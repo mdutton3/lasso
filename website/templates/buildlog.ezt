@@ -1,0 +1,85 @@
+<table>
+<thead>
+ <tr>
+  <th rowspan="2">Build time</th>
+  <th colspan="3">Changes</th>
+  <th colspan="2">Compilation</th>
+  <th colspan="6">Components</th>
+  <th colspan="3">Tests</th>
+ </tr>
+ <tr id="line2">
+  <th>Nb</th> <th>Log</th> <th>Guilty<a href="#note-guilty">*</a></th>
+  <th>Duration</th> <th>Build log</th>
+  <th>Lib C</th> <th>Python</th> <th>PHP</th> <th>Perl</th> <th>Java</th> <th>C#</th>
+  <th>Lib C</th> <th>Python</th> <th><a href="/souk/">Souk</a></th>
+ </tr>
+</thead>
+<tbody>
+ [for build]
+  <tr class="[if-index build even]even[else]odd[end]">
+   <td class="buildtime">
+    [build.display_date]&nbsp;[build.display_hour]
+   </td>
+   <td>
+    [if-any build.changelog][build.nb_commits][else] [end]
+   </td>
+   <td>
+    [if-any build.changelog]<a href="[build.changelog]">C</a>[else] [end]
+   </td>
+   <td>
+    [if-any build.changelog][build.last_commit_author][else] [end]
+   </td>
+   <td>[build.duration]</td>
+   <td>
+    [if-any build.buildlog] <a href="[build.buildlog]">3.3</a>&nbsp;[end][if-any build.buildlog295]&nbsp;/&nbsp;<a href="[build.buildlog295]">2.95</a> [end]
+   </td>
+   <td class="[build.liblasso_status]">
+    [is build.liblasso_status "ok"] [is build.liblasso295_status "ok"]  [else]
+     <a href="[build.liblasso295_href]">L</a> [end]
+    [else] <a href="[build.liblasso_href]">L</a> [end]
+   </td>
+   [if-any build.python_status]
+   <td class="[build.python_status]">
+    [is build.python_status "ok"] [else] <a href="[build.python_href]">L</a> [end]
+   </td>[else]<td> </td>[end]
+   [if-any build.php_status]
+   <td class="[build.php_status]">
+    [is build.php_status "ok"] [else] <a href="[build.php_href]">L</a> [end]
+   </td>[else]<td> </td>[end]
+   [if-any build.perl_status]
+   <td class="[build.perl_status]">
+    [is build.perl_status "ok"] [else] <a href="[build.perl_href]">L</a> [end]
+   </td>[else]<td> </td>[end]
+   [if-any build.java_status]
+   <td class="[build.java_status]">
+    [is build.java_status "ok"] [else] <a href="[build.java_href]">L</a> [end]
+   </td>[else]<td> </td>[end]
+   [if-any build.csharp_status]
+   <td class="[build.csharp_status]">
+    [is build.csharp_status "ok"] [else] <a href="[build.csharp_href]">L</a> [end]
+   </td>[else]<td> </td>[end]
+
+   <!-- tests -->
+
+   [if-any build.tests_c_status]
+   <td class="[build.tests_c_status]">
+    [is build.tests_c_status "ok"] [else] <a href="[build.tests_c_href]">L</a> [end]
+   </td>[else]<td> </td>[end]
+
+   [if-any build.tests_python_status]
+   <td class="[build.tests_python_status]">
+    [is build.tests_python_status "ok"] [else] <a href="[build.tests_python_href]">L</a> [end]
+   </td>[else]<td> </td>[end]
+
+   [if-any build.tests_souk_status]
+   <td class="[build.tests_souk_status]">
+    [is build.tests_souk_status "ok"] [else] <a href="[build.tests_souk_href]">L</a> [end]
+   </td>[else]<td> </td>[end]
+  </tr>
+ [end]
+</tbody>
+</table>
+<p id="note-guilty">
+ <strong>Note:</strong> the "guilty" columns only gives the name of the most
+ recent commiter for the time period.
+</p>

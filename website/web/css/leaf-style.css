@@ -1,0 +1,276 @@
+/* adapted from Localize template published on oswd */
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: sans-serif;
+	color: #666;
+	text-align: center;
+	background-color: #ddd;
+}
+
+p {
+	margin: 0.2em 0 1.2em 0;
+	padding: 0.3em;
+}
+
+h1 {
+	padding: 0;
+	margin: 0;
+	font-size: 180%;
+	font-weight: normal;
+	font-style: italic; 
+	color: #8CD749;
+}
+
+h2, h3 {
+	background: #d0d0d0;
+	color: #3B4471;
+	font-size: 100%;
+	font-weight: normal;
+	margin: 0.2em;
+	padding: 0; 
+	font-style: italic;
+}
+
+h3 {
+	background: #dddddd;
+}
+
+a:link, a:visited {
+	color: #8CD749;
+	text-decoration: underline;
+}
+
+a:hover {
+	color: #3B4471;
+	text-decoration: none;
+}
+
+a:active {
+	color: #8CD749;
+	text-decoration: underline;
+}
+
+
+div#page {
+	background: white;
+	margin: 0 auto;
+	width: 70%;
+}
+
+div#header {
+	padding: 1em 2em;
+	text-align: right;
+	background: white url(my-leaf.jpeg) no-repeat left center;
+}
+
+#header span {
+	display: block;
+	color: #3B4471;
+	font-size: 80%;
+}
+
+
+div#navbar ul {
+	font-size: 80%;
+	list-style-type: none;
+	float: left;
+	display: block;
+	width: 100%;
+	line-height: 1.5em; 
+	clear: both;
+	margin: 0;
+	padding: 0;
+	background-color: #999999;
+}
+
+div#navbar ul li {
+	display: inline;
+}
+
+div#navbar a {
+	display: block;
+	float: left;
+	width: 24.5%;
+	padding: 1.2em 0 1em 0;
+	margin: 0; 
+	text-decoration: none;
+}
+
+div#navbar a:link, div#navbar a:visited, div#navbar a:active {
+	background: #999;
+	color: white;
+	border-bottom: 3px solid transparent;
+}
+
+div#navbar a:hover, div#navbar a.here {
+	background: #8CD749;
+}
+
+div#navbar a.here {
+	border-bottom: 3px solid #489302;
+}
+
+div#quicklinks {
+	float: right;
+	clear: both;
+	width: 13em;
+	margin-top: 1em;
+	padding: 0;
+	font-size: 90%;
+	text-align: center;
+}
+
+div#morelinks,
+div#news,
+div#download,
+div#documentation,
+div#contact {
+	background: white;
+	margin: 0.5em;
+	padding: 0.3em;
+	border: 1px solid #999999;
+}
+
+#quicklinks h2, #quicklinks h3 {
+	text-align: left;
+	padding-left: 1.5em;
+}
+
+#quicklinks ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#content {
+	clear: left;
+	text-align: left;
+	margin: 1.2em 1em 0 0;
+	padding: 1em 1ex 1em 1.5ex;
+}
+
+#content.large {
+	margin-right: 1.2em;
+}
+
+#content h2, #content h3 {
+	text-indent: 2em;
+}
+
+#copyright {
+	color: #999;
+	font-size: 80%;
+	margin: 2.5em 0.2em 0.5em 0.5em;
+	padding: 0.8em; 
+	border-top: 1px solid #999;
+	text-align: left;
+	clear: both;
+}
+
+
+div#news a {
+    display: block;
+}
+
+div#news p.changes {
+	font-size: 80%;
+}
+
+
+table.matrix td, table.matrix th {
+	border: 1px solid #444;
+}
+
+table.matrix thead th {
+	background: #8CD749;
+	font-style: italic;
+	padding: 0 2ex;
+}
+
+table.matrix {
+	caption-side: bottom;
+}
+
+table.matrix caption {
+	font-size: 90%;
+}
+
+table.matrix th {
+	padding: 0 1.5ex;
+}
+
+table.matrix td {
+	padding: 0 0.3ex;
+	text-align: center;
+}
+
+table.matrix td.prof {
+	text-align: left;
+	padding: 0 0.5ex;
+}
+
+table.benchs tr.labels td {
+        text-align: center;
+}
+
+table.benchs tr>th:first-child { padding-right: 2em; }
+
+table.benchs td { padding: 0 0.7em;  text-align: right; }
+
+table.benchs thead, table.benchs th {
+	background: #eee;
+}
+
+ol.test-machines > li {
+	margin-bottom: 1em;
+	border-left: 1px solid #888;
+}
+
+p.details-configuration {
+	margin-top: 3em;
+}
+
+pre {
+	background: #eee;
+	border: 1px inset black;
+	padding: 2px;
+	overflow: auto;
+}
+
+div#page.buildbox {
+	width: 90%;
+}
+
+div#page.buildbox div#content {
+	margin: 1.2em 0.2em 0 0;
+}
+
+div#page.buildbox div#content h1 {
+	margin-bottom: 1em;
+}
+
+div#page.buildbox table {
+	font-size: 90%;
+}
+
+div#page.buildbox div#quicklinks {
+	display: none;
+}
+
+p.warning {
+	color: black;
+	font-weight: bold;
+	background: white url(warning.png) 2px 2px no-repeat;
+	padding-left: 55px;
+	min-height: 48px;
+	margin: 2em 0;
+	border: 1px solid #800;
+}
+
+ul.errornotes {
+	font-size: 90%;
+	margin-left: 2em;
+}
+

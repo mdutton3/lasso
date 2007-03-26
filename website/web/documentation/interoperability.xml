@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Liberty Alliance &amp; SAML 2.0 Interoperability</title>
+ </head>
+ <body>
+
+  <h1>Interoperability</h1>
+
+  <h2>SAML 2.0 Conformance Event</h2>
+
+  <p>Lasso participated in the conformance event organized by the
+  <a href="http://www.projectliberty.org">Liberty Alliance</a> and hosted
+  at <a href="http://www.etsi.org">ETSI</a> in December 2006.  During a 
+  week Lasso and other implementations were tested together and Lasso was
+  then recognized as conformant ot SAML 2.0 specifications.
+  </p>
+
+  <h2>ID-FF 1.2 Conformance Event</h2>
+
+  <p>To achieve Liberty Alliance certification a solution must be
+  successfully tested against several others during a workshop week.
+  In order to achieve the interoperability certification for a single
+  role/profile, an implementation must complete the test sequence in
+  conjunction with at least two other implementations in each of the
+  complementary roles.
+  </p>
+
+  <p>
+  In May 2005 Lasso has passed these series of comprehensive interoperability
+  conformance tests.  It is therefore part of Liberty Alliance Project <a
+   href="http://projectliberty.org/liberty_interoperable/interoperable_products/id_ff_1_2_interoperable_product_table">interoperable
+   products</a> list.
+  </p>
+
+  <h2><del>Work in progress:</del> SAML 2.0 support</h2>
+
+  <p>
+   Development of SAML 2.0 support is ongoing and, thanks to the general
+   availability of a few implementations, some tests have been done.
+  </p>
+
+    <h3>OpenSSO</h3>
+
+    <p>
+     Access Manager is listed as a certified SAML 2.0 implementation and
+     OpenSSO code is said to be Access Manager code but OpenSSO did not
+     have any federation or cross-domain SSO support.  Federation support
+     is part of Sun Java System Federation Manager, which was not
+     available as open source by the time of those tests.
+    </p>
+
+    <p>
+     Sun Java System Federation Manager has been integrated into OpenSSO
+     (as openfm) on November 6th 2006.  It has been added to our testing agenda.
+    </p>
+
+    <h3>Lightbulb</h3>
+
+    <p>
+     Aside OpenSSO is a small project, <a
+     href="http://blogs.sun.com/superpat/entry/switching_on_the_lightbulb">lightbulb</a>,
+     which aims to implement SAML 2.0 support in pure PHP.  It is not certified
+     and only implements SAML 2.0 SSO POST.
+    </p>
+
+    <p>
+     Those tests have last been conducted on November 2nd 2006.
+    </p>
+
+    <table class="matrix">
+     <caption>Lasso / Lightbulb Compatibility Matrix</caption>
+     <thead>
+     <tr>
+      <th>Protocol</th> <th>SP</th> <th>IdP</th> <th>Initiated by</th> <th>Profile</th> <th>Test</th>
+     </tr>
+     </thead>
+     <tbody>
+      <tr>
+       <th rowspan="1">Single Sign-On &amp; Federation</th>
+       <td rowspan="1">Lightbulb</td>
+       <td rowspan="1">Lasso</td>
+       <td rowspan="1">SP</td>
+       <td class="prof">redirect/post/federated</td>     <td>OK</td>
+      </tr>
+     </tbody>
+    </table>
+
+    <h3>zxid</h3>
+
+    <p>
+     <a href="http://www.zxid.org">zxid</a> is different things, including a
+     SAML 2.0 service provider as CGI program.  It is free software (license
+     is <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License
+     2.0</a> and is developed by Sampo Kellomäki, of Symlabs fame.
+    </p>
+
+    <p>
+     Those tests have last been conducted on November 6th 2006.
+    </p>
+
+    <table class="matrix">
+     <caption>Lasso / zxid Compatibility Matrix</caption>
+     <thead>
+     <tr>
+      <th>Protocol</th> <th>SP</th> <th>IdP</th> <th>Initiated by</th> <th>Profile</th> <th>Test</th>
+     </tr>
+     </thead>
+     <tbody>
+      <tr>
+       <th rowspan="6">Single Sign-On &amp; Federation</th>
+       <td rowspan="6">zxid</td>
+       <td rowspan="6">Lasso</td>
+       <td rowspan="6">SP</td>
+       <td class="prof">redirect/artifact/federated</td> <td>OK</td>
+      </tr>
+      <tr> <td class="prof">redirect/artifact/none</td>      <td>Not tested</td> </tr>
+      <tr> <td class="prof">post/artifact/federated</td>     <td>N/I</td> </tr>
+      <tr> <td class="prof">post/artifact/none</td>          <td>N/I</td> </tr>
+      <tr> <td class="prof">redirect/post/federated</td>     <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/post/none</td>          <td>Not tested</td> </tr>
+
+      <tr>
+       <th rowspan="5">Single Logout</th>
+       <td rowspan="5">zxid</td>
+       <td rowspan="5">Lasso</td>
+       <td rowspan="2">SP</td>
+       <td class="prof">SOAP</td>      <td>OK</td>
+      </tr>
+      <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+      <tr> <td rowspan="3">IdP</td>
+       <td class="prof">SOAP</td>     <td><a href="#zxid-2">Error</a></td></tr>
+      <tr> <td class="prof">redirect</td>   <td>Not tested</td> </tr>
+      <tr> <td class="prof">get</td>      <td>Not tested</td> </tr>
+
+      <tr>
+       <th rowspan="4">Name ID Management (only federation termination in zxid)</th>
+       <td rowspan="4">zxid</td>
+       <td rowspan="4">Lasso</td>
+       <td rowspan="2">SP</td>
+       <td class="prof">SOAP</td>      <td>OK</td>
+      </tr>
+      <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+      <tr> <td rowspan="2">IdP</td>
+       <td class="prof">SOAP</td>     <td><a href="#zxid-1">Error</a></td></tr>
+      <tr> <td class="prof">redirect</td>   <td>Not tested</td> </tr>
+     </tbody>
+    </table>
+
+    <ul class="errornotes">
+      <li>
+       <a name="zxid-1">Error with federation termination requested from Lasso
+       to zxid</a> :  SOAP message POSTed to correct URL (zxid?o=S) but HTML
+       document answer from this URL.
+      </li>
+      <li>
+       <a name="zxid-2">Error with single logout requested from Lasso
+       to zxid</a> :  SOAP message POSTed to correct URL (zxid?o=S) but HTML
+       document answer from this URL.
+      </li>
+    </ul>
+
+    <h3>Symlabs Federated Identity Access Manager</h3>
+
+    <p>
+     <a href="http://www.symlabs.com">Symlabs</a> <a
+     href="http://www.symlabs.com/Products/SFIAM.html">FIAM</a> is a complete
+     identity management solution, certified as SAML 2.0 conformant in July
+     2005.  There is a free evaluation version available on their website.
+    </p>
+
+    <p>
+     Those tests have last been conducted on December 2nd 2006.
+    </p>
+
+
+    <table class="matrix">
+     <caption>Lasso / SFIAM Compatibility Matrix</caption>
+     <thead>
+     <tr>
+      <th>Protocol</th> <th>SP</th> <th>IdP</th> <th>Initiated by</th> <th>Profile</th> <th>Test</th>
+     </tr>
+     </thead>
+     <tbody>
+      <tr>
+       <th rowspan="16">Single Sign-On &amp; Federation</th>
+       <td rowspan="6">Lasso</td>
+       <td rowspan="6">SFIAM</td>
+       <td rowspan="4">SP</td>
+       <td class="prof">redirect/artifact/federated</td> <td>OK</td>
+      </tr>
+      <tr> <td class="prof">redirect/artifact/transient</td> <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/post/federated</td> <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/post/transient</td> <td>OK</td> </tr>
+      <tr> <td rowspan="2">IdP</td>
+           <td class="prof">redirect/artifact/federated</td> <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/post/federated</td> <td>OK</td> </tr>
+
+      <tr>
+       <td rowspan="10">SFIAM</td>
+       <td rowspan="10">Lasso</td>
+       <td rowspan="6">SP</td>
+       <td class="prof">redirect/artifact/federated</td> <td>OK</td>
+      </tr>
+      <tr> <td class="prof">redirect/artifact/transient</td> <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/artifact/encrypted</td> <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/post/federated</td> <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/post/transient</td> <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/post/encrypted</td> <td>OK</td> </tr>
+      <tr> <td rowspan="4">IdP</td>
+           <td class="prof">redirect/artifact/federated</td> <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/artifact/encrypted</td> <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/post/federated</td> <td>OK</td> </tr>
+      <tr> <td class="prof">redirect/post/encrypted</td> <td>OK</td> </tr>
+
+      <tr>
+       <th rowspan="10">Single Logout</th>
+       <td rowspan="5">Lasso</td>
+       <td rowspan="5">SFIAM</td>
+       <td rowspan="2">SP</td>
+       <td class="prof">SOAP</td>      <td>OK</td>
+      </tr>
+      <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+      <tr> <td rowspan="3">IdP</td>
+           <td class="prof">SOAP</td>     <td>OK</td> </tr>
+      <tr> <td class="prof">redirect</td>   <td>OK</td> </tr>
+      <tr> <td class="prof">get</td>      <td>OK</td> </tr>
+
+      <tr>
+       <td rowspan="5">SFIAM</td>
+       <td rowspan="5">Lasso</td>
+       <td rowspan="2">SP</td>
+       <td class="prof">SOAP</td>      <td>OK</td>
+      </tr>
+      <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+      <tr> <td rowspan="3">IdP</td>
+           <td class="prof">SOAP</td>     <td>OK</td></tr>
+      <tr> <td class="prof">redirect</td>   <td>OK</td> </tr>
+      <tr> <td class="prof">get</td>      <td>OK</td> </tr>
+
+      <tr>
+       <th rowspan="8">Name ID Management</th>
+       <td rowspan="4">Lasso</td>
+       <td rowspan="4">SFIAM</td>
+       <td rowspan="2">SP</td>
+       <td class="prof">SOAP</td>      <td>Not tested</td> </tr>
+      <tr> <td class="prof">redirect</td>  <td>Not tested</td> </tr>
+      <tr> <td rowspan="2">IdP</td>
+           <td class="prof">SOAP</td>     <td>Not tested</td></tr>
+      <tr> <td class="prof">redirect</td>   <td>Not tested</td> </tr>
+      <tr> <td rowspan="4">SFIAM</td> <td rowspan="4">Lasso</td>
+           <td rowspan="2">SP</td>
+           <td class="prof">SOAP</td>      <td>OK</td> </tr>
+      <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+      <tr> <td rowspan="2">IdP</td>
+           <td class="prof">SOAP</td>     <td>OK</td></tr>
+      <tr> <td class="prof">redirect</td>     <td>Not tested</td></tr>
+
+     </tbody>
+    </table>
+
+
+
+  <h2>Old tests</h2>
+
+  <h3>ID-FF 1.2 against SourceID</h3>
+
+  <p>
+   Prior to the conformance event we tested Lasso ID-FF support against SourceID.
+  </p>
+
+  <p>
+   SourceID is an open source multi-protocol project for enabling identity
+   federation and cross-boundary security.  It implements ID-FF 1.2 and has
+   been stamped as "Liberty Interoperable".  Web site: <a
+   href="http://www.sourceid.org">www.sourceid.org</a>.
+   Lasso interoperability
+   last tested with Lasso 0.6.0 on January 24th.
+  </p>
+
+  <table class="matrix">
+   <caption>Lasso / SourceID Compatibility Matrix</caption>
+   <thead>
+    <tr>
+     <th>Protocol</th>
+     <th>SP</th>
+     <th>IdP</th>
+     <th>Initiated by</th>
+     <th>Profile</th>
+     <th>Test</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <th rowspan="12">Single Sign-On &amp; Federation</th>
+     <td rowspan="9">Lasso</td>
+     <td rowspan="9">SourceID</td>
+     <td rowspan="8">SP</td>
+     <td class="prof">redirect/artifact/federated</td> <td>OK</td>
+    </tr>
+    <tr> <td class="prof">redirect/artifact/none</td>      <td>OK</td> </tr>
+    <tr> <td class="prof">post/artifact/federated</td>     <td>OK</td> </tr>
+    <tr> <td class="prof">post/artifact/none</td>          <td>OK</td> </tr>
+    <tr> <td class="prof">redirect/post/federated</td>     <td>OK</td> </tr>
+    <tr> <td class="prof">redirect/post/none</td>          <td>OK</td> </tr>
+    <tr> <td class="prof">post/post/federated</td>         <td>OK</td> </tr>
+    <tr> <td class="prof">post/post/none</td>              <td>OK</td> </tr>
+    <tr> <td>IdP</td>   <td class="prof">artifact/any</td> <td>OK</td> </tr>
+    <tr>
+     <td rowspan="3">SourceID</td>
+     <td rowspan="3">Lasso</td>
+     <td rowspan="2">SP</td>
+     <td class="prof">redirect/artifact/federated</td>  <td>OK</td>
+    </tr>
+    <tr>
+     <td class="prof">post/post/federated</td>          <td>OK</td>
+    </tr>
+    <tr>
+     <td>IdP</td> <td class="prof">artifact/any</td> <td>OK</td>
+    </tr>
+
+    <tr>
+     <th rowspan="10">Single Logout</th>
+     <td rowspan="5">Lasso</td>
+     <td rowspan="5">SourceID</td>
+     <td rowspan="2">SP</td>
+     <td class="prof">SOAP</td>      <td>OK</td>
+    </tr>
+    <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+    <tr> <td rowspan="3">IdP</td>
+     <td class="prof">SOAP</td>     <td>OK</td></tr>
+    <tr> <td class="prof">redirect</td>   <td>OK</td> </tr>
+    <tr> <td class="prof">get</td>      <td>OK</td> </tr>
+    <tr>
+     <td rowspan="5">SourceID</td>
+     <td rowspan="5">Lasso</td>
+     <td rowspan="2">SP</td>
+     <td class="prof">SOAP</td>      <td>OK</td>
+    </tr>
+    <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+    <tr> <td rowspan="3">IdP</td>
+     <td class="prof">SOAP</td>     <td>OK</td></tr>
+    <tr> <td class="prof">redirect</td>   <td>OK</td> </tr>
+    <tr> <td class="prof">get</td>      <td>OK</td> </tr>
+
+    <tr>
+     <th rowspan="8">Federation Termination</th>
+     <td rowspan="4">Lasso</td>
+     <td rowspan="4">SourceID</td>
+     <td rowspan="2">SP</td>
+     <td class="prof">SOAP</td>      <td>OK</td>
+    </tr>
+    <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+    <tr> <td rowspan="2">IdP</td>
+     <td class="prof">SOAP</td>     <td>OK</td></tr>
+    <tr> <td class="prof">redirect</td>   <td>OK</td> </tr>
+    <tr>
+     <td rowspan="4">SourceID</td>
+     <td rowspan="4">Lasso</td>
+     <td rowspan="2">SP</td>
+     <td class="prof">SOAP</td>      <td>OK</td>
+    </tr>
+    <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+    <tr> <td rowspan="2">IdP</td>
+     <td class="prof">SOAP</td>     <td>OK</td></tr>
+    <tr> <td class="prof">redirect</td>   <td>OK</td> </tr>
+
+    <tr>
+     <th rowspan="8">Register Name Identifier</th>
+     <td rowspan="4">Lasso</td>
+     <td rowspan="4">SourceID</td>
+     <td rowspan="2">SP</td>
+     <td class="prof">SOAP</td>      <td>OK</td> </tr>
+    <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+    <tr> <td rowspan="2">IdP</td>
+     <td class="prof">SOAP</td>     <td>OK</td></tr>
+    <tr> <td class="prof">redirect</td>   <td>OK</td> </tr>
+    <tr>
+     <td rowspan="4">SourceID</td>
+     <td rowspan="4">Lasso</td>
+     <td rowspan="2">SP</td>
+     <td class="prof">SOAP</td>      <td>OK</td> </tr>
+    <tr> <td class="prof">redirect</td>  <td>OK</td> </tr>
+    <tr> <td rowspan="2">IdP</td>
+     <td class="prof">SOAP</td>     <td>OK</td></tr>
+    <tr> <td class="prof">redirect</td>   <td>OK</td> </tr>
+   </tbody>
+  </table>
+  
+ </body>
+</html>

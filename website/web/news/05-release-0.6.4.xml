@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<div xmlns="http://www.w3.org/1999/xhtml">
+ <h3>2006-03-08: Released 0.6.4</h3>
+
+ <p>
+  Lasso 0.6.4 has been released.
+  <a href="/download/">Download it now</a>
+ </p>
+
+ <p class="changes">
+  <strong>What changed ?</strong>
+Added first draft of ID-WSF Interaction Service support, added message
+signatures to ID-WSF messages, added first draft of SAML 2 support (only
+Web-SSO and part of Single Logout for the moment), fixed some corner cases,
+improved error detection in different places, upgraded SWIG support to 1.3.28
+and generally improved the bindings.
+ </p>
+
+</div>

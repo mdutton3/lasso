@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Liberty Alliance Single Sign On</title>
+ </head>
+ <body>
+
+  <p>
+   <acronym title="Liberty Alliance Single Sign On">Lasso</acronym> is a free
+   software C library aiming to implement the <a
+   href="http://www.projectliberty.org">Liberty Alliance</a> standards; it
+   defines processes for federated identities, single sign-on and related
+   protocols.  Lasso is built on top of <a href="http://www.xmlsoft.org">libxml2</a>,
+   <a href="http://www.aleksey.com/xmlsec/">XMLSec</a> and <a
+   href="http://www.openssl.org">OpenSSL</a> and is licensed under the <a
+   href="/license">GNU General Public License</a>
+   (with an <a href="/license#openssl">OpenSSL exception</a>).
+  </p>
+  
+  <p>
+   We strongly recommend the use of the <a href="/license">GNU General Public
+   License</a> each time it is possible. But for proprietary projects, that
+   wouldn't want to use it, we designed a <a
+   href="http://www.entrouvert.com/en/digital-identity/license-and-support">commercial
+   license</a>.
+  </p>
+
+  <p>
+   Lasso first focused on implementing the Liberty Alliance <acronym
+   title="IDentity Federation Framework">ID-FF</acronym> 1.2 protocols.
+   It now supports a good part of <acronym title="IDentity Web Services
+   Framework">ID-WSF</acronym> and SAML 2.0 support has also been completed.
+  </p>
+
+  <p>
+   <a href="http://www.swig.org">SWIG</a> is used to provide high-level
+   bindings for other languages.  Currently tested and distributed bindings are
+   Python, Perl, Java and PHP as well as preliminary .NET assemblies (for C# and
+   the .NET runtime environment).
+  </p>
+
+  <p>
+   It is primarly developed on GNU/Linux and works on many UNIX environments
+   (including Apple MacOS X) and on Microsoft Windows.
+  </p>
+
+  <p>
+   The most recent version of Lasso is <strong>2.0.0</strong>.  You can
+   <a
+   href="http://labs.libre-entreprise.org/frs/download.php/520/lasso-2.0.0.tar.gz">download
+   the 2.0.0 tarball here</a> or get more options on the general <a
+   href="/download/">download</a> page.
+  </p>
+
+  <!-- XXX note about different architectures -->
+
+  <h2>Support Matrix</h2>
+
+  <p>
+   Lasso is just a library, it is up to the applications to use it to implement
+   profiles defined by the Liberty Alliance.  Lasso currently provides support
+   for the following profiles:
+  </p>
+
+  <table class="matrix">
+   <caption>Supported Liberty protocol profiles</caption>
+   <thead>
+    <tr>
+     <th>Feature</th>
+     <th><acronym title="Identity Provider">IdP</acronym></th>
+     <th><acronym title="Service Provider">SP</acronym></th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>Single Sign-On using Artifact Profile</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr>
+     <td>Single Sign-On using Browser POST Profile</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr>
+     <td>Single Sign-On using LECP Profile</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr class="even">
+     <td>Register Name Identifier - (IdP Initiated) - HTTP-Redirect</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr class="even">
+     <td>Register Name Identifier - (IdP Initiated) - SOAP/HTTP</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr class="even">
+     <td>Register Name Identifier - (SP Initiated) - HTTP-Redirect</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr class="even">
+     <td>Register Name Identifier - (SP Initiated) - SOAP/HTTP</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr>
+     <td>Federation Termination Notification (IdP Initiated) - HTTP-Redirect</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr>
+     <td>Federation Termination Notification (IdP Initiated) - SOAP/HTTP</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr>
+     <td>Federation Termination Notification (SP Initiated) - HTTP-Redirect</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr>
+     <td>Federation Termination Notification (SP Initiated) - SOAP/HTTP</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr class="even">
+     <td>Single Logout (IdP Initiated) ­ HTTP-Redirect</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr class="even">
+     <td>Single Logout (IdP Initiated) ­ HTTP-GET</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr class="even">
+     <td>Single Logout (IdP Initiated) ­ SOAP</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr class="even">
+     <td>Single Logout (SP Initiated) ­ HTTP-Redirect</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr class="even">
+     <td>Single Logout (SP Initiated) ­ SOAP</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr>
+     <td>Identity Provider Introduction (cookie)</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+   </tbody>
+  </table>
+
+
+  <!-- XXX note about professional services -->
+
+ </body>
+</html>
+

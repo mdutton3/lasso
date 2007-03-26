@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<catalog xmlns="http://www.entrouvert.org/namespaces/expression/0.0">
+  <rootElementName>div</rootElementName>
+  <rootElementNamespace>http://www.w3.org/1999/xhtml</rootElementNamespace>
+  <contentElementName>div</contentElementName>
+  <root rel="relative"/>
+  <sort reverse="true">html:h2</sort>
+  <count>2</count>
+</catalog>
+

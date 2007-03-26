@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Download</title>
+ </head>
+ <body>
+ 	<h1>Download</h1>
+
+	<p>
+	  Lasso is licensed under the GNU GPL and the latest release
+	  is available here as a gzipped tarball:
+	  <a
+	  href="http://labs.libre-entreprise.org/frs/download.php/520/lasso-2.0.0.tar.gz">lasso-2.0.0.tar.gz</a>
+	</p>
+
+
+	<h2>Binary Downloads</h2>
+
+	<h3>Debian Packages</h3>
+
+	<p>
+	  Debian packages are available in the official Debian distribution,
+	  they are included in the current testing and development versions
+	  (<i>etch</i> and <i>sid</i>).
+	</p>
+	 
+	<p>
+	  Additionnaly there are <i>sarge</i> packages and there may be more
+	  uptodate packages available in our local apt repository.  Pick the
+	  one appropriate for your distribution:
+	</p>
+
+	<pre>
+deb http://deb.entrouvert.org sarge main
+deb http://deb.entrouvert.org etch main
+</pre>
+
+	<p>
+	  Available packages are:
+	</p>
+
+	<ul>
+	 <li>liblasso3: runtime library</li>
+	 <li>liblasso3-dev: C development kit</li>
+	 <li>python2.3-lasso: Python 2.3 bindings</li>
+	 <li>php4-lasso: PHP bindings</li>
+	 <li>liblasso-java: JAVA bindings</li>
+	 <li>liblasso-perl: Perl bindings</li>
+	 <!--<li>liblasso-cil: .NET bindings</li>-->
+	</ul>
+
+	<p>
+	  You can also browse the repository on <a
+	  href="http://deb.entrouvert.org">deb.entrouvert.org</a>
+	</p>
+
+
+	<h3>Fedora Core Packages</h3>
+
+	<p>
+	  There are RPM packages built on Fedora Core 6.
+	</p>
+
+	<ul>
+	 <li><a
+	 href="http://labs.libre-entreprise.org/frs/download.php/527/lasso-2.0.0-1.i386.rpm">lasso-2.0.0-1.i386.rpm</a></li>
+	 <li><a
+	 href="http://labs.libre-entreprise.org/frs/download.php/528/lasso-devel-2.0.0-1.i386.rpm">lasso-devel-2.0.0-1.i386.rpm</a></li>
+	 <li><a
+	 href="http://labs.libre-entreprise.org/frs/download.php/529/lasso-java-2.0.0-1.i386.rpm">lasso-java-2.0.0-1.i386.rpm</a></li>
+	 <li><a
+	 href="http://labs.libre-entreprise.org/frs/download.php/530/lasso-perl-2.0.0-1.i386.rpm">lasso-perl-2.0.0-1.i386.rpm</a></li>
+	 <li><a
+	 href="http://labs.libre-entreprise.org/frs/download.php/531/lasso-python-2.0.0-1.i386.rpm">lasso-python-2.0.0-1.i386.rpm</a></li>
+	</ul>
+
+
+	<h3>Microsoft Windows Installer Packages</h3>
+
+	<p>
+	 The following Microsoft Windows installer packages are available
+	 for this release:
+	</p>
+
+	<ul>
+	 <li><a
+	 href="http://labs.libre-entreprise.org/frs/download.php/524/Install-lite-2_0_0.exe">[lite]</a>
+	 Installer with Lasso library</li>
+	 <li><a
+	 href="http://labs.libre-entreprise.org/frs/download.php/522/Install-full-2_0_0.exe">[full]</a>
+	 Installer with Lasso library as well as dependencies</li>
+	 <li><a
+	 href="http://labs.libre-entreprise.org/frs/download.php/523/Install-java-lite-2.0.0.exe">[java
+	 lite]</a> Installer with Java binding for Lasso library</li>
+	 <li><a
+	 href="https://labs.libre-entreprise.org/frs/download.php/521/Install-deps-2_0_0.exe">[deps]</a>
+	 Installer with dependencies only</li>
+	</ul>
+
+
+	<h2>CVS</h2>
+
+	<p>
+	 Lasso is also available through CVS; you can checkout source code
+	 (see below) or browse source files online with <a
+	 href="http://labs.libre-entreprise.org/plugins/scmcvs/cvsweb.php/lasso/?cvsroot=lasso">CVSWeb</a>.
+	</p>
+
+	<pre>
+cvs -d:pserver:anonymous@cvs.labs.libre-entreprise.org:/cvsroot/lasso login
+ # just press enter when it asks for a password
+cvs -z3 -d:pserver:anonymous@cvs.labs.libre-entreprise.org:/cvsroot/lasso checkout lasso
+</pre>
+
+ </body>
+</html>
+

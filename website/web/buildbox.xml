@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<catalog xmlns="http://www.entrouvert.org/namespaces/expression/0.0">
+ <rootElementName>summary</rootElementName>
+ <rootElementNamespace>http://www.0d.be/ns/build</rootElementNamespace>
+ <root>build-logs</root>
+ <contentElementName>build</contentElementName>
+ <minModificationTime type="rel">-192800</minModificationTime>
+ <sort>build:date</sort>
+</catalog>

@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Documentation</title>
+ </head>
+ <body>
+  <h1>Documentation</h1>
+
+  <ul>
+   <li><a href="writing-a-c-sp.html">Writing a Liberty service provider in C</a></li>
+   <li><a href="writing-a-php-sp.html">Writing a Liberty service provider in PHP</a></li>
+   <li><a href="writing-a-java-sp.html">Writing a Liberty service provider in Java</a></li>
+   <li><a href="book.html">Building Liberty Services with Lasso</a> (work
+   stopped for the time being)</li>
+  </ul>
+
+  <ul>
+   <li><a href="interoperability">Interoperability with other Liberty and
+   SAML 2.0 implementations</a></li>
+  </ul>
+
+  <ul>
+   <li><a href="api-reference/index.html">API Reference</a></li>
+  </ul>
+
+
+  <h2>Benchmarks</h2>
+
+  <ul>
+   <li><a href="perfs">Benchmarking service provider SSO tasks</a></li>
+  </ul>
+
+  <h2>Slides</h2>
+
+  <ul>
+   <li><a
+   href="/documentation/slides/20050201-lasso-solutions-linux.pdf">General
+   presentation</a> given February 1st 2005 in the "Identity Management" track
+   of <a href="http://www.solutionslinux.fr">Solutions Linux</a> in Paris.
+   (in French)
+   </li>
+  </ul>
+
+ </body>
+</html>
+
