@@ -38,7 +38,7 @@
       <li[is section "mailinglists"] id="current"[end]>
        <a href="/mailinglists/">Mailing Lists</a></li>
       <li[is section "buildbox"] id="current"[end]>
-        <a href="/buildbox">CVS Status</a></li>
+        <a href="/buildbox">Subversion Status</a></li>
       <li[is section "links"] id="current"[end]>
         <a href="/links">Related Links</a></li>
       <li><a href="http://labs.libre-entreprise.org/tracker/?atid=206&amp;group_id=31&amp;func=browse">Bug
@@ -55,7 +55,7 @@
 </div>
     
   <div id="content">
-    [is section "buildbox"]<h1>CVS Status</h1>[end]
+    [is section "buildbox"]<h1>Subversion Status</h1>[end]
     [body]
 
      <div id="copyright">

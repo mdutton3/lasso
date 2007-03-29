@@ -39,12 +39,23 @@ class ChangelogFile:
 
 class ChangelogEntry:
     def __init__(self, node):
-        for attr in ('date', 'weekday', 'time', 'isoDate', 'msg', 'author'):
+        for attr in ('date', 'weekday', 'time', 'isoDate', 'msg', 'author', 'revision'):
             try:
                 setattr(self, attr, getText(node.getElementsByTagName(attr)[0].childNodes))
             except IndexError:
                 setattr(self, attr, None)
         self.file = [ChangelogFile(x) for x in node.getElementsByTagName('file')]
+
+class ChangelogSvnEntry:
+    def __init__(self, node):
+        for attr in ('date', 'msg', 'author', 'file'):
+            try:
+                setattr(self, attr, getText(node.getElementsByTagName(attr)[0].childNodes))
+            except IndexError:
+                setattr(self, attr, None)
+        self.revision = node.attributes['revision'].value
+        if self.date:
+            self.time = self.date[11:16]
 
 
 class TestTest:
@@ -105,6 +116,8 @@ class Build:
             dom_cl = xml.dom.minidom.parse(file('web' + self.changelog + '.xml'))
             self.last_commit_author = getText(dom_cl.getElementsByTagName('author')[0].childNodes)
             self.nb_commits = len(dom_cl.getElementsByTagName('entry'))
+            if not self.nb_commits:
+                self.nb_commits = len(dom_cl.getElementsByTagName('logentry'))
 
 
 
@@ -124,7 +137,7 @@ for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
         os.mkdir('web-static/%s' % BUILDLOGS_DIR)
 
     for base, dirs, files in os.walk('web/%s' % BUILDLOGS_DIR):
-        if base.endswith('/CVS'):
+        if base.endswith('/CVS') or base.endswith('/.svn'):
             continue
         for dirname in dirs:
             src_file = os.path.join(base, dirname)
@@ -159,6 +172,15 @@ for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
             type = dom.childNodes[0].nodeName
             if type == 'changelog':
                 entries = [ChangelogEntry(x) for x in dom.getElementsByTagName('entry')]
+                fd = StringIO()
+                changelog_template.generate(fd, {'entry': entries})
+                body = fd.getvalue()
+                fd = StringIO()
+                base_template.generate(fd, {'body': body, 'title': 'ChangeLog', 'section': 'buildbox'})
+                open(dst_file, 'w').write(fd.getvalue())
+
+            if type == 'log':
+                entries = [ChangelogSvnEntry(x) for x in dom.getElementsByTagName('logentry')]
                 fd = StringIO()
                 changelog_template.generate(fd, {'entry': entries})
                 body = fd.getvalue()
@@ -215,10 +237,10 @@ for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
 for base, dirs, files in os.walk('web'):
     if '/build-logs' in base or '/news/' in base:
         continue
-    if base.endswith('CVS'):
+    if base.endswith('CVS') or base.endswith('.svn'):
         continue
     for dirname in dirs:
-        if dirname in ('CVS', 'news'):
+        if dirname in ('CVS', 'news', '.svn'):
             continue
         src_file = os.path.join(base, dirname)
         dst_file = 'web-static/' + src_file[4:]
@@ -237,20 +259,15 @@ for base, dirs, files in os.walk('web'):
                 os.stat(dst_file)[stat.ST_MTIME] >= os.stat(src_file)[stat.ST_MTIME]:
             continue
 
-        if ext not in ('.html', '.xml') or filename.startswith('doap.') or \
-                'api-reference' in src_file:
-            if os.path.exists(dst_file):
-                os.unlink(dst_file)
+        if ext not in ('.html', '.xml') or filename.startswith('doap.') or 'api-reference' in src_file:
+	    if os.path.exists(dst_file):
+	        os.unlink(dst_file)
             os.link(src_file, dst_file)
             continue
 
         type = None
         if ext == '.xml':
-            try:
-                dom = xml.dom.minidom.parse(file(src_file))
-            except:
-                print src_file
-                raise
+            dom = xml.dom.minidom.parse(file(src_file))
             type = dom.childNodes[0].nodeName
             dst_file = dst_file.replace('.xml', '.html')
 

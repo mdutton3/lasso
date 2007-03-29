@@ -32,11 +32,10 @@
       </foaf:Person>
     </maintainer>
     <repository>
-      <CVSRepository>
-        <anon-root>:pserver:anonymous@cvs.labs.libre-entreprise.org:/cvsroot/lasso</anon-root>
-        <module>lasso</module>
-        <browse rdf:resource="http://labs.libre-entreprise.org/plugins/scmcvs/cvsweb.php/lasso/?cvsroot=lasso"/>
-      </CVSRepository>
+      <SVNRepository>
+        <location rdf:resource="svn://labs.libre-entreprise.org/svnroot/lasso" />
+        <browse rdf:resource="https://labs.libre-entreprise.org/plugins/scmsvn/viewcvs.php/?root=lasso"/>
+      </SVNRepository>
     </repository>
     <release>
       <Version>
