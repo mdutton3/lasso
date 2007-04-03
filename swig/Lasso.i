@@ -41,6 +41,15 @@
 #endif
 
 #ifndef SWIGPHP4
+%rename(WSF2_SUPPORT) LASSO_WSF2_SUPPORT;
+#endif
+%include wsf2-support.i
+
+#if LASSO_WSF2_SUPPORT == 1
+#define LASSO_WSF2_ENABLED
+#endif
+
+#ifndef SWIGPHP4
 %rename(SAML2_SUPPORT) LASSO_SAML2_SUPPORT;
 #endif
 
@@ -6936,6 +6945,10 @@ int LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, char *
 
 #ifdef LASSO_WSF_ENABLED
 %include Lasso-wsf.i
+#endif
+
+#ifdef LASSO_WSF2_ENABLED
+%include Lasso-wsf2.i
 #endif
 
 %include Lasso-saml2.i
