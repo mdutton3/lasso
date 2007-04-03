@@ -166,8 +166,10 @@
 
 
 /* liberty wsf prefix & href */
-#define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
-#define LASSO_DISCO_PREFIX "disco"
+#define LASSO_DISCO_HREF          "urn:liberty:disco:2003-08"
+#define LASSO_IDWSF2_DISCO_HREF   "urn:liberty:disco:2006-08"
+#define LASSO_DISCO_PREFIX        "disco"
+#define LASSO_IDWSF2_DISCO_PREFIX "ds"
 
 #define LASSO_EP_HREF   "urn:liberty:id-sis-ep:2003-08"
 #define LASSO_EP_PREFIX "ep"
@@ -294,8 +296,10 @@
 
 #define LASSO_SOAP_ENV_ACTOR "http://schemas.xmlsoap.org/soap/actor/next"
 
-#define LASSO_SOAP_BINDING_HREF   "urn:liberty:sb:2003-08"
-#define LASSO_SOAP_BINDING_PREFIX "sb"
+#define LASSO_SOAP_BINDING_HREF          "urn:liberty:sb:2003-08"
+#define LASSO_IDWSF2_SOAP_BINDING_HREF   "urn:liberty:sb:2006-08"
+#define LASSO_SOAP_BINDING_PREFIX        "sb"
+#define LASSO_IDWSF2_SOAP_BINDING_PREFIX "sb"
 
 #define LASSO_SOAP_BINDING_EXT_HREF "urn:liberty:sb:2004-04"
 #define LASSO_SOAP_BINDING_EXT_PREFIX "sbe"
