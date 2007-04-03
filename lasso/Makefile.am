@@ -1,4 +1,4 @@
-SUBDIRS = xml id-ff id-wsf saml-2.0
+SUBDIRS = xml id-ff id-wsf saml-2.0 id-wsf-2.0
 
 liblassoincludedir = $(includedir)/lasso
 
@@ -25,6 +25,10 @@ if WSF_ENABLED
 SYMBOLS_ARGS = -wsf
 endif
 
+if WSF2_ENABLED
+SYMBOLS_ARGS = -wsf2
+endif
+
 types.c:
 	$(PYTHON) $(srcdir)/extract_types.py $(srcdir) $(SYMBOLS_ARGS)
 
@@ -40,6 +44,12 @@ if WSF_ENABLED
 WSF_LIB_FILE = $(top_builddir)/lasso/id-wsf/liblasso-id-wsf.la
 endif
 
+if WSF2_ENABLED
+
+WSF2_LIB_FILES = $(top_builddir)/lasso/id-wsf-2.0/liblasso-id-wsf2.la \
+	$(top_builddir)/lasso/xml/id-wsf-2.0/liblasso-xml-id-wsf2.la
+endif
+
 if MINGW
 liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/xml/liblasso-xml.la \
@@ -47,6 +57,7 @@ liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/id-ff/liblasso-id-ff.la \
 	$(top_builddir)/lasso/saml-2.0/liblasso-saml-20.la \
 	$(WSF_LIB_FILE) \
+	$(WSF2_LIB_FILES) \
 	$(LASSO_LIBS) \
 	lasso.rc.lo
 # Just make damn sure the ABI stays the same between
@@ -61,6 +72,7 @@ liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/id-ff/liblasso-id-ff.la \
 	$(top_builddir)/lasso/saml-2.0/liblasso-saml-20.la \
 	$(WSF_LIB_FILE) \
+	$(WSF2_LIB_FILES) \
 	$(LASSO_LIBS)
 # Just make damn sure the ABI stays the same between
 # upgrades.
