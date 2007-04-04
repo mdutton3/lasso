@@ -238,8 +238,8 @@ sub test06 {
 
     $login->{request} eq undef or die "Assertion failed\n";
     $login->{request} = new lasso::LibAuthnRequest;
-    $login->{request}->{consent} = lasso::LIB_CONSENT_OBTAINED;
-    $login->{request}->{consent} eq lasso::LIB_CONSENT_OBTAINED or die "Assertion failed\n";
+    $login->{request}->{consent} = $lasso::LIB_CONSENT_OBTAINED;
+    $login->{request}->{consent} eq $lasso::LIB_CONSENT_OBTAINED or die "Assertion failed\n";
     undef $login->{request};
     $login->{request} eq undef or die "Assertion failed\n";
 
