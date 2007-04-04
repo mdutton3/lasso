@@ -1402,6 +1402,10 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 
 	profile->soap_envelope_response = envelope;
 
+	if (envelope == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
+	}
+
 	/* Soap Fault message */
 	if (LASSO_IS_SOAP_FAULT(envelope->Body->any->data) == FALSE)
 		profile->response = LASSO_NODE(envelope->Body->any->data);
