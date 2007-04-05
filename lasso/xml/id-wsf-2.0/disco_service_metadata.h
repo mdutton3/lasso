@@ -1,4 +1,4 @@
-/* $Id: disco_resource_offering.h 2428 2005-03-10 08:13:36Z nclapies $
+/* $Id: disco_service_metadata.h 2428 2005-03-10 08:13:36Z nclapies $
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -59,7 +59,7 @@ struct _LassoDiscoServiceMetadata {
 	LassoDiscoServiceContext *ServiceContext;
 
 	/* attributes */
-	gchar *ID;
+	gchar *id;
 };
 
 struct _LassoDiscoServiceMetadataClass {

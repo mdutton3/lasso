@@ -101,6 +101,9 @@ LASSO_EXPORT void lasso_idwsf2_discovery_destroy(LassoIdwsf2Discovery *discovery
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdwsf2Discovery *discovery,
 	const gchar *security_mech_id);
 
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
+	gchar *service_type, gchar *abstract, gchar *disco_provider_id);
+	
 //LASSO_EXPORT gint lasso_idwsf2_discovery_process_modify_msg(LassoIdwsf2Discovery *discovery,
 //	const gchar *message, const gchar *security_mech_id);
 //
