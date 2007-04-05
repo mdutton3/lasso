@@ -107,16 +107,15 @@ lasso_disco_service_metadata_get_type()
 }
 
 LassoDiscoServiceMetadata*
-lasso_disco_service_metadata_new(gchar *abstract, gchar *providerID,
-		gchar *serviceType)
+lasso_disco_service_metadata_new(gchar *service_type, gchar *abstract, gchar *provider_id)
 {
 	LassoDiscoServiceMetadata *metadata;
 
 	metadata = g_object_new(LASSO_TYPE_DISCO_SERVICE_METADATA, NULL);
 
 	metadata->Abstract = abstract;
-	metadata->ProviderID = providerID;
-	metadata->ServiceContext = lasso_disco_service_context_new(serviceType, NULL);
+	metadata->ProviderID = provider_id;
+	metadata->ServiceContext = lasso_disco_service_context_new(service_type, NULL);
 
 	return metadata;
 }

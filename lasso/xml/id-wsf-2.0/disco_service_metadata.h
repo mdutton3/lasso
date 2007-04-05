@@ -69,7 +69,7 @@ struct _LassoDiscoServiceMetadataClass {
 LASSO_EXPORT GType lasso_disco_service_metadata_get_type(void);
 
 LASSO_EXPORT LassoDiscoServiceMetadata* lasso_disco_service_metadata_new(
-	gchar *abstract, gchar *providerID, gchar *serviceType);
+	gchar *service_type, gchar *abstract, gchar *provider_id);
 
 #ifdef __cplusplus
 }
