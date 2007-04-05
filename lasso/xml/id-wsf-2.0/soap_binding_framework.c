@@ -95,7 +95,9 @@ lasso_soap_binding_framework_get_type()
 LassoSoapBindingFramework*
 lasso_soap_binding_framework_new(gchar *version)
 {
-	LassoSoapBindingFramework *framework = g_object_new(LASSO_TYPE_SOAP_BINDING_FRAMEWORK, NULL);
+	LassoSoapBindingFramework *framework;
+	
+	framework = g_object_new(LASSO_TYPE_SOAP_BINDING_FRAMEWORK, NULL);
 	
 	framework->Version = version;
 	

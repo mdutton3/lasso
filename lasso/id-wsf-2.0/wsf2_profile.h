@@ -1,4 +1,4 @@
-/* $Id: wsf_profile.h,v 1.13 2006/11/14 17:07:30 fpeters Exp $ 
+/* $Id: wsf_profile.h,v 1.13 2006/11/14 17:07:30 Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -35,7 +35,6 @@ extern "C" {
 #include <lasso/id-ff/session.h>
 #include <lasso/xml/soap_envelope.h>
 #include <lasso/xml/soap_binding_provider.h>
-//#include <lasso/xml/saml_assertion.h>
 
 #define LASSO_TYPE_WSF2_PROFILE (lasso_wsf2_profile_get_type())
 #define LASSO_WSF2_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -79,52 +78,10 @@ struct _LassoWsf2ProfileClass {
 
 LASSO_EXPORT GType lasso_wsf2_profile_get_type(void);
 
-//LASSO_EXPORT gboolean lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id);
-//
-//LASSO_EXPORT gint lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest);
-//
-//LASSO_EXPORT LassoIdentity* lasso_wsf_profile_get_identity(LassoWsfProfile *profile);
-//LASSO_EXPORT LassoSession* lasso_wsf_profile_get_session(LassoWsfProfile *profile);
-//LASSO_EXPORT gboolean lasso_wsf_profile_is_identity_dirty(LassoWsfProfile *profile);
-//LASSO_EXPORT gboolean lasso_wsf_profile_is_session_dirty(LassoWsfProfile *profile);
-//LASSO_EXPORT gint lasso_wsf_profile_set_identity_from_dump(LassoWsfProfile *profile,
-//	const gchar *dump);
-//LASSO_EXPORT gint lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile,
-//	const gchar *dump);
-
 LASSO_EXPORT LassoSoapEnvelope* lasso_wsf2_profile_build_soap_envelope(const char *refToMessageId,
 	const char *providerId);
 
 LASSO_EXPORT gint lasso_wsf2_profile_build_soap_request_msg(LassoWsf2Profile *profile);
-
-//LASSO_EXPORT gint lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile);
-//
-//LASSO_EXPORT gint lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile,
-//	LassoNode *request);
-//
-//LASSO_EXPORT gint lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
-//	const gchar *message, const gchar *service_type, const gchar *security_mech_id);
-//
-//LASSO_EXPORT gint lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile,
-//	const gchar *message);
-//
-//LASSO_EXPORT LassoSoapBindingProvider* lasso_wsf_profile_set_provider_soap_request(
-//	LassoWsfProfile *profile, const char *providerId);
-//
-//LASSO_EXPORT LassoWsfProfile* lasso_wsf_profile_new(LassoServer *server);
-//
-//LASSO_EXPORT gboolean lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile);
-//
-//LASSO_EXPORT gint lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential);
-//
-//LASSO_EXPORT void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
-//		LassoDiscoDescription *description);
-//LASSO_EXPORT void lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile,
-//							 const char *status);
-//
-//LASSO_EXPORT void lasso_wsf_profile_set_principal_online(LassoWsfProfile *profile);
-//
-//LASSO_EXPORT void lasso_wsf_profile_set_principal_offline(LassoWsfProfile *profile);
 
 #ifdef __cplusplus
 }
