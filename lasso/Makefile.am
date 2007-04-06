@@ -25,10 +25,6 @@ if WSF_ENABLED
 SYMBOLS_ARGS = -wsf
 endif
 
-if WSF2_ENABLED
-SYMBOLS_ARGS = -wsf2
-endif
-
 types.c:
 	$(PYTHON) $(srcdir)/extract_types.py $(srcdir) $(SYMBOLS_ARGS)
 
@@ -42,9 +38,6 @@ EXTRA_DIST = extract_types.py extract_symbols.py
 
 if WSF_ENABLED
 WSF_LIB_FILE = $(top_builddir)/lasso/id-wsf/liblasso-id-wsf.la
-endif
-
-if WSF2_ENABLED
 
 WSF2_LIB_FILES = $(top_builddir)/lasso/id-wsf-2.0/liblasso-id-wsf2.la \
 	$(top_builddir)/lasso/xml/id-wsf-2.0/liblasso-xml-id-wsf2.la

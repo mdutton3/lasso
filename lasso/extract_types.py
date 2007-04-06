@@ -19,7 +19,7 @@ else:
 wsf = ['lasso_disco_', 'lasso_dst_', 'lasso_is_', 'lasso_profile_service',
         'lasso_discovery', 'lasso_wsf', 'lasso_interaction', 'lasso_utility',
         'lasso_sa_', 'lasso_soap_', 'lasso_authentication', 'lasso_wsse',
-        'lasso_sec_', 'lasso_ds_']
+        'lasso_sec_', 'lasso_ds_', 'lasso_idwsf2', 'lasso_wsf2']
 if enable_wsf:
     wsf = []
 
@@ -32,7 +32,7 @@ print >> fd, ""
 
 header_files = []
 for header_file in glob.glob('%s/*/*.h' % srcdir) + glob.glob('%s/*/*/*.h' % srcdir):
-    if not enable_wsf and 'id-wsf' in header_file:
+    if ('/id-wsf/' in header_file or '/id-wsf-2.0' in header_file) and not enable_wsf:
         continue
     header_files.append(header_file)
     try:

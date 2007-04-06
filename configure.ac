@@ -683,14 +683,6 @@ dnl Check if wsf is explicitly disabled.
 AC_ARG_ENABLE(wsf, [  --enable-wsf            enable experimental ID-WSF],
 		enable_wsf="yes", enable_wsf="no")
 
-dnl Check if wsf 2.0 is explicitly disabled.
-AC_ARG_ENABLE(wsf2, [  --enable-wsf2            enable experimental ID-WSF 2.0],
-		enable_wsf2="yes", enable_wsf2="no")
-
-# WSF 2 needs soap support from WSF 1 files.
-# Should probably set a id-wsf-common directory instead
-test "x$enable_wsf2" = "xyes" && enable_wsf="yes"
-
 AM_CONDITIONAL([WSF_ENABLED],[test "x$enable_wsf" = "xyes"])
 LASSO_WSF_SUPPORT=0
 if test "x$enable_wsf" = "xyes"; then
@@ -717,33 +709,6 @@ else
 	fi
 fi
 AC_SUBST(LASSO_WSF_SUPPORT)
-
-AM_CONDITIONAL([WSF2_ENABLED],[test "x$enable_wsf2" = "xyes"])
-LASSO_WSF2_SUPPORT=0
-if test "x$enable_wsf2" = "xyes"; then
-	AC_DEFINE(LASSO_WSF2_ENABLED, [], [Define if ID-WSF 2.0 support is enabled])
-	LASSO_WSF2_SUPPORT=1
-	if grep -q 'WSF2_SUPPORT.*0' $srcdir/*/lasso_wrap.c;
-	then
-		if test "x$SWIG" = "xecho"; then
-			AC_MSG_WARN(Bindings were pre-generated without ID-WSF 2.0 support)
-			AC_MSG_ERROR(and you don't have SWIG to regenerate their files)
-		fi
-		echo "removing pre-generated language interface files"
-		rm -f $srcdir/*/lasso_wrap.c $srcdir/csharp/liblassosharpglue_wrap.c
-	fi
-else
-	if grep -q 'WSF2_SUPPORT.*1' $srcdir/*/lasso_wrap.c;
-	then
-		if test "x$SWIG" = "xecho"; then
-			AC_MSG_WARN(Bindings were pre-generated with ID-WSF 2.0 support)
-			AC_MSG_ERROR(and you don't have SWIG to regenerate their files)
-		fi
-		echo "removing pre-generated language interface files"
-		rm -f $srcdir/*/lasso_wrap.c $srcdir/csharp/liblassosharpglue_wrap.c
-	fi
-fi
-AC_SUBST(LASSO_WSF2_SUPPORT)
 
 
 dnl ==========================================================================
@@ -780,7 +745,7 @@ fi
 PKG_CHECK_MODULES(LASSO, glib-2.0 >= 2.4.0 gobject-2.0 >= 2.4.0 libxml-2.0 libxslt xmlsec1 >= 1.2.6 xmlsec1-openssl >= 1.2.6 openssl)
 
 AC_ARG_WITH(sasl2, [  --with-sasl2[=PFX]         Use Cyrus SASL library version 2 for WSF-Auth])
-if test "x$enable_wsf" = "xyes" -o "x$enable_wsf2" = "xyes"; then
+if test "x$enable_wsf" = "xyes"; then
 	if test "$with_sasl2" != "no" && test "$with_sasl2" != "yes"
 	then
 		CPPFLAGS="$CPPFLAGS -I$with_sasl2/include"
@@ -920,7 +885,6 @@ php5/Makefile
 python/Makefile
 swig/Makefile
 swig/wsf-support.i
-swig/wsf2-support.i
 swig/saml-2.0/Makefile
 tests/Makefile
 tests/data/Makefile
@@ -960,7 +924,6 @@ Compiler:                ${CC}
 Install prefix:          ${prefix}
 Debugging:               $enable_debugging
 Experimental ID-WSF:     $enable_wsf
-Experimental ID-WSF 2.0: $enable_wsf2
 
 Optionals builds
 ----------------
