@@ -167,9 +167,7 @@
 
 /* liberty wsf prefix & href */
 #define LASSO_DISCO_HREF          "urn:liberty:disco:2003-08"
-#define LASSO_IDWSF2_DISCO_HREF   "urn:liberty:disco:2006-08"
 #define LASSO_DISCO_PREFIX        "disco"
-#define LASSO_IDWSF2_DISCO_PREFIX "ds"
 
 #define LASSO_EP_HREF   "urn:liberty:id-sis-ep:2003-08"
 #define LASSO_EP_PREFIX "ep"
@@ -470,6 +468,41 @@
 /* Confirmation methods */
 
 #define LASSO_SAML2_CONFIRMATION_METHOD_BEARER "urn:oasis:names:tc:SAML:2.0:cm:bearer"
+
+/*****************************************************************************/
+/* ID-WSF 2.0                                                                */
+/*****************************************************************************/
+
+#define LASSO_IDWSF2_DISCO_HREF   "urn:liberty:disco:2006-08"
+#define LASSO_IDWSF2_DISCO_PREFIX "ds"
+
+#define LASSO_IDWSF2_DST_HREF "urn:liberty:dst:2006-08"
+#define LASSO_IDWSF2_DST_PREFIX "dst"
+
+#define LASSO_IDWSF2_DSTREF_HREF "urn:liberty:dst:2006-08:ref"
+#define LASSO_IDWSF2_DSTREF_PREFIX "dstref"
+
+#define LASSO_IDWSF2_IMS_HREF "urn:liberty:ims:2006-08"
+#define LASSO_IDWSF2_IMS_PREFIX "ims"
+
+#define LASSO_IDWSF2_IS_HREF "urn:liberty:is:2006-08"
+#define LASSO_IDWSF2_IS_PREFIX "is"
+
+#define LASSO_IDWSF2_PS_HREF "urn:liberty:ps:2006-08"
+#define LASSO_IDWSF2_PS_PREFIX "ps"
+
+#define LASSO_IDWSF2_SUBS_HREF "urn:liberty:ssos:2006-08"
+#define LASSO_IDWSF2_SUBS_PREFIX "subs"
+
+#define LASSO_IDWSF2_SUBSREF_HREF "urn:liberty:ssos:2006-08:ref"
+#define LASSO_IDWSF2_SUBSREF_PREFIX "subsref"
+
+#define LASSO_IDWSF2_UTIL_HREF "urn:liberty:util:2006-08"
+#define LASSO_IDWSF2_UTIL_PREFIX "util"
+
+#define LASSO_IDWSF2_SEC_HREF "urn:liberty:security:2006-08"
+#define LASSO_IDWSF2_SEC_PREFIX "sec"
+
 
 /*****************************************************************************/
 /* Others                                                                    */
