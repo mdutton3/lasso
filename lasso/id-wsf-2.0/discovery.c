@@ -35,7 +35,7 @@
 #include <lasso/xml/ds_key_value.h>
 #include <lasso/xml/ds_rsa_key_value.h>
 
-#include <lasso/xml/id-wsf-2.0/disco_service_metadata_register.h>
+#include <lasso/xml/id-wsf-2.0/disco_svc_md_register.h>
 #include <lasso/xml/id-wsf-2.0/disco_service_metadata.h>
 
 #include <lasso/id-ff/server.h>
@@ -98,14 +98,14 @@ gint
 lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
 	gchar *service_type, gchar *abstract, gchar *disco_provider_id)
 {
-	LassoDiscoServiceMetadataRegister *metadata_register;
+	LassoDiscoSvcMDRegister *metadata_register;
 
 	/* Get the providerId of this SP */
 	LassoProvider *provider = LASSO_PROVIDER(LASSO_WSF2_PROFILE(discovery)->server);
-	gchar *sp_provider_id = provider->providerId;
+	gchar *sp_provider_id = provider->ProviderID;
 
 	/* Get a MetadataRegister node */
-	metadata_register = lasso_disco_service_metadata_register_new(
+	metadata_register = lasso_disco_svc_md_register_new(
 			service_type, abstract, sp_provider_id);
 
 	if (metadata_register == NULL) {

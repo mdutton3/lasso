@@ -122,5 +122,5 @@ lasso_disco_service_metadata_new(gchar *service_type, gchar *abstract, gchar *pr
 	metadata->ServiceContext =
 		g_object_ref(lasso_disco_service_context_new(service_type, endpoint_context));
 
-	return LASSO_NODE(metadata);
+	return metadata;
 }

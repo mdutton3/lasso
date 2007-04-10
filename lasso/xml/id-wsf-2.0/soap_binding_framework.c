@@ -101,5 +101,5 @@ lasso_soap_binding_framework_new(gchar *version)
 	
 	//framework->Version = g_strdup(version);
 	
-	return LASSO_NODE(framework);
+	return framework;
 }

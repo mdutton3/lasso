@@ -1,4 +1,4 @@
-/* $Id: disco_service_metadata_register.c 2261 2005-01-27 23:41:05 $ 
+/* $Id: disco_svc_md_register.c 2261 2005-01-27 23:41:05 $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/id-wsf-2.0/disco_service_metadata_register.h>
+#include <lasso/xml/id-wsf-2.0/disco_svc_md_register.h>
 #include <lasso/xml/id-wsf-2.0/disco_service_metadata.h>
 
 
@@ -44,7 +44,7 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoDiscoServiceMetadataRegister, metadata_list) },
+	  G_STRUCT_OFFSET(LassoDiscoSvcMDRegister, metadata_list) },
 	{ NULL, 0, 0}
 };
 
@@ -53,13 +53,13 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoDiscoServiceMetadataRegister *node)
+instance_init(LassoDiscoSvcMDRegister *node)
 {
 	node->metadata_list = NULL;
 }
 
 static void
-class_init(LassoDiscoServiceMetadataRegisterClass *klass)
+class_init(LassoDiscoSvcMDRegisterClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
@@ -70,40 +70,40 @@ class_init(LassoDiscoServiceMetadataRegisterClass *klass)
 }
 
 GType
-lasso_disco_service_metadata_register_get_type()
+lasso_disco_svc_md_register_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoDiscoServiceMetadataRegisterClass),
+			sizeof (LassoDiscoSvcMDRegisterClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoDiscoServiceMetadataRegister),
+			sizeof(LassoDiscoSvcMDRegister),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoDiscoServiceMetadataRegister", &this_info, 0);
+				"LassoDiscoSvcMDRegister", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoDiscoServiceMetadataRegister*
-lasso_disco_service_metadata_register_new(gchar *service_type, gchar *abstract, gchar *provider_id)
+LassoDiscoSvcMDRegister*
+lasso_disco_svc_md_register_new(gchar *service_type, gchar *abstract, gchar *provider_id)
 {
-	LassoDiscoServiceMetadataRegister *metadata_register;
+	LassoDiscoSvcMDRegister *metadata_register;
 	LassoDiscoServiceMetadata *metadata;
 
-	metadata_register = g_object_new(LASSO_TYPE_DISCO_SERVICE_METADATA_REGISTER, NULL);
+	metadata_register = g_object_new(LASSO_TYPE_DISCO_SVC_MD_REGISTER, NULL);
 	metadata =
 		g_object_ref(lasso_disco_service_metadata_new(service_type, abstract, provider_id));
 	metadata_register->metadata_list =
 		g_list_append(metadata_register->metadata_list, metadata);
 
-	return LASSO_NODE(metadata_register);
+	return metadata_register;
 }

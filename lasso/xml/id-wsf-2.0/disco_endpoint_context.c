@@ -118,5 +118,5 @@ lasso_disco_endpoint_context_new(gchar *address)
 	context->Address = g_strdup(address);
 	//context->Framework = g_object_ref(lasso_soap_binding_framework_new("2.0"));
 
-	return LASSO_NODE(context);
+	return context;
 }
