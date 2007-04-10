@@ -36,6 +36,7 @@
 #include <lasso/xml/ds_rsa_key_value.h>
 
 #include <lasso/xml/id-wsf-2.0/disco_service_metadata_register.h>
+#include <lasso/xml/id-wsf-2.0/disco_service_metadata.h>
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/provider.h>
@@ -98,15 +99,27 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
 	gchar *service_type, gchar *abstract, gchar *disco_provider_id)
 {
 	LassoDiscoServiceMetadataRegister *metadata_register;
-	
+
+	/* Get the providerId of this SP */
+	LassoProvider *provider = LASSO_PROVIDER(LASSO_WSF2_PROFILE(discovery)->server);
+	gchar *sp_provider_id = provider->providerId;
+
+	/* Get a MetadataRegister node */
 	metadata_register = lasso_disco_service_metadata_register_new(
-			service_type, abstract, disco_provider_id);
+			service_type, abstract, sp_provider_id);
 
-	if (metadata_register == NULL)
+	if (metadata_register == NULL) {
+		/* FIXME */
 		return -1;
-
+	}
+	
+	/* Create request with this xml node */
 	lasso_wsf2_profile_init_soap_request(LASSO_WSF2_PROFILE(discovery),
 			LASSO_NODE(metadata_register));
+
+	/* Get the url of the idp where we must send the soap request */
+	LASSO_WSF2_PROFILE(discovery)->msg_url = g_strdup(disco_provider_id);
+
 	printf(lasso_node_dump(LASSO_NODE(metadata_register)));
 	return 0;
 }

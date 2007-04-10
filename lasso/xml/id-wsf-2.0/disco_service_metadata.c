@@ -115,11 +115,12 @@ lasso_disco_service_metadata_new(gchar *service_type, gchar *abstract, gchar *pr
 
 	metadata = g_object_new(LASSO_TYPE_DISCO_SERVICE_METADATA, NULL);
 
-	metadata->Abstract = abstract;
-	metadata->ProviderID = provider_id;
+	metadata->Abstract = g_strdup(abstract);
+	metadata->ProviderID = g_strdup(provider_id);
 
-	endpoint_context = lasso_disco_endpoint_context_new(provider_id);
-	metadata->ServiceContext = lasso_disco_service_context_new(service_type, endpoint_context);
+	endpoint_context = g_object_ref(lasso_disco_endpoint_context_new(provider_id));
+	metadata->ServiceContext =
+		g_object_ref(lasso_disco_service_context_new(service_type, endpoint_context));
 
-	return metadata;
+	return LASSO_NODE(metadata);
 }

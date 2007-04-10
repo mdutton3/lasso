@@ -87,7 +87,7 @@ lasso_soap_binding_framework_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-						   "LassoSoapBindingFramework", &this_info, 0);
+				"LassoSoapBindingFramework", &this_info, 0);
 	}
 	return this_type;
 }
@@ -99,7 +99,7 @@ lasso_soap_binding_framework_new(gchar *version)
 	
 	framework = g_object_new(LASSO_TYPE_SOAP_BINDING_FRAMEWORK, NULL);
 	
-	framework->Version = version;
+	//framework->Version = g_strdup(version);
 	
-	return framework;
+	return LASSO_NODE(framework);
 }

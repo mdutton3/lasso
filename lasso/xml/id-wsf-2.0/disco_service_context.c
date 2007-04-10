@@ -108,8 +108,8 @@ lasso_disco_service_context_new(gchar *serviceType, LassoDiscoEndpointContext *e
 
 	context = g_object_new(LASSO_TYPE_DISCO_SERVICE_CONTEXT, NULL);
 
-	context->ServiceType = serviceType;
-	context->EndpointContext = endpointContext;
+	context->ServiceType = g_strdup(serviceType);
+	context->EndpointContext = g_object_ref(endpointContext);
 
-	return context;
+	return LASSO_NODE(context);
 }
