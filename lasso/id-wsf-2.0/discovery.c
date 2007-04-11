@@ -73,6 +73,14 @@ lasso_idwsf2_discovery_destroy(LassoIdwsf2Discovery *discovery)
 	g_object_unref(G_OBJECT(discovery));
 }
 
+gchar *
+lasso_idwsf2_discovery_get_metadata_dump(LassoIdwsf2Discovery *discovery)
+{
+	if (discovery->metadata == NULL)
+		return NULL;
+	return lasso_node_dump(LASSO_NODE(discovery->metadata));
+}
+
 
 /**
  * lasso_discovery_init_query
@@ -117,10 +125,40 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
 	lasso_wsf2_profile_init_soap_request(LASSO_WSF2_PROFILE(discovery),
 			LASSO_NODE(metadata_register));
 
-	/* Get the url of the idp where we must send the soap request */
-	LASSO_WSF2_PROFILE(discovery)->msg_url = g_strdup(disco_provider_id);
+	/* FIXME : Get the url of the disco service where we must send the soap request */
+	/* LASSO_WSF2_PROFILE(discovery)->msg_url = g_strdup(disco_provider_id); */
 
 	printf(lasso_node_dump(LASSO_NODE(metadata_register)));
+	return 0;
+}
+
+gint
+lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdwsf2Discovery *discovery, const gchar *message)
+{
+	LassoDiscoSvcMDRegister *request;
+	int res = 0;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	res = lasso_wsf2_profile_process_soap_request_msg(LASSO_WSF2_PROFILE(discovery), message,
+		LASSO_IDWSF2_DISCO_HREF);
+	if (res != 0)
+		return res;
+
+	request = LASSO_DISCO_SVC_MD_REGISTER(LASSO_WSF2_PROFILE(discovery)->request);
+
+	if (request == NULL)
+		printf("\n\nrequest is NULL\n\n"); 
+
+	/* FIXME : foreach on the list instead */
+	if (request != NULL && request->metadata_list != NULL
+			&& g_list_first(request->metadata_list) != NULL) {
+		discovery->metadata =
+			LASSO_DISCO_SERVICE_METADATA(g_list_first(request->metadata_list));
+	}
+
 	return 0;
 }
 

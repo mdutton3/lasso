@@ -91,8 +91,15 @@ typedef struct {
 	/* Methods */
 
 	THROW_ERROR()
-	int initMetadataRegister(char *service_type, char *abstract,
-		char *disco_provider_id);
+	gchar *getMetadataDump();
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int initMetadataRegister(char *service_type, char *abstract, char *disco_provider_id);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int processMetadataRegisterMsg(const gchar *message);
 	END_THROW_ERROR()
 
 	THROW_ERROR()
@@ -156,7 +163,9 @@ typedef struct {
 
 /* Methods implementations */
 
+#define LassoIdwsf2Discovery_getMetadataDump lasso_idwsf2_discovery_get_metadata_dump
 #define LassoIdwsf2Discovery_initMetadataRegister lasso_idwsf2_discovery_init_metadata_register
+#define LassoIdwsf2Discovery_processMetadataRegisterMsg lasso_idwsf2_discovery_process_metadata_register_msg
 #define LassoIdwsf2Discovery_initQuery lasso_idwsf2_discovery_init_query
 
 %}

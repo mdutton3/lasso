@@ -30,9 +30,11 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
+#include <lasso/id-wsf-2.0/wsf2_profile.h>
+
 #include <lasso/xml/id-wsf-2.0/disco_query.h>
 #include <lasso/xml/id-wsf-2.0/disco_query_response.h>
-#include <lasso/id-wsf-2.0/wsf2_profile.h>
+#include <lasso/xml/id-wsf-2.0/disco_service_metadata.h>
 
 
 #define LASSO_TYPE_IDWSF2_DISCOVERY (lasso_idwsf2_discovery_get_type())
@@ -53,6 +55,9 @@ typedef struct _LassoIdwsf2DiscoveryPrivate LassoIdwsf2DiscoveryPrivate;
 struct _LassoIdwsf2Discovery {
 	LassoWsf2Profile parent;
 
+	/* FIXME : Should be a list */
+	LassoDiscoServiceMetadata *metadata;
+
 	/*< private >*/
 	LassoIdwsf2DiscoveryPrivate *private_data;
 };
@@ -67,11 +72,17 @@ LASSO_EXPORT LassoIdwsf2Discovery* lasso_idwsf2_discovery_new(LassoServer *serve
 
 LASSO_EXPORT void lasso_idwsf2_discovery_destroy(LassoIdwsf2Discovery *discovery);
 
-LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdwsf2Discovery *discovery,
-	const gchar *security_mech_id);
+LASSO_EXPORT gchar *lasso_idwsf2_discovery_get_metadata_dump(LassoIdwsf2Discovery *discovery);
 
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
 	gchar *service_type, gchar *abstract, gchar *disco_provider_id);
+
+LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_register_msg(
+	LassoIdwsf2Discovery *discovery, const gchar *message);
+
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdwsf2Discovery *discovery,
+	const gchar *security_mech_id);
+
 
 #ifdef __cplusplus
 }

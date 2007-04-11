@@ -16,7 +16,9 @@ liblasso_xml_id_wsf2_la_SOURCES = \
 	disco_service_context.c \
 	disco_svc_metadata.c \
 	disco_svc_md_register.c \
-	soap_binding_framework.c
+	disco_svc_md_register_response.c \
+	soap_binding_framework.c \
+	util_status.c
 
 liblassoinclude_HEADERS = \
 	disco_endpoint_context.h \
@@ -26,4 +28,6 @@ liblassoinclude_HEADERS = \
 	disco_service_context.h \
 	disco_svc_metadata.h \
 	disco_svc_md_register.h \
-	soap_binding_framework.h
+	disco_svc_md_register_response.h \
+	soap_binding_framework.h \
+	util_status.h

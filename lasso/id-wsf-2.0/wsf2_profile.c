@@ -146,6 +146,44 @@ lasso_wsf2_profile_build_soap_request_msg(LassoWsf2Profile *profile)
 	return 0;
 }
 
+gint
+lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gchar *message,
+					   const gchar *service_type)
+{
+	LassoDiscoServiceInstance *si;
+	LassoSoapBindingCorrelation *correlation;
+	LassoSoapEnvelope *envelope = NULL;
+	LassoSoapFault *fault = NULL;
+	gchar *messageId;
+	int res = 0;
+	xmlDoc *doc;
+
+	g_return_val_if_fail(LASSO_IS_WSF2_PROFILE(profile),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	si = lasso_server_get_service(profile->server, (char *) service_type);
+
+	doc = xmlParseMemory(message, strlen(message));
+
+	/* Get soap request and his message id */
+	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
+	
+	profile->request = LASSO_NODE(envelope->Body->any->data);
+	correlation = LASSO_SOAP_BINDING_CORRELATION(envelope->Header->Other->data);
+	messageId = correlation->messageID;
+
+	/* Set soap response */
+	envelope = lasso_wsf2_profile_build_soap_envelope(messageId,
+		LASSO_PROVIDER(profile->server)->ProviderID);
+	LASSO_WSF2_PROFILE(profile)->soap_envelope_response = envelope;
+
+	xmlFreeDoc(doc);
+
+	return res;
+}
+
+
 /*****************************************************************************/
 /* overrided parent class methods */
 /*****************************************************************************/
