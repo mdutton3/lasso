@@ -295,9 +295,7 @@
 #define LASSO_SOAP_ENV_ACTOR "http://schemas.xmlsoap.org/soap/actor/next"
 
 #define LASSO_SOAP_BINDING_HREF          "urn:liberty:sb:2003-08"
-#define LASSO_IDWSF2_SOAP_BINDING_HREF   "urn:liberty:sb:2006-08"
 #define LASSO_SOAP_BINDING_PREFIX        "sb"
-#define LASSO_IDWSF2_SOAP_BINDING_PREFIX "sb"
 
 #define LASSO_SOAP_BINDING_EXT_HREF "urn:liberty:sb:2004-04"
 #define LASSO_SOAP_BINDING_EXT_PREFIX "sbe"
@@ -503,6 +501,8 @@
 #define LASSO_IDWSF2_SEC_HREF "urn:liberty:security:2006-08"
 #define LASSO_IDWSF2_SEC_PREFIX "sec"
 
+#define LASSO_IDWSF2_SOAP_BINDING_HREF   "urn:liberty:sb:2006-08"
+#define LASSO_IDWSF2_SOAP_BINDING_PREFIX "sb2"
 
 /*****************************************************************************/
 /* Others                                                                    */
@@ -511,6 +511,10 @@
 /* xsi prefix & href */
 #define LASSO_XSI_HREF "http://www.w3.org/2001/XMLSchema-instance"
 #define LASSO_XSI_PREFIX "xsi"
+
+/* WS-Addr */
+#define LASSO_WSA_HREF "http://www.w3.org/2005/08/addressing"
+#define LASSO_WSA_PREFIX "wsa"
 
 #define LASSO_SOAP_FAULT_CODE_SERVER "Server"
 
