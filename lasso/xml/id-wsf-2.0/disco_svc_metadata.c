@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/id-wsf-2.0/disco_service_metadata.h>
+#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
 #include <lasso/xml/id-wsf-2.0/disco_endpoint_context.h>
 
 /*
