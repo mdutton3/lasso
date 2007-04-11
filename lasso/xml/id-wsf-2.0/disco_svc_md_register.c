@@ -100,8 +100,7 @@ lasso_disco_svc_md_register_new(gchar *service_type, gchar *abstract, gchar *pro
 	LassoDiscoServiceMetadata *metadata;
 
 	metadata_register = g_object_new(LASSO_TYPE_DISCO_SVC_MD_REGISTER, NULL);
-	metadata =
-		g_object_ref(lasso_disco_service_metadata_new(service_type, abstract, provider_id));
+	metadata = lasso_disco_service_metadata_new(service_type, abstract, provider_id);
 	metadata_register->metadata_list =
 		g_list_append(metadata_register->metadata_list, metadata);
 
