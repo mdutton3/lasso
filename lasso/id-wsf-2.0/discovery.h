@@ -34,7 +34,7 @@ extern "C" {
 
 #include <lasso/xml/id-wsf-2.0/disco_query.h>
 #include <lasso/xml/id-wsf-2.0/disco_query_response.h>
-#include <lasso/xml/id-wsf-2.0/disco_service_metadata.h>
+#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
 
 
 #define LASSO_TYPE_IDWSF2_DISCOVERY (lasso_idwsf2_discovery_get_type())
