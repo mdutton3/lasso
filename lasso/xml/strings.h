@@ -474,7 +474,7 @@
 /*****************************************************************************/
 
 #define LASSO_IDWSF2_DISCO_HREF   "urn:liberty:disco:2006-08"
-#define LASSO_IDWSF2_DISCO_PREFIX "ds"
+#define LASSO_IDWSF2_DISCO_PREFIX "disco"
 
 #define LASSO_IDWSF2_DST_HREF "urn:liberty:dst:2006-08"
 #define LASSO_IDWSF2_DST_PREFIX "dst"
