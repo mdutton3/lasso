@@ -108,11 +108,6 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
 	metadata_register = lasso_disco_svc_md_register_new(
 			service_type, abstract, sp_provider_id);
 
-	if (metadata_register == NULL) {
-		/* FIXME */
-		return -1;
-	}
-	
 	/* Create request with this xml node */
 	lasso_wsf2_profile_init_soap_request(LASSO_WSF2_PROFILE(discovery),
 			LASSO_NODE(metadata_register));
