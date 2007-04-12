@@ -660,6 +660,9 @@ DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
 SET_NODE_INFO(Node, DowncastableNode)
 %include inheritance.h
 %include saml-2.0/inheritance.h
+#ifdef LASSO_WSF_ENABLED
+%include id-wsf-2.0/inheritance.h
+#endif /* ifdef LASSO_WSF_ENABLED */
 
 #else /* ifdef SWIGCSHARP */
 
@@ -675,6 +678,9 @@ SET_NODE_INFO(Node, DowncastableNode)
 SET_NODE_INFO(Node, DowncastableNode)
 %include inheritance.h
 %include saml-2.0/inheritance.h
+#ifdef LASSO_WSF_ENABLED
+%include id-wsf-2.0/inheritance.h
+#endif /* ifdef LASSO_WSF_ENABLED */
 
 #else /* ifdef SWIGJAVA */
 
@@ -697,6 +703,9 @@ SET_NODE_INFO(Node, DowncastableNode)
 
 #include <swig/inheritance.h>
 #include <swig/saml-2.0/inheritance.h>
+#ifdef LASSO_WSF_ENABLED
+#include <swig/id-wsf-2.0/inheritance.h>
+#endif /* ifdef LASSO_WSF_ENABLED */
 
 	info->name = NULL;
 	info->swig = NULL;
@@ -6937,6 +6946,7 @@ int LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, char *
 #ifdef LASSO_WSF_ENABLED
 %include Lasso-wsf.i
 %include Lasso-wsf2.i
+%include id-wsf-2.0/main.h
 #endif
 
 %include Lasso-saml2.i

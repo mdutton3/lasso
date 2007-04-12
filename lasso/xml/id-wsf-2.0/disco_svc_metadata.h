@@ -59,7 +59,7 @@ struct _LassoIdwsf2DiscoSvcMetadata {
 	LassoIdwsf2DiscoServiceContext *ServiceContext;
 
 	/* attributes */
-	gchar *id;
+	gchar *svcMDID;
 };
 
 struct _LassoIdwsf2DiscoSvcMetadataClass {

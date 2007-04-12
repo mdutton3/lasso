@@ -887,6 +887,7 @@ python/Makefile
 swig/Makefile
 swig/wsf-support.i
 swig/saml-2.0/Makefile
+swig/id-wsf-2.0/Makefile
 tests/Makefile
 tests/data/Makefile
 tests/data/ca1-la/Makefile

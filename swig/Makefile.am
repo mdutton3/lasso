@@ -4,4 +4,4 @@ EXTRA_DIST = Lasso.i Lasso-wsf.i Lasso-wsf-disco.i Lasso-wsf-dst.i \
 		wsf-support.i.in Lasso-wsf2.i Lasso-wsf2-disco.i \
 		Lasso-saml2.i
 
-SUBDIRS = saml-2.0
+SUBDIRS = saml-2.0 id-wsf-2.0

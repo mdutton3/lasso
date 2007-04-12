@@ -55,7 +55,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "ServiceContext", SNIPPET_NODE,
 	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, ServiceContext) },
 	{ "svcMDID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, id) },
+	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, svcMDID) },
 	{ NULL, 0, 0}
 };
 
@@ -69,7 +69,7 @@ instance_init(LassoIdwsf2DiscoSvcMetadata *node)
 	node->Abstract = NULL;
 	node->ProviderID = NULL;
 	node->ServiceContext = NULL;
-	node->id = NULL;
+	node->svcMDID = NULL;
 }
 
 static void

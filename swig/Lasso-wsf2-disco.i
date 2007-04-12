@@ -31,7 +31,7 @@
 %rename(IDWSF2_DISCO_PREFIX) LASSO_IDWSF2_DISCO_PREFIX;
 #endif
 #define LASSO_IDWSF2_DISCO_HREF   "urn:liberty:disco:2006-08"
-#define LASSO_IDWSF2_DISCO_PREFIX "ds"
+#define LASSO_IDWSF2_DISCO_PREFIX "disco"
 
 
 /***********************************************************************

@@ -50,8 +50,8 @@
 typedef struct {
 } LassoIdwsf2Discovery;
 %extend LassoIdwsf2Discovery {
-	/* Attributes inherited from Wsf2Profile */
 
+	/* Attributes inherited from Wsf2Profile */
 
 	%immutable msgBody;
 	char *msgBody;
@@ -73,6 +73,11 @@ typedef struct {
 
 	%newobject soapEnvelopeResponse_get;
 	LassoSoapEnvelope *soapEnvelopeResponse;
+	
+	/* Attributes */
+
+	%newobject metadata_get;
+	LassoIdwsf2DiscoSvcMetadata *metadata;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -82,17 +87,11 @@ typedef struct {
 
 	/* Methods inherited from Wsf2Profile */
 
-
 	THROW_ERROR()
 	int buildRequestMsg();
 	END_THROW_ERROR()
 
-
 	/* Methods */
-
-	THROW_ERROR()
-	gchar *getMetadataDump();
-	END_THROW_ERROR()
 
 	THROW_ERROR()
 	int initMetadataRegister(char *service_type, char *abstract, char *disco_provider_id);
@@ -105,7 +104,6 @@ typedef struct {
 	THROW_ERROR()
 	int initQuery(const char *security_mech_id = NULL);
 	END_THROW_ERROR()
-
 }
 
 %{
@@ -150,7 +148,12 @@ typedef struct {
 #define LassoIdwsf2Discovery_set_soapEnvelopeResponse(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->soap_envelope_response, (value))
 #define LassoIdwsf2Discovery_soapEnvelopeResponse_set(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->soap_envelope_response, (value))
 
+/* Attributes */
 
+#define LassoIdwsf2Discovery_get_metadata(self) get_node(self->metadata)
+#define LassoIdwsf2Discovery_metadata_get(self) get_node(self->metadata)
+#define LassoIdwsf2Discovery_set_metadata(self, value) set_node((gpointer *) &self->metadata, value)
+#define LassoIdwsf2Discovery_metadata_set(self, value) set_node((gpointer *) &self->metadata, value)
 
 /* Constructors, destructors & static methods implementations */
 
@@ -163,7 +166,6 @@ typedef struct {
 
 /* Methods implementations */
 
-#define LassoIdwsf2Discovery_getMetadataDump lasso_idwsf2_discovery_get_metadata_dump
 #define LassoIdwsf2Discovery_initMetadataRegister lasso_idwsf2_discovery_init_metadata_register
 #define LassoIdwsf2Discovery_processMetadataRegisterMsg lasso_idwsf2_discovery_process_metadata_register_msg
 #define LassoIdwsf2Discovery_initQuery lasso_idwsf2_discovery_init_query

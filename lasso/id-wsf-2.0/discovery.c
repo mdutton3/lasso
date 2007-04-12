@@ -65,15 +65,6 @@ lasso_idwsf2_discovery_destroy(LassoIdwsf2Discovery *discovery)
 	g_object_unref(G_OBJECT(discovery));
 }
 
-gchar *
-lasso_idwsf2_discovery_get_metadata_dump(LassoIdwsf2Discovery *discovery)
-{
-	if (discovery->metadata == NULL)
-		return NULL;
-	return lasso_node_dump(LASSO_NODE(discovery->metadata));
-}
-
-
 /**
  * lasso_discovery_init_query
  * @discovery: a #LassoDiscovery
