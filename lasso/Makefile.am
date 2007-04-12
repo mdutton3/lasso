@@ -40,7 +40,8 @@ if WSF_ENABLED
 WSF_LIB_FILE = $(top_builddir)/lasso/id-wsf/liblasso-id-wsf.la
 
 WSF2_LIB_FILES = $(top_builddir)/lasso/id-wsf-2.0/liblasso-id-wsf2.la \
-	$(top_builddir)/lasso/xml/id-wsf-2.0/liblasso-xml-id-wsf2.la
+	$(top_builddir)/lasso/xml/id-wsf-2.0/liblasso-xml-id-wsf2.la \
+	$(top_builddir)/lasso/xml/ws/liblasso-xml-ws.la
 endif
 
 if MINGW

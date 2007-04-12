@@ -116,7 +116,7 @@ lasso_disco_endpoint_context_new(gchar *address)
 	context = g_object_new(LASSO_TYPE_DISCO_ENDPOINT_CONTEXT, NULL);
 
 	context->Address = g_strdup(address);
-	//context->Framework = lasso_soap_binding_framework_new("2.0");
+	context->Framework = lasso_soap_binding_framework_new("2.0");
 
 	return context;
 }

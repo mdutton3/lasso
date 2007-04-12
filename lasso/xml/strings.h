@@ -502,7 +502,7 @@
 #define LASSO_IDWSF2_SEC_PREFIX "sec"
 
 #define LASSO_IDWSF2_SOAP_BINDING_HREF   "urn:liberty:sb:2006-08"
-#define LASSO_IDWSF2_SOAP_BINDING_PREFIX "sb2"
+#define LASSO_IDWSF2_SOAP_BINDING_PREFIX "sb"
 
 /*****************************************************************************/
 /* Others                                                                    */
@@ -512,9 +512,14 @@
 #define LASSO_XSI_HREF "http://www.w3.org/2001/XMLSchema-instance"
 #define LASSO_XSI_PREFIX "xsi"
 
-/* WS-Addr */
+/* WS-Addressing */
 #define LASSO_WSA_HREF "http://www.w3.org/2005/08/addressing"
 #define LASSO_WSA_PREFIX "wsa"
+
+/* WS-Utility */
+#define LASSO_WSU_HREF \
+	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+#define LASSO_WSU_PREFIX "wsu"
 
 #define LASSO_SOAP_FAULT_CODE_SERVER "Server"
 

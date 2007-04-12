@@ -60,8 +60,9 @@ lasso_wsf2_profile_build_soap_envelope(const char *refToMessageId, const char *p
 	LassoSoapEnvelope *envelope;
 	LassoSoapHeader *header;
 	LassoSoapBody *body;
+	
 	LassoSoapBindingCorrelation *correlation;
-	gchar *messageId, *timestamp;
+	gchar *messageId;
 
 	/* Body */
 	body = lasso_soap_body_new();
@@ -72,21 +73,13 @@ lasso_wsf2_profile_build_soap_envelope(const char *refToMessageId, const char *p
 	header = lasso_soap_header_new();
 	envelope->Header = header;
 
-	/* Correlation */
-	messageId = lasso_build_unique_id(32);
-	timestamp = lasso_get_current_time();
-	correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
-	correlation->id = lasso_build_unique_id(32);
-	if (refToMessageId != NULL)
-		correlation->refToMessageID = g_strdup(refToMessageId);
-	header->Other = g_list_append(header->Other, correlation);
-
+	/* FIXME : May be integrated later when we implement id-wsf 2.0 soap headers */
 	/* Provider */
-	if (providerId) {
-		LassoSoapBindingProvider *provider = lasso_soap_binding_provider_new(providerId);
-		provider->id = lasso_build_unique_id(32);
-		header->Other = g_list_append(header->Other, provider);
-	}
+/* 	if (providerId) { */
+/* 		LassoSoapBindingProvider *provider = lasso_soap_binding_provider_new(providerId); */
+/* 		provider->id = lasso_build_unique_id(32); */
+/* 		header->Other = g_list_append(header->Other, provider); */
+/* 	} */
 
 	return envelope;
 }
@@ -170,8 +163,6 @@ lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gch
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
 	
 	profile->request = LASSO_NODE(envelope->Body->any->data);
-	correlation = LASSO_SOAP_BINDING_CORRELATION(envelope->Header->Other->data);
-	messageId = correlation->messageID;
 
 	/* Set soap response */
 	envelope = lasso_wsf2_profile_build_soap_envelope(messageId,
