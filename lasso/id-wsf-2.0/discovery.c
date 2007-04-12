@@ -27,13 +27,8 @@
 
 #include <xmlsec/xmltree.h>
 
-#include <lasso/xml/soap_binding_correlation.h>
 #include <lasso/xml/saml_assertion.h>
 #include <lasso/xml/saml_attribute_value.h>
-//#include <lasso/xml/disco_modify.h>
-#include <lasso/xml/ds_key_info.h>
-#include <lasso/xml/ds_key_value.h>
-#include <lasso/xml/ds_rsa_key_value.h>
 
 #include <lasso/xml/id-wsf-2.0/disco_svc_md_register.h>
 #include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
@@ -43,9 +38,6 @@
 #include <lasso/id-ff/providerprivate.h>
 
 #include <lasso/id-wsf-2.0/discovery.h>
-//#include <lasso/id-wsf/identity.h>
-//#include <lasso/id-wsf/data_service.h>
-//#include <lasso/id-wsf/personal_profile_service.h>
 #include <lasso/id-wsf-2.0/wsf2_profile_private.h>
 
 struct _LassoIdwsf2DiscoveryPrivate
