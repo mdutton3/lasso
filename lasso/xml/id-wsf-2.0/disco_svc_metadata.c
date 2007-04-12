@@ -1,4 +1,4 @@
-/* $Id: disco_service_metadata.c 2261 2005-01-27 23:41:05 $ 
+/* $Id: disco_svc_metadata.c 2261 2005-01-27 23:41:05 $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -49,13 +49,13 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Abstract", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoServiceMetadata, Abstract) },
+	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, Abstract) },
 	{ "ProviderID", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoServiceMetadata, ProviderID) },
+	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, ProviderID) },
 	{ "ServiceContext", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoServiceMetadata, ServiceContext) },
+	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, ServiceContext) },
 	{ "svcMDID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoDiscoServiceMetadata, id) },
+	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, id) },
 	{ NULL, 0, 0}
 };
 
@@ -64,7 +64,7 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoDiscoServiceMetadata *node)
+instance_init(LassoIdwsf2DiscoSvcMetadata *node)
 {
 	node->Abstract = NULL;
 	node->ProviderID = NULL;
@@ -73,7 +73,7 @@ instance_init(LassoDiscoServiceMetadata *node)
 }
 
 static void
-class_init(LassoDiscoServiceMetadataClass *klass)
+class_init(LassoIdwsf2DiscoSvcMetadataClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
@@ -84,42 +84,42 @@ class_init(LassoDiscoServiceMetadataClass *klass)
 }
 
 GType
-lasso_disco_service_metadata_get_type()
+lasso_idwsf2_disco_svc_metadata_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoDiscoServiceMetadataClass),
+			sizeof (LassoIdwsf2DiscoSvcMetadataClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoDiscoServiceMetadata),
+			sizeof(LassoIdwsf2DiscoSvcMetadata),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoDiscoServiceMetadata", &this_info, 0);
+				"LassoIdwsf2DiscoSvcMetadata", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoDiscoServiceMetadata*
-lasso_disco_service_metadata_new(gchar *service_type, gchar *abstract, gchar *provider_id)
+LassoIdwsf2DiscoSvcMetadata*
+lasso_idwsf2_disco_svc_metadata_new(gchar *service_type, gchar *abstract, gchar *provider_id)
 {
-	LassoDiscoServiceMetadata *metadata;
-	LassoDiscoEndpointContext *endpoint_context;
+	LassoIdwsf2DiscoSvcMetadata *metadata;
+	LassoIdwsf2DiscoEndpointContext *endpoint_context;
 
-	metadata = g_object_new(LASSO_TYPE_DISCO_SERVICE_METADATA, NULL);
+	metadata = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, NULL);
 
 	metadata->Abstract = g_strdup(abstract);
 	metadata->ProviderID = g_strdup(provider_id);
 
-	endpoint_context = lasso_disco_endpoint_context_new(provider_id);
-	metadata->ServiceContext = lasso_disco_service_context_new(service_type, endpoint_context);
+	endpoint_context = lasso_idwsf2_disco_endpoint_context_new(provider_id);
+	metadata->ServiceContext = lasso_idwsf2_disco_service_context_new(service_type, endpoint_context);
 
 	return metadata;
 }

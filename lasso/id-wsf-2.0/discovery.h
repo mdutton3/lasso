@@ -56,7 +56,7 @@ struct _LassoIdwsf2Discovery {
 	LassoWsf2Profile parent;
 
 	/* FIXME : Should be a list */
-	LassoDiscoServiceMetadata *metadata;
+	LassoIdwsf2DiscoSvcMetadata *metadata;
 
 	/*< private >*/
 	LassoIdwsf2DiscoveryPrivate *private_data;

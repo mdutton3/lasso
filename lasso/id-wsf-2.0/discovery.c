@@ -98,14 +98,14 @@ gint
 lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
 	gchar *service_type, gchar *abstract, gchar *disco_provider_id)
 {
-	LassoDiscoSvcMDRegister *metadata_register;
+	LassoIdwsf2DiscoSvcMDRegister *metadata_register;
 
 	/* Get the providerId of this SP */
 	LassoProvider *provider = LASSO_PROVIDER(LASSO_WSF2_PROFILE(discovery)->server);
 	gchar *sp_provider_id = provider->ProviderID;
 
 	/* Get a MetadataRegister node */
-	metadata_register = lasso_disco_svc_md_register_new(
+	metadata_register = lasso_idwsf2_disco_svc_md_register_new(
 			service_type, abstract, sp_provider_id);
 
 	/* Create request with this xml node */
@@ -115,35 +115,30 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
 	/* FIXME : Get the url of the disco service where we must send the soap request */
 	/* LASSO_WSF2_PROFILE(discovery)->msg_url = g_strdup(disco_provider_id); */
 
-	printf(lasso_node_dump(LASSO_NODE(metadata_register)));
+/* 	printf(lasso_node_dump(LASSO_NODE(metadata_register))); */
 	return 0;
 }
 
 gint
-lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdwsf2Discovery *discovery, const gchar *message)
+lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdwsf2Discovery *discovery,
+	const gchar *message)
 {
-	LassoDiscoSvcMDRegister *request;
+	LassoIdwsf2DiscoSvcMDRegister *request;
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	res = lasso_wsf2_profile_process_soap_request_msg(LASSO_WSF2_PROFILE(discovery), message,
-		LASSO_IDWSF2_DISCO_HREF);
+	res = lasso_wsf2_profile_process_soap_request_msg(LASSO_WSF2_PROFILE(discovery), message);
 	if (res != 0)
 		return res;
 
-	request = LASSO_DISCO_SVC_MD_REGISTER(LASSO_WSF2_PROFILE(discovery)->request);
-
-	if (request == NULL)
-		printf("\n\nrequest is NULL\n\n"); 
+	request = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_WSF2_PROFILE(discovery)->request);
 
 	/* FIXME : foreach on the list instead */
-	if (request != NULL && request->metadata_list != NULL
-			&& g_list_first(request->metadata_list) != NULL) {
-		discovery->metadata =
-			LASSO_DISCO_SERVICE_METADATA(g_list_first(request->metadata_list));
+	if (request->metadata_list != NULL) {
+		discovery->metadata = LASSO_IDWSF2_DISCO_SVC_METADATA(request->metadata_list->data);
 	}
 
 	return 0;

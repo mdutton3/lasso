@@ -1,4 +1,4 @@
-/* $Id: disco_service_metadata.h 2428 2005-03-10 08:13:36Z nclapies $
+/* $Id: disco_svc_metadata.h 2428 2005-03-10 08:13:36Z nclapies $
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_DISCO_SERVICE_METADATA_H__
-#define __LASSO_DISCO_SERVICE_METADATA_H__
+#ifndef __LASSO_IDWSF2_DISCO_SVC_METADATA_H__
+#define __LASSO_IDWSF2_DISCO_SVC_METADATA_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,47 +32,47 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include <lasso/xml/id-wsf-2.0/disco_service_context.h>
 
-#define LASSO_TYPE_DISCO_SERVICE_METADATA (lasso_disco_service_metadata_get_type())
-#define LASSO_DISCO_SERVICE_METADATA(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DISCO_SERVICE_METADATA, \
-				    LassoDiscoServiceMetadata))
-#define LASSO_DISCO_SERVICE_METADATA_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_SERVICE_METADATA, \
-				 LassoDiscoServiceMetadataClass))
-#define LASSO_IS_DISCO_SERVICE_METADATA(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_SERVICE_METADATA))
-#define LASSO_IS_DISCO_SERVICE_METADATA_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_SERVICE_METADATA))
-#define LASSO_DISCO_SERVICE_METADATA_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_SERVICE_METADATA, \
-				    LassoDiscoServiceMetadataClass)) 
+#define LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA (lasso_idwsf2_disco_svc_metadata_get_type())
+#define LASSO_IDWSF2_DISCO_SVC_METADATA(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, \
+				    LassoIdwsf2DiscoSvcMetadata))
+#define LASSO_IDWSF2_DISCO_SVC_METADATA_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, \
+				 LassoIdwsf2DiscoSvcMetadataClass))
+#define LASSO_IS_IDWSF2_DISCO_SVC_METADATA(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA))
+#define LASSO_IS_IDWSF2_DISCO_SVC_METADATA_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA))
+#define LASSO_IDWSF2_DISCO_SVC_METADATA_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, \
+				    LassoIdwsf2DiscoSvcMetadataClass)) 
 
-typedef struct _LassoDiscoServiceMetadata LassoDiscoServiceMetadata;
-typedef struct _LassoDiscoServiceMetadataClass LassoDiscoServiceMetadataClass;
+typedef struct _LassoIdwsf2DiscoSvcMetadata LassoIdwsf2DiscoSvcMetadata;
+typedef struct _LassoIdwsf2DiscoSvcMetadataClass LassoIdwsf2DiscoSvcMetadataClass;
 
-struct _LassoDiscoServiceMetadata {
+struct _LassoIdwsf2DiscoSvcMetadata {
 	LassoNode parent;
 
 	/* elements */
 	gchar *Abstract;
 	gchar *ProviderID;
-	LassoDiscoServiceContext *ServiceContext;
+	LassoIdwsf2DiscoServiceContext *ServiceContext;
 
 	/* attributes */
 	gchar *id;
 };
 
-struct _LassoDiscoServiceMetadataClass {
+struct _LassoIdwsf2DiscoSvcMetadataClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType lasso_disco_service_metadata_get_type(void);
+LASSO_EXPORT GType lasso_idwsf2_disco_svc_metadata_get_type(void);
 
-LASSO_EXPORT LassoDiscoServiceMetadata* lasso_disco_service_metadata_new(
+LASSO_EXPORT LassoIdwsf2DiscoSvcMetadata* lasso_idwsf2_disco_svc_metadata_new(
 	gchar *service_type, gchar *abstract, gchar *provider_id);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_DISCO_SERVICE_METADATA_H__ */
+#endif /* __LASSO_IDWSF2_DISCO_SVC_METADATA_H__ */

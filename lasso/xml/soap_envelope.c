@@ -104,8 +104,8 @@ lasso_soap_envelope_new_from_message(const gchar *message)
 
 	g_return_val_if_fail(message != NULL, NULL);
 
-/* 	node = g_object_new(LASSO_TYPE_SOAP_ENVELOPE, NULL); */
-/* 	lasso_node_init_from_message(LASSO_NODE(node), message); */
+	node = g_object_new(LASSO_TYPE_SOAP_ENVELOPE, NULL);
+	lasso_node_init_from_message(LASSO_NODE(node), message);
 
 	node = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
 

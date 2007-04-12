@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_DISCO_SVC_MD_REGISTER_RESPONSE_H__
-#define __LASSO_DISCO_SVC_MD_REGISTER_RESPONSE_H__
+#ifndef __LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE_H__
+#define __LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,19 +32,19 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include "util_status.h"
 
-#define LASSO_TYPE_DISCO_SVC_MD_REGISTER_RESPONSE (lasso_disco_svc_md_register_response_get_type())
-#define LASSO_DISCO_SVC_MD_REGISTER_RESPONSE(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DISCO_SVC_MD_REGISTER_RESPONSE, \
+#define LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE (lasso_idwsf2_disco_svc_md_register_response_get_type())
+#define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, \
 				LassoIdWsf2DiscoSvcMDRegisterResponse))
-#define LASSO_DISCO_SVC_MD_REGISTER_RESPONSE_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_SVC_MD_REGISTER_RESPONSE, \
+#define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, \
 				LassoIdWsf2DiscoSvcMDRegisterResponseClass))
-#define LASSO_IS_DISCO_SVC_MD_REGISTER_RESPONSE(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_SVC_MD_REGISTER_RESPONSE))
-#define LASSO_IS_DISCO_SVC_MD_REGISTER_RESPONSE_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_SVC_MD_REGISTER_RESPONSE))
-#define LASSO_DISCO_SVC_MD_REGISTER_RESPONSE_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_SVC_MD_REGISTER_RESPONSE, \
+#define LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE))
+#define LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE))
+#define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, \
 				LassoIdWsf2DiscoSvcMDRegisterResponseClass)) 
 
 typedef struct _LassoIdWsf2DiscoSvcMDRegisterResponse LassoIdWsf2DiscoSvcMDRegisterResponse;
@@ -66,8 +66,8 @@ struct _LassoIdWsf2DiscoSvcMDRegisterResponseClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType lasso_disco_svc_md_register_response_get_type(void);
-LASSO_EXPORT LassoNode* lasso_disco_svc_md_register_response_new(void);
+LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_register_response_get_type(void);
+LASSO_EXPORT LassoNode* lasso_idwsf2_disco_svc_md_register_response_new(void);
 
 
 
@@ -75,4 +75,4 @@ LASSO_EXPORT LassoNode* lasso_disco_svc_md_register_response_new(void);
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_DISCO_SVC_MD_REGISTER_RESPONSE_H__ */
+#endif /* __LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE_H__ */

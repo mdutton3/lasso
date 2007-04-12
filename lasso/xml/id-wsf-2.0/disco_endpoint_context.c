@@ -50,13 +50,13 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Address", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoEndpointContext, Address) },
+	  G_STRUCT_OFFSET(LassoIdwsf2DiscoEndpointContext, Address) },
 	{ "Framework", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoEndpointContext, Framework) },
+	  G_STRUCT_OFFSET(LassoIdwsf2DiscoEndpointContext, Framework) },
 	{ "SecurityMechID", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoEndpointContext, SecurityMechID) },
+	  G_STRUCT_OFFSET(LassoIdwsf2DiscoEndpointContext, SecurityMechID) },
 	{ "Action", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoEndpointContext, Action) },
+	  G_STRUCT_OFFSET(LassoIdwsf2DiscoEndpointContext, Action) },
 	{ NULL, 0, 0}
 };
 
@@ -65,7 +65,7 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoDiscoEndpointContext *node)
+instance_init(LassoIdwsf2DiscoEndpointContext *node)
 {
 	node->Address = NULL;
 	node->Framework = NULL;
@@ -74,7 +74,7 @@ instance_init(LassoDiscoEndpointContext *node)
 }
 
 static void
-class_init(LassoDiscoEndpointContextClass *klass)
+class_init(LassoIdwsf2DiscoEndpointContextClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
@@ -85,35 +85,35 @@ class_init(LassoDiscoEndpointContextClass *klass)
 }
 
 GType
-lasso_disco_endpoint_context_get_type()
+lasso_idwsf2_disco_endpoint_context_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoDiscoEndpointContextClass),
+			sizeof (LassoIdwsf2DiscoEndpointContextClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoDiscoEndpointContext),
+			sizeof(LassoIdwsf2DiscoEndpointContext),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoDiscoEndpointContext", &this_info, 0);
+				"LassoIdwsf2DiscoEndpointContext", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoDiscoEndpointContext*
-lasso_disco_endpoint_context_new(gchar *address)
+LassoIdwsf2DiscoEndpointContext*
+lasso_idwsf2_disco_endpoint_context_new(gchar *address)
 {
-	LassoDiscoEndpointContext *context;
+	LassoIdwsf2DiscoEndpointContext *context;
 
-	context = g_object_new(LASSO_TYPE_DISCO_ENDPOINT_CONTEXT, NULL);
+	context = g_object_new(LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT, NULL);
 
 	context->Address = g_strdup(address);
 	context->Framework = lasso_soap_binding_framework_new("2.0");

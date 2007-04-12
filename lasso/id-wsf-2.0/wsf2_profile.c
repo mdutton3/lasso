@@ -60,9 +60,6 @@ lasso_wsf2_profile_build_soap_envelope(const char *refToMessageId, const char *p
 	LassoSoapEnvelope *envelope;
 	LassoSoapHeader *header;
 	LassoSoapBody *body;
-	
-	LassoSoapBindingCorrelation *correlation;
-	gchar *messageId;
 
 	/* Body */
 	body = lasso_soap_body_new();
@@ -140,36 +137,33 @@ lasso_wsf2_profile_build_soap_request_msg(LassoWsf2Profile *profile)
 }
 
 gint
-lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gchar *message,
-					   const gchar *service_type)
+lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gchar *message)
 {
-	LassoDiscoServiceInstance *si;
-	LassoSoapBindingCorrelation *correlation;
 	LassoSoapEnvelope *envelope = NULL;
-	LassoSoapFault *fault = NULL;
-	gchar *messageId;
 	int res = 0;
-	xmlDoc *doc;
 
 	g_return_val_if_fail(LASSO_IS_WSF2_PROFILE(profile),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	si = lasso_server_get_service(profile->server, (char *) service_type);
+	/* Get soap request */
+	envelope = lasso_soap_envelope_new_from_message(message);
 
-	doc = xmlParseMemory(message, strlen(message));
+	profile->soap_envelope_request = envelope;
 
-	/* Get soap request and his message id */
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
-	
-	profile->request = LASSO_NODE(envelope->Body->any->data);
+	if (envelope != NULL && envelope->Body != NULL && envelope->Body->any != NULL) {
+		profile->request = LASSO_NODE(envelope->Body->any->data);
+	} else {
+		return LASSO_SOAP_ERROR_MISSING_BODY;
+	}
+
+	if (profile->request == NULL)
+		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 
 	/* Set soap response */
-	envelope = lasso_wsf2_profile_build_soap_envelope(messageId,
+	envelope = lasso_wsf2_profile_build_soap_envelope(NULL,
 		LASSO_PROVIDER(profile->server)->ProviderID);
-	LASSO_WSF2_PROFILE(profile)->soap_envelope_response = envelope;
-
-	xmlFreeDoc(doc);
+	profile->soap_envelope_response = envelope;
 
 	return res;
 }

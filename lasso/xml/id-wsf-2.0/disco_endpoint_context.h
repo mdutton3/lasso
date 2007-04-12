@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_DISCO_ENDPOINT_CONTEXT_H__
-#define __LASSO_DISCO_ENDPOINT_CONTEXT_H__
+#ifndef __LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT_H__
+#define __LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,25 +32,25 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include <lasso/xml/id-wsf-2.0/soap_binding_framework.h>
 
-#define LASSO_TYPE_DISCO_ENDPOINT_CONTEXT (lasso_disco_endpoint_context_get_type())
-#define LASSO_DISCO_ENDPOINT_CONTEXT(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DISCO_ENDPOINT_CONTEXT, \
-				    LassoDiscoEndpointContext))
-#define LASSO_DISCO_ENDPOINT_CONTEXT_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_ENDPOINT_CONTEXT, \
-				 LassoDiscoEndpointContextClass))
-#define LASSO_IS_DISCO_ENDPOINT_CONTEXT(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_ENDPOINT_CONTEXT))
-#define LASSO_IS_DISCO_ENDPOINT_CONTEXT_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_ENDPOINT_CONTEXT))
-#define LASSO_DISCO_ENDPOINT_CONTEXT_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_ENDPOINT_CONTEXT, \
-				    LassoDiscoEndpointContextClass)) 
+#define LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT (lasso_idwsf2_disco_endpoint_context_get_type())
+#define LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT, \
+				    LassoIdwsf2DiscoEndpointContext))
+#define LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT, \
+				 LassoIdwsf2DiscoEndpointContextClass))
+#define LASSO_IS_IDWSF2_DISCO_ENDPOINT_CONTEXT(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT))
+#define LASSO_IS_IDWSF2_DISCO_ENDPOINT_CONTEXT_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT))
+#define LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT, \
+				    LassoIdwsf2DiscoEndpointContextClass)) 
 
-typedef struct _LassoDiscoEndpointContext LassoDiscoEndpointContext;
-typedef struct _LassoDiscoEndpointContextClass LassoDiscoEndpointContextClass;
+typedef struct _LassoIdwsf2DiscoEndpointContext LassoIdwsf2DiscoEndpointContext;
+typedef struct _LassoIdwsf2DiscoEndpointContextClass LassoIdwsf2DiscoEndpointContextClass;
 
-struct _LassoDiscoEndpointContext {
+struct _LassoIdwsf2DiscoEndpointContext {
 	LassoNode parent;
 
 	/* elements */
@@ -60,17 +60,17 @@ struct _LassoDiscoEndpointContext {
 	gchar *Action;
 };
 
-struct _LassoDiscoEndpointContextClass {
+struct _LassoIdwsf2DiscoEndpointContextClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType lasso_disco_endpoint_context_get_type(void);
+LASSO_EXPORT GType lasso_idwsf2_disco_endpoint_context_get_type(void);
 
-LASSO_EXPORT LassoDiscoEndpointContext* lasso_disco_endpoint_context_new(
+LASSO_EXPORT LassoIdwsf2DiscoEndpointContext* lasso_idwsf2_disco_endpoint_context_new(
 	gchar *address);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_DISCO_ENDPOINT_CONTEXT_H__ */
+#endif /* __LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT_H__ */

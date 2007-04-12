@@ -83,7 +83,7 @@ class_init(LassoIdWsf2DiscoSvcMDRegisterResponseClass *klass)
 }
 
 GType
-lasso_disco_svc_md_register_response_get_type()
+lasso_idwsf2_disco_svc_md_register_response_get_type()
 {
 	static GType this_type = 0;
 
@@ -107,14 +107,14 @@ lasso_disco_svc_md_register_response_get_type()
 }
 
 /**
- * lasso_disco_svc_md_register_response_new:
+ * lasso_idwsf2_disco_svc_md_register_response_new:
  *
  * Creates a new #LassoIdWsf2DiscoSvcMDRegisterResponse object.
  *
  * Return value: a newly created #LassoIdWsf2DiscoSvcMDRegisterResponse object
  **/
 LassoNode*
-lasso_disco_svc_md_register_response_new()
+lasso_idwsf2_disco_svc_md_register_response_new()
 {
-	return g_object_new(LASSO_TYPE_DISCO_SVC_MD_REGISTER_RESPONSE, NULL);
+	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, NULL);
 }

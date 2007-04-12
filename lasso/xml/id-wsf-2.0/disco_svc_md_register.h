@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_DISCO_SVC_MD_REGISTER_H__
-#define __LASSO_DISCO_SVC_MD_REGISTER_H__
+#ifndef __LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_H__
+#define __LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,42 +31,45 @@ extern "C" {
 
 #include <lasso/xml/xml.h>
 
-#define LASSO_TYPE_DISCO_SVC_MD_REGISTER (lasso_disco_svc_md_register_get_type())
-#define LASSO_DISCO_SVC_MD_REGISTER(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DISCO_SVC_MD_REGISTER, \
-				    LassoDiscoSvcMDRegister))
-#define LASSO_DISCO_SVC_MD_REGISTER_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_SVC_MD_REGISTER, \
-				 LassoDiscoSvcMDRegisterClass))
-#define LASSO_IS_DISCO_SVC_MD_REGISTER(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_SVC_MD_REGISTER))
-#define LASSO_IS_DISCO_SVC_MD_REGISTER_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_SVC_MD_REGISTER))
-#define LASSO_DISCO_SVC_MD_REGISTER_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_SVC_MD_REGISTER, \
-				    LassoDiscoSvcMDRegisterClass)) 
+#define LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER (lasso_idwsf2_disco_svc_md_register_get_type())
+#define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
+				    LassoIdwsf2DiscoSvcMDRegister))
+#define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
+				 LassoIdwsf2DiscoSvcMDRegisterClass))
+#define LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER))
+#define LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER))
+#define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
+				    LassoIdwsf2DiscoSvcMDRegisterClass)) 
 
-typedef struct _LassoDiscoSvcMDRegister LassoDiscoSvcMDRegister;
-typedef struct _LassoDiscoSvcMDRegisterClass LassoDiscoSvcMDRegisterClass;
+typedef struct _LassoIdwsf2DiscoSvcMDRegister LassoIdwsf2DiscoSvcMDRegister;
+typedef struct _LassoIdwsf2DiscoSvcMDRegisterClass LassoIdwsf2DiscoSvcMDRegisterClass;
 
-struct _LassoDiscoSvcMDRegister {
+struct _LassoIdwsf2DiscoSvcMDRegister {
 	LassoNode parent;
 
 	/* elements */
 	GList *metadata_list;
 };
 
-struct _LassoDiscoSvcMDRegisterClass {
+struct _LassoIdwsf2DiscoSvcMDRegisterClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType lasso_disco_svc_md_register_get_type(void);
+LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_register_get_type(void);
 
-LASSO_EXPORT LassoDiscoSvcMDRegister* lasso_disco_svc_md_register_new(
+LASSO_EXPORT LassoIdwsf2DiscoSvcMDRegister* lasso_idwsf2_disco_svc_md_register_new(
 	gchar *service_type, gchar *abstract, gchar *provider_id);
+
+LASSO_EXPORT LassoIdwsf2DiscoSvcMDRegister*
+lasso_idwsf2_disco_svc_md_register_new_from_message(const gchar *message);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_DISCO_SVC_MD_REGISTER_H__ */
+#endif /* __LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_H__ */

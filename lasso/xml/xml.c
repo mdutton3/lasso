@@ -1308,6 +1308,10 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "Samlp2";
 	if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_HREF) == 0)
 		prefix = "Wsse";
+	if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_DISCO_HREF) == 0)
+		prefix = "Idwsf2Disco";
+	if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SOAP_BINDING_HREF) == 0)
+		prefix = "SoapBinding";
 	tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
 	if (tmp) {
 		prefix = "Dst";

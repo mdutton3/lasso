@@ -43,8 +43,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoDiscoSvcMDRegister, metadata_list) },
+	{ "SvcMD", SNIPPET_LIST_NODES,
+	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMDRegister, metadata_list), "LassoIdwsf2DiscoSvcMetadata" },
 	{ NULL, 0, 0}
 };
 
@@ -53,13 +53,13 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoDiscoSvcMDRegister *node)
+instance_init(LassoIdwsf2DiscoSvcMDRegister *node)
 {
 	node->metadata_list = NULL;
 }
 
 static void
-class_init(LassoDiscoSvcMDRegisterClass *klass)
+class_init(LassoIdwsf2DiscoSvcMDRegisterClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
@@ -70,37 +70,37 @@ class_init(LassoDiscoSvcMDRegisterClass *klass)
 }
 
 GType
-lasso_disco_svc_md_register_get_type()
+lasso_idwsf2_disco_svc_md_register_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoDiscoSvcMDRegisterClass),
+			sizeof (LassoIdwsf2DiscoSvcMDRegisterClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoDiscoSvcMDRegister),
+			sizeof(LassoIdwsf2DiscoSvcMDRegister),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoDiscoSvcMDRegister", &this_info, 0);
+				"LassoIdwsf2DiscoSvcMDRegister", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoDiscoSvcMDRegister*
-lasso_disco_svc_md_register_new(gchar *service_type, gchar *abstract, gchar *provider_id)
+LassoIdwsf2DiscoSvcMDRegister*
+lasso_idwsf2_disco_svc_md_register_new(gchar *service_type, gchar *abstract, gchar *provider_id)
 {
-	LassoDiscoSvcMDRegister *metadata_register;
-	LassoDiscoServiceMetadata *metadata;
+	LassoIdwsf2DiscoSvcMDRegister *metadata_register;
+	LassoIdwsf2DiscoSvcMetadata *metadata;
 
-	metadata_register = g_object_new(LASSO_TYPE_DISCO_SVC_MD_REGISTER, NULL);
-	metadata = lasso_disco_service_metadata_new(service_type, abstract, provider_id);
+	metadata_register = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, NULL);
+	metadata = lasso_idwsf2_disco_svc_metadata_new(service_type, abstract, provider_id);
 	metadata_register->metadata_list =
 		g_list_append(metadata_register->metadata_list, metadata);
 
