@@ -36,34 +36,34 @@ extern "C" {
 
 #define LASSO_TYPE_IDWSF2_DISCO_QUERY (lasso_idwsf2_disco_query_get_type())
 #define LASSO_IDWSF2_DISCO_QUERY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-			LASSO_TYPE_IDWSF2_DISCO_QUERY, LassoIdwsf2DiscoQuery))
+			LASSO_TYPE_IDWSF2_DISCO_QUERY, LassoIdWsf2DiscoQuery))
 #define LASSO_IDWSF2_DISCO_QUERY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-			LASSO_TYPE_IDWSF2_DISCO_QUERY, LassoIdwsf2DiscoQueryClass))
+			LASSO_TYPE_IDWSF2_DISCO_QUERY, LassoIdWsf2DiscoQueryClass))
 #define LASSO_IS_IDWSF2_DISCO_QUERY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_QUERY))
 #define LASSO_IS_IDWSF2_DISCO_QUERY_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_TYPE ((klass),LASSO_TYPE_IDWSF2_DISCO_QUERY))
 #define LASSO_IDWSF2_DISCO_QUERY_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_QUERY, LassoIdwsf2DiscoQueryClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_QUERY, LassoIdWsf2DiscoQueryClass)) 
 
-typedef struct _LassoIdwsf2DiscoQuery LassoIdwsf2DiscoQuery;
-typedef struct _LassoIdwsf2DiscoQueryClass LassoIdwsf2DiscoQueryClass;
+typedef struct _LassoIdWsf2DiscoQuery LassoIdWsf2DiscoQuery;
+typedef struct _LassoIdWsf2DiscoQueryClass LassoIdWsf2DiscoQueryClass;
 
-struct _LassoIdwsf2DiscoQuery {
+struct _LassoIdWsf2DiscoQuery {
 	LassoNode parent;
 
 //	GList *RequestedService;
 	gchar *id;
 };
 
-struct _LassoIdwsf2DiscoQueryClass {
+struct _LassoIdWsf2DiscoQueryClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_query_get_type(void);
 
-LASSO_EXPORT LassoIdwsf2DiscoQuery* lasso_idwsf2_disco_query_new(void);
+LASSO_EXPORT LassoIdWsf2DiscoQuery* lasso_idwsf2_disco_query_new(void);
 
-LASSO_EXPORT LassoIdwsf2DiscoQuery* lasso_idwsf2_disco_query_new_from_message(const gchar *message);
+LASSO_EXPORT LassoIdWsf2DiscoQuery* lasso_idwsf2_disco_query_new_from_message(const gchar *message);
 
 #ifdef __cplusplus
 }

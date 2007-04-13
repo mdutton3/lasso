@@ -40,7 +40,7 @@
 #include <lasso/id-wsf-2.0/discovery.h>
 #include <lasso/id-wsf-2.0/wsf2_profile_private.h>
 
-struct _LassoIdwsf2DiscoveryPrivate
+struct _LassoIdWsf2DiscoveryPrivate
 {
 	gboolean dispose_has_run;
 	GList *new_entry_ids;
@@ -60,7 +60,7 @@ struct _LassoIdwsf2DiscoveryPrivate
  * lasso_discovery_new_from_dump().
  **/
 void
-lasso_idwsf2_discovery_destroy(LassoIdwsf2Discovery *discovery)
+lasso_idwsf2_discovery_destroy(LassoIdWsf2Discovery *discovery)
 {
 	g_object_unref(G_OBJECT(discovery));
 }
@@ -74,9 +74,9 @@ lasso_idwsf2_discovery_destroy(LassoIdwsf2Discovery *discovery)
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_idwsf2_discovery_init_query(LassoIdwsf2Discovery *discovery, const gchar *security_mech_id)
+lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery, const gchar *security_mech_id)
 {
-	LassoIdwsf2DiscoQuery *query;
+	LassoIdWsf2DiscoQuery *query;
 
 	query = lasso_idwsf2_disco_query_new();
 	lasso_wsf2_profile_init_soap_request(LASSO_WSF2_PROFILE(discovery), LASSO_NODE(query));
@@ -86,10 +86,10 @@ lasso_idwsf2_discovery_init_query(LassoIdwsf2Discovery *discovery, const gchar *
 
 
 gint
-lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
+lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 	gchar *service_type, gchar *abstract, gchar *disco_provider_id)
 {
-	LassoIdwsf2DiscoSvcMDRegister *metadata_register;
+	LassoIdWsf2DiscoSvcMDRegister *metadata_register;
 
 	/* Get the providerId of this SP */
 	LassoProvider *provider = LASSO_PROVIDER(LASSO_WSF2_PROFILE(discovery)->server);
@@ -111,10 +111,10 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
 }
 
 gint
-lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdwsf2Discovery *discovery,
+lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
 {
-	LassoIdwsf2DiscoSvcMDRegister *request;
+	LassoIdWsf2DiscoSvcMDRegister *request;
 	LassoIdWsf2DiscoSvcMDRegisterResponse *response;
 	LassoSoapEnvelope *envelope;
 	int res = 0;
@@ -156,6 +156,32 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdwsf2Discovery *disco
 	return res;
 }
 
+gint
+lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discovery *discovery,
+	const gchar *message)
+{
+	LassoIdWsf2DiscoSvcMDRegisterResponse *response;
+	LassoSoapEnvelope *envelope;
+	int res = 0;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	/* Process request */
+	res = lasso_wsf2_profile_process_soap_response_msg(LASSO_WSF2_PROFILE(discovery), message);
+
+	if (res == 0) {
+		response = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(
+			LASSO_WSF2_PROFILE(discovery)->response);
+		/* FIXME : foreach on the list instead */
+		if (response->SvcMDID != NULL) {
+			discovery->svcMDID = response->SvcMDID->data;
+		}
+	}
+
+	return res;
+}
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -193,7 +219,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 static void
 dispose(GObject *object)
 {
-	LassoIdwsf2Discovery *discovery = LASSO_IDWSF2_DISCOVERY(object);
+	LassoIdWsf2Discovery *discovery = LASSO_IDWSF2_DISCOVERY(object);
 
 	if (discovery->private_data->dispose_has_run == TRUE)
 		return;
@@ -205,7 +231,7 @@ dispose(GObject *object)
 static void
 finalize(GObject *object)
 { 
-	LassoIdwsf2Discovery *discovery = LASSO_IDWSF2_DISCOVERY(object);
+	LassoIdWsf2Discovery *discovery = LASSO_IDWSF2_DISCOVERY(object);
 	g_free(discovery->private_data);
 	discovery->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
@@ -216,14 +242,16 @@ finalize(GObject *object)
 /*****************************************************************************/
 
 static void
-instance_init(LassoIdwsf2Discovery *discovery)
+instance_init(LassoIdWsf2Discovery *discovery)
 {
-	discovery->private_data = g_new0(LassoIdwsf2DiscoveryPrivate, 1);
+	discovery->metadata = NULL;
+	discovery->svcMDID = NULL;
+	discovery->private_data = g_new0(LassoIdWsf2DiscoveryPrivate, 1);
 	discovery->private_data->dispose_has_run = FALSE;
 }
 
 static void
-class_init(LassoIdwsf2DiscoveryClass *klass)
+class_init(LassoIdWsf2DiscoveryClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
 
@@ -241,19 +269,19 @@ lasso_idwsf2_discovery_get_type()
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof(LassoIdwsf2DiscoveryClass),
+			sizeof(LassoIdWsf2DiscoveryClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoIdwsf2Discovery),
+			sizeof(LassoIdWsf2Discovery),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_WSF2_PROFILE,
-						   "LassoIdwsf2Discovery", &this_info, 0);
+						   "LassoIdWsf2Discovery", &this_info, 0);
 	}
 	return this_type;
 }
@@ -262,15 +290,15 @@ lasso_idwsf2_discovery_get_type()
  * lasso_idwsf2_discovery_new:
  * @server: the #LassoServer
  *
- * Creates a new #LassoIdwsf2Discovery.
+ * Creates a new #LassoIdWsf2Discovery.
  *
- * Return value: a newly created #LassoIdwsf2Discovery object; or NULL if an error
+ * Return value: a newly created #LassoIdWsf2Discovery object; or NULL if an error
  *      occured.
  **/
-LassoIdwsf2Discovery*
+LassoIdWsf2Discovery*
 lasso_idwsf2_discovery_new(LassoServer *server)
 {
-	LassoIdwsf2Discovery *discovery = NULL;
+	LassoIdWsf2Discovery *discovery = NULL;
 
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 

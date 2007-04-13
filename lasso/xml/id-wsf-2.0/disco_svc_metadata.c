@@ -49,13 +49,13 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Abstract", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, Abstract) },
+	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, Abstract) },
 	{ "ProviderID", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, ProviderID) },
+	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, ProviderID) },
 	{ "ServiceContext", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, ServiceContext) },
+	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, ServiceContext) },
 	{ "svcMDID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMetadata, svcMDID) },
+	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, svcMDID) },
 	{ NULL, 0, 0}
 };
 
@@ -64,7 +64,7 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoIdwsf2DiscoSvcMetadata *node)
+instance_init(LassoIdWsf2DiscoSvcMetadata *node)
 {
 	node->Abstract = NULL;
 	node->ProviderID = NULL;
@@ -73,7 +73,7 @@ instance_init(LassoIdwsf2DiscoSvcMetadata *node)
 }
 
 static void
-class_init(LassoIdwsf2DiscoSvcMetadataClass *klass)
+class_init(LassoIdWsf2DiscoSvcMetadataClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
@@ -90,28 +90,28 @@ lasso_idwsf2_disco_svc_metadata_get_type()
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoIdwsf2DiscoSvcMetadataClass),
+			sizeof (LassoIdWsf2DiscoSvcMetadataClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoIdwsf2DiscoSvcMetadata),
+			sizeof(LassoIdWsf2DiscoSvcMetadata),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoIdwsf2DiscoSvcMetadata", &this_info, 0);
+				"LassoIdWsf2DiscoSvcMetadata", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoIdwsf2DiscoSvcMetadata*
+LassoIdWsf2DiscoSvcMetadata*
 lasso_idwsf2_disco_svc_metadata_new(gchar *service_type, gchar *abstract, gchar *provider_id)
 {
-	LassoIdwsf2DiscoSvcMetadata *metadata;
-	LassoIdwsf2DiscoEndpointContext *endpoint_context;
+	LassoIdWsf2DiscoSvcMetadata *metadata;
+	LassoIdWsf2DiscoEndpointContext *endpoint_context;
 
 	metadata = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, NULL);
 

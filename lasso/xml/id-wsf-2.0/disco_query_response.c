@@ -46,13 +46,13 @@
 
 static struct XmlSnippet schema_snippets[] = {
 //	{ "Status", SNIPPET_NODE,
-//	  G_STRUCT_OFFSET(LassoIdwsf2DiscoQueryResponse, Status) },
+//	  G_STRUCT_OFFSET(LassoIdWsf2DiscoQueryResponse, Status) },
 //	{ "ResourceOffering", SNIPPET_LIST_NODES,
-//	  G_STRUCT_OFFSET(LassoIdwsf2DiscoQueryResponse, ResourceOffering) },
+//	  G_STRUCT_OFFSET(LassoIdWsf2DiscoQueryResponse, ResourceOffering) },
 //	{ "Credentials", SNIPPET_NODE,
-//	  G_STRUCT_OFFSET(LassoIdwsf2DiscoQueryResponse, Credentials) },
+//	  G_STRUCT_OFFSET(LassoIdWsf2DiscoQueryResponse, Credentials) },
 	{ "id", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoIdwsf2DiscoQueryResponse, id) },
+	  G_STRUCT_OFFSET(LassoIdWsf2DiscoQueryResponse, id) },
 	{ NULL, 0, 0}
 };
 
@@ -89,7 +89,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 /*****************************************************************************/
 
 static void
-instance_init(LassoIdwsf2DiscoQueryResponse *node)
+instance_init(LassoIdWsf2DiscoQueryResponse *node)
 {
 	node->Status = NULL;
 //	node->ResourceOffering = NULL;
@@ -99,7 +99,7 @@ instance_init(LassoIdwsf2DiscoQueryResponse *node)
 }
 
 static void
-class_init(LassoIdwsf2DiscoQueryResponseClass *class)
+class_init(LassoIdWsf2DiscoQueryResponseClass *class)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(class);
 
@@ -118,27 +118,27 @@ lasso_idwsf2_disco_query_response_get_type()
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoIdwsf2DiscoQueryResponseClass),
+			sizeof (LassoIdWsf2DiscoQueryResponseClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoIdwsf2DiscoQueryResponse),
+			sizeof(LassoIdWsf2DiscoQueryResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoIdwsf2DiscoQueryResponse", &this_info, 0);
+				"LassoIdWsf2DiscoQueryResponse", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoIdwsf2DiscoQueryResponse*
+LassoIdWsf2DiscoQueryResponse*
 lasso_idwsf2_disco_query_response_new(LassoUtilityStatus *status)
 {
-	LassoIdwsf2DiscoQueryResponse *node;
+	LassoIdWsf2DiscoQueryResponse *node;
 
 	g_return_val_if_fail(LASSO_IS_UTILITY_STATUS(status), NULL);
 
@@ -149,10 +149,10 @@ lasso_idwsf2_disco_query_response_new(LassoUtilityStatus *status)
 	return node;
 }
 
-LassoIdwsf2DiscoQueryResponse*
+LassoIdWsf2DiscoQueryResponse*
 lasso_idwsf2_disco_query_response_new_from_message(const gchar *message)
 {
-	LassoIdwsf2DiscoQueryResponse *response;
+	LassoIdWsf2DiscoQueryResponse *response;
 
 	g_return_val_if_fail(message != NULL, NULL);
 

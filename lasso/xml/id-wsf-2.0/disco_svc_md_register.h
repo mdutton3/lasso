@@ -34,38 +34,38 @@ extern "C" {
 #define LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER (lasso_idwsf2_disco_svc_md_register_get_type())
 #define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
-				    LassoIdwsf2DiscoSvcMDRegister))
+				    LassoIdWsf2DiscoSvcMDRegister))
 #define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
-				 LassoIdwsf2DiscoSvcMDRegisterClass))
+				 LassoIdWsf2DiscoSvcMDRegisterClass))
 #define LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER(obj) \
 	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER))
 #define LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER))
 #define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_GET_CLASS(o) \
 	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
-				    LassoIdwsf2DiscoSvcMDRegisterClass)) 
+				    LassoIdWsf2DiscoSvcMDRegisterClass)) 
 
-typedef struct _LassoIdwsf2DiscoSvcMDRegister LassoIdwsf2DiscoSvcMDRegister;
-typedef struct _LassoIdwsf2DiscoSvcMDRegisterClass LassoIdwsf2DiscoSvcMDRegisterClass;
+typedef struct _LassoIdWsf2DiscoSvcMDRegister LassoIdWsf2DiscoSvcMDRegister;
+typedef struct _LassoIdWsf2DiscoSvcMDRegisterClass LassoIdWsf2DiscoSvcMDRegisterClass;
 
-struct _LassoIdwsf2DiscoSvcMDRegister {
+struct _LassoIdWsf2DiscoSvcMDRegister {
 	LassoNode parent;
 
 	/* elements */
 	GList *metadata_list;
 };
 
-struct _LassoIdwsf2DiscoSvcMDRegisterClass {
+struct _LassoIdWsf2DiscoSvcMDRegisterClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_register_get_type(void);
 
-LASSO_EXPORT LassoIdwsf2DiscoSvcMDRegister* lasso_idwsf2_disco_svc_md_register_new(
+LASSO_EXPORT LassoIdWsf2DiscoSvcMDRegister* lasso_idwsf2_disco_svc_md_register_new(
 	gchar *service_type, gchar *abstract, gchar *provider_id);
 
-LASSO_EXPORT LassoIdwsf2DiscoSvcMDRegister*
+LASSO_EXPORT LassoIdWsf2DiscoSvcMDRegister*
 lasso_idwsf2_disco_svc_md_register_new_from_message(const gchar *message);
 
 #ifdef __cplusplus

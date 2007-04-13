@@ -36,38 +36,38 @@ extern "C" {
 #define LASSO_TYPE_IDWSF2_DISCO_SERVICE_CONTEXT (lasso_idwsf2_disco_service_context_get_type())
 #define LASSO_IDWSF2_DISCO_SERVICE_CONTEXT(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_SERVICE_CONTEXT, \
-				    LassoIdwsf2DiscoServiceContext))
+				    LassoIdWsf2DiscoServiceContext))
 #define LASSO_IDWSF2_DISCO_SERVICE_CONTEXT_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_SERVICE_CONTEXT, \
-				 LassoIdwsf2DiscoServiceContextClass))
+				 LassoIdWsf2DiscoServiceContextClass))
 #define LASSO_IS_IDWSF2_DISCO_SERVICE_CONTEXT(obj) \
 	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_SERVICE_CONTEXT))
 #define LASSO_IS_IDWSF2_DISCO_SERVICE_CONTEXT_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_SERVICE_CONTEXT))
 #define LASSO_IDWSF2_DISCO_SERVICE_CONTEXT_GET_CLASS(o) \
 	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_SERVICE_CONTEXT, \
-				    LassoIdwsf2DiscoServiceContextClass)) 
+				    LassoIdWsf2DiscoServiceContextClass)) 
 
-typedef struct _LassoIdwsf2DiscoServiceContext LassoIdwsf2DiscoServiceContext;
-typedef struct _LassoIdwsf2DiscoServiceContextClass LassoIdwsf2DiscoServiceContextClass;
+typedef struct _LassoIdWsf2DiscoServiceContext LassoIdWsf2DiscoServiceContext;
+typedef struct _LassoIdWsf2DiscoServiceContextClass LassoIdWsf2DiscoServiceContextClass;
 
-struct _LassoIdwsf2DiscoServiceContext {
+struct _LassoIdWsf2DiscoServiceContext {
 	LassoNode parent;
 
 	/* elements */
 	gchar *ServiceType;
-	LassoIdwsf2DiscoOptions *Options;
-	LassoIdwsf2DiscoEndpointContext *EndpointContext;
+	LassoIdWsf2DiscoOptions *Options;
+	LassoIdWsf2DiscoEndpointContext *EndpointContext;
 };
 
-struct _LassoIdwsf2DiscoServiceContextClass {
+struct _LassoIdWsf2DiscoServiceContextClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_service_context_get_type(void);
 
-LASSO_EXPORT LassoIdwsf2DiscoServiceContext* lasso_idwsf2_disco_service_context_new(
-	gchar *serviceType, LassoIdwsf2DiscoEndpointContext *endpointContext);
+LASSO_EXPORT LassoIdWsf2DiscoServiceContext* lasso_idwsf2_disco_service_context_new(
+	gchar *serviceType, LassoIdWsf2DiscoEndpointContext *endpointContext);
 
 #ifdef __cplusplus
 }

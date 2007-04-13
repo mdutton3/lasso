@@ -35,22 +35,22 @@ extern "C" {
 #define LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT (lasso_idwsf2_disco_endpoint_context_get_type())
 #define LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT, \
-				    LassoIdwsf2DiscoEndpointContext))
+				    LassoIdWsf2DiscoEndpointContext))
 #define LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT, \
-				 LassoIdwsf2DiscoEndpointContextClass))
+				 LassoIdWsf2DiscoEndpointContextClass))
 #define LASSO_IS_IDWSF2_DISCO_ENDPOINT_CONTEXT(obj) \
 	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT))
 #define LASSO_IS_IDWSF2_DISCO_ENDPOINT_CONTEXT_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT))
 #define LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT_GET_CLASS(o) \
 	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT, \
-				    LassoIdwsf2DiscoEndpointContextClass)) 
+				    LassoIdWsf2DiscoEndpointContextClass)) 
 
-typedef struct _LassoIdwsf2DiscoEndpointContext LassoIdwsf2DiscoEndpointContext;
-typedef struct _LassoIdwsf2DiscoEndpointContextClass LassoIdwsf2DiscoEndpointContextClass;
+typedef struct _LassoIdWsf2DiscoEndpointContext LassoIdWsf2DiscoEndpointContext;
+typedef struct _LassoIdWsf2DiscoEndpointContextClass LassoIdWsf2DiscoEndpointContextClass;
 
-struct _LassoIdwsf2DiscoEndpointContext {
+struct _LassoIdWsf2DiscoEndpointContext {
 	LassoNode parent;
 
 	/* elements */
@@ -60,13 +60,13 @@ struct _LassoIdwsf2DiscoEndpointContext {
 	gchar *Action;
 };
 
-struct _LassoIdwsf2DiscoEndpointContextClass {
+struct _LassoIdWsf2DiscoEndpointContextClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_endpoint_context_get_type(void);
 
-LASSO_EXPORT LassoIdwsf2DiscoEndpointContext* lasso_idwsf2_disco_endpoint_context_new(
+LASSO_EXPORT LassoIdWsf2DiscoEndpointContext* lasso_idwsf2_disco_endpoint_context_new(
 	gchar *address);
 
 #ifdef __cplusplus

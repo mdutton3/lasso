@@ -1,1 +1,1 @@
-SET_NODE_INFO(Idwsf2DiscoSvcMetadata, Node)
+SET_NODE_INFO(IdWsf2DiscoSvcMetadata, Node)

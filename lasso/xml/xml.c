@@ -1309,9 +1309,11 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_HREF) == 0)
 		prefix = "Wsse";
 	if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_DISCO_HREF) == 0)
-		prefix = "Idwsf2Disco";
+		prefix = "IdWsf2Disco";
 	if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SOAP_BINDING_HREF) == 0)
 		prefix = "SoapBinding";
+	if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_UTIL_HREF) == 0)
+		prefix = "IdWsf2Util";
 	tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
 	if (tmp) {
 		prefix = "Dst";

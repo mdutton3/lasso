@@ -44,7 +44,7 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "SvcMD", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoIdwsf2DiscoSvcMDRegister, metadata_list), "LassoIdwsf2DiscoSvcMetadata" },
+	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDRegister, metadata_list), "LassoIdWsf2DiscoSvcMetadata" },
 	{ NULL, 0, 0}
 };
 
@@ -53,13 +53,13 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoIdwsf2DiscoSvcMDRegister *node)
+instance_init(LassoIdWsf2DiscoSvcMDRegister *node)
 {
 	node->metadata_list = NULL;
 }
 
 static void
-class_init(LassoIdwsf2DiscoSvcMDRegisterClass *klass)
+class_init(LassoIdWsf2DiscoSvcMDRegisterClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
@@ -76,28 +76,28 @@ lasso_idwsf2_disco_svc_md_register_get_type()
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoIdwsf2DiscoSvcMDRegisterClass),
+			sizeof (LassoIdWsf2DiscoSvcMDRegisterClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoIdwsf2DiscoSvcMDRegister),
+			sizeof(LassoIdWsf2DiscoSvcMDRegister),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoIdwsf2DiscoSvcMDRegister", &this_info, 0);
+				"LassoIdWsf2DiscoSvcMDRegister", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoIdwsf2DiscoSvcMDRegister*
+LassoIdWsf2DiscoSvcMDRegister*
 lasso_idwsf2_disco_svc_md_register_new(gchar *service_type, gchar *abstract, gchar *provider_id)
 {
-	LassoIdwsf2DiscoSvcMDRegister *metadata_register;
-	LassoIdwsf2DiscoSvcMetadata *metadata;
+	LassoIdWsf2DiscoSvcMDRegister *metadata_register;
+	LassoIdWsf2DiscoSvcMetadata *metadata;
 
 	metadata_register = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, NULL);
 	metadata = lasso_idwsf2_disco_svc_metadata_new(service_type, abstract, provider_id);

@@ -42,7 +42,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Option", SNIPPET_LIST_CONTENT, G_STRUCT_OFFSET(LassoIdwsf2DiscoOptions, Option) },
+	{ "Option", SNIPPET_LIST_CONTENT, G_STRUCT_OFFSET(LassoIdWsf2DiscoOptions, Option) },
 	{ NULL, 0, 0}
 };
 
@@ -51,13 +51,13 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoIdwsf2DiscoOptions *node)
+instance_init(LassoIdWsf2DiscoOptions *node)
 {
 	node->Option = NULL;
 }
 
 static void
-class_init(LassoIdwsf2DiscoOptionsClass *klass)
+class_init(LassoIdWsf2DiscoOptionsClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
@@ -74,24 +74,24 @@ lasso_idwsf2_disco_options_get_type()
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoIdwsf2DiscoOptionsClass),
+			sizeof (LassoIdWsf2DiscoOptionsClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoIdwsf2DiscoOptions),
+			sizeof(LassoIdWsf2DiscoOptions),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-						   "LassoIdwsf2DiscoOptions", &this_info, 0);
+						   "LassoIdWsf2DiscoOptions", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoIdwsf2DiscoOptions*
+LassoIdWsf2DiscoOptions*
 lasso_idwsf2_disco_options_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_OPTIONS, NULL);

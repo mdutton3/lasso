@@ -46,11 +46,11 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ServiceType", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoIdwsf2DiscoServiceContext, ServiceType) },
+	  G_STRUCT_OFFSET(LassoIdWsf2DiscoServiceContext, ServiceType) },
 	{ "Options", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoIdwsf2DiscoServiceContext, Options) },
+	  G_STRUCT_OFFSET(LassoIdWsf2DiscoServiceContext, Options) },
 	{ "EndpointContext", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoIdwsf2DiscoServiceContext, EndpointContext) },
+	  G_STRUCT_OFFSET(LassoIdWsf2DiscoServiceContext, EndpointContext) },
 	{ NULL, 0, 0}
 };
 
@@ -59,7 +59,7 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoIdwsf2DiscoServiceContext *node)
+instance_init(LassoIdWsf2DiscoServiceContext *node)
 {
 	node->ServiceType = NULL;
 	node->Options = NULL;
@@ -67,7 +67,7 @@ instance_init(LassoIdwsf2DiscoServiceContext *node)
 }
 
 static void
-class_init(LassoIdwsf2DiscoServiceContextClass *klass)
+class_init(LassoIdWsf2DiscoServiceContextClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
@@ -84,27 +84,27 @@ lasso_idwsf2_disco_service_context_get_type()
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoIdwsf2DiscoServiceContextClass),
+			sizeof (LassoIdWsf2DiscoServiceContextClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoIdwsf2DiscoServiceContext),
+			sizeof(LassoIdWsf2DiscoServiceContext),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoIdwsf2DiscoServiceContext", &this_info, 0);
+				"LassoIdWsf2DiscoServiceContext", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoIdwsf2DiscoServiceContext*
-lasso_idwsf2_disco_service_context_new(gchar *serviceType, LassoIdwsf2DiscoEndpointContext *endpointContext)
+LassoIdWsf2DiscoServiceContext*
+lasso_idwsf2_disco_service_context_new(gchar *serviceType, LassoIdWsf2DiscoEndpointContext *endpointContext)
 {
-	LassoIdwsf2DiscoServiceContext *context;
+	LassoIdWsf2DiscoServiceContext *context;
 
 	context = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SERVICE_CONTEXT, NULL);
 

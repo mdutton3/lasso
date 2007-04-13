@@ -47,20 +47,20 @@
 
 
 #ifndef SWIGPHP4
-%rename(Idwsf2DiscoQuery) LassoIdwsf2DiscoQuery;
+%rename(IdWsf2DiscoQuery) LassoIdWsf2DiscoQuery;
 #endif
 typedef struct {
 	/* Attributes */
 
 	char *id;
-} LassoIdwsf2DiscoQuery;
-%extend LassoIdwsf2DiscoQuery {
+} LassoIdWsf2DiscoQuery;
+%extend LassoIdWsf2DiscoQuery {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoIdwsf2DiscoQuery();
+	LassoIdWsf2DiscoQuery();
 
-	~LassoIdwsf2DiscoQuery();
+	~LassoIdWsf2DiscoQuery();
 
 	/* Methods inherited from LassoNode */
 
@@ -72,11 +72,11 @@ typedef struct {
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoIdwsf2DiscoQuery lasso_idwsf2_disco_query_new
-#define delete_LassoIdwsf2DiscoQuery(self) lasso_node_destroy(LASSO_NODE(self))
+#define new_LassoIdWsf2DiscoQuery lasso_idwsf2_disco_query_new
+#define delete_LassoIdWsf2DiscoQuery(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoIdwsf2DiscoQuery_dump(self) lasso_node_dump(LASSO_NODE(self))
+#define LassoIdWsf2DiscoQuery_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}

@@ -39,46 +39,50 @@ extern "C" {
 
 #define LASSO_TYPE_IDWSF2_DISCOVERY (lasso_idwsf2_discovery_get_type())
 #define LASSO_IDWSF2_DISCOVERY(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdwsf2Discovery))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdWsf2Discovery))
 #define LASSO_IDWSF2_DISCOVERY_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdwsf2DiscoveryClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdWsf2DiscoveryClass))
 #define LASSO_IS_IDWSF2_DISCOVERY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCOVERY))
 #define LASSO_IS_IDWSF2_DISCOVERY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCOVERY))
 #define LASSO_IDWSF2_DISCOVERY_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdwsf2DiscoveryClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdWsf2DiscoveryClass)) 
 
-typedef struct _LassoIdwsf2Discovery LassoIdwsf2Discovery;
-typedef struct _LassoIdwsf2DiscoveryClass LassoIdwsf2DiscoveryClass;
-typedef struct _LassoIdwsf2DiscoveryPrivate LassoIdwsf2DiscoveryPrivate;
+typedef struct _LassoIdWsf2Discovery LassoIdWsf2Discovery;
+typedef struct _LassoIdWsf2DiscoveryClass LassoIdWsf2DiscoveryClass;
+typedef struct _LassoIdWsf2DiscoveryPrivate LassoIdWsf2DiscoveryPrivate;
 
 
-struct _LassoIdwsf2Discovery {
+struct _LassoIdWsf2Discovery {
 	LassoWsf2Profile parent;
 
-	/* FIXME : Should be a list */
-	LassoIdwsf2DiscoSvcMetadata *metadata;
+	/* FIXME : Both should be lists */
+	LassoIdWsf2DiscoSvcMetadata *metadata;
+	gchar *svcMDID;
 
 	/*< private >*/
-	LassoIdwsf2DiscoveryPrivate *private_data;
+	LassoIdWsf2DiscoveryPrivate *private_data;
 };
 
-struct _LassoIdwsf2DiscoveryClass {
+struct _LassoIdWsf2DiscoveryClass {
 	LassoWsf2ProfileClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_discovery_get_type(void);
 
-LASSO_EXPORT LassoIdwsf2Discovery* lasso_idwsf2_discovery_new(LassoServer *server);
+LASSO_EXPORT LassoIdWsf2Discovery* lasso_idwsf2_discovery_new(LassoServer *server);
 
-LASSO_EXPORT void lasso_idwsf2_discovery_destroy(LassoIdwsf2Discovery *discovery);
+LASSO_EXPORT void lasso_idwsf2_discovery_destroy(LassoIdWsf2Discovery *discovery);
 
-LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_register(LassoIdwsf2Discovery *discovery,
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 	gchar *service_type, gchar *abstract, gchar *disco_provider_id);
 
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_register_msg(
-	LassoIdwsf2Discovery *discovery, const gchar *message);
+	LassoIdWsf2Discovery *discovery, const gchar *message);
 
-LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdwsf2Discovery *discovery,
+LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_register_response_msg(
+	LassoIdWsf2Discovery *discovery, const gchar *message);
+
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery,
 	const gchar *security_mech_id);
 
 

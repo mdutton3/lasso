@@ -45,12 +45,12 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-//	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIdwsf2DiscoQuery, ResourceID) },
+//	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, ResourceID) },
 //	{ "EncryptedResourceID",
-//	  SNIPPET_NODE, G_STRUCT_OFFSET(LassoIdwsf2DiscoQuery, EncryptedResourceID) },
+//	  SNIPPET_NODE, G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, EncryptedResourceID) },
 //	{ "RequestedServiceType", SNIPPET_LIST_NODES,
-//	  G_STRUCT_OFFSET(LassoIdwsf2DiscoQuery, RequestedServiceType) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIdwsf2DiscoQuery, id) },
+//	  G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, RequestedServiceType) },
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, id) },
 	{ NULL, 0, 0}
 };
 
@@ -59,7 +59,7 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoIdwsf2DiscoQuery *node)
+instance_init(LassoIdWsf2DiscoQuery *node)
 {
 //	node->ResourceID = NULL;
 //	node->EncryptedResourceID = NULL;
@@ -68,7 +68,7 @@ instance_init(LassoIdwsf2DiscoQuery *node)
 }
 
 static void
-class_init(LassoIdwsf2DiscoQueryClass *klass)
+class_init(LassoIdWsf2DiscoQueryClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
@@ -85,37 +85,37 @@ lasso_idwsf2_disco_query_get_type()
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoIdwsf2DiscoQueryClass),
+			sizeof (LassoIdWsf2DiscoQueryClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoIdwsf2DiscoQuery),
+			sizeof(LassoIdWsf2DiscoQuery),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoIdwsf2DiscoQuery", &this_info, 0);
+				"LassoIdWsf2DiscoQuery", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoIdwsf2DiscoQuery*
+LassoIdWsf2DiscoQuery*
 lasso_idwsf2_disco_query_new()
 {
-	LassoIdwsf2DiscoQuery *node;
+	LassoIdWsf2DiscoQuery *node;
 
 	node = g_object_new(LASSO_TYPE_IDWSF2_DISCO_QUERY, NULL);
 
 	return node;
 }
 
-LassoIdwsf2DiscoQuery*
+LassoIdWsf2DiscoQuery*
 lasso_idwsf2_disco_query_new_from_message(const gchar *message)
 {
-	LassoIdwsf2DiscoQuery *node;
+	LassoIdWsf2DiscoQuery *node;
 
 	g_return_val_if_fail(message != NULL, NULL);
 

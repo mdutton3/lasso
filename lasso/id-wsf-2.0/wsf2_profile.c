@@ -153,6 +153,33 @@ lasso_wsf2_profile_build_soap_response_msg(LassoWsf2Profile *profile)
 	return 0;
 }
 
+gint
+lasso_wsf2_profile_process_soap_response_msg(LassoWsf2Profile *profile, const gchar *message)
+{
+	LassoSoapEnvelope *envelope = NULL;
+	int res = 0;
+
+	g_return_val_if_fail(LASSO_IS_WSF2_PROFILE(profile),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	/* Get soap response */
+	envelope = lasso_soap_envelope_new_from_message(message);
+
+	profile->soap_envelope_response = envelope;
+
+	if (envelope != NULL && envelope->Body != NULL && envelope->Body->any != NULL) {
+		profile->response = LASSO_NODE(envelope->Body->any->data);
+	} else {
+		res = LASSO_SOAP_ERROR_MISSING_BODY;
+	}
+
+	if (profile->response == NULL) {
+		res = LASSO_PROFILE_ERROR_MISSING_RESPONSE;
+	}
+
+	return res;
+}
 
 /*****************************************************************************/
 /* overrided parent class methods */

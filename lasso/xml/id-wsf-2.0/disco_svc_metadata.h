@@ -35,40 +35,40 @@ extern "C" {
 #define LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA (lasso_idwsf2_disco_svc_metadata_get_type())
 #define LASSO_IDWSF2_DISCO_SVC_METADATA(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, \
-				    LassoIdwsf2DiscoSvcMetadata))
+				    LassoIdWsf2DiscoSvcMetadata))
 #define LASSO_IDWSF2_DISCO_SVC_METADATA_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, \
-				 LassoIdwsf2DiscoSvcMetadataClass))
+				 LassoIdWsf2DiscoSvcMetadataClass))
 #define LASSO_IS_IDWSF2_DISCO_SVC_METADATA(obj) \
 	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA))
 #define LASSO_IS_IDWSF2_DISCO_SVC_METADATA_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA))
 #define LASSO_IDWSF2_DISCO_SVC_METADATA_GET_CLASS(o) \
 	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, \
-				    LassoIdwsf2DiscoSvcMetadataClass)) 
+				    LassoIdWsf2DiscoSvcMetadataClass)) 
 
-typedef struct _LassoIdwsf2DiscoSvcMetadata LassoIdwsf2DiscoSvcMetadata;
-typedef struct _LassoIdwsf2DiscoSvcMetadataClass LassoIdwsf2DiscoSvcMetadataClass;
+typedef struct _LassoIdWsf2DiscoSvcMetadata LassoIdWsf2DiscoSvcMetadata;
+typedef struct _LassoIdWsf2DiscoSvcMetadataClass LassoIdWsf2DiscoSvcMetadataClass;
 
-struct _LassoIdwsf2DiscoSvcMetadata {
+struct _LassoIdWsf2DiscoSvcMetadata {
 	LassoNode parent;
 
 	/* elements */
 	gchar *Abstract;
 	gchar *ProviderID;
-	LassoIdwsf2DiscoServiceContext *ServiceContext;
+	LassoIdWsf2DiscoServiceContext *ServiceContext;
 
 	/* attributes */
 	gchar *svcMDID;
 };
 
-struct _LassoIdwsf2DiscoSvcMetadataClass {
+struct _LassoIdWsf2DiscoSvcMetadataClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_metadata_get_type(void);
 
-LASSO_EXPORT LassoIdwsf2DiscoSvcMetadata* lasso_idwsf2_disco_svc_metadata_new(
+LASSO_EXPORT LassoIdWsf2DiscoSvcMetadata* lasso_idwsf2_disco_svc_metadata_new(
 	gchar *service_type, gchar *abstract, gchar *provider_id);
 
 #ifdef __cplusplus
