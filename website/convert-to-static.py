@@ -114,7 +114,7 @@ class Build:
         if self.changelog:
             self.changelog = self.changelog.replace('.xml', '')
             dom_cl = xml.dom.minidom.parse(file('web' + self.changelog + '.xml'))
-            self.last_commit_author = getText(dom_cl.getElementsByTagName('author')[0].childNodes)
+            self.last_commit_author = getText(dom_cl.getElementsByTagName('author')[-1].childNodes)
             self.nb_commits = len(dom_cl.getElementsByTagName('entry'))
             if not self.nb_commits:
                 self.nb_commits = len(dom_cl.getElementsByTagName('logentry'))
