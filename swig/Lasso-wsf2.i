@@ -91,6 +91,10 @@ typedef struct {
 	int buildRequestMsg();
 	END_THROW_ERROR()
 
+	THROW_ERROR()
+	int buildResponseMsg();
+	END_THROW_ERROR()
+
 	/* Methods */
 
 	THROW_ERROR()
@@ -163,6 +167,7 @@ typedef struct {
 /* Implementations of methods inherited from Wsf2Profile */
 
 #define LassoIdwsf2Discovery_buildRequestMsg(self) lasso_wsf2_profile_build_soap_request_msg(LASSO_WSF2_PROFILE(self))
+#define LassoIdwsf2Discovery_buildResponseMsg(self) lasso_wsf2_profile_build_soap_response_msg(LASSO_WSF2_PROFILE(self))
 
 /* Methods implementations */
 

@@ -31,7 +31,7 @@
 #include <lasso/xml/saml_attribute_value.h>
 
 #include <lasso/xml/id-wsf-2.0/disco_svc_md_register.h>
-#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
+#include <lasso/xml/id-wsf-2.0/disco_svc_md_register_response.h>
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/provider.h>
@@ -115,24 +115,45 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdwsf2Discovery *disco
 	const gchar *message)
 {
 	LassoIdwsf2DiscoSvcMDRegister *request;
+	LassoIdWsf2DiscoSvcMDRegisterResponse *response;
+	LassoSoapEnvelope *envelope;
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
+	/* Process request */
 	res = lasso_wsf2_profile_process_soap_request_msg(LASSO_WSF2_PROFILE(discovery), message);
-	if (res != 0)
-		return res;
 
-	request = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_WSF2_PROFILE(discovery)->request);
-
-	/* FIXME : foreach on the list instead */
-	if (request->metadata_list != NULL) {
-		discovery->metadata = LASSO_IDWSF2_DISCO_SVC_METADATA(request->metadata_list->data);
+	if (res == 0) {
+		request =
+			LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_WSF2_PROFILE(discovery)->request);
+		/* FIXME : foreach on the list instead */
+		if (request->metadata_list != NULL) {
+			discovery->metadata =
+				LASSO_IDWSF2_DISCO_SVC_METADATA(request->metadata_list->data);
+			discovery->metadata->svcMDID = lasso_build_unique_id(32);
+		}
 	}
 
-	return 0;
+	/* Build response */
+	response = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(
+		lasso_idwsf2_disco_svc_md_register_response_new());
+	/* FIXME : Replace status codes with a constant ? */
+	if (res == 0) {
+		response->Status = lasso_util_status_new("OK");
+		/* FIXME : foreach here as well */
+		response->SvcMDID = g_list_append(response->SvcMDID, discovery->metadata->svcMDID);
+	} else {
+		response->Status = lasso_util_status_new("Failed");
+		/* XXX : May add secondary status codes here */
+	}
+
+	envelope = LASSO_WSF2_PROFILE(discovery)->soap_envelope_response;
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	return res;
 }
 
 

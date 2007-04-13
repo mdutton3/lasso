@@ -86,6 +86,8 @@ LASSO_EXPORT gint lasso_wsf2_profile_build_soap_request_msg(LassoWsf2Profile *pr
 LASSO_EXPORT gint lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile,
 	const gchar *message);
 
+LASSO_EXPORT gint lasso_wsf2_profile_build_soap_response_msg(LassoWsf2Profile *profile);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

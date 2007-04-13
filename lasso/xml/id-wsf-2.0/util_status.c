@@ -118,8 +118,12 @@ lasso_util_status_get_type()
  *
  * Return value: a newly created #LassoIdWsf2UtilStatus object
  **/
-LassoNode*
-lasso_util_status_new()
+LassoIdWsf2UtilStatus*
+lasso_util_status_new(gchar *code)
 {
-	return g_object_new(LASSO_TYPE_UTIL_STATUS, NULL);
+	LassoIdWsf2UtilStatus *status = LASSO_UTIL_STATUS(g_object_new(LASSO_TYPE_UTIL_STATUS, NULL));
+	
+	status->code = g_strdup(code);
+
+	return status;
 }

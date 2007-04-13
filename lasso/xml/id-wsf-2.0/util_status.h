@@ -68,8 +68,7 @@ struct _LassoIdWsf2UtilStatusClass {
 };
 
 LASSO_EXPORT GType lasso_util_status_get_type(void);
-LASSO_EXPORT LassoNode* lasso_util_status_new(void);
-
+LASSO_EXPORT LassoIdWsf2UtilStatus* lasso_util_status_new(gchar *code);
 
 
 #ifdef __cplusplus

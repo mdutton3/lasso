@@ -92,7 +92,7 @@ lasso_wsf2_profile_init_soap_request(LassoWsf2Profile *profile, LassoNode *reque
 
 	envelope = lasso_wsf2_profile_build_soap_envelope(NULL,
 		LASSO_PROVIDER(profile->server)->ProviderID);
-	LASSO_WSF2_PROFILE(profile)->soap_envelope_request = envelope;
+	profile->soap_envelope_request = envelope;
 	envelope->Body->any = g_list_append(envelope->Body->any, request);
 
 	return 0;
@@ -101,37 +101,10 @@ lasso_wsf2_profile_init_soap_request(LassoWsf2Profile *profile, LassoNode *reque
 gint
 lasso_wsf2_profile_build_soap_request_msg(LassoWsf2Profile *profile)
 {
-	LassoSoapEnvelope *envelope;
-	LassoSoapHeader *header;
-	int ret;
-	GList *iter = NULL;
-	xmlNode *security_xmlNode, *credential;
-	xmlOutputBuffer *buf;
-	xmlCharEncodingHandler *handler;
-	xmlDoc *doc = NULL;
-	xmlNode *envelope_node = NULL;
-	xmlXPathContext *xpathCtx = NULL;
-	xmlXPathObject *xpathObj = NULL;
-			
-
 	g_return_val_if_fail(LASSO_IS_WSF2_PROFILE(profile),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	envelope = profile->soap_envelope_request;
-
-	doc = xmlNewDoc((xmlChar*)"1.0");
-	envelope_node = lasso_node_get_xmlNode(LASSO_NODE(envelope), FALSE);
-	xmlDocSetRootElement(doc, envelope_node);
-
-	/* Dump soap request */
-	handler = xmlFindCharEncodingHandler("utf-8");
-	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, envelope_node, 0, 0, "utf-8");
-	xmlOutputBufferFlush(buf);
-	profile->msg_body = g_strdup(
-		(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
-	xmlOutputBufferClose(buf);
-	xmlFreeDoc(doc);
+	profile->msg_body = lasso_node_dump(LASSO_NODE(profile->soap_envelope_request));
 
 	return 0;
 }
@@ -154,11 +127,12 @@ lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gch
 	if (envelope != NULL && envelope->Body != NULL && envelope->Body->any != NULL) {
 		profile->request = LASSO_NODE(envelope->Body->any->data);
 	} else {
-		return LASSO_SOAP_ERROR_MISSING_BODY;
+		res = LASSO_SOAP_ERROR_MISSING_BODY;
 	}
 
-	if (profile->request == NULL)
-		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+	if (profile->request == NULL) {
+		res = LASSO_PROFILE_ERROR_MISSING_REQUEST;
+	}
 
 	/* Set soap response */
 	envelope = lasso_wsf2_profile_build_soap_envelope(NULL,
@@ -166,6 +140,17 @@ lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gch
 	profile->soap_envelope_response = envelope;
 
 	return res;
+}
+
+gint
+lasso_wsf2_profile_build_soap_response_msg(LassoWsf2Profile *profile)
+{
+	g_return_val_if_fail(LASSO_IS_WSF2_PROFILE(profile),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	profile->msg_body = lasso_node_dump(LASSO_NODE(profile->soap_envelope_response));
+
+	return 0;
 }
 
 
