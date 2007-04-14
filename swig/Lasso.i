@@ -1280,9 +1280,9 @@ static void add_xml_to_array(xmlNode *xmlnode, GPtrArray *array)
 		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
 		xmlOutputBufferFlush(buf);
 		if (buf->conv == NULL) {
-			xmlString = g_strdup(buf->buffer->content);
+			xmlString = g_strdup((char*)buf->buffer->content);
 		} else {
-			xmlString = g_strdup(buf->conv->content);
+			xmlString = g_strdup((char*)buf->conv->content);
 		}
 		xmlOutputBufferClose(buf);
 	}
@@ -1381,9 +1381,9 @@ static char* get_xml_string(xmlNode *xmlnode)
 		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
 		xmlOutputBufferFlush(buf);
 		if (buf->conv == NULL) {
-			xmlString = g_strdup(buf->buffer->content);
+			xmlString = g_strdup((char*)buf->buffer->content);
 		} else {
-			xmlString = g_strdup(buf->conv->content);
+			xmlString = g_strdup((char*)buf->conv->content);
 		}
 		xmlOutputBufferClose(buf);
 	}
@@ -1395,7 +1395,7 @@ static xmlNode *get_string_xml(const char *string) {
 	xmlDoc *doc;
 	xmlNode *node;
 
-	doc = xmlReadDoc(string, NULL, NULL, XML_PARSE_NONET);
+	doc = xmlReadDoc((xmlChar*)string, NULL, NULL, XML_PARSE_NONET);
 	node = xmlDocGetRootElement(doc);
 	if (node != NULL) {
 		node = xmlCopyNode(node, 1);
@@ -1512,7 +1512,7 @@ static void set_xml_string(xmlNode **xmlnode, const char* string)
 	xmlDoc *doc;
 	xmlNode *node;
 
-	doc = xmlReadDoc(string, NULL, NULL, XML_PARSE_NONET);
+	doc = xmlReadDoc((xmlChar*)string, NULL, NULL, XML_PARSE_NONET);
 	node = xmlDocGetRootElement(doc);
 	if (node != NULL) {
 		node = xmlCopyNode(node, 1);
@@ -1828,6 +1828,68 @@ typedef struct {
 #define delete_LassoStringList(self) g_ptr_array_free(self, true)
 
 %}
+
+
+/* map GHashTable to Python dict */
+
+
+#ifndef SWIGPHP4
+%rename(StringDict) LassoStringDict;
+#endif
+%{
+typedef GHashTable LassoStringDict;
+%}
+typedef struct {
+	%extend {
+		/* Constructor, Destructor & Static Methods */
+
+		LassoStringDict();
+
+		~LassoStringDict();
+
+		/* Methods */
+
+		GHashTable* cast() {
+			return self;
+		}
+
+		static LassoStringDict *frompointer(GHashTable *stringDict) {
+			return (LassoStringDict*)stringDict;
+		}
+
+#if defined(SWIGPYTHON)
+		%rename(__getitem__) getItem;
+#endif
+		char* getItem(char *key) {
+                        return g_strdup(g_hash_table_lookup(self, key));
+		}
+		%exception getItem;
+
+#if defined(SWIGPYTHON)
+		%rename(__setitem__) setItem;
+#endif
+		void setItem(char *key, char *item) {
+                        g_hash_table_insert(self, g_strdup(key), g_strdup(item));
+		}
+		%exception setItem;
+	}
+} LassoStringDict;
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+static GHashTable* lasso_string_dict_new()
+{
+	return g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+}
+
+#define new_LassoStringDict lasso_string_dict_new
+#define delete_LassoStringDict(self) g_hash_table_destroy(self)
+
+%}
+
+
 
 
 /***********************************************************************
