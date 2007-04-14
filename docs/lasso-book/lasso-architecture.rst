@@ -41,5 +41,5 @@ Talk more about respective usage of Identity and Session.
 
 
 .. _Liberty ID-FF Bindings and Profiles Specification:
-   http://www.projectliberty.org/specs/draft-liberty-idff-bindings-profiles-1.2-errata-v1.0.pdf
+   http://www.projectliberty.org/liberty/content/download/319/2369/file/draft-liberty-idff-bindings-profiles-1.2-errata-v2.0.pdf
 
