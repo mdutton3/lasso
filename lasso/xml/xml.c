@@ -816,7 +816,9 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	void *value;
 	SnippetType type;
 	struct XmlSnippet *snippet_any = NULL;
+	struct XmlSnippet *snippet_any_attribute = NULL;
 	GSList *unknown_nodes = NULL;
+	GSList *known_attributes = NULL;
 
 	class = LASSO_NODE_GET_CLASS(node);
 
@@ -922,9 +924,16 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		for (snippet = class->node_data->snippets; snippet && snippet->name; snippet++) {
 			void *tmp = NULL;
 			type = snippet->type & 0xff;
+
 			value = G_STRUCT_MEMBER_P(node, snippet->offset);
-			if (type == SNIPPET_ATTRIBUTE)
+			if (type == SNIPPET_ATTRIBUTE) {
+				if (snippet->type & SNIPPET_ANY) {
+					snippet_any_attribute = snippet;
+					continue;
+				}
 				tmp = xmlGetProp(xmlnode, (xmlChar*)snippet->name);
+				known_attributes = g_slist_append(known_attributes, snippet->name);
+			}
 			if (type == SNIPPET_TEXT_CHILD)
 				tmp = xmlNodeGetContent(xmlnode);
 			if (tmp == NULL)
@@ -945,7 +954,6 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				(*(char**)value) = g_strdup(tmp);
 			}
 			xmlFree(tmp);
-
 		}
 
 		class = g_type_class_peek_parent(class);
@@ -957,6 +965,45 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		value = G_STRUCT_MEMBER_P(node, snippet_any->offset);
 		tmp = lasso_node_new_from_xmlNode_with_type(t, snippet_any->class_name);
 		(*(char**)value) = tmp;
+	}
+
+	if (snippet_any_attribute) {
+		GHashTable **any_attribute;
+		GSList *tmp_attr;
+		xmlAttr *node_attr;
+
+		any_attribute = G_STRUCT_MEMBER_P(node, snippet_any_attribute->offset);
+		if (*any_attribute == NULL) {
+			*any_attribute = g_hash_table_new_full(
+				g_str_hash, g_str_equal, g_free, g_free);
+		}
+
+		for (node_attr = xmlnode->properties; node_attr; node_attr = node_attr->next) {
+			xmlChar *attr_name = (xmlChar*)node_attr->name;
+			gboolean known_attr = FALSE;
+			for (tmp_attr = known_attributes; tmp_attr;
+					tmp_attr = g_slist_next(tmp_attr)) {
+				if (strcmp(tmp_attr->data, (char*)attr_name) == 0) {
+					known_attr = TRUE;
+					break;
+				}
+			}
+			if (known_attr == FALSE) {
+				xmlChar *tmp = xmlGetProp(xmlnode, attr_name);
+				g_hash_table_insert(*any_attribute,
+					g_strdup((char*)attr_name), g_strdup((char*)tmp));
+				xmlFree(tmp);
+			}
+		}
+
+	}
+
+	if (unknown_nodes) {
+		g_slist_free(unknown_nodes);
+	}
+
+	if (known_attributes) {
+		g_slist_free(known_attributes);
 	}
 
 	return 0;
@@ -1101,9 +1148,13 @@ lasso_node_dispose(GObject *object)
 					break;
 				case SNIPPET_CONTENT:
 				case SNIPPET_TEXT_CHILD:
-				case SNIPPET_ATTRIBUTE:
-					g_free(*value);
-					break;
+				case SNIPPET_ATTRIBUTE: {
+					if (snippet->type & SNIPPET_ANY) {
+						g_hash_table_destroy(*value);
+					} else {
+						g_free(*value);
+					}
+				} break;
 				case SNIPPET_SIGNATURE:
 					break; /* no real element here */
 				default:
@@ -1530,6 +1581,14 @@ lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix)
 	klass->node_data->ns = xmlNewNs(NULL, (xmlChar*)href, (xmlChar*)prefix);
 }
 
+
+static void
+snippet_dump_any(gchar *key, gchar *value, xmlNode *xmlnode)
+{
+	xmlSetProp(xmlnode, (xmlChar*)key, (xmlChar*)value);
+}
+
+
 static void
 lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump)
@@ -1539,6 +1598,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 	xmlNode *t;
 	xmlNs *xmlns;
 	GList *elem;
+	struct XmlSnippet *snippet_any_attribute = NULL;
 
 	for (snippet = snippets; snippet && snippet->name; snippet++) {
 		void *value = G_STRUCT_MEMBER(void*, node, snippet->offset);
@@ -1548,6 +1608,10 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		if (lasso_dump == FALSE && snippet->type & SNIPPET_LASSO_DUMP)
 			continue;
 
+		if (type == SNIPPET_ATTRIBUTE && snippet->type & SNIPPET_ANY) {
+			snippet_any_attribute = snippet;
+			continue;
+		}
 		if (value == NULL && (!(snippet->type & SNIPPET_BOOLEAN ||
 					snippet->type & SNIPPET_INTEGER) ||
 					snippet->type & SNIPPET_OPTIONAL))
@@ -1650,6 +1714,14 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		}
 		if (snippet->type & SNIPPET_INTEGER)
 			g_free(str);
+	}
+
+	if (snippet_any_attribute) {
+		GHashTable *value = G_STRUCT_MEMBER(GHashTable*, node,
+				snippet_any_attribute->offset);
+		if (value) {
+			g_hash_table_foreach(value, (GHFunc)snippet_dump_any, xmlnode);
+		}
 	}
 }
 
