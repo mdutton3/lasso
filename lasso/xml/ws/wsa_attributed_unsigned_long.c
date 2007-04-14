@@ -59,7 +59,9 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoWsAddrAttributedUnsignedLong *node)
 {
-	node->content = NULL;
+	node->content = 0;
+	node->attributes = g_hash_table_new_full(
+		g_str_hash, g_str_equal, g_free, g_free);
 }
 
 static void
@@ -69,7 +71,7 @@ class_init(LassoWsAddrAttributedUnsignedLongClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "AttributedUnsignedLong"); 
+	lasso_node_class_set_nodename(nclass, "AttributedUnsignedLong");
 	lasso_node_class_set_ns(nclass, LASSO_WSA_HREF, LASSO_WSA_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
