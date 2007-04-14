@@ -1365,6 +1365,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "SoapBinding";
 	if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_UTIL_HREF) == 0)
 		prefix = "IdWsf2Util";
+	if (strcmp((char*)xmlnode->ns->href, LASSO_WSA_HREF) == 0)
+		prefix = "WsAddr";
 	tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
 	if (tmp) {
 		prefix = "Dst";
