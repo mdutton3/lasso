@@ -1333,44 +1333,46 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	}
 
 	/* autodetect type name */
-	if (strcmp((char*)xmlnode->ns->href, LASSO_SOAP_ENV_HREF) == 0)
-		prefix = "Soap";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_SOAP_BINDING_HREF) == 0)
-		prefix = "SoapBinding";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_DS_HREF) == 0)
-		prefix = "Ds";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_DISCO_HREF) == 0)
-		prefix = "Disco";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_LIB_HREF) == 0)
-		prefix = "Lib";
 	if (strcmp((char*)xmlnode->ns->href, LASSO_LASSO_HREF) == 0)
 		prefix = "";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_IS_HREF) == 0)
-		prefix = "Is";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_SA_HREF) == 0)
-		prefix = "Sa";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_SAML_ASSERTION_HREF) == 0)
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_SAML_ASSERTION_HREF) == 0)
 		prefix = "Saml";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_SAML_PROTOCOL_HREF) == 0)
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_SAML_PROTOCOL_HREF) == 0)
 		prefix = "Samlp";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_SAML2_ASSERTION_HREF) == 0)
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_LIB_HREF) == 0)
+		prefix = "Lib";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_SAML2_ASSERTION_HREF) == 0)
 		prefix = "Saml2";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_SAML2_PROTOCOL_HREF) == 0)
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_SAML2_PROTOCOL_HREF) == 0)
 		prefix = "Samlp2";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_HREF) == 0)
-		prefix = "Wsse";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_DISCO_HREF) == 0)
-		prefix = "IdWsf2Disco";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SOAP_BINDING_HREF) == 0)
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_SOAP_ENV_HREF) == 0)
+		prefix = "Soap";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_SOAP_BINDING_HREF) == 0)
 		prefix = "SoapBinding";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_UTIL_HREF) == 0)
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_DISCO_HREF) == 0)
+		prefix = "Disco";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_IS_HREF) == 0)
+		prefix = "Is";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_SA_HREF) == 0)
+		prefix = "Sa";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_HREF) == 0)
+		prefix = "Wsse";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_DISCO_HREF) == 0)
+		prefix = "IdWsf2Disco";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SOAP_BINDING_HREF) == 0)
+		prefix = "SoapBinding";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_UTIL_HREF) == 0)
 		prefix = "IdWsf2Util";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_WSA_HREF) == 0)
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSA_HREF) == 0)
 		prefix = "WsAddr";
-	tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
-	if (tmp) {
-		prefix = "Dst";
-		g_free(tmp);
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_DS_HREF) == 0)
+		prefix = "Ds";
+	else {
+		tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
+		if (tmp) {
+			prefix = "Dst";
+			g_free(tmp);
+		}
 	}
 
 	if (prefix == NULL)
@@ -1378,9 +1380,9 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	
 	if (strcmp(prefix, "Dst") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
 		prefix = "Utility";
-	if (strcmp(prefix, "Disco") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
+	else if (strcmp(prefix, "Disco") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
 		prefix = "Utility";
-	if (strcmp(prefix, "Sa") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
+	else if (strcmp(prefix, "Sa") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
 		prefix = "Utility";
 
 	xsitype = xmlGetNsProp(xmlnode, (xmlChar*)"type", (xmlChar*)LASSO_XSI_HREF);
