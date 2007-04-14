@@ -26,6 +26,7 @@
 #include <libxml/xpathInternals.h>
 
 #include <lasso/id-ff/lecp.h>
+#include <lasso/id-ff/profileprivate.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
