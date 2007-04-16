@@ -45,6 +45,13 @@
 #include <lasso/xml/saml-2.0/saml2_audience_restriction.h>
 #include <lasso/xml/saml-2.0/saml2_authn_statement.h>
 #include <lasso/xml/saml-2.0/saml2_encrypted_element.h>
+#include <lasso/xml/saml-2.0/saml2_attribute.h>
+#include <lasso/xml/saml-2.0/saml2_attribute_statement.h>
+#include <lasso/xml/saml-2.0/saml2_attribute_value.h>
+
+#ifdef LASSO_WSF_ENABLED
+#include <lasso/xml/ws/wsa_endpoint_reference.h>
+#endif
 
 static int lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obtained);
 static gboolean lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login);
@@ -579,6 +586,46 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 }
 
 
+static void
+lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertion *assertion)
+{
+#ifdef LASSO_WSF_ENABLED
+	LassoProfile *profile = LASSO_PROFILE(login);
+	LassoWsAddrEndpointReference *epr;
+	LassoWsAddrMetadata *metadata;
+	LassoSaml2AttributeStatement *attributeStatement;
+	LassoSaml2Attribute *attribute;
+	LassoSaml2AttributeValue *attributeValue;
+
+	/* Build EndpointReference */
+
+	epr = LASSO_WSA_ENDPOINT_REFERENCE(lasso_wsa_endpoint_reference_new());
+	
+	metadata = LASSO_WSA_METADATA(lasso_wsa_metadata_new());
+	
+	epr->Metadata = metadata;
+	
+	/* Add the EPR to the assertion as a SAML attribute */
+
+	attributeValue = LASSO_SAML2_ATTRIBUTE_VALUE(lasso_saml2_attribute_value_new());
+	attributeValue->any = g_list_append(attributeValue->any, epr);
+
+	attribute = LASSO_SAML2_ATTRIBUTE(lasso_saml2_attribute_new());
+	attribute->Name = g_strdup("WsAddrEndpointReference");
+	/* FIXME : Use Namespace of new WSA spec made in 2004 instead */
+	attribute->NameFormat = g_strdup(LASSO_WSA_HREF);
+	attribute->AttributeValue = g_list_append(attribute->AttributeValue,
+			attributeValue);
+
+	attributeStatement = LASSO_SAML2_ATTRIBUTE_STATEMENT(lasso_saml2_attribute_statement_new());
+	attributeStatement->Attribute = g_list_append(
+			attributeStatement->Attribute, attribute);
+
+	assertion->AttributeStatement = g_list_append(assertion->AttributeStatement,
+		attributeStatement);
+#endif
+}
+
 int
 lasso_saml20_login_build_assertion(LassoLogin *login,
 		const char *authenticationMethod,
@@ -710,6 +757,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 		assertion->encryption_sym_key_type =
 			provider->private_data->encryption_sym_key_type;
 	}
+
+	lasso_saml20_login_assertion_add_discovery(login, assertion);
 
 	/* store assertion in session object */
 	if (profile->session == NULL) {

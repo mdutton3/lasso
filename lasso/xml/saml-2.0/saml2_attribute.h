@@ -55,7 +55,7 @@ struct _LassoSaml2Attribute {
 
 	/*< public >*/
 	/* elements */
-	/* XXX */ void *AttributeValue;
+	GList *AttributeValue;
 	/* attributes */
 	char *Name;
 	char *NameFormat;

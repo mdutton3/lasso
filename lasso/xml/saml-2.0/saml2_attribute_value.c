@@ -1,11 +1,9 @@
-/* $Id$ 
+/* $Id: saml2_attribute_value.c 2820 2006-10-09 10:09:25Z dlaniel $
  *
- * Lasso - A free implementation of the Liberty Alliance specifications.
+ * Lasso - A free implementation of the Samlerty Alliance specifications.
  *
- * Copyright (C) 2004, 2005 Entr'ouvert
+ * Copyright (C) 2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
- * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,100 +20,71 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "saml2_attribute.h"
+#include <lasso/xml/saml-2.0/saml2_attribute_value.h>
 
 /*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
- *
- * <complexType name="AttributeType">
- *   <sequence>
- *     <element ref="saml:AttributeValue" minOccurs="0" maxOccurs="unbounded"/>
- *   </sequence>
- *   <attribute name="Name" type="string" use="required"/>
- *   <attribute name="NameFormat" type="anyURI" use="optional"/>
- *   <attribute name="FriendlyName" type="string" use="optional"/>
- *   <anyAttribute namespace="##other" processContents="lax"/>
- * </complexType>
+ * The schema fragment (saml-schema-assertion-2.0.xsd):
+ * 
+ * <element name="AttributeValue" type="anyType" nillable="true"/>
  */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
-
 static struct XmlSnippet schema_snippets[] = {
-	{ "AttributeValue", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSaml2Attribute, AttributeValue) },
-	{ "Name", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2Attribute, Name) },
-	{ "NameFormat", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2Attribute, NameFormat) },
-	{ "FriendlyName", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2Attribute, FriendlyName) },
-	{NULL, 0, 0}
+	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSaml2AttributeValue, any) },
+	{ NULL, 0, 0 }
 };
-
-static LassoNodeClass *parent_class = NULL;
-
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-instance_init(LassoSaml2Attribute *node)
+instance_init(LassoSaml2AttributeValue *node)
 {
-	node->AttributeValue = NULL;
-	node->Name = NULL;
-	node->NameFormat = NULL;
-	node->FriendlyName = NULL;
+	node->any = NULL;
 }
 
 static void
-class_init(LassoSaml2AttributeClass *klass)
+class_init(LassoSaml2AttributeValueClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "Attribute"); 
+	lasso_node_class_set_nodename(nclass, "AttributeValue");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
-lasso_saml2_attribute_get_type()
+lasso_saml2_attribute_value_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoSaml2AttributeClass),
+			sizeof (LassoSaml2AttributeValueClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoSaml2Attribute),
+			sizeof(LassoSaml2AttributeValue),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoSaml2Attribute", &this_info, 0);
+						   "LassoSaml2AttributeValue",
+						   &this_info, 0);
 	}
 	return this_type;
 }
 
-/**
- * lasso_saml2_attribute_new:
- *
- * Creates a new #LassoSaml2Attribute object.
- *
- * Return value: a newly created #LassoSaml2Attribute object
- **/
-LassoNode*
-lasso_saml2_attribute_new()
+LassoSaml2AttributeValue*
+lasso_saml2_attribute_value_new()
 {
-	return g_object_new(LASSO_TYPE_SAML2_ATTRIBUTE, NULL);
+	return g_object_new(LASSO_TYPE_SAML2_ATTRIBUTE_VALUE, NULL);
 }
