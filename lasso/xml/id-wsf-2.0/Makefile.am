@@ -15,6 +15,8 @@ liblasso_xml_id_wsf2_la_SOURCES = \
 	disco_query_response.c \
 	disco_service_context.c \
 	disco_svc_metadata.c \
+	disco_svc_md_association_add.c \
+	disco_svc_md_association_add_response.c \
 	disco_svc_md_register.c \
 	disco_svc_md_register_response.c \
 	soap_binding_framework.c \
@@ -27,6 +29,8 @@ liblassoinclude_HEADERS = \
 	disco_query_response.h \
 	disco_service_context.h \
 	disco_svc_metadata.h \
+	disco_svc_md_association_add.h \
+	disco_svc_md_association_add_response.h \
 	disco_svc_md_register.h \
 	disco_svc_md_register_response.h \
 	soap_binding_framework.h \

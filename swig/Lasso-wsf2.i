@@ -53,6 +53,18 @@ typedef struct {
 
 	/* Attributes inherited from Wsf2Profile */
 
+	%newobject identity_get;
+	LassoIdentity *identity;
+
+	%newobject session_get;
+	LassoSession *session;
+
+	%immutable isIdentityDirty;
+	gboolean isIdentityDirty;
+
+	%immutable isSessionDirty;
+	gboolean isSessionDirty;
+
 	%immutable msgBody;
 	char *msgBody;
 
@@ -91,6 +103,14 @@ typedef struct {
 	/* Methods inherited from Wsf2Profile */
 
 	THROW_ERROR()
+	int setIdentityFromDump(char *dump);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int setSessionFromDump(char *dump);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
 	int buildRequestMsg();
 	END_THROW_ERROR()
 
@@ -113,6 +133,18 @@ typedef struct {
 	END_THROW_ERROR()
 
 	THROW_ERROR()
+	int initMetadataAssociationAdd(const char *svcMDID, const char *disco_provider_id);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int processMetadataAssociationAddMsg(const gchar *message);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int processMetadataAssociationAddResponseMsg(const gchar *message);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
 	int initQuery(const char *security_mech_id = NULL);
 	END_THROW_ERROR()
 }
@@ -120,6 +152,26 @@ typedef struct {
 %{
 
 /* Attributes inherited from Wsf2Profile implementations */
+
+/* identity */
+#define LassoIdWsf2Discovery_get_identity(self) lasso_wsf2_profile_get_identity(LASSO_WSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_identity_get(self) lasso_wsf2_profile_get_identity(LASSO_WSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_set_identity(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->identity, (value))
+#define LassoIdWsf2Discovery_identity_set(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->identity, (value))
+
+/* isIdentityDirty */
+#define LassoIdWsf2Discovery_get_isIdentityDirty(self) lasso_wsf2_profile_is_identity_dirty(LASSO_WSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_isIdentityDirty_get(self) lasso_wsf2_profile_is_identity_dirty(LASSO_WSF2_PROFILE(self))
+
+/* session */
+#define LassoIdWsf2Discovery_get_session(self) lasso_wsf2_profile_get_session(LASSO_WSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_session_get(self) lasso_wsf2_profile_get_session(LASSO_WSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_set_session(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->session, (value))
+#define LassoIdWsf2Discovery_session_set(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->session, (value))
+
+/* isSessionDirty */
+#define LassoIdWsf2Discovery_get_isSessionDirty(self) lasso_wsf2_profile_is_session_dirty(LASSO_WSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_isSessionDirty_get(self) lasso_wsf2_profile_is_session_dirty(LASSO_WSF2_PROFILE(self))
 
 /* msgBody */
 #define LassoIdWsf2Discovery_get_msgBody(self) LASSO_WSF2_PROFILE(self)->msg_body
@@ -178,6 +230,9 @@ typedef struct {
 
 /* Implementations of methods inherited from Wsf2Profile */
 
+#define LassoIdWsf2Discovery_setIdentityFromDump(self, dump) lasso_wsf2_profile_set_identity_from_dump(LASSO_WSF2_PROFILE(self), dump)
+#define LassoIdWsf2Discovery_setSessionFromDump(self, dump) lasso_wsf2_profile_set_session_from_dump(LASSO_WSF2_PROFILE(self), dump)
+
 #define LassoIdWsf2Discovery_buildRequestMsg(self) lasso_wsf2_profile_build_soap_request_msg(LASSO_WSF2_PROFILE(self))
 #define LassoIdWsf2Discovery_buildResponseMsg(self) lasso_wsf2_profile_build_soap_response_msg(LASSO_WSF2_PROFILE(self))
 
@@ -186,6 +241,9 @@ typedef struct {
 #define LassoIdWsf2Discovery_initMetadataRegister lasso_idwsf2_discovery_init_metadata_register
 #define LassoIdWsf2Discovery_processMetadataRegisterMsg lasso_idwsf2_discovery_process_metadata_register_msg
 #define LassoIdWsf2Discovery_processMetadataRegisterResponseMsg lasso_idwsf2_discovery_process_metadata_register_response_msg
+#define LassoIdWsf2Discovery_initMetadataAssociationAdd lasso_idwsf2_discovery_init_metadata_association_add
+#define LassoIdWsf2Discovery_processMetadataAssociationAddMsg lasso_idwsf2_discovery_process_metadata_association_add_msg
+#define LassoIdWsf2Discovery_processMetadataAssociationAddResponseMsg lasso_idwsf2_discovery_process_metadata_association_add_response_msg
 #define LassoIdWsf2Discovery_initQuery lasso_idwsf2_discovery_init_query
 
 %}

@@ -32,6 +32,8 @@
 
 #include <lasso/xml/id-wsf-2.0/disco_svc_md_register.h>
 #include <lasso/xml/id-wsf-2.0/disco_svc_md_register_response.h>
+#include <lasso/xml/id-wsf-2.0/disco_svc_md_association_add.h>
+#include <lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.h>
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/provider.h>
@@ -126,9 +128,11 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 	/* Process request */
 	res = lasso_wsf2_profile_process_soap_request_msg(LASSO_WSF2_PROFILE(discovery), message);
 
+	/* If the request has been correctly processed, */
+	/* put interesting datas into the discovery object */
 	if (res == 0) {
-		request =
-			LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_WSF2_PROFILE(discovery)->request);
+		request = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(
+			LASSO_WSF2_PROFILE(discovery)->request);
 		/* FIXME : foreach on the list instead */
 		if (request->metadata_list != NULL) {
 			discovery->metadata =
@@ -140,6 +144,7 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 	/* Build response */
 	response = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(
 		lasso_idwsf2_disco_svc_md_register_response_new());
+
 	/* FIXME : Replace status codes with a constant ? */
 	if (res == 0) {
 		response->Status = lasso_util_status_new("OK");
@@ -171,6 +176,8 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 	/* Process request */
 	res = lasso_wsf2_profile_process_soap_response_msg(LASSO_WSF2_PROFILE(discovery), message);
 
+	/* If the response has been correctly processed, */
+	/* put interesting datas into the discovery object */
 	if (res == 0) {
 		response = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(
 			LASSO_WSF2_PROFILE(discovery)->response);
@@ -178,6 +185,98 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 		if (response->SvcMDID != NULL) {
 			discovery->svcMDID = response->SvcMDID->data;
 		}
+	}
+
+	return res;
+}
+
+
+gint
+lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *discovery,
+	const gchar *svcMDID, const gchar *disco_provider_id)
+{
+	LassoIdWsf2DiscoSvcMDAssociationAdd *md_association_add;
+
+	/* Get a MetadataRegister node */
+	md_association_add = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(
+		lasso_idwsf2_disco_svc_md_association_add_new());
+	md_association_add->SvcMDID = g_list_append(md_association_add->SvcMDID, g_strdup(svcMDID));
+
+	/* Create request with this xml node */
+	lasso_wsf2_profile_init_soap_request(LASSO_WSF2_PROFILE(discovery),
+			LASSO_NODE(md_association_add));
+
+	/* FIXME : Get the url of the disco service where we must send the soap request */
+	/* LASSO_WSF2_PROFILE(discovery)->msg_url = g_strdup(disco_provider_id); */
+
+	return 0;
+}
+
+gint
+lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery *discovery,
+	const gchar *message)
+{
+	LassoIdWsf2DiscoSvcMDAssociationAdd *request;
+	LassoIdWsf2DiscoSvcMDAssociationAddResponse *response;
+	LassoSoapEnvelope *envelope;
+	int res = 0;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	/* Process request */
+	res = lasso_wsf2_profile_process_soap_request_msg(LASSO_WSF2_PROFILE(discovery), message);
+
+	/* If the request has been correctly processed, */
+	/* put interesting datas into the discovery object */
+	if (res == 0) {
+		request = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(
+			LASSO_WSF2_PROFILE(discovery)->request);
+		/* FIXME : foreach on the list instead */
+		if (request->SvcMDID != NULL) {
+			discovery->svcMDID = request->SvcMDID->data;
+		}
+	}
+
+	/* Build response */
+	response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(
+		lasso_idwsf2_disco_svc_md_association_add_response_new());
+	/* FIXME : Replace status codes with a constant ? */
+	if (res == 0) {
+		response->Status = lasso_util_status_new("OK");
+	} else {
+		response->Status = lasso_util_status_new("Failed");
+		/* XXX : May add secondary status codes here */
+	}
+
+	envelope = LASSO_WSF2_PROFILE(discovery)->soap_envelope_response;
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	return res;
+}
+
+gint
+lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
+	LassoIdWsf2Discovery *discovery, const gchar *message)
+{
+	LassoIdWsf2DiscoSvcMDAssociationAddResponse *response;
+	LassoSoapEnvelope *envelope;
+	int res = 0;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	/* Process request */
+	res = lasso_wsf2_profile_process_soap_response_msg(LASSO_WSF2_PROFILE(discovery), message);
+
+	/* If the response has been correctly processed, */
+	/* put interesting datas into the discovery object */
+	if (res == 0) {
+		response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(
+			LASSO_WSF2_PROFILE(discovery)->response);
+		/* FIXME : Check status here and in other functions as well */
 	}
 
 	return res;

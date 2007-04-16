@@ -85,6 +85,121 @@ lasso_wsf2_profile_build_soap_envelope(const char *refToMessageId, const char *p
 /* public methods                                                            */
 /*****************************************************************************/
 
+/**
+ * lasso_wsf2_profile_get_identity:
+ * @profile: a #LassoWsf2Profile
+ *
+ * Gets the identity bound to @profile.
+ *
+ * Return value: the identity or NULL if it none was found.  The #LassoIdentity
+ *      object is internally allocated and must not be freed by the caller.
+ **/
+LassoIdentity*
+lasso_wsf2_profile_get_identity(LassoWsf2Profile *profile)
+{
+	if (profile->identity && g_hash_table_size(profile->identity->federations))
+		return profile->identity;
+	return NULL;
+}
+
+
+/**
+ * lasso_wsf2_profile_get_session:
+ * @profile: a #LassoWsf2Profile
+ *
+ * Gets the session bound to @profile.
+ *
+ * Return value: the session or NULL if it none was found.  The #LassoSession
+ *      object is internally allocated and must not be freed by the caller.
+ **/
+LassoSession*
+lasso_wsf2_profile_get_session(LassoWsf2Profile *profile)
+{
+	if (profile->session == NULL)
+		return NULL;
+
+	if (lasso_session_is_empty(profile->session))
+		return NULL;
+
+	return profile->session;
+}
+
+
+/**
+ * lasso_wsf2_profile_is_identity_dirty:
+ * @profile: a #LassoWsf2Profile
+ *
+ * Checks whether identity has been modified (and should therefore be saved).
+ *
+ * Return value: %TRUE if identity has changed
+ **/
+gboolean
+lasso_wsf2_profile_is_identity_dirty(LassoWsf2Profile *profile)
+{
+	return (profile->identity && profile->identity->is_dirty);
+}
+
+
+/**
+ * lasso_wsf2_profile_is_session_dirty:
+ * @profile: a #LassoWsf2Profile
+ *
+ * Checks whether session has been modified (and should therefore be saved).
+ *
+ * Return value: %TRUE if session has changed
+ **/
+gboolean
+lasso_wsf2_profile_is_session_dirty(LassoWsf2Profile *profile)
+{
+	return (profile->session && profile->session->is_dirty);
+}
+
+
+/**
+ * lasso_wsf2_profile_set_identity_from_dump:
+ * @profile: a #LassoWsf2Profile
+ * @dump: XML identity dump
+ *
+ * Builds a new #LassoIdentity object from XML dump and binds it to @profile.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_wsf2_profile_set_identity_from_dump(LassoWsf2Profile *profile, const gchar *dump)
+{
+	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	profile->identity = lasso_identity_new_from_dump(dump);
+	if (profile->identity == NULL)
+		return critical_error(LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP);
+
+	return 0;
+}
+
+
+/**
+ * lasso_wsf2_profile_set_session_from_dump:
+ * @profile: a #LassoWsf2Profile
+ * @dump: XML session dump
+ *
+ * Builds a new #LassoSession object from XML dump and binds it to @profile.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_wsf2_profile_set_session_from_dump(LassoWsf2Profile *profile, const gchar  *dump)
+{
+	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	profile->session = lasso_session_new_from_dump(dump);
+	if (profile->session == NULL)
+		return critical_error(LASSO_PROFILE_ERROR_BAD_SESSION_DUMP);
+	profile->session->is_dirty = FALSE;
+
+	return 0;
+}
+
+
 gint
 lasso_wsf2_profile_init_soap_request(LassoWsf2Profile *profile, LassoNode *request)
 {

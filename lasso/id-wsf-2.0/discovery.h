@@ -81,6 +81,15 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_register_msg(
 
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_register_response_msg(
 	LassoIdWsf2Discovery *discovery, const gchar *message);
+	
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_association_add(
+	LassoIdWsf2Discovery *discovery, const gchar *svcMDID, const gchar *disco_provider_id);
+	
+LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_association_add_msg(
+	LassoIdWsf2Discovery *discovery, const gchar *message);
+
+LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
+	LassoIdWsf2Discovery *discovery, const gchar *message);
 
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery,
 	const gchar *security_mech_id);
