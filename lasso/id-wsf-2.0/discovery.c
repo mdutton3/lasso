@@ -129,7 +129,7 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 	res = lasso_wsf2_profile_process_soap_request_msg(LASSO_WSF2_PROFILE(discovery), message);
 
 	/* If the request has been correctly processed, */
-	/* put interesting datas into the discovery object */
+	/* put interesting data into the discovery object */
 	if (res == 0) {
 		request = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(
 			LASSO_WSF2_PROFILE(discovery)->request);
@@ -177,7 +177,7 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 	res = lasso_wsf2_profile_process_soap_response_msg(LASSO_WSF2_PROFILE(discovery), message);
 
 	/* If the response has been correctly processed, */
-	/* put interesting datas into the discovery object */
+	/* put interesting data into the discovery object */
 	if (res == 0) {
 		response = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(
 			LASSO_WSF2_PROFILE(discovery)->response);
@@ -229,7 +229,7 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 	res = lasso_wsf2_profile_process_soap_request_msg(LASSO_WSF2_PROFILE(discovery), message);
 
 	/* If the request has been correctly processed, */
-	/* put interesting datas into the discovery object */
+	/* put interesting data into the discovery object */
 	if (res == 0) {
 		request = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(
 			LASSO_WSF2_PROFILE(discovery)->request);
@@ -272,7 +272,7 @@ lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 	res = lasso_wsf2_profile_process_soap_response_msg(LASSO_WSF2_PROFILE(discovery), message);
 
 	/* If the response has been correctly processed, */
-	/* put interesting datas into the discovery object */
+	/* put interesting data into the discovery object */
 	if (res == 0) {
 		response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(
 			LASSO_WSF2_PROFILE(discovery)->response);
