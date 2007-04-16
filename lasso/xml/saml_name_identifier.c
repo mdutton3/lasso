@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Lasso - A free implementation of the Samlerty Alliance specifications.
+ * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004, 2005 Entr'ouvert
  * http://lasso.entrouvert.org

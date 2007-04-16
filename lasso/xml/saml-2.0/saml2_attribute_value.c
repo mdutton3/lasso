@@ -1,6 +1,6 @@
 /* $Id: saml2_attribute_value.c 2820 2006-10-09 10:09:25Z dlaniel $
  *
- * Lasso - A free implementation of the Samlerty Alliance specifications.
+ * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2007 Entr'ouvert
  * http://lasso.entrouvert.org
