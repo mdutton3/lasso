@@ -14,6 +14,7 @@ liblasso_xml_saml2_la_SOURCES = \
 	saml2_assertion.c \
 	saml2_attribute.c \
 	saml2_attribute_statement.c \
+	saml2_attribute_value.c \
 	saml2_audience_restriction.c \
 	saml2_authn_context.c \
 	saml2_authn_statement.c \
@@ -66,6 +67,7 @@ liblassoinclude_HEADERS = \
 	saml2_assertion.h \
 	saml2_attribute.h \
 	saml2_attribute_statement.h \
+	saml2_attribute_value.h \
 	saml2_audience_restriction.h \
 	saml2_authn_context.h \
 	saml2_authn_statement.h \
