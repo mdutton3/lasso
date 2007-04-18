@@ -41,6 +41,7 @@
 
 #include <lasso/id-wsf-2.0/discovery.h>
 #include <lasso/id-wsf-2.0/wsf2_profile_private.h>
+#include <lasso/id-wsf-2.0/server.h>
 
 struct _LassoIdWsf2DiscoveryPrivate
 {
@@ -119,6 +120,7 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 	LassoIdWsf2DiscoSvcMDRegister *request;
 	LassoIdWsf2DiscoSvcMDRegisterResponse *response;
 	LassoSoapEnvelope *envelope;
+	char unique_id[33];
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
@@ -137,7 +139,13 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 		if (request->metadata_list != NULL) {
 			discovery->metadata =
 				LASSO_IDWSF2_DISCO_SVC_METADATA(request->metadata_list->data);
-			discovery->metadata->svcMDID = lasso_build_unique_id(32);
+			/* Build a unique SvcMDID */
+			lasso_build_random_sequence(unique_id, 32);
+			unique_id[32] = 0;
+			discovery->metadata->svcMDID = g_strdup(unique_id);
+			/* Add the metadata into the server object */
+			lasso_server_add_svc_metadata(LASSO_WSF2_PROFILE(discovery)->server,
+				discovery->metadata);
 		}
 	}
 
@@ -218,7 +226,12 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 {
 	LassoIdWsf2DiscoSvcMDAssociationAdd *request;
 	LassoIdWsf2DiscoSvcMDAssociationAddResponse *response;
+	LassoIdentity *identity;
+	LassoIdWsf2DiscoSvcMetadata *svcMD;
+	gchar *svcMDID;
 	LassoSoapEnvelope *envelope;
+	GList *i;
+	GList *j;
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
@@ -228,14 +241,24 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 	/* Process request */
 	res = lasso_wsf2_profile_process_soap_request_msg(LASSO_WSF2_PROFILE(discovery), message);
 
+	identity = LASSO_WSF2_PROFILE(discovery)->identity;
+
 	/* If the request has been correctly processed, */
 	/* put interesting data into the discovery object */
-	if (res == 0) {
+	if (res == 0 && identity != NULL) {
 		request = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(
 			LASSO_WSF2_PROFILE(discovery)->request);
-		/* FIXME : foreach on the list instead */
-		if (request->SvcMDID != NULL) {
-			discovery->svcMDID = request->SvcMDID->data;
+		/* Copy the service metadatas with given svcMDIDs into the identity object */
+		for (i = g_list_first(request->SvcMDID); i != NULL; i = g_list_next(i)) {
+			svcMDID = (gchar *)(i->data);
+			j = g_list_first(lasso_server_get_svc_metadatas(
+				LASSO_WSF2_PROFILE(discovery)->server));
+			for ( ; j != NULL; j = g_list_next(j)) {
+				svcMD = LASSO_IDWSF2_DISCO_SVC_METADATA(j->data);
+				if (strcmp(svcMD->svcMDID, svcMDID) == 0) {
+					lasso_identity_add_svc_md(identity, svcMD);
+				}
+			}
 		}
 	}
 

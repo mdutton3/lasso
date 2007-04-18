@@ -24,13 +24,19 @@
 
 #include <lasso/lasso_config.h>
 #include <lasso/id-ff/identity.h>
+
+#ifdef LASSO_WSF_ENABLED
 #include <lasso/id-wsf/identity.h>
+#include <lasso/id-wsf-2.0/identity.h>
+#endif
+
 #include <lasso/id-ff/identityprivate.h>
 
 struct _LassoIdentityPrivate
 {
 	GList *resource_offerings;
 	gboolean dispose_has_run;
+	GList *svcMD;
 };
 
 /*****************************************************************************/
@@ -212,6 +218,37 @@ LassoDiscoResourceOffering* lasso_identity_get_resource_offering(
 	return NULL;
 }
 
+gint
+lasso_identity_add_svc_md(LassoIdentity *identity, LassoIdWsf2DiscoSvcMetadata *svcMD)
+{
+	identity->private_data->svcMD = g_list_append(
+			identity->private_data->svcMD, g_object_ref(svcMD));
+	identity->is_dirty = TRUE;
+
+	return 0;
+}
+
+/* GList* */
+/* lasso_identity_get_svc_metadatas(LassoIdentity *identity, const char *service_type) */
+/* { */
+/* 	GList *iter; */
+/* 	LassoIdWsf2DiscoSvcMetadata *t; */
+/* 	GList *result = NULL; */
+/* 	 */
+/* 	iter = identity->private_data->svc_metadatas; */
+/* 	while (iter) { */
+/* 		t = iter->data; */
+/* 		iter = g_list_next(iter); */
+/* 		if (service_type == NULL || (t->ServiceContext && strcmp( */
+/* 					t->ServiceContext->ServiceType, service_type) == 0)) { */
+/* 			result = g_list_append(result, g_object_ref(t)); */
+/* 		} */
+/* 	} */
+
+/* 	return result; */
+/* } */
+
+
 #endif
 
 
@@ -222,18 +259,17 @@ LassoDiscoResourceOffering* lasso_identity_get_resource_offering(
 static LassoNodeClass *parent_class = NULL;
 
 static void
-add_federation_childnode(gchar *key, LassoFederation *value, xmlNode *xmlnode)
+add_childnode_from_hashtable(gchar *key, LassoFederation *value, xmlNode *xmlnode)
 {
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
 #ifdef LASSO_WSF_ENABLED
 static void
-add_resource_offering_childnode(LassoNode *value, xmlNode *xmlnode)
+add_childnode_from_list(LassoNode *value, xmlNode *xmlnode)
 {
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
-
 #endif
 
 static xmlNode*
@@ -246,12 +282,27 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, (xmlChar*)LASSO_LASSO_HREF, NULL));
 	xmlSetProp(xmlnode, (xmlChar*)"Version", (xmlChar*)"2");
 
+	/* Federations */
 	if (g_hash_table_size(identity->federations))
 		g_hash_table_foreach(identity->federations,
-				(GHFunc)add_federation_childnode, xmlnode);
+				(GHFunc)add_childnode_from_hashtable, xmlnode);
 #ifdef LASSO_WSF_ENABLED
+	/* Resource Offerings */
 	g_list_foreach(identity->private_data->resource_offerings,
-			(GFunc)add_resource_offering_childnode, xmlnode);
+			(GFunc)add_childnode_from_list, xmlnode);
+
+	/* Service Metadatas (SvcMD) */
+	if (identity->private_data->svcMD != NULL) {
+		xmlNode *t;
+		t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"SvcMDs", NULL);
+		g_list_foreach(identity->private_data->svcMD,
+				(GFunc)add_childnode_from_list, t);
+	}
+
+	/* Simpler version which has the drawback of not working. */
+	/* Kept here in case it can work and be a nicer solution */
+/* 	g_list_foreach(identity->private_data->svcMD, */
+/* 			(GFunc)add_childnode_from_list, xmlnode); */
 #endif
 
 	return xmlnode;
@@ -262,6 +313,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoIdentity *identity = LASSO_IDENTITY(node);
 	xmlNode *t;
+	xmlNode *t2;
 
 	t = xmlnode->children;
 	while (t) {
@@ -270,6 +322,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			continue;
 		}
 
+		/* Federations */
 		if (strcmp((char*)t->name, "Federation") == 0) {
 			LassoFederation *federation;
 			federation = LASSO_FEDERATION(lasso_node_new_from_xmlNode(t));
@@ -279,12 +332,39 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 
 #ifdef LASSO_WSF_ENABLED
+		/* Resource Offerings */
 		if (strcmp((char*)t->name, "ResourceOffering") == 0) {
 			LassoDiscoResourceOffering *offering;
 			offering = LASSO_DISCO_RESOURCE_OFFERING(lasso_node_new_from_xmlNode(t));
 			identity->private_data->resource_offerings = g_list_append(
 					identity->private_data->resource_offerings, offering);
 		}
+
+		/* Service Metadatas (SvcMD) */
+		if (strcmp((char*)t->name, "SvcMDs") == 0) {
+			t2 = t->children;
+			while (t2) {
+				LassoIdWsf2DiscoSvcMetadata *svcMD;
+				if (t2->type != XML_ELEMENT_NODE) {
+					t2 = t2->next;
+					continue;
+				}
+				svcMD = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, NULL);
+				LASSO_NODE_GET_CLASS(svcMD)->init_from_xml(LASSO_NODE(svcMD), t2);
+				identity->private_data->svcMD = g_list_append(
+					identity->private_data->svcMD, svcMD);
+				t2 = t2->next;
+			}
+		}
+
+		/* Simpler version which has the drawback of not working. */
+		/* Kept here in case it can work and be a nicer solution */
+/* 		if (strcmp((char*)t->name, "SvcMD") == 0) { */
+/* 			LassoIdWsf2DiscoSvcMetadata *svcMD; */
+/* 			svcMD = LASSO_IDWSF2_DISCO_SVC_METADATA(lasso_node_new_from_xmlNode(t)); */
+/* 			identity->private_data->svcMD = g_list_append( */
+/* 					identity->private_data->svcMD, svcMD); */
+/* 		} */
 #endif
 
 		t = t->next;
@@ -303,10 +383,21 @@ dispose(GObject *object)
 {
 	LassoIdentity *identity = LASSO_IDENTITY(object);
 
+	/* FIXME : Probably necessary, must be tested */
+/* 	if (identity->private_data->resource_offerings != NULL) { */
+/* 		g_list_free(identity->private_data->resource_offerings); */
+/* 		identity->private_data->resource_offerings = NULL; */
+/* 	}	 */
+
 	if (identity->private_data->dispose_has_run == TRUE) {
 		return;
 	}
 	identity->private_data->dispose_has_run = TRUE;
+
+	if (identity->private_data->svcMD != NULL) {
+		g_list_free(identity->private_data->svcMD);
+		identity->private_data->svcMD = NULL;
+	}
 
 	g_hash_table_destroy(identity->federations);
 	identity->federations = NULL;
@@ -331,7 +422,9 @@ static void
 instance_init(LassoIdentity *identity)
 {
 	identity->private_data = g_new0(LassoIdentityPrivate, 1);
+	identity->private_data->resource_offerings = NULL;
 	identity->private_data->dispose_has_run = FALSE;
+	identity->private_data->svcMD = NULL;
 
 	identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,

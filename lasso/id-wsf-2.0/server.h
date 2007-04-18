@@ -1,8 +1,8 @@
-/* $Id$ 
+/* $Id: server.h 2945 2006-11-19 20:07:46Z dlaniel $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
- * Copyright (C) 2004, 2005 Entr'ouvert
+ * Copyright (C) 2007 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: See AUTHORS file in top-level directory.
@@ -22,25 +22,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_SERVER_PRIVATE_H__
-#define __LASSO_SERVER_PRIVATE_H__
+#ifndef __LASSO_IDWSF2_SERVER_H__
+#define __LASSO_IDWSF2_SERVER_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */ 
 
-struct _LassoServerPrivate
-{
-	gboolean dispose_has_run;
-	xmlSecKey *encryption_private_key;
-	GList *svc_metadatas;
-};
+#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
 
-gchar* lasso_server_get_first_providerID(LassoServer *server);
-gchar* lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash);
+LASSO_EXPORT gint lasso_server_add_svc_metadata(LassoServer *server,
+        LassoIdWsf2DiscoSvcMetadata *metadata);
+        
+LASSO_EXPORT GList *lasso_server_get_svc_metadatas(LassoServer *server);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_SERVER_PRIVATE_H__ */
+#endif /* __LASSO_IDWSF2_SERVER_H__ */

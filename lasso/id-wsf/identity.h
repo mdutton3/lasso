@@ -40,7 +40,6 @@ LASSO_EXPORT GList* lasso_identity_get_offerings(LassoIdentity *identity,
 LASSO_EXPORT LassoDiscoResourceOffering* lasso_identity_get_resource_offering(
 		LassoIdentity *identity, const char *entryID);
 
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
