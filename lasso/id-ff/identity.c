@@ -219,7 +219,7 @@ LassoDiscoResourceOffering* lasso_identity_get_resource_offering(
 }
 
 gint
-lasso_identity_add_svc_md(LassoIdentity *identity, LassoIdWsf2DiscoSvcMetadata *svcMD)
+lasso_identity_add_svc_metadata(LassoIdentity *identity, LassoIdWsf2DiscoSvcMetadata *svcMD)
 {
 	identity->private_data->svcMD = g_list_append(
 			identity->private_data->svcMD, g_object_ref(svcMD));

@@ -590,7 +590,6 @@ static void
 lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertion *assertion)
 {
 #ifdef LASSO_WSF_ENABLED
-	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoWsAddrEndpointReference *epr;
 	LassoWsAddrMetadata *metadata;
 	LassoSaml2AttributeStatement *attributeStatement;

@@ -256,7 +256,7 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 			for ( ; j != NULL; j = g_list_next(j)) {
 				svcMD = LASSO_IDWSF2_DISCO_SVC_METADATA(j->data);
 				if (strcmp(svcMD->svcMDID, svcMDID) == 0) {
-					lasso_identity_add_svc_md(identity, svcMD);
+					lasso_identity_add_svc_metadata(identity, svcMD);
 				}
 			}
 		}

@@ -513,7 +513,7 @@ dispose(GObject *object)
 
 	if (server->private_data->svc_metadatas != NULL) {
 		g_list_free(server->private_data->svc_metadatas);
-		server->private_data->svc_metadatas;
+		server->private_data->svc_metadatas = NULL;
 	}
 
 	/* free allocated memory for hash tables */
