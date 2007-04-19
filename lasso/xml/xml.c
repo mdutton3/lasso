@@ -877,9 +877,27 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					tmp = lasso_saml_name_identifier_new_from_xmlNode(t);
 				} else if (type == SNIPPET_LIST_NODES) {
 					GList **location = value;
-					LassoNode *n = lasso_node_new_from_xmlNode_with_type(t,
+					LassoNode *n;
+					n = lasso_node_new_from_xmlNode_with_type(t,
 							snippet->class_name);
-					*location = g_list_append(*location, n);
+					if (n == NULL && snippet_any == snippet &&
+							t->properties == NULL && t->children &&
+							t->children->type == XML_TEXT_NODE &&
+							t->children->next == NULL) {
+						/* unknown, but no attributes, and content
+						 * is text ? -> use generic object */
+						n = lasso_node_new_from_xmlNode_with_type(t,
+								"LassoMiscTextNode");
+					}
+
+					if (n) {
+						*location = g_list_append(*location, n);
+					} else {
+						/* failed to do sth with */
+						message(G_LOG_LEVEL_WARNING,
+							"Failed to do sth with %s",
+							t->name);
+					}
 				} else if (type == SNIPPET_LIST_CONTENT) {
 					GList **location = value;
 					xmlChar *s = xmlNodeGetContent(t);
