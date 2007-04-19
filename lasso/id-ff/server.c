@@ -118,8 +118,8 @@ lasso_server_add_svc_metadata(LassoServer *server, LassoIdWsf2DiscoSvcMetadata *
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCO_SVC_METADATA(metadata),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	server->private_data->svc_metadatas =
-		g_list_append(server->private_data->svc_metadatas, g_object_ref(metadata));
+	server->private_data->svc_metadatas = g_list_append(
+		server->private_data->svc_metadatas, g_object_ref(metadata));
 
 	return 0;
 }
@@ -130,8 +130,6 @@ lasso_server_get_svc_metadatas(LassoServer *server)
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	return server->private_data->svc_metadatas;
-
-	return NULL;
 }
 #endif
 
@@ -374,7 +372,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					t2 = t2->next;
 					continue;
 				}
-				svcMD = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, NULL);
+				svcMD = lasso_idwsf2_disco_svc_metadata_new(NULL, NULL, NULL);
 				LASSO_NODE_GET_CLASS(svcMD)->init_from_xml(LASSO_NODE(svcMD), t2);
 				server->private_data->svc_metadatas = g_list_append(
 					server->private_data->svc_metadatas, svcMD);

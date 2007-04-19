@@ -349,7 +349,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					t2 = t2->next;
 					continue;
 				}
-				svcMD = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, NULL);
+				svcMD = lasso_idwsf2_disco_svc_metadata_new(NULL, NULL, NULL);
 				LASSO_NODE_GET_CLASS(svcMD)->init_from_xml(LASSO_NODE(svcMD), t2);
 				identity->private_data->svcMD = g_list_append(
 					identity->private_data->svcMD, svcMD);
@@ -383,7 +383,7 @@ dispose(GObject *object)
 {
 	LassoIdentity *identity = LASSO_IDENTITY(object);
 
-	/* FIXME : Probably necessary, must be tested */
+	/* FIXME (ID-WSF 1) : Probably necessary, must be tested */
 /* 	if (identity->private_data->resource_offerings != NULL) { */
 /* 		g_list_free(identity->private_data->resource_offerings); */
 /* 		identity->private_data->resource_offerings = NULL; */
