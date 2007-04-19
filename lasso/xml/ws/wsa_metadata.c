@@ -41,6 +41,7 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
+	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoWsAddrMetadata, any) },
 	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoWsAddrMetadata, attributes) },
 	{NULL, 0, 0}

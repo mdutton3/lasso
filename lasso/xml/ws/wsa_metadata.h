@@ -54,6 +54,10 @@ struct _LassoWsAddrMetadata {
 	LassoNode parent;
 
 	/*< public >*/
+	
+	/* elements */
+	GList *any;
+	
 	/* attributes */
 	GHashTable *attributes;
 };

@@ -50,7 +50,12 @@
 #include <lasso/xml/saml-2.0/saml2_attribute_value.h>
 
 #ifdef LASSO_WSF_ENABLED
+#include <lasso/id-wsf-2.0/identity.h>
 #include <lasso/xml/ws/wsa_endpoint_reference.h>
+#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
+#include <lasso/xml/id-wsf-2.0/disco_abstract.h>
+#include <lasso/xml/id-wsf-2.0/disco_providerid.h>
+#include <lasso/xml/id-wsf-2.0/disco_service_type.h>
 #endif
 
 static int lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obtained);
@@ -590,18 +595,51 @@ static void
 lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertion *assertion)
 {
 #ifdef LASSO_WSF_ENABLED
+	GList *svcMDs;
+	LassoIdWsf2DiscoSvcMetadata *svcMD;
 	LassoWsAddrEndpointReference *epr;
 	LassoWsAddrMetadata *metadata;
 	LassoSaml2AttributeStatement *attributeStatement;
 	LassoSaml2Attribute *attribute;
 	LassoSaml2AttributeValue *attributeValue;
 
+	svcMDs = lasso_identity_get_svc_metadatas(LASSO_PROFILE(login)->identity,
+		LASSO_IDWSF2_DISCO_HREF);
+	if (svcMDs == NULL) {
+		return;
+	}
+
+	/* FIXME : foreach on the whole list and build on epr for each svcMD */
+	svcMD = svcMDs->data;
+
+	if (svcMD == NULL || svcMD->ServiceContext == NULL
+			|| svcMD->ServiceContext->EndpointContext == NULL) {
+		return;
+	}
+
 	/* Build EndpointReference */
 
 	epr = LASSO_WSA_ENDPOINT_REFERENCE(lasso_wsa_endpoint_reference_new());
-	
+
+	epr->Address = LASSO_WSA_ATTRIBUTED_URI(lasso_wsa_attributed_uri_new_with_string(
+		svcMD->ServiceContext->EndpointContext->Address));
+
 	metadata = LASSO_WSA_METADATA(lasso_wsa_metadata_new());
-	
+
+	/* Abstract */
+	metadata->any = g_list_append(metadata->any,
+ 		lasso_idwsf2_disco_abstract_new_with_content(svcMD->Abstract));
+ 	/* ProviderID */
+	metadata->any = g_list_append(metadata->any,
+ 		lasso_idwsf2_disco_providerid_new_with_content(svcMD->ProviderID));
+ 	/* ServiceType */
+	metadata->any = g_list_append(metadata->any,
+ 		lasso_idwsf2_disco_service_type_new_with_content(
+ 			svcMD->ServiceContext->ServiceType));
+	/* Framework */
+	metadata->any = g_list_append(metadata->any,
+		g_object_ref(svcMD->ServiceContext->EndpointContext->Framework));
+
 	epr->Metadata = metadata;
 	
 	/* Add the EPR to the assertion as a SAML attribute */

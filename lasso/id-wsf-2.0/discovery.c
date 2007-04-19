@@ -40,8 +40,9 @@
 #include <lasso/id-ff/providerprivate.h>
 
 #include <lasso/id-wsf-2.0/discovery.h>
-#include <lasso/id-wsf-2.0/wsf2_profile_private.h>
+#include <lasso/id-wsf-2.0/wsf2_profile.h>
 #include <lasso/id-wsf-2.0/server.h>
+#include <lasso/id-wsf-2.0/identity.h>
 
 struct _LassoIdWsf2DiscoveryPrivate
 {
@@ -174,7 +175,6 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 	const gchar *message)
 {
 	LassoIdWsf2DiscoSvcMDRegisterResponse *response;
-	LassoSoapEnvelope *envelope;
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
@@ -284,7 +284,6 @@ lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 	LassoIdWsf2Discovery *discovery, const gchar *message)
 {
 	LassoIdWsf2DiscoSvcMDAssociationAddResponse *response;
-	LassoSoapEnvelope *envelope;
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),

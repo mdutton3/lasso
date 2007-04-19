@@ -228,26 +228,27 @@ lasso_identity_add_svc_metadata(LassoIdentity *identity, LassoIdWsf2DiscoSvcMeta
 	return 0;
 }
 
-/* GList* */
-/* lasso_identity_get_svc_metadatas(LassoIdentity *identity, const char *service_type) */
-/* { */
-/* 	GList *iter; */
-/* 	LassoIdWsf2DiscoSvcMetadata *t; */
-/* 	GList *result = NULL; */
-/* 	 */
-/* 	iter = identity->private_data->svc_metadatas; */
-/* 	while (iter) { */
-/* 		t = iter->data; */
-/* 		iter = g_list_next(iter); */
-/* 		if (service_type == NULL || (t->ServiceContext && strcmp( */
-/* 					t->ServiceContext->ServiceType, service_type) == 0)) { */
-/* 			result = g_list_append(result, g_object_ref(t)); */
-/* 		} */
-/* 	} */
+GList*
+lasso_identity_get_svc_metadatas(LassoIdentity *identity, const char *service_type)
+{
+	GList *iter;
+	LassoIdWsf2DiscoSvcMetadata *t;
+	GList *result = NULL;
+	
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
+	
+	iter = identity->private_data->svcMD;
+	while (iter) {
+		t = iter->data;
+		iter = g_list_next(iter);
+		if (service_type == NULL || (t->ServiceContext && strcmp(
+					t->ServiceContext->ServiceType, service_type) == 0)) {
+			result = g_list_append(result, g_object_ref(t));
+		}
+	}
 
-/* 	return result; */
-/* } */
-
+	return result;
+}
 
 #endif
 
