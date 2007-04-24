@@ -329,10 +329,11 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 
 	/* Endpoint References */
 	if (identity->private_data->eprs != NULL
-			&& g_hash_table_size(identity->private_data->eprs))
+			&& g_hash_table_size(identity->private_data->eprs)) {
 		t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"EndpointReferences", NULL);
 		g_hash_table_foreach(identity->private_data->eprs,
 				(GHFunc)add_childnode_from_hashtable, t);
+	}
 
 	/* Simpler version which has the drawback of not working. */
 	/* Kept here in case it can work and be a nicer solution */
