@@ -201,8 +201,8 @@ lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type)
 	return result;
 }
 
-LassoDiscoResourceOffering* lasso_identity_get_resource_offering(
-		LassoIdentity *identity, const char *entryID)
+LassoDiscoResourceOffering*
+lasso_identity_get_resource_offering(LassoIdentity *identity, const char *entryID)
 {
 	GList *iter;
 	LassoDiscoResourceOffering *t;
@@ -269,7 +269,7 @@ lasso_identity_add_endpoint_reference(LassoIdentity *identity, LassoWsAddrEndpoi
 	return 0;
 }
 
-LassoWsAddrEndpointReference *
+LassoWsAddrEndpointReference*
 lasso_identity_get_endpoint_reference(LassoIdentity *identity, gchar *service_type) {
 	return LASSO_WSA_ENDPOINT_REFERENCE(g_hash_table_lookup(
 		identity->private_data->eprs, service_type));

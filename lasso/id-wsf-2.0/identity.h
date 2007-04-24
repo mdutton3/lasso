@@ -42,7 +42,7 @@ LASSO_EXPORT GList* lasso_identity_get_svc_metadatas(LassoIdentity *identity,
 LASSO_EXPORT gint lasso_identity_add_endpoint_reference(LassoIdentity *identity,
         LassoWsAddrEndpointReference *epr);
 
-LASSO_EXPORT LassoWsAddrEndpointReference *lasso_identity_get_endpoint_reference(
+LASSO_EXPORT LassoWsAddrEndpointReference* lasso_identity_get_endpoint_reference(
         LassoIdentity *identity, gchar *service_type);
 
 #ifdef __cplusplus

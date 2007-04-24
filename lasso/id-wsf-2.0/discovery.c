@@ -351,11 +351,11 @@ lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2Discovery *discover
 	return 0;
 }
 
-static LassoWsAddrEndpointReference *
+static LassoWsAddrEndpointReference*
 lasso_idwsf2_discovery_build_query_response_epr(LassoIdWsf2DiscoRequestedService *service,
 	LassoIdentity *identity)
 {
-	gchar * service_type = NULL;
+	gchar *service_type = NULL;
 	GList *svcMDs;
 	LassoIdWsf2DiscoSvcMetadata *svcMD;
 	LassoWsAddrEndpointReference *epr;
