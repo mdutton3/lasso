@@ -5485,6 +5485,9 @@ typedef struct {
 
 	%newobject getOfferings;
 	LassoNodeList *getOfferings(const char *service_type = NULL);
+
+	%newobject getSvcMetadatas;
+	LassoNodeList *getSvcMetadatas(const char *service_type = NULL);
 #endif
 }
 
@@ -5530,6 +5533,20 @@ LassoNodeList *LassoIdentity_getOfferings(LassoIdentity *self, const char *servi
 	}
 	return array;
 }
+
+LassoNodeList* LassoIdentity_getSvcMetadatas(LassoIdentity *self, const char *service_type) {
+	GPtrArray *array = NULL;
+	GList *list;
+
+	list = lasso_identity_get_svc_metadatas(self, service_type);
+	if (list) {
+		array = get_node_list(list);
+		g_list_foreach(list, (GFunc) free_node_list_item, NULL);
+		g_list_free(list);
+	}
+	return array;
+}
+
 #endif
 
 %}
