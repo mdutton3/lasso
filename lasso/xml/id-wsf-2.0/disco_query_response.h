@@ -1,8 +1,8 @@
-/* $Id: disco_query_response.h,v 1.5 2005/01/22 15:57:55 $ 
+/* $Id: disco_query_response.h,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
- * Copyright (C) 2007 Entr'ouvert
+ * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: See AUTHORS file in top-level directory.
@@ -27,48 +27,57 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
-//#include <lasso/xml/disco_credentials.h>
-#include <lasso/xml/utility_status.h>
+#include "util_status.h"
 
-#define LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE (lasso_idwsf2_disco_query_response_get_type())
-#define LASSO_IDWSF2_DISCO_QUERY_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-			LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE, LassoIdWsf2DiscoQueryResponse))
-#define LASSO_IDWSF2_DISCO_QUERY_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-			LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE, LassoIdWsf2DiscoQueryResponseClass))
+#define LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE \
+	(lasso_idwsf2_disco_query_response_get_type())
+#define LASSO_IDWSF2_DISCO_QUERY_RESPONSE(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE, \
+		LassoIdWsf2DiscoQueryResponse))
+#define LASSO_IDWSF2_DISCO_QUERY_RESPONSE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE, \
+		LassoIdWsf2DiscoQueryResponseClass))
 #define LASSO_IS_IDWSF2_DISCO_QUERY_RESPONSE(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE))
 #define LASSO_IS_IDWSF2_DISCO_QUERY_RESPONSE_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE))
 #define LASSO_IDWSF2_DISCO_QUERY_RESPONSE_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE, \
-				    LassoIdWsf2DiscoQueryResponseClass))
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE, \
+		LassoIdWsf2DiscoQueryResponseClass)) 
+
 
 typedef struct _LassoIdWsf2DiscoQueryResponse LassoIdWsf2DiscoQueryResponse;
 typedef struct _LassoIdWsf2DiscoQueryResponseClass LassoIdWsf2DiscoQueryResponseClass;
 
+
 struct _LassoIdWsf2DiscoQueryResponse {
 	LassoNode parent;
 
-	LassoUtilityStatus *Status;
-//	GList *ResourceOffering;
-//	LassoIdWsf2DiscoCredentials *Credentials;
-
-	char *id;
+	/*< public >*/
+	/* elements */
+	LassoIdWsf2UtilStatus *Status;
+	GList *EndpointReference; /* of LassoWsAddrEndpointReference */
+	/* attributes */
+	GHashTable *attributes;
 };
+
 
 struct _LassoIdWsf2DiscoQueryResponseClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_query_response_get_type(void);
+LASSO_EXPORT LassoNode* lasso_idwsf2_disco_query_response_new(void);
 
-LASSO_EXPORT LassoIdWsf2DiscoQueryResponse* lasso_idwsf2_disco_query_response_new(LassoUtilityStatus *status);
 
-LASSO_EXPORT LassoIdWsf2DiscoQueryResponse* lasso_idwsf2_disco_query_response_new_from_message(
-	const gchar *message);
 
 #ifdef __cplusplus
 }

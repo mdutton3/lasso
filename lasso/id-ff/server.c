@@ -239,13 +239,13 @@ add_provider_childnode(gchar *key, LassoProvider *value, xmlNode *xmlnode)
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
+#ifdef LASSO_WSF_ENABLED
 static void
 add_service_childnode(gchar *key, LassoNode *value, xmlNode *xmlnode)
 {
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
-#ifdef LASSO_WSF_ENABLED
 static void
 add_childnode_from_list(LassoNode *value, xmlNode *xmlnode)
 {

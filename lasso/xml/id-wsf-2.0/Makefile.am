@@ -13,6 +13,7 @@ liblasso_xml_id_wsf2_la_SOURCES = \
 	disco_options.c \
 	disco_query.c \
 	disco_query_response.c \
+	disco_requested_service.c \
 	disco_service_context.c \
 	disco_svc_metadata.c \
 	disco_svc_md_association_add.c \
@@ -30,6 +31,7 @@ liblassoinclude_HEADERS = \
 	disco_options.h \
 	disco_query.h \
 	disco_query_response.h \
+	disco_requested_service.c \
 	disco_service_context.h \
 	disco_svc_metadata.h \
 	disco_svc_md_association_add.h \

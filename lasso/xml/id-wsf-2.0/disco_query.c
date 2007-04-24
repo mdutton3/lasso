@@ -1,8 +1,8 @@
-/* $Id: disco_query.c,v 1.7 2005/01/22 15:57:55 $ 
+/* $Id: disco_query.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
- * Copyright (C) 2007 Entr'ouvert
+ * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: See AUTHORS file in top-level directory.
@@ -22,37 +22,39 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/id-wsf-2.0/disco_query.h>
+#include "disco_query.h"
 
 /*
- * Schema fragments (liberty-idwsf-disco-svc-v2.0.xsd) :
- *
- * <xs:element name="Query" type="QueryType"/>
+ * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
  *
  * <xs:complexType name="QueryType">
  *   <xs:sequence>
  *     <xs:element name="RequestedService"
- *                 type="RequestedServiceType"
- *                 minOccurs="0" 
- *                 maxOccurs="unbounded"/>
- *   </xs:sequence>
- *   <xs:anyAttribute namespace="##other" processContents="lax"/>
- * </xs:complexType>
- */ 
+ *       type="RequestedServiceType"
+ *       minOccurs="0"
+ *       maxOccurs="unbounded"/>
+ *     </xs:sequence>
+ *     
+ *     <xs:anyAttribute namespace="##other" processContents="lax"/>
+ *   </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
+
 static struct XmlSnippet schema_snippets[] = {
-//	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, ResourceID) },
-//	{ "EncryptedResourceID",
-//	  SNIPPET_NODE, G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, EncryptedResourceID) },
-//	{ "RequestedServiceType", SNIPPET_LIST_NODES,
-//	  G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, RequestedServiceType) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, id) },
-	{ NULL, 0, 0}
+	{ "RequestedService", SNIPPET_LIST_NODES,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, RequestedService),
+		"LassoIdWsf2DiscoRequestedService" },
+	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, attributes) },
+	{NULL, 0, 0}
 };
+
+static LassoNodeClass *parent_class = NULL;
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -61,10 +63,9 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoIdWsf2DiscoQuery *node)
 {
-//	node->ResourceID = NULL;
-//	node->EncryptedResourceID = NULL;
-//	node->RequestedServiceType = NULL;
-	node->id = NULL;
+	node->RequestedService = NULL;
+	node->attributes = g_hash_table_new_full(
+		g_str_hash, g_str_equal, g_free, g_free);
 }
 
 static void
@@ -72,6 +73,7 @@ class_init(LassoIdWsf2DiscoQueryClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Query");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DISCO_HREF, LASSO_IDWSF2_DISCO_PREFIX);
@@ -102,25 +104,15 @@ lasso_idwsf2_disco_query_get_type()
 	return this_type;
 }
 
-LassoIdWsf2DiscoQuery*
+/**
+ * lasso_idwsf2_disco_query_new:
+ *
+ * Creates a new #LassoIdWsf2DiscoQuery object.
+ *
+ * Return value: a newly created #LassoIdWsf2DiscoQuery object
+ **/
+LassoNode*
 lasso_idwsf2_disco_query_new()
 {
-	LassoIdWsf2DiscoQuery *node;
-
-	node = g_object_new(LASSO_TYPE_IDWSF2_DISCO_QUERY, NULL);
-
-	return node;
-}
-
-LassoIdWsf2DiscoQuery*
-lasso_idwsf2_disco_query_new_from_message(const gchar *message)
-{
-	LassoIdWsf2DiscoQuery *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_IDWSF2_DISCO_QUERY, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
+	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_QUERY, NULL);
 }

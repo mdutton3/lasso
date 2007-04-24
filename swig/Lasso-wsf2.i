@@ -24,12 +24,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-%include Lasso-wsf2-disco.i
+/* %include Lasso-wsf2-disco.i */
 %include Lasso-wsf-soap.i
 
 %{
 #include <lasso/id-wsf-2.0/discovery.h>
 %}
+
+
+/* WSF prefix & href */
+#ifndef SWIGPHP4
+%rename(IDWSF2_DISCO_HREF) LASSO_IDWSF2_DISCO_HREF;
+%rename(IDWSF2_DISCO_PREFIX) LASSO_IDWSF2_DISCO_PREFIX;
+#endif
+#define LASSO_IDWSF2_DISCO_HREF   "urn:liberty:disco:2006-08"
+#define LASSO_IDWSF2_DISCO_PREFIX "disco"
 
 
 /***********************************************************************
@@ -147,6 +156,18 @@ typedef struct {
 	THROW_ERROR()
 	int initQuery(const char *security_mech_id = NULL);
 	END_THROW_ERROR()
+	
+	THROW_ERROR()
+	int addRequestedServiceType(const gchar *service_type);
+	END_THROW_ERROR()
+	
+	THROW_ERROR()
+	int processQueryMsg(const gchar *message);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int processQueryResponseMsg(const gchar *message);
+	END_THROW_ERROR()
 }
 
 %{
@@ -245,5 +266,8 @@ typedef struct {
 #define LassoIdWsf2Discovery_processMetadataAssociationAddMsg lasso_idwsf2_discovery_process_metadata_association_add_msg
 #define LassoIdWsf2Discovery_processMetadataAssociationAddResponseMsg lasso_idwsf2_discovery_process_metadata_association_add_response_msg
 #define LassoIdWsf2Discovery_initQuery lasso_idwsf2_discovery_init_query
+#define LassoIdWsf2Discovery_addRequestedServiceType lasso_idwsf2_discovery_add_requested_service_type
+#define LassoIdWsf2Discovery_processQueryMsg lasso_idwsf2_discovery_process_query_msg
+#define LassoIdWsf2Discovery_processQueryResponseMsg lasso_idwsf2_discovery_process_query_response_msg
 
 %}

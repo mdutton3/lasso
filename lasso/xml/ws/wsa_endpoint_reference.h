@@ -70,10 +70,10 @@ struct _LassoWsAddrEndpointReferenceClass {
 	LassoNodeClass parent;
 };
 
+void lasso_wsa_endpoint_reference_destroy(LassoWsAddrEndpointReference *epr);
+
 LASSO_EXPORT GType lasso_wsa_endpoint_reference_get_type(void);
 LASSO_EXPORT LassoNode* lasso_wsa_endpoint_reference_new(void);
-
-
 
 #ifdef __cplusplus
 }

@@ -2197,7 +2197,8 @@ static void
 xmlUseNsDef(xmlNs *ns, xmlNode *node)
 {
 	xmlNode *t;
-	xmlNs *ns2, *ns3;
+	xmlNs *ns2;
+	xmlNs *ns3 = NULL;
 
 	if (sameNs(ns, node->ns)) {
 		node->ns = ns;
@@ -2215,11 +2216,14 @@ xmlUseNsDef(xmlNs *ns, xmlNode *node)
 	} else if (node->nsDef) {
 		for (ns2 = node->nsDef; ns2->next; ns2 = ns2->next) {
 			if (sameNs(ns2->next, ns)) {
-				ns3 = ns2;
 				ns2->next = ns2->next->next;
-				xmlFreeNs(ns3);
+				if (ns3 != NULL) {
+					xmlFreeNs(ns3);
+				}
+				ns3 = ns2;
 			}
 		}
+		/* FIXME : memory leak : ns3 should be freed here */
 	}
 }
 

@@ -1,8 +1,8 @@
-/* $Id: disco_query.h,v 1.8 2005/01/22 15:57:55 $ 
+/* $Id: disco_query.h,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
- * Copyright (C) 2007 Entr'ouvert
+ * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: See AUTHORS file in top-level directory.
@@ -27,43 +27,54 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
-//#include <lasso/xml/disco_resource_id.h>
-//#include <lasso/xml/disco_encrypted_resource_id.h>
-//#include <lasso/xml/disco_requested_service_type.h>
 
 #define LASSO_TYPE_IDWSF2_DISCO_QUERY (lasso_idwsf2_disco_query_get_type())
-#define LASSO_IDWSF2_DISCO_QUERY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-			LASSO_TYPE_IDWSF2_DISCO_QUERY, LassoIdWsf2DiscoQuery))
-#define LASSO_IDWSF2_DISCO_QUERY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-			LASSO_TYPE_IDWSF2_DISCO_QUERY, LassoIdWsf2DiscoQueryClass))
-#define LASSO_IS_IDWSF2_DISCO_QUERY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_QUERY))
+#define LASSO_IDWSF2_DISCO_QUERY(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_QUERY, \
+		LassoIdWsf2DiscoQuery))
+#define LASSO_IDWSF2_DISCO_QUERY_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_QUERY, \
+		LassoIdWsf2DiscoQueryClass))
+#define LASSO_IS_IDWSF2_DISCO_QUERY(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_QUERY))
 #define LASSO_IS_IDWSF2_DISCO_QUERY_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass),LASSO_TYPE_IDWSF2_DISCO_QUERY))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_QUERY))
 #define LASSO_IDWSF2_DISCO_QUERY_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_QUERY, LassoIdWsf2DiscoQueryClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_IDWSF2_DISCO_QUERY, \
+		LassoIdWsf2DiscoQueryClass)) 
+
 
 typedef struct _LassoIdWsf2DiscoQuery LassoIdWsf2DiscoQuery;
 typedef struct _LassoIdWsf2DiscoQueryClass LassoIdWsf2DiscoQueryClass;
 
+
 struct _LassoIdWsf2DiscoQuery {
 	LassoNode parent;
 
-//	GList *RequestedService;
-	gchar *id;
+	/*< public >*/
+	/* elements */
+	GList *RequestedService; /* of LassoIdWsf2DiscoRequestedService */
+	/* attributes */
+	GHashTable *attributes;
 };
+
 
 struct _LassoIdWsf2DiscoQueryClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_query_get_type(void);
+LASSO_EXPORT LassoNode* lasso_idwsf2_disco_query_new(void);
 
-LASSO_EXPORT LassoIdWsf2DiscoQuery* lasso_idwsf2_disco_query_new(void);
 
-LASSO_EXPORT LassoIdWsf2DiscoQuery* lasso_idwsf2_disco_query_new_from_message(const gchar *message);
 
 #ifdef __cplusplus
 }

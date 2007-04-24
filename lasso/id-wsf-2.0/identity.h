@@ -30,12 +30,20 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
+#include <lasso/xml/id-wsf-2.0/disco_service_type.h>
+#include <lasso/xml/ws/wsa_endpoint_reference.h>
 
 LASSO_EXPORT gint lasso_identity_add_svc_metadata(LassoIdentity *identity,
         LassoIdWsf2DiscoSvcMetadata *metadata);
 
 LASSO_EXPORT GList* lasso_identity_get_svc_metadatas(LassoIdentity *identity,
         const char *service_type);
+
+LASSO_EXPORT gint lasso_identity_add_endpoint_reference(LassoIdentity *identity,
+        LassoWsAddrEndpointReference *epr);
+
+LASSO_EXPORT LassoWsAddrEndpointReference *lasso_identity_get_endpoint_reference(
+        LassoIdentity *identity, gchar *service_type);
 
 #ifdef __cplusplus
 }

@@ -94,6 +94,14 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_association_add_respon
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery,
 	const gchar *security_mech_id);
 
+LASSO_EXPORT gint lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2Discovery *discovery,
+	const gchar *service_type);
+	
+LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery,
+	const gchar *message);
+	
+LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discovery,
+	const gchar *message);
 
 #ifdef __cplusplus
 }
