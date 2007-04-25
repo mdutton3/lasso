@@ -109,7 +109,7 @@ lasso_idwsf2_disco_endpoint_context_get_type()
 }
 
 LassoIdWsf2DiscoEndpointContext*
-lasso_idwsf2_disco_endpoint_context_new(gchar *address)
+lasso_idwsf2_disco_endpoint_context_new(const gchar *address)
 {
 	LassoIdWsf2DiscoEndpointContext *context;
 

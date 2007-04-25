@@ -114,8 +114,8 @@ lasso_idwsf2_disco_svc_metadata_new()
 }
 
 LassoIdWsf2DiscoSvcMetadata*
-lasso_idwsf2_disco_svc_metadata_new_full(gchar *service_type, gchar *abstract, gchar *provider_id,
-	gchar *soap_endpoint)
+lasso_idwsf2_disco_svc_metadata_new_full(const gchar *service_type, const gchar *abstract,
+		const gchar *provider_id, const gchar *soap_endpoint)
 {
 	LassoIdWsf2DiscoSvcMetadata *metadata;
 	LassoIdWsf2DiscoEndpointContext *endpoint_context;

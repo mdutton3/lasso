@@ -79,7 +79,8 @@ lasso_idwsf2_discovery_destroy(LassoIdWsf2Discovery *discovery)
 
 gint
 lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
-	gchar *service_type, gchar *abstract, gchar *disco_provider_id, gchar *soap_endpoint)
+		const gchar *service_type, const gchar *abstract,
+		const gchar *disco_provider_id, const gchar *soap_endpoint)
 {
 	LassoIdWsf2DiscoSvcMDRegister *metadata_register;
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);

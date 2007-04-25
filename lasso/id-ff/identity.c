@@ -270,7 +270,7 @@ lasso_identity_add_endpoint_reference(LassoIdentity *identity, LassoWsAddrEndpoi
 }
 
 LassoWsAddrEndpointReference*
-lasso_identity_get_endpoint_reference(LassoIdentity *identity, gchar *service_type) {
+lasso_identity_get_endpoint_reference(LassoIdentity *identity, const gchar *service_type) {
 	return LASSO_WSA_ENDPOINT_REFERENCE(g_hash_table_lookup(
 		identity->private_data->eprs, service_type));
 }

@@ -67,7 +67,7 @@ struct _LassoIdWsf2DiscoServiceContextClass {
 LASSO_EXPORT GType lasso_idwsf2_disco_service_context_get_type(void);
 
 LASSO_EXPORT LassoIdWsf2DiscoServiceContext* lasso_idwsf2_disco_service_context_new(
-	gchar *serviceType, LassoIdWsf2DiscoEndpointContext *endpointContext);
+		const gchar *serviceType, LassoIdWsf2DiscoEndpointContext *endpointContext);
 
 #ifdef __cplusplus
 }

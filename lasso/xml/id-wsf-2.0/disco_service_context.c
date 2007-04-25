@@ -102,7 +102,8 @@ lasso_idwsf2_disco_service_context_get_type()
 }
 
 LassoIdWsf2DiscoServiceContext*
-lasso_idwsf2_disco_service_context_new(gchar *serviceType, LassoIdWsf2DiscoEndpointContext *endpointContext)
+lasso_idwsf2_disco_service_context_new(const gchar *serviceType,
+		LassoIdWsf2DiscoEndpointContext *endpointContext)
 {
 	LassoIdWsf2DiscoServiceContext *context;
 
