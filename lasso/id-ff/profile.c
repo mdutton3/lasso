@@ -148,6 +148,10 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		type = LASSO_REQUEST_TYPE_SASL_REQUEST;
 	} else if (strcmp(name, "ManageNameIDRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_NAME_ID_MANAGEMENT;
+	} else if (strcmp(name, "SvcMDRegister") == 0) {
+		type = LASSO_REQUEST_TYPE_IDWSF2_DISCO_SVCMD_REGISTER;
+	} else if (strcmp(name, "SvcMDAssociationAdd") == 0) {
+		type = LASSO_REQUEST_TYPE_IDWSF2_DISCO_SVCMD_ASSOCIATION_ADD;
 	} else {
 		message(G_LOG_LEVEL_WARNING, "Unknown node name : %s", name);
 	}
