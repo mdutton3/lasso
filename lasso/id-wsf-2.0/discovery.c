@@ -97,8 +97,12 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 	metadata_register = lasso_idwsf2_disco_svc_md_register_new(
 			service_type, abstract, sp_provider_id);
 
+	if (profile->request)
+		lasso_node_destroy(LASSO_NODE(profile->request));
+	profile->request = LASSO_NODE(metadata_register);
+
 	/* Create request with this xml node */
-	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(metadata_register));
+	lasso_wsf2_profile_init_soap_request(profile, profile->request);
 
 	/* FIXME : Get the url of the disco service where we must send the soap request */
 	/* profile->msg_url = g_strdup(disco_provider_id); */
