@@ -1423,6 +1423,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	node_name = (char*)xmlnode->name;
 	if (strcmp(node_name, "EncryptedAssertion") == 0) {
 		typename = g_strdup("LassoSaml2EncryptedElement");
+	} else if (strcmp(node_name, "SvcMD") == 0) {
+		typename = g_strdup("LassoIdWsf2DiscoSvcMetadata");
 	} else {
 		typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
 	}

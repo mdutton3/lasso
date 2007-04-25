@@ -36,6 +36,7 @@ extern "C" {
 #else
 typedef void LassoDiscoServiceInstance;
 #endif
+
 #include <lasso/id-ff/provider.h>
 
 
@@ -85,7 +86,8 @@ LASSO_EXPORT gint lasso_server_add_provider (LassoServer *server,
 		LassoProviderRole role, const gchar *metadata,
 		const gchar *public_key, const gchar *ca_cert_chain);
 
-LASSO_EXPORT gint lasso_server_add_service(LassoServer *server, LassoDiscoServiceInstance *service);
+LASSO_EXPORT gint lasso_server_add_service(LassoServer *server, LassoNode *service);
+LASSO_EXPORT gint lasso_server_add_service_from_dump(LassoServer *server, const gchar *dump);
 
 LASSO_EXPORT void lasso_server_destroy(LassoServer *server);
 

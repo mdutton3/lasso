@@ -5268,6 +5268,10 @@ typedef struct {
 	THROW_ERROR()
 	int addService(LassoDiscoServiceInstance *service);
 	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int addServiceFromDump(const char *dump);
+	END_THROW_ERROR()
 #endif
 
 	%newobject dump;
@@ -5345,6 +5349,7 @@ LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 
 #define LassoServer_addProvider lasso_server_add_provider
 #define LassoServer_addService lasso_server_add_service
+#define LassoServer_addServiceFromDump lasso_server_add_service_from_dump
 #define LassoServer_dump lasso_server_dump
 #define LassoServer_getProvider lasso_server_get_provider
 #define LassoServer_getService lasso_server_get_service

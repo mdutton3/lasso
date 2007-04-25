@@ -95,18 +95,36 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
  * Return value: 0 on success; a negative value if an error occured.
  **/
 gint
-lasso_server_add_service(LassoServer *server, LassoDiscoServiceInstance *service)
+lasso_server_add_service(LassoServer *server, LassoNode *service)
 {
 #ifdef LASSO_WSF_ENABLED
 	g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_DISCO_SERVICE_INSTANCE(service),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(service != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	g_hash_table_insert(server->services, g_strdup(service->ServiceType),
-			g_object_ref(service));
+	if (LASSO_IS_DISCO_SERVICE_INSTANCE(service)) {
+		g_hash_table_insert(server->services,
+				g_strdup(LASSO_DISCO_SERVICE_INSTANCE(service)->ServiceType),
+				g_object_ref(service));
+	} else if (LASSO_IS_IDWSF2_DISCO_SVC_METADATA(service)) {
+		return lasso_server_add_svc_metadata(server,
+				LASSO_IDWSF2_DISCO_SVC_METADATA(service));
+	} else {
+		return LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ;
+	}
 #endif
-
 	return 0;
+}
+
+
+gint
+lasso_server_add_service_from_dump(LassoServer *server, const gchar *dump)
+{
+	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	LassoNode *node;
+
+	node = lasso_node_new_from_dump(dump);
+
+	return lasso_server_add_service(server, node);
 }
 
 #ifdef LASSO_WSF_ENABLED
