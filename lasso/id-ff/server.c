@@ -119,8 +119,9 @@ lasso_server_add_service(LassoServer *server, LassoNode *service)
 gint
 lasso_server_add_service_from_dump(LassoServer *server, const gchar *dump)
 {
-	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	LassoNode *node;
+
+	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	node = lasso_node_new_from_dump(dump);
 
