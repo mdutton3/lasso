@@ -130,7 +130,7 @@ typedef struct {
 
 	THROW_ERROR()
 	int initMetadataRegister(char *service_type, char *abstract, char *disco_provider_id,
-		const char *soap_endpoint);
+		char *soap_endpoint);
 	END_THROW_ERROR()
 
 	THROW_ERROR()
