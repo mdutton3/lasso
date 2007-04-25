@@ -94,13 +94,15 @@ lasso_idwsf2_disco_svc_md_register_get_type()
 }
 
 LassoIdWsf2DiscoSvcMDRegister*
-lasso_idwsf2_disco_svc_md_register_new(gchar *service_type, gchar *abstract, gchar *provider_id)
+lasso_idwsf2_disco_svc_md_register_new(gchar *service_type, gchar *abstract, gchar *provider_id,
+	gchar *soap_endpoint)
 {
 	LassoIdWsf2DiscoSvcMDRegister *metadata_register;
 	LassoIdWsf2DiscoSvcMetadata *metadata;
 
 	metadata_register = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, NULL);
-	metadata = lasso_idwsf2_disco_svc_metadata_new(service_type, abstract, provider_id);
+	metadata = lasso_idwsf2_disco_svc_metadata_new_full(service_type, abstract, provider_id,
+		soap_endpoint);
 	metadata_register->metadata_list =
 		g_list_append(metadata_register->metadata_list, metadata);
 

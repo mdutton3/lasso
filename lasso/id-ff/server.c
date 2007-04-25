@@ -372,7 +372,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					t2 = t2->next;
 					continue;
 				}
-				svcMD = lasso_idwsf2_disco_svc_metadata_new(NULL, NULL, NULL);
+				svcMD = lasso_idwsf2_disco_svc_metadata_new();
 				LASSO_NODE_GET_CLASS(svcMD)->init_from_xml(LASSO_NODE(svcMD), t2);
 				server->private_data->svc_metadatas = g_list_append(
 					server->private_data->svc_metadatas, svcMD);

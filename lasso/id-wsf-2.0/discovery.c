@@ -79,7 +79,7 @@ lasso_idwsf2_discovery_destroy(LassoIdWsf2Discovery *discovery)
 
 gint
 lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
-	gchar *service_type, gchar *abstract, gchar *disco_provider_id)
+	gchar *service_type, gchar *abstract, gchar *disco_provider_id, gchar *soap_endpoint)
 {
 	LassoIdWsf2DiscoSvcMDRegister *metadata_register;
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
@@ -95,7 +95,7 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 
 	/* Get a MetadataRegister node */
 	metadata_register = lasso_idwsf2_disco_svc_md_register_new(
-			service_type, abstract, sp_provider_id);
+			service_type, abstract, sp_provider_id, soap_endpoint);
 
 	if (profile->request)
 		lasso_node_destroy(LASSO_NODE(profile->request));

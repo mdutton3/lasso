@@ -63,7 +63,7 @@ struct _LassoIdWsf2DiscoSvcMDRegisterClass {
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_register_get_type(void);
 
 LASSO_EXPORT LassoIdWsf2DiscoSvcMDRegister* lasso_idwsf2_disco_svc_md_register_new(
-	gchar *service_type, gchar *abstract, gchar *provider_id);
+	gchar *service_type, gchar *abstract, gchar *provider_id, gchar *soap_endpoint);
 
 LASSO_EXPORT LassoIdWsf2DiscoSvcMDRegister*
 lasso_idwsf2_disco_svc_md_register_new_from_message(const gchar *message);

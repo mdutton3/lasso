@@ -74,7 +74,7 @@ LASSO_EXPORT LassoIdWsf2Discovery* lasso_idwsf2_discovery_new(LassoServer *serve
 LASSO_EXPORT void lasso_idwsf2_discovery_destroy(LassoIdWsf2Discovery *discovery);
 
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
-	gchar *service_type, gchar *abstract, gchar *disco_provider_id);
+	gchar *service_type, gchar *abstract, gchar *disco_provider_id, gchar *soap_endpoint);
 
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_register_msg(
 	LassoIdWsf2Discovery *discovery, const gchar *message);

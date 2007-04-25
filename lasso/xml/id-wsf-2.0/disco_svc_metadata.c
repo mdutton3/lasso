@@ -108,7 +108,14 @@ lasso_idwsf2_disco_svc_metadata_get_type()
 }
 
 LassoIdWsf2DiscoSvcMetadata*
-lasso_idwsf2_disco_svc_metadata_new(gchar *service_type, gchar *abstract, gchar *provider_id)
+lasso_idwsf2_disco_svc_metadata_new()
+{
+	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, NULL);
+}
+
+LassoIdWsf2DiscoSvcMetadata*
+lasso_idwsf2_disco_svc_metadata_new_full(gchar *service_type, gchar *abstract, gchar *provider_id,
+	gchar *soap_endpoint)
 {
 	LassoIdWsf2DiscoSvcMetadata *metadata;
 	LassoIdWsf2DiscoEndpointContext *endpoint_context;
@@ -118,8 +125,9 @@ lasso_idwsf2_disco_svc_metadata_new(gchar *service_type, gchar *abstract, gchar 
 	metadata->Abstract = g_strdup(abstract);
 	metadata->ProviderID = g_strdup(provider_id);
 
-	endpoint_context = lasso_idwsf2_disco_endpoint_context_new(provider_id);
-	metadata->ServiceContext = lasso_idwsf2_disco_service_context_new(service_type, endpoint_context);
+	endpoint_context = lasso_idwsf2_disco_endpoint_context_new(soap_endpoint);
+	metadata->ServiceContext = lasso_idwsf2_disco_service_context_new(service_type,
+		endpoint_context);
 
 	return metadata;
 }
