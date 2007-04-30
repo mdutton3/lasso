@@ -248,10 +248,10 @@ liblassoinclude_HEADERS = \
 	samlp_response_abstract.h \
 	samlp_status.h \
 	samlp_status_code.h \
+	xml_enc.h \
 	$(WSF_H_FILES)
 
 lasso_private_h_sources = \
-	private.h \
-	xml_enc.h
+	private.h
 
 EXTRA_DIST = $(lasso_private_h_sources)
