@@ -27,8 +27,10 @@
 
 #include <xmlsec/xmltree.h>
 
-#include <lasso/xml/saml_assertion.h>
 #include <lasso/xml/saml_attribute_value.h>
+
+#include <lasso/xml/saml-2.0/saml2_assertion.h>
+#include <lasso/xml/saml-2.0/samlp2_name_id_policy.h>
 
 #include <lasso/xml/id-wsf-2.0/disco_query.h>
 #include <lasso/xml/id-wsf-2.0/disco_requested_service.h>
@@ -42,6 +44,7 @@
 #include <lasso/xml/id-wsf-2.0/disco_service_type.h>
 
 #include <lasso/xml/ws/wsa_endpoint_reference.h>
+#include <lasso/xml/ws/wsse_200401_security.h>
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/provider.h>
@@ -200,10 +203,17 @@ gint
 lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *discovery,
 	const gchar *svcMDID, const gchar *disco_provider_id)
 {
+	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
+	LassoIdentity *identity = profile->identity;
 	LassoIdWsf2DiscoSvcMDAssociationAdd *md_association_add;
+	LassoSoapEnvelope *envelope;
+	LassoSaml2Assertion *assertion;
+	LassoFederation *federation;
+	LassoWsse200401Security *wsse_security;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 
 	/* Get a MetadataRegister node */
 	md_association_add = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(
@@ -211,8 +221,31 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 	md_association_add->SvcMDID = g_list_append(md_association_add->SvcMDID, g_strdup(svcMDID));
 
 	/* Create request with this xml node */
-	lasso_wsf2_profile_init_soap_request(LASSO_WSF2_PROFILE(discovery),
-			LASSO_NODE(md_association_add));
+	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(md_association_add));
+
+	/* Identity token */
+	assertion = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
+	assertion->Subject = LASSO_SAML2_SUBJECT(lasso_saml2_subject_new());
+	assertion->Subject->SubjectConfirmation = LASSO_SAML2_SUBJECT_CONFIRMATION(
+			lasso_saml2_subject_confirmation_new());
+	assertion->Subject->SubjectConfirmation->Method = g_strdup(
+			LASSO_SAML2_CONFIRMATION_METHOD_BEARER);
+	federation = lasso_identity_get_federation(identity, disco_provider_id);
+	if (federation != NULL) {
+		if (federation->remote_nameIdentifier) {
+			assertion->Subject->NameID = g_object_ref(
+					federation->remote_nameIdentifier);
+		} else {
+			assertion->Subject->NameID = g_object_ref(
+					federation->local_nameIdentifier);
+		}
+	}
+
+	wsse_security = lasso_wsse_200401_security_new();
+	wsse_security->any = g_list_append(wsse_security->any, assertion);
+
+	envelope = profile->soap_envelope_request;
+	envelope->Header->Other = g_list_append(envelope->Header->Other, wsse_security);
 
 	/* FIXME : Get the url of the disco service where we must send the soap request */
 	/* LASSO_WSF2_PROFILE(discovery)->msg_url = g_strdup(disco_provider_id); */

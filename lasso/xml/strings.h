@@ -522,6 +522,11 @@
 #define LASSO_WSA_HREF "http://www.w3.org/2005/08/addressing"
 #define LASSO_WSA_PREFIX "wsa"
 
+/* WS-Security - 2004/01 */
+#define LASSO_WSSE_200401_HREF \
+	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+#define LASSO_WSSE_200401_PREFIX "wsse"
+
 /* WS-Utility */
 #define LASSO_WSU_HREF \
 	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"

@@ -30,7 +30,6 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
-#include <lasso/id-wsf-2.0/wsf2_profile.h>
 #include <lasso/xml/soap_fault.h>
 #include <lasso/xml/soap_binding_correlation.h>
 #include <lasso/xml/soap_binding_provider.h>
@@ -39,6 +38,7 @@
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/providerprivate.h>
 
+#include <lasso/id-wsf-2.0/wsf2_profile.h>
 #include <lasso/id-wsf-2.0/wsf2_profile_private.h>
 
 struct _LassoWsf2ProfilePrivate

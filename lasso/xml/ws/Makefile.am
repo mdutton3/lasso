@@ -18,6 +18,7 @@ liblasso_xml_ws_la_SOURCES = \
 	wsa_problem_action.c \
 	wsa_reference_parameters.c \
 	wsa_relates_to.c \
+	wsse_200401_security.c \
 	wsu_timestamp.c
 
 liblassoinclude_HEADERS = \
@@ -30,4 +31,5 @@ liblassoinclude_HEADERS = \
 	wsa_problem_action.h \
 	wsa_reference_parameters.h \
 	wsa_relates_to.h \
+	wsse_200401_security.h \
 	wsu_timestamp.h

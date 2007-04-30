@@ -1375,6 +1375,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "Sa";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_HREF) == 0)
 		prefix = "Wsse";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_200401_HREF) == 0)
+		prefix = "Wsse200401";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_DISCO_HREF) == 0)
 		prefix = "IdWsf2Disco";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SOAP_BINDING_HREF) == 0)
