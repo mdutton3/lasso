@@ -132,6 +132,10 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 	/* Process request */
 	res = lasso_wsf2_profile_process_soap_request_msg(profile, message);
 
+	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER(profile->request)) {
+		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	}
+
 	/* If the request has been correctly processed, */
 	/* put interesting data into the discovery object */
 	if (res == 0) {
@@ -184,6 +188,10 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 
 	/* Process request */
 	res = lasso_wsf2_profile_process_soap_response_msg(profile, message);
+
+	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(profile->response)) {
+		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	}
 
 	/* If the response has been correctly processed, */
 	/* put interesting data into the discovery object */
@@ -272,10 +280,14 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
+	identity = profile->identity;
+
 	/* Process request */
 	res = lasso_wsf2_profile_process_soap_request_msg(profile, message);
 
-	identity = profile->identity;
+	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(profile->request)) {
+		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	}
 
 	/* If the request has been correctly processed, */
 	/* put interesting data into the discovery object */
@@ -325,6 +337,10 @@ lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 
 	/* Process request */
 	res = lasso_wsf2_profile_process_soap_response_msg(profile, message);
+
+	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response)) {
+		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	}
 
 	/* If the response has been correctly processed, */
 	/* put interesting data into the discovery object */
@@ -464,6 +480,10 @@ lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const 
 	/* Process request */
 	res = lasso_wsf2_profile_process_soap_request_msg(profile, message);
 
+	if (! LASSO_IS_IDWSF2_DISCO_QUERY(profile->request)) {
+		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	}
+
 	/* If the request has been correctly processed, */
 	/* put interesting data into the discovery object */
 	if (res == 0) {
@@ -515,6 +535,10 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 
 	/* Process request */
 	res = lasso_wsf2_profile_process_soap_response_msg(profile, message);
+
+	if (! LASSO_IS_IDWSF2_DISCO_QUERY_RESPONSE(profile->response)) {
+		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	}
 
 	/* If the response has been correctly processed, */
 	/* put interesting data into the discovery object */
