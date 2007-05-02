@@ -56,6 +56,8 @@
 #include <lasso/xml/id-wsf-2.0/disco_abstract.h>
 #include <lasso/xml/id-wsf-2.0/disco_providerid.h>
 #include <lasso/xml/id-wsf-2.0/disco_service_type.h>
+#include <lasso/xml/id-wsf-2.0/disco_security_context.h>
+#include <lasso/xml/id-wsf-2.0/sec_token.h>
 #endif
 
 static int lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obtained);
@@ -602,6 +604,9 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	LassoSaml2AttributeStatement *attributeStatement;
 	LassoSaml2Attribute *attribute;
 	LassoSaml2AttributeValue *attributeValue;
+	LassoIdWsf2DiscoSecurityContext *security_context;
+	LassoIdWsf2SecToken *sec_token;
+	LassoSaml2Assertion *assertion_identity_token;
 
 	svcMDs = lasso_identity_get_svc_metadatas(LASSO_PROFILE(login)->identity,
 		LASSO_IDWSF2_DISCO_HREF);
@@ -639,11 +644,27 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	/* Framework */
 	metadata->any = g_list_append(metadata->any,
 		g_object_ref(svcMD->ServiceContext->EndpointContext->Framework));
+	
+	/* Identity token */
+	assertion_identity_token = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
+	assertion_identity_token->Subject = g_object_ref(assertion->Subject);
 
+	sec_token = LASSO_IDWSF2_SEC_TOKEN(lasso_idwsf2_sec_token_new());
+	sec_token->any = LASSO_NODE(assertion_identity_token);
+	
+	security_context = LASSO_IDWSF2_DISCO_SECURITY_CONTEXT(
+		lasso_idwsf2_disco_security_context_new());
+	/* FIXME */
+	security_context->SecurityMechID = g_list_append(
+		security_context->SecurityMechID, g_strdup("SecMechID"));
+	security_context->Token = g_list_append(security_context->Token, sec_token);
+	
+	metadata->any = g_list_append(metadata->any, security_context);
+
+	/* End of metadata construction */
 	epr->Metadata = metadata;
 	
 	/* Add the EPR to the assertion as a SAML attribute */
-
 	attributeValue = LASSO_SAML2_ATTRIBUTE_VALUE(lasso_saml2_attribute_value_new());
 	attributeValue->any = g_list_append(attributeValue->any, epr);
 
