@@ -54,6 +54,7 @@ typedef enum {
 	SNIPPET_OPTIONAL = 1 << 23, /* optional, ignored if 0 */
 	SNIPPET_OPTIONAL_NEG = 1 << 24, /* optional, ignored if -1 */
 	SNIPPET_ANY = 1 << 25, /* ##any node */
+	SNIPPET_ALLOW_TEXT = 1 << 26, /* allow text childs in list of nodes */
 } SnippetType;
 
 struct XmlSnippet {

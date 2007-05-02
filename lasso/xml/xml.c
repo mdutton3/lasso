@@ -840,7 +840,8 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 						location = value;
 						*location = g_list_append(
 								*location, xmlCopyNode(t, 1));
-					} else if (type == SNIPPET_LIST_NODES) {
+					} else if (type == SNIPPET_LIST_NODES &&
+							snippet->type & SNIPPET_ALLOW_TEXT) {
 						LassoNode *text_node;
 						text_node = lasso_node_new_from_xmlNode_with_type(t,
 								"LassoMiscTextNode");
