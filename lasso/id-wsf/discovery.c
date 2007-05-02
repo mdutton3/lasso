@@ -767,7 +767,7 @@ lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gch
 	}
 
 	response = LASSO_DISCO_MODIFY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
-	if (strcmp(response->Status->code, "OK") != 0) {
+	if (strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_OK) != 0) {
 		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 
@@ -911,7 +911,7 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 	}
 
 	response = LASSO_DISCO_QUERY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
-	if (strcmp(response->Status->code, "OK") != 0) {
+	if (strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_OK) != 0) {
 		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 

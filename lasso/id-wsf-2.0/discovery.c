@@ -158,13 +158,12 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 	response = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(
 		lasso_idwsf2_disco_svc_md_register_response_new());
 
-	/* FIXME : Replace status codes with a constant ? */
 	if (res == 0) {
-		response->Status = lasso_util_status_new("OK");
+		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_OK);
 		/* FIXME : foreach here as well */
 		response->SvcMDID = g_list_append(response->SvcMDID, discovery->metadata->svcMDID);
 	} else {
-		response->Status = lasso_util_status_new("Failed");
+		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
 		/* XXX : May add secondary status codes here */
 	}
 
@@ -309,11 +308,11 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 	/* Build response */
 	response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(
 		lasso_idwsf2_disco_svc_md_association_add_response_new());
-	/* FIXME : Replace status codes with a constant ? */
+
 	if (res == 0) {
-		response->Status = lasso_util_status_new("OK");
+		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_OK);
 	} else {
-		response->Status = lasso_util_status_new("Failed");
+		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
 		/* XXX : May add secondary status codes here */
 	}
 
@@ -499,9 +498,8 @@ lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const 
 	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(
 		lasso_idwsf2_disco_query_response_new());
 
-	/* FIXME : Replace status codes with a constant ? */
 	if (res == 0) {
-		response->Status = lasso_util_status_new("OK");
+		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_OK);
 		/* FIXME : foreach here as well */
 		epr = lasso_idwsf2_discovery_build_query_response_epr(service, identity);
 		if (epr != NULL) {
@@ -509,7 +507,7 @@ lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const 
 				g_list_append(response->EndpointReference, epr);
 		}
 	} else {
-		response->Status = lasso_util_status_new("Failed");
+		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
 		/* XXX : May add secondary status codes here */
 	}
 
