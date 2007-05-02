@@ -239,10 +239,10 @@
 /*****************************************************************************/
 
 /* prefix & href */
-#define LASSO_SAML_ASSERTION_HREF	 "urn:oasis:names:tc:SAML:1.0:assertion"
-#define LASSO_SAML_ASSERTION_PREFIX "saml"
-#define LASSO_SAML_PROTOCOL_HREF	 "urn:oasis:names:tc:SAML:1.0:protocol"
-#define LASSO_SAML_PROTOCOL_PREFIX	 "samlp"
+#define LASSO_SAML_ASSERTION_HREF	"urn:oasis:names:tc:SAML:1.0:assertion"
+#define LASSO_SAML_ASSERTION_PREFIX	"saml"
+#define LASSO_SAML_PROTOCOL_HREF	"urn:oasis:names:tc:SAML:1.0:protocol"
+#define LASSO_SAML_PROTOCOL_PREFIX	"samlp"
 
 /* Versioning */
 #define LASSO_SAML_MAJOR_VERSION_N	 1
