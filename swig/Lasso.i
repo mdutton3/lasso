@@ -5914,6 +5914,9 @@ typedef struct {
 
 	%immutable protocolProfile;
 	LassoLoginProtocolProfile protocolProfile;
+
+	%newobject assertion_get;
+	LassoSamlAssertion *assertion;
 } LassoLogin;
 %extend LassoLogin {
 	/* Attributes inherited from Profile */
