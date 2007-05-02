@@ -50,7 +50,7 @@ LASSO_EXPORT gint lasso_identity_add_endpoint_reference(LassoIdentity *identity,
 LASSO_EXPORT LassoWsAddrEndpointReference* lasso_identity_get_endpoint_reference(
         LassoIdentity *identity, const gchar *service_type);
 
-LASSO_EXPORT LassoSaml2Assertion* lasso_identity_assertion_identity_token(LassoIdentity *identity);
+LASSO_EXPORT LassoSaml2Assertion* lasso_identity_get_assertion_identity_token(LassoIdentity *identity);
 
 #ifdef __cplusplus
 }

@@ -277,7 +277,7 @@ lasso_identity_get_endpoint_reference(LassoIdentity *identity, const gchar *serv
 }
 
 LassoSaml2Assertion*
-lasso_identity_assertion_identity_token(LassoIdentity *identity)
+lasso_identity_get_assertion_identity_token(LassoIdentity *identity)
 {
 	LassoWsAddrEndpointReference* epr;
 	GList *metadata_item;
