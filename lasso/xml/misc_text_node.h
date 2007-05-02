@@ -61,6 +61,7 @@ struct _LassoMiscTextNode {
 	char *name;
 	char *ns_href;
 	char *ns_prefix;
+	gboolean text_child;
 };
 
 

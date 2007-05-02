@@ -836,11 +836,18 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					type = snippet->type & 0xff;
 					value = G_STRUCT_MEMBER_P(node, snippet->offset);
 
-					if (type != SNIPPET_LIST_XMLNODES)
-						continue;
-
-					location = value;
-					*location = g_list_append(*location, xmlCopyNode(t, 1));
+					if (type == SNIPPET_LIST_XMLNODES) {
+						location = value;
+						*location = g_list_append(
+								*location, xmlCopyNode(t, 1));
+					} else if (type == SNIPPET_LIST_NODES) {
+						LassoNode *text_node;
+						text_node = lasso_node_new_from_xmlNode_with_type(t,
+								"LassoMiscTextNode");
+						location = value;
+						*location = g_list_append(*location, text_node);
+					}
+					continue;
 				}
 				continue;
 			}

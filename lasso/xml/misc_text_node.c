@@ -56,6 +56,10 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	xmlNs *ns;
+	
+	if (LASSO_MISC_TEXT_NODE(node)->text_child) {
+		return xmlNewText((xmlChar*)(LASSO_MISC_TEXT_NODE(node)->content));
+	}
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlNodeSetName(xmlnode, (xmlChar*)LASSO_MISC_TEXT_NODE(node)->name);
@@ -71,6 +75,12 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoMiscTextNode *n = LASSO_MISC_TEXT_NODE(node);
 	int rc;
+
+	if (xmlnode->type == XML_TEXT_NODE) {
+		n->text_child = TRUE;
+		n->content = g_strdup((char*)(xmlnode->content));
+		return 0;
+	}
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc) return rc;
@@ -107,6 +117,7 @@ instance_init(LassoMiscTextNode *node)
 	node->name = NULL;
 	node->ns_href = NULL;
 	node->ns_prefix = NULL;
+	node->text_child = FALSE;
 }
 
 static void

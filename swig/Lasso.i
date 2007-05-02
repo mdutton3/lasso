@@ -1909,6 +1909,7 @@ typedef struct {
 	char *name;
 	char *ns_href;
 	char *ns_prefix;
+	gboolean text_child;
 } LassoMiscTextNode;
 %extend LassoMiscTextNode {
 
