@@ -272,8 +272,14 @@ lasso_identity_add_endpoint_reference(LassoIdentity *identity, LassoWsAddrEndpoi
 LassoWsAddrEndpointReference*
 lasso_identity_get_endpoint_reference(LassoIdentity *identity, const gchar *service_type)
 {
-	return LASSO_WSA_ENDPOINT_REFERENCE(g_hash_table_lookup(
-		identity->private_data->eprs, service_type));
+	LassoWsAddrEndpointReference* epr;
+	
+	epr = g_hash_table_lookup(identity->private_data->eprs, service_type);
+	if (LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
+		return LASSO_WSA_ENDPOINT_REFERENCE(epr);
+	} else {
+		return NULL;
+	}
 }
 
 LassoSaml2Assertion*
@@ -287,14 +293,19 @@ lasso_identity_get_assertion_identity_token(LassoIdentity *identity)
 	LassoSaml2Assertion *assertion = NULL;
 
 	epr = lasso_identity_get_endpoint_reference(identity, LASSO_IDWSF2_DISCO_HREF);
+	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
+		return NULL;
+	}
+
 	metadata_item = epr->Metadata->any;
 	for (i = g_list_first(metadata_item); i != NULL; i = g_list_next(i)) {
-		if (LASSO_IS_IDWSF2_DISCO_SECURITY_CONTEXT(i)) {
-			security_context = LASSO_IDWSF2_DISCO_SECURITY_CONTEXT(i);
+		if (LASSO_IS_IDWSF2_DISCO_SECURITY_CONTEXT(i->data)) {
+			security_context = LASSO_IDWSF2_DISCO_SECURITY_CONTEXT(i->data);
 			if (security_context->Token != NULL) {
 				sec_token = security_context->Token->data;
 				if (LASSO_IS_SAML2_ASSERTION(sec_token->any)) {
-					assertion = LASSO_SAML2_ASSERTION(sec_token->any);
+					assertion = LASSO_SAML2_ASSERTION(
+						g_object_ref(sec_token->any));
 					break;
 				}
 			}

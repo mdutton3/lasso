@@ -215,7 +215,6 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 	LassoIdWsf2DiscoSvcMDAssociationAdd *md_association_add;
 	LassoSoapEnvelope *envelope;
 	LassoSaml2Assertion *assertion;
-	LassoFederation *federation;
 	LassoWsse200401Security *wsse_security;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
@@ -231,28 +230,15 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(md_association_add));
 
 	/* Identity token */
-	assertion = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
-	assertion->Subject = LASSO_SAML2_SUBJECT(lasso_saml2_subject_new());
-	assertion->Subject->SubjectConfirmation = LASSO_SAML2_SUBJECT_CONFIRMATION(
-			lasso_saml2_subject_confirmation_new());
-	assertion->Subject->SubjectConfirmation->Method = g_strdup(
-			LASSO_SAML2_CONFIRMATION_METHOD_BEARER);
-	federation = lasso_identity_get_federation(identity, disco_provider_id);
-	if (federation != NULL) {
-		if (federation->remote_nameIdentifier) {
-			assertion->Subject->NameID = g_object_ref(
-					federation->remote_nameIdentifier);
-		} else {
-			assertion->Subject->NameID = g_object_ref(
-					federation->local_nameIdentifier);
-		}
+	assertion = lasso_identity_get_assertion_identity_token(identity);
+
+	if (assertion != NULL) {
+		wsse_security = lasso_wsse_200401_security_new();
+		wsse_security->any = g_list_append(wsse_security->any, assertion);
+
+		envelope = profile->soap_envelope_request;
+		envelope->Header->Other = g_list_append(envelope->Header->Other, wsse_security);
 	}
-
-	wsse_security = lasso_wsse_200401_security_new();
-	wsse_security->any = g_list_append(wsse_security->any, assertion);
-
-	envelope = profile->soap_envelope_request;
-	envelope->Header->Other = g_list_append(envelope->Header->Other, wsse_security);
 
 	/* FIXME : Get the url of the disco service where we must send the soap request */
 	/* LASSO_WSF2_PROFILE(discovery)->msg_url = g_strdup(disco_provider_id); */
