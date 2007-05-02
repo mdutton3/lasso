@@ -403,12 +403,19 @@ lasso_discovery_get_resource_offering_auto(LassoDiscovery *discovery, const gcha
 		while (iter2) {
 			LassoSamlAttribute *attribute = iter2->data;
 			iter2 = g_list_next(iter2);
-			if (strcmp(attribute->attributeName, "DiscoveryResourceOffering") != 0)
+			if (! LASSO_IS_SAML_ATTRIBUTE(attribute)) {
 				continue;
+			}
+			if (strcmp(attribute->attributeName, "DiscoveryResourceOffering") != 0) {
+				continue;
+			}
 			iter3 = attribute->AttributeValue;
 			while (iter3) {
 				LassoSamlAttributeValue *attribute_value = iter3->data;
 				iter3 = g_list_next(iter3);
+				if (! LASSO_IS_SAML_ATTRIBUTE_VALUE(attribute_value)) {
+					continue;
+				}
 				iter4 = attribute_value->any;
 				while (iter4) {
 					LassoDiscoResourceOffering *v = iter4->data;
