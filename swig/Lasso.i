@@ -59,6 +59,7 @@
 #include <lasso/lasso.h>
 #include <lasso/xml/lib_assertion.h>
 #include <lasso/xml/saml_attribute_value.h>
+#include <lasso/xml/misc_text_node.h>
 
 #ifdef LASSO_WSF_ENABLED
 #include <lasso/xml/disco_resource_id.h>
@@ -1894,6 +1895,46 @@ static GHashTable* lasso_string_dict_new()
 #define delete_LassoStringDict(self) g_hash_table_destroy(self)
 
 %}
+
+
+
+/* General utility elements */
+
+#ifndef SWIGPHP4
+%rename(MiscTextNode) LassoMiscTextNode;
+#endif
+typedef struct {
+	char *content;
+
+	char *name;
+	char *ns_href;
+	char *ns_prefix;
+} LassoMiscTextNode;
+%extend LassoMiscTextNode {
+
+	/* Constructor, Destructor & Static Methods */
+	LassoMiscTextNode();
+	~LassoMiscTextNode();
+
+	/* Method inherited from LassoNode */
+	%newobject dump;
+	char* dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoMiscTextNode lasso_misc_text_node_new
+#define delete_LassoMiscTextNode(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoMiscTextNode_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
 
 
 
