@@ -28,7 +28,7 @@
 %module lasso
 
 
-%include exception.i       
+%include exception.i
 %include typemaps.i
 
 #ifndef SWIGPHP4
@@ -92,14 +92,14 @@
 
 %{
 
-/* 
+/*
  * Thanks to the patch in this Debian bug for the solution
  * to the crash inside vsnprintf on some architectures.
  *
  * "reuse of args inside the while(1) loop is in violation of the
  * specs and only happens to work by accident on other systems."
  *
- * http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=104325 
+ * http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=104325
  */
 
 #ifndef va_copy
@@ -115,7 +115,7 @@
 /*#define %nonewobject %feature("new","")*/
 
 /*
- * In Windows, function free() segfaults when used for strings allocated 
+ * In Windows, function free() segfaults when used for strings allocated
  * using Glib.
  */
 
@@ -295,7 +295,7 @@ static void build_exception_msg(int errorCode, char *errorMsg) {
 	if (errorCode) {
 		char errorMsg[256];
 		int swig_error = SWIG_RuntimeError;
-		if (errorCode == LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ || 
+		if (errorCode == LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ ||
 				errorCode == LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ) {
 			swig_error = SWIG_ValueError;
 		}
@@ -569,7 +569,7 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 				break;
 		if (super == info) {
 			printf("Lasso Swig Alert: Unknown super class %s for class %s\n",
-			       superName, name);
+					superName, name);
 			super = NULL;
 		}
 	} else {
@@ -1868,7 +1868,7 @@ typedef struct {
 		%rename(__getitem__) getItem;
 #endif
 		char* getItem(char *key) {
-                        return g_strdup(g_hash_table_lookup(self, key));
+			return g_strdup(g_hash_table_lookup(self, key));
 		}
 		%exception getItem;
 
@@ -1876,7 +1876,7 @@ typedef struct {
 		%rename(__setitem__) setItem;
 #endif
 		void setItem(char *key, char *item) {
-                        g_hash_table_insert(self, g_strdup(key), g_strdup(item));
+			g_hash_table_insert(self, g_strdup(key), g_strdup(item));
 		}
 		%exception setItem;
 	}
@@ -5785,7 +5785,7 @@ typedef struct {
 
 	THROW_ERROR()
 	int initNotification(char *remoteProviderId = NULL,
-			      LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
+			LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 	END_THROW_ERROR()
 
 	THROW_ERROR()
@@ -6016,7 +6016,7 @@ typedef struct {
 
 	THROW_ERROR()
 	int initAuthnRequest(char *remoteProviderId = NULL,
-			     LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
+			LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
 	END_THROW_ERROR()
 
 	THROW_ERROR()
@@ -6180,7 +6180,7 @@ int LassoLogin_setSessionFromDump(LassoLogin *self, char *dump) {
 #define LassoLogin_processAuthnResponseMsg lasso_login_process_authn_response_msg
 #define LassoLogin_processRequestMsg lasso_login_process_request_msg
 #define LassoLogin_processResponseMsg lasso_login_process_response_msg
-#define LassoLogin_setEncryptedResourceId lasso_login_set_encryptedResourceId 
+#define LassoLogin_setEncryptedResourceId lasso_login_set_encryptedResourceId
 #define LassoLogin_setResourceId lasso_login_set_resourceId
 #define LassoLogin_validateRequestMsg lasso_login_validate_request_msg
 #define LassoLogin_processPaosResponseMsg lasso_login_process_paos_response_msg
