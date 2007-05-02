@@ -31,6 +31,11 @@ extern "C" {
 
 #include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
 #include <lasso/xml/id-wsf-2.0/disco_service_type.h>
+#include <lasso/xml/id-wsf-2.0/disco_security_context.h>
+#include <lasso/xml/id-wsf-2.0/sec_token.h>
+
+#include <lasso/xml/saml-2.0/saml2_assertion.h>
+
 #include <lasso/xml/ws/wsa_endpoint_reference.h>
 
 LASSO_EXPORT gint lasso_identity_add_svc_metadata(LassoIdentity *identity,
@@ -44,6 +49,8 @@ LASSO_EXPORT gint lasso_identity_add_endpoint_reference(LassoIdentity *identity,
 
 LASSO_EXPORT LassoWsAddrEndpointReference* lasso_identity_get_endpoint_reference(
         LassoIdentity *identity, const gchar *service_type);
+
+LASSO_EXPORT LassoSaml2Assertion* lasso_identity_assertion_identity_token(LassoIdentity *identity);
 
 #ifdef __cplusplus
 }
