@@ -2179,18 +2179,22 @@ lasso_node_init_from_saml2_query_fields(LassoNode *node, char **query_fields, ch
 static void
 xmlDeclareNs(xmlNode *root_node, xmlNode *node)
 {
-	xmlNs *ns;
+	xmlNs *ns, *ns2;
 	xmlNode *t;
 
 	if (strcmp((char*)node->name, "Signature") == 0)
 		return;
 
-	for (ns = node->nsDef; ns; ns = ns->next)
-		if (ns->prefix && strcmp((char*)ns->prefix, "xsi") != 0)
-			xmlNewNs(root_node, ns->href, ns->prefix);
-	for (t = node->children; t; t = t->next)
-		if (t->type == XML_ELEMENT_NODE)
+	for (ns = node->nsDef; ns; ns = ns->next) {
+		if (ns->prefix && strcmp((char*)ns->prefix, "xsi") != 0) {
+			ns2 = xmlNewNs(root_node, ns->href, ns->prefix);
+		}
+	}
+	for (t = node->children; t; t = t->next) {
+		if (t->type == XML_ELEMENT_NODE) {
 			xmlDeclareNs(root_node, t);
+		}
+	}
 }
 
 static inline int
@@ -2227,14 +2231,13 @@ xmlUseNsDef(xmlNs *ns, xmlNode *node)
 	} else if (node->nsDef) {
 		for (ns2 = node->nsDef; ns2->next; ns2 = ns2->next) {
 			if (sameNs(ns2->next, ns)) {
+				ns3 = ns2->next;
 				ns2->next = ns2->next->next;
-				if (ns3 != NULL) {
-					xmlFreeNs(ns3);
-				}
-				ns3 = ns2;
+				xmlFreeNs(ns3);
+				if (ns2->next == NULL)
+					break;
 			}
 		}
-		/* FIXME : memory leak : ns3 should be freed here */
 	}
 }
 
