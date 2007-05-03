@@ -68,7 +68,9 @@ struct _LassoWsf2Profile {
 	/*< private >*/
 	LassoIdentity *identity;
 	LassoSession  *session;
-	
+
+	gchar *name_id;
+
 	LassoWsf2ProfilePrivate *private_data;
 };
 

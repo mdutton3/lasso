@@ -78,6 +78,9 @@ typedef struct {
 
 	%immutable msgUrl;
 	char *msgUrl;
+	
+	%immutable nameId;
+	char *nameId;
 
 	%newobject request_get;
 	LassoNode *request;
@@ -150,6 +153,10 @@ typedef struct {
 	END_THROW_ERROR()
 
 	THROW_ERROR()
+	int registerMetadata(const gchar *message);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
 	int processMetadataAssociationAddResponseMsg(const gchar *message);
 	END_THROW_ERROR()
 
@@ -201,6 +208,10 @@ typedef struct {
 /* msgUrl */
 #define LassoIdWsf2Discovery_get_msgUrl(self) LASSO_WSF2_PROFILE(self)->msg_url
 #define LassoIdWsf2Discovery_msgUrl_get(self) LASSO_WSF2_PROFILE(self)->msg_url
+
+/* nameId */
+#define LassoIdWsf2Discovery_get_nameId(self) LASSO_WSF2_PROFILE(self)->name_id
+#define LassoIdWsf2Discovery_nameId_get(self) LASSO_WSF2_PROFILE(self)->name_id
 
 /* request */
 #define LassoIdWsf2Discovery_get_request(self) get_node(LASSO_WSF2_PROFILE(self)->request)
@@ -269,5 +280,7 @@ typedef struct {
 #define LassoIdWsf2Discovery_addRequestedServiceType lasso_idwsf2_discovery_add_requested_service_type
 #define LassoIdWsf2Discovery_processQueryMsg lasso_idwsf2_discovery_process_query_msg
 #define LassoIdWsf2Discovery_processQueryResponseMsg lasso_idwsf2_discovery_process_query_response_msg
+#define LassoIdWsf2Discovery_registerMetadata lasso_idwsf2_discovery_register_metadata
 
 %}
+

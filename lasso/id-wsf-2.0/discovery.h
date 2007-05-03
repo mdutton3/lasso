@@ -88,6 +88,9 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_association_add(
 	
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_association_add_msg(
 	LassoIdWsf2Discovery *discovery, const gchar *message);
+	
+LASSO_EXPORT gint lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery,
+	const gchar *message);
 
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 	LassoIdWsf2Discovery *discovery, const gchar *message);
