@@ -669,9 +669,8 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	attributeValue->any = g_list_append(attributeValue->any, epr);
 
 	attribute = LASSO_SAML2_ATTRIBUTE(lasso_saml2_attribute_new());
-	attribute->Name = g_strdup("WsAddrEndpointReference");
-	/* FIXME : Use Namespace of new WSA spec made in 2004 instead */
-	attribute->NameFormat = g_strdup(LASSO_WSA_HREF);
+	attribute->Name = g_strdup(LASSO_SAML2_ATTRIBUTE_NAME_EPR);
+	attribute->NameFormat = g_strdup(LASSO_SAML2_ATTRIBUTE_NAME_FORMAT_URI);
 	attribute->AttributeValue = g_list_append(attribute->AttributeValue,
 			attributeValue);
 

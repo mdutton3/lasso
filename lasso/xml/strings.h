@@ -359,6 +359,11 @@
 #define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED \
 		"urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"
 
+/* Attribute Name */
+#define LASSO_SAML2_ATTRIBUTE_NAME_EPR "urn:liberty:disco:2006-08:DiscoveryEPR"
+
+/* Attribute Name Format*/
+#define LASSO_SAML2_ATTRIBUTE_NAME_FORMAT_URI "urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
 
 /* Consent */
 #define LASSO_SAML2_CONSENT_OBTAINED "urn:oasis:names:tc:SAML:2.0:consent:obtained"
