@@ -219,7 +219,7 @@ lasso_wsf2_profile_build_soap_request_msg(LassoWsf2Profile *profile)
 	g_return_val_if_fail(LASSO_IS_WSF2_PROFILE(profile),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	profile->msg_body = lasso_node_dump(LASSO_NODE(profile->soap_envelope_request));
+	profile->msg_body = lasso_node_export_to_xml(LASSO_NODE(profile->soap_envelope_request));
 
 	return 0;
 }
@@ -263,7 +263,7 @@ lasso_wsf2_profile_build_soap_response_msg(LassoWsf2Profile *profile)
 	g_return_val_if_fail(LASSO_IS_WSF2_PROFILE(profile),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	profile->msg_body = lasso_node_dump(LASSO_NODE(profile->soap_envelope_response));
+	profile->msg_body = lasso_node_export_to_xml(LASSO_NODE(profile->soap_envelope_response));
 
 	return 0;
 }

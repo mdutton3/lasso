@@ -139,6 +139,8 @@ LASSO_EXPORT char* lasso_node_export_to_query(LassoNode *node,
 
 LASSO_EXPORT char* lasso_node_export_to_soap(LassoNode *node);
 
+gchar* lasso_node_export_to_xml(LassoNode *node);
+
 LASSO_EXPORT char* lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
 				const char *responseConsumerURL, const char *relay_state);
 

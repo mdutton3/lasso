@@ -173,6 +173,8 @@ lasso_node_export_to_base64(LassoNode *node)
 	xmlCharEncodingHandlerPtr handler = NULL;
 	xmlChar *buffer;
 	char *ret;
+	
+	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
 	message = lasso_node_get_xmlNode(node, FALSE);
 
@@ -208,7 +210,7 @@ lasso_node_export_to_ecp_soap_response(LassoNode *node, const char *assertionCon
 	xmlCharEncodingHandler *handler;
 	char *ret;
 
-	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
 	message = lasso_node_get_xmlNode(node, FALSE);
 
@@ -265,7 +267,7 @@ lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
 	xmlCharEncodingHandler *handler;
 	char *ret;
 
-	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
 	message = lasso_node_get_xmlNode(node, FALSE);
 
@@ -349,7 +351,7 @@ lasso_node_export_to_query(LassoNode *node,
 {
 	char *unsigned_query, *query;
 
-	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
 	unsigned_query = lasso_node_build_query(node);
 	if (private_key_file) {
@@ -360,6 +362,37 @@ lasso_node_export_to_query(LassoNode *node,
 	g_free(unsigned_query);
 
 	return query;
+}
+
+/**
+ * lasso_node_export_to_xml:
+ * @node: a #LassoNode
+ * 
+ * Exports @node to an xml message.
+ * 
+ * Return value: an xml export of @node.  The string must be freed by the
+ *      caller.
+ **/
+gchar*
+lasso_node_export_to_xml(LassoNode *node)
+{
+	xmlNode *message;
+	xmlOutputBuffer *buf;
+	xmlCharEncodingHandler *handler;
+	gchar *ret;
+
+	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
+
+	message = lasso_node_get_xmlNode(node, FALSE);
+
+	handler = xmlFindCharEncodingHandler("utf-8");
+	buf = xmlAllocOutputBuffer(handler);
+	xmlNodeDumpOutput(buf, NULL, message, 0, 0, "utf-8");
+	xmlOutputBufferFlush(buf);
+	ret = g_strdup((gchar*)(buf->conv ? buf->conv->content : buf->buffer->content));
+	xmlOutputBufferClose(buf);
+
+	return ret;
 }
 
 /**
@@ -379,7 +412,7 @@ lasso_node_export_to_soap(LassoNode *node)
 	xmlCharEncodingHandler *handler;
 	char *ret;
 
-	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
 	message = lasso_node_get_xmlNode(node, FALSE);
 
