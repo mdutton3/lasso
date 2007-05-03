@@ -214,7 +214,7 @@ lasso_wsf2_profile_init_soap_request(LassoWsf2Profile *profile, LassoNode *reque
 }
 
 gint
-lasso_wsf2_profile_build_soap_request_msg(LassoWsf2Profile *profile)
+lasso_wsf2_profile_build_request_msg(LassoWsf2Profile *profile)
 {
 	g_return_val_if_fail(LASSO_IS_WSF2_PROFILE(profile),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -258,7 +258,7 @@ lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gch
 }
 
 gint
-lasso_wsf2_profile_build_soap_response_msg(LassoWsf2Profile *profile)
+lasso_wsf2_profile_build_response_msg(LassoWsf2Profile *profile)
 {
 	g_return_val_if_fail(LASSO_IS_WSF2_PROFILE(profile),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);

@@ -94,12 +94,12 @@ LASSO_EXPORT gint lasso_wsf2_profile_set_session_from_dump(LassoWsf2Profile *pro
 LASSO_EXPORT gint lasso_wsf2_profile_init_soap_request(LassoWsf2Profile *profile,
 	LassoNode *request);
 
-LASSO_EXPORT gint lasso_wsf2_profile_build_soap_request_msg(LassoWsf2Profile *profile);
+LASSO_EXPORT gint lasso_wsf2_profile_build_request_msg(LassoWsf2Profile *profile);
 
 LASSO_EXPORT gint lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile,
 	const gchar *message);
 
-LASSO_EXPORT gint lasso_wsf2_profile_build_soap_response_msg(LassoWsf2Profile *profile);
+LASSO_EXPORT gint lasso_wsf2_profile_build_response_msg(LassoWsf2Profile *profile);
 
 LASSO_EXPORT gint lasso_wsf2_profile_process_soap_response_msg(LassoWsf2Profile *profile,
 	const gchar *message);

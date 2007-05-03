@@ -265,8 +265,8 @@ typedef struct {
 #define LassoIdWsf2Discovery_setIdentityFromDump(self, dump) lasso_wsf2_profile_set_identity_from_dump(LASSO_WSF2_PROFILE(self), dump)
 #define LassoIdWsf2Discovery_setSessionFromDump(self, dump) lasso_wsf2_profile_set_session_from_dump(LASSO_WSF2_PROFILE(self), dump)
 
-#define LassoIdWsf2Discovery_buildRequestMsg(self) lasso_wsf2_profile_build_soap_request_msg(LASSO_WSF2_PROFILE(self))
-#define LassoIdWsf2Discovery_buildResponseMsg(self) lasso_wsf2_profile_build_soap_response_msg(LASSO_WSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_buildRequestMsg(self) lasso_wsf2_profile_build_request_msg(LASSO_WSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_buildResponseMsg(self) lasso_wsf2_profile_build_response_msg(LASSO_WSF2_PROFILE(self))
 
 /* Methods implementations */
 
