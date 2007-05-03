@@ -656,7 +656,7 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 		lasso_idwsf2_disco_security_context_new());
 	/* FIXME */
 	security_context->SecurityMechID = g_list_append(
-		security_context->SecurityMechID, g_strdup("SecMechID"));
+		security_context->SecurityMechID, g_strdup(LASSO_SECURITY_MECH_TLS_BEARER));
 	security_context->Token = g_list_append(security_context->Token, sec_token);
 	
 	metadata->any = g_list_append(metadata->any, security_context);
