@@ -153,7 +153,7 @@ typedef struct {
 	END_THROW_ERROR()
 
 	THROW_ERROR()
-	int registerMetadata(const gchar *message);
+	int registerMetadata();
 	END_THROW_ERROR()
 
 	THROW_ERROR()
