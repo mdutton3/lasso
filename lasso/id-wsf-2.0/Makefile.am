@@ -19,6 +19,7 @@ liblassoinclude_HEADERS = \
 	discovery.h \
 	wsf2_profile.h \
 	identity.h \
-	server.h
+	server.h \
+	session.h
 
 EXTRA_DIST = $(lasso_private_h_sources)

@@ -20,8 +20,8 @@ liblasso_id_ff_la_SOURCES = \
 	name_registration.c \
 	profile.c \
 	provider.c \
-	server.c \
-	session.c
+	session.c \
+	server.c
 
 lasso_private_h_sources = \
 	identityprivate.h \

@@ -29,32 +29,13 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
-#include <lasso/xml/id-wsf-2.0/disco_service_type.h>
-#include <lasso/xml/id-wsf-2.0/disco_security_context.h>
-#include <lasso/xml/id-wsf-2.0/sec_token.h>
+LASSO_EXPORT gint lasso_identity_add_svc_md_id(LassoIdentity *identity, gchar *svcMDID);
 
-#include <lasso/xml/saml-2.0/saml2_assertion.h>
-
-#include <lasso/xml/ws/wsa_endpoint_reference.h>
-
-LASSO_EXPORT gint lasso_identity_add_svc_metadata(LassoIdentity *identity,
-        LassoIdWsf2DiscoSvcMetadata *metadata);
-
-LASSO_EXPORT GList* lasso_identity_get_svc_metadatas(LassoIdentity *identity,
-        const char *service_type);
-
-LASSO_EXPORT gint lasso_identity_add_endpoint_reference(LassoIdentity *identity,
-        LassoWsAddrEndpointReference *epr);
-
-LASSO_EXPORT LassoWsAddrEndpointReference* lasso_identity_get_endpoint_reference(
-        LassoIdentity *identity, const gchar *service_type);
-
-LASSO_EXPORT LassoSaml2Assertion* lasso_identity_get_assertion_identity_token(
-        LassoIdentity *identity);
+LASSO_EXPORT GList* lasso_identity_get_svc_md_ids(LassoIdentity *identity);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
 #endif /* __LASSO_IDWSF2_IDENTITY_H__ */
+

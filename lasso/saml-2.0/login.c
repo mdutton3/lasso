@@ -51,6 +51,8 @@
 
 #ifdef LASSO_WSF_ENABLED
 #include <lasso/id-wsf-2.0/identity.h>
+#include <lasso/id-wsf-2.0/server.h>
+#include <lasso/id-wsf-2.0/session.h>
 #include <lasso/xml/ws/wsa_endpoint_reference.h>
 #include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
 #include <lasso/xml/id-wsf-2.0/disco_abstract.h>
@@ -597,6 +599,7 @@ static void
 lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertion *assertion)
 {
 #ifdef LASSO_WSF_ENABLED
+	GList *svcMDIDs;
 	GList *svcMDs;
 	LassoIdWsf2DiscoSvcMetadata *svcMD;
 	LassoWsAddrEndpointReference *epr;
@@ -608,8 +611,9 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	LassoIdWsf2SecToken *sec_token;
 	LassoSaml2Assertion *assertion_identity_token;
 
-	svcMDs = lasso_identity_get_svc_metadatas(LASSO_PROFILE(login)->identity,
-		LASSO_IDWSF2_DISCO_HREF);
+	svcMDIDs = lasso_identity_get_svc_md_ids(LASSO_PROFILE(login)->identity);
+	svcMDs = lasso_server_get_svc_metadatas_with_id_and_type(LASSO_PROFILE(login)->server,
+		svcMDIDs, LASSO_IDWSF2_DISCO_HREF);
 	if (svcMDs == NULL) {
 		return;
 	}
@@ -1232,7 +1236,7 @@ lasso_saml20_login_copy_assertion_epr(LassoLogin *login)
 {
 #ifdef LASSO_WSF_ENABLED
 	LassoProfile *profile = LASSO_PROFILE(login);
-	LassoIdentity *identity = profile->identity;
+	LassoSession *session = profile->session;
 	LassoSaml2Assertion *assertion;
 	GList *attribute_statement_item;
 	LassoSaml2AttributeStatement *attribute_statement;
@@ -1242,7 +1246,7 @@ lasso_saml20_login_copy_assertion_epr(LassoLogin *login)
 	GList *i;
 	LassoWsAddrEndpointReference *epr;
 
-	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
+	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 
 	assertion = LASSO_SAML2_ASSERTION(
 		LASSO_SAMLP2_RESPONSE(profile->response)->Assertion->data);
@@ -1259,7 +1263,7 @@ lasso_saml20_login_copy_assertion_epr(LassoLogin *login)
 	for (i = g_list_first(attribute_value_item); i != NULL; i = g_list_next(i)) {
 		if (LASSO_IS_WSA_ENDPOINT_REFERENCE(i->data)) {
 			epr = LASSO_WSA_ENDPOINT_REFERENCE(i->data);
-			lasso_identity_add_endpoint_reference(identity, epr);
+			lasso_session_add_endpoint_reference(session, epr);
 		}
 	}
 #endif

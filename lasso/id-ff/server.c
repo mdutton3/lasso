@@ -150,6 +150,35 @@ lasso_server_get_svc_metadatas(LassoServer *server)
 
 	return server->private_data->svc_metadatas;
 }
+
+GList *
+lasso_server_get_svc_metadatas_with_id_and_type(LassoServer *server, GList *svcMDIDs,
+	const gchar *service_type)
+{
+	gchar *svcMDID;
+	LassoIdWsf2DiscoSvcMetadata *md;
+	GList *result = NULL;
+	GList *i;
+	GList *j;
+
+	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+	g_return_val_if_fail(service_type != NULL, NULL);
+
+	for (i = g_list_first(svcMDIDs); i != NULL; i = g_list_next(i)) {
+		svcMDID = (gchar *)(i->data);
+		for (j = g_list_first(server->private_data->svc_metadatas); j != NULL;
+				j = g_list_next(j)) {
+			md = LASSO_IDWSF2_DISCO_SVC_METADATA(j->data);
+			if (strcmp(svcMDID, md->svcMDID) == 0 && md->ServiceContext != NULL
+				&& strcmp(md->ServiceContext->ServiceType, service_type) == 0) {
+			
+				result = g_list_append(result, g_object_ref(md));
+			}
+		}
+	}
+
+	return result;
+}
 #endif
 
 

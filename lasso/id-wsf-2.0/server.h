@@ -36,8 +36,12 @@ LASSO_EXPORT gint lasso_server_add_svc_metadata(LassoServer *server,
         
 LASSO_EXPORT GList *lasso_server_get_svc_metadatas(LassoServer *server);
 
+LASSO_EXPORT GList *lasso_server_get_svc_metadatas_with_id_and_type(LassoServer *server,
+        GList *svcMDIDs, const gchar *service_type);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
 #endif /* __LASSO_IDWSF2_SERVER_H__ */
+

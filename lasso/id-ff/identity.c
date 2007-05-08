@@ -28,6 +28,7 @@
 #ifdef LASSO_WSF_ENABLED
 #include <lasso/id-wsf/identity.h>
 #include <lasso/id-wsf-2.0/identity.h>
+#include <lasso/xml/misc_text_node.h>
 #endif
 
 #include <lasso/id-ff/identityprivate.h>
@@ -36,8 +37,7 @@ struct _LassoIdentityPrivate
 {
 	GList *resource_offerings;
 	gboolean dispose_has_run;
-	GList *svcMD;
-	GHashTable *eprs;
+	GList *svcMDID;
 };
 
 /*****************************************************************************/
@@ -220,99 +220,21 @@ lasso_identity_get_resource_offering(LassoIdentity *identity, const char *entryI
 }
 
 gint
-lasso_identity_add_svc_metadata(LassoIdentity *identity, LassoIdWsf2DiscoSvcMetadata *svcMD)
+lasso_identity_add_svc_md_id(LassoIdentity *identity, gchar *svcMDID)
 {
-	identity->private_data->svcMD = g_list_append(
-			identity->private_data->svcMD, g_object_ref(svcMD));
+	identity->private_data->svcMDID = g_list_append(
+			identity->private_data->svcMDID, g_strdup(svcMDID));
 	identity->is_dirty = TRUE;
 
 	return 0;
 }
 
 GList*
-lasso_identity_get_svc_metadatas(LassoIdentity *identity, const char *service_type)
+lasso_identity_get_svc_md_ids(LassoIdentity *identity)
 {
-	GList *iter;
-	LassoIdWsf2DiscoSvcMetadata *t;
-	GList *result = NULL;
-	
 	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
-	
-	iter = identity->private_data->svcMD;
-	while (iter) {
-		t = iter->data;
-		iter = g_list_next(iter);
-		if (service_type == NULL || (t->ServiceContext && strcmp(
-					t->ServiceContext->ServiceType, service_type) == 0)) {
-			result = g_list_append(result, g_object_ref(t));
-		}
-	}
 
-	return result;
-}
-
-gint
-lasso_identity_add_endpoint_reference(LassoIdentity *identity, LassoWsAddrEndpointReference *epr)
-{
-	GList *i;
-	
-	for (i = g_list_first(epr->Metadata->any); i != NULL; i = g_list_next(i)) {
-		if (LASSO_IS_IDWSF2_DISCO_SERVICE_TYPE(i->data)) {
-			g_hash_table_insert(identity->private_data->eprs,
-				g_strdup(LASSO_IDWSF2_DISCO_SERVICE_TYPE(i->data)->content),
-				g_object_ref(epr));
-			identity->is_dirty = TRUE;
-			break;
-		}
-	}
-
-	return 0;
-}
-
-LassoWsAddrEndpointReference*
-lasso_identity_get_endpoint_reference(LassoIdentity *identity, const gchar *service_type)
-{
-	LassoWsAddrEndpointReference* epr;
-	
-	epr = g_hash_table_lookup(identity->private_data->eprs, service_type);
-	if (LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
-		return LASSO_WSA_ENDPOINT_REFERENCE(epr);
-	} else {
-		return NULL;
-	}
-}
-
-LassoSaml2Assertion*
-lasso_identity_get_assertion_identity_token(LassoIdentity *identity)
-{
-	LassoWsAddrEndpointReference* epr;
-	GList *metadata_item;
-	GList *i;
-	LassoIdWsf2DiscoSecurityContext *security_context;
-	LassoIdWsf2SecToken *sec_token;
-	LassoSaml2Assertion *assertion = NULL;
-
-	epr = lasso_identity_get_endpoint_reference(identity, LASSO_IDWSF2_DISCO_HREF);
-	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
-		return NULL;
-	}
-
-	metadata_item = epr->Metadata->any;
-	for (i = g_list_first(metadata_item); i != NULL; i = g_list_next(i)) {
-		if (LASSO_IS_IDWSF2_DISCO_SECURITY_CONTEXT(i->data)) {
-			security_context = LASSO_IDWSF2_DISCO_SECURITY_CONTEXT(i->data);
-			if (security_context->Token != NULL) {
-				sec_token = security_context->Token->data;
-				if (LASSO_IS_SAML2_ASSERTION(sec_token->any)) {
-					assertion = LASSO_SAML2_ASSERTION(
-						g_object_ref(sec_token->any));
-					break;
-				}
-			}
-		}
-	}
-
-	return assertion;
+	return identity->private_data->svcMDID;
 }
 
 #endif
@@ -325,7 +247,7 @@ lasso_identity_get_assertion_identity_token(LassoIdentity *identity)
 static LassoNodeClass *parent_class = NULL;
 
 static void
-add_childnode_from_hashtable(gchar *key, LassoFederation *value, xmlNode *xmlnode)
+add_childnode_from_hashtable(gchar *key, LassoNode *value, xmlNode *xmlnode)
 {
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
@@ -335,6 +257,13 @@ static void
 add_childnode_from_list(LassoNode *value, xmlNode *xmlnode)
 {
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
+}
+
+static void
+add_text_childnode_from_list(gchar *value, xmlNode *xmlnode)
+{
+	xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+		lasso_misc_text_node_new_with_string(value), TRUE));
 }
 #endif
 
@@ -360,25 +289,12 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	g_list_foreach(identity->private_data->resource_offerings,
 			(GFunc)add_childnode_from_list, xmlnode);
 
-	/* Service Metadatas (SvcMD) */
-	if (identity->private_data->svcMD != NULL) {
-		t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"SvcMDs", NULL);
-		g_list_foreach(identity->private_data->svcMD,
-				(GFunc)add_childnode_from_list, t);
+	/* Service Metadatas IDs (svcMDID) */
+	if (identity->private_data->svcMDID != NULL) {
+		t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"SvcMDIDs", NULL);
+		g_list_foreach(identity->private_data->svcMDID,
+				(GFunc)add_text_childnode_from_list, t);
 	}
-
-	/* Endpoint References */
-	if (identity->private_data->eprs != NULL
-			&& g_hash_table_size(identity->private_data->eprs)) {
-		t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"EndpointReferences", NULL);
-		g_hash_table_foreach(identity->private_data->eprs,
-				(GHFunc)add_childnode_from_hashtable, t);
-	}
-
-	/* Simpler version which has the drawback of not working. */
-	/* Kept here in case it can work and be a nicer solution */
-/* 	g_list_foreach(identity->private_data->svcMD, */
-/* 			(GFunc)add_childnode_from_list, xmlnode); */
 #endif
 
 	return xmlnode;
@@ -418,48 +334,23 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					identity->private_data->resource_offerings, offering);
 		}
 
-		/* Service Metadatas (SvcMD) */
-		if (strcmp((char*)t->name, "SvcMDs") == 0) {
+		/* Service Metadatas IDs (SvcMDID) */
+		if (strcmp((char*)t->name, "SvcMDIDs") == 0) {
 			t2 = t->children;
 			while (t2) {
-				LassoIdWsf2DiscoSvcMetadata *svcMD;
+				LassoMiscTextNode *text_node;
 				if (t2->type != XML_ELEMENT_NODE) {
 					t2 = t2->next;
 					continue;
 				}
-				svcMD = lasso_idwsf2_disco_svc_metadata_new();
-				LASSO_NODE_GET_CLASS(svcMD)->init_from_xml(LASSO_NODE(svcMD), t2);
-				identity->private_data->svcMD = g_list_append(
-					identity->private_data->svcMD, svcMD);
+				text_node = LASSO_MISC_TEXT_NODE(lasso_misc_text_node_new());
+				LASSO_NODE_GET_CLASS(text_node)->init_from_xml(
+					LASSO_NODE(text_node), t2);
+				identity->private_data->svcMDID = g_list_append(
+					identity->private_data->svcMDID, text_node->content);
 				t2 = t2->next;
 			}
 		}
-
-		/* Endpoint References */
-		if (strcmp((char*)t->name, "EndpointReferences") == 0) {
-			t2 = t->children;
-			while (t2) {
-				LassoWsAddrEndpointReference *epr;
-				if (t2->type != XML_ELEMENT_NODE) {
-					t2 = t2->next;
-					continue;
-				}
-				epr = LASSO_WSA_ENDPOINT_REFERENCE(
-					lasso_wsa_endpoint_reference_new());
-				LASSO_NODE_GET_CLASS(epr)->init_from_xml(LASSO_NODE(epr), t2);
-				lasso_identity_add_endpoint_reference(identity, epr);
-				t2 = t2->next;
-			}
-		}
-
-		/* Simpler version which has the drawback of not working. */
-		/* Kept here in case it can work and be a nicer solution */
-/* 		if (strcmp((char*)t->name, "SvcMD") == 0) { */
-/* 			LassoIdWsf2DiscoSvcMetadata *svcMD; */
-/* 			svcMD = LASSO_IDWSF2_DISCO_SVC_METADATA(lasso_node_new_from_xmlNode(t)); */
-/* 			identity->private_data->svcMD = g_list_append( */
-/* 					identity->private_data->svcMD, svcMD); */
-/* 		} */
 #endif
 
 		t = t->next;
@@ -489,16 +380,13 @@ dispose(GObject *object)
 	}
 	identity->private_data->dispose_has_run = TRUE;
 
-	if (identity->private_data->svcMD != NULL) {
-		g_list_free(identity->private_data->svcMD);
-		identity->private_data->svcMD = NULL;
+	if (identity->private_data->svcMDID != NULL) {
+		g_list_free(identity->private_data->svcMDID);
+		identity->private_data->svcMDID = NULL;
 	}
 
 	g_hash_table_destroy(identity->federations);
 	identity->federations = NULL;
-
-	g_hash_table_destroy(identity->private_data->eprs);
-	identity->private_data->eprs = NULL;
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
@@ -522,12 +410,7 @@ instance_init(LassoIdentity *identity)
 	identity->private_data = g_new0(LassoIdentityPrivate, 1);
 	identity->private_data->resource_offerings = NULL;
 	identity->private_data->dispose_has_run = FALSE;
-	identity->private_data->svcMD = NULL;
-#ifdef LASSO_WSF_ENABLED
-	identity->private_data->eprs = g_hash_table_new_full(g_str_hash, g_str_equal,
-			(GDestroyNotify)g_free,
-			(GDestroyNotify)lasso_wsa_endpoint_reference_destroy);
-#endif
+	identity->private_data->svcMDID = NULL;
 	identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,
 			(GDestroyNotify)lasso_federation_destroy);

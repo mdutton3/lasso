@@ -25,11 +25,21 @@
 #include <lasso/id-ff/session.h>
 #include <lasso/id-ff/sessionprivate.h>
 
+#ifdef LASSO_WSF_ENABLED
+#include <lasso/id-wsf-2.0/session.h>
+#include <lasso/xml/misc_text_node.h>
+#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
+#include <lasso/xml/id-wsf-2.0/disco_service_type.h>
+#include <lasso/xml/id-wsf-2.0/disco_security_context.h>
+#include <lasso/xml/id-wsf-2.0/sec_token.h>
+#endif
+
 struct _LassoSessionPrivate
 {
 	gboolean dispose_has_run;
 	GList *providerIDs;
 	GHashTable *status; /* hold temporary response status for sso-art */
+	GHashTable *eprs;
 };
 
 /*****************************************************************************/
@@ -292,6 +302,72 @@ lasso_session_remove_status(LassoSession *session, gchar *providerID)
 	return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 }
 
+#ifdef LASSO_WSF_ENABLED
+gint
+lasso_session_add_endpoint_reference(LassoSession *session, LassoWsAddrEndpointReference *epr)
+{
+	GList *i;
+	
+	for (i = g_list_first(epr->Metadata->any); i != NULL; i = g_list_next(i)) {
+		if (LASSO_IS_IDWSF2_DISCO_SERVICE_TYPE(i->data)) {
+			g_hash_table_insert(session->private_data->eprs,
+				g_strdup(LASSO_IDWSF2_DISCO_SERVICE_TYPE(i->data)->content),
+				g_object_ref(epr));
+			session->is_dirty = TRUE;
+			break;
+		}
+	}
+
+	return 0;
+}
+
+LassoWsAddrEndpointReference*
+lasso_session_get_endpoint_reference(LassoSession *session, const gchar *service_type)
+{
+	LassoWsAddrEndpointReference* epr;
+	
+	epr = g_hash_table_lookup(session->private_data->eprs, service_type);
+	if (LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
+		return LASSO_WSA_ENDPOINT_REFERENCE(epr);
+	} else {
+		return NULL;
+	}
+}
+
+LassoSaml2Assertion*
+lasso_session_get_assertion_identity_token(LassoSession *session)
+{
+	LassoWsAddrEndpointReference* epr;
+	GList *metadata_item;
+	GList *i;
+	LassoIdWsf2DiscoSecurityContext *security_context;
+	LassoIdWsf2SecToken *sec_token;
+	LassoSaml2Assertion *assertion = NULL;
+
+	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
+	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
+		return NULL;
+	}
+
+	metadata_item = epr->Metadata->any;
+	for (i = g_list_first(metadata_item); i != NULL; i = g_list_next(i)) {
+		if (LASSO_IS_IDWSF2_DISCO_SECURITY_CONTEXT(i->data)) {
+			security_context = LASSO_IDWSF2_DISCO_SECURITY_CONTEXT(i->data);
+			if (security_context->Token != NULL) {
+				sec_token = security_context->Token->data;
+				if (LASSO_IS_SAML2_ASSERTION(sec_token->any)) {
+					assertion = LASSO_SAML2_ASSERTION(
+						g_object_ref(sec_token->any));
+					break;
+				}
+			}
+		}
+	}
+
+	return assertion;
+}
+#endif
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
@@ -316,11 +392,22 @@ add_status_childnode(gchar *key, LassoSamlpStatus *value, xmlNode *xmlnode)
 	xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
+#ifdef LASSO_WSF_ENABLED
+static void
+add_childnode_from_hashtable(gchar *key, LassoNode *value, xmlNode *xmlnode)
+{
+	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
+}
+#endif
+
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	LassoSession *session = LASSO_SESSION(node);
+#ifdef LASSO_WSF_ENABLED
+	xmlNode *t;
+#endif
 
 	xmlnode = xmlNewNode(NULL, (xmlChar*)"Session");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, (xmlChar*)LASSO_LASSO_HREF, NULL));
@@ -333,6 +420,16 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		g_hash_table_foreach(session->private_data->status,
 				(GHFunc)add_status_childnode, xmlnode);
 
+#ifdef LASSO_WSF_ENABLED
+	/* Endpoint References */
+	if (session->private_data->eprs != NULL
+			&& g_hash_table_size(session->private_data->eprs)) {
+		t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"EndpointReferences", NULL);
+		g_hash_table_foreach(session->private_data->eprs,
+				(GHFunc)add_childnode_from_hashtable, t);
+	}
+#endif
+
 	return xmlnode;
 }
 
@@ -340,7 +437,11 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSession *session = LASSO_SESSION(node);
-	xmlNode *t, *n;
+	xmlNode *t;
+	xmlNode *n;
+#ifdef LASSO_WSF_ENABLED
+	xmlNode *t2;
+#endif
 
 	t = xmlnode->children;
 	while (t) {
@@ -374,6 +475,26 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 						status);
 			}
 		}
+
+#ifdef LASSO_WSF_ENABLED		
+		/* Endpoint References */
+		if (strcmp((char*)t->name, "EndpointReferences") == 0) {
+			t2 = t->children;
+			while (t2) {
+				LassoWsAddrEndpointReference *epr;
+				if (t2->type != XML_ELEMENT_NODE) {
+					t2 = t2->next;
+					continue;
+				}
+				epr = LASSO_WSA_ENDPOINT_REFERENCE(
+					lasso_wsa_endpoint_reference_new());
+				LASSO_NODE_GET_CLASS(epr)->init_from_xml(LASSO_NODE(epr), t2);
+				lasso_session_add_endpoint_reference(session, epr);
+				t2 = t2->next;
+			}
+		}
+#endif
+
 		t = t->next;
 	}
 	return 0;
@@ -404,6 +525,11 @@ dispose(GObject *object)
 	g_list_free(session->private_data->providerIDs);
 	session->private_data->providerIDs = NULL;
 
+#ifdef LASSO_WSF_ENABLED	
+	g_hash_table_destroy(session->private_data->eprs);
+	session->private_data->eprs = NULL;
+#endif
+
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
@@ -431,7 +557,11 @@ instance_init(LassoSession *session)
 	session->private_data->status = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,
 			(GDestroyNotify)lasso_node_destroy);
-
+#ifdef LASSO_WSF_ENABLED
+	session->private_data->eprs = g_hash_table_new_full(g_str_hash, g_str_equal,
+			(GDestroyNotify)g_free,
+			(GDestroyNotify)lasso_wsa_endpoint_reference_destroy);
+#endif
 	session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,
 			(GDestroyNotify)lasso_node_destroy);
