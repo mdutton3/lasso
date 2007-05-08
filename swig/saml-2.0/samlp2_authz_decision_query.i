@@ -1,64 +1,64 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Samlp2AuthzDecisionQuery) LassoSamlp2AuthzDecisionQuery;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(resource) Resource;
 #endif
 	char *Resource;
 } LassoSamlp2AuthzDecisionQuery;
 %extend LassoSamlp2AuthzDecisionQuery {
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(action) Action;
 #endif
 	%newobject *Action_get;
 	LassoSaml2Action *Action;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(evidence) Evidence;
 #endif
 	%newobject *Evidence_get;
 	LassoSaml2Evidence *Evidence;
 
 	/* inherited from Samlp2SubjectQueryAbstract */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(subject) Subject;
 #endif
 	%newobject *Subject_get;
 	LassoSaml2Subject *Subject;
 
 	/* inherited from RequestAbstract */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(issuer) Issuer;
 #endif
 	%newobject *Issuer_get;
 	LassoSaml2NameID *Issuer;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(extensions) Extensions;
 #endif
 	%newobject *Extensions_get;
 	LassoSamlp2Extensions *Extensions;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(iD) ID;
 #endif
 	char *ID;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(version) Version;
 #endif
 	char *Version;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(issueInstant) IssueInstant;
 #endif
 	char *IssueInstant;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(destination) Destination;
 #endif
 	char *Destination;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(consent) Consent;
 #endif
 	char *Consent;

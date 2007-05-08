@@ -51,7 +51,7 @@
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsHelp) LassoIsHelp;
 #endif
 typedef struct {
@@ -95,7 +95,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsInquiry) LassoIsInquiry;
 #endif
 typedef struct {
@@ -108,25 +108,25 @@ typedef struct {
 %extend LassoIsInquiry {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(confirm) Confirm;
 #endif
 	%newobject Confirm_get;
 	LassoNodeList *Confirm;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(help) Help;
 #endif
 	%newobject Help_get;
 	LassoIsHelp *Help;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(select) Select;
 #endif
 	%newobject Select_get;
 	LassoNodeList *Select;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(text) Text;
 #endif
 	%newobject Text_get;
@@ -189,25 +189,25 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsInquiryElement) LassoIsInquiryElement;
 #endif
 typedef struct {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(hint) Hint;
 #endif
 	char *Hint;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(Label) Label;
 #endif
 	char *Label;
 
 	char *name;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(value) Value;
 #endif
 	char *Value;
@@ -215,7 +215,7 @@ typedef struct {
 %extend LassoIsInquiryElement {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(help) Help;
 #endif
 	%newobject Help_get;
@@ -260,7 +260,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsInteractionRequest) LassoIsInteractionRequest;
 #endif
 typedef struct {
@@ -281,19 +281,19 @@ typedef struct {
 %extend LassoIsInteractionRequest {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(encryptedResourceId) EncryptedResourceID;
 #endif
 	%newobject EncryptedResourceID_get;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(inquiry) Inquiry;
 #endif
 	%newobject Inquiry_get;
 	LassoNodeList *Inquiry;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(resourceId) ResourceID;
 #endif
 	%newobject ResourceID_get;
@@ -350,7 +350,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsInteractionResponse) LassoIsInteractionResponse;
 #endif
 typedef struct {
@@ -358,19 +358,19 @@ typedef struct {
 %extend LassoIsInteractionResponse {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(interactionStatement) InteractionStatement;
 #endif
 	%newobject InteractionStatement_get;
 	LassoNodeList *InteractionStatement;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(parameter) Parameter;
 #endif
 	%newobject Parameter_get;
 	LassoNodeList *Parameter;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(status) Status;
 #endif
 	%newobject Status_get;
@@ -427,7 +427,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsInteractionStatement) LassoIsInteractionStatement;
 #endif
 typedef struct {
@@ -435,7 +435,7 @@ typedef struct {
 %extend LassoIsInteractionStatement {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(inquiry) Inquiry;
 #endif
 	%newobject Inquiry_get;
@@ -483,13 +483,13 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsItem) LassoIsItem;
 #endif
 typedef struct {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(hint) Hint;
 #endif
 	char *Hint;
@@ -530,7 +530,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsParameter) LassoIsParameter;
 #endif
 typedef struct {
@@ -572,13 +572,13 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsRedirectRequest) LassoIsRedirectRequest;
 #endif
 typedef struct {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(redirectUrl) redirectURL;
 #endif
 	char *redirectURL;
@@ -615,7 +615,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsSelect) LassoIsSelect;
 #endif
 typedef struct {
@@ -628,7 +628,7 @@ typedef struct {
 %extend LassoIsSelect {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(item) Item;
 #endif
 	%newobject Item_get;
@@ -673,7 +673,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsText) LassoIsText;
 #endif
 typedef struct {
@@ -719,7 +719,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IsUserInteraction) LassoIsUserInteraction;
 #endif
 typedef struct {
@@ -744,7 +744,7 @@ typedef struct {
 %extend LassoIsUserInteraction {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(interactionService) InteractionService;
 #endif
 	%newobject InteractionService_get;

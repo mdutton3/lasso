@@ -1,9 +1,9 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Samlp2RequestedAuthnContext) LassoSamlp2RequestedAuthnContext;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(comparison) Comparison;
 #endif
 	char *Comparison;

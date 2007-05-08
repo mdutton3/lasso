@@ -1,13 +1,13 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2ProxyRestriction) LassoSaml2ProxyRestriction;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(audience) Audience;
 #endif
 	char *Audience;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(count) Count;
 #endif
 	char *Count;

@@ -1,48 +1,48 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2Assertion) LassoSaml2Assertion;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(version) Version;
 #endif
 	char *Version;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(iD) ID;
 #endif
 	char *ID;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(issueInstant) IssueInstant;
 #endif
 	char *IssueInstant;
 } LassoSaml2Assertion;
 %extend LassoSaml2Assertion {
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(issuer) Issuer;
 #endif
 	%newobject *Issuer_get;
 	LassoSaml2NameID *Issuer;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(subject) Subject;
 #endif
 	%newobject *Subject_get;
 	LassoSaml2Subject *Subject;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(conditions) Conditions;
 #endif
 	%newobject *Conditions_get;
 	LassoSaml2Conditions *Conditions;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(advice) Advice;
 #endif
 	%newobject *Advice_get;
 	LassoSaml2Advice *Advice;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(authnStatement) AuthnStatement;
 #endif
 	%newobject AuthnStatement_get;

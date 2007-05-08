@@ -1,5 +1,5 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Samlp2Extensions) LassoSamlp2Extensions;
 #endif
 typedef struct {

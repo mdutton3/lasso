@@ -46,7 +46,7 @@
  ***********************************************************************/
 
 /* Liberty Security Mechanisms */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(SECURITY_MECH_NULL) LASSO_SECURITY_MECH_NULL;
 
 %rename(SECURITY_MECH_X509) LASSO_SECURITY_MECH_X509;
@@ -80,7 +80,7 @@
 #define LASSO_SECURITY_MECH_CLIENT_TLS_BEARER "urn:liberty:security:2004-04:ClientTLS:Bearer"
 
 /* WSF prefix & href */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(EP_HREF) LASSO_EP_HREF;
 %rename(EP_PREFIX) LASSO_EP_PREFIX;
 %rename(PP_HREF) LASSO_PP_HREF;
@@ -104,7 +104,7 @@
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(UtilityStatus) LassoUtilityStatus;
 #endif
 typedef struct {
@@ -123,7 +123,7 @@ typedef struct {
 %extend LassoUtilityStatus {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(status) Status;
 #endif
 	%newobject Status_get;
@@ -174,7 +174,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Discovery) LassoDiscovery;
 #endif
 typedef struct {
@@ -421,7 +421,7 @@ int LassoDiscovery_setSessionFromDump(LassoDiscovery *self, char *dump) {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(InteractionProfileService) LassoInteractionProfileService;
 #endif
 typedef struct {
@@ -538,7 +538,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(PersonalProfileService) LassoPersonalProfileService;
 #endif
 typedef struct {
@@ -712,7 +712,7 @@ typedef struct {
  * lasso:DataService
  ***********************************************************************/
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(DataService) LassoDataService;
 #endif
 typedef struct {
@@ -937,7 +937,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Authentication) LassoAuthentication;
 #endif
 typedef struct {
@@ -952,13 +952,13 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(soapEnvelopeRequest) soap_envelope_request;
 #endif
 	%newobject soap_envelope_request_get;
 	LassoSoapEnvelope *soap_envelope_request;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(soapEnvelopeResponse) soap_envelope_response;
 #endif
 	%newobject soap_envelope_response_get;

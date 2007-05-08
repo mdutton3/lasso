@@ -1,22 +1,22 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2NameID) LassoSaml2NameID;
 #endif
 typedef struct {
 	char *content;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(format) Format;
 #endif
 	char *Format;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(spProviderId) SPProviderID;
 #endif
 	char *SPProvidedID;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(nameQualifier) NameQualifier;
 #endif
 	char *NameQualifier;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(spNameQualifier) SPNameQualifier;
 #endif
 	char *SPNameQualifier;

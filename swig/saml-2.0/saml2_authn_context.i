@@ -1,17 +1,17 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2AuthnContext) LassoSaml2AuthnContext;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(authnContextClassRef) AuthnContextClassRef;
 #endif
 	char *AuthnContextClassRef;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(authnContextDeclRef) AuthnContextDeclRef;
 #endif
 	char *AuthnContextDeclRef;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(authenticationAuthority) AuthenticationAuthority;
 #endif
 	char *AuthenticatingAuthority;

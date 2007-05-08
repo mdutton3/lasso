@@ -1,16 +1,16 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Samlp2StatusCode) LassoSamlp2StatusCode;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(value) Value;
 #endif
 	char *Value;
 } LassoSamlp2StatusCode;
 %extend LassoSamlp2StatusCode {
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(statusCode) StatusCode;
 #endif
 	%newobject *StatusCode_get;

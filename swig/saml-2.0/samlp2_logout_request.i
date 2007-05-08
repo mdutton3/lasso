@@ -1,73 +1,73 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Samlp2LogoutRequest) LassoSamlp2LogoutRequest;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(sessionIndex) SessionIndex;
 #endif
 	char *SessionIndex;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(reason) Reason;
 #endif
 	char *Reason;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(notOnOrAfter) NotOnOrAfter;
 #endif
 	char *NotOnOrAfter;
 } LassoSamlp2LogoutRequest;
 %extend LassoSamlp2LogoutRequest {
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(baseID) BaseID;
 #endif
 	%newobject *BaseID_get;
 	LassoSaml2BaseIDAbstract *BaseID;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(nameID) NameID;
 #endif
 	%newobject *NameID_get;
 	LassoSaml2NameID *NameID;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(encryptedID) EncryptedID;
 #endif
 	%newobject *EncryptedID_get;
 	LassoSaml2EncryptedElement *EncryptedID;
 
 	/* inherited from Samlp2RequestAbstract */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(issuer) Issuer;
 #endif
 	%newobject *Issuer_get;
 	LassoSaml2NameID *Issuer;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(extensions) Extensions;
 #endif
 	%newobject *Extensions_get;
 	LassoSamlp2Extensions *Extensions;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(iD) ID;
 #endif
 	char *ID;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(version) Version;
 #endif
 	char *Version;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(issueInstant) IssueInstant;
 #endif
 	char *IssueInstant;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(destination) Destination;
 #endif
 	char *Destination;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(consent) Consent;
 #endif
 	char *Consent;

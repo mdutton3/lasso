@@ -32,7 +32,7 @@
 
 
 /* WSF prefix & href */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IDWSF2_DISCO_HREF) LASSO_IDWSF2_DISCO_HREF;
 %rename(IDWSF2_DISCO_PREFIX) LASSO_IDWSF2_DISCO_PREFIX;
 #endif
@@ -52,7 +52,7 @@
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IdWsf2Discovery) LassoIdWsf2Discovery;
 #endif
 typedef struct {

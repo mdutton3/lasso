@@ -1,17 +1,17 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Samlp2IDPEntry) LassoSamlp2IDPEntry;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(providerId) ProviderID;
 #endif
 	char *ProviderID;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(name) Name;
 #endif
 	char *Name;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(loc) Loc;
 #endif
 	char *Loc;

@@ -1,10 +1,10 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2Action) LassoSaml2Action;
 #endif
 typedef struct {
 	char *content;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(namespace) Namespace;
 #endif
 	char *Namespace;

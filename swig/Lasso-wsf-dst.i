@@ -33,7 +33,7 @@
 %}
 
 /* WSF status code */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(DST_STATUS_CODE_ACTION_NOT_AUTHORIZED) LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED;
 %rename(DST_STATUS_CODE_ACTION_NOT_SUPPORTED) LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED;
 %rename(DST_STATUS_CODE_ALL_RETURNED) LASSO_DST_STATUS_CODE_ALL_RETURNED;
@@ -92,7 +92,7 @@
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(DstData) LassoDstData;
 #endif
 typedef struct {
@@ -100,7 +100,7 @@ typedef struct {
 
 	char *id;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(itemIdRef) itemIDRef;
 #endif
 	char *itemIDRef;
@@ -150,7 +150,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(DstModification) LassoDstModification;
 #endif
 typedef struct {
@@ -162,7 +162,7 @@ typedef struct {
 
 	gboolean overrideAllowed;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(select) Select;
 #endif
 	char *Select;
@@ -170,7 +170,7 @@ typedef struct {
 %extend LassoDstModification {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(newData) NewData;
 #endif
 	%newobject NewData_get;
@@ -215,7 +215,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(DstModify) LassoDstModify;
 #endif
 typedef struct {
@@ -223,7 +223,7 @@ typedef struct {
 
 	char *id;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(itemId) itemID;
 #endif
 	char *itemID;
@@ -231,25 +231,25 @@ typedef struct {
 %extend LassoDstModify {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(encryptedResourceId) EncryptedResourceID;
 #endif
 	%newobject EncryptedResourceID_get;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(extension) Extension;
 #endif
 	%newobject Extension_get;
 	LassoStringList *Extension;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(modification) Modification;
 #endif
 	%newobject Modification_get;
 	LassoNodeList *Modification;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(resourceId) ResourceID;
 #endif
 	%newobject ResourceID_get;
@@ -312,7 +312,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(DstModifyResponse) LassoDstModifyResponse;
 #endif
 typedef struct {
@@ -320,7 +320,7 @@ typedef struct {
 
 	char *id;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(itemIdRef) itemIDRef;
 #endif
 	char *itemIDRef;
@@ -330,13 +330,13 @@ typedef struct {
 %extend LassoDstModifyResponse {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(extension) Extension;
 #endif
 	%newobject Extension_get;
 	LassoStringList *Extension;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(status) Status;
 #endif
 	%newobject Status_get;
@@ -387,7 +387,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(DstNewData) LassoDstNewData;
 #endif
 typedef struct {
@@ -437,7 +437,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(DstQuery) LassoDstQuery;
 #endif
 typedef struct {
@@ -445,7 +445,7 @@ typedef struct {
 
 	char *id;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(itemId) itemID;
 #endif
 	char *itemID;
@@ -453,25 +453,25 @@ typedef struct {
 %extend LassoDstQuery {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(encryptedResourceId) EncryptedResourceID;
 #endif
 	%newobject EncryptedResourceID_get;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(extension) Extension;
 #endif
 	%newobject Extension_get;
 	LassoStringList *Extension;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(queryItem) QueryItem;
 #endif
 	%newobject QueryItem_get;
 	LassoNodeList *QueryItem;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(resourceId) ResourceID;
 #endif
 	%newobject ResourceID_get;
@@ -534,7 +534,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(DstQueryItem) LassoDstQueryItem;
 #endif
 typedef struct {
@@ -546,12 +546,12 @@ typedef struct {
 
 	gboolean includeCommonAttributes;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(itemId) itemID;
 #endif
 	char *itemID;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(select) Select;
 #endif
 	char *Select;
@@ -588,7 +588,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(DstQueryResponse) LassoDstQueryResponse;
 #endif
 typedef struct {
@@ -596,7 +596,7 @@ typedef struct {
 
 	char *id;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(itemIdRef) itemIDRef;
 #endif
 	char *itemIDRef;
@@ -606,19 +606,19 @@ typedef struct {
 %extend LassoDstQueryResponse {
 	/* Attributes */
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(data) Data;
 #endif
 	%newobject Data_get;
 	LassoNodeList *Data;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(extension) Extension;
 #endif
 	%newobject Extension_get;
 	LassoStringList *Extension;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(status) Status;
 #endif
 	%newobject Status_get;

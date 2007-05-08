@@ -1,47 +1,47 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Samlp2SubjectQueryAbstract) LassoSamlp2SubjectQueryAbstract;
 #endif
 typedef struct {
 } LassoSamlp2SubjectQueryAbstract;
 %extend LassoSamlp2SubjectQueryAbstract {
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(subject) Subject;
 #endif
 	%newobject *Subject_get;
 	LassoSaml2Subject *Subject;
 
 	/* inherited from Samlp2RequestAbstract */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(issuer) Issuer;
 #endif
 	%newobject *Issuer_get;
 	LassoSaml2NameID *Issuer;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(extensions) Extensions;
 #endif
 	%newobject *Extensions_get;
 	LassoSamlp2Extensions *Extensions;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(iD) ID;
 #endif
 	char *ID;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(version) Version;
 #endif
 	char *Version;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(issueInstant) IssueInstant;
 #endif
 	char *IssueInstant;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(destination) Destination;
 #endif
 	char *Destination;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(consent) Consent;
 #endif
 	char *Consent;

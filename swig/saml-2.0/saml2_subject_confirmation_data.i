@@ -1,25 +1,25 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2SubjectConfirmationData) LassoSaml2SubjectConfirmationData;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(notBefore) NotBefore;
 #endif
 	char *NotBefore;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(notOnOrAfter) NotOnOrAfter;
 #endif
 	char *NotOnOrAfter;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(recipient) Recipient;
 #endif
 	char *Recipient;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(inResponseTo) InResponseTo;
 #endif
 	char *InResponseTo;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(address) Address;
 #endif
 	char *Address;

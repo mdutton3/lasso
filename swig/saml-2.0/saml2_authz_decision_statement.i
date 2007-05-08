@@ -1,26 +1,26 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2AuthzDecisionStatement) LassoSaml2AuthzDecisionStatement;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(resource) Resource;
 #endif
 	char *Resource;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(decision) Decision;
 #endif
 	char *Decision;
 } LassoSaml2AuthzDecisionStatement;
 %extend LassoSaml2AuthzDecisionStatement {
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(action) Action;
 #endif
 	%newobject *Action_get;
 	LassoSaml2Action *Action;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(evidence) Evidence;
 #endif
 	%newobject *Evidence_get;

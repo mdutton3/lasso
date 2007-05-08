@@ -1,13 +1,13 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2SubjectLocality) LassoSaml2SubjectLocality;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(address) Address;
 #endif
 	char *Address;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(dnsName) DNSName;
 #endif
 	char *DNSName;

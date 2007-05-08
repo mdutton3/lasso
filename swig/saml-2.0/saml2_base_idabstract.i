@@ -1,13 +1,13 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2BaseIDAbstract) LassoSaml2BaseIDAbstract;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(nameQualifier) NameQualifier;
 #endif
 	char *NameQualifier;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(spNameQualifier) SPNameQualifier;
 #endif
 	char *SPNameQualifier;

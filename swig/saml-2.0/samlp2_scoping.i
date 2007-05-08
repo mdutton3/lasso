@@ -1,20 +1,20 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Samlp2Scoping) LassoSamlp2Scoping;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(requesterId) RequesterID;
 #endif
 	char *RequesterID;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(proxyCount) ProxyCount;
 #endif
 	char *ProxyCount;
 } LassoSamlp2Scoping;
 %extend LassoSamlp2Scoping {
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(iDPList) IDPList;
 #endif
 	%newobject *IDPList_get;

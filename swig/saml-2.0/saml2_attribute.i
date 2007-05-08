@@ -1,17 +1,17 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2Attribute) LassoSaml2Attribute;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(name) Name;
 #endif
 	char *Name;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(nameFormat) NameFormat;
 #endif
 	char *NameFormat;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(friendlyName) FriendlyName;
 #endif
 	char *FriendlyName;

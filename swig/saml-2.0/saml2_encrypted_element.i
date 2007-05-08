@@ -1,5 +1,5 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2EncryptedElement) LassoSaml2EncryptedElement;
 #endif
 typedef struct {

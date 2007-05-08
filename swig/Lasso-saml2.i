@@ -6,7 +6,7 @@
 
 /* Utility functions */
 
-#ifdef SWIGPHP4
+#ifdef SWIG_PHP_RENAMES
 %rename(lasso_isSamlQuery) lasso_profile_is_saml_query;
 #else
 %rename(isSamlQuery) lasso_profile_is_saml_query;
@@ -15,7 +15,7 @@ gboolean lasso_profile_is_saml_query(char *query);
 
 
 /* NameIdPolicy */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT;
 %rename(SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT;
 %rename(SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED) LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED;
@@ -28,7 +28,7 @@ gboolean lasso_profile_is_saml_query(char *query);
 		"urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"
 
 /* Protocol Bindings */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(SAML2_METADATA_BINDING_SOAP) LASSO_SAML2_METADATA_BINDING_SOAP;
 %rename(SAML2_METADATA_BINDING_REDIRECT) LASSO_SAML2_METADATA_BINDING_REDIRECT;
 %rename(SAML2_METADATA_BINDING_POST) LASSO_SAML2_METADATA_BINDING_POST;
@@ -43,7 +43,7 @@ gboolean lasso_profile_is_saml_query(char *query);
 
 
 /* AuthnClassRef */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(SAML2_AUTHN_CONTEXT_AUTHENTICATED_TELEPHONY) \
 	LASSO_SAML2_AUTHN_CONTEXT_AUTHENTICATED_TELEPHONY;
 %rename(SAML2_AUTHN_CONTEXT_INTERNET_PROTOCOL) \
@@ -147,7 +147,7 @@ gboolean lasso_profile_is_saml_query(char *query);
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(NameIdManagement) LassoNameIdManagement;
 #endif
 typedef struct {
@@ -356,7 +356,7 @@ int LassoNameIdManagement_setSessionFromDump(LassoNameIdManagement *self, char *
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Ecp) LassoEcp;
 #endif
 typedef struct {

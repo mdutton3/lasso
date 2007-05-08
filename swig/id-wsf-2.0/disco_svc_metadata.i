@@ -1,9 +1,12 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(IdWsf2DiscoSvcMetadata) LassoIdWsf2DiscoSvcMetadata;
 #endif
 typedef struct {
-	char *Abstract;
+#ifndef SWIG_PHP_RENAMES
+	%rename(abstract) Abstract;
+        char *Abstract;
+#endif
 	char *ProviderID;
 	/* XXX : Change this "void" if we happen to add ServiceContext in swig as well */
 	void *ServiceContext;

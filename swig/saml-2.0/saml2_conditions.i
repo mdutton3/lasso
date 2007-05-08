@@ -1,25 +1,25 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2Conditions) LassoSaml2Conditions;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(notBefore) NotBefore;
 #endif
 	char *NotBefore;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(notOnOrAfter) NotOnOrAfter;
 #endif
 	char *NotOnOrAfter;
 } LassoSaml2Conditions;
 %extend LassoSaml2Conditions {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(condition) Condition;
 #endif
 	%newobject Condition_get;
 	LassoNodeList *Condition;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(audienceRestriction) AudienceRestriction;
 #endif
 	%newobject AudienceRestriction_get;

@@ -1,34 +1,34 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2SubjectConfirmation) LassoSaml2SubjectConfirmation;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(method) Method;
 #endif
 	char *Method;
 } LassoSaml2SubjectConfirmation;
 %extend LassoSaml2SubjectConfirmation {
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(baseID) BaseID;
 #endif
 	%newobject *BaseID_get;
 	LassoSaml2BaseIDAbstract *BaseID;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(nameID) NameID;
 #endif
 	%newobject *NameID_get;
 	LassoSaml2NameID *NameID;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(encryptedID) EncryptedID;
 #endif
 	%newobject *EncryptedID_get;
 	LassoSaml2EncryptedElement *EncryptedID;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(subjectConfirmationData) SubjectConfirmationData;
 #endif
 	%newobject *SubjectConfirmationData_get;

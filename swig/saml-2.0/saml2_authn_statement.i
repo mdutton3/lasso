@@ -1,30 +1,30 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2AuthnStatement) LassoSaml2AuthnStatement;
 #endif
 typedef struct {
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(authnInstant) AuthnInstant;
 #endif
 	char *AuthnInstant;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(sessionIndex) SessionIndex;
 #endif
 	char *SessionIndex;
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(sessionNotOnOrAfter) SessionNotOnOrAfter;
 #endif
 	char *SessionNotOnOrAfter;
 } LassoSaml2AuthnStatement;
 %extend LassoSaml2AuthnStatement {
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(subjectLocality) SubjectLocality;
 #endif
 	%newobject *SubjectLocality_get;
 	LassoSaml2SubjectLocality *SubjectLocality;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(authnContext) AuthnContext;
 #endif
 	%newobject *AuthnContext_get;

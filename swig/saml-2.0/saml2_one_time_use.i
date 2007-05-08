@@ -1,5 +1,5 @@
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(Saml2OneTimeUse) LassoSaml2OneTimeUse;
 #endif
 typedef struct {

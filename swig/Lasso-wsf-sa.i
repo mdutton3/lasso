@@ -31,7 +31,7 @@
 %}
 
 /* SASL mechanisms */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(SASL_MECH_ANONYMOUS) LASSO_SASL_MECH_ANONYMOUS;
 %rename(SASL_MECH_PLAIN) LASSO_SASL_MECH_PLAIN;
 %rename(SASL_MECH_CRAM_MD5) LASSO_SASL_MECH_CRAM_MD5;
@@ -77,7 +77,7 @@
 #define SASL_NOUSERPASS -28  /* user supplied passwords not permitted */
 
 /* WSF prefix & href */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(SA_HREF) LASSO_SA_HREF;
 %rename(SA_PREFIX) LASSO_SA_PREFIX;
 #endif
@@ -85,7 +85,7 @@
 #define LASSO_SA_PREFIX "sa"
 
 /* WSF status code */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(SA_STATUS_CODE_CONTINUE) LASSO_SA_STATUS_CODE_CONTINUE;
 %rename(SA_STATUS_CODE_ABORT) LASSO_SA_STATUS_CODE_ABORT;
 %rename(SA_STATUS_CODE_OK) LASSO_SA_STATUS_CODE_OK;
@@ -106,7 +106,7 @@
  * sa:SaCredentials
  ***********************************************************************/
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(SaCredentials) LassoSaCredentials;
 #endif
 typedef struct {
@@ -115,7 +115,7 @@ typedef struct {
 } LassoSaCredentials;
 %extend LassoSaCredentials {
 	/* Attributes */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(any) any;
 #endif
 	%newobject any_get;
@@ -163,7 +163,7 @@ typedef struct {
  * sa:SaSASLRequest
  ***********************************************************************/
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(SaSASLRequest) LassoSaSASLRequest;
 #endif
 typedef struct {
@@ -180,13 +180,13 @@ typedef struct {
 } LassoSaSASLRequest;
 %extend LassoSaSASLRequest {
 	/* Attributes */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(data) Data;
 #endif
 	%newobject Data_get;
 	LassoNodeList *Data;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(requestAuthnContext) RequestAuthnContext;
 #endif
 	%newobject RequestAuthnContext_get;
@@ -235,7 +235,7 @@ typedef struct {
  ***********************************************************************/
 
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 %rename(SaSASLResponse) LassoSaSASLResponse;
 #endif
 typedef struct {
@@ -248,31 +248,31 @@ typedef struct {
 } LassoSaSASLResponse;
 %extend LassoSaSASLResponse {
 	/* Attributes */
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(data) Data;
 #endif
 	%newobject Data_get;
 	LassoNodeList *Data;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(credentials) Credentials;
 #endif
 	%newobject Credentials_get;
 	LassoNodeList *Credentials;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(resourceOffering) ResourceOffering;
 #endif
 	%newobject ResourceOffering_get;
 	LassoNodeList *ResourceOffering;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(passwordTransforms) PasswordTransforms;
 #endif
 	%newobject PasswordTransforms_get;
 	LassoNodeList *PasswordTransforms;
 
-#ifndef SWIGPHP4
+#ifndef SWIG_PHP_RENAMES
 	%rename(status) Status;
 #endif
 	%newobject Status_get;
