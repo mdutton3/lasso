@@ -510,8 +510,5 @@ lasso_identity_new_from_dump(const gchar *dump)
 gchar*
 lasso_identity_dump(LassoIdentity *identity)
 {
-	if (g_hash_table_size(identity->federations) == 0)
-		return g_strdup("");
-
 	return lasso_node_dump(LASSO_NODE(identity));
 }

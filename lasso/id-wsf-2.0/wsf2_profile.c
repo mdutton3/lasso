@@ -97,7 +97,7 @@ lasso_wsf2_profile_build_soap_envelope(const char *refToMessageId, const char *p
 LassoIdentity*
 lasso_wsf2_profile_get_identity(LassoWsf2Profile *profile)
 {
-	if (profile->identity && g_hash_table_size(profile->identity->federations))
+	if (profile->identity)
 		return profile->identity;
 	return NULL;
 }
