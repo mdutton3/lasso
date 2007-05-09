@@ -305,6 +305,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	xmlNode *t;
 #ifdef LASSO_WSF_ENABLED
 	xmlNode *t2;
+	xmlChar *xml_content;
+	gchar *content;
 #endif
 
 	t = xmlnode->children;
@@ -340,8 +342,11 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					t2 = t2->next;
 					continue;
 				}
+				xml_content = xmlNodeGetContent(t2);
+				content = g_strdup((gchar *)xml_content);
 				identity->private_data->svcMDID = g_list_append(
-					identity->private_data->svcMDID, xmlNodeGetContent(t2));
+					identity->private_data->svcMDID, content);
+				xmlFree(xml_content);
 				t2 = t2->next;
 			}
 		}
