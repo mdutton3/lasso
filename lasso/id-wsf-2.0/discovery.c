@@ -312,14 +312,19 @@ lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery)
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoSvcMDAssociationAdd *request;
 	LassoIdWsf2DiscoSvcMDAssociationAddResponse *response;
-	LassoIdentity *identity = profile->identity;
+	LassoIdentity *identity;
 	LassoSoapEnvelope *envelope;
 	GList *i;
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
+		
+	/* verify if identity already exists else create it */
+	if (profile->identity == NULL) {
+		profile->identity = lasso_identity_new();
+	}
+	identity = profile->identity;
 
 	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(profile->request)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
