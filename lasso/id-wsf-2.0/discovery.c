@@ -217,6 +217,7 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 	LassoSoapEnvelope *envelope;
 	LassoSaml2Assertion *assertion;
 	LassoWsse200401Security *wsse_security;
+	LassoWsAddrEndpointReference *epr;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -240,8 +241,10 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 		envelope->Header->Other = g_list_append(envelope->Header->Other, wsse_security);
 	}
 
-	/* FIXME : Get the url of the disco service where we must send the soap request */
-	/* LASSO_WSF2_PROFILE(discovery)->msg_url = g_strdup(disco_provider_id); */
+	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
+	if (epr != NULL) {
+		profile->msg_url = g_strdup(epr->Address->content);
+	}
 
 	return 0;
 }
