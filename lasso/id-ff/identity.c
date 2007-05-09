@@ -28,7 +28,6 @@
 #ifdef LASSO_WSF_ENABLED
 #include <lasso/id-wsf/identity.h>
 #include <lasso/id-wsf-2.0/identity.h>
-#include <lasso/xml/misc_text_node.h>
 #endif
 
 #include <lasso/id-ff/identityprivate.h>
@@ -262,8 +261,7 @@ add_childnode_from_list(LassoNode *value, xmlNode *xmlnode)
 static void
 add_text_childnode_from_list(gchar *value, xmlNode *xmlnode)
 {
-	xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-		lasso_misc_text_node_new_with_string(value), TRUE));
+	xmlNewTextChild(xmlnode, NULL, (xmlChar*)"SvcMDID", (xmlChar*)value);
 }
 #endif
 
@@ -338,16 +336,12 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		if (strcmp((char*)t->name, "SvcMDIDs") == 0) {
 			t2 = t->children;
 			while (t2) {
-				LassoMiscTextNode *text_node;
 				if (t2->type != XML_ELEMENT_NODE) {
 					t2 = t2->next;
 					continue;
 				}
-				text_node = LASSO_MISC_TEXT_NODE(lasso_misc_text_node_new());
-				LASSO_NODE_GET_CLASS(text_node)->init_from_xml(
-					LASSO_NODE(text_node), t2);
 				identity->private_data->svcMDID = g_list_append(
-					identity->private_data->svcMDID, text_node->content);
+					identity->private_data->svcMDID, xmlNodeGetContent(t2));
 				t2 = t2->next;
 			}
 		}
