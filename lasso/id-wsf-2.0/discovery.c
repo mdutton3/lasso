@@ -220,7 +220,6 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 
 	/* Get a MetadataRegister node */
 	md_association_add = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(

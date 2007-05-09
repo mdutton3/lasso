@@ -344,6 +344,8 @@ lasso_session_get_assertion_identity_token(LassoSession *session)
 	LassoIdWsf2SecToken *sec_token;
 	LassoSaml2Assertion *assertion = NULL;
 
+	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
+
 	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
 	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
 		return NULL;
