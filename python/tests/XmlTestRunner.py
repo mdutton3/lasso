@@ -4,7 +4,7 @@
 #
 # XmlTestRunner
 #
-# Copyright (C) 2004 Entr'ouvert
+ * Copyright (C) 2004-2007 Entr'ouvert
 # 
 # Authors: Frederic Peters <fpeters@entrouvert.com>
 #
