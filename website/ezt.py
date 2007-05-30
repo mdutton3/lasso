@@ -194,7 +194,7 @@ Directives
    &quot; and &gt;)
 """
 #
- * Copyright (C) 2004-2007 Entr'ouvert
+# Copyright (C) 2001-2005 Greg Stein. All Rights Reserved.
 #
 # Redistribution and use in source and binary forms, with or without 
 # modification, are permitted provided that the following conditions are 
