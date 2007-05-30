@@ -2,7 +2,7 @@
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
- * Copyright (C) 2004, 2005 Entr'ouvert
+ * Copyright (C) 2007 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: See AUTHORS file in top-level directory.
@@ -31,11 +31,11 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/id-wsf-2.0/wsf2_profile.h>
+#include <lasso/id-wsf-2.0/data_service.h>
 
 #include <lasso/xml/id-wsf-2.0/disco_query.h>
 #include <lasso/xml/id-wsf-2.0/disco_query_response.h>
 #include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
-
 
 #define LASSO_TYPE_IDWSF2_DISCOVERY (lasso_idwsf2_discovery_get_type())
 #define LASSO_IDWSF2_DISCOVERY(obj) \
@@ -50,7 +50,6 @@ extern "C" {
 typedef struct _LassoIdWsf2Discovery LassoIdWsf2Discovery;
 typedef struct _LassoIdWsf2DiscoveryClass LassoIdWsf2DiscoveryClass;
 typedef struct _LassoIdWsf2DiscoveryPrivate LassoIdWsf2DiscoveryPrivate;
-
 
 struct _LassoIdWsf2Discovery {
 	LassoWsf2Profile parent;
@@ -106,8 +105,12 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery 
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message);
 
+LASSO_EXPORT LassoIdWsf2DataService* lasso_idwsf2_discovery_get_service(
+	LassoIdWsf2Discovery *discovery, const char *service_type);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
 #endif /* __LASSO_IDWSF2_DISCOVERY_H__ */
+

@@ -2,7 +2,7 @@
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
- * Copyright (C) 2004, 2005 Entr'ouvert
+ * Copyright (C) 2007 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: See AUTHORS file in top-level directory.
@@ -584,6 +584,47 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 	}
 
 	return res;
+}
+
+/**
+ * lasso_idwsf2_discovery_get_service:
+ * @discovery: a #LassoIdWsf2Discovery
+ * @service_type: the requested service type
+ *
+ * After a disco:query message, creates a #LassoIdWsf2DataService instance for the
+ * requested @service_type.
+ *
+ * Return value: a newly created #LassoIdWsf2DataService object; or NULL if an
+ *     error occured.
+ **/
+LassoIdWsf2DataService*
+lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const char *service_type)
+{
+	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
+	LassoIdWsf2DiscoQueryResponse *response;
+	LassoWsAddrEndpointReference *epr = NULL;
+	LassoIdWsf2DataService *service;
+
+	g_return_val_if_fail(LASSO_IS_SERVER(profile->server), NULL);
+
+	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(profile->response);
+	if (response == NULL) {
+		/* no response; probably called at wrong time */
+		return NULL;
+	}
+
+	/* FIXME : foreach on the list instead */
+	if (response->EndpointReference != NULL && response->EndpointReference->data != NULL) {
+		epr = response->EndpointReference->data;
+	} else {
+		return NULL;
+	}
+
+	service = lasso_idwsf2_data_service_new_full(profile->server, epr);
+
+/* 	lasso_wsf2_profile_move_credentials(profile, LASSO_WSF2_PROFILE(service)); */
+
+	return service;
 }
 
 /*****************************************************************************/

@@ -13,10 +13,12 @@ noinst_LTLIBRARIES = liblasso-id-wsf2.la
 
 liblasso_id_wsf2_la_SOURCES = \
 	discovery.c \
+	data_service.c \
 	wsf2_profile.c
 
 liblassoinclude_HEADERS = \
 	discovery.h \
+	data_service.h \
 	wsf2_profile.h \
 	identity.h \
 	server.h \
