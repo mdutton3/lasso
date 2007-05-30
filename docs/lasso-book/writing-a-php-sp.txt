@@ -7,7 +7,7 @@ Writing a Liberty service Provider in PHP
 :contact: dlaniel@entrouvert.com
 :date: $Date$
 :revision: $Revision$
-:copyright: Copyright © 2005, 2006 Entr'ouvert
+:copyright: Copyright © 2004-2007 Entr'ouvert
 
 .. contents:: Table of Contents
 .. section-numbering::
