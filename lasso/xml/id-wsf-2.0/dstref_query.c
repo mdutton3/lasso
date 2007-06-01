@@ -111,8 +111,8 @@ lasso_idwsf2_dstref_query_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DstRefQuery object
  **/
-LassoNode*
+LassoIdWsf2DstRefQuery*
 lasso_idwsf2_dstref_query_new()
 {
-	return g_object_new(LASSO_TYPE_IDWSF2_DSTREF_QUERY, NULL);
+	return LASSO_IDWSF2_DSTREF_QUERY(g_object_new(LASSO_TYPE_IDWSF2_DSTREF_QUERY, NULL));
 }

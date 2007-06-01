@@ -27,8 +27,8 @@
 #include <lasso/id-wsf-2.0/discovery.h>
 #include <lasso/id-wsf-2.0/data_service.h>
 
-/* #include <lasso/xml/id-wsf-2.0/dst_query.h> */
-/* #include <lasso/xml/id-wsf-2.0/dst_query_response.h> */
+#include <lasso/xml/id-wsf-2.0/dstref_query.h>
+/* #include <lasso/xml/id-wsf-2.0/dstref_query_response.h> */
 
 struct _LassoIdWsf2DataServicePrivate
 {
@@ -41,6 +41,60 @@ struct _LassoIdWsf2DataServicePrivate
 /* public methods                                                            */
 /*****************************************************************************/
 
+gint
+lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
+{
+	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2DstRefQuery *query;
+	LassoWsAddrEndpointReference *epr;
+
+	query = lasso_idwsf2_dstref_query_new();
+
+	profile->request = LASSO_NODE(query);
+
+	if (service == NULL || service->private_data == NULL
+			|| service->private_data->epr == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE;
+	}
+
+	epr = service->private_data->epr;
+
+	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(query));
+
+	if (epr->Address != NULL) {
+		profile->msg_url = g_strdup(epr->Address->content);
+	} else {
+		return LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS;
+	}
+
+	/* Add needed credential for remote service */
+
+	return 0;
+}
+
+LassoIdWsf2DstRefQueryItem*
+lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const gchar *item_xpath,
+	const gchar *item_id)
+{
+	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2DstRefQuery *query;
+	LassoIdWsf2DstRefQueryItem *item;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
+	g_return_val_if_fail(item_xpath != NULL, NULL);
+	g_return_val_if_fail(item_id != NULL, NULL);
+
+	if (! LASSO_IS_IDWSF2_DSTREF_QUERY(profile->request)) {
+		return NULL;
+	}
+
+	query = LASSO_IDWSF2_DSTREF_QUERY(profile->request);
+
+	item = lasso_idwsf2_dstref_query_item_new_full(item_xpath, item_id);
+	query->QueryItem = g_list_append(query->QueryItem, item);
+
+	return item;
+}
 
 /*****************************************************************************/
 /* private methods                                                           */

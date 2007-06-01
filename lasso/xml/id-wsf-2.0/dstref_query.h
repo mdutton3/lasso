@@ -72,12 +72,11 @@ struct _LassoIdWsf2DstRefQueryClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_dstref_query_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_dstref_query_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2DstRefQuery* lasso_idwsf2_dstref_query_new(void);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
 #endif /* __LASSO_IDWSF2_DSTREF_QUERY_H__ */
+

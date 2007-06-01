@@ -32,9 +32,12 @@ extern "C" {
 
 #include <lasso/id-wsf-2.0/wsf2_profile.h>
 
+#include <lasso/xml/xml.h>
+
+#include <lasso/xml/id-wsf-2.0/dstref_query_item.h>
+
 #include <lasso/xml/ws/wsa_endpoint_reference.h>
 
-#include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_IDWSF2_DATA_SERVICE (lasso_idwsf2_data_service_get_type())
 #define LASSO_IDWSF2_DATA_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -76,22 +79,10 @@ LASSO_EXPORT LassoIdWsf2DataService* lasso_idwsf2_data_service_new();
 LASSO_EXPORT LassoIdWsf2DataService* lasso_idwsf2_data_service_new_full(LassoServer *server,
 		LassoWsAddrEndpointReference *epr);
 
-/* LASSO_EXPORT gint lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service); */
+LASSO_EXPORT gint lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service);
 
-/* LASSO_EXPORT LassoDstQueryItem* lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, */
-/* 		const char *select, const char *item_id); */
-
-/* LASSO_EXPORT gint lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, */
-/* 		const char *message); */
-
-/* LASSO_EXPORT gint lasso_idwsf2_data_service_build_response_msg(LassoIdWsf2DataService *service); */
-
-/* LASSO_EXPORT gint lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *service, */
-/* 		const char *message); */
-
-/* LASSO_EXPORT xmlNode* lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, */
-/* 		const char *item_id); */
-
+LASSO_EXPORT LassoIdWsf2DstRefQueryItem* lasso_idwsf2_data_service_add_query_item(
+	LassoIdWsf2DataService *service, const gchar *item_xpath, const gchar *item_id);
 
 #ifdef __cplusplus
 }
