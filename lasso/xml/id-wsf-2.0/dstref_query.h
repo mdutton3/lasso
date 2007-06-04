@@ -64,8 +64,11 @@ struct _LassoIdWsf2DstRefQuery {
 	/* elements */
 	GList *TestItem; /* of LassoIdWsf2DstRefTestItem */
 	GList *QueryItem; /* of LassoIdWsf2DstRefQueryItem */
+	
+	/*< private >*/
+	char *prefixServiceType;
+	char *hrefServiceType;
 };
-
 
 struct _LassoIdWsf2DstRefQueryClass {
 	LassoIdWsf2DstRequestClass parent;

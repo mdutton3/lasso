@@ -74,7 +74,7 @@ struct _LassoIdWsf2DataServiceClass {
 
 LASSO_EXPORT GType lasso_idwsf2_data_service_get_type(void);
 
-LASSO_EXPORT LassoIdWsf2DataService* lasso_idwsf2_data_service_new();
+LASSO_EXPORT LassoIdWsf2DataService* lasso_idwsf2_data_service_new(LassoServer *server);
 
 LASSO_EXPORT LassoIdWsf2DataService* lasso_idwsf2_data_service_new_full(LassoServer *server,
 		LassoWsAddrEndpointReference *epr);

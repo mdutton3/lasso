@@ -30,6 +30,8 @@
 #include <lasso/xml/id-wsf-2.0/dstref_query.h>
 /* #include <lasso/xml/id-wsf-2.0/dstref_query_response.h> */
 
+#include <lasso/xml/id-wsf-2.0/disco_service_type.h>
+
 struct _LassoIdWsf2DataServicePrivate
 {
 	gboolean dispose_has_run;
@@ -47,6 +49,9 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 	LassoWsf2Profile *profile;
 	LassoIdWsf2DstRefQuery *query;
 	LassoWsAddrEndpointReference *epr;
+	GList *metadata_item;
+	GList *i;
+	gchar *service_type = NULL;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -64,15 +69,34 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 
 	epr = service->private_data->epr;
 
+	/* Get the service type from the EPR */
+	metadata_item = epr->Metadata->any;
+	for (i = g_list_first(metadata_item); i != NULL; i = g_list_next(i)) {
+		if (LASSO_IS_IDWSF2_DISCO_SERVICE_TYPE(i->data)) {
+			service_type = LASSO_IDWSF2_DISCO_SERVICE_TYPE(i->data)->content;
+			break;
+		}
+	}
+
+	/* Set hrefServiceType and prefixServiceType in query in order to set the profile */
+	/* namespace in the request */
+	if (service_type != NULL) {
+		query->hrefServiceType = g_strdup(service_type);
+		query->prefixServiceType = lasso_get_prefix_for_dst_service_href(
+			query->hrefServiceType);
+	}
+	if (query->prefixServiceType == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE;
+	}
+
 	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(query));
 
+	/* Set msg_url as epr address, which is the SoapEndpoint */
 	if (epr->Address != NULL) {
 		profile->msg_url = g_strdup(epr->Address->content);
 	} else {
 		return LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS;
 	}
-
-	/* Add needed credential for remote service */
 
 	return 0;
 }
@@ -192,9 +216,17 @@ lasso_idwsf2_data_service_get_type()
  * Return value: a newly created #LassoIdWsf2DataService object
  **/
 LassoIdWsf2DataService*
-lasso_idwsf2_data_service_new()
+lasso_idwsf2_data_service_new(LassoServer *server)
 {
-	return LASSO_IDWSF2_DATA_SERVICE(g_object_new(LASSO_TYPE_IDWSF2_DATA_SERVICE, NULL));
+	LassoIdWsf2DataService *service;
+
+	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+
+	service = g_object_new(LASSO_TYPE_IDWSF2_DATA_SERVICE, NULL);
+
+	LASSO_WSF2_PROFILE(service)->server = g_object_ref(server);
+
+	return service;
 }
 
 LassoIdWsf2DataService*
@@ -205,9 +237,8 @@ lasso_idwsf2_data_service_new_full(LassoServer *server, LassoWsAddrEndpointRefer
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 	g_return_val_if_fail(LASSO_IS_WSA_ENDPOINT_REFERENCE(epr), NULL);
 
-	service = LASSO_IDWSF2_DATA_SERVICE(g_object_new(LASSO_TYPE_IDWSF2_DATA_SERVICE, NULL));
+	service = lasso_idwsf2_data_service_new(server);
 
-	LASSO_WSF2_PROFILE(service)->server = g_object_ref(server);
 	service->private_data->epr = g_object_ref(epr);
 
 	return service;

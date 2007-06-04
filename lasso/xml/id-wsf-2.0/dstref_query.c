@@ -56,6 +56,54 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
+static void
+insure_namespace(xmlNode *xmlnode, xmlNs *ns)
+{
+	xmlNode *t = xmlnode->children;
+
+	xmlSetNs(xmlnode, ns);
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE) {
+			insure_namespace(t, ns);
+		}
+		t = t->next;
+	}
+}
+
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
+{
+	xmlNode *xmlnode;
+	xmlNs *ns;
+
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+	ns = xmlNewNs(xmlnode, (xmlChar*)LASSO_IDWSF2_DSTREF_QUERY(node)->hrefServiceType,
+			(xmlChar*)LASSO_IDWSF2_DSTREF_QUERY(node)->prefixServiceType);
+	insure_namespace(xmlnode, ns);
+
+	return xmlnode;
+}
+
+static int
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	LassoIdWsf2DstRefQuery *query = LASSO_IDWSF2_DSTREF_QUERY(node);
+	int res;
+
+	res = parent_class->init_from_xml(node, xmlnode);
+	if (res != 0) {
+		return res;
+	}
+
+	query->hrefServiceType = g_strdup((char*)xmlnode->ns->href);
+	query->prefixServiceType = lasso_get_prefix_for_dst_service_href(
+			query->hrefServiceType);
+	if (query->prefixServiceType == NULL) {
+		/* XXX: what to do here ? */
+	}
+
+	return 0;
+}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -66,6 +114,8 @@ instance_init(LassoIdWsf2DstRefQuery *node)
 {
 	node->TestItem = NULL;
 	node->QueryItem = NULL;
+	node->prefixServiceType = NULL;
+	node->hrefServiceType = NULL;
 }
 
 static void
@@ -74,6 +124,8 @@ class_init(LassoIdWsf2DstRefQueryClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Query");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DSTREF_HREF, LASSO_IDWSF2_DSTREF_PREFIX);
