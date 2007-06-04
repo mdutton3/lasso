@@ -585,12 +585,7 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 
 	return res;
 }
-/* struct _LassoIdWsf2DataServicePrivate */
-/* { */
-/* 	gboolean dispose_has_run; */
-/* 	LassoWsAddrEndpointReference *epr; */
-/* 	GList *credentials; */
-/* }; */
+
 /**
  * lasso_idwsf2_discovery_get_service:
  * @discovery: a #LassoIdWsf2Discovery
