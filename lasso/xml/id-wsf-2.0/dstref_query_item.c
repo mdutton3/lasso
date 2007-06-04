@@ -42,9 +42,9 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "count", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
+	{ "count", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, count) },
-	{ "offset", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
+	{ "offset", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, offset) },
 	{ "setID", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, setID) },
@@ -63,8 +63,8 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2DstRefQueryItem *node)
 {
-	node->count = NULL;
-	node->offset = NULL;
+	node->count = -1;
+	node->offset = -1;
 	node->setID = NULL;
 	node->setReq = NULL;
 }

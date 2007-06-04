@@ -62,8 +62,8 @@ struct _LassoIdWsf2DstRefQueryItem {
 
 	/*< public >*/
 	/* attributes */
-	char *count;
-	char *offset;
+	int count;
+	int offset;
 	char *setID;
 	char *setReq;
 };
