@@ -176,6 +176,7 @@ typedef struct {
 	int processQueryResponseMsg(const char *message);
 	END_THROW_ERROR()
 
+	%newobject getService;
 	LassoIdWsf2DataService* getService(const char *service_type = NULL);
 }
 
@@ -283,7 +284,8 @@ typedef struct {
 #define LassoIdWsf2Discovery_processQueryMsg lasso_idwsf2_discovery_process_query_msg
 #define LassoIdWsf2Discovery_processQueryResponseMsg lasso_idwsf2_discovery_process_query_response_msg
 #define LassoIdWsf2Discovery_registerMetadata lasso_idwsf2_discovery_register_metadata
-#define LassoIdWsf2Discovery_getService lasso_idwsf2_discovery_get_service;
+#define LassoIdWsf2Discovery_getService(self, type) \
+        get_node(lasso_idwsf2_discovery_get_service(self, type))
 
 %}
 
