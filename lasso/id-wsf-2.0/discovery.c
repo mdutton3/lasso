@@ -44,7 +44,6 @@
 #include <lasso/xml/id-wsf-2.0/disco_service_type.h>
 
 #include <lasso/xml/ws/wsa_endpoint_reference.h>
-#include <lasso/xml/ws/wsse_200401_security.h>
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/provider.h>
@@ -214,9 +213,6 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
 	LassoSession *session = profile->session;
 	LassoIdWsf2DiscoSvcMDAssociationAdd *md_association_add;
-	LassoSoapEnvelope *envelope;
-	LassoSaml2Assertion *assertion;
-	LassoWsse200401Security *wsse_security;
 	LassoWsAddrEndpointReference *epr;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
@@ -229,17 +225,6 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 
 	/* Create request with this xml node */
 	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(md_association_add));
-
-	/* Identity token */
-	assertion = lasso_session_get_assertion_identity_token(session);
-
-	if (assertion != NULL) {
-		wsse_security = lasso_wsse_200401_security_new();
-		wsse_security->any = g_list_append(wsse_security->any, assertion);
-
-		envelope = profile->soap_envelope_request;
-		envelope->Header->Other = g_list_append(envelope->Header->Other, wsse_security);
-	}
 
 	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
 	if (epr != NULL) {
@@ -256,10 +241,6 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoSvcMDAssociationAddResponse *response;
 	LassoSoapEnvelope *envelope;
-	LassoWsse200401Security *wsse_security;
-	LassoSaml2Assertion *assertion;
-	GList *i;
-	GList *j;
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
@@ -271,26 +252,6 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 
 	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(profile->request)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
-	}
-
-	/* Get NameIdentifier (if exists) from the soap header */
-	if (res == 0) {
-		envelope = profile->soap_envelope_request;
-		for (i = g_list_first(envelope->Header->Other); i != NULL; i = g_list_next(i)) {
-			if (LASSO_IS_WSSE_200401_SECURITY(i->data)) {
-				wsse_security = LASSO_WSSE_200401_SECURITY(i->data);
-				for (j = g_list_first(wsse_security->any); j != NULL;
-						j = g_list_next(j)) {
-					if (LASSO_IS_SAML2_ASSERTION(j->data)) {
-						assertion = LASSO_SAML2_ASSERTION(j->data);
-						profile->name_id = g_strdup(
-							assertion->Subject->NameID->content);
-						break;
-					}
-				}
-				break;
-			}
-		}
 	}
 
 	/* Build response */

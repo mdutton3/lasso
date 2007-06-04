@@ -30,16 +30,21 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
-#include <lasso/xml/soap_fault.h>
-#include <lasso/xml/soap_binding_correlation.h>
-#include <lasso/xml/soap_binding_provider.h>
-#include <lasso/xml/soap_binding_processing_context.h>
-
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/providerprivate.h>
 
 #include <lasso/id-wsf-2.0/wsf2_profile.h>
 #include <lasso/id-wsf-2.0/wsf2_profile_private.h>
+#include <lasso/id-wsf-2.0/session.h>
+
+#include <lasso/xml/soap_fault.h>
+#include <lasso/xml/soap_binding_correlation.h>
+#include <lasso/xml/soap_binding_provider.h>
+#include <lasso/xml/soap_binding_processing_context.h>
+
+#include <lasso/xml/ws/wsse_200401_security.h>
+
+#include <lasso/xml/saml-2.0/saml2_assertion.h>
 
 struct _LassoWsf2ProfilePrivate
 {
@@ -48,7 +53,6 @@ struct _LassoWsf2ProfilePrivate
 	gchar *public_key;
 	GList *credentials;
 };
-
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -204,10 +208,27 @@ gint
 lasso_wsf2_profile_init_soap_request(LassoWsf2Profile *profile, LassoNode *request)
 {
 	LassoSoapEnvelope *envelope;
+	LassoSession *session = profile->session;
+	LassoSaml2Assertion *assertion;
+	LassoWsse200401Security *wsse_security;
 
+	/* Initialise soap envelope */
 	envelope = lasso_wsf2_profile_build_soap_envelope(NULL,
 		LASSO_PROVIDER(profile->server)->ProviderID);
 	profile->soap_envelope_request = envelope;
+
+	/* Add identity token (if it exists in the session) in soap header */
+	assertion = lasso_session_get_assertion_identity_token(session);
+
+	if (assertion != NULL) {
+		wsse_security = lasso_wsse_200401_security_new();
+		wsse_security->any = g_list_append(wsse_security->any, assertion);
+
+		envelope = profile->soap_envelope_request;
+		envelope->Header->Other = g_list_append(envelope->Header->Other, wsse_security);
+	}
+	
+	/* Add the given request in soap body */
 	envelope->Body->any = g_list_append(envelope->Body->any, request);
 
 	return 0;
@@ -228,6 +249,10 @@ gint
 lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gchar *message)
 {
 	LassoSoapEnvelope *envelope = NULL;
+	LassoSaml2Assertion *assertion;
+	LassoWsse200401Security *wsse_security;
+	GList *i;
+	GList *j;
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_WSF2_PROFILE(profile),
@@ -238,6 +263,28 @@ lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gch
 	envelope = lasso_soap_envelope_new_from_message(message);
 
 	profile->soap_envelope_request = envelope;
+
+	/* Get NameIdentifier (if exists) from the soap header */
+	for (i = g_list_first(envelope->Header->Other); i != NULL; i = g_list_next(i)) {
+		if (LASSO_IS_WSSE_200401_SECURITY(i->data)) {
+			wsse_security = LASSO_WSSE_200401_SECURITY(i->data);
+			for (j = g_list_first(wsse_security->any); j != NULL;
+					j = g_list_next(j)) {
+				if (LASSO_IS_SAML2_ASSERTION(j->data)) {
+					assertion = LASSO_SAML2_ASSERTION(j->data);
+					if (assertion->Subject == NULL
+						|| assertion->Subject->NameID == NULL
+						|| assertion->Subject->NameID->content == NULL) {
+						continue;
+					}
+					profile->name_id = g_strdup(
+						assertion->Subject->NameID->content);
+					break;
+				}
+			}
+			break;
+		}
+	}
 
 	if (envelope != NULL && envelope->Body != NULL && envelope->Body->any != NULL) {
 		profile->request = LASSO_NODE(envelope->Body->any->data);
