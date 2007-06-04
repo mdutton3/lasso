@@ -28,6 +28,7 @@
 
 %{
 #include <lasso/id-wsf-2.0/discovery.h>
+#include <lasso/id-wsf-2.0/data_service.h>
 %}
 
 
@@ -48,9 +49,8 @@
 
 
 /***********************************************************************
- * lasso:Discovery
+ * lasso:IdWsf2Discovery
  ***********************************************************************/
-
 
 #ifndef SWIG_PHP_RENAMES
 %rename(IdWsf2Discovery) LassoIdWsf2Discovery;
@@ -137,11 +137,11 @@ typedef struct {
 	END_THROW_ERROR()
 
 	THROW_ERROR()
-	int processMetadataRegisterMsg(const gchar *message);
+	int processMetadataRegisterMsg(const char *message);
 	END_THROW_ERROR()
 
 	THROW_ERROR()
-	int processMetadataRegisterResponseMsg(const gchar *message);
+	int processMetadataRegisterResponseMsg(const char *message);
 	END_THROW_ERROR()
 
 	THROW_ERROR()
@@ -149,7 +149,7 @@ typedef struct {
 	END_THROW_ERROR()
 
 	THROW_ERROR()
-	int processMetadataAssociationAddMsg(const gchar *message);
+	int processMetadataAssociationAddMsg(const char *message);
 	END_THROW_ERROR()
 
 	THROW_ERROR()
@@ -157,7 +157,7 @@ typedef struct {
 	END_THROW_ERROR()
 
 	THROW_ERROR()
-	int processMetadataAssociationAddResponseMsg(const gchar *message);
+	int processMetadataAssociationAddResponseMsg(const char *message);
 	END_THROW_ERROR()
 
 	THROW_ERROR()
@@ -165,16 +165,18 @@ typedef struct {
 	END_THROW_ERROR()
 	
 	THROW_ERROR()
-	int addRequestedServiceType(const gchar *service_type);
+	int addRequestedServiceType(const char *service_type);
 	END_THROW_ERROR()
 	
 	THROW_ERROR()
-	int processQueryMsg(const gchar *message);
+	int processQueryMsg(const char *message);
 	END_THROW_ERROR()
 
 	THROW_ERROR()
-	int processQueryResponseMsg(const gchar *message);
+	int processQueryResponseMsg(const char *message);
 	END_THROW_ERROR()
+
+	LassoIdWsf2DataService* getService(const char *service_type = NULL);
 }
 
 %{
@@ -281,6 +283,117 @@ typedef struct {
 #define LassoIdWsf2Discovery_processQueryMsg lasso_idwsf2_discovery_process_query_msg
 #define LassoIdWsf2Discovery_processQueryResponseMsg lasso_idwsf2_discovery_process_query_response_msg
 #define LassoIdWsf2Discovery_registerMetadata lasso_idwsf2_discovery_register_metadata
+#define LassoIdWsf2Discovery_getService lasso_idwsf2_discovery_get_service;
+
+%}
+
+
+/***********************************************************************
+ * lasso:IdWsf2DataService
+ ***********************************************************************/
+
+#ifndef SWIG_PHP_RENAMES
+%rename(IdWsf2DataService) LassoIdWsf2DataService;
+#endif
+typedef struct {
+} LassoIdWsf2DataService;
+%extend LassoIdWsf2DataService {
+	/* Attributes inherited from WsfProfile */
+
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	%newobject request_get;
+	LassoNode *request;
+
+	%newobject response_get;
+	LassoNode *response;
+
+	%newobject server_get;
+	LassoServer *server;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIdWsf2DataService(LassoServer *server);
+
+	~LassoIdWsf2DataService();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods inherited from Wsf2Profile */
+
+	THROW_ERROR()
+	int buildRequestMsg();
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int buildResponseMsg();
+	END_THROW_ERROR()
+
+	/* Methods */
+
+	THROW_ERROR()
+	int initQuery();
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int addQueryItem(const char *item_xpath, const char *item_id);		
+	END_THROW_ERROR()
+}
+
+%{
+
+/* Attributes inherited from WsfProfile implementations */
+
+/* msgBody */
+#define LassoIdWsf2DataService_get_msgBody(self) LASSO_WSF2_PROFILE(self)->msg_body
+#define LassoIdWsf2DataService_msgBody_get(self) LASSO_WSF2_PROFILE(self)->msg_body
+
+/* msgUrl */
+#define LassoIdWsf2DataService_get_msgUrl(self) LASSO_WSF2_PROFILE(self)->msg_url
+#define LassoIdWsf2DataService_msgUrl_get(self) LASSO_WSF2_PROFILE(self)->msg_url
+
+/* request */
+#define LassoIdWsf2DataService_get_request(self) get_node(LASSO_WSF2_PROFILE(self)->request)
+#define LassoIdWsf2DataService_request_get(self) get_node(LASSO_WSF2_PROFILE(self)->request)
+#define LassoIdWsf2DataService_set_request(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->request, (value))
+#define LassoIdWsf2DataService_request_set(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->request, (value))
+
+/* response */
+#define LassoIdWsf2DataService_get_response(self) get_node(LASSO_WSF2_PROFILE(self)->response)
+#define LassoIdWsf2DataService_response_get(self) get_node(LASSO_WSF2_PROFILE(self)->response)
+#define LassoIdWsf2DataService_set_response(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->response, (value))
+#define LassoIdWsf2DataService_response_set(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->response, (value))
+
+/* server */
+#define LassoIdWsf2DataService_get_server(self) get_node(LASSO_WSF2_PROFILE(self)->server)
+#define LassoIdWsf2DataService_server_get(self) get_node(LASSO_WSF2_PROFILE(self)->server)
+#define LassoIdWsf2DataService_set_server(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->server, (value))
+#define LassoIdWsf2DataService_server_set(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->server, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIdWsf2DataService lasso_idwsf2_data_service_new
+#define delete_LassoIdWsf2DataService(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIdWsf2DataService_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+/* Implementations of methods inherited from Wsf2Profile */
+
+#define LassoIdWsf2DataService_buildRequestMsg(self) lasso_wsf2_profile_build_request_msg(LASSO_WSF2_PROFILE(self))
+#define LassoIdWsf2DataService_buildResponseMsg(self) lasso_wsf2_profile_build_response_msg(LASSO_WSF2_PROFILE(self))
+
+/* Methods implementations */
+#define LassoIdWsf2DataService_initQuery lasso_idwsf2_data_service_init_query
+#define LassoIdWsf2DataService_addQueryItem lasso_idwsf2_data_service_add_query_item
 
 %}
 

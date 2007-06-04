@@ -106,7 +106,7 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2D
 	const gchar *message);
 
 LASSO_EXPORT LassoIdWsf2DataService* lasso_idwsf2_discovery_get_service(
-	LassoIdWsf2Discovery *discovery, const char *service_type);
+	LassoIdWsf2Discovery *discovery, const gchar *service_type);
 
 #ifdef __cplusplus
 }

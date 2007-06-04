@@ -81,7 +81,7 @@ LASSO_EXPORT LassoIdWsf2DataService* lasso_idwsf2_data_service_new_full(LassoSer
 
 LASSO_EXPORT gint lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service);
 
-LASSO_EXPORT LassoIdWsf2DstRefQueryItem* lasso_idwsf2_data_service_add_query_item(
+LASSO_EXPORT gint lasso_idwsf2_data_service_add_query_item(
 	LassoIdWsf2DataService *service, const gchar *item_xpath, const gchar *item_id);
 
 #ifdef __cplusplus

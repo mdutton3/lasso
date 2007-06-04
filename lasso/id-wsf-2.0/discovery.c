@@ -585,7 +585,12 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 
 	return res;
 }
-
+/* struct _LassoIdWsf2DataServicePrivate */
+/* { */
+/* 	gboolean dispose_has_run; */
+/* 	LassoWsAddrEndpointReference *epr; */
+/* 	GList *credentials; */
+/* }; */
 /**
  * lasso_idwsf2_discovery_get_service:
  * @discovery: a #LassoIdWsf2Discovery
@@ -598,13 +603,14 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
  *     error occured.
  **/
 LassoIdWsf2DataService*
-lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const char *service_type)
+lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const gchar *service_type)
 {
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoQueryResponse *response;
 	LassoWsAddrEndpointReference *epr = NULL;
 	LassoIdWsf2DataService *service;
 
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery), NULL);
 	g_return_val_if_fail(LASSO_IS_SERVER(profile->server), NULL);
 
 	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(profile->response);
@@ -615,7 +621,7 @@ lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const char *
 
 	/* FIXME : foreach on the list instead */
 	if (response->EndpointReference != NULL && response->EndpointReference->data != NULL) {
-		epr = response->EndpointReference->data;
+		epr = LASSO_WSA_ENDPOINT_REFERENCE(response->EndpointReference->data);
 	} else {
 		return NULL;
 	}

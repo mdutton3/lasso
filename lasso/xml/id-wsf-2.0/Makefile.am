@@ -32,9 +32,6 @@ liblasso_xml_id_wsf2_la_SOURCES = \
 	dstref_query_response.c \
 	dstref_result_query.c \
 	dstref_sort.c \
-	dst_data_response_base.c \
-	dst_request.c \
-	dst_result_query_base.c \
 	sec_token.c \
 	soap_binding_framework.c \
 	util_status.c \
@@ -45,7 +42,7 @@ liblassoinclude_HEADERS = \
 	disco_options.h \
 	disco_query.h \
 	disco_query_response.h \
-	disco_requested_service.c \
+	disco_requested_service.h \
 	disco_security_context.h \
 	disco_service_context.h \
 	disco_svc_metadata.h \
@@ -67,5 +64,5 @@ liblassoinclude_HEADERS = \
 	sec_token.h \
 	soap_binding_framework.h \
 	util_status.h \
-	util_response.c
+	util_response.h
 

@@ -44,9 +44,14 @@ struct _LassoIdWsf2DataServicePrivate
 gint
 lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 {
-	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoWsf2Profile *profile;
 	LassoIdWsf2DstRefQuery *query;
 	LassoWsAddrEndpointReference *epr;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	profile = LASSO_WSF2_PROFILE(service);
 
 	query = lasso_idwsf2_dstref_query_new();
 
@@ -72,7 +77,7 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 	return 0;
 }
 
-LassoIdWsf2DstRefQueryItem*
+gint
 lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const gchar *item_xpath,
 	const gchar *item_id)
 {
@@ -80,12 +85,13 @@ lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const 
 	LassoIdWsf2DstRefQuery *query;
 	LassoIdWsf2DstRefQueryItem *item;
 
-	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
-	g_return_val_if_fail(item_xpath != NULL, NULL);
-	g_return_val_if_fail(item_id != NULL, NULL);
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(item_xpath != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(item_id != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (! LASSO_IS_IDWSF2_DSTREF_QUERY(profile->request)) {
-		return NULL;
+		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	}
 
 	query = LASSO_IDWSF2_DSTREF_QUERY(profile->request);
@@ -93,7 +99,7 @@ lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const 
 	item = lasso_idwsf2_dstref_query_item_new_full(item_xpath, item_id);
 	query->QueryItem = g_list_append(query->QueryItem, item);
 
-	return item;
+	return 0;
 }
 
 /*****************************************************************************/
@@ -188,7 +194,7 @@ lasso_idwsf2_data_service_get_type()
 LassoIdWsf2DataService*
 lasso_idwsf2_data_service_new()
 {
-	return g_object_new(LASSO_TYPE_IDWSF2_DATA_SERVICE, NULL);
+	return LASSO_IDWSF2_DATA_SERVICE(g_object_new(LASSO_TYPE_IDWSF2_DATA_SERVICE, NULL));
 }
 
 LassoIdWsf2DataService*

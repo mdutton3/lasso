@@ -90,7 +90,7 @@ lasso_idwsf2_dst_data_response_base_get_type()
 			(GInstanceInitFunc) instance_init,
 		};
 
-		this_type = g_type_register_static(LASSO_TYPE_UTIL_RESPONSE,
+		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_UTIL_RESPONSE,
 				"LassoIdWsf2DstDataResponseBase", &this_info, 0);
 	}
 	return this_type;
