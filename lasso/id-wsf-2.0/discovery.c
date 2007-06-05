@@ -584,7 +584,8 @@ lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const gchar 
 
 	service = lasso_idwsf2_data_service_new_full(profile->server, epr);
 
-/* 	lasso_wsf2_profile_move_credentials(profile, LASSO_WSF2_PROFILE(service)); */
+	/* Copy session to service object (used to get assertion identity token from the session) */
+ 	LASSO_WSF2_PROFILE(service)->session = g_object_ref(profile->session);
 
 	return service;
 }
