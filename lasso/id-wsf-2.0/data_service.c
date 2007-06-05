@@ -139,7 +139,7 @@ lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, con
 	res = lasso_wsf2_profile_process_soap_request_msg(profile, message);
 
 	service->type = g_strdup(LASSO_IDWSF2_DSTREF_QUERY(profile->request)->hrefServiceType);
-	printf(LASSO_IDWSF2_DSTREF_QUERY(profile->request)->prefixServiceType);
+
 	return res;
 }
 
