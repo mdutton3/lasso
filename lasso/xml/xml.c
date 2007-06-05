@@ -768,7 +768,7 @@ lasso_node_init_from_query(LassoNode *node, const char *query)
 
 	query_fields = urlencoded_to_strings(query);
 	rc = class->init_from_query(node, query_fields);
-	for (i=0; query_fields[i]; i++) {
+	for (i = 0; query_fields[i]; i++) {
 		xmlFree(query_fields[i]);
 		query_fields[i] = NULL;
 	}
@@ -1068,7 +1068,9 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	return 0;
 }
 
-/*** private methods **********************************************************/
+/*****************************************************************************/
+/* private methods                                                           */
+/*****************************************************************************/
 
 static char*
 lasso_node_impl_build_query(LassoNode *node)
@@ -1431,6 +1433,7 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSA_HREF) == 0)
 		prefix = "WsAddr";
 	else {
+		/* ID-WSF 1 Profile */
 		tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
 		if (tmp) {
 			prefix = "Dst";
@@ -2113,7 +2116,7 @@ lasso_node_init_from_query_fields(LassoNode *node, char **query_fields)
 	if (query_snippets == NULL)
 		return FALSE;
 
-	for (i=0; (field=query_fields[i]); i++) {
+	for (i = 0; (field = query_fields[i]); i++) {
 		t = strchr(field, '=');
 		if (t == NULL)
 			continue;
