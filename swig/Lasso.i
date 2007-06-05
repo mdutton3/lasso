@@ -1248,9 +1248,10 @@ int lasso_check_version(int major, int minor, int subminor,
 
 #ifndef SWIG_PHP_RENAMES
 %rename(registerDstService) lasso_register_dst_service;
+%rename(registerIdWsf2DstService) lasso_register_idwsf2_dst_service;
 #endif
 void lasso_register_dst_service(const char *prefix, const char *href);
-
+void lasso_register_idwsf2_dst_service(const char *prefix, const char *href);
 
 /***********************************************************************
  * Utility functions to handle nodes, strings, lists...

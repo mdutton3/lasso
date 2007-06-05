@@ -53,8 +53,11 @@ static void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 
 static LassoNode* lasso_node_new_from_xmlNode_with_type(xmlNode *xmlnode, char *typename);
 
-GHashTable *dst_services_by_href = NULL; /* Extra DST services, indexed on href */
-GHashTable *dst_services_by_prefix = NULL; /* Extra DST services, indexed on prefix */
+GHashTable *dst_services_by_href = NULL; /* ID-WSF 1 extra DST services, indexed on href */
+GHashTable *dst_services_by_prefix = NULL; /* ID-WSF 1 extra DST services, indexed on prefix */
+
+GHashTable *idwsf2_dst_services_by_href = NULL; /* ID-WSF 2 DST services, indexed on href */
+GHashTable *idwsf2_dst_services_by_prefix = NULL; /* ID-WSF 2 DST services, indexed on prefix */
 
 /*****************************************************************************/
 /* global methods                                                            */
@@ -69,7 +72,7 @@ GHashTable *dst_services_by_prefix = NULL; /* Extra DST services, indexed on pre
  * Registers prefix and href of a custom data service template service.
  **/
 void
-lasso_register_dst_service(const char *prefix, const char *href)
+lasso_register_dst_service(const gchar *prefix, const gchar *href)
 {
 	if (dst_services_by_href == NULL) {
 		dst_services_by_href = g_hash_table_new_full(
@@ -81,8 +84,21 @@ lasso_register_dst_service(const char *prefix, const char *href)
 	g_hash_table_insert(dst_services_by_href, g_strdup(href), g_strdup(prefix));
 }
 
-char*
-lasso_get_prefix_for_dst_service_href(const char *href)
+void
+lasso_register_idwsf2_dst_service(const gchar *prefix, const gchar *href)
+{
+	if (idwsf2_dst_services_by_href == NULL) {
+		idwsf2_dst_services_by_href = g_hash_table_new_full(
+				g_str_hash, g_str_equal, g_free, g_free);
+		idwsf2_dst_services_by_prefix = g_hash_table_new_full(
+				g_str_hash, g_str_equal, g_free, g_free);
+	}
+	g_hash_table_insert(idwsf2_dst_services_by_prefix, g_strdup(prefix), g_strdup(href));
+	g_hash_table_insert(idwsf2_dst_services_by_href, g_strdup(href), g_strdup(prefix));
+}
+
+gchar*
+lasso_get_prefix_for_dst_service_href(const gchar *href)
 {
 	if (strcmp(href, LASSO_PP_HREF) == 0)
 		return g_strdup(LASSO_PP_PREFIX);
@@ -95,6 +111,14 @@ lasso_get_prefix_for_dst_service_href(const char *href)
 	return g_strdup(g_hash_table_lookup(dst_services_by_href, href));
 }
 
+gchar*
+lasso_get_prefix_for_idwsf2_dst_service_href(const gchar *href)
+{
+	if (idwsf2_dst_services_by_href == NULL)
+		return NULL;
+
+	return g_strdup(g_hash_table_lookup(idwsf2_dst_services_by_href, href));
+}
 
 /*****************************************************************************/
 /* virtual public methods                                                    */
@@ -1433,11 +1457,18 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSA_HREF) == 0)
 		prefix = "WsAddr";
 	else {
-		/* ID-WSF 1 Profile */
-		tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
+		/* ID-WSF 2 Profile */
+		tmp = lasso_get_prefix_for_idwsf2_dst_service_href((char*)xmlnode->ns->href);
 		if (tmp) {
-			prefix = "Dst";
+			prefix = "IdWsf2DstRef";
 			g_free(tmp);
+		} else {
+			/* ID-WSF 1 Profile */
+			tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
+			if (tmp) {
+				prefix = "Dst";
+				g_free(tmp);
+			}
 		}
 	}
 

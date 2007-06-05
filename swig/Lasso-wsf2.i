@@ -308,6 +308,12 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 
+	%immutable nameId;
+	char *nameId;
+
+	%immutable type;
+	char *type;
+
 	%newobject request_get;
 	LassoNode *request;
 
@@ -346,6 +352,9 @@ typedef struct {
 
 	THROW_ERROR()
 	int addQueryItem(const char *item_xpath, const char *item_id);		
+
+	THROW_ERROR()
+	int processQueryMsg(const char *message);
 	END_THROW_ERROR()
 }
 
@@ -360,6 +369,14 @@ typedef struct {
 /* msgUrl */
 #define LassoIdWsf2DataService_get_msgUrl(self) LASSO_WSF2_PROFILE(self)->msg_url
 #define LassoIdWsf2DataService_msgUrl_get(self) LASSO_WSF2_PROFILE(self)->msg_url
+
+/* nameId */
+#define LassoIdWsf2DataService_get_nameId(self) LASSO_WSF2_PROFILE(self)->name_id
+#define LassoIdWsf2DataService_nameId_get(self) LASSO_WSF2_PROFILE(self)->name_id
+
+/* type */
+#define LassoIdWsf2DataService_get_type(self) self->type
+#define LassoIdWsf2DataService_type_get(self) self->type
 
 /* request */
 #define LassoIdWsf2DataService_get_request(self) get_node(LASSO_WSF2_PROFILE(self)->request)
@@ -396,6 +413,6 @@ typedef struct {
 /* Methods implementations */
 #define LassoIdWsf2DataService_initQuery lasso_idwsf2_data_service_init_query
 #define LassoIdWsf2DataService_addQueryItem lasso_idwsf2_data_service_add_query_item
-
+#define LassoIdWsf2DataService_processQueryMsg lasso_idwsf2_data_service_process_query_msg
 %}
 

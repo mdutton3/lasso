@@ -96,7 +96,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	}
 
 	query->hrefServiceType = g_strdup((char*)xmlnode->ns->href);
-	query->prefixServiceType = lasso_get_prefix_for_dst_service_href(
+	query->prefixServiceType = lasso_get_prefix_for_idwsf2_dst_service_href(
 			query->hrefServiceType);
 	if (query->prefixServiceType == NULL) {
 		/* XXX: what to do here ? */

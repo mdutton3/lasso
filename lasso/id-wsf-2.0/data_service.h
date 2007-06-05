@@ -60,9 +60,7 @@ struct _LassoIdWsf2DataService {
 
 	/*< public >*/
 	xmlNode *data;
-
-/* 	gchar *provider_id; */
-/* 	gchar *abstract_description; */
+	gchar *type;
 
 	/*< private >*/
 	LassoIdWsf2DataServicePrivate *private_data;
@@ -83,6 +81,9 @@ LASSO_EXPORT gint lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *s
 
 LASSO_EXPORT gint lasso_idwsf2_data_service_add_query_item(
 	LassoIdWsf2DataService *service, const gchar *item_xpath, const gchar *item_id);
+
+LASSO_EXPORT gint lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service,
+	const gchar *message);
 
 #ifdef __cplusplus
 }
