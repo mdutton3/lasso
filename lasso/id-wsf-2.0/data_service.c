@@ -22,15 +22,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* #include <libxml/xpath.h> */
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
 
 #include <lasso/id-wsf-2.0/discovery.h>
 #include <lasso/id-wsf-2.0/data_service.h>
 
-#include <lasso/xml/id-wsf-2.0/dstref_query.h>
-/* #include <lasso/xml/id-wsf-2.0/dstref_query_response.h> */
-
 #include <lasso/xml/id-wsf-2.0/disco_service_type.h>
+#include <lasso/xml/id-wsf-2.0/dstref_query.h>
+#include <lasso/xml/id-wsf-2.0/dstref_query_response.h>
+#include <lasso/xml/id-wsf-2.0/dstref_data.h>
+#include <lasso/xml/id-wsf-2.0/util_status.h>
 
 struct _LassoIdWsf2DataServicePrivate
 {
@@ -141,6 +143,100 @@ lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, con
 	service->type = g_strdup(LASSO_IDWSF2_DSTREF_QUERY(profile->request)->hrefServiceType);
 
 	return res;
+}
+
+/* XXX: Taken from swig/Lasso.i . Should probably be moved to xml.c */
+static gchar* get_xml_string(xmlNode *xmlnode)
+{
+	xmlOutputBufferPtr buf;
+	gchar *xmlString;
+
+	if (xmlnode == NULL) {
+		return NULL;
+	}
+
+	buf = xmlAllocOutputBuffer(NULL);
+	if (buf == NULL) {
+		xmlString = NULL;
+	} else {
+		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
+		xmlOutputBufferFlush(buf);
+		if (buf->conv == NULL) {
+			xmlString = g_strdup((gchar*)buf->buffer->content);
+		} else {
+			xmlString = g_strdup((gchar*)buf->conv->content);
+		}
+		xmlOutputBufferClose(buf);
+	}
+	xmlFreeNode(xmlnode);
+	return xmlString;
+}
+
+gint
+lasso_idwsf2_data_service_build_query_response_msg(LassoIdWsf2DataService *service)
+{
+	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2DstRefQuery *request = LASSO_IDWSF2_DSTREF_QUERY(profile->request);
+	LassoIdWsf2DstRefQueryResponse *response;
+	LassoSoapEnvelope *envelope;
+	xmlDoc *doc;
+	xmlXPathContext *xpathCtx;
+	xmlXPathObject *xpathObj;
+	LassoIdWsf2DstRefQueryItem *item;
+	LassoIdWsf2DstRefResultQuery *item_result_query;
+	LassoIdWsf2DstResultQueryBase *item_result_query_base;
+	LassoIdWsf2DstRefData *data;
+	LassoIdWsf2DstRefItemData *data_item;
+	xmlNode *node;
+	GList *iter;
+
+	/* Response envelope and body */
+	envelope = profile->soap_envelope_response;
+	response = lasso_idwsf2_dstref_query_response_new();
+	response->prefixServiceType = g_strdup(request->prefixServiceType);
+	response->hrefServiceType = g_strdup(request->hrefServiceType);
+	profile->response = LASSO_NODE(response);
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	/* Initialise XML parsing */
+	doc = xmlNewDoc((xmlChar*)"1.0");
+	xmlDocSetRootElement(doc, service->data);
+	xpathCtx = xmlXPathNewContext(doc);
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)response->prefixServiceType,
+		(xmlChar*)response->hrefServiceType);
+
+	/* Parse request QueryItems and fill response Data accordingly */
+	/* XXX: needs another level, since there may be more than one <dst:Query> */
+	for (iter = g_list_first(request->QueryItem); iter != NULL; iter = g_list_next(iter)) {
+		item = iter->data;
+		item_result_query = LASSO_IDWSF2_DSTREF_RESULT_QUERY(item);
+		item_result_query_base = LASSO_IDWSF2_DST_RESULT_QUERY_BASE(item);
+		xpathObj = xmlXPathEvalExpression((xmlChar*)item_result_query->Select, xpathCtx);
+		if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+			node = xpathObj->nodesetval->nodeTab[0];
+			/* XXX: assuming there is only one matching node */
+			data = lasso_idwsf2_dstref_data_new();
+			data_item = LASSO_IDWSF2_DSTREF_ITEM_DATA(data);
+			data_item->content = get_xml_string(node);
+			if (item_result_query_base->itemID != NULL) {
+				data_item->itemIDRef = g_strdup(item_result_query_base->itemID);
+			}
+			response->Data = g_list_append(response->Data, data);
+		}
+		xmlXPathFreeObject(xpathObj);
+		xpathObj = NULL;
+	}
+
+	/* Free XML parsing objects */
+	xmlUnlinkNode(service->data);
+	xmlXPathFreeContext(xpathCtx);
+	xmlFreeDoc(doc);
+
+	/* Response is built without any problem, status code is ok */
+	LASSO_IDWSF2_UTIL_RESPONSE(response)->Status = 
+		lasso_util_status_new(LASSO_DST_STATUS_CODE_OK);
+
+	return lasso_wsf2_profile_build_response_msg(profile);
 }
 
 /*****************************************************************************/

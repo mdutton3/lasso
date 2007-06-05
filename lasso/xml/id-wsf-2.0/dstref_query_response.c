@@ -55,6 +55,40 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
+{
+	xmlNode *xmlnode;
+	xmlNs *ns;
+
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+	ns = xmlNewNs(xmlnode, (xmlChar*)LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(node)->hrefServiceType,
+			(xmlChar*)LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(node)->prefixServiceType);
+	xml_insure_namespace(xmlnode, ns, TRUE);
+
+	return xmlnode;
+}
+
+static int
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	LassoIdWsf2DstRefQueryResponse *response = LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(node);
+	int res;
+
+	res = parent_class->init_from_xml(node, xmlnode);
+	if (res) {
+		return res;
+	}
+
+	response->hrefServiceType = g_strdup((char*)xmlnode->ns->href);
+	response->prefixServiceType = lasso_get_prefix_for_dst_service_href(
+			response->hrefServiceType);
+	if (response->prefixServiceType == NULL) {
+		/* XXX: what to do here ? */
+	}
+
+	return 0;
+}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -65,6 +99,8 @@ instance_init(LassoIdWsf2DstRefQueryResponse *node)
 {
 	node->TestResult = NULL;
 	node->Data = NULL;
+	node->prefixServiceType = NULL;
+	node->hrefServiceType = NULL;
 }
 
 static void
@@ -73,6 +109,8 @@ class_init(LassoIdWsf2DstRefQueryResponseClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "QueryResponse");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DSTREF_HREF, LASSO_IDWSF2_DSTREF_PREFIX);
@@ -110,8 +148,9 @@ lasso_idwsf2_dstref_query_response_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DstRefQueryResponse object
  **/
-LassoNode*
+LassoIdWsf2DstRefQueryResponse*
 lasso_idwsf2_dstref_query_response_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DSTREF_QUERY_RESPONSE, NULL);
 }
+

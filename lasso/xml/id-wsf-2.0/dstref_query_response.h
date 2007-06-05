@@ -65,6 +65,10 @@ struct _LassoIdWsf2DstRefQueryResponse {
 	/* elements */
 	GList *TestResult;
 	GList *Data; /* of LassoIdWsf2DstRefData */
+	
+	/*< private >*/
+	char *prefixServiceType;
+	char *hrefServiceType;
 };
 
 
@@ -73,7 +77,7 @@ struct _LassoIdWsf2DstRefQueryResponseClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_dstref_query_response_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_dstref_query_response_new(void);
+LASSO_EXPORT LassoIdWsf2DstRefQueryResponse* lasso_idwsf2_dstref_query_response_new(void);
 
 
 

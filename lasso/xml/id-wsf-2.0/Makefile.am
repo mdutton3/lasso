@@ -27,6 +27,8 @@ liblasso_xml_id_wsf2_la_SOURCES = \
 	dst_data_response_base.c \
 	dst_request.c \
 	dst_result_query_base.c \
+	dstref_data.c \
+	dstref_item_data.c \
 	dstref_query.c \
 	dstref_query_item.c \
 	dstref_query_response.c \
@@ -56,6 +58,8 @@ liblassoinclude_HEADERS = \
 	dst_data_response_base.h \
 	dst_request.h \
 	dst_result_query_base.h \
+	dstref_data.h \
+	dstref_item_data.h \
 	dstref_query.h \
 	dstref_query_item.h \
 	dstref_query_response.h \

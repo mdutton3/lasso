@@ -2336,3 +2336,17 @@ xmlCleanNs(xmlNode *root_node)
 	}
 }
 
+void
+xml_insure_namespace(xmlNode *xmlnode, xmlNs *ns, gboolean force)
+{
+	xmlNode *t = xmlnode->children;
+
+	xmlSetNs(xmlnode, ns);
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE && (force == TRUE || t->ns == NULL)) {
+			xml_insure_namespace(t, ns, force);
+		}
+		t = t->next;
+	}
+}
+

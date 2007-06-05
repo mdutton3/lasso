@@ -323,6 +323,11 @@ typedef struct {
 	%newobject server_get;
 	LassoServer *server;
 
+	/* Attributes */
+
+	%newobject data;
+	char *data;
+
 	/* Constructor, Destructor & Static Methods */
 
 	LassoIdWsf2DataService(LassoServer *server);
@@ -352,9 +357,14 @@ typedef struct {
 
 	THROW_ERROR()
 	int addQueryItem(const char *item_xpath, const char *item_id);		
+	END_THROW_ERROR()
 
 	THROW_ERROR()
 	int processQueryMsg(const char *message);
+	END_THROW_ERROR()
+	
+	THROW_ERROR()
+	int buildQueryResponseMsg();
 	END_THROW_ERROR()
 }
 
@@ -396,6 +406,14 @@ typedef struct {
 #define LassoIdWsf2DataService_set_server(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->server, (value))
 #define LassoIdWsf2DataService_server_set(self, value) set_node((gpointer *) &LASSO_WSF2_PROFILE(self)->server, (value))
 
+/* Attributes */
+
+/* data */
+#define LassoIdWsf2DataService_get_data(self) get_xml_string((self)->data)
+#define LassoIdWsf2DataService_data_get(self) get_xml_string((self)->data)
+#define LassoIdWsf2DataService_set_data(self, value) set_xml_string(&(self)->data, (value))
+#define LassoIdWsf2DataService_data_set(self, value) set_xml_string(&(self)->data, (value))
+
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoIdWsf2DataService lasso_idwsf2_data_service_new
@@ -414,5 +432,7 @@ typedef struct {
 #define LassoIdWsf2DataService_initQuery lasso_idwsf2_data_service_init_query
 #define LassoIdWsf2DataService_addQueryItem lasso_idwsf2_data_service_add_query_item
 #define LassoIdWsf2DataService_processQueryMsg lasso_idwsf2_data_service_process_query_msg
+#define LassoIdWsf2DataService_buildQueryResponseMsg lasso_idwsf2_data_service_build_query_response_msg
+
 %}
 

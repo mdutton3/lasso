@@ -62,7 +62,7 @@ struct _LassoIdWsf2UtilResponse {
 
 	/*< public >*/
 	/* elements */
-	/* XXX */ void *Status;
+	LassoIdWsf2UtilStatus *Status;
 	GList *Extension; /* of LassoIdWsf2Utilextension */
 	/* attributes */
 	char *itemIDRef;

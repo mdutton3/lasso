@@ -56,20 +56,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-static void
-insure_namespace(xmlNode *xmlnode, xmlNs *ns)
-{
-	xmlNode *t = xmlnode->children;
-
-	xmlSetNs(xmlnode, ns);
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE) {
-			insure_namespace(t, ns);
-		}
-		t = t->next;
-	}
-}
-
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
@@ -79,7 +65,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	ns = xmlNewNs(xmlnode, (xmlChar*)LASSO_IDWSF2_DSTREF_QUERY(node)->hrefServiceType,
 			(xmlChar*)LASSO_IDWSF2_DSTREF_QUERY(node)->prefixServiceType);
-	insure_namespace(xmlnode, ns);
+	xml_insure_namespace(xmlnode, ns, TRUE);
 
 	return xmlnode;
 }

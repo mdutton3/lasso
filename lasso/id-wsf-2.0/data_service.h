@@ -85,6 +85,9 @@ LASSO_EXPORT gint lasso_idwsf2_data_service_add_query_item(
 LASSO_EXPORT gint lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service,
 	const gchar *message);
 
+LASSO_EXPORT gint lasso_idwsf2_data_service_build_query_response_msg(
+	LassoIdWsf2DataService *service);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
