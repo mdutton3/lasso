@@ -574,7 +574,6 @@ lasso_data_service_get_answer_for_item_id(LassoDataService *service, const char 
 	GList *iter;
 
 	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
-	iter = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request)->QueryItem;
 
 	iter = response->Data;
 	while (iter && item_id) {
