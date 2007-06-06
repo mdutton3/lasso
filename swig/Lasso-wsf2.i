@@ -362,9 +362,13 @@ typedef struct {
 	THROW_ERROR()
 	int processQueryMsg(const char *message);
 	END_THROW_ERROR()
-	
+
 	THROW_ERROR()
 	int buildQueryResponseMsg();
+	END_THROW_ERROR()
+	
+	THROW_ERROR()
+	int processQueryResponseMsg(const char *message);
 	END_THROW_ERROR()
 }
 
@@ -433,6 +437,7 @@ typedef struct {
 #define LassoIdWsf2DataService_addQueryItem lasso_idwsf2_data_service_add_query_item
 #define LassoIdWsf2DataService_processQueryMsg lasso_idwsf2_data_service_process_query_msg
 #define LassoIdWsf2DataService_buildQueryResponseMsg lasso_idwsf2_data_service_build_query_response_msg
+#define LassoIdWsf2DataService_processQueryResponseMsg lasso_idwsf2_data_service_process_query_response_msg
 
 %}
 

@@ -212,6 +212,21 @@ lasso_idwsf2_data_service_build_query_response_msg(LassoIdWsf2DataService *servi
 	return lasso_wsf2_profile_build_response_msg(profile);
 }
 
+gint
+lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *service,
+	const gchar *message)
+{
+	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	int res;
+
+	res = lasso_wsf2_profile_process_soap_response_msg(profile, message);
+	if (res != 0) {
+		return res;
+	}
+
+	return 0;
+}
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
