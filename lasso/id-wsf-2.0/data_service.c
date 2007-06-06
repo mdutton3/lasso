@@ -145,33 +145,6 @@ lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, con
 	return res;
 }
 
-/* XXX: Taken from swig/Lasso.i . Should probably be moved to xml.c */
-static gchar* get_xml_string(xmlNode *xmlnode)
-{
-	xmlOutputBufferPtr buf;
-	gchar *xmlString;
-
-	if (xmlnode == NULL) {
-		return NULL;
-	}
-
-	buf = xmlAllocOutputBuffer(NULL);
-	if (buf == NULL) {
-		xmlString = NULL;
-	} else {
-		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
-		xmlOutputBufferFlush(buf);
-		if (buf->conv == NULL) {
-			xmlString = g_strdup((gchar*)buf->buffer->content);
-		} else {
-			xmlString = g_strdup((gchar*)buf->conv->content);
-		}
-		xmlOutputBufferClose(buf);
-	}
-	xmlFreeNode(xmlnode);
-	return xmlString;
-}
-
 gint
 lasso_idwsf2_data_service_build_query_response_msg(LassoIdWsf2DataService *service)
 {
@@ -217,7 +190,7 @@ lasso_idwsf2_data_service_build_query_response_msg(LassoIdWsf2DataService *servi
 			/* XXX: assuming there is only one matching node */
 			data = lasso_idwsf2_dstref_data_new();
 			data_item = LASSO_IDWSF2_DSTREF_ITEM_DATA(data);
-			data_item->content = get_xml_string(node);
+			data_item->any = g_list_append(data_item->any, xmlCopyNode(node, 1));
 			if (item_result_query_base->itemID != NULL) {
 				data_item->itemIDRef = g_strdup(item_result_query_base->itemID);
 			}

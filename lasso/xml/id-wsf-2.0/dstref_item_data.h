@@ -61,7 +61,8 @@ struct _LassoIdWsf2DstRefItemData {
 
 	/*< public >*/
 	/* elements */
-	char *content;
+	GList *any; /* list of xmlNodes */
+
 	/* attributes */
 	char *itemIDRef;
 	char *notSorted;

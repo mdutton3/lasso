@@ -42,8 +42,8 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "content", SNIPPET_TEXT_CHILD,
-		G_STRUCT_OFFSET(LassoIdWsf2DstRefItemData, content) },
+	{ "any", SNIPPET_LIST_XMLNODES,
+		G_STRUCT_OFFSET(LassoIdWsf2DstRefItemData, any) },
 	{ "itemIDRef", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefItemData, itemIDRef) },
 	{ "notSorted", SNIPPET_ATTRIBUTE,
@@ -63,7 +63,7 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2DstRefItemData *node)
 {
-	node->content = NULL;
+	node->any = NULL;
 	node->itemIDRef = NULL;
 	node->notSorted = NULL;
 	node->changeFormat = NULL;
@@ -118,21 +118,3 @@ lasso_idwsf2_dstref_item_data_new()
 	return g_object_new(LASSO_TYPE_IDWSF2_DSTREF_ITEM_DATA, NULL);
 }
 
-
-/**
- * lasso_idwsf2_dstref_item_data_new_with_string:
- * @content: 
- *
- * Creates a new #LassoIdWsf2DstRefItemData object and initializes it
- * with @content.
- *
- * Return value: a newly created #LassoIdWsf2DstRefItemData object
- **/
-LassoNode*
-lasso_idwsf2_dstref_item_data_new_with_string(char *content)
-{
-	LassoIdWsf2DstRefItemData *object;
-	object = g_object_new(LASSO_TYPE_IDWSF2_DSTREF_ITEM_DATA, NULL);
-	object->content = g_strdup(content);
-	return LASSO_NODE(object);
-}
