@@ -282,13 +282,16 @@ lasso_idwsf2_data_service_get_attribute_string(LassoIdWsf2DataService *service,
 	const gchar *item_id)
 {
 	xmlNode *node;
+	xmlChar *xml_content;
 	gchar *content;
 	
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
 	
 	node = lasso_idwsf2_data_service_get_attribute_node(service, item_id);
-	content = (gchar*)xmlNodeGetContent(node);
+	xml_content = xmlNodeGetContent(node);
+	content = g_strdup((gchar*)xml_content);
 
+	xmlFree(xml_content);
 	xmlFreeNode(node);
 
 	return content;
