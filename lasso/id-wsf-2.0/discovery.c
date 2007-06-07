@@ -226,9 +226,11 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 	/* Create request with this xml node */
 	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(md_association_add));
 
-	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
-	if (epr != NULL) {
-		profile->msg_url = g_strdup(epr->Address->content);
+	if (session) {
+		epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
+		if (epr != NULL) {
+			profile->msg_url = g_strdup(epr->Address->content);
+		}
 	}
 
 	return 0;
