@@ -42,7 +42,7 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "any", SNIPPET_LIST_XMLNODES,
+	{ "", SNIPPET_LIST_XMLNODES,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefItemData, any) },
 	{ "itemIDRef", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefItemData, itemIDRef) },
