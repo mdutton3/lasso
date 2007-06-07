@@ -59,7 +59,7 @@ struct _LassoSessionPrivate
 gint
 lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *assertion)
 {
-	g_return_val_if_fail(session != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
@@ -83,7 +83,7 @@ lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *
 gint
 lasso_session_add_status(LassoSession *session, char *providerID, LassoNode *status)
 {
-	g_return_val_if_fail(session != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(status != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
@@ -109,6 +109,8 @@ lasso_session_add_status(LassoSession *session, char *providerID, LassoNode *sta
 LassoNode*
 lasso_session_get_assertion(LassoSession *session, gchar *providerID)
 {
+	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
+
 	return g_hash_table_lookup(session->assertions, providerID);
 }
 
@@ -117,7 +119,6 @@ add_assertion_to_list(gchar *key, LassoLibAssertion *value, GList **list)
 {
 	*list = g_list_append(*list, value);
 }
-
 
 /**
  * lasso_session_get_assertions
@@ -246,12 +247,16 @@ lasso_session_init_provider_ids(LassoSession *session)
 gboolean
 lasso_session_is_empty(LassoSession *session)
 {
-	if (session == NULL) return TRUE;
+	if (session == NULL) {
+		return TRUE;
+	}
 
-	if (g_hash_table_size(session->assertions))
+	if (g_hash_table_size(session->assertions)) {
 		return FALSE;
-	if (g_hash_table_size(session->private_data->status))
+	}
+	if (g_hash_table_size(session->private_data->status)) {
 		return FALSE;
+	}
 
 	return TRUE;
 }
@@ -268,7 +273,7 @@ lasso_session_is_empty(LassoSession *session)
 gint
 lasso_session_remove_assertion(LassoSession *session, gchar *providerID)
 {
-	g_return_val_if_fail(session != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	if (g_hash_table_remove(session->assertions, providerID)) {
@@ -309,7 +314,8 @@ lasso_session_add_endpoint_reference(LassoSession *session, LassoWsAddrEndpointR
 	GList *i;
 
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
-	
+	g_return_val_if_fail(LASSO_IS_WSA_ENDPOINT_REFERENCE(epr), LASSO_PARAM_ERROR_INVALID_VALUE);
+
 	for (i = g_list_first(epr->Metadata->any); i != NULL; i = g_list_next(i)) {
 		if (LASSO_IS_IDWSF2_DISCO_SERVICE_TYPE(i->data)) {
 			g_hash_table_insert(session->private_data->eprs,
@@ -329,6 +335,7 @@ lasso_session_get_endpoint_reference(LassoSession *session, const gchar *service
 	LassoWsAddrEndpointReference* epr;
 
 	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
+	g_return_val_if_fail(service_type != NULL, NULL);
 	
 	epr = g_hash_table_lookup(session->private_data->eprs, service_type);
 	if (LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
@@ -348,7 +355,9 @@ lasso_session_get_assertion_identity_token(LassoSession *session)
 	LassoIdWsf2SecToken *sec_token;
 	LassoSaml2Assertion *assertion = NULL;
 
-	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
+	if (LASSO_IS_SESSION(session) == FALSE) {
+		return NULL;
+	}
 
 	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
 	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {

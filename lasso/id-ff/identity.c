@@ -82,6 +82,9 @@ lasso_identity_add_federation(LassoIdentity *identity, LassoFederation *federati
 LassoFederation*
 lasso_identity_get_federation(LassoIdentity *identity, const char *providerID)
 {
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
+	g_return_val_if_fail(providerID != NULL, NULL);
+
 	return g_hash_table_lookup(identity->federations, providerID);
 }
 
@@ -97,10 +100,14 @@ lasso_identity_get_federation(LassoIdentity *identity, const char *providerID)
 gint
 lasso_identity_remove_federation(LassoIdentity *identity, const char *providerID)
 {
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
 	if (g_hash_table_remove(identity->federations, providerID) == FALSE) {
 		return LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND;
 	}
 	identity->is_dirty = TRUE;
+
 	return 0;
 }
 
@@ -128,7 +135,11 @@ lasso_identity_add_resource_offering(LassoIdentity *identity,
 	char entry_id_s[20];
 	GList *iter;
 	LassoDiscoResourceOffering *t;
-	
+
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(offering),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
 	g_snprintf(entry_id_s, 18, "%d", entry_id);
 	iter = identity->private_data->resource_offerings;
 	while (iter) {
@@ -140,7 +151,7 @@ lasso_identity_add_resource_offering(LassoIdentity *identity,
 			iter = identity->private_data->resource_offerings; /* rewind */
 		}
 	}
-		
+
 	offering->entryID = g_strdup(entry_id_s);
 	identity->private_data->resource_offerings = g_list_append(
 			identity->private_data->resource_offerings, g_object_ref(offering));
@@ -163,7 +174,10 @@ lasso_identity_remove_resource_offering(LassoIdentity *identity, const char *ent
 {
 	GList *iter;
 	LassoDiscoResourceOffering *t;
-	
+
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), FALSE);
+	g_return_val_if_fail(entryID != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
 	iter = identity->private_data->resource_offerings;
 	while (iter) {
 		t = iter->data;
@@ -186,7 +200,9 @@ lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type)
 	GList *iter;
 	LassoDiscoResourceOffering *t;
 	GList *result = NULL;
-	
+
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
+
 	iter = identity->private_data->resource_offerings;
 	while (iter) {
 		t = iter->data;
@@ -206,6 +222,9 @@ lasso_identity_get_resource_offering(LassoIdentity *identity, const char *entryI
 	GList *iter;
 	LassoDiscoResourceOffering *t;
 
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
+	g_return_val_if_fail(entryID != NULL, NULL);
+
 	iter = identity->private_data->resource_offerings;
 	while (iter) {
 		t = iter->data;
@@ -221,6 +240,9 @@ lasso_identity_get_resource_offering(LassoIdentity *identity, const char *entryI
 gint
 lasso_identity_add_svc_md_id(LassoIdentity *identity, gchar *svcMDID)
 {
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(svcMDID != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
 	identity->private_data->svcMDID = g_list_append(
 			identity->private_data->svcMDID, g_strdup(svcMDID));
 	identity->is_dirty = TRUE;
