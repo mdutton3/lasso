@@ -120,7 +120,7 @@ int lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_v
 void xmlCleanNs(xmlNode *root_node);
 
 void xml_insure_namespace(xmlNode *xmlnode, xmlNs *ns, gboolean force,
-		char *ns_href, char *ns_prefix);
+		gchar *ns_href, gchar *ns_prefix);
 
 gchar* lasso_node_build_deflated_query(LassoNode *node);
 

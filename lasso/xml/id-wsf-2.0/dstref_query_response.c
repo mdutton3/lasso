@@ -59,8 +59,6 @@ static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
-	xmlNs *ns;
-	char *ns_href;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xml_insure_namespace(xmlnode, NULL, TRUE,
