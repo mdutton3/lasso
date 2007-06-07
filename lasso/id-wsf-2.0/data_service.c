@@ -163,6 +163,9 @@ lasso_idwsf2_data_service_build_query_response_msg(LassoIdWsf2DataService *servi
 	xmlNode *node;
 	GList *iter;
 
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
 	/* Response envelope and body */
 	envelope = profile->soap_envelope_response;
 	response = lasso_idwsf2_dstref_query_response_new();
@@ -219,6 +222,10 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
 	int res;
 
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
 	res = lasso_wsf2_profile_process_soap_response_msg(profile, message);
 	if (res != 0) {
 		return res;
@@ -234,6 +241,9 @@ lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, co
 	LassoIdWsf2DstRefQueryResponse *response;
 	LassoIdWsf2DstRefItemData *data = NULL;
 	GList *iter;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	response = LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(profile->response);
 
