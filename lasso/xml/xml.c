@@ -1504,6 +1504,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		typename = g_strdup("LassoSaml2EncryptedElement");
 	} else if (strcmp(node_name, "SvcMD") == 0) {
 		typename = g_strdup("LassoIdWsf2DiscoSvcMetadata");
+	} else if (strcmp(prefix, "IdWsf2DstRef") == 0 && strcmp(node_name, "Status") == 0) {
+		typename = g_strdup("LassoIdWsf2UtilStatus");
 	} else {
 		typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
 	}

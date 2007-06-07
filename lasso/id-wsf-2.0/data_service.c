@@ -227,6 +227,48 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 	return 0;
 }
 
+xmlNode*
+lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service,
+	const gchar *item_id)
+{
+	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2DstRefQueryResponse *response;
+	LassoIdWsf2DstRefItemData *data = NULL;
+	GList *iter;
+
+	response = LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(profile->response);
+
+	/* If no item_id is given, return the first item */
+	if (item_id == NULL && response->Data != NULL && response->Data->data != NULL) {
+		data = LASSO_IDWSF2_DSTREF_ITEM_DATA(response->Data->data);
+		if (data->any != NULL && data->any->data != NULL) {
+			return xmlCopyNode(data->any->data, 1);
+		}
+	}
+	if (item_id == NULL) {
+		return NULL;
+	}
+
+	/* Find the item which has the given item_id */
+	for (iter = g_list_first(response->Data); iter != NULL; iter = g_list_next(iter)) {
+		if (iter->data == NULL) {
+			continue;
+		}
+		if (strcmp(LASSO_IDWSF2_DSTREF_ITEM_DATA(iter->data)->itemIDRef, item_id) == 0) {
+			data = LASSO_IDWSF2_DSTREF_ITEM_DATA(iter->data);
+			break;
+		}
+	}
+
+	if (data == NULL || data->any == NULL || data->any->data == NULL) {
+		/* Item not found */
+		return NULL;
+	}
+
+	/* XXX: there may be more than one xmlnode */
+	return xmlCopyNode(data->any->data, 1);
+}
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
