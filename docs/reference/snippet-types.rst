@@ -68,6 +68,7 @@ SNIPPET_LIST_CONTENT
  possible to set 4th and 5th members of snippet to get a different namespace
  (name, uri).]
 
+
 SNIPPET_LIST_XMLNODES
 
   <Parent>
@@ -75,6 +76,11 @@ SNIPPET_LIST_XMLNODES
     <Value-2/>
     <Value-3/>
   </Parent>
+
+[note: if there are no other nodes; it is possible to leave snippet name as
+ the empty string; nodes will then be constructed looking at their names and
+ namespaces  (this is useful for xs:any)]
+
 
 SNIPPET_XMLNODE
 
