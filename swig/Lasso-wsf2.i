@@ -373,6 +373,9 @@ typedef struct {
 
 	%newobject getAttributeNode;
 	char* getAttributeNode(const char *item_id = NULL);
+
+	%newobject getAttributeString;
+	char* getAttributeString(const char *item_id = NULL);
 }
 
 %{
@@ -443,6 +446,7 @@ typedef struct {
 #define LassoIdWsf2DataService_processQueryResponseMsg lasso_idwsf2_data_service_process_query_response_msg
 #define LassoIdWsf2DataService_getAttributeNode(self, itemId) \
 	get_xml_string(lasso_idwsf2_data_service_get_attribute_node(self, itemId))
+#define LassoIdWsf2DataService_getAttributeString lasso_idwsf2_data_service_get_attribute_string
 
 %}
 

@@ -228,8 +228,7 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 }
 
 xmlNode*
-lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service,
-	const gchar *item_id)
+lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, const gchar *item_id)
 {
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
 	LassoIdWsf2DstRefQueryResponse *response;
@@ -267,6 +266,15 @@ lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service,
 
 	/* XXX: there may be more than one xmlnode */
 	return xmlCopyNode(data->any->data, 1);
+}
+
+gchar*
+lasso_idwsf2_data_service_get_attribute_string(LassoIdWsf2DataService *service,
+	const gchar *item_id)
+{
+	xmlNode *node = lasso_idwsf2_data_service_get_attribute_node(service, item_id);
+	
+	return (gchar*)xmlNodeGetContent(node);
 }
 
 /*****************************************************************************/
