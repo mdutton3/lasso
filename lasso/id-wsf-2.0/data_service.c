@@ -287,9 +287,9 @@ lasso_idwsf2_data_service_get_attribute_string(LassoIdWsf2DataService *service,
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
 	
 	node = lasso_idwsf2_data_service_get_attribute_node(service, item_id);
-	content = g_strdup((gchar*)xmlNodeGetContent(node));
+	content = (gchar*)xmlNodeGetContent(node);
 
-	xmlFree(node);
+	xmlFreeNode(node);
 
 	return content;
 }
