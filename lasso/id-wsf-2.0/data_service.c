@@ -242,8 +242,7 @@ lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, co
 	LassoIdWsf2DstRefItemData *data = NULL;
 	GList *iter;
 
-	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
-		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
 
 	response = LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(profile->response);
 
@@ -282,9 +281,17 @@ gchar*
 lasso_idwsf2_data_service_get_attribute_string(LassoIdWsf2DataService *service,
 	const gchar *item_id)
 {
-	xmlNode *node = lasso_idwsf2_data_service_get_attribute_node(service, item_id);
+	xmlNode *node;
+	gchar *content;
 	
-	return (gchar*)xmlNodeGetContent(node);
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
+	
+	node = lasso_idwsf2_data_service_get_attribute_node(service, item_id);
+	content = g_strdup((gchar*)xmlNodeGetContent(node));
+
+	xmlFree(node);
+
+	return content;
 }
 
 /*****************************************************************************/
