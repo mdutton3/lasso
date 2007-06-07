@@ -307,6 +307,8 @@ gint
 lasso_session_add_endpoint_reference(LassoSession *session, LassoWsAddrEndpointReference *epr)
 {
 	GList *i;
+
+	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
 	
 	for (i = g_list_first(epr->Metadata->any); i != NULL; i = g_list_next(i)) {
 		if (LASSO_IS_IDWSF2_DISCO_SERVICE_TYPE(i->data)) {
@@ -325,6 +327,8 @@ LassoWsAddrEndpointReference*
 lasso_session_get_endpoint_reference(LassoSession *session, const gchar *service_type)
 {
 	LassoWsAddrEndpointReference* epr;
+
+	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
 	
 	epr = g_hash_table_lookup(session->private_data->eprs, service_type);
 	if (LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
@@ -344,8 +348,7 @@ lasso_session_get_assertion_identity_token(LassoSession *session)
 	LassoIdWsf2SecToken *sec_token;
 	LassoSaml2Assertion *assertion = NULL;
 
-	if (! LASSO_IS_SESSION(session))
-		return NULL;
+	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
 
 	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
 	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
