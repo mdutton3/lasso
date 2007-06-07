@@ -2337,14 +2337,25 @@ xmlCleanNs(xmlNode *root_node)
 }
 
 void
-xml_insure_namespace(xmlNode *xmlnode, xmlNs *ns, gboolean force)
+xml_insure_namespace(xmlNode *xmlnode, xmlNs *ns, gboolean force, char *ns_href, char *ns_prefix)
 {
 	xmlNode *t = xmlnode->children;
+
+	if (ns == NULL) {
+		for (ns = xmlnode->nsDef; ns; ns = ns->next) {
+			if (strcmp(ns->href, ns_href) == 0) {
+				break;
+			}
+		}
+		if (ns == NULL) {
+			ns = xmlNewNs(xmlnode, ns_href, ns_prefix);
+		}
+	}
 
 	xmlSetNs(xmlnode, ns);
 	while (t) {
 		if (t->type == XML_ELEMENT_NODE && (force == TRUE || t->ns == NULL)) {
-			xml_insure_namespace(t, ns, force);
+			xml_insure_namespace(t, ns, force, NULL, NULL);
 		}
 		t = t->next;
 	}

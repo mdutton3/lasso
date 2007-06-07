@@ -60,11 +60,12 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	xmlNs *ns;
+	char *ns_href;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	ns = xmlNewNs(xmlnode, (xmlChar*)LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(node)->hrefServiceType,
-			(xmlChar*)LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(node)->prefixServiceType);
-	xml_insure_namespace(xmlnode, ns, TRUE);
+	xml_insure_namespace(xmlnode, NULL, TRUE,
+			LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(node)->hrefServiceType,
+			LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(node)->prefixServiceType);
 
 	return xmlnode;
 }
