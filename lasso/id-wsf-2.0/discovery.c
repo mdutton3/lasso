@@ -161,7 +161,7 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 	if (res == 0) {
 		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_OK);
 		/* FIXME : foreach here as well */
-		response->SvcMDID = g_list_append(response->SvcMDID, discovery->metadata->svcMDID);
+		response->SvcMDID = g_list_append(response->SvcMDID, g_strdup(discovery->metadata->svcMDID));
 	} else {
 		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
 		/* XXX : May add secondary status codes here */
@@ -198,7 +198,7 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 		response = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(profile->response);
 		/* FIXME : foreach on the list instead */
 		if (response->SvcMDID != NULL) {
-			discovery->svcMDID = response->SvcMDID->data;
+			discovery->svcMDID = g_strdup(response->SvcMDID->data);
 		}
 	}
 
