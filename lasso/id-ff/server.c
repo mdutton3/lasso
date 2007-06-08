@@ -162,6 +162,7 @@ lasso_server_get_svc_metadatas_with_id_and_type(LassoServer *server, GList *svcM
 	GList *j;
 
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+	g_return_val_if_fail(svcMDIDs != NULL, NULL);
 	g_return_val_if_fail(service_type != NULL, NULL);
 
 	for (i = g_list_first(svcMDIDs); i != NULL; i = g_list_next(i)) {

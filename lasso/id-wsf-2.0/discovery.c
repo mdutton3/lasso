@@ -80,10 +80,47 @@ lasso_idwsf2_discovery_destroy(LassoIdWsf2Discovery *discovery)
 	g_object_unref(G_OBJECT(discovery));
 }
 
+gchar*
+lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
+	const gchar *service_type, const gchar *abstract,
+	const gchar *soap_endpoint, const gchar *svcMDID)
+{
+	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
+	LassoProvider *provider;
+	gchar *provider_id;
+	LassoIdWsf2DiscoSvcMetadata *metadata;
+	char unique_id[33];
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery), NULL);
+	g_return_val_if_fail(service_type != NULL, NULL);
+	g_return_val_if_fail(abstract != NULL, NULL);
+	g_return_val_if_fail(soap_endpoint != NULL, NULL);
+
+	provider = LASSO_PROVIDER(profile->server);
+	provider_id = provider->ProviderID;
+
+	metadata = lasso_idwsf2_disco_svc_metadata_new_full(service_type, abstract, provider_id,
+		soap_endpoint);
+
+	if (svcMDID != NULL) {
+		metadata->svcMDID = g_strdup(svcMDID);
+	} else {
+		/* Build a unique SvcMDID */
+		lasso_build_random_sequence(unique_id, 32);
+		unique_id[32] = 0;
+		metadata->svcMDID = g_strdup(unique_id);
+	}
+
+	/* Add the metadata into the server object */
+	lasso_server_add_svc_metadata(profile->server, metadata);
+
+	return g_strdup(metadata->svcMDID);
+}
+
 gint
 lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
-		const gchar *service_type, const gchar *abstract,
-		const gchar *disco_provider_id, const gchar *soap_endpoint)
+	const gchar *service_type, const gchar *abstract,
+	const gchar *disco_provider_id, const gchar *soap_endpoint)
 {
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoSvcMDRegister *metadata_register;
@@ -92,6 +129,10 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(service_type != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(abstract != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(disco_provider_id != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(soap_endpoint != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	/* Get the providerId of this SP */
 	provider = LASSO_PROVIDER(profile->server);

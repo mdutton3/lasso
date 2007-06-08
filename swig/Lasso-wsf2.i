@@ -130,10 +130,14 @@ typedef struct {
 	END_THROW_ERROR()
 
 	/* Methods */
+	
+	%newobject metadataRegisterSelf;
+	char* metadataRegisterSelf(const char *service_type, const char *abstract,
+		const char *soap_endpoint, const char *svcMDID = NULL);
 
 	THROW_ERROR()
-	int initMetadataRegister(char *service_type, char *abstract, char *disco_provider_id,
-		char *soap_endpoint);
+	int initMetadataRegister(const char *service_type, const char *abstract,
+		const char *disco_provider_id, const char *soap_endpoint);
 	END_THROW_ERROR()
 
 	THROW_ERROR()
@@ -273,6 +277,7 @@ typedef struct {
 
 /* Methods implementations */
 
+#define LassoIdWsf2Discovery_metadataRegisterSelf lasso_idwsf2_discovery_metadata_register_self
 #define LassoIdWsf2Discovery_initMetadataRegister lasso_idwsf2_discovery_init_metadata_register
 #define LassoIdWsf2Discovery_processMetadataRegisterMsg lasso_idwsf2_discovery_process_metadata_register_msg
 #define LassoIdWsf2Discovery_processMetadataRegisterResponseMsg lasso_idwsf2_discovery_process_metadata_register_response_msg
@@ -376,6 +381,9 @@ typedef struct {
 
 	%newobject getAttributeString;
 	char* getAttributeString(const char *item_id = NULL);
+
+	%newobject getPersonalProfileEmail;
+	char* getPersonalProfileEmail(const char *item_id = NULL);
 }
 
 %{
@@ -447,6 +455,7 @@ typedef struct {
 #define LassoIdWsf2DataService_getAttributeNode(self, itemId) \
 	get_xml_string(lasso_idwsf2_data_service_get_attribute_node(self, itemId))
 #define LassoIdWsf2DataService_getAttributeString lasso_idwsf2_data_service_get_attribute_string
+#define LassoIdWsf2DataService_getPersonalProfileEmail lasso_idwsf2_data_service_get_personal_profile_email
 
 %}
 
