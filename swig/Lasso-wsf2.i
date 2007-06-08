@@ -149,7 +149,7 @@ typedef struct {
 	END_THROW_ERROR()
 
 	THROW_ERROR()
-	int initMetadataAssociationAdd(const char *svcMDID, const char *disco_provider_id);
+	int initMetadataAssociationAdd(const char *svcMDID);
 	END_THROW_ERROR()
 
 	THROW_ERROR()

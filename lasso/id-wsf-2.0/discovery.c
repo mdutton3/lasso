@@ -249,7 +249,7 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 
 gint
 lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *discovery,
-	const gchar *svcMDID, const gchar *disco_provider_id)
+	const gchar *svcMDID)
 {
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
 	LassoSession *session = profile->session;
