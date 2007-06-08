@@ -146,7 +146,7 @@ lasso_idwsf2_disco_requested_service_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DiscoRequestedService object
  **/
-LassoNode*
+LassoIdWsf2DiscoRequestedService*
 lasso_idwsf2_disco_requested_service_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_REQUESTED_SERVICE, NULL);

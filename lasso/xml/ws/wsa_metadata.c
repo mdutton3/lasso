@@ -103,7 +103,7 @@ lasso_wsa_metadata_get_type()
  *
  * Return value: a newly created #LassoWsAddrMetadata object
  **/
-LassoNode*
+LassoWsAddrMetadata*
 lasso_wsa_metadata_new()
 {
 	return g_object_new(LASSO_TYPE_WSA_METADATA, NULL);

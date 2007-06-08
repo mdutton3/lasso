@@ -115,7 +115,7 @@ lasso_idwsf2_disco_query_response_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DiscoQueryResponse object
  **/
-LassoNode*
+LassoIdWsf2DiscoQueryResponse*
 lasso_idwsf2_disco_query_response_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE, NULL);

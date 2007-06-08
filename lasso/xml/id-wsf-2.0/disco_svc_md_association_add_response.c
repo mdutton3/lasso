@@ -107,7 +107,7 @@ lasso_idwsf2_disco_svc_md_association_add_response_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DiscoSvcMDAssociationAddResponse object
  **/
-LassoNode*
+LassoIdWsf2DiscoSvcMDAssociationAddResponse*
 lasso_idwsf2_disco_svc_md_association_add_response_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE, NULL);

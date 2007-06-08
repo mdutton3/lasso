@@ -80,7 +80,7 @@ struct _LassoIdWsf2DiscoRequestedServiceClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_requested_service_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_disco_requested_service_new(void);
+LASSO_EXPORT LassoIdWsf2DiscoRequestedService* lasso_idwsf2_disco_requested_service_new(void);
 
 
 

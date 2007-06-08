@@ -153,6 +153,14 @@ lasso_strerror(int error_code)
 			return "Found an encrypted element but encryption private key is not set";
 		case LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS:
 			return "Status code is not success";
+		case LASSO_PROFILE_ERROR_MISSING_ISSUER:
+		        return "Missing issuer";
+		case LASSO_PROFILE_ERROR_MISSING_SERVICE_INSTANCE:
+		        return "Missing service instance";
+		case LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE:
+		        return "Missing endpoint reference";
+                case LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS:
+                        return "Missing endpoint reference address";
 
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
 			return "An object type provided as parameter "\
@@ -184,6 +192,13 @@ lasso_strerror(int error_code)
 
 		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE:
 			return "Target name space not found";
+
+		case LASSO_IDWSF2_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED:
+			return "Service metadata registration failed";
+		case LASSO_IDWSF2_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
+		        return "Service metadata association failed";
+		case LASSO_IDWSF2_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE:
+		        return "Missing requested service";
 
 		default:
 			return "Error";

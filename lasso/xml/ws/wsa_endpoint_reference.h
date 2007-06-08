@@ -73,7 +73,7 @@ struct _LassoWsAddrEndpointReferenceClass {
 void lasso_wsa_endpoint_reference_destroy(LassoWsAddrEndpointReference *epr);
 
 LASSO_EXPORT GType lasso_wsa_endpoint_reference_get_type(void);
-LASSO_EXPORT LassoNode* lasso_wsa_endpoint_reference_new(void);
+LASSO_EXPORT LassoWsAddrEndpointReference* lasso_wsa_endpoint_reference_new(void);
 
 #ifdef __cplusplus
 }

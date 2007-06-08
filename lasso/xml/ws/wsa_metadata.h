@@ -68,7 +68,7 @@ struct _LassoWsAddrMetadataClass {
 };
 
 LASSO_EXPORT GType lasso_wsa_metadata_get_type(void);
-LASSO_EXPORT LassoNode* lasso_wsa_metadata_new(void);
+LASSO_EXPORT LassoWsAddrMetadata* lasso_wsa_metadata_new(void);
 
 
 

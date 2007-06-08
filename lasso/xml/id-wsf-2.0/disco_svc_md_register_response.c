@@ -113,8 +113,9 @@ lasso_idwsf2_disco_svc_md_register_response_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DiscoSvcMDRegisterResponse object
  **/
-LassoNode*
+LassoIdWsf2DiscoSvcMDRegisterResponse*
 lasso_idwsf2_disco_svc_md_register_response_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, NULL);
 }
+

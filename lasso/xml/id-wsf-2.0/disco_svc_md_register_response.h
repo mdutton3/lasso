@@ -67,7 +67,8 @@ struct _LassoIdWsf2DiscoSvcMDRegisterResponseClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_register_response_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_disco_svc_md_register_response_new(void);
+LASSO_EXPORT LassoIdWsf2DiscoSvcMDRegisterResponse*
+        lasso_idwsf2_disco_svc_md_register_response_new(void);
 
 
 

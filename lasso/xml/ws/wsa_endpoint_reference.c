@@ -126,7 +126,7 @@ lasso_wsa_endpoint_reference_get_type()
  *
  * Return value: a newly created #LassoWsAddrEndpointReference object
  **/
-LassoNode*
+LassoWsAddrEndpointReference*
 lasso_wsa_endpoint_reference_new()
 {
 	return g_object_new(LASSO_TYPE_WSA_ENDPOINT_REFERENCE, NULL);

@@ -105,7 +105,7 @@ lasso_wsa_attributed_uri_get_type()
  *
  * Return value: a newly created #LassoWsAddrAttributedURI object
  **/
-LassoNode*
+LassoWsAddrAttributedURI*
 lasso_wsa_attributed_uri_new()
 {
 	return g_object_new(LASSO_TYPE_WSA_ATTRIBUTED_URI, NULL);
@@ -121,11 +121,12 @@ lasso_wsa_attributed_uri_new()
  *
  * Return value: a newly created #LassoWsAddrAttributedURI object
  **/
-LassoNode*
+LassoWsAddrAttributedURI*
 lasso_wsa_attributed_uri_new_with_string(char *content)
 {
-	LassoWsAddrAttributedURI *object;
-	object = g_object_new(LASSO_TYPE_WSA_ATTRIBUTED_URI, NULL);
+	LassoWsAddrAttributedURI *object = g_object_new(LASSO_TYPE_WSA_ATTRIBUTED_URI, NULL);
+
 	object->content = g_strdup(content);
-	return LASSO_NODE(object);
+
+	return object;
 }
