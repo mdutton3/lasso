@@ -615,6 +615,10 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	svcMDs = lasso_server_get_svc_metadatas_with_id_and_type(LASSO_PROFILE(login)->server,
 		svcMDIDs, LASSO_IDWSF2_DISCO_HREF);
 	if (svcMDs == NULL) {
+		svcMDs = lasso_server_get_svc_metadatas_with_id_and_type(
+			LASSO_PROFILE(login)->server, NULL, LASSO_IDWSF2_DISCO_HREF);
+	}
+	if (svcMDs == NULL) {
 		return;
 	}
 
