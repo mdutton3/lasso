@@ -611,15 +611,23 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	LassoIdWsf2SecToken *sec_token;
 	LassoSaml2Assertion *assertion_identity_token;
 
+	/* Get metadatas ids to which the user is associated */
 	svcMDIDs = lasso_identity_get_svc_md_ids(LASSO_PROFILE(login)->identity);
+	/* Get the metadatas of type discovery to which the user is associated */
 	svcMDs = lasso_server_get_svc_metadatas_with_id_and_type(LASSO_PROFILE(login)->server,
 		svcMDIDs, LASSO_IDWSF2_DISCO_HREF);
 	if (svcMDs == NULL) {
+		/* If the user hasn't been associated to any discovery metadatas, */
+		/* get a default one */
 		svcMDs = lasso_server_get_svc_metadatas_with_id_and_type(
 			LASSO_PROFILE(login)->server, NULL, LASSO_IDWSF2_DISCO_HREF);
-	}
-	if (svcMDs == NULL) {
-		return;
+		if (svcMDs != NULL && LASSO_IS_IDWSF2_DISCO_SVC_METADATA(svcMDs->data)) {
+			/* Then associate the user to these metadatas for later use */
+			lasso_identity_add_svc_md_id(LASSO_PROFILE(login)->identity,
+				LASSO_IDWSF2_DISCO_SVC_METADATA(svcMDs->data)->svcMDID);
+		} else {
+			return;
+		}
 	}
 
 	/* FIXME : foreach on the whole list and build on epr for each svcMD */
