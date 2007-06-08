@@ -381,9 +381,6 @@ typedef struct {
 
 	%newobject getAttributeString;
 	char* getAttributeString(const char *item_id = NULL);
-
-	%newobject getPersonalProfileEmail;
-	char* getPersonalProfileEmail(const char *item_id = NULL);
 }
 
 %{
@@ -455,7 +452,6 @@ typedef struct {
 #define LassoIdWsf2DataService_getAttributeNode(self, itemId) \
 	get_xml_string(lasso_idwsf2_data_service_get_attribute_node(self, itemId))
 #define LassoIdWsf2DataService_getAttributeString lasso_idwsf2_data_service_get_attribute_string
-#define LassoIdWsf2DataService_getPersonalProfileEmail lasso_idwsf2_data_service_get_personal_profile_email
 
 %}
 

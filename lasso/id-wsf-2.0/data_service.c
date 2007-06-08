@@ -297,52 +297,6 @@ lasso_idwsf2_data_service_get_attribute_string(LassoIdWsf2DataService *service,
 	return content;
 }
 
-gchar*
-lasso_idwsf2_data_service_get_personal_profile_email(LassoIdWsf2DataService *service,
-	const gchar *item_id)
-{
-	xmlNode *node;
-	xmlNode *child;
-	xmlChar *msgAccount = NULL;
-	xmlChar *msgProvider = NULL;
-	gchar *email = NULL;
-
-	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
-
-	node = lasso_idwsf2_data_service_get_attribute_node(service, item_id);
-
-	if (node == NULL) {
-		return NULL;
-	}
-
-	for (child = node->children; child != NULL; child = child->next) {
-		if (child->type != XML_ELEMENT_NODE) {
-			child = child->next;
-			continue;
-		}
-
-		if (strcmp((gchar *)child->name, "MsgAccount") == 0) {
-			msgAccount = xmlNodeGetContent(child);
-		} else if (strcmp((gchar *)child->name, "MsgProvider") == 0) {
-			msgProvider = xmlNodeGetContent(child);
-		}
-
-		if (msgAccount != NULL && msgProvider != NULL) {
-			break;
-		}
-	}
-
-	if (msgAccount != NULL && msgProvider != NULL) {
-		email = g_strdup_printf("%s@%s", msgAccount, msgProvider);
-	}
-
-	xmlFree(msgAccount);
-	xmlFree(msgProvider);
-	xmlFreeNode(node);
-
-	return email;
-}
-
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/

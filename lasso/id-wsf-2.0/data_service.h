@@ -97,9 +97,6 @@ LASSO_EXPORT xmlNode* lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2Da
 LASSO_EXPORT gchar* lasso_idwsf2_data_service_get_attribute_string(LassoIdWsf2DataService *service,
 	const gchar *item_id);
 
-LASSO_EXPORT gchar* lasso_idwsf2_data_service_get_personal_profile_email(
-	LassoIdWsf2DataService *service, const gchar *item_id);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
