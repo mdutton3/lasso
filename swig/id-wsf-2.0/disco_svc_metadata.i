@@ -15,7 +15,7 @@ typedef struct {
 %extend LassoIdWsf2DiscoSvcMetadata {
 
 	/* Constructor, Destructor & Static Methods */
-	LassoIdWsf2DiscoSvcMetadata(gchar *service_type, gchar *abstract, gchar *provider_id);
+	LassoIdWsf2DiscoSvcMetadata();
 	~LassoIdWsf2DiscoSvcMetadata();
 
 	/* Method inherited from LassoNode */
