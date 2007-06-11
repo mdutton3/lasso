@@ -226,6 +226,7 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 	const gchar *message)
 {
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2UtilResponse *response;
 	int res;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
@@ -242,7 +243,7 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 	}
 
 	/* Check response status code */
-	response = LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(profile->response);
+	response = LASSO_IDWSF2_UTIL_RESPONSE(profile->response);
 	if (response->Status == NULL || response->Status->code == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 	}

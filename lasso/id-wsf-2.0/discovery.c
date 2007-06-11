@@ -594,7 +594,7 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 	}
 
 	/* Check response status code */
-	response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response);
+	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(profile->response);
 	if (response->Status == NULL || response->Status->code == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 	}
