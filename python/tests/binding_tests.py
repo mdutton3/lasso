@@ -81,7 +81,6 @@ class BindingTestCase(unittest.TestCase):
         respondWith.append('first string')
         self.failUnlessEqual(len(respondWith), 1)
         self.failUnlessEqual(respondWith[0], 'first string')
-        self.failUnlessEqual(respondWith[0], 'first string')
         respondWith.append('second string')
         self.failUnlessEqual(len(respondWith), 2)
         self.failUnlessEqual(respondWith[0], 'first string')
