@@ -42,11 +42,10 @@ lasso_federation_build_name_identifier(const gchar *nameQualifier,
 {
 	LassoSamlNameIdentifier *nameIdentifier;
 
+	nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(lasso_saml_name_identifier_new());
 	if (content == NULL) {
-		nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(lasso_saml_name_identifier_new());
 		nameIdentifier->content = lasso_build_unique_id(32);
 	} else {
-		nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(lasso_saml_name_identifier_new());
 		nameIdentifier->content = g_strdup(content);
 	}
 	nameIdentifier->NameQualifier = g_strdup(nameQualifier);
