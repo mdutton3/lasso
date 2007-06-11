@@ -365,24 +365,26 @@ lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	/* Process request */
+	/* Process response */
 	res = lasso_wsf2_profile_process_soap_response_msg(profile, message);
+	if (res != 0) {
+		return res;
+	}
 
 	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response)) {
-		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+		return LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}
 
-	if (res == 0) {
-		response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response);
-		if (response->Status == NULL || response->Status->code == NULL) {
-			return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
-		}
-		if (strcmp(response->Status->code, "OK") != 0) {
-			return LASSO_IDWSF2_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED;
-		}
+	/* Check response status code */
+	response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response);
+	if (response->Status == NULL || response->Status->code == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+	}
+	if (strcmp(response->Status->code, "OK") != 0) {
+		return LASSO_IDWSF2_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED;
 	}
 
-	return res;
+	return 0;
 }
 
 /**
@@ -583,24 +585,34 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 
 	/* Process request */
 	res = lasso_wsf2_profile_process_soap_response_msg(profile, message);
+	if (res != 0) {
+		return res;
+	}
 
 	if (! LASSO_IS_IDWSF2_DISCO_QUERY_RESPONSE(profile->response)) {
-		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+		return LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	}
+
+	/* Check response status code */
+	response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response);
+	if (response->Status == NULL || response->Status->code == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+	}
+	if (strcmp(response->Status->code, "OK") != 0) {
+		return LASSO_IDWSF2_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED;
 	}
 
 	/* If the response has been correctly processed, */
 	/* put interesting data into the discovery object */
-	if (res == 0) {
-		response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(profile->response);
-		/* FIXME : foreach on the list instead */
-		if (response->EndpointReference != NULL
-				&& response->EndpointReference->data != NULL) {
-			lasso_session_add_endpoint_reference(session,
-				response->EndpointReference->data);
-		}
+	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(profile->response);
+	/* FIXME : foreach on the list instead */
+	if (response->EndpointReference != NULL
+			&& response->EndpointReference->data != NULL) {
+		lasso_session_add_endpoint_reference(session,
+			response->EndpointReference->data);
 	}
 
-	return res;
+	return 0;
 }
 
 /**
@@ -618,17 +630,18 @@ LassoIdWsf2DataService*
 lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const gchar *service_type)
 {
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
+	LassoSession *session = profile->session;
 	LassoIdWsf2DiscoQueryResponse *response;
 	LassoWsAddrEndpointReference *epr = NULL;
 	LassoIdWsf2DataService *service;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery), NULL);
 
+	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCO_QUERY_RESPONSE(profile->response), NULL);
+
 	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(profile->response);
-	if (response == NULL) {
-		/* no response; probably called at wrong time */
-		return NULL;
-	}
 
 	/* FIXME : foreach on the list instead */
 	if (response->EndpointReference != NULL && response->EndpointReference->data != NULL) {
@@ -640,7 +653,7 @@ lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const gchar 
 	service = lasso_idwsf2_data_service_new_full(profile->server, epr);
 
 	/* Copy session to service object (used to get assertion identity token from the session) */
- 	LASSO_WSF2_PROFILE(service)->session = g_object_ref(profile->session);
+ 	LASSO_WSF2_PROFILE(service)->session = g_object_ref(session);
 
 	return service;
 }

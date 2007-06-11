@@ -48,7 +48,7 @@ struct _LassoIdWsf2DataServicePrivate
 gint
 lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 {
-	LassoWsf2Profile *profile;
+	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
 	LassoIdWsf2DstRefQuery *query;
 	LassoWsAddrEndpointReference *epr;
 	GList *metadata_item;
@@ -58,10 +58,11 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	profile = LASSO_WSF2_PROFILE(service);
-
 	query = lasso_idwsf2_dstref_query_new();
 
+	if (profile->request) {
+		lasso_node_destroy(LASSO_NODE(profile->request));
+	}
 	profile->request = LASSO_NODE(query);
 
 	if (service == NULL || service->private_data == NULL
@@ -140,7 +141,12 @@ lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, con
 
 	res = lasso_wsf2_profile_process_soap_request_msg(profile, message);
 
-	service->type = g_strdup(LASSO_IDWSF2_DSTREF_QUERY(profile->request)->hrefServiceType);
+	if (! LASSO_IS_IDWSF2_DSTREF_QUERY(profile->request)) {
+		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	} else {
+		service->type = g_strdup(
+			LASSO_IDWSF2_DSTREF_QUERY(profile->request)->hrefServiceType);
+	}
 
 	return res;
 }
@@ -189,8 +195,8 @@ lasso_idwsf2_data_service_build_query_response_msg(LassoIdWsf2DataService *servi
 		item_result_query_base = LASSO_IDWSF2_DST_RESULT_QUERY_BASE(item);
 		xpathObj = xmlXPathEvalExpression((xmlChar*)item_result_query->Select, xpathCtx);
 		if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-			node = xpathObj->nodesetval->nodeTab[0];
 			/* XXX: assuming there is only one matching node */
+			node = xpathObj->nodesetval->nodeTab[0];
 			data = lasso_idwsf2_dstref_data_new();
 			data_item = LASSO_IDWSF2_DSTREF_ITEM_DATA(data);
 			data_item->any = g_list_append(data_item->any, xmlCopyNode(node, 1));
@@ -230,6 +236,19 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 	if (res != 0) {
 		return res;
 	}
+	
+	if (! LASSO_IS_IDWSF2_DSTREF_QUERY_RESPONSE(profile->response)) {
+		return LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	}
+
+	/* Check response status code */
+	response = LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(profile->response);
+	if (response->Status == NULL || response->Status->code == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+	}
+	if (strcmp(response->Status->code, "OK") != 0) {
+		return LASSO_IDWSF2_DST_QUERY_FAILED;
+	}
 
 	return 0;
 }
@@ -259,7 +278,7 @@ lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, co
 
 	/* Find the item which has the given item_id */
 	for (iter = g_list_first(response->Data); iter != NULL; iter = g_list_next(iter)) {
-		if (iter->data == NULL) {
+		if (! LASSO_IS_IDWSF2_DSTREF_ITEM_DATA(iter->data)) {
 			continue;
 		}
 		if (strcmp(LASSO_IDWSF2_DSTREF_ITEM_DATA(iter->data)->itemIDRef, item_id) == 0) {
