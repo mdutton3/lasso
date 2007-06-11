@@ -42,6 +42,8 @@
 #include <lasso/xml/id-wsf-2.0/disco_abstract.h>
 #include <lasso/xml/id-wsf-2.0/disco_providerid.h>
 #include <lasso/xml/id-wsf-2.0/disco_service_type.h>
+#include <lasso/xml/id-wsf-2.0/disco_security_context.h>
+#include <lasso/xml/id-wsf-2.0/sec_token.h>
 
 #include <lasso/xml/ws/wsa_endpoint_reference.h>
 
@@ -454,6 +456,11 @@ lasso_idwsf2_discovery_build_query_response_epr(LassoIdWsf2DiscoRequestedService
 	LassoIdWsf2DiscoSvcMetadata *svcMD;
 	LassoWsAddrEndpointReference *epr;
 	LassoWsAddrMetadata *metadata;
+	LassoIdWsf2DiscoSecurityContext *security_context;
+	LassoIdWsf2SecToken *sec_token;
+	LassoSaml2Assertion *assertion_identity_token;
+	LassoSaml2Subject *subject;
+	LassoFederation* federation;
 
 	if (service != NULL && service->ServiceType != NULL && service->ServiceType->data != NULL) {
 		service_type = (gchar *)service->ServiceType->data;
@@ -499,6 +506,32 @@ lasso_idwsf2_discovery_build_query_response_epr(LassoIdWsf2DiscoRequestedService
 	if (svcMD->ServiceContext->EndpointContext->Framework != NULL) {
 		metadata->any = g_list_append(metadata->any,
 			g_object_ref(svcMD->ServiceContext->EndpointContext->Framework));
+	}
+	
+	/* Identity token */	
+	federation = lasso_identity_get_federation(identity, svcMD->ProviderID);
+	if (federation != NULL) {
+		assertion_identity_token = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
+
+		/* Identity token Subject */
+		subject = LASSO_SAML2_SUBJECT(lasso_saml2_subject_new());
+		if (federation->remote_nameIdentifier != NULL) {
+			subject->NameID = g_object_ref(federation->remote_nameIdentifier);
+		} else {
+			subject->NameID = g_object_ref(federation->local_nameIdentifier);
+		}
+		assertion_identity_token->Subject = subject;
+
+		sec_token = LASSO_IDWSF2_SEC_TOKEN(lasso_idwsf2_sec_token_new());
+		sec_token->any = LASSO_NODE(assertion_identity_token);
+		
+		security_context = LASSO_IDWSF2_DISCO_SECURITY_CONTEXT(
+			lasso_idwsf2_disco_security_context_new());
+		security_context->SecurityMechID = g_list_append(
+			security_context->SecurityMechID, g_strdup(LASSO_SECURITY_MECH_TLS_BEARER));
+		security_context->Token = g_list_append(security_context->Token, sec_token);
+		
+		metadata->any = g_list_append(metadata->any, security_context);
 	}
 
 	epr->Metadata = metadata;
@@ -557,6 +590,8 @@ lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const 
 			response->EndpointReference =
 				g_list_append(response->EndpointReference, epr);
 		}
+		/* XXX : Should probably check if the epr contains a SecurityContext, */
+		/* otherwise return a "federation not found" error code */
 	} else {
 		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
 		/* XXX : May add secondary status codes here */
