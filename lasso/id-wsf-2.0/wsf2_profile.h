@@ -92,7 +92,7 @@ LASSO_EXPORT gint lasso_wsf2_profile_set_session_from_dump(LassoWsf2Profile *pro
 	const gchar *dump);
 	
 LASSO_EXPORT gint lasso_wsf2_profile_init_soap_request(LassoWsf2Profile *profile,
-	LassoNode *request);
+	LassoNode *request, gchar *service_type);
 
 LASSO_EXPORT gint lasso_wsf2_profile_build_request_msg(LassoWsf2Profile *profile);
 

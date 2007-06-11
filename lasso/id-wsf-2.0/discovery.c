@@ -145,7 +145,8 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 			service_type, abstract, sp_provider_id, soap_endpoint);
 
 	/* Create a request with this xml node */
-	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(metadata_register));
+	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(metadata_register),
+		LASSO_IDWSF2_DISCO_HREF);
 
 	/* FIXME : Get the url of the disco service where we must send the soap request */
 	/* profile->msg_url = g_strdup(disco_provider_id); */
@@ -266,7 +267,8 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 	md_association_add->SvcMDID = g_list_append(md_association_add->SvcMDID, g_strdup(svcMDID));
 
 	/* Create a request with this xml node */
-	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(md_association_add));
+	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(md_association_add),
+		LASSO_IDWSF2_DISCO_HREF);
 
 	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
 	if (epr != NULL) {
@@ -414,7 +416,7 @@ lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery, const gchar *
 	}
 	profile->request = LASSO_NODE(lasso_idwsf2_disco_query_new());
 
-	lasso_wsf2_profile_init_soap_request(profile, profile->request);
+	lasso_wsf2_profile_init_soap_request(profile, profile->request, LASSO_IDWSF2_DISCO_HREF);
 	
 	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
 	if (epr != NULL) {

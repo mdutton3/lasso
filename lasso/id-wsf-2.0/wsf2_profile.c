@@ -205,7 +205,8 @@ lasso_wsf2_profile_set_session_from_dump(LassoWsf2Profile *profile, const gchar 
 
 
 gint
-lasso_wsf2_profile_init_soap_request(LassoWsf2Profile *profile, LassoNode *request)
+lasso_wsf2_profile_init_soap_request(LassoWsf2Profile *profile, LassoNode *request,
+	gchar *service_type)
 {
 	LassoSoapEnvelope *envelope;
 	LassoSession *session = profile->session;
@@ -218,7 +219,7 @@ lasso_wsf2_profile_init_soap_request(LassoWsf2Profile *profile, LassoNode *reque
 	profile->soap_envelope_request = envelope;
 
 	/* Add identity token (if it exists in the session) in soap header */
-	assertion = lasso_session_get_assertion_identity_token(session);
+	assertion = lasso_session_get_assertion_identity_token(session, service_type);
 
 	if (assertion != NULL) {
 		wsse_security = lasso_wsse_200401_security_new();

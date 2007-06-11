@@ -346,7 +346,7 @@ lasso_session_get_endpoint_reference(LassoSession *session, const gchar *service
 }
 
 LassoSaml2Assertion*
-lasso_session_get_assertion_identity_token(LassoSession *session)
+lasso_session_get_assertion_identity_token(LassoSession *session, const gchar *service_type)
 {
 	LassoWsAddrEndpointReference* epr;
 	GList *metadata_item;
@@ -359,8 +359,8 @@ lasso_session_get_assertion_identity_token(LassoSession *session)
 		return NULL;
 	}
 
-	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
-	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
+	epr = lasso_session_get_endpoint_reference(session, service_type);
+	if (epr == NULL || epr->Metadata == NULL) {
 		return NULL;
 	}
 

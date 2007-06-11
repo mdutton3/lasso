@@ -66,7 +66,8 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 	profile->request = LASSO_NODE(query);
 
 	if (service == NULL || service->private_data == NULL
-			|| service->private_data->epr == NULL) {
+			|| service->private_data->epr == NULL
+			|| service->private_data->epr->Metadata == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE;
 	}
 
@@ -92,7 +93,7 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 		return LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE;
 	}
 
-	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(query));
+	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(query), service_type);
 
 	/* Set msg_url as epr address, which is the SoapEndpoint */
 	if (epr->Address != NULL) {

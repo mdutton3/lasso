@@ -40,7 +40,7 @@ LASSO_EXPORT LassoWsAddrEndpointReference* lasso_session_get_endpoint_reference(
         LassoSession *session, const gchar *service_type);
 
 LASSO_EXPORT LassoSaml2Assertion* lasso_session_get_assertion_identity_token(
-        LassoSession *session);
+        LassoSession *session, const gchar *service_type);
 
 #ifdef __cplusplus
 }
