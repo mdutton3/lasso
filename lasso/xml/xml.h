@@ -38,8 +38,6 @@ extern "C" {
 #include <libxml/uri.h>
 #include <libxml/tree.h>
 
-#include <xmlsec/xmlenc.h>
-
 #include <lasso/export.h>
 #include <lasso/errors.h>
 #include <lasso/xml/strings.h>

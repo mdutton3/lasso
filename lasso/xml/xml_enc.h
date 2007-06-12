@@ -29,6 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include <xmlsec/xmlenc.h>
+
 #include <lasso/xml/xml.h>
 #include <lasso/xml/saml-2.0/saml2_encrypted_element.h>
 
