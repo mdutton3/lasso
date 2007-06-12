@@ -1183,6 +1183,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 			return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
 	}
 
+	/* Decrypt Assertion */
 	if (LASSO_SAMLP2_RESPONSE(response)->Assertion == NULL &&
 			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion != NULL) {
 
@@ -1228,6 +1229,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
 		}
 
+		/* Decrypt NameID */
 		if (encrypted_element != NULL && encryption_private_key != NULL) {
 			profile->nameIdentifier = LASSO_NODE(
 				lasso_node_decrypt(encrypted_element, encryption_private_key));
