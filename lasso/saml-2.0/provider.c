@@ -129,10 +129,11 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 		t = t->next;
 	}
 
-	for (i=0; descriptor_attrs[i]; i++) {
+	for (i = 0; descriptor_attrs[i]; i++) {
 		value = xmlGetProp(xmlnode, (xmlChar*)descriptor_attrs[i]);
-		if (value == NULL) continue;
-
+		if (value == NULL) {
+			continue;
+		}
 		name = g_strdup(descriptor_attrs[i]);
 		elements = g_hash_table_lookup(descriptor, name);
 		elements = g_list_append(elements, g_strdup((char*)value));
