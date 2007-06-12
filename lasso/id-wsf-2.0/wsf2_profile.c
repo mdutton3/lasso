@@ -31,6 +31,7 @@
 #include <xmlsec/crypto.h>
 
 #include <lasso/id-ff/server.h>
+#include <lasso/id-ff/serverprivate.h>
 #include <lasso/id-ff/providerprivate.h>
 
 #include <lasso/id-wsf-2.0/wsf2_profile.h>
@@ -41,6 +42,7 @@
 #include <lasso/xml/soap_binding_correlation.h>
 #include <lasso/xml/soap_binding_provider.h>
 #include <lasso/xml/soap_binding_processing_context.h>
+#include <lasso/xml/xml_enc.h>
 
 #include <lasso/xml/ws/wsse_200401_security.h>
 
@@ -252,6 +254,9 @@ lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gch
 	LassoSoapEnvelope *envelope = NULL;
 	LassoSaml2Assertion *assertion;
 	LassoWsse200401Security *wsse_security;
+	LassoSaml2NameID *name_id = NULL;
+	LassoSaml2EncryptedElement *encrypted_id = NULL;
+	xmlSecKey *encryption_private_key = NULL;
 	GList *i;
 	GList *j;
 	int res = 0;
@@ -267,24 +272,39 @@ lasso_wsf2_profile_process_soap_request_msg(LassoWsf2Profile *profile, const gch
 
 	/* Get NameIdentifier (if exists) from the soap header */
 	for (i = g_list_first(envelope->Header->Other); i != NULL; i = g_list_next(i)) {
-		if (LASSO_IS_WSSE_200401_SECURITY(i->data)) {
-			wsse_security = LASSO_WSSE_200401_SECURITY(i->data);
-			for (j = g_list_first(wsse_security->any); j != NULL;
-					j = g_list_next(j)) {
-				if (LASSO_IS_SAML2_ASSERTION(j->data)) {
-					assertion = LASSO_SAML2_ASSERTION(j->data);
-					if (assertion->Subject == NULL
-						|| assertion->Subject->NameID == NULL
-						|| assertion->Subject->NameID->content == NULL) {
-						continue;
-					}
-					profile->name_id = g_strdup(
-						assertion->Subject->NameID->content);
-					break;
-				}
+		if (! LASSO_IS_WSSE_200401_SECURITY(i->data)) {
+			continue;
+		}
+		wsse_security = LASSO_WSSE_200401_SECURITY(i->data);
+		for (j = g_list_first(wsse_security->any); j != NULL; j = g_list_next(j)) {
+			if (! LASSO_IS_SAML2_ASSERTION(j->data)) {
+				continue;
+			}
+			assertion = LASSO_SAML2_ASSERTION(j->data);
+			if (assertion->Subject == NULL) {
+				continue;
+			}
+			if (assertion->Subject->NameID != NULL) {
+				name_id = assertion->Subject->NameID;
+			} else if (assertion->Subject->EncryptedID != NULL) {
+				encrypted_id = assertion->Subject->EncryptedID;
+			} else {
+				continue;
 			}
 			break;
 		}
+		break;
+	}
+
+	/* Decrypt NameID */
+	encryption_private_key = profile->server->private_data->encryption_private_key;
+	if (name_id == NULL && encrypted_id != NULL && encryption_private_key != NULL) {
+		name_id = LASSO_SAML2_NAME_ID(
+			lasso_node_decrypt(encrypted_id, encryption_private_key));
+	}
+
+	if (name_id != NULL && name_id->content != NULL) {
+		profile->name_id = g_strdup(name_id->content);
 	}
 
 	if (envelope != NULL && envelope->Body != NULL && envelope->Body->any != NULL) {
