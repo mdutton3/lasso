@@ -411,11 +411,14 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 	LassoProvider *provider = LASSO_PROVIDER(node);
 	char *roles[] = { "None", "SP", "IdP"};
+	char *encryption_mode[] = { "None", "NameId", "Assertion", "Both" };
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlSetProp(xmlnode, (xmlChar*)"ProviderDumpVersion", (xmlChar*)"2");
 	if (provider->role)
 		xmlSetProp(xmlnode, (xmlChar*)"ProviderRole", (xmlChar*)roles[provider->role]);
+	xmlSetProp(xmlnode, (xmlChar*)"EncryptionMode",
+		(xmlChar*)encryption_mode[provider->private_data->encryption_mode]);
 
 	return xmlnode;
 }
@@ -440,8 +443,24 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (s)
 		xmlFree(s);
 
+	s = xmlGetProp(xmlnode, (xmlChar*)"EncryptionMode");
+	if (s != NULL && strcmp((char*)s, "NameId") == 0) {
+		provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NAMEID;
+	} else if (s != NULL && strcmp((char*)s, "Assertion") == 0) {
+		provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_ASSERTION;
+	} else if (s != NULL && strcmp((char*)s, "Both") == 0) {
+		provider->private_data->encryption_mode =
+			LASSO_ENCRYPTION_MODE_NAMEID | LASSO_ENCRYPTION_MODE_ASSERTION;
+	}
+	if (s != NULL) {
+		xmlFree(s);
+	}
+
 	if (provider->metadata_filename)
 		lasso_provider_load_metadata(provider, provider->metadata_filename);
+
+	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING);
+	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	return 0;
 }
@@ -907,9 +926,6 @@ lasso_provider_new_from_dump(const gchar *dump)
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc)); 
 	xmlFreeDoc(doc);
-
-	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING);
-	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	return provider;
 }
