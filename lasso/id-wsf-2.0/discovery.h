@@ -105,7 +105,9 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2D
 	
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message);
-	
+
+LASSO_EXPORT gint lasso_idwsf2_discovery_build_query_response_msg(LassoIdWsf2Discovery *discovery);
+
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message);
 
