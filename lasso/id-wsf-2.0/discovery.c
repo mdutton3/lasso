@@ -28,6 +28,7 @@
 #include <xmlsec/xmltree.h>
 
 #include <lasso/xml/saml_attribute_value.h>
+#include <lasso/xml/xml_enc.h>
 
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
 #include <lasso/xml/saml-2.0/samlp2_name_id_policy.h>
@@ -460,9 +461,11 @@ lasso_idwsf2_discovery_build_query_response_epr(LassoIdWsf2DiscoRequestedService
 	LassoWsAddrMetadata *metadata;
 	LassoIdWsf2DiscoSecurityContext *security_context;
 	LassoIdWsf2SecToken *sec_token;
-	LassoSaml2Assertion *assertion_identity_token;
+	LassoSaml2Assertion *assertion;
 	LassoSaml2Subject *subject;
 	LassoFederation* federation;
+	LassoProvider *provider;
+	LassoSaml2EncryptedElement *encrypted_element;
 
 	if (service != NULL && service->ServiceType != NULL && service->ServiceType->data != NULL) {
 		service_type = (gchar *)service->ServiceType->data;
@@ -513,7 +516,7 @@ lasso_idwsf2_discovery_build_query_response_epr(LassoIdWsf2DiscoRequestedService
 	/* Identity token */	
 	federation = lasso_identity_get_federation(identity, svcMD->ProviderID);
 	if (federation != NULL) {
-		assertion_identity_token = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
+		assertion = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
 
 		/* Identity token Subject */
 		subject = LASSO_SAML2_SUBJECT(lasso_saml2_subject_new());
@@ -522,10 +525,26 @@ lasso_idwsf2_discovery_build_query_response_epr(LassoIdWsf2DiscoRequestedService
 		} else {
 			subject->NameID = g_object_ref(federation->local_nameIdentifier);
 		}
-		assertion_identity_token->Subject = subject;
+		assertion->Subject = subject;
+
+		/* Encrypt NameID */
+		provider = g_hash_table_lookup(server->providers, svcMD->ProviderID);
+		if (provider
+			&& provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_NAMEID
+			&& provider->private_data->encryption_public_key != NULL) {
+
+			encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
+				LASSO_NODE(assertion->Subject->NameID),
+				provider->private_data->encryption_public_key,
+				provider->private_data->encryption_sym_key_type));
+			if (encrypted_element != NULL) {
+				assertion->Subject->EncryptedID = encrypted_element;
+				assertion->Subject->NameID = NULL;
+			}
+		}
 
 		sec_token = LASSO_IDWSF2_SEC_TOKEN(lasso_idwsf2_sec_token_new());
-		sec_token->any = LASSO_NODE(assertion_identity_token);
+		sec_token->any = LASSO_NODE(assertion);
 		
 		security_context = LASSO_IDWSF2_DISCO_SECURITY_CONTEXT(
 			lasso_idwsf2_disco_security_context_new());
