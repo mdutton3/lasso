@@ -414,9 +414,14 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	char *encryption_mode[] = { "None", "NameId", "Assertion", "Both" };
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+
+	/* Save provider role */
 	xmlSetProp(xmlnode, (xmlChar*)"ProviderDumpVersion", (xmlChar*)"2");
-	if (provider->role)
+	if (provider->role) {
 		xmlSetProp(xmlnode, (xmlChar*)"ProviderRole", (xmlChar*)roles[provider->role]);
+	}
+
+	/* Save encryption mode */
 	xmlSetProp(xmlnode, (xmlChar*)"EncryptionMode",
 		(xmlChar*)encryption_mode[provider->private_data->encryption_mode]);
 
@@ -432,17 +437,22 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	parent_class->init_from_xml(node, xmlnode);
 	
-	if (xmlnode == NULL)
+	if (xmlnode == NULL) {
 		return LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED;
+	}
 
+	/* Load provider role */
 	s = xmlGetProp(xmlnode, (xmlChar*)"ProviderRole");
-	if (s && strcmp((char*)s, "SP") == 0)
+	if (s != NULL && strcmp((char*)s, "SP") == 0) {
 		provider->role = LASSO_PROVIDER_ROLE_SP;
-	if (s && strcmp((char*)s, "IdP") == 0)
+	} else if (s != NULL && strcmp((char*)s, "IdP") == 0) {
 		provider->role = LASSO_PROVIDER_ROLE_IDP;
-	if (s)
+	}
+	if (s != NULL) {
 		xmlFree(s);
+	}
 
+	/* Load encryption mode */
 	s = xmlGetProp(xmlnode, (xmlChar*)"EncryptionMode");
 	if (s != NULL && strcmp((char*)s, "NameId") == 0) {
 		provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NAMEID;
@@ -456,9 +466,12 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		xmlFree(s);
 	}
 
-	if (provider->metadata_filename)
+	/* Load metadata */
+	if (provider->metadata_filename) {
 		lasso_provider_load_metadata(provider, provider->metadata_filename);
+	}
 
+	/* Load signing and encryption public keys */
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING);
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
