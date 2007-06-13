@@ -179,7 +179,8 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoProfile *profile, const gchar
 	}
 
 	/* Decrypt NameID */
-	encryption_private_key = profile->server->private_data->encryption_private_key;
+	encryption_private_key =
+		g_object_ref(profile->server->private_data->encryption_private_key);
 	if (profile->nameIdentifier == NULL && encrypted_id != NULL
 			&& encryption_private_key != NULL) {
 		decrypted_name_id = lasso_node_decrypt(encrypted_id, encryption_private_key);
