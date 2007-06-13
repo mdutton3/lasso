@@ -371,6 +371,11 @@ dispose(GObject *object)
 		return;
 	service->private_data->dispose_has_run = TRUE;
 
+	if (service->private_data->epr != NULL) {
+		lasso_node_destroy(LASSO_NODE(service->private_data->epr));
+		service->private_data->epr = NULL;
+	}
+
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
@@ -378,10 +383,6 @@ static void
 finalize(GObject *object)
 { 
 	LassoIdWsf2DataService *service = LASSO_IDWSF2_DATA_SERVICE(object);
-	if (service->private_data->epr) {
-		lasso_node_destroy(LASSO_NODE(service->private_data->epr));
-		service->private_data->epr = NULL;
-	}
 	g_free(service->private_data);
 	service->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
