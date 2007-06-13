@@ -52,7 +52,7 @@ typedef struct _LassoIdWsf2DiscoveryClass LassoIdWsf2DiscoveryClass;
 typedef struct _LassoIdWsf2DiscoveryPrivate LassoIdWsf2DiscoveryPrivate;
 
 struct _LassoIdWsf2Discovery {
-	LassoIdWsf2Profile parent;
+	LassoProfile parent;
 
 	/* FIXME : Both should be lists */
 	LassoIdWsf2DiscoSvcMetadata *metadata;
@@ -63,7 +63,7 @@ struct _LassoIdWsf2Discovery {
 };
 
 struct _LassoIdWsf2DiscoveryClass {
-	LassoIdWsf2ProfileClass parent;
+	LassoProfileClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_discovery_get_type(void);

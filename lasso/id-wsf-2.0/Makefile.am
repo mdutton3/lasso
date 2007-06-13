@@ -6,9 +6,6 @@ INCLUDES = \
 	$(LASSO_CORE_CFLAGS) \
 	-DG_LOG_DOMAIN=\"lasso\"
 
-lasso_private_h_sources = \
-	profile_private.h
-
 noinst_LTLIBRARIES = liblasso-id-wsf2.la
 
 liblasso_id_wsf2_la_SOURCES = \
@@ -24,4 +21,3 @@ liblassoinclude_HEADERS = \
 	server.h \
 	session.h
 
-EXTRA_DIST = $(lasso_private_h_sources)

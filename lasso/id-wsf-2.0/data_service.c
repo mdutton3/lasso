@@ -48,7 +48,7 @@ struct _LassoIdWsf2DataServicePrivate
 gint
 lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 {
-	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoProfile *profile = LASSO_PROFILE(service);
 	LassoIdWsf2DstRefQuery *query;
 	LassoWsAddrEndpointReference *epr;
 	GList *metadata_item;
@@ -109,7 +109,7 @@ gint
 lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const gchar *item_xpath,
 	const gchar *item_id)
 {
-	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoProfile *profile = LASSO_PROFILE(service);
 	LassoIdWsf2DstRefQuery *query;
 	LassoIdWsf2DstRefQueryItem *item;
 
@@ -133,7 +133,7 @@ lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const 
 gint
 lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, const gchar *message)
 {
-	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoProfile *profile = LASSO_PROFILE(service);
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
@@ -155,7 +155,7 @@ lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, con
 gint
 lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 {
-	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoProfile *profile = LASSO_PROFILE(service);
 	LassoIdWsf2DstRefQuery *request;
 	LassoIdWsf2DstRefQueryResponse *response;
 	LassoIdWsf2UtilResponse *response2;
@@ -256,7 +256,7 @@ gint
 lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *service,
 	const gchar *message)
 {
-	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoProfile *profile = LASSO_PROFILE(service);
 	LassoIdWsf2UtilResponse *response;
 	int res;
 
@@ -290,7 +290,7 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 xmlNode*
 lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, const gchar *item_id)
 {
-	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoProfile *profile = LASSO_PROFILE(service);
 	LassoIdWsf2DstRefQueryResponse *response;
 	LassoIdWsf2DstRefItemData *data = NULL;
 	GList *iter;
@@ -428,7 +428,7 @@ lasso_idwsf2_data_service_get_type()
 			(GInstanceInitFunc) instance_init,
 		};
 
-		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_PROFILE,
+		this_type = g_type_register_static(LASSO_TYPE_PROFILE,
 				"LassoIdWsf2DataService", &this_info, 0);
 	}
 	return this_type;
@@ -451,7 +451,7 @@ lasso_idwsf2_data_service_new(LassoServer *server)
 
 	service = g_object_new(LASSO_TYPE_IDWSF2_DATA_SERVICE, NULL);
 
-	LASSO_IDWSF2_PROFILE(service)->server = g_object_ref(server);
+	LASSO_PROFILE(service)->server = g_object_ref(server);
 
 	return service;
 }

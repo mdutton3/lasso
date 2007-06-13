@@ -56,7 +56,7 @@ typedef struct _LassoIdWsf2DataServiceClass LassoIdWsf2DataServiceClass;
 typedef struct _LassoIdWsf2DataServicePrivate LassoIdWsf2DataServicePrivate;
 
 struct _LassoIdWsf2DataService {
-	LassoIdWsf2Profile parent;
+	LassoProfile parent;
 
 	/*< public >*/
 	xmlNode *data;
@@ -67,7 +67,7 @@ struct _LassoIdWsf2DataService {
 };
 
 struct _LassoIdWsf2DataServiceClass {
-	LassoIdWsf2ProfileClass parent;
+	LassoProfileClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_data_service_get_type(void);

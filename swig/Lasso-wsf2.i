@@ -31,7 +31,6 @@
 #include <lasso/id-wsf-2.0/data_service.h>
 %}
 
-
 /* WSF prefix & href */
 #ifndef SWIG_PHP_RENAMES
 %rename(IDWSF2_DISCO_HREF) LASSO_IDWSF2_DISCO_HREF;
@@ -40,10 +39,9 @@
 #define LASSO_IDWSF2_DISCO_HREF   "urn:liberty:disco:2006-08"
 #define LASSO_IDWSF2_DISCO_PREFIX "disco"
 
-
 /***********************************************************************
  ***********************************************************************
- * ID-WSF
+ * ID-WSF 2
  ***********************************************************************
  ***********************************************************************/
 
@@ -59,7 +57,7 @@ typedef struct {
 } LassoIdWsf2Discovery;
 %extend LassoIdWsf2Discovery {
 
-	/* Attributes inherited from Wsf2Profile */
+	/* Attributes inherited from LassoProfile */
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -111,7 +109,7 @@ typedef struct {
 
 	~LassoIdWsf2Discovery();
 
-	/* Methods inherited from Wsf2Profile */
+	/* Methods inherited from LassoProfile */
 
 	THROW_ERROR()
 	int setIdentityFromDump(char *dump);
@@ -120,6 +118,8 @@ typedef struct {
 	THROW_ERROR()
 	int setSessionFromDump(char *dump);
 	END_THROW_ERROR()
+
+	/* Methods inherited from LassoIdWsf2Profile */
 
 	THROW_ERROR()
 	int buildRequestMsg();
@@ -190,69 +190,69 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from Wsf2Profile implementations */
+/* Attributes inherited from LassoProfile */
 
 /* identity */
-#define LassoIdWsf2Discovery_get_identity(self) lasso_idwsf2_profile_get_identity(LASSO_IDWSF2_PROFILE(self))
-#define LassoIdWsf2Discovery_identity_get(self) lasso_idwsf2_profile_get_identity(LASSO_IDWSF2_PROFILE(self))
-#define LassoIdWsf2Discovery_set_identity(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->identity, (value))
-#define LassoIdWsf2Discovery_identity_set(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->identity, (value))
+#define LassoIdWsf2Discovery_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
+#define LassoIdWsf2Discovery_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
+#define LassoIdWsf2Discovery_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoIdWsf2Discovery_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 
 /* isIdentityDirty */
-#define LassoIdWsf2Discovery_get_isIdentityDirty(self) lasso_idwsf2_profile_is_identity_dirty(LASSO_IDWSF2_PROFILE(self))
-#define LassoIdWsf2Discovery_isIdentityDirty_get(self) lasso_idwsf2_profile_is_identity_dirty(LASSO_IDWSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
+#define LassoIdWsf2Discovery_isIdentityDirty_get(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
 
 /* session */
-#define LassoIdWsf2Discovery_get_session(self) lasso_idwsf2_profile_get_session(LASSO_IDWSF2_PROFILE(self))
-#define LassoIdWsf2Discovery_session_get(self) lasso_idwsf2_profile_get_session(LASSO_IDWSF2_PROFILE(self))
-#define LassoIdWsf2Discovery_set_session(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->session, (value))
-#define LassoIdWsf2Discovery_session_set(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->session, (value))
+#define LassoIdWsf2Discovery_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
+#define LassoIdWsf2Discovery_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
+#define LassoIdWsf2Discovery_set_session(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoIdWsf2Discovery_session_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
 
 /* isSessionDirty */
-#define LassoIdWsf2Discovery_get_isSessionDirty(self) lasso_idwsf2_profile_is_session_dirty(LASSO_IDWSF2_PROFILE(self))
-#define LassoIdWsf2Discovery_isSessionDirty_get(self) lasso_idwsf2_profile_is_session_dirty(LASSO_IDWSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_get_isSessionDirty(self) lasso_profile_is_session_dirty(LASSO_PROFILE(self))
+#define LassoIdWsf2Discovery_isSessionDirty_get(self) lasso_profile_is_session_dirty(LASSO_PROFILE(self))
 
 /* msgBody */
-#define LassoIdWsf2Discovery_get_msgBody(self) LASSO_IDWSF2_PROFILE(self)->msg_body
-#define LassoIdWsf2Discovery_msgBody_get(self) LASSO_IDWSF2_PROFILE(self)->msg_body
+#define LassoIdWsf2Discovery_get_msgBody(self) LASSO_PROFILE(self)->msg_body
+#define LassoIdWsf2Discovery_msgBody_get(self) LASSO_PROFILE(self)->msg_body
 
 /* msgUrl */
-#define LassoIdWsf2Discovery_get_msgUrl(self) LASSO_IDWSF2_PROFILE(self)->msg_url
-#define LassoIdWsf2Discovery_msgUrl_get(self) LASSO_IDWSF2_PROFILE(self)->msg_url
+#define LassoIdWsf2Discovery_get_msgUrl(self) LASSO_PROFILE(self)->msg_url
+#define LassoIdWsf2Discovery_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
 
 /* nameId */
-#define LassoIdWsf2Discovery_get_nameId(self) LASSO_IDWSF2_PROFILE(self)->name_id
-#define LassoIdWsf2Discovery_nameId_get(self) LASSO_IDWSF2_PROFILE(self)->name_id
+#define LassoIdWsf2Discovery_get_nameId(self) LASSO_PROFILE(self)->name_id
+#define LassoIdWsf2Discovery_nameId_get(self) LASSO_PROFILE(self)->name_id
 
 /* request */
-#define LassoIdWsf2Discovery_get_request(self) get_node(LASSO_IDWSF2_PROFILE(self)->request)
-#define LassoIdWsf2Discovery_request_get(self) get_node(LASSO_IDWSF2_PROFILE(self)->request)
-#define LassoIdWsf2Discovery_set_request(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->request, (value))
-#define LassoIdWsf2Discovery_request_set(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->request, (value))
+#define LassoIdWsf2Discovery_get_request(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoIdWsf2Discovery_request_get(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoIdWsf2Discovery_set_request(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+#define LassoIdWsf2Discovery_request_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
 
 /* response */
-#define LassoIdWsf2Discovery_get_response(self) get_node(LASSO_IDWSF2_PROFILE(self)->response)
-#define LassoIdWsf2Discovery_response_get(self) get_node(LASSO_IDWSF2_PROFILE(self)->response)
-#define LassoIdWsf2Discovery_set_response(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->response, (value))
-#define LassoIdWsf2Discovery_response_set(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->response, (value))
+#define LassoIdWsf2Discovery_get_response(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoIdWsf2Discovery_response_get(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoIdWsf2Discovery_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+#define LassoIdWsf2Discovery_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
 /* server */
-#define LassoIdWsf2Discovery_get_server(self) get_node(LASSO_IDWSF2_PROFILE(self)->server)
-#define LassoIdWsf2Discovery_server_get(self) get_node(LASSO_IDWSF2_PROFILE(self)->server)
-#define LassoIdWsf2Discovery_set_server(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->server, (value))
-#define LassoIdWsf2Discovery_server_set(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->server, (value))
+#define LassoIdWsf2Discovery_get_server(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoIdWsf2Discovery_server_get(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoIdWsf2Discovery_set_server(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+#define LassoIdWsf2Discovery_server_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
 
 /* soapEnvelopeRequest */
-#define LassoIdWsf2Discovery_get_soapEnvelopeRequest(self) get_node(LASSO_IDWSF2_PROFILE(self)->soap_envelope_request)
-#define LassoIdWsf2Discovery_soapEnvelopeRequest_get(self) get_node(LASSO_IDWSF2_PROFILE(self)->soap_envelope_request)
-#define LassoIdWsf2Discovery_set_soapEnvelopeRequest(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->soap_envelope_request, (value))
-#define LassoIdWsf2Discovery_soapEnvelopeRequest_set(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->soap_envelope_request, (value))
+#define LassoIdWsf2Discovery_get_soapEnvelopeRequest(self) get_node(LASSO_PROFILE(self)->soap_envelope_request)
+#define LassoIdWsf2Discovery_soapEnvelopeRequest_get(self) get_node(LASSO_PROFILE(self)->soap_envelope_request)
+#define LassoIdWsf2Discovery_set_soapEnvelopeRequest(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->soap_envelope_request, (value))
+#define LassoIdWsf2Discovery_soapEnvelopeRequest_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->soap_envelope_request, (value))
 
 /* soapEnvelopeResponse */
-#define LassoIdWsf2Discovery_get_soapEnvelopeResponse(self) get_node(LASSO_IDWSF2_PROFILE(self)->soap_envelope_response)
-#define LassoIdWsf2Discovery_soapEnvelopeResponse_get(self) get_node(LASSO_IDWSF2_PROFILE(self)->soap_envelope_response)
-#define LassoIdWsf2Discovery_set_soapEnvelopeResponse(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->soap_envelope_response, (value))
-#define LassoIdWsf2Discovery_soapEnvelopeResponse_set(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->soap_envelope_response, (value))
+#define LassoIdWsf2Discovery_get_soapEnvelopeResponse(self) get_node(LASSO_PROFILE(self)->soap_envelope_response)
+#define LassoIdWsf2Discovery_soapEnvelopeResponse_get(self) get_node(LASSO_PROFILE(self)->soap_envelope_response)
+#define LassoIdWsf2Discovery_set_soapEnvelopeResponse(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->soap_envelope_response, (value))
+#define LassoIdWsf2Discovery_soapEnvelopeResponse_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->soap_envelope_response, (value))
 
 /* Attributes */
 
@@ -271,13 +271,13 @@ typedef struct {
 #define new_LassoIdWsf2Discovery lasso_idwsf2_discovery_new
 #define delete_LassoIdWsf2Discovery(self) lasso_node_destroy(LASSO_NODE(self))
 
-/* Implementations of methods inherited from Wsf2Profile */
+/* Implementations of methods inherited from LassoIdWsf2Profile */
 
-#define LassoIdWsf2Discovery_setIdentityFromDump(self, dump) lasso_idwsf2_profile_set_identity_from_dump(LASSO_IDWSF2_PROFILE(self), dump)
-#define LassoIdWsf2Discovery_setSessionFromDump(self, dump) lasso_idwsf2_profile_set_session_from_dump(LASSO_IDWSF2_PROFILE(self), dump)
+#define LassoIdWsf2Discovery_setIdentityFromDump(self, dump) lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump)
+#define LassoIdWsf2Discovery_setSessionFromDump(self, dump) lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump)
 
-#define LassoIdWsf2Discovery_buildRequestMsg(self) lasso_idwsf2_profile_build_request_msg(LASSO_IDWSF2_PROFILE(self))
-#define LassoIdWsf2Discovery_buildResponseMsg(self) lasso_idwsf2_profile_build_response_msg(LASSO_IDWSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_buildRequestMsg(self) lasso_idwsf2_profile_build_request_msg(LASSO_PROFILE(self))
+#define LassoIdWsf2Discovery_buildResponseMsg(self) lasso_idwsf2_profile_build_response_msg(LASSO_PROFILE(self))
 
 /* Methods implementations */
 
@@ -310,7 +310,8 @@ typedef struct {
 typedef struct {
 } LassoIdWsf2DataService;
 %extend LassoIdWsf2DataService {
-	/* Attributes inherited from WsfProfile */
+
+	/* Attributes inherited from LassoProfile */
 
 	%immutable msgBody;
 	char *msgBody;
@@ -349,7 +350,7 @@ typedef struct {
 	%newobject dump;
 	char *dump();
 
-	/* Methods inherited from Wsf2Profile */
+	/* Methods inherited from LassoIdWsf2Profile */
 
 	THROW_ERROR()
 	int buildRequestMsg();
@@ -390,41 +391,41 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from WsfProfile implementations */
+/* Attributes inherited from LassoProfile */
 
 /* msgBody */
-#define LassoIdWsf2DataService_get_msgBody(self) LASSO_IDWSF2_PROFILE(self)->msg_body
-#define LassoIdWsf2DataService_msgBody_get(self) LASSO_IDWSF2_PROFILE(self)->msg_body
+#define LassoIdWsf2DataService_get_msgBody(self) LASSO_PROFILE(self)->msg_body
+#define LassoIdWsf2DataService_msgBody_get(self) LASSO_PROFILE(self)->msg_body
 
 /* msgUrl */
-#define LassoIdWsf2DataService_get_msgUrl(self) LASSO_IDWSF2_PROFILE(self)->msg_url
-#define LassoIdWsf2DataService_msgUrl_get(self) LASSO_IDWSF2_PROFILE(self)->msg_url
+#define LassoIdWsf2DataService_get_msgUrl(self) LASSO_PROFILE(self)->msg_url
+#define LassoIdWsf2DataService_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
 
 /* nameId */
-#define LassoIdWsf2DataService_get_nameId(self) LASSO_IDWSF2_PROFILE(self)->name_id
-#define LassoIdWsf2DataService_nameId_get(self) LASSO_IDWSF2_PROFILE(self)->name_id
+#define LassoIdWsf2DataService_get_nameId(self) LASSO_PROFILE(self)->name_id
+#define LassoIdWsf2DataService_nameId_get(self) LASSO_PROFILE(self)->name_id
 
 /* type */
 #define LassoIdWsf2DataService_get_type(self) self->type
 #define LassoIdWsf2DataService_type_get(self) self->type
 
 /* request */
-#define LassoIdWsf2DataService_get_request(self) get_node(LASSO_IDWSF2_PROFILE(self)->request)
-#define LassoIdWsf2DataService_request_get(self) get_node(LASSO_IDWSF2_PROFILE(self)->request)
-#define LassoIdWsf2DataService_set_request(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->request, (value))
-#define LassoIdWsf2DataService_request_set(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->request, (value))
+#define LassoIdWsf2DataService_get_request(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoIdWsf2DataService_request_get(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoIdWsf2DataService_set_request(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+#define LassoIdWsf2DataService_request_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
 
 /* response */
-#define LassoIdWsf2DataService_get_response(self) get_node(LASSO_IDWSF2_PROFILE(self)->response)
-#define LassoIdWsf2DataService_response_get(self) get_node(LASSO_IDWSF2_PROFILE(self)->response)
-#define LassoIdWsf2DataService_set_response(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->response, (value))
-#define LassoIdWsf2DataService_response_set(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->response, (value))
+#define LassoIdWsf2DataService_get_response(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoIdWsf2DataService_response_get(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoIdWsf2DataService_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+#define LassoIdWsf2DataService_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
 /* server */
-#define LassoIdWsf2DataService_get_server(self) get_node(LASSO_IDWSF2_PROFILE(self)->server)
-#define LassoIdWsf2DataService_server_get(self) get_node(LASSO_IDWSF2_PROFILE(self)->server)
-#define LassoIdWsf2DataService_set_server(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->server, (value))
-#define LassoIdWsf2DataService_server_set(self, value) set_node((gpointer *) &LASSO_IDWSF2_PROFILE(self)->server, (value))
+#define LassoIdWsf2DataService_get_server(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoIdWsf2DataService_server_get(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoIdWsf2DataService_set_server(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+#define LassoIdWsf2DataService_server_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
 
 /* Attributes */
 
@@ -443,10 +444,10 @@ typedef struct {
 
 #define LassoIdWsf2DataService_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Implementations of methods inherited from Wsf2Profile */
+/* Implementations of methods inherited from LassoIdWsf2Profile */
 
-#define LassoIdWsf2DataService_buildRequestMsg(self) lasso_idwsf2_profile_build_request_msg(LASSO_IDWSF2_PROFILE(self))
-#define LassoIdWsf2DataService_buildResponseMsg(self) lasso_idwsf2_profile_build_response_msg(LASSO_IDWSF2_PROFILE(self))
+#define LassoIdWsf2DataService_buildRequestMsg(self) lasso_idwsf2_profile_build_request_msg(LASSO_PROFILE(self))
+#define LassoIdWsf2DataService_buildResponseMsg(self) lasso_idwsf2_profile_build_response_msg(LASSO_PROFILE(self))
 
 /* Methods implementations */
 #define LassoIdWsf2DataService_initQuery lasso_idwsf2_data_service_init_query
