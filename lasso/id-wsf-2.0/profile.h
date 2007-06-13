@@ -1,4 +1,4 @@
-/* $Id: wsf_profile_private.h,v 1.4 2005/10/06 15:03:56 nclapies Exp $ 
+/* $Id: wsf_profile.h,v 1.13 2006/11/14 17:07:30 Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -22,26 +22,35 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_WSF2_PROFILE_PRIVATE_H__
-#define __LASSO_WSF2_PROFILE_PRIVATE_H__
+#ifndef __LASSO_IDWSF2_PROFILE_H__
+#define __LASSO_IDWSF2_PROFILE_H__
 
 #ifdef __cplusplus
 extern "C" {
-
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/soap_fault.h>
+#include <lasso/id-ff/profile.h>
 
-//void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
-//				       LassoDiscoDescription *description);
-//void lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
-//					    const gchar *security_mech_id);
-LassoSoapFault* lasso_wsf2_profile_get_fault(LassoWsf2Profile *profile);
+LASSO_EXPORT gint lasso_idwsf2_profile_init_soap_request(LassoProfile *profile,
+	LassoNode *request, gchar *service_type);
 
-void lasso_wsf2_profile_set_public_key(LassoWsf2Profile *profile, const char *public_key); 
+LASSO_EXPORT gint lasso_idwsf2_profile_build_request_msg(LassoProfile *profile);
+
+LASSO_EXPORT gint lasso_idwsf2_profile_process_soap_request_msg(LassoProfile *profile,
+	const gchar *message);
+
+LASSO_EXPORT gint lasso_idwsf2_profile_build_response_msg(LassoProfile *profile);
+
+LASSO_EXPORT gint lasso_idwsf2_profile_process_soap_response_msg(LassoProfile *profile,
+	const gchar *message);
+
+/* Private method */
+LassoSoapEnvelope* lasso_idwsf2_profile_build_soap_envelope(const char *refToMessageId,
+	const char *providerId);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_WSF2_PROFILE_PRIVATE_H__ */
+#endif /* __LASSO_IDWSF2_PROFILE_H__ */
+
