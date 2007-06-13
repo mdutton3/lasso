@@ -199,6 +199,9 @@
 #define LASSO_DISCO_STATUS_CODE_NO_RESULTS "NoResults"
 #define LASSO_DISCO_STATUS_CODE_DIRECTIVES "Directive"
 
+#define LASSO_DST_STATUS_CODE_OK "OK"
+#define LASSO_DST_STATUS_CODE_FAILED "Failed"
+#define LASSO_DST_STATUS_CODE_PARTIAL "Partial"
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED "ActionNotAuthorized"
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED "ActionNotSupported"
 #define LASSO_DST_STATUS_CODE_ALL_RETURNED "AllReturned"
@@ -218,13 +221,12 @@
 #define LASSO_DST_STATUS_CODE_NO_MORE_ELEMENTS "NoMoreElements"
 #define LASSO_DST_STATUS_CODE_NO_MULTIPLE_ALLOWED "NoMultipleAllowed"
 #define LASSO_DST_STATUS_CODE_NO_MULTIPLE_RESOURCES "NoMultipleResources"
-#define LASSO_DST_STATUS_CODE_OK "OK"
 #define LASSO_DST_STATUS_CODE_TIME_OUT "TimeOut"
 #define LASSO_DST_STATUS_CODE_UNEXPECTED_ERROR "UnexpectedError"
 
+#define LASSO_SA_STATUS_CODE_OK "OK"
 #define LASSO_SA_STATUS_CODE_CONTINUE "continue"
 #define LASSO_SA_STATUS_CODE_ABORT "abort"
-#define LASSO_SA_STATUS_CODE_OK "OK"
 
 /*****************************************************************************/
 /* METADATA                                                                  */

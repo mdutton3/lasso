@@ -240,7 +240,7 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 		if (response->SvcMDID != NULL) {
 			discovery->svcMDID = g_strdup(response->SvcMDID->data);
 		} else {
-			res = LASSO_IDWSF2_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED;
+			res = LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED;
 		}
 	}
 
@@ -302,11 +302,10 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 	/* Build response */
 	response = lasso_idwsf2_disco_svc_md_association_add_response_new();
 
-	/* Default is Failed, will be OK when metadatas are registered */
-	response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
-
 	envelope = profile->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	profile->response = LASSO_NODE(response);
 
 	return res;
 }
@@ -318,7 +317,6 @@ lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery)
 	LassoIdWsf2DiscoSvcMDAssociationAdd *request;
 	LassoIdWsf2DiscoSvcMDAssociationAddResponse *response;
 	LassoIdentity *identity;
-	LassoSoapEnvelope *envelope;
 	GList *i;
 	int res = 0;
 
@@ -333,6 +331,8 @@ lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery)
 
 	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(profile->request)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	} else if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response)) {
+		res = LASSO_PROFILE_ERROR_MISSING_RESPONSE;
 	}
 
 	/* If the request has been correctly processed, */
@@ -343,16 +343,12 @@ lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery)
 		lasso_identity_add_svc_md_id(identity, (gchar *)(i->data));
 	}
 
+	/* Set response status code */
+	response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response);
 	if (res == 0) {
-		envelope = profile->soap_envelope_response;
-		for (i = g_list_first(envelope->Body->any); i != NULL; i = g_list_next(i)) {
-			if (LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(i->data)) {
-				response =
-					LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(i->data);
-				response->Status->code = g_strdup(LASSO_DISCO_STATUS_CODE_OK);
-				break;
-			}
-		}
+		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_OK);
+	} else {
+		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
 	}
 
 	return res;
@@ -386,7 +382,7 @@ lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 	}
 	if (strcmp(response->Status->code, "OK") != 0) {
-		return LASSO_IDWSF2_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED;
+		return LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED;
 	}
 
 	return 0;
@@ -447,6 +443,27 @@ lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2Discovery *discover
 	query->RequestedService = g_list_append(query->RequestedService, service);
 
 	return 0;
+}
+
+gint
+lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const gchar *message)
+{
+	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
+
+	int res = 0;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	/* Process request */
+	res = lasso_wsf2_profile_process_soap_request_msg(profile, message);
+
+	if (! LASSO_IS_IDWSF2_DISCO_QUERY(profile->request)) {
+		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	}
+	
+	return res;
 }
 
 static LassoWsAddrEndpointReference*
@@ -561,27 +578,6 @@ lasso_idwsf2_discovery_build_query_response_epr(LassoIdWsf2DiscoRequestedService
 }
 
 gint
-lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const gchar *message)
-{
-	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
-
-	int res = 0;
-
-	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
-		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
-	/* Process request */
-	res = lasso_wsf2_profile_process_soap_request_msg(profile, message);
-
-	if (! LASSO_IS_IDWSF2_DISCO_QUERY(profile->request)) {
-		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
-	}
-	
-	return res;
-}
-
-gint
 lasso_idwsf2_discovery_build_query_response_msg(LassoIdWsf2Discovery *discovery)
 {
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
@@ -608,7 +604,7 @@ lasso_idwsf2_discovery_build_query_response_msg(LassoIdWsf2Discovery *discovery)
 				request->RequestedService->data);
 		}
 		if (service == NULL) {
-			res = LASSO_IDWSF2_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE;
+			res = LASSO_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE;
 		}
 	}
 
@@ -616,15 +612,21 @@ lasso_idwsf2_discovery_build_query_response_msg(LassoIdWsf2Discovery *discovery)
 	response = lasso_idwsf2_disco_query_response_new();
 
 	if (res == 0) {
-		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_OK);
 		/* FIXME : foreach here as well */
 		epr = lasso_idwsf2_discovery_build_query_response_epr(service, identity, server);
 		if (epr != NULL) {
 			response->EndpointReference =
 				g_list_append(response->EndpointReference, epr);
+			/* XXX : Should probably check if the epr contains a SecurityContext, */
+			/* otherwise return a "federation not found" error code */
+		} else {
+			res = LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE;
 		}
-		/* XXX : Should probably check if the epr contains a SecurityContext, */
-		/* otherwise return a "federation not found" error code */
+	}
+
+	/* Set response status code */		
+	if (res == 0) {
+		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_OK);	
 	} else {
 		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
 		/* XXX : May add secondary status codes here */
@@ -669,7 +671,7 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 	}
 	if (strcmp(response->Status->code, "OK") != 0) {
-		return LASSO_IDWSF2_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED;
+		return LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED;
 	}
 
 	/* If the response has been correctly processed, */

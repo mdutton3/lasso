@@ -193,12 +193,19 @@ lasso_strerror(int error_code)
 		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE:
 			return "Target name space not found";
 
-		case LASSO_IDWSF2_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED:
+		case LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED:
 			return "Service metadata registration failed";
-		case LASSO_IDWSF2_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
+		case LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
 		        return "Service metadata association failed";
-		case LASSO_IDWSF2_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE:
+		case LASSO_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE:
 		        return "Missing requested service";
+		case LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE:
+			return "Failed to build Endpoint Reference";
+
+		case LASSO_DST_ERROR_QUERY_FAILED:
+			return "Query failed";
+		case LASSO_DST_ERROR_QUERY_PARTIALLY_FAILED:
+			return "Query partially failed : some items were correctly processed";
 
 		default:
 			return "Error";
