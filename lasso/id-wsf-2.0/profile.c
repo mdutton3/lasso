@@ -166,7 +166,7 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoProfile *profile, const gchar
 				continue;
 			}
 			if (LASSO_IS_SAML2_NAME_ID(assertion->Subject->NameID)) {
-				//profile->nameIdentifier = g_object_ref(assertion->Subject->NameID);
+				profile->nameIdentifier = g_object_ref(assertion->Subject->NameID);
 			} else if (LASSO_IS_SAML2_ENCRYPTED_ELEMENT(
 					assertion->Subject->EncryptedID)) {
 				encrypted_id = assertion->Subject->EncryptedID;
