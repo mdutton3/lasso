@@ -300,8 +300,7 @@ static void build_exception_msg(int errorCode, char *errorMsg) {
 	if (errorCode) {
 		char errorMsg[256];
 		int swig_error = SWIG_RuntimeError;
-		if (errorCode == LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ ||
-				errorCode == LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ) {
+		if (errorCode == LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ) {
 			swig_error = SWIG_ValueError;
 		}
 		build_exception_msg(errorCode, errorMsg);
