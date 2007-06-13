@@ -153,7 +153,7 @@ lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, con
 }
 
 gint
-lasso_idwsf2_data_service_build_query_response_msg(LassoIdWsf2DataService *service)
+lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 {
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
 	LassoIdWsf2DstRefQuery *request;
@@ -239,6 +239,7 @@ lasso_idwsf2_data_service_build_query_response_msg(LassoIdWsf2DataService *servi
 			break;
 		}
 	}
+
 	/* Free XML parsing objects */
 	xmlUnlinkNode(service->data);
 	xmlXPathFreeContext(xpathCtx);
@@ -247,8 +248,6 @@ lasso_idwsf2_data_service_build_query_response_msg(LassoIdWsf2DataService *servi
 	if (res == 0 && strcmp(response2->Status->code, LASSO_DST_STATUS_CODE_FAILED) == 0) {
 		res = LASSO_DST_ERROR_QUERY_FAILED;
 	}
-
-	lasso_wsf2_profile_build_response_msg(profile);
 
 	return res;
 }
@@ -297,6 +296,8 @@ lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, co
 	GList *iter;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DSTREF_QUERY_RESPONSE(profile->response), NULL);
 
 	response = LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(profile->response);
 

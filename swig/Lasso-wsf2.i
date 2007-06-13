@@ -374,7 +374,7 @@ typedef struct {
 	END_THROW_ERROR()
 
 	THROW_ERROR()
-	int buildQueryResponseMsg();
+	int parseQueryItems();
 	END_THROW_ERROR()
 	
 	THROW_ERROR()
@@ -452,7 +452,7 @@ typedef struct {
 #define LassoIdWsf2DataService_initQuery lasso_idwsf2_data_service_init_query
 #define LassoIdWsf2DataService_addQueryItem lasso_idwsf2_data_service_add_query_item
 #define LassoIdWsf2DataService_processQueryMsg lasso_idwsf2_data_service_process_query_msg
-#define LassoIdWsf2DataService_buildQueryResponseMsg lasso_idwsf2_data_service_build_query_response_msg
+#define LassoIdWsf2DataService_parseQueryItems lasso_idwsf2_data_service_parse_query_items
 #define LassoIdWsf2DataService_processQueryResponseMsg lasso_idwsf2_data_service_process_query_response_msg
 #define LassoIdWsf2DataService_getAttributeNode(self, itemId) \
 	get_xml_string(lasso_idwsf2_data_service_get_attribute_node(self, itemId))
