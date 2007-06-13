@@ -83,8 +83,8 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	assertion->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;
 	assertion->MinorVersion = LASSO_SAML_MINOR_VERSION_N;
 	assertion->IssueInstant = lasso_get_current_time();
-	assertion->Issuer = \
-	  g_strdup(LASSO_PROVIDER(LASSO_WSF_PROFILE(discovery)->server)->ProviderID);
+	assertion->Issuer =
+		g_strdup(LASSO_PROVIDER(LASSO_WSF_PROFILE(discovery)->server)->ProviderID);
 
 	/* Add AuthenticationStatement */
 	authentication_statement = LASSO_SAML_AUTHENTICATION_STATEMENT(
@@ -116,8 +116,8 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 
 	/* SubjectConfirmation */
 	subject_confirmation = lasso_saml_subject_confirmation_new();
-	subject_confirmation->ConfirmationMethod = \
-	  g_list_append(subject_confirmation->ConfirmationMethod,
+	subject_confirmation->ConfirmationMethod =
+		g_list_append(subject_confirmation->ConfirmationMethod,
 			g_strdup(LASSO_SAML_CONFIRMATION_METHOD_HOLDER_OF_KEY));
 
 	/* Add public key value in credential */
