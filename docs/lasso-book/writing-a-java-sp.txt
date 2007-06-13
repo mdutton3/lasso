@@ -178,7 +178,7 @@ AssertionConsumerServiceURL metadata URL::
   }
   String lassoSessionDump = lassoLogin.getSession().dump();
   String lassoIdentityDump = lassoLogin.getIdentity().dump();
-  String nameIdentifier = lassoLogin.getNameIdentifier().getContent();
+  String nameIdentifier = ((SamlNameIdentifier)lassoLogin.getNameIdentifier()).getContent();
 
 
 Single Logout
