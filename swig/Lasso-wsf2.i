@@ -177,7 +177,7 @@ typedef struct {
 	END_THROW_ERROR()
 
 	THROW_ERROR()
-	int buildQueryResponseMsg();
+	int buildQueryResponseEprs();
 	END_THROW_ERROR()
 
 	THROW_ERROR()
@@ -291,7 +291,7 @@ typedef struct {
 #define LassoIdWsf2Discovery_initQuery lasso_idwsf2_discovery_init_query
 #define LassoIdWsf2Discovery_addRequestedServiceType lasso_idwsf2_discovery_add_requested_service_type
 #define LassoIdWsf2Discovery_processQueryMsg lasso_idwsf2_discovery_process_query_msg
-#define LassoIdWsf2Discovery_buildQueryResponseMsg lasso_idwsf2_discovery_build_query_response_msg
+#define LassoIdWsf2Discovery_buildQueryResponseEprs lasso_idwsf2_discovery_build_query_response_eprs
 #define LassoIdWsf2Discovery_processQueryResponseMsg lasso_idwsf2_discovery_process_query_response_msg
 #define LassoIdWsf2Discovery_registerMetadata lasso_idwsf2_discovery_register_metadata
 #define LassoIdWsf2Discovery_getService(self, type) \

@@ -467,7 +467,7 @@ lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const 
 }
 
 static LassoWsAddrEndpointReference*
-lasso_idwsf2_discovery_build_query_response_epr(LassoIdWsf2DiscoRequestedService *service,
+lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 	LassoIdentity *identity, LassoServer *server)
 {
 	gchar *service_type = NULL;
@@ -578,7 +578,7 @@ lasso_idwsf2_discovery_build_query_response_epr(LassoIdWsf2DiscoRequestedService
 }
 
 gint
-lasso_idwsf2_discovery_build_query_response_msg(LassoIdWsf2Discovery *discovery)
+lasso_idwsf2_discovery_build_query_response_eprs(LassoIdWsf2Discovery *discovery)
 {
 	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(discovery);
 	LassoIdentity *identity = profile->identity;
@@ -613,7 +613,7 @@ lasso_idwsf2_discovery_build_query_response_msg(LassoIdWsf2Discovery *discovery)
 
 	if (res == 0) {
 		/* FIXME : foreach here as well */
-		epr = lasso_idwsf2_discovery_build_query_response_epr(service, identity, server);
+		epr = lasso_idwsf2_discovery_build_epr(service, identity, server);
 		if (epr != NULL) {
 			response->EndpointReference =
 				g_list_append(response->EndpointReference, epr);
@@ -634,8 +634,6 @@ lasso_idwsf2_discovery_build_query_response_msg(LassoIdWsf2Discovery *discovery)
 
 	envelope = profile->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
-
-	lasso_wsf2_profile_build_response_msg(profile);
 
 	return res;
 }
