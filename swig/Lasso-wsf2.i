@@ -77,8 +77,8 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 	
-	%immutable nameId;
-	char *nameId;
+	%immutable nameIdentifier;
+	LassoSaml2NameID *nameIdentifier;
 
 	%newobject request_get;
 	LassoNode *request;
@@ -220,9 +220,11 @@ typedef struct {
 #define LassoIdWsf2Discovery_get_msgUrl(self) LASSO_PROFILE(self)->msg_url
 #define LassoIdWsf2Discovery_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
 
-/* nameId */
-#define LassoIdWsf2Discovery_get_nameId(self) LASSO_PROFILE(self)->name_id
-#define LassoIdWsf2Discovery_nameId_get(self) LASSO_PROFILE(self)->name_id
+/* nameIdentifier */
+#define LassoIdWsf2Discovery_get_nameIdentifier(self) \
+	LASSO_SAML2_NAME_ID(get_node(LASSO_PROFILE(self)->nameIdentifier))
+#define LassoIdWsf2Discovery_nameIdentifier_get(self) \
+	LASSO_SAML2_NAME_ID(get_node(LASSO_PROFILE(self)->nameIdentifier))
 
 /* request */
 #define LassoIdWsf2Discovery_get_request(self) get_node(LASSO_PROFILE(self)->request)
@@ -319,8 +321,8 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 
-	%immutable nameId;
-	char *nameId;
+	%immutable nameIdentifier;
+	LassoSaml2NameID *nameIdentifier;
 
 	%immutable type;
 	char *type;
@@ -401,9 +403,11 @@ typedef struct {
 #define LassoIdWsf2DataService_get_msgUrl(self) LASSO_PROFILE(self)->msg_url
 #define LassoIdWsf2DataService_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
 
-/* nameId */
-#define LassoIdWsf2DataService_get_nameId(self) LASSO_PROFILE(self)->name_id
-#define LassoIdWsf2DataService_nameId_get(self) LASSO_PROFILE(self)->name_id
+/* nameIdentifier */
+#define LassoIdWsf2DataService_get_nameIdentifier(self) \
+	LASSO_SAML2_NAME_ID(get_node(LASSO_PROFILE(self)->nameIdentifier))
+#define LassoIdWsf2DataService_nameIdentifier_get(self) \
+	LASSO_SAML2_NAME_ID(get_node(LASSO_PROFILE(self)->nameIdentifier))
 
 /* type */
 #define LassoIdWsf2DataService_get_type(self) self->type

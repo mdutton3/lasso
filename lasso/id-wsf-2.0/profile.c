@@ -130,8 +130,8 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoProfile *profile, const gchar
 	LassoSoapEnvelope *envelope = NULL;
 	LassoSaml2Assertion *assertion;
 	LassoWsse200401Security *wsse_security;
-	LassoSaml2NameID *name_id = NULL;
 	LassoSaml2EncryptedElement *encrypted_id = NULL;
+	LassoNode *decrypted_name_id = NULL;
 	xmlSecKey *encryption_private_key = NULL;
 	GList *i;
 	GList *j;
@@ -145,6 +145,11 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoProfile *profile, const gchar
 	envelope = lasso_soap_envelope_new_from_message(message);
 
 	profile->soap_envelope_request = envelope;
+
+	if (profile->nameIdentifier != NULL) {
+		lasso_node_destroy(profile->nameIdentifier);
+		profile->nameIdentifier = NULL;
+	}
 
 	/* Get NameIdentifier (if exists) from the soap header */
 	for (i = g_list_first(envelope->Header->Other); i != NULL; i = g_list_next(i)) {
@@ -160,9 +165,10 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoProfile *profile, const gchar
 			if (assertion->Subject == NULL) {
 				continue;
 			}
-			if (assertion->Subject->NameID != NULL) {
-				name_id = assertion->Subject->NameID;
-			} else if (assertion->Subject->EncryptedID != NULL) {
+			if (LASSO_IS_SAML2_NAME_ID(assertion->Subject->NameID)) {
+				//profile->nameIdentifier = g_object_ref(assertion->Subject->NameID);
+			} else if (LASSO_IS_SAML2_ENCRYPTED_ELEMENT(
+					assertion->Subject->EncryptedID)) {
 				encrypted_id = assertion->Subject->EncryptedID;
 			} else {
 				continue;
@@ -174,13 +180,12 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoProfile *profile, const gchar
 
 	/* Decrypt NameID */
 	encryption_private_key = profile->server->private_data->encryption_private_key;
-	if (name_id == NULL && encrypted_id != NULL && encryption_private_key != NULL) {
-		name_id = LASSO_SAML2_NAME_ID(
-			lasso_node_decrypt(encrypted_id, encryption_private_key));
-	}
-
-	if (name_id != NULL && name_id->content != NULL) {
-		profile->name_id = g_strdup(name_id->content);
+	if (profile->nameIdentifier == NULL && encrypted_id != NULL
+			&& encryption_private_key != NULL) {
+		decrypted_name_id = lasso_node_decrypt(encrypted_id, encryption_private_key);
+		if (LASSO_IS_SAML2_NAME_ID(decrypted_name_id)) {
+			profile->nameIdentifier = decrypted_name_id;
+		}
 	}
 
 	if (envelope != NULL && envelope->Body != NULL && envelope->Body->any != NULL) {

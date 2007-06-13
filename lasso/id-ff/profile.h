@@ -116,9 +116,6 @@ struct _LassoProfile {
 	LassoSoapEnvelope *soap_envelope_request;
 	LassoSoapEnvelope *soap_envelope_response;
 
-	/* Could use above nameIdentifier instead */
-	gchar *name_id;
-
 	LassoProfilePrivate *private_data;
 };
 

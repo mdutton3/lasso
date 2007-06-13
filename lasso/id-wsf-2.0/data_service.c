@@ -218,7 +218,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 			response->Data = g_list_append(response->Data, data);
 			/* Success : change status code to OK */
 			if (strcmp(response2->Status->code, LASSO_DST_STATUS_CODE_FAILED) == 0) {
-				free(response2->Status->code);
+				g_free(response2->Status->code);
 				response2->Status->code = g_strdup(LASSO_DST_STATUS_CODE_OK);
 			}
 			xmlXPathFreeObject(xpathObj);
@@ -226,7 +226,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 		} else {
 			/* If status was OK, change it to Partial */
 			if (strcmp(response2->Status->code, LASSO_DST_STATUS_CODE_OK) == 0) {
-				free(response2->Status->code);
+				g_free(response2->Status->code);
 				response2->Status->code = g_strdup(LASSO_DST_STATUS_CODE_PARTIAL);
 			} else {
 				res = LASSO_DST_ERROR_QUERY_FAILED;
