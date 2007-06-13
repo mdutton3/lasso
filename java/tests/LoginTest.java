@@ -137,7 +137,7 @@ public class LoginTest extends TestCase {
         responseUrl = idpLogin.getMsgUrl();
         responseQuery = responseUrl.substring(responseUrl.indexOf("?") + 1);
 	idpRemoteProviderId = idpLogin.getRemoteProviderId();
-	nameIdentifier = idpLogin.getNameIdentifier().getContent();
+	nameIdentifier = ((SamlNameIdentifier)idpLogin.getNameIdentifier()).getContent();
 	artifact = idpLogin.getAssertionArtifact();
         assertNotNull(artifact);
         method = lasso.HTTP_METHOD_REDIRECT;
@@ -169,7 +169,7 @@ public class LoginTest extends TestCase {
 
 	// Service provider assertion consumer (step 2: process SOAP response).
         spLogin.processResponseMsg(soapResponseMsg);
-        assertEquals(nameIdentifier, spLogin.getNameIdentifier().getContent());
+        assertEquals(nameIdentifier, ((SamlNameIdentifier)spLogin.getNameIdentifier()).getContent());
 	// The user doesn't have any federation yet.
         spLogin.acceptSso();
         spIdentity = spLogin.getIdentity();
@@ -208,7 +208,7 @@ public class LoginTest extends TestCase {
         assertNotNull(idp);
         idpLogout = new Logout(idp);
 	idpLogout.processRequestMsg(soapRequestMsg);
-        assertEquals(nameIdentifier, idpLogout.getNameIdentifier().getContent());
+        assertEquals(nameIdentifier, ((SamlNameIdentifier)idpLogout.getNameIdentifier()).getContent());
         assertNotNull(idpIdentityDump);
         idpLogout.setIdentityFromDump(idpIdentityDump);
         assertNotNull(idpSessionDump);
