@@ -30,7 +30,7 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
-#include <lasso/id-wsf-2.0/wsf2_profile.h>
+#include <lasso/id-wsf-2.0/profile.h>
 
 #include <lasso/xml/xml.h>
 
@@ -56,7 +56,7 @@ typedef struct _LassoIdWsf2DataServiceClass LassoIdWsf2DataServiceClass;
 typedef struct _LassoIdWsf2DataServicePrivate LassoIdWsf2DataServicePrivate;
 
 struct _LassoIdWsf2DataService {
-	LassoWsf2Profile parent;
+	LassoIdWsf2Profile parent;
 
 	/*< public >*/
 	xmlNode *data;
@@ -67,7 +67,7 @@ struct _LassoIdWsf2DataService {
 };
 
 struct _LassoIdWsf2DataServiceClass {
-	LassoWsf2ProfileClass parent;
+	LassoIdWsf2ProfileClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_data_service_get_type(void);

@@ -48,7 +48,7 @@ struct _LassoIdWsf2DataServicePrivate
 gint
 lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 {
-	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoIdWsf2DstRefQuery *query;
 	LassoWsAddrEndpointReference *epr;
 	GList *metadata_item;
@@ -93,7 +93,7 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 		return LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE;
 	}
 
-	lasso_wsf2_profile_init_soap_request(profile, LASSO_NODE(query), service_type);
+	lasso_idwsf2_profile_init_soap_request(profile, LASSO_NODE(query), service_type);
 
 	/* Set msg_url as epr address, which is the SoapEndpoint */
 	if (epr->Address != NULL) {
@@ -109,7 +109,7 @@ gint
 lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const gchar *item_xpath,
 	const gchar *item_id)
 {
-	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoIdWsf2DstRefQuery *query;
 	LassoIdWsf2DstRefQueryItem *item;
 
@@ -133,14 +133,14 @@ lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const 
 gint
 lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, const gchar *message)
 {
-	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	res = lasso_wsf2_profile_process_soap_request_msg(profile, message);
+	res = lasso_idwsf2_profile_process_soap_request_msg(profile, message);
 
 	if (! LASSO_IS_IDWSF2_DSTREF_QUERY(profile->request)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
@@ -155,7 +155,7 @@ lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, con
 gint
 lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 {
-	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoIdWsf2DstRefQuery *request;
 	LassoIdWsf2DstRefQueryResponse *response;
 	LassoIdWsf2UtilResponse *response2;
@@ -256,7 +256,7 @@ gint
 lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *service,
 	const gchar *message)
 {
-	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoIdWsf2UtilResponse *response;
 	int res;
 
@@ -264,7 +264,7 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	res = lasso_wsf2_profile_process_soap_response_msg(profile, message);
+	res = lasso_idwsf2_profile_process_soap_response_msg(profile, message);
 	if (res != 0) {
 		return res;
 	}
@@ -290,7 +290,7 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 xmlNode*
 lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, const gchar *item_id)
 {
-	LassoWsf2Profile *profile = LASSO_WSF2_PROFILE(service);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoIdWsf2DstRefQueryResponse *response;
 	LassoIdWsf2DstRefItemData *data = NULL;
 	GList *iter;
@@ -428,7 +428,7 @@ lasso_idwsf2_data_service_get_type()
 			(GInstanceInitFunc) instance_init,
 		};
 
-		this_type = g_type_register_static(LASSO_TYPE_WSF2_PROFILE,
+		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_PROFILE,
 				"LassoIdWsf2DataService", &this_info, 0);
 	}
 	return this_type;
@@ -451,7 +451,7 @@ lasso_idwsf2_data_service_new(LassoServer *server)
 
 	service = g_object_new(LASSO_TYPE_IDWSF2_DATA_SERVICE, NULL);
 
-	LASSO_WSF2_PROFILE(service)->server = g_object_ref(server);
+	LASSO_IDWSF2_PROFILE(service)->server = g_object_ref(server);
 
 	return service;
 }

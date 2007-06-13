@@ -7,19 +7,19 @@ INCLUDES = \
 	-DG_LOG_DOMAIN=\"lasso\"
 
 lasso_private_h_sources = \
-	wsf2_profile_private.h
+	profile_private.h
 
 noinst_LTLIBRARIES = liblasso-id-wsf2.la
 
 liblasso_id_wsf2_la_SOURCES = \
 	discovery.c \
 	data_service.c \
-	wsf2_profile.c
+	profile.c
 
 liblassoinclude_HEADERS = \
 	discovery.h \
 	data_service.h \
-	wsf2_profile.h \
+	profile.h \
 	identity.h \
 	server.h \
 	session.h

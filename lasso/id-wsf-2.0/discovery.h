@@ -30,7 +30,7 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
-#include <lasso/id-wsf-2.0/wsf2_profile.h>
+#include <lasso/id-wsf-2.0/profile.h>
 #include <lasso/id-wsf-2.0/data_service.h>
 
 #include <lasso/xml/id-wsf-2.0/disco_query.h>
@@ -52,7 +52,7 @@ typedef struct _LassoIdWsf2DiscoveryClass LassoIdWsf2DiscoveryClass;
 typedef struct _LassoIdWsf2DiscoveryPrivate LassoIdWsf2DiscoveryPrivate;
 
 struct _LassoIdWsf2Discovery {
-	LassoWsf2Profile parent;
+	LassoIdWsf2Profile parent;
 
 	/* FIXME : Both should be lists */
 	LassoIdWsf2DiscoSvcMetadata *metadata;
@@ -63,7 +63,7 @@ struct _LassoIdWsf2Discovery {
 };
 
 struct _LassoIdWsf2DiscoveryClass {
-	LassoWsf2ProfileClass parent;
+	LassoIdWsf2ProfileClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_discovery_get_type(void);
