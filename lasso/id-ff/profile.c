@@ -508,6 +508,15 @@ dispose(GObject *object)
 	g_free(profile->private_data->artifact_message);
 	profile->private_data->artifact_message = NULL;
 
+	if (profile->soap_envelope_request != NULL) {
+		lasso_node_destroy(LASSO_NODE(profile->soap_envelope_request));
+		profile->soap_envelope_request = NULL;
+	}
+	if (profile->soap_envelope_response != NULL) {
+		lasso_node_destroy(LASSO_NODE(profile->soap_envelope_response));
+		profile->soap_envelope_response = NULL;
+	}
+
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(profile));
 }
 
@@ -543,6 +552,8 @@ instance_init(LassoProfile *profile)
 	profile->identity = NULL;
 	profile->session = NULL;
 	profile->signature_status = 0;
+	profile->soap_envelope_request = NULL;
+	profile->soap_envelope_response = NULL;
 }
 
 static void
