@@ -86,7 +86,7 @@ public class LoginTest extends TestCase {
         Logout idpLogout, spLogout;
         SamlAssertion assertion;
         Server idp, sp;
-        Session idpSession, spSession;
+        Session spSession;
         String artifact, authenticationMethod, authnRequestQuery, authnRequestUrl, idpDump,
             idpIdentityDump, idpRemoteProviderId, idpSessionDump, nameIdentifier, relayState,
             responseQuery, responseUrl, soapEndpoint, soapResponseMsg, soapRequestMsg,
@@ -149,7 +149,9 @@ public class LoginTest extends TestCase {
         spLogin.initRequest(responseQuery, method);
         spLogin.buildRequestMsg();
         soapEndpoint = spLogin.getMsgUrl();
+        assertNotNull(soapEndpoint);
         soapRequestMsg = spLogin.getMsgBody();
+        assertNotNull(soapRequestMsg);
 
         // Identity provider SOAP endpoint.
         requestType = lasso.getRequestTypeFromSoapMsg(soapRequestMsg);
