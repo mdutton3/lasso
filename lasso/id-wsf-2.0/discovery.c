@@ -381,7 +381,7 @@ lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 	if (response->Status == NULL || response->Status->code == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 	}
-	if (strcmp(response->Status->code, "OK") != 0) {
+	if (strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_OK) != 0) {
 		return LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED;
 	}
 
@@ -670,7 +670,7 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 	if (response->Status == NULL || response->Status->code == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 	}
-	if (strcmp(response->Status->code, "OK") != 0) {
+	if (strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_OK) != 0) {
 		return LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED;
 	}
 
