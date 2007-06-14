@@ -376,7 +376,7 @@ PHP warning, the code resume after the call to the error handler function.
 
 ::
 
-  $lrv = $lassoLogin->processResponseMsg($responseMsg);
+  $lrv = $lassoLogin->processResponseMsg($answer);
   if ($lrv > 0) {
       print("Lasso Error: ".$lrv."\n");
       /* handling error; most probably bailing out */
