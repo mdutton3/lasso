@@ -346,8 +346,8 @@ Identity and session dumps should be restored to prepare the logout request.
   $lassoLogout->buildRequestMsg();
 
 
-The service provider must then make a SOAP request to the identity provider;
-``$msgUrl`` and ``$msgBody``.  You should then pass the answer to Lasso::
+The service provider must then make a SOAP request to the identity provider as above with
+$lassoLogout->msgUrl and $lassoLogout->msgBody values.  You should then pass the answer to Lasso::
 
   $lassoLogout->processResponseMsg($answer));
 
