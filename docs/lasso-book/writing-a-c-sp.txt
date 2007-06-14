@@ -401,7 +401,7 @@ end of the single sign on profile.
 Proper Error Checking
 =====================
 
-Most Lasso functions returns 0 on success and a negative number on failure.  It
+Most Lasso functions return 0 on success and a negative number on failure.  It
 is strongly advised to check this return code on each call.
 
 ::

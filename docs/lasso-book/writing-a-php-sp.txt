@@ -370,7 +370,7 @@ and to set up the script to use it::
 
   set_error_handler("userErrorHandler");
 
-Most Lasso functions returns 0 on success and a negative number on failure.  It
+Most Lasso functions return 0 on success and a negative number on failure.  It
 is strongly advised to check this return code on each call. If the error raise a
 PHP warning, the code resume after the call to the error handler function.
 
