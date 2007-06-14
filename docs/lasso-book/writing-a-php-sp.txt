@@ -229,14 +229,13 @@ service.
 .. note:: the login URL is not normative; any name will do.
 
 
-``$server`` is a instantiated ``LassoServer`` as seen earlier and
-``$idpProviderId`` is a string with the identity provider Id (the string must
-match a providerID defined in the metadata file).
+``$server`` is an instantiated ``LassoServer`` as seen earlier
 
 ::
 
-
   $lassoLogin = new LassoLogin($server);
+  $providerIdList = $server->providerIds;
+  $idpProviderId = $provider_id_list->getItem(0);
   $lassoLogin->initAuthnRequest($idpProviderId, LASSO_HTTP_METHOD_REDIRECT);
   $lassoRequest = $lassoLogin->request;
   $lassoRequest->NameIDPolicy = LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED;
