@@ -59,20 +59,35 @@ Service Provider keys and metadata files
 Liberty key files
 -----------------
 
-Service Provider needs private and public keys to sign sent messages. It also
-needs Identity Provider public key to verify received messages. Private and
+Service Provider needs private and public keys to sign sent messages. Private and
 public keys are loaded from PEM files by Lasso.
+
+If you don't have PEM format keys, you need to create them. To create a couple public key/private key with OpenSSL, use the following commands:
+
+Create a private key in a file named name-of-the-private-key.pem::
+
+  openssl genrsa -out name-of-the-private-key.pem 2048
+
+Extract the public key from the private key in a file named name-of-the-public-key.pem::
+
+  openssl rsa -in name-of-the-private-key.pem -pubout \
+    -out name-of-the-public-key.pem
+
+Your Service Provider also needs Identity Provider public key to verify received messages. You must get it from your Identity Provider.
 
 Liberty Metadata files
 ----------------------
 
-Service Provider need to get Identity Provider metadata to know where to send
-requests and how to process received requests from Identity Provider. Metadata
-are xml document describing provider identifier, deployed urls where to send
-requests and initiate profile and methods describing how to send or process
-requests.
+Metadata are xml document describing provider configuration, that is its identifier, urls where to send him
+requests and supported Liberty Alliance profiles (that is methods describing how to send or process
+requests).
 
-Service provider typically describe metadata like this::
+Your Service Provider needs Identity Provider metadata to know where to send
+requests and how to process the requests he receives from the Identity Provider.
+You must get them from your Identity Provider. Then, you must create some metadata for your
+Service Provider and give them to your Identity Provider as well.
+
+Here is an example service provider metadata that you will have to adapt to your needs::
 
   <?xml version="1.0"?>
   <EntityDescriptor
@@ -110,6 +125,8 @@ on authentication response.
 ``http://sp.example.com/liberty/single-logout`` is the Service Provider single
 logout url. Service Provider can initiate single logout from this url or
 process HTTP single logout request from Identity Provider.  `
+
+More information about these metadatas can be found in Liberty Alliance specifications.
 
 Lasso Server and remote providers settings
 ==========================================

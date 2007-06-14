@@ -38,7 +38,6 @@ The other way is to load it dynamically, like::
 
 You can easily include this code every time you need lasso.
 
-
 The first thing to do is to call ``lasso_init()``. Similarly, the last thing
 should be to call ``lasso_shutdown()``.
 
@@ -51,6 +50,81 @@ therefore be::
 
 If your PHP code is used in HTML script environment, it could be difficult to
 call ``lasso_shutdown()``, this is not mandatory.
+
+Service Provider keys and metadata files
+========================================
+
+Liberty key files
+-----------------
+
+Service Provider needs private and public keys to sign sent messages. Private and
+public keys are loaded from PEM files by Lasso.
+
+If you don't have PEM format keys, you need to create them. To create a couple public key/private key with OpenSSL, use the following commands:
+
+Create a private key in a file named name-of-the-private-key.pem::
+
+  openssl genrsa -out name-of-the-private-key.pem 2048
+
+Extract the public key from the private key in a file named name-of-the-public-key.pem::
+
+  openssl rsa -in name-of-the-private-key.pem -pubout \
+    -out name-of-the-public-key.pem
+
+Your Service Provider also needs Identity Provider public key to verify received messages. You must get it from your Identity Provider.
+
+Liberty Metadata files
+----------------------
+
+Metadata are xml document describing provider configuration, that is its identifier, urls where to send him
+requests and supported Liberty Alliance profiles (that is methods describing how to send or process
+requests).
+
+Your Service Provider needs Identity Provider metadata to know where to send
+requests and how to process the requests he receives from the Identity Provider.
+You must get them from your Identity Provider. Then, you must create some metadata for your
+Service Provider and give them to your Identity Provider as well.
+
+Here is an example service provider metadata that you will have to adapt to your needs::
+
+  <?xml version="1.0"?>
+  <EntityDescriptor
+    providerID="http://sp.example.com/liberty/metadata" 
+    xmlns="urn:liberty:metadata:2003-08">
+    <SPDescriptor protocolSupportEnumeration="urn:liberty:iff:2003-08">
+        <SoapEndpoint>http://sp.example.com/liberty/soap-endpoint</SoapEndpoint>
+        <SingleLogoutServiceURL>sp.example.com/liberty/single-logout</SingleLogoutServiceURL>
+        <AssertionConsumerServiceURL id="AssertionConsumerService1"isDefault="true">http://sp.example.com/liberty/assertion-consumer-service</AssertionConsumerServiceURL>
+        <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-idp-soap</FederationTerminationNotificationProtocolProfile>
+        <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-idp-http</FederationTerminationNotificationProtocolProfile>
+        <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
+        <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-http</SingleLogoutProtocolProfile>
+        <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-sp-soap</SingleLogoutProtocolProfile>
+        <AuthnRequestsSigned>true</AuthnRequestsSigned>
+    </SPDescriptor>
+    <Organization>
+        <OrganizationName>Example Organization</OrganizationName>
+    </Organization>
+  </EntityDescriptor>
+
+Where sp.example.com is the domain name of Service Provider.
+
+``http://sp.example.com/liberty/metadata`` is the Service Provider Liberty
+identifier.
+
+``http://sp.example.com/liberty/soap-endpoint`` is the Service Provider SOAP
+endpoint where Identity Provider send SOAP single logout or defederation
+requests.
+
+``http://sp.example.com/liberty/assertion-consumer-service`` is the Service
+Provider assertion consumer url where Identity Provider must return single sign
+on authentication response.
+
+``http://sp.example.com/liberty/single-logout`` is the Service Provider single
+logout url. Service Provider can initiate single logout from this url or
+process HTTP single logout request from Identity Provider.  `
+
+More information about these metadata can be found in Liberty Alliance specifications.
 
 Liberty and Lasso profiles
 ==========================
