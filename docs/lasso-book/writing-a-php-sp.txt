@@ -27,6 +27,7 @@ in your ``php.ini`` configuration file, which can be found in something like
 ``/etc/php4/apache2/php.ini`` (if you're using apache2 and php4 on Debian,
 otherwise you may need to adapt the path to your local configuration).
 
+Then restart Apache 2.
 
 The other way is to load it dynamically, like::
 
