@@ -36,7 +36,6 @@ extern "C" {
 
 #include <lasso/xml/samlp_request_abstract.h>
 #include <lasso/xml/samlp_response_abstract.h>
-#include <lasso/xml/soap_envelope.h>
 
 #define LASSO_TYPE_PROFILE (lasso_profile_get_type())
 #define LASSO_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_PROFILE, LassoProfile))
@@ -112,9 +111,6 @@ struct _LassoProfile {
 
 	LassoHttpMethod http_request_method;
 	gint signature_status;
-
-	LassoSoapEnvelope *soap_envelope_request;
-	LassoSoapEnvelope *soap_envelope_response;
 
 	LassoProfilePrivate *private_data;
 };

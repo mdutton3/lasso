@@ -181,7 +181,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	request = LASSO_IDWSF2_DSTREF_QUERY(profile->request);
 
 	/* Response envelope and body */
-	envelope = profile->soap_envelope_response;
+	envelope = profile->private_data->soap_envelope_response;
 	response = lasso_idwsf2_dstref_query_response_new();
 	response->prefixServiceType = g_strdup(request->prefixServiceType);
 	response->hrefServiceType = g_strdup(request->hrefServiceType);

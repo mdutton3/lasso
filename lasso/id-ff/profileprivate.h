@@ -32,10 +32,14 @@ extern "C" {
 
 #include <lasso/id-ff/profile.h>
 
+#include <lasso/xml/soap_envelope.h>
+
 struct _LassoProfilePrivate
 {
 	char *artifact;
 	char *artifact_message;
+	LassoSoapEnvelope *soap_envelope_request;
+	LassoSoapEnvelope *soap_envelope_response;
 	gboolean dispose_has_run;
 };
 

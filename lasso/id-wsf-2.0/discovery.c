@@ -207,7 +207,7 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 		/* XXX : May add secondary status codes here */
 	}
 
-	envelope = profile->soap_envelope_response;
+	envelope = profile->private_data->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return res;
@@ -302,7 +302,7 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 	/* Build response */
 	response = lasso_idwsf2_disco_svc_md_association_add_response_new();
 
-	envelope = profile->soap_envelope_response;
+	envelope = profile->private_data->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	profile->response = LASSO_NODE(response);
@@ -632,7 +632,7 @@ lasso_idwsf2_discovery_build_query_response_eprs(LassoIdWsf2Discovery *discovery
 		/* XXX : May add secondary status codes here */
 	}
 
-	envelope = profile->soap_envelope_response;
+	envelope = profile->private_data->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return res;

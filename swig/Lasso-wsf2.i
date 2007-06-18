@@ -88,12 +88,6 @@ typedef struct {
 
 	%newobject server_get;
 	LassoServer *server;
-
-	%newobject soapEnvelopeRequest_get;
-	LassoSoapEnvelope *soapEnvelopeRequest;
-
-	%newobject soapEnvelopeResponse_get;
-	LassoSoapEnvelope *soapEnvelopeResponse;
 	
 	/* Attributes */
 
@@ -243,18 +237,6 @@ typedef struct {
 #define LassoIdWsf2Discovery_server_get(self) get_node(LASSO_PROFILE(self)->server)
 #define LassoIdWsf2Discovery_set_server(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
 #define LassoIdWsf2Discovery_server_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
-
-/* soapEnvelopeRequest */
-#define LassoIdWsf2Discovery_get_soapEnvelopeRequest(self) get_node(LASSO_PROFILE(self)->soap_envelope_request)
-#define LassoIdWsf2Discovery_soapEnvelopeRequest_get(self) get_node(LASSO_PROFILE(self)->soap_envelope_request)
-#define LassoIdWsf2Discovery_set_soapEnvelopeRequest(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->soap_envelope_request, (value))
-#define LassoIdWsf2Discovery_soapEnvelopeRequest_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->soap_envelope_request, (value))
-
-/* soapEnvelopeResponse */
-#define LassoIdWsf2Discovery_get_soapEnvelopeResponse(self) get_node(LASSO_PROFILE(self)->soap_envelope_response)
-#define LassoIdWsf2Discovery_soapEnvelopeResponse_get(self) get_node(LASSO_PROFILE(self)->soap_envelope_response)
-#define LassoIdWsf2Discovery_set_soapEnvelopeResponse(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->soap_envelope_response, (value))
-#define LassoIdWsf2Discovery_soapEnvelopeResponse_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->soap_envelope_response, (value))
 
 /* Attributes */
 

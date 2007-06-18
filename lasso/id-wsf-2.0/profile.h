@@ -30,6 +30,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/id-ff/profile.h>
+#include <lasso/id-ff/profileprivate.h>
 
 LASSO_EXPORT gint lasso_idwsf2_profile_init_soap_request(LassoProfile *profile,
 	LassoNode *request, gchar *service_type);
