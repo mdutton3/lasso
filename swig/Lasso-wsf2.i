@@ -260,8 +260,8 @@ typedef struct {
 #define LassoIdWsf2Discovery_setIdentityFromDump(self, dump) lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump)
 #define LassoIdWsf2Discovery_setSessionFromDump(self, dump) lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump)
 
-#define LassoIdWsf2Discovery_buildRequestMsg(self) lasso_idwsf2_profile_build_request_msg(LASSO_PROFILE(self))
-#define LassoIdWsf2Discovery_buildResponseMsg(self) lasso_idwsf2_profile_build_response_msg(LASSO_PROFILE(self))
+#define LassoIdWsf2Discovery_buildRequestMsg(self) lasso_idwsf2_profile_build_request_msg(LASSO_IDWSF2_PROFILE(self))
+#define LassoIdWsf2Discovery_buildResponseMsg(self) lasso_idwsf2_profile_build_response_msg(LASSO_IDWSF2_PROFILE(self))
 
 /* Methods implementations */
 
@@ -432,8 +432,8 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoIdWsf2Profile */
 
-#define LassoIdWsf2DataService_buildRequestMsg(self) lasso_idwsf2_profile_build_request_msg(LASSO_PROFILE(self))
-#define LassoIdWsf2DataService_buildResponseMsg(self) lasso_idwsf2_profile_build_response_msg(LASSO_PROFILE(self))
+#define LassoIdWsf2DataService_buildRequestMsg(self) lasso_idwsf2_profile_build_request_msg(LASSO_IDWSF2_PROFILE(self))
+#define LassoIdWsf2DataService_buildResponseMsg(self) lasso_idwsf2_profile_build_response_msg(LASSO_IDWSF2_PROFILE(self))
 
 /* Methods implementations */
 #define LassoIdWsf2DataService_initQuery lasso_idwsf2_data_service_init_query

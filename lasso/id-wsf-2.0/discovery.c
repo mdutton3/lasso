@@ -88,7 +88,7 @@ lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	const gchar *service_type, const gchar *abstract,
 	const gchar *soap_endpoint, const gchar *svcMDID)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoProvider *provider;
 	gchar *provider_id;
 	LassoIdWsf2DiscoSvcMetadata *metadata;
@@ -99,7 +99,7 @@ lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	g_return_val_if_fail(abstract != NULL, NULL);
 	g_return_val_if_fail(soap_endpoint != NULL, NULL);
 
-	provider = LASSO_PROVIDER(profile->server);
+	provider = LASSO_PROVIDER(LASSO_PROFILE(profile)->server);
 	provider_id = provider->ProviderID;
 
 	metadata = lasso_idwsf2_disco_svc_metadata_new_full(
@@ -115,7 +115,7 @@ lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	}
 
 	/* Add the metadata into the server object */
-	lasso_server_add_svc_metadata(profile->server, metadata);
+	lasso_server_add_svc_metadata(LASSO_PROFILE(profile)->server, metadata);
 
 	return g_strdup(metadata->svcMDID);
 }
@@ -125,7 +125,7 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 	const gchar *service_type, const gchar *abstract,
 	const gchar *disco_provider_id, const gchar *soap_endpoint)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoSvcMDRegister *metadata_register;
 	LassoProvider *provider;
 	gchar *sp_provider_id;
@@ -138,7 +138,7 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 	g_return_val_if_fail(soap_endpoint != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	/* Get the providerId of this SP */
-	provider = LASSO_PROVIDER(profile->server);
+	provider = LASSO_PROVIDER(LASSO_PROFILE(profile)->server);
 	sp_provider_id = provider->ProviderID;
 
 	/* Get a MetadataRegister node */
@@ -159,7 +159,7 @@ gint
 lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoSvcMDRegister *request;
 	LassoIdWsf2DiscoSvcMDRegisterResponse *response;
 	LassoSoapEnvelope *envelope;
@@ -173,14 +173,14 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 	/* Process request */
 	res = lasso_idwsf2_profile_process_soap_request_msg(profile, message);
 
-	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER(profile->request)) {
+	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_PROFILE(profile)->request)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}
 
 	/* If the request has been correctly processed, */
 	/* put interesting data into the discovery object */
 	if (res == 0) {
-		request = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(profile->request);
+		request = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_PROFILE(profile)->request);
 		/* FIXME : foreach on the list instead */
 		if (request != NULL && request->metadata_list != NULL) {
 			discovery->metadata =
@@ -190,7 +190,8 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 			unique_id[32] = 0;
 			discovery->metadata->svcMDID = g_strdup(unique_id);
 			/* Add the metadata into the server object */
-			lasso_server_add_svc_metadata(profile->server, discovery->metadata);
+			lasso_server_add_svc_metadata(LASSO_PROFILE(profile)->server,
+					discovery->metadata);
 		}
 	}
 
@@ -207,7 +208,7 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 		/* XXX : May add secondary status codes here */
 	}
 
-	envelope = profile->private_data->soap_envelope_response;
+	envelope = profile->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return res;
@@ -217,7 +218,7 @@ gint
 lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoSvcMDRegisterResponse *response;
 	int res = 0;
 
@@ -228,14 +229,15 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 	/* Process request */
 	res = lasso_idwsf2_profile_process_soap_response_msg(profile, message);
 
-	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(profile->response)) {
+	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(LASSO_PROFILE(profile)->response)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}
 
 	/* If the response has been correctly processed, */
 	/* put interesting data into the discovery object */
 	if (res == 0) {
-		response = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(profile->response);
+		response = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(
+				LASSO_PROFILE(profile)->response);
 		/* FIXME : foreach on the list instead */
 		if (response->SvcMDID != NULL) {
 			discovery->svcMDID = g_strdup(response->SvcMDID->data);
@@ -252,8 +254,8 @@ gint
 lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *discovery,
 	const gchar *svcMDID)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
-	LassoSession *session = profile->session;
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
+	LassoSession *session = LASSO_PROFILE(profile)->session;
 	LassoIdWsf2DiscoSvcMDAssociationAdd *md_association_add;
 	LassoWsAddrEndpointReference *epr;
 
@@ -273,7 +275,7 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 
 	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
 	if (epr != NULL) {
-		profile->msg_url = g_strdup(epr->Address->content);
+		LASSO_PROFILE(profile)->msg_url = g_strdup(epr->Address->content);
 	}
 
 	return 0;
@@ -283,7 +285,7 @@ gint
 lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoSvcMDAssociationAddResponse *response;
 	LassoSoapEnvelope *envelope;
 	int res = 0;
@@ -295,17 +297,17 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 	/* Process request */
 	res = lasso_idwsf2_profile_process_soap_request_msg(profile, message);
 
-	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(profile->request)) {
+	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(LASSO_PROFILE(profile)->request)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}
 
 	/* Build response */
 	response = lasso_idwsf2_disco_svc_md_association_add_response_new();
 
-	envelope = profile->private_data->soap_envelope_response;
+	envelope = profile->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
-	profile->response = LASSO_NODE(response);
+	LASSO_PROFILE(profile)->response = LASSO_NODE(response);
 
 	return res;
 }
@@ -313,7 +315,7 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 gint
 lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoSvcMDAssociationAdd *request;
 	LassoIdWsf2DiscoSvcMDAssociationAddResponse *response;
 	LassoIdentity *identity;
@@ -324,27 +326,29 @@ lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery)
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 		
 	/* verify if identity already exists else create it */
-	if (profile->identity == NULL) {
-		profile->identity = lasso_identity_new();
+	if (LASSO_PROFILE(profile)->identity == NULL) {
+		LASSO_PROFILE(profile)->identity = lasso_identity_new();
 	}
-	identity = profile->identity;
+	identity = LASSO_PROFILE(profile)->identity;
 
-	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(profile->request)) {
+	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(LASSO_PROFILE(profile)->request)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
-	} else if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response)) {
+	} else if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(
+				LASSO_PROFILE(profile)->response)) {
 		res = LASSO_PROFILE_ERROR_MISSING_RESPONSE;
 	}
 
 	/* If the request has been correctly processed, */
 	/* put interesting data into the discovery object */
-	request = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(profile->request);
+	request = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD(LASSO_PROFILE(profile)->request);
 	/* Copy the service metadatas with given svcMDIDs into the identity object */
 	for (i = g_list_first(request->SvcMDID); i != NULL; i = g_list_next(i)) {
 		lasso_identity_add_svc_md_id(identity, (gchar *)(i->data));
 	}
 
 	/* Set response status code */
-	response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response);
+	response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(
+			LASSO_PROFILE(profile)->response);
 	if (res == 0) {
 		response->Status = lasso_util_status_new(LASSO_DISCO_STATUS_CODE_OK);
 	} else {
@@ -358,7 +362,7 @@ gint
 lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 	LassoIdWsf2Discovery *discovery, const gchar *message)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoSvcMDAssociationAddResponse *response;
 	int res = 0;
 
@@ -372,12 +376,14 @@ lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 		return res;
 	}
 
-	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response)) {
+	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(
+				LASSO_PROFILE(profile)->response)) {
 		return LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}
 
 	/* Check response status code */
-	response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(profile->response);
+	response = LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(
+			LASSO_PROFILE(profile)->response);
 	if (response->Status == NULL || response->Status->code == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 	}
@@ -399,8 +405,8 @@ lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 gint
 lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery, const gchar *security_mech_id)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
-	LassoSession *session = profile->session;
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
+	LassoSession *session = LASSO_PROFILE(profile)->session;
 	LassoWsAddrEndpointReference *epr;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
@@ -408,16 +414,17 @@ lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery, const gchar *
 
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 
-	if (profile->request) {
-		lasso_node_destroy(LASSO_NODE(profile->request));
+	if (LASSO_PROFILE(profile)->request) {
+		lasso_node_destroy(LASSO_NODE(LASSO_PROFILE(profile)->request));
 	}
-	profile->request = LASSO_NODE(lasso_idwsf2_disco_query_new());
+	LASSO_PROFILE(profile)->request = LASSO_NODE(lasso_idwsf2_disco_query_new());
 
-	lasso_idwsf2_profile_init_soap_request(profile, profile->request, LASSO_IDWSF2_DISCO_HREF);
+	lasso_idwsf2_profile_init_soap_request(profile,
+			LASSO_PROFILE(profile)->request, LASSO_IDWSF2_DISCO_HREF);
 	
 	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
 	if (epr != NULL) {
-		profile->msg_url = g_strdup(epr->Address->content);
+		LASSO_PROFILE(profile)->msg_url = g_strdup(epr->Address->content);
 	}
 
 	return 0;
@@ -427,17 +434,17 @@ gint
 lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2Discovery *discovery,
 	const gchar *service_type)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoQuery *query;
 	LassoIdWsf2DiscoRequestedService *service;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCO_QUERY(profile->request),
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCO_QUERY(LASSO_PROFILE(profile)->request),
 		LASSO_PROFILE_ERROR_MISSING_REQUEST);
 
-	query = LASSO_IDWSF2_DISCO_QUERY(profile->request);
+	query = LASSO_IDWSF2_DISCO_QUERY(LASSO_PROFILE(profile)->request);
 	service = lasso_idwsf2_disco_requested_service_new();
 	service->ServiceType = g_list_append(service->ServiceType, g_strdup(service_type));
 	query->RequestedService = g_list_append(query->RequestedService, service);
@@ -448,7 +455,7 @@ lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2Discovery *discover
 gint
 lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const gchar *message)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 
 	int res = 0;
 
@@ -459,7 +466,7 @@ lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const 
 	/* Process request */
 	res = lasso_idwsf2_profile_process_soap_request_msg(profile, message);
 
-	if (! LASSO_IS_IDWSF2_DISCO_QUERY(profile->request)) {
+	if (! LASSO_IS_IDWSF2_DISCO_QUERY(LASSO_PROFILE(profile)->request)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}
 	
@@ -580,9 +587,9 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 gint
 lasso_idwsf2_discovery_build_query_response_eprs(LassoIdWsf2Discovery *discovery)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
-	LassoIdentity *identity = profile->identity;
-	LassoServer *server = profile->server;
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
+	LassoIdentity *identity = LASSO_PROFILE(profile)->identity;
+	LassoServer *server = LASSO_PROFILE(profile)->server;
 	LassoIdWsf2DiscoQuery* request;
 	LassoIdWsf2DiscoRequestedService *service = NULL;
 	LassoIdWsf2DiscoQueryResponse *response;
@@ -590,14 +597,14 @@ lasso_idwsf2_discovery_build_query_response_eprs(LassoIdWsf2Discovery *discovery
 	LassoSoapEnvelope *envelope;
 	int res = 0;
 	
-	if (! LASSO_IS_IDWSF2_DISCO_QUERY(profile->request)) {
+	if (! LASSO_IS_IDWSF2_DISCO_QUERY(LASSO_PROFILE(profile)->request)) {
 		res = LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	} else 	if (! LASSO_IS_IDENTITY(identity)) {
 		res = LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND;
 	}
 
 	if (res == 0) {
-		request = LASSO_IDWSF2_DISCO_QUERY(profile->request);
+		request = LASSO_IDWSF2_DISCO_QUERY(LASSO_PROFILE(profile)->request);
 		/* FIXME : foreach on the list instead */
 		if (request->RequestedService != NULL) {
 			service = LASSO_IDWSF2_DISCO_REQUESTED_SERVICE(
@@ -632,7 +639,7 @@ lasso_idwsf2_discovery_build_query_response_eprs(LassoIdWsf2Discovery *discovery
 		/* XXX : May add secondary status codes here */
 	}
 
-	envelope = profile->private_data->soap_envelope_response;
+	envelope = profile->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return res;
@@ -642,8 +649,8 @@ gint
 lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
-	LassoSession *session = profile->session;
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
+	LassoSession *session = LASSO_PROFILE(profile)->session;
 	LassoIdWsf2DiscoQueryResponse *response;
 	int res = 0;
 
@@ -659,12 +666,12 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 		return res;
 	}
 
-	if (! LASSO_IS_IDWSF2_DISCO_QUERY_RESPONSE(profile->response)) {
+	if (! LASSO_IS_IDWSF2_DISCO_QUERY_RESPONSE(LASSO_PROFILE(profile)->response)) {
 		return LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}
 
 	/* Check response status code */
-	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(profile->response);
+	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(LASSO_PROFILE(profile)->response);
 	if (response->Status == NULL || response->Status->code == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 	}
@@ -674,7 +681,7 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 
 	/* If the response has been correctly processed, */
 	/* put interesting data into the discovery object */
-	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(profile->response);
+	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(LASSO_PROFILE(profile)->response);
 	/* FIXME : foreach on the list instead */
 	if (response->EndpointReference != NULL
 			&& response->EndpointReference->data != NULL) {
@@ -699,19 +706,17 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
 LassoIdWsf2DataService*
 lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const gchar *service_type)
 {
-	LassoProfile *profile = LASSO_PROFILE(discovery);
-	LassoSession *session = profile->session;
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoQueryResponse *response;
 	LassoWsAddrEndpointReference *epr = NULL;
 	LassoIdWsf2DataService *service;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery), NULL);
 
-	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCO_QUERY_RESPONSE(
+				LASSO_PROFILE(profile)->response), NULL);
 
-	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCO_QUERY_RESPONSE(profile->response), NULL);
-
-	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(profile->response);
+	response = LASSO_IDWSF2_DISCO_QUERY_RESPONSE(LASSO_PROFILE(profile)->response);
 
 	/* FIXME : foreach on the list instead */
 	if (response->EndpointReference != NULL && response->EndpointReference->data != NULL) {
@@ -720,10 +725,8 @@ lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const gchar 
 		return NULL;
 	}
 
-	service = lasso_idwsf2_data_service_new_full(profile->server, epr);
-
-	/* Copy session to service object (used to get assertion identity token from the session) */
- 	LASSO_PROFILE(service)->session = g_object_ref(session);
+	service = lasso_idwsf2_data_service_new_full(LASSO_PROFILE(profile)->server, epr);
+	LASSO_PROFILE(service)->session = g_object_ref(LASSO_PROFILE(profile)->session);
 
 	return service;
 }
@@ -825,7 +828,7 @@ lasso_idwsf2_discovery_get_type()
 			(GInstanceInitFunc) instance_init,
 		};
 
-		this_type = g_type_register_static(LASSO_TYPE_PROFILE,
+		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_PROFILE,
 						   "LassoIdWsf2Discovery", &this_info, 0);
 	}
 	return this_type;

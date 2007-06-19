@@ -42,8 +42,10 @@ extern "C" {
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdWsf2Discovery))
 #define LASSO_IDWSF2_DISCOVERY_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdWsf2DiscoveryClass))
-#define LASSO_IS_IDWSF2_DISCOVERY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCOVERY))
-#define LASSO_IS_IDWSF2_DISCOVERY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCOVERY))
+#define LASSO_IS_IDWSF2_DISCOVERY(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCOVERY))
+#define LASSO_IS_IDWSF2_DISCOVERY_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCOVERY))
 #define LASSO_IDWSF2_DISCOVERY_GET_CLASS(o) \
 	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdWsf2DiscoveryClass)) 
 
@@ -52,7 +54,7 @@ typedef struct _LassoIdWsf2DiscoveryClass LassoIdWsf2DiscoveryClass;
 typedef struct _LassoIdWsf2DiscoveryPrivate LassoIdWsf2DiscoveryPrivate;
 
 struct _LassoIdWsf2Discovery {
-	LassoProfile parent;
+	LassoIdWsf2Profile parent;
 
 	/* FIXME : Both should be lists */
 	LassoIdWsf2DiscoSvcMetadata *metadata;
@@ -63,7 +65,7 @@ struct _LassoIdWsf2Discovery {
 };
 
 struct _LassoIdWsf2DiscoveryClass {
-	LassoProfileClass parent;
+	LassoIdWsf2ProfileClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_discovery_get_type(void);
@@ -106,10 +108,11 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2D
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message);
 
-LASSO_EXPORT gint lasso_idwsf2_discovery_build_query_response_eprs(LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT gint lasso_idwsf2_discovery_build_query_response_eprs(
+		LassoIdWsf2Discovery *discovery);
 
-LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discovery,
-	const gchar *message);
+LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_response_msg(
+		LassoIdWsf2Discovery *discovery, const gchar *message);
 
 LASSO_EXPORT LassoIdWsf2DataService* lasso_idwsf2_discovery_get_service(
 	LassoIdWsf2Discovery *discovery, const gchar *service_type);

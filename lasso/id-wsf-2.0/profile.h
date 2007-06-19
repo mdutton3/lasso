@@ -30,24 +30,53 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/id-ff/profile.h>
-#include <lasso/id-ff/profileprivate.h>
+#include <lasso/xml/soap_envelope.h>
 
-LASSO_EXPORT gint lasso_idwsf2_profile_init_soap_request(LassoProfile *profile,
+#define LASSO_TYPE_IDWSF2_PROFILE (lasso_idwsf2_profile_get_type())
+#define LASSO_IDWSF2_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
+       LASSO_TYPE_IDWSF2_PROFILE, LassoIdWsf2Profile))
+#define LASSO_IDWSF2_PROFILE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
+       LASSO_TYPE_IDWSF2_PROFILE, LassoIdWsf2ProfileClass))
+#define LASSO_IS_IDWSF2_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+       LASSO_TYPE_IDWSF2_PROFILE))
+#define LASSO_IS_IDWSF2_PROFILE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
+       LASSO_TYPE_IDWSF2_PROFILE))
+#define LASSO_IDWSF2_PROFILE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
+       LASSO_TYPE_IDWSF2_PROFILE, LassoIdWsf2ProfileClass)) 
+
+
+typedef struct _LassoIdWsf2Profile LassoIdWsf2Profile;
+typedef struct _LassoIdWsf2ProfileClass LassoIdWsf2ProfileClass;
+typedef struct _LassoIdWsf2ProfilePrivate LassoIdWsf2ProfilePrivate;
+
+struct _LassoIdWsf2Profile {
+	LassoProfile parent;
+
+	/*< private >*/
+	LassoSoapEnvelope *soap_envelope_request;
+	LassoSoapEnvelope *soap_envelope_response;
+
+	LassoIdWsf2ProfilePrivate *private_data;
+};
+
+struct _LassoIdWsf2ProfileClass {
+	LassoProfileClass parent;
+};
+
+LASSO_EXPORT GType lasso_idwsf2_profile_get_type(void);
+
+LASSO_EXPORT gint lasso_idwsf2_profile_init_soap_request(LassoIdWsf2Profile *profile,
 	LassoNode *request, gchar *service_type);
 
-LASSO_EXPORT gint lasso_idwsf2_profile_build_request_msg(LassoProfile *profile);
+LASSO_EXPORT gint lasso_idwsf2_profile_build_request_msg(LassoIdWsf2Profile *profile);
 
-LASSO_EXPORT gint lasso_idwsf2_profile_process_soap_request_msg(LassoProfile *profile,
+LASSO_EXPORT gint lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile,
 	const gchar *message);
 
-LASSO_EXPORT gint lasso_idwsf2_profile_build_response_msg(LassoProfile *profile);
+LASSO_EXPORT gint lasso_idwsf2_profile_build_response_msg(LassoIdWsf2Profile *profile);
 
-LASSO_EXPORT gint lasso_idwsf2_profile_process_soap_response_msg(LassoProfile *profile,
+LASSO_EXPORT gint lasso_idwsf2_profile_process_soap_response_msg(LassoIdWsf2Profile *profile,
 	const gchar *message);
-
-/* Private method */
-LassoSoapEnvelope* lasso_idwsf2_profile_build_soap_envelope(const char *refToMessageId,
-	const char *providerId);
 
 #ifdef __cplusplus
 }
