@@ -514,8 +514,11 @@
 #define LASSO_IDWSF2_SEC_HREF "urn:liberty:security:2006-08"
 #define LASSO_IDWSF2_SEC_PREFIX "sec"
 
-#define LASSO_IDWSF2_SOAP_BINDING_HREF   "urn:liberty:sb:2006-08"
+#define LASSO_IDWSF2_SOAP_BINDING_HREF   "urn:liberty:sb"
 #define LASSO_IDWSF2_SOAP_BINDING_PREFIX "sb"
+
+#define LASSO_IDWSF2_SOAP_BINDING2_HREF   "urn:liberty:sb:2006-08"
+#define LASSO_IDWSF2_SOAP_BINDING2_PREFIX "sb2"
 
 /*****************************************************************************/
 /* Others                                                                    */
@@ -541,4 +544,7 @@
 
 #define LASSO_SOAP_FAULT_CODE_SERVER "Server"
 
+#define LASSO_SOAP_FAULT_STRING_SERVER "Server Error"
+
 #endif /* __LASSO_STRINGS_H__ */
+

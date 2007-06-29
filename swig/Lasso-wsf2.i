@@ -361,7 +361,7 @@ typedef struct {
 	THROW_ERROR()
 	int parseQueryItems();
 	END_THROW_ERROR()
-	
+
 	THROW_ERROR()
 	int processQueryResponseMsg(const char *message);
 	END_THROW_ERROR()
@@ -371,6 +371,10 @@ typedef struct {
 
 	%newobject getAttributeString;
 	char* getAttributeString(const char *item_id = NULL);
+
+	THROW_ERROR()
+	gint initRedirectUserForConsent(const char *redirect_url);
+	END_THROW_ERROR()
 }
 
 %{
@@ -444,6 +448,7 @@ typedef struct {
 #define LassoIdWsf2DataService_getAttributeNode(self, itemId) \
 	get_xml_string(lasso_idwsf2_data_service_get_attribute_node(self, itemId))
 #define LassoIdWsf2DataService_getAttributeString lasso_idwsf2_data_service_get_attribute_string
+#define LassoIdWsf2DataService_initRedirectUserForConsent lasso_idwsf2_data_service_init_redirect_user_for_consent
 
 %}
 

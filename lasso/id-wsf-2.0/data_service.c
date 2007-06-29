@@ -33,6 +33,9 @@
 #include <lasso/xml/id-wsf-2.0/dstref_query_response.h>
 #include <lasso/xml/id-wsf-2.0/dstref_data.h>
 #include <lasso/xml/id-wsf-2.0/util_status.h>
+#include <lasso/xml/id-wsf-2.0/soap_binding2_redirect_request.h>
+
+#include <lasso/xml/soap_fault.h>
 
 struct _LassoIdWsf2DataServicePrivate
 {
@@ -351,6 +354,35 @@ lasso_idwsf2_data_service_get_attribute_string(LassoIdWsf2DataService *service,
 	xmlFreeNode(node);
 
 	return content;
+}
+
+gint
+lasso_idwsf2_data_service_init_redirect_user_for_consent(LassoIdWsf2DataService *service,
+	const gchar *redirect_url)
+{
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoSoapEnvelope *envelope;
+	LassoSoapFault *fault;
+	LassoSoapDetail *detail;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(redirect_url != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	/* Build soap fault node */
+	fault = lasso_soap_fault_new();
+	fault->faultcode = g_strdup(LASSO_SOAP_FAULT_CODE_SERVER);
+	fault->faultstring = g_strdup(LASSO_SOAP_FAULT_STRING_SERVER);
+	detail = lasso_soap_detail_new();
+	detail->any = g_list_append(
+		detail->any, lasso_idwsf2_soap_binding2_redirect_request_new_full(redirect_url));
+	fault->Detail = detail;
+
+	/* Response envelope */
+	envelope = profile->soap_envelope_response;
+	envelope->Body->any = g_list_append(envelope->Body->any, fault);
+
+	return 0;
 }
 
 /*****************************************************************************/

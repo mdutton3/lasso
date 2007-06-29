@@ -36,6 +36,7 @@ liblasso_xml_id_wsf2_la_SOURCES = \
 	dstref_sort.c \
 	sec_token.c \
 	soap_binding_framework.c \
+	soap_binding2_redirect_request.c \
 	util_status.c \
 	util_response.c
 
@@ -67,6 +68,7 @@ liblassoinclude_HEADERS = \
 	dstref_sort.h \
 	sec_token.h \
 	soap_binding_framework.h \
+	soap_binding2_redirect_request.h \
 	util_status.h \
 	util_response.h
 
