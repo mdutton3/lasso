@@ -1454,6 +1454,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "IdWsf2Util";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SEC_HREF) == 0)
 		prefix = "IdWsf2Sec";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SOAP_BINDING2_HREF) == 0)
+		prefix = "IdWsf2SoapBinding2";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSA_HREF) == 0)
 		prefix = "WsAddr";
 	else {
