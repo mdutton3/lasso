@@ -255,6 +255,46 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	return res;
 }
 
+static gint
+lasso_idwsf2_data_service_process_query_response_soap_fault_msg(LassoIdWsf2DataService *service,
+	const gchar *message)
+{
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoSoapFault *fault;
+	LassoIdWsf2SoapBinding2RedirectRequest *redirect_request = NULL;
+	GList *iter;
+	int res;
+
+	if (! LASSO_IS_SOAP_FAULT(LASSO_PROFILE(profile)->response)) {
+		/* Should not happen as it should be checked in caller */
+		return 0;
+	}
+
+	fault = LASSO_SOAP_FAULT(LASSO_PROFILE(profile)->response);
+
+	if (fault->Detail == NULL || fault->Detail->any == NULL) {
+		return LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL;
+	}
+
+	/* Get RedirectRequest element from soap fault detail */
+	for (iter = fault->Detail->any; iter != NULL; iter = iter->next) {
+		if (LASSO_IS_IDWSF2_SOAP_BINDING2_REDIRECT_REQUEST(iter->data) == TRUE) {
+			redirect_request = LASSO_IDWSF2_SOAP_BINDING2_REDIRECT_REQUEST(iter->data);
+			break;
+		}
+	}
+
+	if (redirect_request != NULL) {
+		/* This is not a failure, this exception code indicates the WSP needs to ask */
+		/* user consent to get an attribute */
+		res = LASSO_SOAP_FAULT_REDIRECT_REQUEST;
+		/* Get redirect request url */
+		service->redirect_url = g_strdup(redirect_request->redirectURL);
+	}
+
+	return res;
+}
+
 gint
 lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *service,
 	const gchar *message)
@@ -271,7 +311,13 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 	if (res != 0) {
 		return res;
 	}
-	
+
+	/* Message can be either a SoapFault or a QueryResponse */
+	if (LASSO_IS_SOAP_FAULT(LASSO_PROFILE(profile)->response)) {
+		return lasso_idwsf2_data_service_process_query_response_soap_fault_msg(
+			service, message);
+	}
+
 	if (! LASSO_IS_IDWSF2_DSTREF_QUERY_RESPONSE(LASSO_PROFILE(profile)->response)) {
 		return LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}

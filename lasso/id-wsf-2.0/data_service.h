@@ -58,6 +58,7 @@ struct _LassoIdWsf2DataService {
 	/*< public >*/
 	xmlNode *data;
 	gchar *type;
+	gchar *redirect_url;
 
 	/*< private >*/
 	LassoIdWsf2DataServicePrivate *private_data;

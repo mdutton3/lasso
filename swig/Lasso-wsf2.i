@@ -323,6 +323,9 @@ typedef struct {
 	%newobject data;
 	char *data;
 
+	%immutable redirectUrl;
+	char *redirectUrl;
+
 	/* Constructor, Destructor & Static Methods */
 
 	LassoIdWsf2DataService(LassoServer *server);
@@ -424,6 +427,10 @@ typedef struct {
 #define LassoIdWsf2DataService_data_get(self) get_xml_string((self)->data)
 #define LassoIdWsf2DataService_set_data(self, value) set_xml_string(&(self)->data, (value))
 #define LassoIdWsf2DataService_data_set(self, value) set_xml_string(&(self)->data, (value))
+
+/* redirectUrl */
+#define LassoIdWsf2DataService_get_redirectUrl(self) self->redirect_url
+#define LassoIdWsf2DataService_redirectUrl_get(self) self->redirect_url
 
 /* Constructors, destructors & static methods implementations */
 
