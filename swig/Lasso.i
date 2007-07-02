@@ -5439,7 +5439,7 @@ LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 /* Methods implementations */
 
 #define LassoServer_addProvider lasso_server_add_provider
-#define LassoServer_addService lasso_server_add_service
+#define LassoServer_addService(self, service) lasso_server_add_service(self, LASSO_NODE(service))
 #define LassoServer_addServiceFromDump lasso_server_add_service_from_dump
 #define LassoServer_dump lasso_server_dump
 #define LassoServer_getProvider lasso_server_get_provider
