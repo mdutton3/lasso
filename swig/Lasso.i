@@ -548,15 +548,17 @@ static swig_type_info *dynamic_cast_node(void **nodePointer) {
 	return NULL;
 }
 
-static node_info *get_node_info_with_swig(swig_type_info *swig) {
-	node_info *info;
+/* Not used. Can be removed ? */
 
-	for (info = node_infos; info->swig; info++) {
-		if (info->swig == swig)
-			return info;
-	}
-	return NULL;
-}
+/* static node_info *get_node_info_with_swig(swig_type_info *swig) { */
+/* 	node_info *info; */
+
+/* 	for (info = node_infos; info->swig; info++) { */
+/* 		if (info->swig == swig) */
+/* 			return info; */
+/* 	} */
+/* 	return NULL; */
+/* } */
 
 #if defined(PHP_VERSION) && ! defined(PHP_VERSION_ID)
 static void set_node_info(node_info *info, char *name, char *superName, swig_type_info *swig,
