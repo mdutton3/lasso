@@ -306,9 +306,6 @@ typedef struct {
 	%immutable nameIdentifier;
 	LassoSaml2NameID *nameIdentifier;
 
-	%immutable type;
-	char *type;
-
 	%newobject request_get;
 	LassoNode *request;
 
@@ -322,6 +319,9 @@ typedef struct {
 
 	%newobject data;
 	char *data;
+
+	%immutable type;
+	char *type;
 
 	%immutable redirectUrl;
 	char *redirectUrl;
@@ -401,10 +401,6 @@ typedef struct {
 #define LassoIdWsf2DataService_nameIdentifier_get(self) \
 	LASSO_SAML2_NAME_ID(get_node(LASSO_PROFILE(self)->nameIdentifier))
 
-/* type */
-#define LassoIdWsf2DataService_get_type(self) self->type
-#define LassoIdWsf2DataService_type_get(self) self->type
-
 /* request */
 #define LassoIdWsf2DataService_get_request(self) get_node(LASSO_PROFILE(self)->request)
 #define LassoIdWsf2DataService_request_get(self) get_node(LASSO_PROFILE(self)->request)
@@ -430,6 +426,10 @@ typedef struct {
 #define LassoIdWsf2DataService_data_get(self) get_xml_string((self)->data)
 #define LassoIdWsf2DataService_set_data(self, value) set_xml_string(&(self)->data, (value))
 #define LassoIdWsf2DataService_data_set(self, value) set_xml_string(&(self)->data, (value))
+
+/* type */
+#define LassoIdWsf2DataService_get_type(self) self->type
+#define LassoIdWsf2DataService_type_get(self) self->type
 
 /* redirectUrl */
 #define LassoIdWsf2DataService_get_redirectUrl(self) self->redirect_url
