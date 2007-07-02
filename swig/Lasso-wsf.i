@@ -688,17 +688,28 @@ typedef struct {
 #define LassoPersonalProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
 
 /* Implementations of methods inherited from DataService */
-#define LassoPersonalProfileService_buildResponseMsg lasso_data_service_build_response_msg
-#define LassoPersonalProfileService_addModification lasso_data_service_add_modification
-#define LassoPersonalProfileService_addQueryItem lasso_data_service_add_query_item
-#define LassoPersonalProfileService_initQuery lasso_data_service_init_query
-#define LassoPersonalProfileService_processModifyMsg lasso_data_service_process_modify_msg
-#define LassoPersonalProfileService_processModifyResponseMsg lasso_data_service_process_modify_response_msg
-#define LassoPersonalProfileService_processQueryMsg lasso_data_service_process_query_msg
-#define LassoPersonalProfileService_processQueryResponseMsg lasso_data_service_process_query_response_msg
-#define LassoPersonalProfileService_getAnswer(self,select) get_xml_string(lasso_data_service_get_answer(LASSO_DATA_SERVICE(self), select))
-#define LassoPersonalProfileService_getAnswerForItemId(self,itemId) get_xml_string(lasso_data_service_get_answer_for_item_id(LASSO_DATA_SERVICE(self), itemId))
-#define LassoPersonalProfileService_initModify(self, select, xmlString) lasso_data_service_init_modify(LASSO_DATA_SERVICE(self), select, get_string_xml(xmlString))
+#define LassoPersonalProfileService_buildResponseMsg(self) \
+	lasso_data_service_build_response_msg(LASSO_DATA_SERVICE(self))
+#define LassoPersonalProfileService_addModification(self, select) \
+	lasso_data_service_add_modification(LASSO_DATA_SERVICE(self), select)
+#define LassoPersonalProfileService_addQueryItem(self, select, item_id) \
+	lasso_data_service_add_query_item(LASSO_DATA_SERVICE(self), select, item_id)
+#define LassoPersonalProfileService_initQuery(self, select, item_id, security_mech_id) \
+	lasso_data_service_init_query(LASSO_DATA_SERVICE(self), select, item_id, security_mech_id)
+#define LassoPersonalProfileService_processModifyMsg(self, soap_msg, security_mech_id) \
+	lasso_data_service_process_modify_msg(LASSO_DATA_SERVICE(self), soap_msg, security_mech_id)
+#define LassoPersonalProfileService_processModifyResponseMsg(self, soap_msg) \
+	lasso_data_service_process_modify_response_msg(LASSO_DATA_SERVICE(self), soap_msg)
+#define LassoPersonalProfileService_processQueryMsg(self, message, security_mech_id) \
+	lasso_data_service_process_query_msg(LASSO_DATA_SERVICE(self), message, security_mech_id)
+#define LassoPersonalProfileService_processQueryResponseMsg(self, message) \
+	lasso_data_service_process_query_response_msg(LASSO_DATA_SERVICE(self), message)
+#define LassoPersonalProfileService_getAnswer(self, select) \
+	get_xml_string(lasso_data_service_get_answer(LASSO_DATA_SERVICE(self), select))
+#define LassoPersonalProfileService_getAnswerForItemId(self, itemId) \
+	get_xml_string(lasso_data_service_get_answer_for_item_id(LASSO_DATA_SERVICE(self), itemId))
+#define LassoPersonalProfileService_initModify(self, select, xmlString) \
+	lasso_data_service_init_modify(LASSO_DATA_SERVICE(self), select, get_string_xml(xmlString))
 
 /* Methods implementations */
 #define LassoPersonalProfileService_getEmail lasso_personal_profile_service_get_email
