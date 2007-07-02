@@ -137,6 +137,9 @@ gint
 lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, const gchar *message)
 {
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoIdWsf2DstRefQuery *request = NULL;
+	LassoIdWsf2DstRefResultQuery *item = NULL;
+	GList *i;
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
@@ -148,8 +151,19 @@ lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, con
 	if (! LASSO_IS_IDWSF2_DSTREF_QUERY(LASSO_PROFILE(profile)->request)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	} else {
-		service->type = g_strdup(LASSO_IDWSF2_DSTREF_QUERY(
-					LASSO_PROFILE(profile)->request)->hrefServiceType);
+		request = LASSO_IDWSF2_DSTREF_QUERY(LASSO_PROFILE(profile)->request);
+		service->type = g_strdup(request->hrefServiceType);
+	}
+
+	if (res == 0) {
+		/* Parse QueryItems to get a list of Xpath strings */
+		for (i = g_list_first(request->QueryItem); i != NULL; i = g_list_next(i)) {
+			item = LASSO_IDWSF2_DSTREF_RESULT_QUERY(i->data);
+			if (item->Select != NULL) {
+				service->query_items = g_list_append(
+					service->query_items, g_strdup(item->Select));
+			}
+		}
 	}
 
 	return res;
@@ -450,6 +464,19 @@ dispose(GObject *object)
 		return;
 	service->private_data->dispose_has_run = TRUE;
 
+	if (service->type != NULL) {
+		g_free(service->type);
+		service->type = NULL;
+	}
+	if (service->redirect_url != NULL) {
+		g_free(service->redirect_url);
+		service->redirect_url = NULL;
+	}
+	if (service->query_items != NULL) {
+		g_list_free(service->query_items);
+		service->query_items = NULL;
+	}
+
 	if (service->private_data->epr != NULL) {
 		lasso_node_destroy(LASSO_NODE(service->private_data->epr));
 		service->private_data->epr = NULL;
@@ -477,6 +504,8 @@ instance_init(LassoIdWsf2DataService *service)
 {
 	service->data = NULL;
 	service->type = NULL;
+	service->redirect_url = NULL;
+	service->query_items = NULL;
 	service->private_data = g_new0(LassoIdWsf2DataServicePrivate, 1);
 	service->private_data->epr = NULL;
 }

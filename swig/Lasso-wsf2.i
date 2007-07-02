@@ -326,6 +326,9 @@ typedef struct {
 	%immutable redirectUrl;
 	char *redirectUrl;
 
+	%immutable queryItems;
+	LassoStringList *queryItems;
+
 	/* Constructor, Destructor & Static Methods */
 
 	LassoIdWsf2DataService(LassoServer *server);
@@ -431,6 +434,10 @@ typedef struct {
 /* redirectUrl */
 #define LassoIdWsf2DataService_get_redirectUrl(self) self->redirect_url
 #define LassoIdWsf2DataService_redirectUrl_get(self) self->redirect_url
+
+/* queryItems */
+#define LassoIdWsf2DataService_get_queryItems(self) get_string_list((self)->query_items)
+#define LassoIdWsf2DataService_queryItems_get(self) get_string_list((self)->query_items)
 
 /* Constructors, destructors & static methods implementations */
 
