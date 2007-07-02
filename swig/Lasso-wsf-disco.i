@@ -465,6 +465,7 @@ typedef struct {
 	char *dump();
 
 	/* Methods */
+
 	void addSecurityMechId(const char *security_mech_id);
 }
 
@@ -492,15 +493,18 @@ typedef struct {
 #define new_LassoDiscoDescription lasso_disco_description_new
 #define delete_LassoDiscoDescription(self) lasso_node_destroy(LASSO_NODE(self))
 
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoDescription_dump(self) lasso_node_dump(LASSO_NODE(self))
+
 /* Implementations of methods */
 
-/* Implementations of methods inherited from LassoNode */
+void
+LassoDiscoDescription_addSecurityMechId(LassoDiscoDescription *self, const char *security_mech_id);
 void
 LassoDiscoDescription_addSecurityMechId(LassoDiscoDescription *self, const char *security_mech_id) {
 	self->SecurityMechID = g_list_append(self->SecurityMechID, g_strdup(security_mech_id));
 }
-
-#define LassoDiscoDescription_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 

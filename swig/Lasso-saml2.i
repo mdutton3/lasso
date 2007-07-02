@@ -153,7 +153,7 @@ gboolean lasso_profile_is_saml_query(char *query);
 typedef struct {
 } LassoNameIdManagement;
 %extend LassoNameIdManagement {
-	/* Attributes inherited from Profile */
+	/* Attributes inherited from LassoProfile */
 	%immutable artifact;
 	char *artifact;
 
@@ -203,7 +203,7 @@ typedef struct {
 	%newobject newFromDump;
 	static LassoNameIdManagement *newFromDump(LassoServer *server, char *dump);
 
-	/* Methods inherited from Profile */
+	/* Methods inherited from LassoProfile */
 
 	THROW_ERROR()
 	int setIdentityFromDump(char *dump);
@@ -247,7 +247,7 @@ typedef struct {
 
 %{
 
-/* Implementations of attributes inherited from Profile */
+/* Implementations of attributes inherited from LassoProfile */
 
 /* identity */
 #define LassoNameIdManagement_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -327,15 +327,12 @@ typedef struct {
 #define delete_LassoNameIdManagement(self) lasso_node_destroy(LASSO_NODE(self))
 #define LassoNameIdManagement_newFromDump lasso_name_id_management_new_from_dump
 
-/* Implementations of methods inherited from Profile */
+/* Implementations of methods inherited from LassoProfile */
 
-int LassoNameIdManagement_setIdentityFromDump(LassoNameIdManagement *self, char *dump) {
-	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
-}
-
-int LassoNameIdManagement_setSessionFromDump(LassoNameIdManagement *self, char *dump) {
-	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
-}
+#define LassoNameIdManagement_setIdentityFromDump(self, dump) \
+	lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump)
+#define LassoNameIdManagement_setSessionFromDump(self, dump) \
+	lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump)
 
 /* Methods implementations */
 

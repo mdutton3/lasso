@@ -1778,6 +1778,7 @@ typedef struct {
 
 #define new_LassoNodeList g_ptr_array_new
 
+void delete_LassoNodeList(GPtrArray *self);
 void delete_LassoNodeList(GPtrArray *self) {
 	g_ptr_array_foreach(self, (GFunc) free_node_array_item, NULL);
 	g_ptr_array_free(self, false);
@@ -5413,6 +5414,7 @@ typedef struct {
 
 /* providerIds */
 #define LassoServer_get_providerIds LassoServer_providerIds_get
+LassoStringList *LassoServer_providerIds_get(LassoServer *self);
 LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->providers));
 	g_hash_table_foreach(self->providers, (GHFunc) add_key_to_array, providerIds);
@@ -5593,6 +5595,7 @@ typedef struct {
 
 /* providerIds */
 #define LassoIdentity_get_providerIds LassoIdentity_providerIds_get
+LassoStringList *LassoIdentity_providerIds_get(LassoIdentity *self);
 LassoStringList *LassoIdentity_providerIds_get(LassoIdentity *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->federations));
 	g_hash_table_foreach(self->federations, (GHFunc) add_key_to_array, providerIds);
@@ -5617,6 +5620,7 @@ LassoStringList *LassoIdentity_providerIds_get(LassoIdentity *self) {
 #define LassoIdentity_addResourceOffering lasso_identity_add_resource_offering
 #define LassoIdentity_removeResourceOffering lasso_identity_remove_resource_offering
 
+LassoNodeList *LassoIdentity_getOfferings(LassoIdentity *self, const char *service_type);
 LassoNodeList *LassoIdentity_getOfferings(LassoIdentity *self, const char *service_type) {
 	GPtrArray *array = NULL;
 	GList *list;
@@ -5632,6 +5636,7 @@ LassoNodeList *LassoIdentity_getOfferings(LassoIdentity *self, const char *servi
 
 #include <lasso/id-wsf-2.0/identity.h>
 
+LassoStringList* LassoIdentity_getSvcMDIDs(LassoIdentity *self);
 LassoStringList* LassoIdentity_getSvcMDIDs(LassoIdentity *self) {
 	GList *list = lasso_identity_get_svc_md_ids(self);
 	GPtrArray *svcMDIDs = g_ptr_array_sized_new(g_list_length(list));
@@ -5697,6 +5702,7 @@ typedef struct {
 
 /* providerIds */
 #define LassoSession_get_providerIds LassoSession_providerIds_get
+LassoStringList *LassoSession_providerIds_get(LassoSession *self);
 LassoStringList *LassoSession_providerIds_get(LassoSession *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->assertions));
 	g_hash_table_foreach(self->assertions, (GHFunc) add_key_to_array, providerIds);
@@ -5713,6 +5719,7 @@ LassoStringList *LassoSession_providerIds_get(LassoSession *self) {
 
 #define LassoSession_dump lasso_session_dump
 
+LassoNodeList *LassoSession_getAssertions(LassoSession *self, char *providerId);
 LassoNodeList *LassoSession_getAssertions(LassoSession *self, char *providerId) {
 	GPtrArray *assertionsArray;
 	GList *assertionsList;
@@ -5923,13 +5930,10 @@ typedef struct {
 
 /* Implementations of methods inherited from Profile */
 
-int LassoDefederation_setIdentityFromDump(LassoDefederation *self, char *dump) {
-	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
-}
-
-int LassoDefederation_setSessionFromDump(LassoDefederation *self, char *dump) {
-	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
-}
+#define LassoDefederation_setIdentityFromDump(self, dump) \
+	lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump)
+#define LassoDefederation_setSessionFromDump(self, dump) \
+	lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump)
 
 /* Methods implementations */
 
@@ -6196,13 +6200,10 @@ typedef struct {
 
 /* Implementations of methods inherited from Profile */
 
-int LassoLogin_setIdentityFromDump(LassoLogin *self, char *dump) {
-	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
-}
-
-int LassoLogin_setSessionFromDump(LassoLogin *self, char *dump) {
-	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
-}
+#define LassoLogin_setIdentityFromDump(self, dump) \
+	lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump)
+#define LassoLogin_setSessionFromDump(self, dump) \
+	lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump)
 
 /* Methods implementations */
 
@@ -6424,13 +6425,10 @@ typedef struct {
 
 /* Implementations of methods inherited from Profile */
 
-int LassoLogout_setIdentityFromDump(LassoLogout *self, char *dump) {
-	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
-}
-
-int LassoLogout_setSessionFromDump(LassoLogout *self, char *dump) {
-	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
-}
+#define LassoLogout_setIdentityFromDump(self, dump) \
+	lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump)
+#define LassoLogout_setSessionFromDump(self, dump) \
+	lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump)
 
 /* Methods implementations */
 
@@ -6658,39 +6656,28 @@ typedef struct {
 
 /* Implementations of methods inherited from Profile */
 
-int LassoLecp_setIdentityFromDump(LassoLecp *self, char *dump) {
-	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
-}
-
-int LassoLecp_setSessionFromDump(LassoLecp *self, char *dump) {
-	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
-}
+#define LassoLecp_setIdentityFromDump(self, dump) \
+	lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump)
+#define LassoLecp_setSessionFromDump(self, dump) \
+	lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump)
 
 /* Implementations of methods inherited from Login */
 
-int LassoLecp_buildAssertion(LassoLecp *self, char *authenticationMethod,
-		char *authenticationInstant, char *reauthenticateOnOrAfter, char *notBefore,
-		char *notOnOrAfter) {
-	return lasso_login_build_assertion(LASSO_LOGIN(self), authenticationMethod,
-			authenticationInstant, reauthenticateOnOrAfter, notBefore, notOnOrAfter);
-}
+#define LassoLecp_buildAssertion(self, authenticationMethod, authenticationInstant, \
+		reauthenticateOnOrAfter, notBefore, notOnOrAfter) \
+	lasso_login_build_assertion(LASSO_LOGIN(self), authenticationMethod, \
+		authenticationInstant, reauthenticateOnOrAfter, notBefore, notOnOrAfter)
 
 #ifdef LASSO_WSF_ENABLED
-int LassoLecp_setEncryptedResourceId(LassoLecp *self,
-		LassoDiscoEncryptedResourceID *encryptedResourceId) {
-	return lasso_login_set_encryptedResourceId(LASSO_LOGIN(self), encryptedResourceId);
-}
+#define LassoLecp_setEncryptedResourceId(self, encryptedResourceId) \
+	lasso_login_set_encryptedResourceId(LASSO_LOGIN(self), encryptedResourceId)
 #endif
 
-int LassoLecp_setResourceId(LassoLecp *self, char *content) {
-	return lasso_login_set_resourceId(LASSO_LOGIN(self), content);
-}
+#define LassoLecp_setResourceId(self, content) \
+	lasso_login_set_resourceId(LASSO_LOGIN(self), content)
 
-int LassoLecp_validateRequestMsg(LassoLecp *self, gboolean authenticationResult,
-		gboolean isConsentObtained) {
-	return lasso_login_validate_request_msg(LASSO_LOGIN(self), authenticationResult,
-			isConsentObtained);
-}
+#define LassoLecp_validateRequestMsg(self, authenticationResult, isConsentObtained) \
+	lasso_login_validate_request_msg(LASSO_LOGIN(self), authenticationResult, isConsentObtained)
 
 /* Methods implementations */
 
@@ -6883,13 +6870,10 @@ typedef struct {
 
 /* Implementations of methods inherited from Profile */
 
-int LassoNameIdentifierMapping_setIdentityFromDump(LassoNameIdentifierMapping *self, char *dump) {
-	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
-}
-
-int LassoNameIdentifierMapping_setSessionFromDump(LassoNameIdentifierMapping *self, char *dump) {
-	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
-}
+#define LassoNameIdentifierMapping_setIdentityFromDump(self, dump) \
+	lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump)
+#define LassoNameIdentifierMapping_setSessionFromDump(self, dump) \
+	lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump)
 
 /* Methods implementations */
 
@@ -7102,13 +7086,10 @@ typedef struct {
 
 /* Implementations of methods inherited from Profile */
 
-int LassoNameRegistration_setIdentityFromDump(LassoNameRegistration *self, char *dump) {
-	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
-}
-
-int LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, char *dump) {
-	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
-}
+#define LassoNameRegistration_setIdentityFromDump(self, dump) \
+	lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump)
+#define LassoNameRegistration_setSessionFromDump(self, dump) \
+	lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump)
 
 /* Methods implementations */
 

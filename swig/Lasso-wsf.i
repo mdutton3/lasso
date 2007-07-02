@@ -375,8 +375,6 @@ typedef struct {
 #define LassoDiscovery_set_resourceId(self, value) set_node((gpointer *) &(self)->resource_id, (value))
 #define LassoDiscovery_resourceId_set(self, value) set_node((gpointer *) &(self)->resource_id, (value))
 
-
-
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoDiscovery lasso_discovery_new
@@ -384,14 +382,10 @@ typedef struct {
 
 /* Implementations of methods inherited from WsfProfile */
 
-int LassoDiscovery_setIdentityFromDump(LassoDiscovery *self, char *dump) {
-	return lasso_wsf_profile_set_identity_from_dump(LASSO_WSF_PROFILE(self), dump);
-}
-
-int LassoDiscovery_setSessionFromDump(LassoDiscovery *self, char *dump) {
-	return lasso_wsf_profile_set_session_from_dump(LASSO_WSF_PROFILE(self), dump);
-}
-
+#define LassoDiscovery_setIdentityFromDump(self, dump) \
+	lasso_wsf_profile_set_identity_from_dump(LASSO_WSF_PROFILE(self), dump)
+#define LassoDiscovery_setSessionFromDump(self, dump) \
+	lasso_wsf_profile_set_session_from_dump(LASSO_WSF_PROFILE(self), dump)
 #define LassoDiscovery_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
