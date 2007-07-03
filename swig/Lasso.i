@@ -134,6 +134,12 @@
 
 #ifdef SWIGPYTHON
 %typemap(in,parse="z") char * "";
+%{
+/* hack around swig not declaring functions by declaring it ourself here,
+ * but it may break in a future swig version, this is just to get a clean
+ * build without any warning of the Python binding with SWIG 1.3.31... */
+SWIGEXPORT void init_lasso(void);
+%}
 #endif
 
 
