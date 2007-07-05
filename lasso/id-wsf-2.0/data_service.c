@@ -199,6 +199,9 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 
 	/* Response envelope and body */
 	envelope = profile->soap_envelope_response;
+	if (envelope == NULL) {
+		return LASSO_SOAP_ERROR_MISSING_ENVELOPE;
+	}
 	response = lasso_idwsf2_dstref_query_response_new();
 	response->prefixServiceType = g_strdup(request->prefixServiceType);
 	response->hrefServiceType = g_strdup(request->hrefServiceType);
@@ -429,6 +432,12 @@ lasso_idwsf2_data_service_init_redirect_user_for_consent(LassoIdWsf2DataService 
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(redirect_url != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
+	/* Response envelope */
+	envelope = profile->soap_envelope_response;
+	if (envelope == NULL) {
+		return LASSO_SOAP_ERROR_MISSING_ENVELOPE;
+	}
+
 	/* Build soap fault node */
 	fault = lasso_soap_fault_new();
 	fault->faultcode = g_strdup(LASSO_SOAP_FAULT_CODE_SERVER);
@@ -438,8 +447,7 @@ lasso_idwsf2_data_service_init_redirect_user_for_consent(LassoIdWsf2DataService 
 		detail->any, lasso_idwsf2_soap_binding2_redirect_request_new_full(redirect_url));
 	fault->Detail = detail;
 
-	/* Response envelope */
-	envelope = profile->soap_envelope_response;
+	/* Response envelope body */
 	envelope->Body->any = g_list_append(envelope->Body->any, fault);
 
 	return 0;

@@ -189,6 +189,8 @@ lasso_strerror(int error_code)
 
 		case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
 			return "Redirect request from Attribute Provider";
+		case LASSO_SOAP_ERROR_MISSING_ENVELOPE:
+			return "Missing SOAP envelope";
 		case LASSO_SOAP_ERROR_MISSING_HEADER:
 			return "Missing SOAP header";
 		case LASSO_SOAP_ERROR_MISSING_BODY:
