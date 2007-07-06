@@ -299,11 +299,25 @@
 #define LASSO_SOAP_BINDING_HREF          "urn:liberty:sb:2003-08"
 #define LASSO_SOAP_BINDING_PREFIX        "sb"
 
+#define LASSO_IDWSF2_SB2_HREF "urn:liberty:sb:2006-08"
+#define LASSO_IDWSF2_SB2_PREFIX "sb"
+
+#define LASSO_IDWSF2_SBF_HREF "urn:liberty:sb"
+#define LASSO_IDWSF2_SBF_PREFIX "sbf"
+
 #define LASSO_SOAP_BINDING_EXT_HREF "urn:liberty:sb:2004-04"
 #define LASSO_SOAP_BINDING_EXT_PREFIX "sbe"
 
 #define LASSO_WSSE_HREF "http://schemas.xmlsoap.org/ws/2002/07/secext"
 #define LASSO_WSSE_PREFIX "wsse"
+
+#define LASSO_WSSE1_HREF \
+	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+#define LASSO_WSSE1_PREFIX "wsse"
+
+#define LASSO_WSUTIL1_HREF \
+	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+#define LASSO_WSUTIL1_PREFIX "wsutil"
 
 #define LASSO_SOAP_BINDING_PROCESS_CONTEXT_PRINCIPAL_OFFLINE \
 	"urn:liberty:sb:2003-08:ProcessingContext:PrincipalOffline"
