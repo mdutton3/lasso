@@ -53,7 +53,7 @@ struct _LassoIdWsf2DiscoSvcMDRegister {
 	LassoNode parent;
 
 	/* elements */
-	GList *metadata_list;
+	GList *SvcMD;
 };
 
 struct _LassoIdWsf2DiscoSvcMDRegisterClass {

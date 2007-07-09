@@ -44,7 +44,7 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "SvcMD", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDRegister, metadata_list), "LassoIdWsf2DiscoSvcMetadata" },
+	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDRegister, SvcMD), "LassoIdWsf2DiscoSvcMetadata" },
 	{ NULL, 0, 0}
 };
 
@@ -55,7 +55,7 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoIdWsf2DiscoSvcMDRegister *node)
 {
-	node->metadata_list = NULL;
+	node->SvcMD = NULL;
 }
 
 static void
@@ -109,8 +109,8 @@ lasso_idwsf2_disco_svc_md_register_new_full(const gchar *service_type, const gch
 	metadata_register = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, NULL);
 	metadata = lasso_idwsf2_disco_svc_metadata_new_full(service_type, abstract, provider_id,
 		soap_endpoint);
-	metadata_register->metadata_list = g_list_append(
-			metadata_register->metadata_list, metadata);
+	metadata_register->SvcMD = g_list_append(
+			metadata_register->SvcMD, metadata);
 
 	return metadata_register;
 }
