@@ -93,13 +93,20 @@ lasso_soap_binding_framework_get_type()
 }
 
 LassoSoapBindingFramework*
-lasso_soap_binding_framework_new(gchar *version)
+lasso_soap_binding_framework_new()
+{
+	return g_object_new(LASSO_TYPE_SOAP_BINDING_FRAMEWORK, NULL);
+}
+
+LassoSoapBindingFramework*
+lasso_soap_binding_framework_new_full(gchar *version)
 {
 	LassoSoapBindingFramework *framework;
-	
+
 	framework = g_object_new(LASSO_TYPE_SOAP_BINDING_FRAMEWORK, NULL);
-	
+
 	framework->Version = g_strdup(version);
-	
+
 	return framework;
 }
+

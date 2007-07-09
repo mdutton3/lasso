@@ -66,8 +66,10 @@ struct _LassoIdWsf2DiscoEndpointContextClass {
 
 LASSO_EXPORT GType lasso_idwsf2_disco_endpoint_context_get_type(void);
 
-LASSO_EXPORT LassoIdWsf2DiscoEndpointContext* lasso_idwsf2_disco_endpoint_context_new(
-		const gchar *address);
+LASSO_EXPORT LassoIdWsf2DiscoEndpointContext* lasso_idwsf2_disco_endpoint_context_new();
+		
+LASSO_EXPORT LassoIdWsf2DiscoEndpointContext* lasso_idwsf2_disco_endpoint_context_new_full(
+	const gchar *address);
 
 #ifdef __cplusplus
 }

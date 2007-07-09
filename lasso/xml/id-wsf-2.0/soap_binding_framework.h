@@ -58,7 +58,9 @@ struct _LassoSoapBindingFrameworkClass {
 
 LASSO_EXPORT GType lasso_soap_binding_framework_get_type(void);
 
-LASSO_EXPORT LassoSoapBindingFramework* lasso_soap_binding_framework_new(gchar *version);
+LASSO_EXPORT LassoSoapBindingFramework* lasso_soap_binding_framework_new();
+
+LASSO_EXPORT LassoSoapBindingFramework* lasso_soap_binding_framework_new_full(gchar *version);
 
 #ifdef __cplusplus
 }

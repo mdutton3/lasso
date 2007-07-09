@@ -115,7 +115,7 @@ lasso_idwsf2_disco_svc_metadata_new()
 
 LassoIdWsf2DiscoSvcMetadata*
 lasso_idwsf2_disco_svc_metadata_new_full(const gchar *service_type, const gchar *abstract,
-		const gchar *provider_id, const gchar *soap_endpoint)
+	const gchar *provider_id, const gchar *soap_endpoint)
 {
 	LassoIdWsf2DiscoSvcMetadata *metadata;
 	LassoIdWsf2DiscoEndpointContext *endpoint_context;
@@ -125,8 +125,8 @@ lasso_idwsf2_disco_svc_metadata_new_full(const gchar *service_type, const gchar 
 	metadata->Abstract = g_strdup(abstract);
 	metadata->ProviderID = g_strdup(provider_id);
 
-	endpoint_context = lasso_idwsf2_disco_endpoint_context_new(soap_endpoint);
-	metadata->ServiceContext = lasso_idwsf2_disco_service_context_new(service_type,
+	endpoint_context = lasso_idwsf2_disco_endpoint_context_new_full(soap_endpoint);
+	metadata->ServiceContext = lasso_idwsf2_disco_service_context_new_full(service_type,
 		endpoint_context);
 
 	return metadata;
