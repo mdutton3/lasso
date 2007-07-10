@@ -1444,18 +1444,18 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "Sa";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_HREF) == 0)
 		prefix = "Wsse";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_200401_HREF) == 0)
-		prefix = "Wsse200401";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE1_HREF) == 0)
+		prefix = "WsSec1";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_DISCO_HREF) == 0)
 		prefix = "IdWsf2Disco";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SOAP_BINDING_HREF) == 0)
-		prefix = "SoapBinding";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SBF_HREF) == 0)
+		prefix = "IdWsf2Sbf";
+	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SB2_HREF) == 0)
+		prefix = "IdWsf2Sb2";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_UTIL_HREF) == 0)
 		prefix = "IdWsf2Util";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SEC_HREF) == 0)
 		prefix = "IdWsf2Sec";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SOAP_BINDING2_HREF) == 0)
-		prefix = "IdWsf2SoapBinding2";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSA_HREF) == 0)
 		prefix = "WsAddr";
 	else {
@@ -1508,6 +1508,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		typename = g_strdup("LassoIdWsf2DiscoSvcMetadata");
 	} else if (strcmp(prefix, "IdWsf2DstRef") == 0 && strcmp(node_name, "Status") == 0) {
 		typename = g_strdup("LassoIdWsf2UtilStatus");
+	} else if (strcmp(prefix, "WsSec1") == 0 && strcmp(node_name, "Security") == 0) {
+		typename = g_strdup("LassoWsSec1SecurityHeader");
 	} else {
 		typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
 	}
