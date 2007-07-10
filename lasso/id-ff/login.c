@@ -1779,7 +1779,9 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 	/* rebuild samlp:Response with response_msg */
 	profile->response = lasso_node_new_from_soap(response_msg);
 	if (! LASSO_IS_SAMLP_RESPONSE(profile->response) ) {
-		lasso_node_destroy(profile->response);
+		if (profile->response) {
+			lasso_node_destroy(profile->response);
+		}
 		profile->response = NULL;
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
