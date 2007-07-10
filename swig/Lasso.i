@@ -237,8 +237,8 @@ static void throw_exception_msg(int errorCode) {
 
 %{
 
-PyObject *lassoError;
-PyObject *lassoWarning;
+PyObject *lassoError = NULL;
+PyObject *lassoWarning = NULL;
 
 static void lasso_exception(int errorCode) {
 	char errorMsg[256];
