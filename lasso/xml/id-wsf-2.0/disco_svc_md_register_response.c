@@ -51,7 +51,10 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "SvcMDID", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDRegisterResponse, SvcMDID) },
 	{ "Keys", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDRegisterResponse, Keys) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDRegisterResponse, Keys),
+		"LassoIdWsf2DiscoKeys" },
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDRegisterResponse, attributes) },
 	{NULL, 0, 0}
 };
 
@@ -68,6 +71,8 @@ instance_init(LassoIdWsf2DiscoSvcMDRegisterResponse *node)
 	node->Status = NULL;
 	node->SvcMDID = NULL;
 	node->Keys = NULL;
+	node->attributes = g_hash_table_new_full(
+		g_str_hash, g_str_equal, g_free, g_free);
 }
 
 static void
@@ -77,7 +82,7 @@ class_init(LassoIdWsf2DiscoSvcMDRegisterResponseClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "SvcMDRegisterResponse"); 
+	lasso_node_class_set_nodename(nclass, "SvcMDRegisterResponse");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DISCO_HREF, LASSO_IDWSF2_DISCO_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
@@ -118,4 +123,3 @@ lasso_idwsf2_disco_svc_md_register_response_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, NULL);
 }
-

@@ -33,7 +33,7 @@
 #include <lasso/xml/id-wsf-2.0/dstref_query_response.h>
 #include <lasso/xml/id-wsf-2.0/dstref_data.h>
 #include <lasso/xml/id-wsf-2.0/util_status.h>
-#include <lasso/xml/id-wsf-2.0/soap_binding2_redirect_request.h>
+#include <lasso/xml/id-wsf-2.0/sb2_redirect_request.h>
 
 #include <lasso/xml/soap_fault.h>
 
@@ -210,7 +210,8 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 
 	response2 = LASSO_IDWSF2_UTIL_RESPONSE(response);
 	/* Default is Failed, will be OK or Partial when some items are successfully parsed */
-	response2->Status = lasso_util_status_new(LASSO_DST_STATUS_CODE_FAILED);
+	response2->Status = lasso_idwsf2_util_status_new();
+	response2->Status->code = g_strdup(LASSO_DST_STATUS_CODE_FAILED);
 
 	/* Initialise XML parsing */
 	doc = xmlNewDoc((xmlChar*)"1.0");
@@ -278,7 +279,7 @@ lasso_idwsf2_data_service_process_query_response_soap_fault_msg(LassoIdWsf2DataS
 {
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoSoapFault *fault;
-	LassoIdWsf2SoapBinding2RedirectRequest *redirect_request = NULL;
+	LassoIdWsf2Sb2RedirectRequest *redirect_request = NULL;
 	GList *iter;
 	int res;
 
@@ -295,8 +296,8 @@ lasso_idwsf2_data_service_process_query_response_soap_fault_msg(LassoIdWsf2DataS
 
 	/* Get RedirectRequest element from soap fault detail */
 	for (iter = fault->Detail->any; iter != NULL; iter = iter->next) {
-		if (LASSO_IS_IDWSF2_SOAP_BINDING2_REDIRECT_REQUEST(iter->data) == TRUE) {
-			redirect_request = LASSO_IDWSF2_SOAP_BINDING2_REDIRECT_REQUEST(iter->data);
+		if (LASSO_IS_IDWSF2_SB2_REDIRECT_REQUEST(iter->data) == TRUE) {
+			redirect_request = LASSO_IDWSF2_SB2_REDIRECT_REQUEST(iter->data);
 			break;
 		}
 	}
@@ -444,7 +445,7 @@ lasso_idwsf2_data_service_init_redirect_user_for_consent(LassoIdWsf2DataService 
 	fault->faultstring = g_strdup(LASSO_SOAP_FAULT_STRING_SERVER);
 	detail = lasso_soap_detail_new();
 	detail->any = g_list_append(
-		detail->any, lasso_idwsf2_soap_binding2_redirect_request_new_full(redirect_url));
+		detail->any, lasso_idwsf2_sb2_redirect_request_new_full(redirect_url));
 	fault->Detail = detail;
 
 	/* Response envelope body */

@@ -34,6 +34,7 @@
 
 #ifdef LASSO_WSF_ENABLED
 #include <lasso/id-wsf-2.0/server.h>
+#include <lasso/xml/id-wsf-2.0/disco_service_context.h>
 #endif
 
 /*****************************************************************************/
@@ -167,8 +168,11 @@ lasso_server_get_svc_metadatas_with_id_and_type(LassoServer *server, GList *svcM
 	for (i = g_list_first(server->private_data->svc_metadatas); i != NULL;
 			i = g_list_next(i)) {
 		md = LASSO_IDWSF2_DISCO_SVC_METADATA(i->data);
-		if (md->ServiceContext == NULL
-				|| strcmp(md->ServiceContext->ServiceType, service_type) != 0) {
+		/* FIXME: this assumes there is one and only one service
+		 * context, and service type, this should be fixed to iterate
+		 * properly on the GList */
+		if (md->ServiceContext == NULL || strcmp((char*)(LASSO_IDWSF2_DISCO_SERVICE_CONTEXT(
+				md->ServiceContext->data)->ServiceType)->data, service_type) != 0) {
 			continue;
 		}
 		if (svcMDIDs == NULL) {

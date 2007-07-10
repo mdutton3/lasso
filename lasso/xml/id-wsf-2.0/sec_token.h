@@ -74,7 +74,7 @@ struct _LassoIdWsf2SecTokenClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_sec_token_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_sec_token_new(void);
+LASSO_EXPORT LassoIdWsf2SecToken* lasso_idwsf2_sec_token_new(void);
 
 
 

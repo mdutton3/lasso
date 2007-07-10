@@ -49,12 +49,13 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Status", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2UtilStatus, Status) },
+		G_STRUCT_OFFSET(LassoIdWsf2UtilStatus, Status),
+		"LassoIdWsf2UtilStatus" },
 	{ "code", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoIdWsf2UtilStatus, code) },
-	{ "ref", SNIPPET_ATTRIBUTE,
+	{ "ref", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2UtilStatus, ref) },
-	{ "comment", SNIPPET_ATTRIBUTE,
+	{ "comment", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2UtilStatus, comment) },
 	{NULL, 0, 0}
 };
@@ -82,13 +83,13 @@ class_init(LassoIdWsf2UtilStatusClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "Status"); 
+	lasso_node_class_set_nodename(nclass, "Status");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_UTIL_HREF, LASSO_IDWSF2_UTIL_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
-lasso_util_status_get_type()
+lasso_idwsf2_util_status_get_type()
 {
 	static GType this_type = 0;
 
@@ -112,18 +113,14 @@ lasso_util_status_get_type()
 }
 
 /**
- * lasso_util_status_new:
+ * lasso_idwsf2_util_status_new:
  *
  * Creates a new #LassoIdWsf2UtilStatus object.
  *
  * Return value: a newly created #LassoIdWsf2UtilStatus object
  **/
 LassoIdWsf2UtilStatus*
-lasso_util_status_new(gchar *code)
+lasso_idwsf2_util_status_new()
 {
-	LassoIdWsf2UtilStatus *status = LASSO_UTIL_STATUS(g_object_new(LASSO_TYPE_UTIL_STATUS, NULL));
-	
-	status->code = g_strdup(code);
-
-	return status;
+	return g_object_new(LASSO_TYPE_IDWSF2_UTIL_STATUS, NULL);
 }

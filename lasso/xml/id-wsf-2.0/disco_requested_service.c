@@ -73,11 +73,11 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, Framework) },
 	{ "Action", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, Action) },
-	{ "any", SNIPPET_NODE | SNIPPET_ANY,
+	{ "", SNIPPET_NODE | SNIPPET_ANY | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, any) },
-	{ "reqID", SNIPPET_ATTRIBUTE,
+	{ "reqID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, reqID) },
-	{ "resultsType", SNIPPET_ATTRIBUTE,
+	{ "resultsType", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, resultsType) },
 	{NULL, 0, 0}
 };

@@ -575,7 +575,7 @@ instance_init(LassoSession *session)
 #ifdef LASSO_WSF_ENABLED
 	session->private_data->eprs = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,
-			(GDestroyNotify)lasso_wsa_endpoint_reference_destroy);
+			(GDestroyNotify)lasso_node_destroy);
 #endif
 	session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,

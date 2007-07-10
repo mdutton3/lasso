@@ -33,18 +33,24 @@ extern "C" {
 
 #define LASSO_TYPE_WSA_ATTRIBUTED_QNAME (lasso_wsa_attributed_qname_get_type())
 #define LASSO_WSA_ATTRIBUTED_QNAME(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_WSA_ATTRIBUTED_QNAME, \
-				LassoWsAddrAttributedQName))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_WSA_ATTRIBUTED_QNAME, \
+		LassoWsAddrAttributedQName))
 #define LASSO_WSA_ATTRIBUTED_QNAME_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_WSA_ATTRIBUTED_QNAME, \
-				LassoWsAddrAttributedQNameClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_WSA_ATTRIBUTED_QNAME, \
+		LassoWsAddrAttributedQNameClass))
 #define LASSO_IS_WSA_ATTRIBUTED_QNAME(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_WSA_ATTRIBUTED_QNAME))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_WSA_ATTRIBUTED_QNAME))
 #define LASSO_IS_WSA_ATTRIBUTED_QNAME_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_WSA_ATTRIBUTED_QNAME))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_WSA_ATTRIBUTED_QNAME))
 #define LASSO_WSA_ATTRIBUTED_QNAME_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSA_ATTRIBUTED_QNAME, \
-				LassoWsAddrAttributedQNameClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_WSA_ATTRIBUTED_QNAME, \
+		LassoWsAddrAttributedQNameClass)) 
+
 
 typedef struct _LassoWsAddrAttributedQName LassoWsAddrAttributedQName;
 typedef struct _LassoWsAddrAttributedQNameClass LassoWsAddrAttributedQNameClass;
@@ -66,9 +72,9 @@ struct _LassoWsAddrAttributedQNameClass {
 };
 
 LASSO_EXPORT GType lasso_wsa_attributed_qname_get_type(void);
-LASSO_EXPORT LassoNode* lasso_wsa_attributed_qname_new(void);
+LASSO_EXPORT LassoWsAddrAttributedQName* lasso_wsa_attributed_qname_new(void);
 
-LASSO_EXPORT LassoNode* lasso_wsa_attributed_qname_new_with_string(char *content);
+LASSO_EXPORT LassoWsAddrAttributedQName* lasso_wsa_attributed_qname_new_with_string(char *content);
 
 
 #ifdef __cplusplus

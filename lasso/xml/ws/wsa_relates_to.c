@@ -30,7 +30,8 @@
  * <xs:complexType name="RelatesToType" mixed="false">
  *   <xs:simpleContent>
  *     <xs:extension base="xs:anyURI">
- *       <xs:attribute name="RelationshipType" type="tns:RelationshipTypeOpenEnum" use="optional" default="http://www.w3.org/2005/08/addressing/reply"/>
+ *       <xs:attribute name="RelationshipType" type="tns:RelationshipTypeOpenEnum"
+ *               use="optional" default="http://www.w3.org/2005/08/addressing/reply"/>
  *       <xs:anyAttribute namespace="##other" processContents="lax"/>
  *     </xs:extension>
  *   </xs:simpleContent>
@@ -43,11 +44,11 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "content", SNIPPET_CONTENT,
+	{ "content", SNIPPET_TEXT_CHILD,
 		G_STRUCT_OFFSET(LassoWsAddrRelatesTo, content) },
-	{ "RelationshipType", SNIPPET_ATTRIBUTE,
+	{ "RelationshipType", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoWsAddrRelatesTo, RelationshipType) },
-	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoWsAddrRelatesTo, attributes) },
 	{NULL, 0, 0}
 };
@@ -64,6 +65,8 @@ instance_init(LassoWsAddrRelatesTo *node)
 {
 	node->content = NULL;
 	node->RelationshipType = NULL;
+	node->attributes = g_hash_table_new_full(
+		g_str_hash, g_str_equal, g_free, g_free);
 }
 
 static void
@@ -73,7 +76,7 @@ class_init(LassoWsAddrRelatesToClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "RelatesTo"); 
+	lasso_node_class_set_nodename(nclass, "RelatesTo");
 	lasso_node_class_set_ns(nclass, LASSO_WSA_HREF, LASSO_WSA_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
@@ -109,7 +112,7 @@ lasso_wsa_relates_to_get_type()
  *
  * Return value: a newly created #LassoWsAddrRelatesTo object
  **/
-LassoNode*
+LassoWsAddrRelatesTo*
 lasso_wsa_relates_to_new()
 {
 	return g_object_new(LASSO_TYPE_WSA_RELATES_TO, NULL);
@@ -125,11 +128,11 @@ lasso_wsa_relates_to_new()
  *
  * Return value: a newly created #LassoWsAddrRelatesTo object
  **/
-LassoNode*
+LassoWsAddrRelatesTo*
 lasso_wsa_relates_to_new_with_string(char *content)
 {
 	LassoWsAddrRelatesTo *object;
 	object = g_object_new(LASSO_TYPE_WSA_RELATES_TO, NULL);
 	object->content = g_strdup(content);
-	return LASSO_NODE(object);
+	return object;
 }

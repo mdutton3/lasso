@@ -43,7 +43,7 @@
 #include <lasso/xml/soap_binding_processing_context.h>
 #include <lasso/xml/xml_enc.h>
 
-#include <lasso/xml/ws/wsse_200401_security.h>
+#include <lasso/xml/ws/wsse_security_header.h>
 
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
 
@@ -89,7 +89,7 @@ lasso_idwsf2_profile_init_soap_request(LassoIdWsf2Profile *profile, LassoNode *r
 	LassoSoapEnvelope *envelope;
 	LassoSession *session = LASSO_PROFILE(profile)->session;
 	LassoSaml2Assertion *assertion;
-	LassoWsse200401Security *wsse_security;
+	LassoWsSec1SecurityHeader *wsse_security;
 
 	/* Initialise soap envelope */
 	envelope = lasso_idwsf2_profile_build_soap_envelope(NULL,
@@ -100,7 +100,7 @@ lasso_idwsf2_profile_init_soap_request(LassoIdWsf2Profile *profile, LassoNode *r
 	assertion = lasso_session_get_assertion_identity_token(session, service_type);
 
 	if (assertion != NULL) {
-		wsse_security = lasso_wsse_200401_security_new();
+		wsse_security = lasso_wsse_security_header_new();
 		wsse_security->any = g_list_append(wsse_security->any, assertion);
 
 		envelope->Header->Other = g_list_append(envelope->Header->Other, wsse_security);
@@ -129,7 +129,7 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 {
 	LassoSoapEnvelope *envelope = NULL;
 	LassoSaml2Assertion *assertion;
-	LassoWsse200401Security *wsse_security;
+	LassoWsSec1SecurityHeader *wsse_security;
 	LassoSaml2EncryptedElement *encrypted_id = NULL;
 	LassoNode *decrypted_name_id = NULL;
 	xmlSecKey *encryption_private_key = NULL;
@@ -153,10 +153,10 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 
 	/* Get NameIdentifier (if exists) from the soap header */
 	for (i = g_list_first(envelope->Header->Other); i != NULL; i = g_list_next(i)) {
-		if (! LASSO_IS_WSSE_200401_SECURITY(i->data)) {
+		if (! LASSO_IS_WSSE_SECURITY_HEADER(i->data)) {
 			continue;
 		}
-		wsse_security = LASSO_WSSE_200401_SECURITY(i->data);
+		wsse_security = LASSO_WSSE_SECURITY_HEADER(i->data);
 		for (j = g_list_first(wsse_security->any); j != NULL; j = g_list_next(j)) {
 			if (! LASSO_IS_SAML2_ASSERTION(j->data)) {
 				continue;

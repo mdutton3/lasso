@@ -74,10 +74,11 @@ struct _LassoIdWsf2DstRefQueryItemClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_dstref_query_item_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_dstref_query_item_new(void);
+LASSO_EXPORT LassoIdWsf2DstRefQueryItem* lasso_idwsf2_dstref_query_item_new(void);
 
 LASSO_EXPORT LassoIdWsf2DstRefQueryItem* lasso_idwsf2_dstref_query_item_new_full(
-	const gchar *item_xpath, const gchar *item_id);
+		const gchar *item_xpath, const gchar *item_id);
+
 
 #ifdef __cplusplus
 }

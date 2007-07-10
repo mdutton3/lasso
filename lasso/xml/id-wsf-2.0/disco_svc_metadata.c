@@ -1,4 +1,4 @@
-/* $Id: disco_svc_metadata.c 2261 2005-01-27 23:41:05 $ 
+/* $Id: disco_svc_metadata.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -22,42 +22,43 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
-#include <lasso/xml/id-wsf-2.0/disco_endpoint_context.h>
+#include "disco_svc_metadata.h"
+#include "disco_endpoint_context.h"
+#include "disco_service_context.h"
 
 /*
  * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
- * 
- * <xs:element name="SvcMD" type="SvcMetadataType"/>
+ *
  * <xs:complexType name="SvcMetadataType">
- *    <xs:sequence>
- *       <xs:element ref="Abstract"                              />
- *       <xs:element ref="ProviderID"                            />
- *       <xs:element ref="ServiceContext"  maxOccurs="unbounded" />
- *    </xs:sequence>
- *    <xs:attribute name="svcMDID" type="xs:string" use="optional" />
+ *   <xs:sequence>
+ *     <xs:element ref="Abstract"                              />
+ *     <xs:element ref="ProviderID"                            />
+ *     <xs:element ref="ServiceContext"  maxOccurs="unbounded" />
+ *   </xs:sequence>
+ *   <xs:attribute name="svcMDID" type="xs:string" use="optional" />
  * </xs:complexType>
- * 
- * <xs:element name="Abstract" type="xs:string"/>
- * <xs:element name="ProviderID" type="xs:anyURI"/>
- * <xs:element name="SvcMDID" type="xs:string" />
  */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
+
 static struct XmlSnippet schema_snippets[] = {
 	{ "Abstract", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, Abstract) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, Abstract) },
 	{ "ProviderID", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, ProviderID) },
-	{ "ServiceContext", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, ServiceContext) },
-	{ "svcMDID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, svcMDID) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, ProviderID) },
+	{ "ServiceContext", SNIPPET_LIST_NODES,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, ServiceContext),
+		"LassoIdWsf2DiscoServiceContext" },
+	{ "svcMDID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMetadata, svcMDID) },
+	{NULL, 0, 0}
 };
+
+static LassoNodeClass *parent_class = NULL;
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -77,6 +78,7 @@ class_init(LassoIdWsf2DiscoSvcMetadataClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "SvcMD");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DISCO_HREF, LASSO_IDWSF2_DISCO_PREFIX);
@@ -107,27 +109,36 @@ lasso_idwsf2_disco_svc_metadata_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_idwsf2_disco_svc_metadata_new:
+ *
+ * Creates a new #LassoIdWsf2DiscoSvcMetadata object.
+ *
+ * Return value: a newly created #LassoIdWsf2DiscoSvcMetadata object
+ **/
 LassoIdWsf2DiscoSvcMetadata*
 lasso_idwsf2_disco_svc_metadata_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, NULL);
 }
 
+
 LassoIdWsf2DiscoSvcMetadata*
 lasso_idwsf2_disco_svc_metadata_new_full(const gchar *service_type, const gchar *abstract,
-	const gchar *provider_id, const gchar *soap_endpoint)
+		const gchar *provider_id, const gchar *soap_endpoint)
 {
 	LassoIdWsf2DiscoSvcMetadata *metadata;
 	LassoIdWsf2DiscoEndpointContext *endpoint_context;
 
-	metadata = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_METADATA, NULL);
+	metadata = lasso_idwsf2_disco_svc_metadata_new();
 
 	metadata->Abstract = g_strdup(abstract);
 	metadata->ProviderID = g_strdup(provider_id);
 
 	endpoint_context = lasso_idwsf2_disco_endpoint_context_new_full(soap_endpoint);
-	metadata->ServiceContext = lasso_idwsf2_disco_service_context_new_full(service_type,
-		endpoint_context);
+	metadata->ServiceContext = g_list_append(NULL,
+		lasso_idwsf2_disco_service_context_new_full(service_type, endpoint_context));
 
 	return metadata;
 }
+

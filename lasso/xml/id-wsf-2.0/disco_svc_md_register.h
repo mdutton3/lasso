@@ -1,4 +1,4 @@
-/* $Id: disco_svc_md_register.h 2428 2005-03-10 08:13:36Z nclapies $
+/* $Id: disco_svc_md_register.h,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -27,49 +27,57 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER (lasso_idwsf2_disco_svc_md_register_get_type())
 #define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
-				    LassoIdWsf2DiscoSvcMDRegister))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
+		LassoIdWsf2DiscoSvcMDRegister))
 #define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
-				 LassoIdWsf2DiscoSvcMDRegisterClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
+		LassoIdWsf2DiscoSvcMDRegisterClass))
 #define LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER))
 #define LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER))
 #define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
-				    LassoIdWsf2DiscoSvcMDRegisterClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, \
+		LassoIdWsf2DiscoSvcMDRegisterClass)) 
+
 
 typedef struct _LassoIdWsf2DiscoSvcMDRegister LassoIdWsf2DiscoSvcMDRegister;
 typedef struct _LassoIdWsf2DiscoSvcMDRegisterClass LassoIdWsf2DiscoSvcMDRegisterClass;
 
+
 struct _LassoIdWsf2DiscoSvcMDRegister {
 	LassoNode parent;
 
+	/*< public >*/
 	/* elements */
-	GList *SvcMD;
+	GList *SvcMD; /* of LassoIdWsf2DiscoSvcMetadata */
+	/* attributes */
+	GHashTable *attributes;
 };
+
 
 struct _LassoIdWsf2DiscoSvcMDRegisterClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_register_get_type(void);
-
 LASSO_EXPORT LassoIdWsf2DiscoSvcMDRegister* lasso_idwsf2_disco_svc_md_register_new(void);
 
 LASSO_EXPORT LassoIdWsf2DiscoSvcMDRegister* lasso_idwsf2_disco_svc_md_register_new_full(
-	const gchar *service_type, const gchar *abstract,
-	const gchar *provider_id, const gchar *soap_endpoint);
+		const gchar *service_type, const gchar *abstract,
+		const gchar *provider_id, const gchar *soap_endpoint);
 
-LASSO_EXPORT LassoIdWsf2DiscoSvcMDRegister*
-lasso_idwsf2_disco_svc_md_register_new_from_message(const gchar *message);
 
 #ifdef __cplusplus
 }

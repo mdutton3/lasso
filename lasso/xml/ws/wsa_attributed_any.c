@@ -41,7 +41,9 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+	{ "", SNIPPET_LIST_NODES | SNIPPET_ANY,
+		G_STRUCT_OFFSET(LassoWsAddrAttributedAny, any) },
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoWsAddrAttributedAny, attributes) },
 	{NULL, 0, 0}
 };
@@ -56,6 +58,9 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoWsAddrAttributedAny *node)
 {
+	node->any = NULL;
+	node->attributes = g_hash_table_new_full(
+		g_str_hash, g_str_equal, g_free, g_free);
 }
 
 static void
@@ -65,7 +70,7 @@ class_init(LassoWsAddrAttributedAnyClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "AttributedAny"); 
+	lasso_node_class_set_nodename(nclass, "ProblemHeader");
 	lasso_node_class_set_ns(nclass, LASSO_WSA_HREF, LASSO_WSA_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
@@ -101,7 +106,7 @@ lasso_wsa_attributed_any_get_type()
  *
  * Return value: a newly created #LassoWsAddrAttributedAny object
  **/
-LassoNode*
+LassoWsAddrAttributedAny*
 lasso_wsa_attributed_any_new()
 {
 	return g_object_new(LASSO_TYPE_WSA_ATTRIBUTED_ANY, NULL);

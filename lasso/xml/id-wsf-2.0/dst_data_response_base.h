@@ -32,8 +32,7 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include "util_response.h"
 
-#define LASSO_TYPE_IDWSF2_DST_DATA_RESPONSE_BASE \
-	(lasso_idwsf2_dst_data_response_base_get_type())
+#define LASSO_TYPE_IDWSF2_DST_DATA_RESPONSE_BASE (lasso_idwsf2_dst_data_response_base_get_type())
 #define LASSO_IDWSF2_DST_DATA_RESPONSE_BASE(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
 		LASSO_TYPE_IDWSF2_DST_DATA_RESPONSE_BASE, \
@@ -72,7 +71,7 @@ struct _LassoIdWsf2DstDataResponseBaseClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_dst_data_response_base_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_dst_data_response_base_new(void);
+LASSO_EXPORT LassoIdWsf2DstDataResponseBase* lasso_idwsf2_dst_data_response_base_new(void);
 
 
 

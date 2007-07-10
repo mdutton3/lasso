@@ -49,15 +49,15 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "ChangeFormat", SNIPPET_CONTENT,
 		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, ChangeFormat) },
-	{ "itemIDRef", SNIPPET_ATTRIBUTE,
+	{ "itemIDRef", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, itemIDRef) },
 	{ "contingency", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, contingency) },
 	{ "includeCommonAttributes", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, includeCommonAttributes) },
-	{ "changedSince", SNIPPET_ATTRIBUTE,
+	{ "changedSince", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, changedSince) },
-	{ "itemID", SNIPPET_ATTRIBUTE,
+	{ "itemID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, itemID) },
 	{ "objectType", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, objectType) },
@@ -78,8 +78,8 @@ instance_init(LassoIdWsf2DstResultQueryBase *node)
 {
 	node->ChangeFormat = NULL;
 	node->itemIDRef = NULL;
-	node->contingency = NULL;
-	node->includeCommonAttributes = NULL;
+	node->contingency = FALSE;
+	node->includeCommonAttributes = FALSE;
 	node->changedSince = NULL;
 	node->itemID = NULL;
 	node->objectType = NULL;
@@ -129,7 +129,7 @@ lasso_idwsf2_dst_result_query_base_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DstResultQueryBase object
  **/
-LassoNode*
+LassoIdWsf2DstResultQueryBase*
 lasso_idwsf2_dst_result_query_base_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DST_RESULT_QUERY_BASE, NULL);

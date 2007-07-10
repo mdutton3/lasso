@@ -1,4 +1,4 @@
-/* $Id: disco_endpoint_context.c 2261 2005-01-27 23:41:05 $ 
+/* $Id: disco_endpoint_context.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -22,43 +22,42 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/id-wsf-2.0/disco_endpoint_context.h>
+#include "disco_endpoint_context.h"
+#include "sbf_framework.h"
 
 /*
  * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
- * 
- * <xs:element name="EndpointContext" type="EndpointContextType" />
+ *
  * <xs:complexType name="EndpointContextType">
- *    <xs:sequence>
- *       <xs:element ref="Address"        maxOccurs="unbounded" />
- *       <xs:element ref="sbf:Framework"  maxOccurs="unbounded" />
- *       <xs:element ref="SecurityMechID" maxOccurs="unbounded" />
- *       <xs:element ref="Action"         minOccurs="0" 
- *                                        maxOccurs="unbounded" />
- *    </xs:sequence>
- * </xs:complexType>
- * 
- * <xs:element name="Address" type="xs:anyURI"/>
- * <xs:element name="Framework" type="sbf:FrameworkType"/>
- * <xs:element name="SecurityMechID" type="xs:anyURI"/>
- * <xs:element name="Action" type="xs:anyURI"/>
+ *   <xs:sequence>
+ *     <xs:element ref="Address"        maxOccurs="unbounded" />
+ *     <xs:element ref="sbf:Framework"  maxOccurs="unbounded" />
+ *     <xs:element ref="SecurityMechID" maxOccurs="unbounded" />
+ *     <xs:element ref="Action"         minOccurs="0"
+ *       maxOccurs="unbounded" />
+ *     </xs:sequence>
+ *   </xs:complexType>
  */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
+
 static struct XmlSnippet schema_snippets[] = {
-	{ "Address", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoIdWsf2DiscoEndpointContext, Address) },
-	{ "Framework", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoIdWsf2DiscoEndpointContext, Framework) },
-	{ "SecurityMechID", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoIdWsf2DiscoEndpointContext, SecurityMechID) },
-	{ "Action", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoIdWsf2DiscoEndpointContext, Action) },
-	{ NULL, 0, 0}
+	{ "Address", SNIPPET_LIST_CONTENT,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoEndpointContext, Address) },
+	{ "Framework", SNIPPET_LIST_NODES,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoEndpointContext, Framework) },
+	{ "SecurityMechID", SNIPPET_LIST_CONTENT,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoEndpointContext, SecurityMechID) },
+	{ "Action", SNIPPET_LIST_CONTENT,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoEndpointContext, Action) },
+	{NULL, 0, 0}
 };
+
+static LassoNodeClass *parent_class = NULL;
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -78,6 +77,7 @@ class_init(LassoIdWsf2DiscoEndpointContextClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "EndpointContext");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DISCO_HREF, LASSO_IDWSF2_DISCO_PREFIX);
@@ -108,22 +108,32 @@ lasso_idwsf2_disco_endpoint_context_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_idwsf2_disco_endpoint_context_new:
+ *
+ * Creates a new #LassoIdWsf2DiscoEndpointContext object.
+ *
+ * Return value: a newly created #LassoIdWsf2DiscoEndpointContext object
+ **/
 LassoIdWsf2DiscoEndpointContext*
 lasso_idwsf2_disco_endpoint_context_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT, NULL);
 }
 
+
 LassoIdWsf2DiscoEndpointContext*
 lasso_idwsf2_disco_endpoint_context_new_full(const gchar *address)
 {
 	LassoIdWsf2DiscoEndpointContext *context;
+	LassoIdWsf2SbfFramework *sbf_framework;
 
-	context = g_object_new(LASSO_TYPE_IDWSF2_DISCO_ENDPOINT_CONTEXT, NULL);
+	context = lasso_idwsf2_disco_endpoint_context_new();
 
-	context->Address = g_strdup(address);
-	context->Framework = lasso_soap_binding_framework_new("2.0");
+	context->Address = g_list_append(NULL, g_strdup(address));
+	sbf_framework = lasso_idwsf2_sbf_framework_new();
+	sbf_framework->version = g_strdup("2.0");
+	context->Framework = g_list_append(NULL, sbf_framework);
 
 	return context;
 }
-

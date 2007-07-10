@@ -18,7 +18,12 @@ liblasso_xml_ws_la_SOURCES = \
 	wsa_problem_action.c \
 	wsa_reference_parameters.c \
 	wsa_relates_to.c \
-	wsse_200401_security.c \
+	wsse_embedded.c \
+	wsse_reference.c \
+	wsse_security_header.c \
+	wsse_security_token_reference.c \
+	wsse_transformation_parameters.c \
+	wsse_username_token.c \
 	wsu_timestamp.c
 
 liblassoinclude_HEADERS = \
@@ -31,5 +36,11 @@ liblassoinclude_HEADERS = \
 	wsa_problem_action.h \
 	wsa_reference_parameters.h \
 	wsa_relates_to.h \
-	wsse_200401_security.h \
+	wsse_embedded.h \
+	wsse_reference.h \
+	wsse_security_header.h \
+	wsse_security_token_reference.h \
+	wsse_transformation_parameters.h \
+	wsse_username_token.h \
 	wsu_timestamp.h
+

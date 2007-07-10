@@ -44,7 +44,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "content", SNIPPET_TEXT_CHILD | SNIPPET_INTEGER,
 		G_STRUCT_OFFSET(LassoWsAddrAttributedUnsignedLong, content) },
-	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoWsAddrAttributedUnsignedLong, attributes) },
 	{NULL, 0, 0}
 };
@@ -71,7 +71,7 @@ class_init(LassoWsAddrAttributedUnsignedLongClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "AttributedUnsignedLong");
+	lasso_node_class_set_nodename(nclass, "RetryAfter");
 	lasso_node_class_set_ns(nclass, LASSO_WSA_HREF, LASSO_WSA_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
@@ -107,7 +107,7 @@ lasso_wsa_attributed_unsigned_long_get_type()
  *
  * Return value: a newly created #LassoWsAddrAttributedUnsignedLong object
  **/
-LassoNode*
+LassoWsAddrAttributedUnsignedLong*
 lasso_wsa_attributed_unsigned_long_new()
 {
 	return g_object_new(LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG, NULL);

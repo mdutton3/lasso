@@ -61,8 +61,7 @@ struct _LassoIdWsf2DstRefItemData {
 
 	/*< public >*/
 	/* elements */
-	GList *any; /* list of xmlNodes */
-
+	GList *any; /* of xmlNode */
 	/* attributes */
 	char *itemIDRef;
 	char *notSorted;
@@ -75,9 +74,8 @@ struct _LassoIdWsf2DstRefItemDataClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_dstref_item_data_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_dstref_item_data_new(void);
+LASSO_EXPORT LassoIdWsf2DstRefItemData* lasso_idwsf2_dstref_item_data_new(void);
 
-LASSO_EXPORT LassoNode* lasso_idwsf2_dstref_item_data_new_with_string(char *content);
 
 
 #ifdef __cplusplus

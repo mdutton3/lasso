@@ -32,23 +32,32 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include "util_status.h"
 
-#define LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE (lasso_idwsf2_disco_svc_md_register_response_get_type())
+#define LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE \
+	(lasso_idwsf2_disco_svc_md_register_response_get_type())
 #define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, \
-				LassoIdWsf2DiscoSvcMDRegisterResponse))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, \
+		LassoIdWsf2DiscoSvcMDRegisterResponse))
 #define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, \
-				LassoIdWsf2DiscoSvcMDRegisterResponseClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, \
+		LassoIdWsf2DiscoSvcMDRegisterResponseClass))
 #define LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE))
 #define LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE))
 #define LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, \
-				LassoIdWsf2DiscoSvcMDRegisterResponseClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE, \
+		LassoIdWsf2DiscoSvcMDRegisterResponseClass)) 
 
-typedef struct _LassoIdWsf2DiscoSvcMDRegisterResponse LassoIdWsf2DiscoSvcMDRegisterResponse;
-typedef struct _LassoIdWsf2DiscoSvcMDRegisterResponseClass LassoIdWsf2DiscoSvcMDRegisterResponseClass;
+
+typedef struct _LassoIdWsf2DiscoSvcMDRegisterResponse \
+	LassoIdWsf2DiscoSvcMDRegisterResponse;
+typedef struct _LassoIdWsf2DiscoSvcMDRegisterResponseClass \
+	LassoIdWsf2DiscoSvcMDRegisterResponseClass;
 
 
 struct _LassoIdWsf2DiscoSvcMDRegisterResponse {
@@ -58,7 +67,9 @@ struct _LassoIdWsf2DiscoSvcMDRegisterResponse {
 	/* elements */
 	LassoIdWsf2UtilStatus *Status;
 	GList *SvcMDID;
-	GList *Keys;
+	GList *Keys; /* of LassoIdWsf2DiscoKeys */
+	/* attributes */
+	GHashTable *attributes;
 };
 
 
@@ -67,8 +78,7 @@ struct _LassoIdWsf2DiscoSvcMDRegisterResponseClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_register_response_get_type(void);
-LASSO_EXPORT LassoIdWsf2DiscoSvcMDRegisterResponse*
-        lasso_idwsf2_disco_svc_md_register_response_new(void);
+LASSO_EXPORT LassoIdWsf2DiscoSvcMDRegisterResponse* lasso_idwsf2_disco_svc_md_register_response_new(void);
 
 
 

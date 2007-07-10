@@ -674,6 +674,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 %include inheritance.h
 %include saml-2.0/inheritance.h
 #ifdef LASSO_WSF_ENABLED
+%include ws/inheritance.h
 %include id-wsf-2.0/inheritance.h
 #endif /* ifdef LASSO_WSF_ENABLED */
 
@@ -692,6 +693,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 %include inheritance.h
 %include saml-2.0/inheritance.h
 #ifdef LASSO_WSF_ENABLED
+%include ws/inheritance.h
 %include id-wsf-2.0/inheritance.h
 #endif /* ifdef LASSO_WSF_ENABLED */
 
@@ -717,6 +719,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 #include <swig/inheritance.h>
 #include <swig/saml-2.0/inheritance.h>
 #ifdef LASSO_WSF_ENABLED
+#include <swig/ws/inheritance.h>
 #include <swig/id-wsf-2.0/inheritance.h>
 #endif /* ifdef LASSO_WSF_ENABLED */
 
@@ -7115,6 +7118,7 @@ typedef struct {
 %include Lasso-wsf.i
 %include Lasso-wsf2.i
 %include id-wsf-2.0/main.h
+%include ws/main.h
 #endif
 
 %include Lasso-saml2.i

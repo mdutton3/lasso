@@ -33,18 +33,24 @@ extern "C" {
 
 #define LASSO_TYPE_WSA_REFERENCE_PARAMETERS (lasso_wsa_reference_parameters_get_type())
 #define LASSO_WSA_REFERENCE_PARAMETERS(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_WSA_REFERENCE_PARAMETERS, \
-				LassoWsAddrReferenceParameters))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_WSA_REFERENCE_PARAMETERS, \
+		LassoWsAddrReferenceParameters))
 #define LASSO_WSA_REFERENCE_PARAMETERS_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_WSA_REFERENCE_PARAMETERS, \
-				LassoWsAddrReferenceParametersClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_WSA_REFERENCE_PARAMETERS, \
+		LassoWsAddrReferenceParametersClass))
 #define LASSO_IS_WSA_REFERENCE_PARAMETERS(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_WSA_REFERENCE_PARAMETERS))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_WSA_REFERENCE_PARAMETERS))
 #define LASSO_IS_WSA_REFERENCE_PARAMETERS_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_WSA_REFERENCE_PARAMETERS))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_WSA_REFERENCE_PARAMETERS))
 #define LASSO_WSA_REFERENCE_PARAMETERS_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSA_REFERENCE_PARAMETERS, \
-				LassoWsAddrReferenceParametersClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_WSA_REFERENCE_PARAMETERS, \
+		LassoWsAddrReferenceParametersClass)) 
+
 
 typedef struct _LassoWsAddrReferenceParameters LassoWsAddrReferenceParameters;
 typedef struct _LassoWsAddrReferenceParametersClass LassoWsAddrReferenceParametersClass;
@@ -54,6 +60,8 @@ struct _LassoWsAddrReferenceParameters {
 	LassoNode parent;
 
 	/*< public >*/
+	/* elements */
+	GList *any; /* of LassoNode */
 	/* attributes */
 	GHashTable *attributes;
 };
@@ -64,7 +72,7 @@ struct _LassoWsAddrReferenceParametersClass {
 };
 
 LASSO_EXPORT GType lasso_wsa_reference_parameters_get_type(void);
-LASSO_EXPORT LassoNode* lasso_wsa_reference_parameters_new(void);
+LASSO_EXPORT LassoWsAddrReferenceParameters* lasso_wsa_reference_parameters_new(void);
 
 
 

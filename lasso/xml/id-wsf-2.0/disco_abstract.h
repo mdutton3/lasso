@@ -1,4 +1,4 @@
-/* $Id: disco_abstract.h 2183 2005-01-22 15:57:56Z dlaniel $ 
+/* $Id: disco_abstract.h,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -27,40 +27,53 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_IDWSF2_DISCO_ABSTRACT (lasso_idwsf2_disco_abstract_get_type())
-#define LASSO_IDWSF2_DISCO_ABSTRACT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-	 LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, LassoIdWsf2DiscoAbstract))
-#define LASSO_IDWSF2_DISCO_ABSTRACT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-	 LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, LassoIdWsf2DiscoAbstractClass))
-#define LASSO_IS_IDWSF2_DISCO_ABSTRACT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-	 LASSO_TYPE_IDWSF2_DISCO_ABSTRACT))
-#define LASSO_IS_IDWSF2_DISCO_ABSTRACT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-	 LASSO_TYPE_IDWSF2_DISCO_ABSTRACT))
-#define LASSO_IDWSF2_DISCO_ABSTRACT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-	 LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, LassoIdWsf2DiscoAbstractClass)) 
+#define LASSO_IDWSF2_DISCO_ABSTRACT(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, \
+		LassoIdWsf2DiscoAbstract))
+#define LASSO_IDWSF2_DISCO_ABSTRACT_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, \
+		LassoIdWsf2DiscoAbstractClass))
+#define LASSO_IS_IDWSF2_DISCO_ABSTRACT(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_ABSTRACT))
+#define LASSO_IS_IDWSF2_DISCO_ABSTRACT_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_ABSTRACT))
+#define LASSO_IDWSF2_DISCO_ABSTRACT_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, \
+		LassoIdWsf2DiscoAbstractClass)) 
+
 
 typedef struct _LassoIdWsf2DiscoAbstract LassoIdWsf2DiscoAbstract;
 typedef struct _LassoIdWsf2DiscoAbstractClass LassoIdWsf2DiscoAbstractClass;
 
+
 struct _LassoIdWsf2DiscoAbstract {
 	LassoNode parent;
 
-	gchar *content;
+	/*< public >*/
+	/* elements */
+	char *content;
 };
+
 
 struct _LassoIdWsf2DiscoAbstractClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_abstract_get_type(void);
-
 LASSO_EXPORT LassoIdWsf2DiscoAbstract* lasso_idwsf2_disco_abstract_new(void);
 
-LASSO_EXPORT LassoIdWsf2DiscoAbstract* lasso_idwsf2_disco_abstract_new_with_content(gchar *content);
+LASSO_EXPORT LassoIdWsf2DiscoAbstract* lasso_idwsf2_disco_abstract_new_with_string(char *content);
+
 
 #ifdef __cplusplus
 }

@@ -33,18 +33,24 @@ extern "C" {
 
 #define LASSO_TYPE_WSA_METADATA (lasso_wsa_metadata_get_type())
 #define LASSO_WSA_METADATA(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_WSA_METADATA, \
-				LassoWsAddrMetadata))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_WSA_METADATA, \
+		LassoWsAddrMetadata))
 #define LASSO_WSA_METADATA_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_WSA_METADATA, \
-				LassoWsAddrMetadataClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_WSA_METADATA, \
+		LassoWsAddrMetadataClass))
 #define LASSO_IS_WSA_METADATA(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_WSA_METADATA))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_WSA_METADATA))
 #define LASSO_IS_WSA_METADATA_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_WSA_METADATA))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_WSA_METADATA))
 #define LASSO_WSA_METADATA_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSA_METADATA, \
-				LassoWsAddrMetadataClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_WSA_METADATA, \
+		LassoWsAddrMetadataClass)) 
+
 
 typedef struct _LassoWsAddrMetadata LassoWsAddrMetadata;
 typedef struct _LassoWsAddrMetadataClass LassoWsAddrMetadataClass;
@@ -54,10 +60,8 @@ struct _LassoWsAddrMetadata {
 	LassoNode parent;
 
 	/*< public >*/
-	
 	/* elements */
-	GList *any;
-	
+	GList *any; /* of LassoNode */
 	/* attributes */
 	GHashTable *attributes;
 };

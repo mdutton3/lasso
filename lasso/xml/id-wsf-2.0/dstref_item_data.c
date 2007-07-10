@@ -112,9 +112,8 @@ lasso_idwsf2_dstref_item_data_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DstRefItemData object
  **/
-LassoNode*
+LassoIdWsf2DstRefItemData*
 lasso_idwsf2_dstref_item_data_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DSTREF_ITEM_DATA, NULL);
 }
-

@@ -64,8 +64,8 @@ struct _LassoIdWsf2DstResultQueryBase {
 	char *ChangeFormat;
 	/* attributes */
 	char *itemIDRef;
-	char *contingency;
-	char *includeCommonAttributes;
+	gboolean contingency;
+	gboolean includeCommonAttributes;
 	char *changedSince;
 	char *itemID;
 	char *objectType;
@@ -78,7 +78,7 @@ struct _LassoIdWsf2DstResultQueryBaseClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_dst_result_query_base_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_dst_result_query_base_new(void);
+LASSO_EXPORT LassoIdWsf2DstResultQueryBase* lasso_idwsf2_dst_result_query_base_new(void);
 
 
 

@@ -1,4 +1,5 @@
-/* $Id: wsu_timestamp.c 2495 2005-05-02 09:17:08Z dlaniel $
+/* $Id: wsu_timestamp.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
+ *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
@@ -21,41 +22,71 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/ws/wsu_timestamp.h>
+#include "wsu_timestamp.h"
 
 /*
+ * Schema fragment (oasis-200401-wss-wssecurity-utility-1.0.xsd):
  *
- */ 
+ * <xs:complexType name="TimestampType">
+ *   <xs:annotation>
+ *     <xs:documentation>
+ *       This complex type ties together the timestamp related elements into a composite type.
+ *     </xs:documentation>
+ *   </xs:annotation>
+ *   <xs:sequence>
+ *     <xs:element ref="wsu:Created" minOccurs="0"/>
+ *     <xs:element ref="wsu:Expires" minOccurs="0"/>
+ *     <xs:choice minOccurs="0" maxOccurs="unbounded">
+ *       <xs:any namespace="##other" processContents="lax"/>
+ *     </xs:choice>
+ *   </xs:sequence>
+ *   <xs:attributeGroup ref="wsu:commonAtts"/>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
+
 static struct XmlSnippet schema_snippets[] = {
-	{ "Created", SNIPPET_NODE, G_STRUCT_OFFSET(LassoWsuTimestamp, Created) },
-	{ "Expired", SNIPPET_NODE, G_STRUCT_OFFSET(LassoWsuTimestamp, Expired) },
-	{ NULL, 0, 0}
+	{ "Created", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoWsUtil1Timestamp, Created) },
+	{ "Expires", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoWsUtil1Timestamp, Expires) },
+	{ "Id", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoWsUtil1Timestamp, Id) },
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+		G_STRUCT_OFFSET(LassoWsUtil1Timestamp, attributes) },
+	{NULL, 0, 0}
 };
+
+static LassoNodeClass *parent_class = NULL;
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-instance_init(LassoWsuTimestamp *node)
+instance_init(LassoWsUtil1Timestamp *node)
 {
 	node->Created = NULL;
-	node->Expired = NULL;
+	node->Expires = NULL;
+	node->Id = NULL;
+	node->attributes = g_hash_table_new_full(
+		g_str_hash, g_str_equal, g_free, g_free);
 }
 
 static void
-class_init(LassoWsuTimestampClass *klass)
+class_init(LassoWsUtil1TimestampClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Timestamp");
-	lasso_node_class_set_ns(nclass, LASSO_WSU_HREF, LASSO_WSU_PREFIX);
+	lasso_node_class_set_ns(nclass, LASSO_WSUTIL1_HREF, LASSO_WSUTIL1_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
@@ -66,29 +97,32 @@ lasso_wsu_timestamp_get_type()
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoWsuTimestampClass),
+			sizeof (LassoWsUtil1TimestampClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoWsuTimestamp),
+			sizeof(LassoWsUtil1Timestamp),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoWsuTimestamp", &this_info, 0);
+				"LassoWsUtil1Timestamp", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoWsuTimestamp*
+/**
+ * lasso_wsu_timestamp_new:
+ *
+ * Creates a new #LassoWsUtil1Timestamp object.
+ *
+ * Return value: a newly created #LassoWsUtil1Timestamp object
+ **/
+LassoWsUtil1Timestamp*
 lasso_wsu_timestamp_new()
 {
-	LassoWsuTimestamp *node;
-
-	node = g_object_new(LASSO_TYPE_WSU_TIMESTAMP, NULL);
-
-	return node;
+	return g_object_new(LASSO_TYPE_WSU_TIMESTAMP, NULL);
 }

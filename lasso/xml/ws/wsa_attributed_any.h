@@ -33,18 +33,24 @@ extern "C" {
 
 #define LASSO_TYPE_WSA_ATTRIBUTED_ANY (lasso_wsa_attributed_any_get_type())
 #define LASSO_WSA_ATTRIBUTED_ANY(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_WSA_ATTRIBUTED_ANY, \
-				LassoWsAddrAttributedAny))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_WSA_ATTRIBUTED_ANY, \
+		LassoWsAddrAttributedAny))
 #define LASSO_WSA_ATTRIBUTED_ANY_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_WSA_ATTRIBUTED_ANY, \
-				LassoWsAddrAttributedAnyClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_WSA_ATTRIBUTED_ANY, \
+		LassoWsAddrAttributedAnyClass))
 #define LASSO_IS_WSA_ATTRIBUTED_ANY(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_WSA_ATTRIBUTED_ANY))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_WSA_ATTRIBUTED_ANY))
 #define LASSO_IS_WSA_ATTRIBUTED_ANY_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_WSA_ATTRIBUTED_ANY))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_WSA_ATTRIBUTED_ANY))
 #define LASSO_WSA_ATTRIBUTED_ANY_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSA_ATTRIBUTED_ANY, \
-				LassoWsAddrAttributedAnyClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_WSA_ATTRIBUTED_ANY, \
+		LassoWsAddrAttributedAnyClass)) 
+
 
 typedef struct _LassoWsAddrAttributedAny LassoWsAddrAttributedAny;
 typedef struct _LassoWsAddrAttributedAnyClass LassoWsAddrAttributedAnyClass;
@@ -54,6 +60,8 @@ struct _LassoWsAddrAttributedAny {
 	LassoNode parent;
 
 	/*< public >*/
+	/* elements */
+	GList *any; /* of LassoNode */
 	/* attributes */
 	GHashTable *attributes;
 };
@@ -64,7 +72,7 @@ struct _LassoWsAddrAttributedAnyClass {
 };
 
 LASSO_EXPORT GType lasso_wsa_attributed_any_get_type(void);
-LASSO_EXPORT LassoNode* lasso_wsa_attributed_any_new(void);
+LASSO_EXPORT LassoWsAddrAttributedAny* lasso_wsa_attributed_any_new(void);
 
 
 

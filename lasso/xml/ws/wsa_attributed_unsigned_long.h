@@ -31,20 +31,27 @@ extern "C" {
 
 #include <lasso/xml/xml.h>
 
-#define LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG (lasso_wsa_attributed_unsigned_long_get_type())
+#define LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG \
+	(lasso_wsa_attributed_unsigned_long_get_type())
 #define LASSO_WSA_ATTRIBUTED_UNSIGNED_LONG(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG, \
-				LassoWsAddrAttributedUnsignedLong))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG, \
+		LassoWsAddrAttributedUnsignedLong))
 #define LASSO_WSA_ATTRIBUTED_UNSIGNED_LONG_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG, \
-				LassoWsAddrAttributedUnsignedLongClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG, \
+		LassoWsAddrAttributedUnsignedLongClass))
 #define LASSO_IS_WSA_ATTRIBUTED_UNSIGNED_LONG(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG))
 #define LASSO_IS_WSA_ATTRIBUTED_UNSIGNED_LONG_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG))
 #define LASSO_WSA_ATTRIBUTED_UNSIGNED_LONG_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG, \
-				LassoWsAddrAttributedUnsignedLongClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG, \
+		LassoWsAddrAttributedUnsignedLongClass)) 
+
 
 typedef struct _LassoWsAddrAttributedUnsignedLong LassoWsAddrAttributedUnsignedLong;
 typedef struct _LassoWsAddrAttributedUnsignedLongClass LassoWsAddrAttributedUnsignedLongClass;
@@ -66,7 +73,7 @@ struct _LassoWsAddrAttributedUnsignedLongClass {
 };
 
 LASSO_EXPORT GType lasso_wsa_attributed_unsigned_long_get_type(void);
-LASSO_EXPORT LassoNode* lasso_wsa_attributed_unsigned_long_new(void);
+LASSO_EXPORT LassoWsAddrAttributedUnsignedLong* lasso_wsa_attributed_unsigned_long_new(void);
 
 
 

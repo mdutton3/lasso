@@ -64,11 +64,12 @@ struct _LassoIdWsf2DstRefQuery {
 	/* elements */
 	GList *TestItem; /* of LassoIdWsf2DstRefTestItem */
 	GList *QueryItem; /* of LassoIdWsf2DstRefQueryItem */
-	
+
 	/*< private >*/
 	char *prefixServiceType;
 	char *hrefServiceType;
 };
+
 
 struct _LassoIdWsf2DstRefQueryClass {
 	LassoIdWsf2DstRequestClass parent;
@@ -77,9 +78,10 @@ struct _LassoIdWsf2DstRefQueryClass {
 LASSO_EXPORT GType lasso_idwsf2_dstref_query_get_type(void);
 LASSO_EXPORT LassoIdWsf2DstRefQuery* lasso_idwsf2_dstref_query_new(void);
 
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
 #endif /* __LASSO_IDWSF2_DSTREF_QUERY_H__ */
-

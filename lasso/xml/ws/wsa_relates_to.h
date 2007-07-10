@@ -33,18 +33,24 @@ extern "C" {
 
 #define LASSO_TYPE_WSA_RELATES_TO (lasso_wsa_relates_to_get_type())
 #define LASSO_WSA_RELATES_TO(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_WSA_RELATES_TO, \
-				LassoWsAddrRelatesTo))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_WSA_RELATES_TO, \
+		LassoWsAddrRelatesTo))
 #define LASSO_WSA_RELATES_TO_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_WSA_RELATES_TO, \
-				LassoWsAddrRelatesToClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_WSA_RELATES_TO, \
+		LassoWsAddrRelatesToClass))
 #define LASSO_IS_WSA_RELATES_TO(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_WSA_RELATES_TO))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_WSA_RELATES_TO))
 #define LASSO_IS_WSA_RELATES_TO_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_WSA_RELATES_TO))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_WSA_RELATES_TO))
 #define LASSO_WSA_RELATES_TO_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSA_RELATES_TO, \
-				LassoWsAddrRelatesToClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_WSA_RELATES_TO, \
+		LassoWsAddrRelatesToClass)) 
+
 
 typedef struct _LassoWsAddrRelatesTo LassoWsAddrRelatesTo;
 typedef struct _LassoWsAddrRelatesToClass LassoWsAddrRelatesToClass;
@@ -67,9 +73,9 @@ struct _LassoWsAddrRelatesToClass {
 };
 
 LASSO_EXPORT GType lasso_wsa_relates_to_get_type(void);
-LASSO_EXPORT LassoNode* lasso_wsa_relates_to_new(void);
+LASSO_EXPORT LassoWsAddrRelatesTo* lasso_wsa_relates_to_new(void);
 
-LASSO_EXPORT LassoNode* lasso_wsa_relates_to_new_with_string(char *content);
+LASSO_EXPORT LassoWsAddrRelatesTo* lasso_wsa_relates_to_new_with_string(char *content);
 
 
 #ifdef __cplusplus

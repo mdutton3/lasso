@@ -73,8 +73,7 @@ struct _LassoIdWsf2DiscoSvcMDAssociationAddClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_association_add_get_type(void);
-LASSO_EXPORT LassoIdWsf2DiscoSvcMDAssociationAdd*
-        lasso_idwsf2_disco_svc_md_association_add_new(void);
+LASSO_EXPORT LassoIdWsf2DiscoSvcMDAssociationAdd* lasso_idwsf2_disco_svc_md_association_add_new(void);
 
 
 

@@ -1,4 +1,4 @@
-/* $Id: disco_options.h 2183 2005-01-22 15:57:56Z $ 
+/* $Id: disco_options.h,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -27,38 +27,52 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_IDWSF2_DISCO_OPTIONS (lasso_idwsf2_disco_options_get_type())
 #define LASSO_IDWSF2_DISCO_OPTIONS(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDWSF2_DISCO_OPTIONS, LassoIdWsf2DiscoOptions))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_OPTIONS, \
+		LassoIdWsf2DiscoOptions))
 #define LASSO_IDWSF2_DISCO_OPTIONS_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_IDWSF2_DISCO_OPTIONS, LassoIdWsf2DiscoOptionsClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_OPTIONS, \
+		LassoIdWsf2DiscoOptionsClass))
 #define LASSO_IS_IDWSF2_DISCO_OPTIONS(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDWSF2_DISCO_OPTIONS))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_OPTIONS))
 #define LASSO_IS_IDWSF2_DISCO_OPTIONS_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCO_OPTIONS))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_OPTIONS))
 #define LASSO_IDWSF2_DISCO_OPTIONS_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCO_OPTIONS, LassoIdWsf2DiscoOptionsClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_IDWSF2_DISCO_OPTIONS, \
+		LassoIdWsf2DiscoOptionsClass)) 
+
 
 typedef struct _LassoIdWsf2DiscoOptions LassoIdWsf2DiscoOptions;
 typedef struct _LassoIdWsf2DiscoOptionsClass LassoIdWsf2DiscoOptionsClass;
 
+
 struct _LassoIdWsf2DiscoOptions {
 	LassoNode parent;
 
+	/*< public >*/
+	/* elements */
 	GList *Option;
 };
+
 
 struct _LassoIdWsf2DiscoOptionsClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_options_get_type(void);
-
 LASSO_EXPORT LassoIdWsf2DiscoOptions* lasso_idwsf2_disco_options_new(void);
+
+
 
 #ifdef __cplusplus
 }

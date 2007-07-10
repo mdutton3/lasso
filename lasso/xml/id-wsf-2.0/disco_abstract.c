@@ -1,4 +1,4 @@
-/* $Id: disco_abstract.c 2183 2005-01-22 15:57:56 dlaniel $ 
+/* $Id: disco_abstract.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -22,16 +22,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/id-wsf-2.0/disco_abstract.h>
+#include "disco_abstract.h"
+
+/*
+ * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+ *
+ * <xs:element name="Abstract" type="xs:string"/>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
+
 static struct XmlSnippet schema_snippets[] = {
-	{ "content", SNIPPET_TEXT_CHILD, G_STRUCT_OFFSET(LassoIdWsf2DiscoAbstract, content) },
-	{ NULL, 0, 0}
+	{ "content", SNIPPET_TEXT_CHILD,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoAbstract, content) },
+	{NULL, 0, 0}
 };
+
+static LassoNodeClass *parent_class = NULL;
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -48,10 +59,10 @@ class_init(LassoIdWsf2DiscoAbstractClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Abstract");
-	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DISCO_HREF,
-			LASSO_IDWSF2_DISCO_PREFIX);
+	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DISCO_HREF, LASSO_IDWSF2_DISCO_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
@@ -79,19 +90,34 @@ lasso_idwsf2_disco_abstract_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_idwsf2_disco_abstract_new:
+ *
+ * Creates a new #LassoIdWsf2DiscoAbstract object.
+ *
+ * Return value: a newly created #LassoIdWsf2DiscoAbstract object
+ **/
 LassoIdWsf2DiscoAbstract*
 lasso_idwsf2_disco_abstract_new()
 {
-	return LASSO_IDWSF2_DISCO_ABSTRACT(g_object_new(LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, NULL));
+	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, NULL);
 }
 
-LassoIdWsf2DiscoAbstract*
-lasso_idwsf2_disco_abstract_new_with_content(gchar *content)
-{
-	LassoIdWsf2DiscoAbstract *idwsf2_disco_abstract = LASSO_IDWSF2_DISCO_ABSTRACT(
-		g_object_new(LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, NULL));
-	
-	idwsf2_disco_abstract->content = g_strdup(content);
 
-	return idwsf2_disco_abstract;
+/**
+ * lasso_idwsf2_disco_abstract_new_with_string:
+ * @content: 
+ *
+ * Creates a new #LassoIdWsf2DiscoAbstract object and initializes it
+ * with @content.
+ *
+ * Return value: a newly created #LassoIdWsf2DiscoAbstract object
+ **/
+LassoIdWsf2DiscoAbstract*
+lasso_idwsf2_disco_abstract_new_with_string(char *content)
+{
+	LassoIdWsf2DiscoAbstract *object;
+	object = g_object_new(LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, NULL);
+	object->content = g_strdup(content);
+	return object;
 }

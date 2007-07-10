@@ -44,13 +44,13 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "any", SNIPPET_NODE | SNIPPET_ANY,
+	{ "", SNIPPET_NODE | SNIPPET_ANY | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoIdWsf2SecToken, any) },
-	{ "id", SNIPPET_ATTRIBUTE,
+	{ "id", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2SecToken, id) },
-	{ "ref", SNIPPET_ATTRIBUTE,
+	{ "ref", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2SecToken, ref) },
-	{ "usage", SNIPPET_ATTRIBUTE,
+	{ "usage", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2SecToken, usage) },
 	{NULL, 0, 0}
 };
@@ -114,7 +114,7 @@ lasso_idwsf2_sec_token_get_type()
  *
  * Return value: a newly created #LassoIdWsf2SecToken object
  **/
-LassoNode*
+LassoIdWsf2SecToken*
 lasso_idwsf2_sec_token_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_SEC_TOKEN, NULL);

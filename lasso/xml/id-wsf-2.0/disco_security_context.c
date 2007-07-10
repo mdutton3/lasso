@@ -112,7 +112,7 @@ lasso_idwsf2_disco_security_context_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DiscoSecurityContext object
  **/
-LassoNode*
+LassoIdWsf2DiscoSecurityContext*
 lasso_idwsf2_disco_security_context_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_SECURITY_CONTEXT, NULL);

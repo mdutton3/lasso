@@ -1,4 +1,4 @@
-/* $Id: disco_service_type.h 2183 2005-01-22 15:57:56Z dlaniel $ 
+/* $Id: disco_service_type.h,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -27,41 +27,53 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE (lasso_idwsf2_disco_service_type_get_type())
-#define LASSO_IDWSF2_DISCO_SERVICE_TYPE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-	 LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE, LassoIdWsf2DiscoServiceType))
-#define LASSO_IDWSF2_DISCO_SERVICE_TYPE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-	 LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE, LassoIdWsf2DiscoServiceTypeClass))
-#define LASSO_IS_IDWSF2_DISCO_SERVICE_TYPE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-	 LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE))
-#define LASSO_IS_IDWSF2_DISCO_SERVICE_TYPE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-	 LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE))
-#define LASSO_IDWSF2_DISCO_SERVICE_TYPE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-	 LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE, LassoIdWsf2DiscoServiceTypeClass)) 
+#define LASSO_IDWSF2_DISCO_SERVICE_TYPE(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE, \
+		LassoIdWsf2DiscoServiceType))
+#define LASSO_IDWSF2_DISCO_SERVICE_TYPE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE, \
+		LassoIdWsf2DiscoServiceTypeClass))
+#define LASSO_IS_IDWSF2_DISCO_SERVICE_TYPE(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE))
+#define LASSO_IS_IDWSF2_DISCO_SERVICE_TYPE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE))
+#define LASSO_IDWSF2_DISCO_SERVICE_TYPE_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE, \
+		LassoIdWsf2DiscoServiceTypeClass)) 
+
 
 typedef struct _LassoIdWsf2DiscoServiceType LassoIdWsf2DiscoServiceType;
 typedef struct _LassoIdWsf2DiscoServiceTypeClass LassoIdWsf2DiscoServiceTypeClass;
 
+
 struct _LassoIdWsf2DiscoServiceType {
 	LassoNode parent;
 
-	gchar *content;
+	/*< public >*/
+	/* elements */
+	char *content;
 };
+
 
 struct _LassoIdWsf2DiscoServiceTypeClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_service_type_get_type(void);
-
 LASSO_EXPORT LassoIdWsf2DiscoServiceType* lasso_idwsf2_disco_service_type_new(void);
 
-LASSO_EXPORT LassoIdWsf2DiscoServiceType*
-	lasso_idwsf2_disco_service_type_new_with_content(gchar *content);
+LASSO_EXPORT LassoIdWsf2DiscoServiceType* lasso_idwsf2_disco_service_type_new_with_string(char *content);
+
 
 #ifdef __cplusplus
 }

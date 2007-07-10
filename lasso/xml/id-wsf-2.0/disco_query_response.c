@@ -51,7 +51,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "EndpointReference", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoQueryResponse, EndpointReference),
 		"LassoWsAddrEndpointReference" },
-	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoQueryResponse, attributes) },
 	{NULL, 0, 0}
 };

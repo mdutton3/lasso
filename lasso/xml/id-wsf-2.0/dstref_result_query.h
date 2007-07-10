@@ -31,10 +31,8 @@ extern "C" {
 
 #include <lasso/xml/xml.h>
 #include "dst_result_query_base.h"
-#include "dstref_sort.h"
 
-#define LASSO_TYPE_IDWSF2_DSTREF_RESULT_QUERY \
-	(lasso_idwsf2_dstref_result_query_get_type())
+#define LASSO_TYPE_IDWSF2_DSTREF_RESULT_QUERY (lasso_idwsf2_dstref_result_query_get_type())
 #define LASSO_IDWSF2_DSTREF_RESULT_QUERY(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
 		LASSO_TYPE_IDWSF2_DSTREF_RESULT_QUERY, \
@@ -64,8 +62,8 @@ struct _LassoIdWsf2DstRefResultQuery {
 
 	/*< public >*/
 	/* elements */
-	gchar *Select;
-	LassoIdWsf2DstRefSort *Sort;
+	char *Select;
+	char *Sort;
 };
 
 
@@ -74,7 +72,7 @@ struct _LassoIdWsf2DstRefResultQueryClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_dstref_result_query_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_dstref_result_query_new(void);
+LASSO_EXPORT LassoIdWsf2DstRefResultQuery* lasso_idwsf2_dstref_result_query_new(void);
 
 
 

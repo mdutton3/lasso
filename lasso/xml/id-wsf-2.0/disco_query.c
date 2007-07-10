@@ -48,7 +48,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "RequestedService", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, RequestedService),
 		"LassoIdWsf2DiscoRequestedService" },
-	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoQuery, attributes) },
 	{NULL, 0, 0}
 };
@@ -111,7 +111,7 @@ lasso_idwsf2_disco_query_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DiscoQuery object
  **/
-LassoNode*
+LassoIdWsf2DiscoQuery*
 lasso_idwsf2_disco_query_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_QUERY, NULL);

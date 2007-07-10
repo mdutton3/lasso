@@ -62,8 +62,8 @@ struct _LassoIdWsf2DstRefData {
 
 	/*< public >*/
 	/* attributes */
-	char *remaining;
-	char *nextOffset;
+	int remaining;
+	int nextOffset;
 	char *setID;
 };
 

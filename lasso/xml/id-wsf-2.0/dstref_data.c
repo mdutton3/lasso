@@ -44,9 +44,9 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "remaining", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefData, remaining) },
-	{ "nextOffset", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL,
+	{ "nextOffset", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefData, nextOffset) },
-	{ "setID", SNIPPET_ATTRIBUTE,
+	{ "setID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefData, setID) },
 	{NULL, 0, 0}
 };
@@ -61,8 +61,8 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2DstRefData *node)
 {
-	node->remaining = NULL;
-	node->nextOffset = NULL;
+	node->remaining = 0;
+	node->nextOffset = -1;
 	node->setID = NULL;
 }
 
@@ -114,4 +114,3 @@ lasso_idwsf2_dstref_data_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DSTREF_DATA, NULL);
 }
-

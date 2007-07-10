@@ -1,4 +1,4 @@
-/* $Id: wsu_timestamp.h 2495 2005-05-02 09:17:08Z dlaniel $ 
+/* $Id: wsu_timestamp.h,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -27,40 +27,56 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_WSU_TIMESTAMP (lasso_wsu_timestamp_get_type())
-#define LASSO_WSU_TIMESTAMP(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-			LASSO_TYPE_WSU_TIMESTAMP, LassoWsuTimestamp))
-#define LASSO_WSU_TIMESTAMP_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-			LASSO_TYPE_WSU_TIMESTAMP, LassoWsuTimestampClass))
-#define LASSO_IS_WSU_TIMESTAMP(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_WSU_TIMESTAMP))
+#define LASSO_WSU_TIMESTAMP(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_WSU_TIMESTAMP, \
+		LassoWsUtil1Timestamp))
+#define LASSO_WSU_TIMESTAMP_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_WSU_TIMESTAMP, \
+		LassoWsUtil1TimestampClass))
+#define LASSO_IS_WSU_TIMESTAMP(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_WSU_TIMESTAMP))
 #define LASSO_IS_WSU_TIMESTAMP_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass),LASSO_TYPE_WSU_TIMESTAMP))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_WSU_TIMESTAMP))
 #define LASSO_WSU_TIMESTAMP_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSU_TIMESTAMP, LassoWsuTimestampClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_WSU_TIMESTAMP, \
+		LassoWsUtil1TimestampClass)) 
 
-typedef struct _LassoWsuTimestamp LassoWsuTimestamp;
-typedef struct _LassoWsuTimestampClass LassoWsuTimestampClass;
 
-struct _LassoWsuTimestamp {
+typedef struct _LassoWsUtil1Timestamp LassoWsUtil1Timestamp;
+typedef struct _LassoWsUtil1TimestampClass LassoWsUtil1TimestampClass;
+
+
+struct _LassoWsUtil1Timestamp {
 	LassoNode parent;
 
-	gchar *Created;
-	gchar *Expired;
+	/*< public >*/
+	/* elements */
+	char *Created;
+	char *Expires;
+	/* attributes */
+	char *Id;
+	GHashTable *attributes;
 };
 
-struct _LassoWsuTimestampClass {
+
+struct _LassoWsUtil1TimestampClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_wsu_timestamp_get_type(void);
+LASSO_EXPORT LassoWsUtil1Timestamp* lasso_wsu_timestamp_new(void);
 
-LASSO_EXPORT LassoWsuTimestamp* lasso_wsu_timestamp_new(void);
 
-LASSO_EXPORT LassoWsuTimestamp* lasso_wsu_timestamp_new_from_message(const gchar *message);
 
 #ifdef __cplusplus
 }

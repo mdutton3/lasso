@@ -43,7 +43,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "SvcMDID", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDAssociationAdd, SvcMDID) },
-	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDAssociationAdd, attributes) },
 	{NULL, 0, 0}
 };

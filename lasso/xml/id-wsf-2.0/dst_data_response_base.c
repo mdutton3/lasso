@@ -42,7 +42,7 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "timeStamp", SNIPPET_ATTRIBUTE,
+	{ "timeStamp", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstDataResponseBase, timeStamp) },
 	{NULL, 0, 0}
 };
@@ -103,7 +103,7 @@ lasso_idwsf2_dst_data_response_base_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DstDataResponseBase object
  **/
-LassoNode*
+LassoIdWsf2DstDataResponseBase*
 lasso_idwsf2_dst_data_response_base_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DST_DATA_RESPONSE_BASE, NULL);

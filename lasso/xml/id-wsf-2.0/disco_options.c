@@ -1,4 +1,4 @@
-/* $Id: disco_options.c 2183 2005-01-22 15:57:56 $ 
+/* $Id: disco_options.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -22,29 +22,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/id-wsf-2.0/disco_options.h>
+#include "disco_options.h"
 
 /*
  * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
- * 
- * <xs:element name="Options" type="OptionsType"/>
+ *
  * <xs:complexType name="OptionsType">
- *    <xs:sequence>
- *       <xs:element ref="Option" minOccurs="0" maxOccurs="unbounded"/>
- *    </xs:sequence>
+ *   <xs:sequence>
+ *     <xs:element ref="Option" minOccurs="0" maxOccurs="unbounded"/>
+ *   </xs:sequence>
  * </xs:complexType>
- *  
- * <xs:element name="Option" type="xs:anyURI" />
  */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
+
 static struct XmlSnippet schema_snippets[] = {
-	{ "Option", SNIPPET_LIST_CONTENT, G_STRUCT_OFFSET(LassoIdWsf2DiscoOptions, Option) },
-	{ NULL, 0, 0}
+	{ "Option", SNIPPET_LIST_CONTENT,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoOptions, Option) },
+	{NULL, 0, 0}
 };
+
+static LassoNodeClass *parent_class = NULL;
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -61,6 +63,7 @@ class_init(LassoIdWsf2DiscoOptionsClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Options");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DISCO_HREF, LASSO_IDWSF2_DISCO_PREFIX);
@@ -86,11 +89,18 @@ lasso_idwsf2_disco_options_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-						   "LassoIdWsf2DiscoOptions", &this_info, 0);
+				"LassoIdWsf2DiscoOptions", &this_info, 0);
 	}
 	return this_type;
 }
 
+/**
+ * lasso_idwsf2_disco_options_new:
+ *
+ * Creates a new #LassoIdWsf2DiscoOptions object.
+ *
+ * Return value: a newly created #LassoIdWsf2DiscoOptions object
+ **/
 LassoIdWsf2DiscoOptions*
 lasso_idwsf2_disco_options_new()
 {

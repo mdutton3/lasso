@@ -32,8 +32,7 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include "util_status.h"
 
-#define LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE \
-	(lasso_idwsf2_disco_query_response_get_type())
+#define LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE (lasso_idwsf2_disco_query_response_get_type())
 #define LASSO_IDWSF2_DISCO_QUERY_RESPONSE(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
 		LASSO_TYPE_IDWSF2_DISCO_QUERY_RESPONSE, \

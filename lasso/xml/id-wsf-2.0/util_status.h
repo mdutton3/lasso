@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_UTIL_STATUS_H__
-#define __LASSO_UTIL_STATUS_H__
+#ifndef __LASSO_IDWSF2_UTIL_STATUS_H__
+#define __LASSO_IDWSF2_UTIL_STATUS_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,20 +31,26 @@ extern "C" {
 
 #include <lasso/xml/xml.h>
 
-#define LASSO_TYPE_UTIL_STATUS (lasso_util_status_get_type())
-#define LASSO_UTIL_STATUS(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_UTIL_STATUS, \
-				LassoIdWsf2UtilStatus))
-#define LASSO_UTIL_STATUS_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_UTIL_STATUS, \
-				LassoIdWsf2UtilStatusClass))
-#define LASSO_IS_UTIL_STATUS(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_UTIL_STATUS))
-#define LASSO_IS_UTIL_STATUS_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_UTIL_STATUS))
-#define LASSO_UTIL_STATUS_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_UTIL_STATUS, \
-				LassoIdWsf2UtilStatusClass)) 
+#define LASSO_TYPE_IDWSF2_UTIL_STATUS (lasso_idwsf2_util_status_get_type())
+#define LASSO_IDWSF2_UTIL_STATUS(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_IDWSF2_UTIL_STATUS, \
+		LassoIdWsf2UtilStatus))
+#define LASSO_IDWSF2_UTIL_STATUS_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_IDWSF2_UTIL_STATUS, \
+		LassoIdWsf2UtilStatusClass))
+#define LASSO_IS_IDWSF2_UTIL_STATUS(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_IDWSF2_UTIL_STATUS))
+#define LASSO_IS_IDWSF2_UTIL_STATUS_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_IDWSF2_UTIL_STATUS))
+#define LASSO_IDWSF2_UTIL_STATUS_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_IDWSF2_UTIL_STATUS, \
+		LassoIdWsf2UtilStatusClass)) 
+
 
 typedef struct _LassoIdWsf2UtilStatus LassoIdWsf2UtilStatus;
 typedef struct _LassoIdWsf2UtilStatusClass LassoIdWsf2UtilStatusClass;
@@ -55,7 +61,7 @@ struct _LassoIdWsf2UtilStatus {
 
 	/*< public >*/
 	/* elements */
-	GList *Status;
+	GList *Status; /* of LassoIdWsf2UtilStatus */
 	/* attributes */
 	char *code;
 	char *ref;
@@ -67,12 +73,13 @@ struct _LassoIdWsf2UtilStatusClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType lasso_util_status_get_type(void);
-LASSO_EXPORT LassoIdWsf2UtilStatus* lasso_util_status_new(gchar *code);
+LASSO_EXPORT GType lasso_idwsf2_util_status_get_type(void);
+LASSO_EXPORT LassoIdWsf2UtilStatus* lasso_idwsf2_util_status_new(void);
+
 
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_UTIL_STATUS_H__ */
+#endif /* __LASSO_IDWSF2_UTIL_STATUS_H__ */

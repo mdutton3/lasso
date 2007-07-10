@@ -39,16 +39,6 @@
  */
 
 /*****************************************************************************/
-/* public methods                                                            */
-/*****************************************************************************/
-
-void
-lasso_wsa_endpoint_reference_destroy(LassoWsAddrEndpointReference *epr)
-{
-	lasso_node_destroy(LASSO_NODE(epr));
-}
-
-/*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
@@ -63,7 +53,9 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Metadata", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoWsAddrEndpointReference, Metadata),
 		"LassoWsAddrMetadata" },
-	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+	{ "", SNIPPET_LIST_NODES | SNIPPET_ANY,
+		G_STRUCT_OFFSET(LassoWsAddrEndpointReference, any) },
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoWsAddrEndpointReference, attributes) },
 	{NULL, 0, 0}
 };
@@ -81,6 +73,9 @@ instance_init(LassoWsAddrEndpointReference *node)
 	node->Address = NULL;
 	node->ReferenceParameters = NULL;
 	node->Metadata = NULL;
+	node->any = NULL;
+	node->attributes = g_hash_table_new_full(
+		g_str_hash, g_str_equal, g_free, g_free);
 }
 
 static void
@@ -90,7 +85,7 @@ class_init(LassoWsAddrEndpointReferenceClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "EndpointReference"); 
+	lasso_node_class_set_nodename(nclass, "EndpointReference");
 	lasso_node_class_set_ns(nclass, LASSO_WSA_HREF, LASSO_WSA_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }

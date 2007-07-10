@@ -73,7 +73,7 @@ struct _LassoIdWsf2DstRequestClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_dst_request_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_dst_request_new(void);
+LASSO_EXPORT LassoIdWsf2DstRequest* lasso_idwsf2_dst_request_new(void);
 
 
 

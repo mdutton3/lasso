@@ -72,7 +72,7 @@ struct _LassoIdWsf2DiscoQueryClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_query_get_type(void);
-LASSO_EXPORT LassoNode* lasso_idwsf2_disco_query_new(void);
+LASSO_EXPORT LassoIdWsf2DiscoQuery* lasso_idwsf2_disco_query_new(void);
 
 
 

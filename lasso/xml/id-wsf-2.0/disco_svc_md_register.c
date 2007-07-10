@@ -1,4 +1,4 @@
-/* $Id: disco_svc_md_register.c 2261 2005-01-27 23:41:05 $ 
+/* $Id: disco_svc_md_register.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -22,19 +22,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/id-wsf-2.0/disco_svc_md_register.h>
-#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
-
+#include "disco_svc_md_register.h"
+#include "disco_svc_metadata.h"
 
 /*
  * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
- * 
- * <xs:element name="SvcMDRegister" type="SvcMDRegisterType"/>
+ *
  * <xs:complexType name="SvcMDRegisterType">
- *    <xs:sequence>
- *       <xs:element ref="SvcMD" maxOccurs="unbounded"/>
- *    </xs:sequence>
- *    <xs:anyAttribute namespace="##other" processContents="lax"/>
+ *   <xs:sequence>
+ *     <xs:element ref="SvcMD" maxOccurs="unbounded" />
+ *   </xs:sequence>
+ *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
  */
 
@@ -42,11 +40,18 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+
 static struct XmlSnippet schema_snippets[] = {
 	{ "SvcMD", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDRegister, SvcMD), "LassoIdWsf2DiscoSvcMetadata" },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDRegister, SvcMD),
+		"LassoIdWsf2DiscoSvcMetadata" },
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDRegister, attributes) },
+	{NULL, 0, 0}
 };
+
+static LassoNodeClass *parent_class = NULL;
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -56,6 +61,8 @@ static void
 instance_init(LassoIdWsf2DiscoSvcMDRegister *node)
 {
 	node->SvcMD = NULL;
+	node->attributes = g_hash_table_new_full(
+		g_str_hash, g_str_equal, g_free, g_free);
 }
 
 static void
@@ -63,6 +70,7 @@ class_init(LassoIdWsf2DiscoSvcMDRegisterClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "SvcMDRegister");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DISCO_HREF, LASSO_IDWSF2_DISCO_PREFIX);
@@ -93,11 +101,19 @@ lasso_idwsf2_disco_svc_md_register_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_idwsf2_disco_svc_md_register_new:
+ *
+ * Creates a new #LassoIdWsf2DiscoSvcMDRegister object.
+ *
+ * Return value: a newly created #LassoIdWsf2DiscoSvcMDRegister object
+ **/
 LassoIdWsf2DiscoSvcMDRegister*
 lasso_idwsf2_disco_svc_md_register_new()
 {
-        return g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, NULL);
+	return g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, NULL);
 }
+
 
 LassoIdWsf2DiscoSvcMDRegister*
 lasso_idwsf2_disco_svc_md_register_new_full(const gchar *service_type, const gchar *abstract,
@@ -106,9 +122,9 @@ lasso_idwsf2_disco_svc_md_register_new_full(const gchar *service_type, const gch
 	LassoIdWsf2DiscoSvcMDRegister *metadata_register;
 	LassoIdWsf2DiscoSvcMetadata *metadata;
 
-	metadata_register = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REGISTER, NULL);
+	metadata_register = lasso_idwsf2_disco_svc_md_register_new();
 	metadata = lasso_idwsf2_disco_svc_metadata_new_full(service_type, abstract, provider_id,
-		soap_endpoint);
+			soap_endpoint);
 	metadata_register->SvcMD = g_list_append(
 			metadata_register->SvcMD, metadata);
 

@@ -45,9 +45,9 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Extension", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRequest, Extension),
 		"LassoIdWsf2Utilextension" },
-	{ "itemID", SNIPPET_ATTRIBUTE,
+	{ "itemID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRequest, itemID) },
-	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRequest, attributes) },
 	{NULL, 0, 0}
 };
@@ -111,7 +111,7 @@ lasso_idwsf2_dst_request_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DstRequest object
  **/
-LassoNode*
+LassoIdWsf2DstRequest*
 lasso_idwsf2_dst_request_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DST_REQUEST, NULL);

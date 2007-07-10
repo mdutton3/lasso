@@ -65,7 +65,7 @@ struct _LassoIdWsf2DstRefQueryResponse {
 	/* elements */
 	GList *TestResult;
 	GList *Data; /* of LassoIdWsf2DstRefData */
-	
+
 	/*< private >*/
 	char *prefixServiceType;
 	char *hrefServiceType;

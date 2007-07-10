@@ -46,7 +46,7 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, count) },
 	{ "offset", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, offset) },
-	{ "setID", SNIPPET_ATTRIBUTE,
+	{ "setID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, setID) },
 	{ "setReq", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, setReq) },
@@ -112,17 +112,18 @@ lasso_idwsf2_dstref_query_item_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DstRefQueryItem object
  **/
-LassoNode*
+LassoIdWsf2DstRefQueryItem*
 lasso_idwsf2_dstref_query_item_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DSTREF_QUERY_ITEM, NULL);
 }
 
+
 LassoIdWsf2DstRefQueryItem*
 lasso_idwsf2_dstref_query_item_new_full(const gchar *item_xpath, const gchar *item_id)
 {
 	LassoIdWsf2DstRefResultQuery *item_result_query = LASSO_IDWSF2_DSTREF_RESULT_QUERY(
-		g_object_new(LASSO_TYPE_IDWSF2_DSTREF_QUERY_ITEM, NULL));
+		lasso_idwsf2_dstref_query_item_new());
 	LassoIdWsf2DstResultQueryBase *item_result_query_base = LASSO_IDWSF2_DST_RESULT_QUERY_BASE(
 		item_result_query);
 
@@ -131,4 +132,3 @@ lasso_idwsf2_dstref_query_item_new_full(const gchar *item_xpath, const gchar *it
 
 	return LASSO_IDWSF2_DSTREF_QUERY_ITEM(item_result_query);
 }
-

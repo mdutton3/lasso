@@ -45,10 +45,10 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Select", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIdWsf2DstRefResultQuery, Select) },
-	{ "Sort", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2DstRefResultQuery, Sort),
-		"LassoIdWsf2DstRefSort" },
+	{ "Select", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoIdWsf2DstRefResultQuery, Select) },
+	{ "Sort", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoIdWsf2DstRefResultQuery, Sort) },
 	{NULL, 0, 0}
 };
 
@@ -109,9 +109,8 @@ lasso_idwsf2_dstref_result_query_get_type()
  *
  * Return value: a newly created #LassoIdWsf2DstRefResultQuery object
  **/
-LassoNode*
+LassoIdWsf2DstRefResultQuery*
 lasso_idwsf2_dstref_result_query_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DSTREF_RESULT_QUERY, NULL);
 }
-

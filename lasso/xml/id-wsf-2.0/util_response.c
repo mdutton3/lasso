@@ -44,13 +44,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Status", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2UtilResponse, Status) },
+		G_STRUCT_OFFSET(LassoIdWsf2UtilResponse, Status),
+		"LassoIdWsf2UtilStatus" },
 	{ "Extension", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2UtilResponse, Extension),
 		"LassoIdWsf2Utilextension" },
-	{ "itemIDRef", SNIPPET_ATTRIBUTE,
+	{ "itemIDRef", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2UtilResponse, itemIDRef) },
-	{ "any", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
+	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoIdWsf2UtilResponse, attributes) },
 	{NULL, 0, 0}
 };
@@ -115,7 +116,7 @@ lasso_idwsf2_util_response_get_type()
  *
  * Return value: a newly created #LassoIdWsf2UtilResponse object
  **/
-LassoNode*
+LassoIdWsf2UtilResponse*
 lasso_idwsf2_util_response_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_UTIL_RESPONSE, NULL);

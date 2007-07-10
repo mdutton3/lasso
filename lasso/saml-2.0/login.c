@@ -56,8 +56,9 @@
 #include <lasso/xml/ws/wsa_endpoint_reference.h>
 #include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
 #include <lasso/xml/id-wsf-2.0/disco_abstract.h>
-#include <lasso/xml/id-wsf-2.0/disco_providerid.h>
+#include <lasso/xml/id-wsf-2.0/disco_provider_id.h>
 #include <lasso/xml/id-wsf-2.0/disco_service_type.h>
+#include <lasso/xml/id-wsf-2.0/disco_service_context.h>
 #include <lasso/xml/id-wsf-2.0/disco_security_context.h>
 #include <lasso/xml/id-wsf-2.0/sec_token.h>
 #endif
@@ -610,6 +611,8 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	LassoIdWsf2DiscoSecurityContext *security_context;
 	LassoIdWsf2SecToken *sec_token;
 	LassoSaml2Assertion *assertion_identity_token;
+	LassoIdWsf2DiscoServiceContext *service_context;
+	LassoIdWsf2DiscoEndpointContext *endpoint_context;
 
 	/* Get metadatas ids to which the user is associated */
 	svcMDIDs = lasso_identity_get_svc_md_ids(LASSO_PROFILE(login)->identity);
@@ -633,33 +636,37 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	/* FIXME : foreach on the whole list and build on epr for each svcMD */
 	svcMD = svcMDs->data;
 
-	if (svcMD == NULL || svcMD->ServiceContext == NULL
-			|| svcMD->ServiceContext->EndpointContext == NULL) {
+	if (svcMD == NULL || svcMD->ServiceContext == NULL || svcMD->ServiceContext->data == NULL) {
 		return;
 	}
 
 	/* Build EndpointReference */
 
-	epr = LASSO_WSA_ENDPOINT_REFERENCE(lasso_wsa_endpoint_reference_new());
+	epr = lasso_wsa_endpoint_reference_new();
+	service_context = LASSO_IDWSF2_DISCO_SERVICE_CONTEXT(svcMD->ServiceContext->data);
+	endpoint_context = LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT(
+			service_context->EndpointContext->data);
 
-	epr->Address = LASSO_WSA_ATTRIBUTED_URI(lasso_wsa_attributed_uri_new_with_string(
-		svcMD->ServiceContext->EndpointContext->Address));
+	epr->Address = lasso_wsa_attributed_uri_new_with_string(
+		(gchar*)endpoint_context->Address->data);
 
 	metadata = LASSO_WSA_METADATA(lasso_wsa_metadata_new());
 
 	/* Abstract */
 	metadata->any = g_list_append(metadata->any,
- 		lasso_idwsf2_disco_abstract_new_with_content(svcMD->Abstract));
+ 		lasso_idwsf2_disco_abstract_new_with_string(svcMD->Abstract));
  	/* ProviderID */
 	metadata->any = g_list_append(metadata->any,
- 		lasso_idwsf2_disco_providerid_new_with_content(svcMD->ProviderID));
+ 		lasso_idwsf2_disco_provider_id_new_with_string(svcMD->ProviderID));
  	/* ServiceType */
 	metadata->any = g_list_append(metadata->any,
- 		lasso_idwsf2_disco_service_type_new_with_content(
- 			svcMD->ServiceContext->ServiceType));
+ 		lasso_idwsf2_disco_service_type_new_with_string(
+ 			(char*)service_context->ServiceType->data));
 	/* Framework */
-	metadata->any = g_list_append(metadata->any,
-		g_object_ref(svcMD->ServiceContext->EndpointContext->Framework));
+	if (endpoint_context->Framework != NULL) {
+		metadata->any = g_list_append(metadata->any,
+			g_object_ref((GObject*)endpoint_context->Framework->data));
+	}
 	
 	/* Identity token */
 	assertion_identity_token = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());

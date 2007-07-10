@@ -36,18 +36,24 @@ extern "C" {
 
 #define LASSO_TYPE_WSA_ENDPOINT_REFERENCE (lasso_wsa_endpoint_reference_get_type())
 #define LASSO_WSA_ENDPOINT_REFERENCE(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_WSA_ENDPOINT_REFERENCE, \
-				LassoWsAddrEndpointReference))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_WSA_ENDPOINT_REFERENCE, \
+		LassoWsAddrEndpointReference))
 #define LASSO_WSA_ENDPOINT_REFERENCE_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_WSA_ENDPOINT_REFERENCE, \
-				LassoWsAddrEndpointReferenceClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_WSA_ENDPOINT_REFERENCE, \
+		LassoWsAddrEndpointReferenceClass))
 #define LASSO_IS_WSA_ENDPOINT_REFERENCE(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_WSA_ENDPOINT_REFERENCE))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_WSA_ENDPOINT_REFERENCE))
 #define LASSO_IS_WSA_ENDPOINT_REFERENCE_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_WSA_ENDPOINT_REFERENCE))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_WSA_ENDPOINT_REFERENCE))
 #define LASSO_WSA_ENDPOINT_REFERENCE_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSA_ENDPOINT_REFERENCE, \
-				LassoWsAddrEndpointReferenceClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_WSA_ENDPOINT_REFERENCE, \
+		LassoWsAddrEndpointReferenceClass)) 
+
 
 typedef struct _LassoWsAddrEndpointReference LassoWsAddrEndpointReference;
 typedef struct _LassoWsAddrEndpointReferenceClass LassoWsAddrEndpointReferenceClass;
@@ -61,6 +67,7 @@ struct _LassoWsAddrEndpointReference {
 	LassoWsAddrAttributedURI *Address;
 	LassoWsAddrReferenceParameters *ReferenceParameters;
 	LassoWsAddrMetadata *Metadata;
+	GList *any; /* of LassoNode */
 	/* attributes */
 	GHashTable *attributes;
 };
@@ -70,10 +77,10 @@ struct _LassoWsAddrEndpointReferenceClass {
 	LassoNodeClass parent;
 };
 
-void lasso_wsa_endpoint_reference_destroy(LassoWsAddrEndpointReference *epr);
-
 LASSO_EXPORT GType lasso_wsa_endpoint_reference_get_type(void);
 LASSO_EXPORT LassoWsAddrEndpointReference* lasso_wsa_endpoint_reference_new(void);
+
+
 
 #ifdef __cplusplus
 }

@@ -34,18 +34,24 @@ extern "C" {
 
 #define LASSO_TYPE_WSA_PROBLEM_ACTION (lasso_wsa_problem_action_get_type())
 #define LASSO_WSA_PROBLEM_ACTION(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_WSA_PROBLEM_ACTION, \
-				LassoWsAddrProblemAction))
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
+		LASSO_TYPE_WSA_PROBLEM_ACTION, \
+		LassoWsAddrProblemAction))
 #define LASSO_WSA_PROBLEM_ACTION_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_WSA_PROBLEM_ACTION, \
-				LassoWsAddrProblemActionClass))
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+		LASSO_TYPE_WSA_PROBLEM_ACTION, \
+		LassoWsAddrProblemActionClass))
 #define LASSO_IS_WSA_PROBLEM_ACTION(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_WSA_PROBLEM_ACTION))
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+		LASSO_TYPE_WSA_PROBLEM_ACTION))
 #define LASSO_IS_WSA_PROBLEM_ACTION_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_WSA_PROBLEM_ACTION))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
+		LASSO_TYPE_WSA_PROBLEM_ACTION))
 #define LASSO_WSA_PROBLEM_ACTION_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSA_PROBLEM_ACTION, \
-				LassoWsAddrProblemActionClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), \
+		LASSO_TYPE_WSA_PROBLEM_ACTION, \
+		LassoWsAddrProblemActionClass)) 
+
 
 typedef struct _LassoWsAddrProblemAction LassoWsAddrProblemAction;
 typedef struct _LassoWsAddrProblemActionClass LassoWsAddrProblemActionClass;
@@ -68,7 +74,7 @@ struct _LassoWsAddrProblemActionClass {
 };
 
 LASSO_EXPORT GType lasso_wsa_problem_action_get_type(void);
-LASSO_EXPORT LassoNode* lasso_wsa_problem_action_new(void);
+LASSO_EXPORT LassoWsAddrProblemAction* lasso_wsa_problem_action_new(void);
 
 
 
