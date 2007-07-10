@@ -45,6 +45,7 @@ testSuites = (
     'binding_tests',
     'profiles_tests',
     'errorchecking_tests',
+    'idwsf2_tests'
     )
 
 
@@ -97,4 +98,3 @@ if options.xmlMode:
     print """</testsuites>"""
 
 sys.exit(not success)
-
