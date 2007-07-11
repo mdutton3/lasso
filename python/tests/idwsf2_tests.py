@@ -56,7 +56,7 @@ class IdWsf2TestCase(unittest.TestCase):
 
     def getWscServer(self):
         wsc_metadata = os.path.join(dataDir, 'sp6-saml2/metadata.xml')
-        wsc_private_key = os.path.join(dataDir, 'sp6-saml2/private-key.xml')
+        wsc_private_key = os.path.join(dataDir, 'sp6-saml2/private-key.pem')
         idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
 
         server = lasso.Server(wsc_metadata, wsc_private_key, None, None)
@@ -376,8 +376,9 @@ class MetadataAssociationAddTestCase(IdWsf2TestCase):
 
         try:
             wsp_disco.initMetadataAssociationAdd(svcMDID)
-        except:
-            pass
+        except lasso.Error, e:
+            if e[0] != lasso.PROFILE_ERROR_SESSION_NOT_FOUND:
+                self.fail(e)
         else:
             self.fail('Should have a "session not found" exception')
 
@@ -565,7 +566,511 @@ class MetadataAssociationAddTestCase(IdWsf2TestCase):
 
 
 class DiscoveryQueryTestCase(IdWsf2TestCase):
-    pass
+    def test01(self):
+        """Init discovery query"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        idp, svcMDID = self.metadataRegister(wsp, idp)
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        if wsp_identity_dump is not None:
+            wsp_disco.setIdentityFromDump(wsp_identity_dump)
+        if wsp_session_dump is not None:
+            wsp_disco.setSessionFromDump(wsp_session_dump)
+        wsp_disco.initMetadataAssociationAdd(svcMDID)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        idp_disco.registerMetadata()
+        if idp_disco.isIdentityDirty:
+            idp_identity_dump = idp_disco.identity.dump()
+        if idp_disco.isSessionDirty:
+            idp_session_dump = idp_disco.session.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataAssociationAddResponseMsg(idp_disco.msgBody)
+
+        wsc = self.getWscServer()
+        wsc_identity_dump, wsc_session_dump, idp_identity_dump, idp_session_dump = self.login(wsc, idp)
+
+        wsc_disco = lasso.IdWsf2Discovery(wsc)
+        if wsc_identity_dump is not None:
+            wsc_disco.setIdentityFromDump(wsc_identity_dump)
+        if wsc_session_dump is not None:
+            wsc_disco.setSessionFromDump(wsc_session_dump)
+
+        try:
+            wsc_disco.initQuery()
+        except lasso.Error, e:
+            self.fail(e)
+
+    def test02(self):
+        """Init discovery query without login"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        idp, svcMDID = self.metadataRegister(wsp, idp)
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        if wsp_identity_dump is not None:
+            wsp_disco.setIdentityFromDump(wsp_identity_dump)
+        if wsp_session_dump is not None:
+            wsp_disco.setSessionFromDump(wsp_session_dump)
+        wsp_disco.initMetadataAssociationAdd(svcMDID)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        idp_disco.registerMetadata()
+        if idp_disco.isIdentityDirty:
+            idp_identity_dump = idp_disco.identity.dump()
+        if idp_disco.isSessionDirty:
+            idp_session_dump = idp_disco.session.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataAssociationAddResponseMsg(idp_disco.msgBody)
+
+        wsc = self.getWscServer()
+
+        wsc_disco = lasso.IdWsf2Discovery(wsc)
+
+        try:
+            wsc_disco.initQuery()
+        except lasso.Error, e:
+            if e[0] != lasso.PROFILE_ERROR_SESSION_NOT_FOUND:
+                self.fail(e)
+        else:
+            self.fail('Should have a "session not found" exception')
+
+    def test03(self):
+        """Init discovery query - check msg url"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        idp, svcMDID = self.metadataRegister(wsp, idp)
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        if wsp_identity_dump is not None:
+            wsp_disco.setIdentityFromDump(wsp_identity_dump)
+        if wsp_session_dump is not None:
+            wsp_disco.setSessionFromDump(wsp_session_dump)
+        wsp_disco.initMetadataAssociationAdd(svcMDID)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        idp_disco.registerMetadata()
+        if idp_disco.isIdentityDirty:
+            idp_identity_dump = idp_disco.identity.dump()
+        if idp_disco.isSessionDirty:
+            idp_session_dump = idp_disco.session.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataAssociationAddResponseMsg(idp_disco.msgBody)
+
+        wsc = self.getWscServer()
+        wsc_identity_dump, wsc_session_dump, idp_identity_dump, idp_session_dump = self.login(wsc, idp)
+
+        wsc_disco = lasso.IdWsf2Discovery(wsc)
+        if wsc_identity_dump is not None:
+            wsc_disco.setIdentityFromDump(wsc_identity_dump)
+        if wsc_session_dump is not None:
+            wsc_disco.setSessionFromDump(wsc_session_dump)
+
+        wsc_disco.initQuery()
+
+        self.failUnless(wsc_disco.msgUrl, 'missing msgUrl')
+
+    def test04(self):
+        """Add requested service type to discovery query"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        idp, svcMDID = self.metadataRegister(wsp, idp)
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        if wsp_identity_dump is not None:
+            wsp_disco.setIdentityFromDump(wsp_identity_dump)
+        if wsp_session_dump is not None:
+            wsp_disco.setSessionFromDump(wsp_session_dump)
+        wsp_disco.initMetadataAssociationAdd(svcMDID)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        idp_disco.registerMetadata()
+        if idp_disco.isIdentityDirty:
+            idp_identity_dump = idp_disco.identity.dump()
+        if idp_disco.isSessionDirty:
+            idp_session_dump = idp_disco.session.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataAssociationAddResponseMsg(idp_disco.msgBody)
+
+        wsc = self.getWscServer()
+        wsc_identity_dump, wsc_session_dump, idp_identity_dump, idp_session_dump = self.login(wsc, idp)
+
+        wsc_disco = lasso.IdWsf2Discovery(wsc)
+        if wsc_identity_dump is not None:
+            wsc_disco.setIdentityFromDump(wsc_identity_dump)
+        if wsc_session_dump is not None:
+            wsc_disco.setSessionFromDump(wsc_session_dump)
+
+        wsc_disco.initQuery()
+
+        try:
+            wsc_disco.addRequestedServiceType('urn:liberty:id-sis-pp:2005-05')
+        except lasso.Error, e:
+            self.fail(e)
+
+    def test05(self):
+        """Build discovery query"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        idp, svcMDID = self.metadataRegister(wsp, idp)
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        if wsp_identity_dump is not None:
+            wsp_disco.setIdentityFromDump(wsp_identity_dump)
+        if wsp_session_dump is not None:
+            wsp_disco.setSessionFromDump(wsp_session_dump)
+        wsp_disco.initMetadataAssociationAdd(svcMDID)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        idp_disco.registerMetadata()
+        if idp_disco.isIdentityDirty:
+            idp_identity_dump = idp_disco.identity.dump()
+        if idp_disco.isSessionDirty:
+            idp_session_dump = idp_disco.session.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataAssociationAddResponseMsg(idp_disco.msgBody)
+
+        wsc = self.getWscServer()
+        wsc_identity_dump, wsc_session_dump, idp_identity_dump, idp_session_dump = self.login(wsc, idp)
+
+        wsc_disco = lasso.IdWsf2Discovery(wsc)
+        if wsc_identity_dump is not None:
+            wsc_disco.setIdentityFromDump(wsc_identity_dump)
+        if wsc_session_dump is not None:
+            wsc_disco.setSessionFromDump(wsc_session_dump)
+
+        wsc_disco.initQuery()
+        wsc_disco.addRequestedServiceType('urn:liberty:id-sis-pp:2005-05')
+        wsc_disco.buildRequestMsg()
+
+        self.failUnless(wsc_disco.msgBody)
+
+    def test06(self):
+        """Process discovery query"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        idp, svcMDID = self.metadataRegister(wsp, idp)
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        if wsp_identity_dump is not None:
+            wsp_disco.setIdentityFromDump(wsp_identity_dump)
+        if wsp_session_dump is not None:
+            wsp_disco.setSessionFromDump(wsp_session_dump)
+        wsp_disco.initMetadataAssociationAdd(svcMDID)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        idp_disco.registerMetadata()
+        if idp_disco.isIdentityDirty:
+            idp_identity_dump = idp_disco.identity.dump()
+        if idp_disco.isSessionDirty:
+            idp_session_dump = idp_disco.session.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataAssociationAddResponseMsg(idp_disco.msgBody)
+
+        wsc = self.getWscServer()
+        wsc_identity_dump, wsc_session_dump, idp_identity_dump, idp_session_dump = self.login(wsc, idp)
+
+        wsc_disco = lasso.IdWsf2Discovery(wsc)
+        if wsc_identity_dump is not None:
+            wsc_disco.setIdentityFromDump(wsc_identity_dump)
+        if wsc_session_dump is not None:
+            wsc_disco.setSessionFromDump(wsc_session_dump)
+
+        wsc_disco.initQuery()
+        wsc_disco.addRequestedServiceType('urn:liberty:id-sis-pp:2005-05')
+        wsc_disco.buildRequestMsg()
+
+        try:
+            idp_disco.processQueryMsg(wsc_disco.msgBody)
+        except lasso.Error, e:
+            self.fail(e)
+
+    def test07(self):
+        """Build discovery query response EPRs"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        idp, svcMDID = self.metadataRegister(wsp, idp)
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        if wsp_identity_dump is not None:
+            wsp_disco.setIdentityFromDump(wsp_identity_dump)
+        if wsp_session_dump is not None:
+            wsp_disco.setSessionFromDump(wsp_session_dump)
+        wsp_disco.initMetadataAssociationAdd(svcMDID)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        idp_disco.registerMetadata()
+        if idp_disco.isIdentityDirty:
+            idp_identity_dump = idp_disco.identity.dump()
+        if idp_disco.isSessionDirty:
+            idp_session_dump = idp_disco.session.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataAssociationAddResponseMsg(idp_disco.msgBody)
+
+        wsc = self.getWscServer()
+        wsc_identity_dump, wsc_session_dump, idp_identity_dump, idp_session_dump = self.login(wsc, idp)
+
+        wsc_disco = lasso.IdWsf2Discovery(wsc)
+        if wsc_identity_dump is not None:
+            wsc_disco.setIdentityFromDump(wsc_identity_dump)
+        if wsc_session_dump is not None:
+            wsc_disco.setSessionFromDump(wsc_session_dump)
+
+        wsc_disco.initQuery()
+        wsc_disco.addRequestedServiceType('urn:liberty:id-sis-pp:2005-05')
+        wsc_disco.buildRequestMsg()
+
+        idp_disco.processQueryMsg(wsc_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        try:
+            idp_disco.buildQueryResponseEprs()
+        except lasso.Error, e:
+            self.fail(e)
+
+    def test08(self):
+        """Build discovery query response"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        idp, svcMDID = self.metadataRegister(wsp, idp)
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        if wsp_identity_dump is not None:
+            wsp_disco.setIdentityFromDump(wsp_identity_dump)
+        if wsp_session_dump is not None:
+            wsp_disco.setSessionFromDump(wsp_session_dump)
+        wsp_disco.initMetadataAssociationAdd(svcMDID)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        idp_disco.registerMetadata()
+        if idp_disco.isIdentityDirty:
+            idp_identity_dump = idp_disco.identity.dump()
+        if idp_disco.isSessionDirty:
+            idp_session_dump = idp_disco.session.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataAssociationAddResponseMsg(idp_disco.msgBody)
+
+        wsc = self.getWscServer()
+        wsc_identity_dump, wsc_session_dump, idp_identity_dump, idp_session_dump = self.login(wsc, idp)
+
+        wsc_disco = lasso.IdWsf2Discovery(wsc)
+        if wsc_identity_dump is not None:
+            wsc_disco.setIdentityFromDump(wsc_identity_dump)
+        if wsc_session_dump is not None:
+            wsc_disco.setSessionFromDump(wsc_session_dump)
+
+        wsc_disco.initQuery()
+        wsc_disco.addRequestedServiceType('urn:liberty:id-sis-pp:2005-05')
+        wsc_disco.buildRequestMsg()
+
+        idp_disco.processQueryMsg(wsc_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+        idp_disco.buildQueryResponseEprs()
+        idp_disco.buildResponseMsg()
+
+        self.failUnless(idp_disco.msgBody, 'missing msgBody')
+
+    def test09(self):
+        """Process discovery query response"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        idp, svcMDID = self.metadataRegister(wsp, idp)
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        if wsp_identity_dump is not None:
+            wsp_disco.setIdentityFromDump(wsp_identity_dump)
+        if wsp_session_dump is not None:
+            wsp_disco.setSessionFromDump(wsp_session_dump)
+        wsp_disco.initMetadataAssociationAdd(svcMDID)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        idp_disco.registerMetadata()
+        if idp_disco.isIdentityDirty:
+            idp_identity_dump = idp_disco.identity.dump()
+        if idp_disco.isSessionDirty:
+            idp_session_dump = idp_disco.session.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataAssociationAddResponseMsg(idp_disco.msgBody)
+
+        wsc = self.getWscServer()
+        wsc_identity_dump, wsc_session_dump, idp_identity_dump, idp_session_dump = self.login(wsc, idp)
+
+        wsc_disco = lasso.IdWsf2Discovery(wsc)
+        if wsc_identity_dump is not None:
+            wsc_disco.setIdentityFromDump(wsc_identity_dump)
+        if wsc_session_dump is not None:
+            wsc_disco.setSessionFromDump(wsc_session_dump)
+
+        wsc_disco.initQuery()
+        wsc_disco.addRequestedServiceType('urn:liberty:id-sis-pp:2005-05')
+        wsc_disco.buildRequestMsg()
+
+        idp_disco.processQueryMsg(wsc_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+        idp_disco.buildQueryResponseEprs()
+        idp_disco.buildResponseMsg()
+
+        try:
+            wsc_disco.processQueryResponseMsg(idp_disco.msgBody)
+        except lasso.Error, e:
+            self.fail(e)
+
+    def test10(self):
+        """Check discovery query result"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        idp, svcMDID = self.metadataRegister(wsp, idp)
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        if wsp_identity_dump is not None:
+            wsp_disco.setIdentityFromDump(wsp_identity_dump)
+        if wsp_session_dump is not None:
+            wsp_disco.setSessionFromDump(wsp_session_dump)
+        wsp_disco.initMetadataAssociationAdd(svcMDID)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+
+        idp_disco.registerMetadata()
+        if idp_disco.isIdentityDirty:
+            idp_identity_dump = idp_disco.identity.dump()
+        if idp_disco.isSessionDirty:
+            idp_session_dump = idp_disco.session.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataAssociationAddResponseMsg(idp_disco.msgBody)
+
+        wsc = self.getWscServer()
+        wsc_identity_dump, wsc_session_dump, idp_identity_dump, idp_session_dump = self.login(wsc, idp)
+
+        wsc_disco = lasso.IdWsf2Discovery(wsc)
+        if wsc_identity_dump is not None:
+            wsc_disco.setIdentityFromDump(wsc_identity_dump)
+        if wsc_session_dump is not None:
+            wsc_disco.setSessionFromDump(wsc_session_dump)
+
+        wsc_disco.initQuery()
+        wsc_disco.addRequestedServiceType('urn:liberty:id-sis-pp:2005-05')
+        wsc_disco.buildRequestMsg()
+
+        idp_disco.processQueryMsg(wsc_disco.msgBody)
+        if idp_identity_dump is not None:
+            idp_disco.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            idp_disco.setSessionFromDump(idp_session_dump)
+        idp_disco.buildQueryResponseEprs()
+        idp_disco.buildResponseMsg()
+
+        wsc_disco.processQueryResponseMsg(idp_disco.msgBody)
+
+        self.failUnless(wsc_disco.getService(), 'missing service after discovery query')
 
 
 idpSelfRegistrationSuite = unittest.makeSuite(IdpSelfRegistrationTestCase, 'test')
