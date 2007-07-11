@@ -91,7 +91,7 @@ class IdpSelfRegistrationTestCase(unittest.TestCase):
 
         svcMDID = disco.metadataRegisterSelf(service_type, abstract, soapEndpoint)
 
-        self.failUnless(svcMDID is None, 'svcMDID should not be set')
+        self.failIf(svcMDID, 'svcMDID should not be set')
 
 
 class MetadataRegisterTestCase(unittest.TestCase):
@@ -140,56 +140,159 @@ class MetadataRegisterTestCase(unittest.TestCase):
 
         svcMDID = disco.metadataRegisterSelf(service_type, abstract, soapEndpoint)
 
-        self.idp_server_dump = idp_server.dump()
+        # Usually store the server dump instead
+        return idp_server
 
     def test01(self):
-        """Register service metadatas"""
+        """Init metadata registration request"""
 
         idp = self.getIdpServer()
-        self.idpRegisterSelf(idp)
-        idp = self.getIdpServer()
-        
+        idp = self.idpRegisterSelf(idp)
         wsp = self.getWspServer()
-
-        disco = lasso.IdWsf2Discovery(wsp)
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
 
         abstract = 'Personal Profile service'
         soapEndpoint = 'http://idp1/soapEndpoint'
         try:
-            disco.initMetadataRegister(
+            wsp_disco.initMetadataRegister(
                 'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
         except lasso.Error, e:
             self.fail(e)
 
-        disco.buildRequestMsg()
 
-        # FIXME : set msgUrl
-#        self.failUnless(disco.msgUrl, 'msgUrl should be set')
+    def test02(self):
+        """Build metadata registration request"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
 
-        soap_msg = disco.msgBody
-        self.failUnless(soap_msg, 'missing soap message')
+        abstract = 'Personal Profile service'
+        soapEndpoint = 'http://idp1/soapEndpoint'
+        wsp_disco.initMetadataRegister(
+                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
+        wsp_disco.buildRequestMsg()
 
-        request_type = lasso.getRequestTypeFromSoapMsg(soap_msg)
+        self.failUnless(wsp_disco.msgBody, 'missing soap request')
+
+    def test03(self):
+        """Check metadata registration request type"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+
+        abstract = 'Personal Profile service'
+        soapEndpoint = 'http://idp1/soapEndpoint'
+        wsp_disco.initMetadataRegister(
+                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
+        wsp_disco.buildRequestMsg()
+
+        request_type = lasso.getRequestTypeFromSoapMsg(wsp_disco.msgBody)
         self.failUnlessEqual(request_type, lasso.REQUEST_TYPE_IDWSF2_DISCO_SVCMD_REGISTER,
             'wrong request type in metadata_register : %s' % request_type)
 
+    def test04(self):
+        """Process metadata registration request"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+
+        abstract = 'Personal Profile service'
+        soapEndpoint = 'http://idp1/soapEndpoint'
+        wsp_disco.initMetadataRegister(
+                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
+        wsp_disco.buildRequestMsg()
+
         idp_disco = lasso.IdWsf2Discovery(idp)
-        idp_disco.processMetadataRegisterMsg(soap_msg)
-        self.idp_server_dump = idp.dump()
+        try:
+            idp_disco.processMetadataRegisterMsg(wsp_disco.msgBody)
+        except lasso.Error, e:
+            self.fail(e)
+
+    def test05(self):
+        """Check metadata registration on the Discovery service"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+
+        abstract = 'Personal Profile service'
+        soapEndpoint = 'http://idp1/soapEndpoint'
+        wsp_disco.initMetadataRegister(
+                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataRegisterMsg(wsp_disco.msgBody)
 
         self.failUnless(idp_disco.metadata.dump(), 'missing registered metadata')
 
+    def test06(self):
+        """Build metadata registration response"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+
+        abstract = 'Personal Profile service'
+        soapEndpoint = 'http://idp1/soapEndpoint'
+        wsp_disco.initMetadataRegister(
+                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataRegisterMsg(wsp_disco.msgBody)
+        self.idp_server_dump = idp.dump()
         idp_disco.buildResponseMsg()
-        soap_answer = idp_disco.msgBody
 
-        self.failUnless(soap_answer, 'missing soap answer')
+        self.failUnless(idp_disco.msgBody, 'missing soap answer')
 
-        disco.processMetadataRegisterResponseMsg(soap_answer)
+    def test07(self):
+        """Process metadata registration response"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
 
-        svcMDID = disco.svcMDID
-        self.failUnless(svcMDID, 'missing svcMDID')
+        abstract = 'Personal Profile service'
+        soapEndpoint = 'http://idp1/soapEndpoint'
+        wsp_disco.initMetadataRegister(
+                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
+        wsp_disco.buildRequestMsg()
 
-        #self.services[service_type] = svcMDID
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataRegisterMsg(wsp_disco.msgBody)
+        self.idp_server_dump = idp.dump()
+        idp_disco.buildResponseMsg()
+
+        try:
+            wsp_disco.processMetadataRegisterResponseMsg(idp_disco.msgBody)
+        except lasso.Error, e:
+            self.fail(e)
+
+    def test08(self):
+        """Check metadata registration on the WSP"""
+        idp = self.getIdpServer()
+        idp = self.idpRegisterSelf(idp)
+        wsp = self.getWspServer()
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+
+        abstract = 'Personal Profile service'
+        soapEndpoint = 'http://idp1/soapEndpoint'
+        wsp_disco.initMetadataRegister(
+                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataRegisterMsg(wsp_disco.msgBody)
+        self.idp_server_dump = idp.dump()
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataRegisterResponseMsg(idp_disco.msgBody)
+
+        self.failUnless(wsp_disco.svcMDID, 'missing svcMDID')
 
 
 idpSelfRegistrationSuite = unittest.makeSuite(IdpSelfRegistrationTestCase, 'test')
