@@ -43,15 +43,115 @@ except NameError:
     dataDir = '../../tests/data'
 
 
-class IdpSelfRegistrationTestCase(unittest.TestCase):
-    def getIdpServer(self):
+class IdWsf2TestCase(unittest.TestCase):
+    def getWspServer(self):
+        wsp_metadata = os.path.join(dataDir, 'sp5-saml2/metadata.xml')
+        wsp_private_key = os.path.join(dataDir, 'sp5-saml2/private-key.pem')
         idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
-        idp_private_key = os.path.join(dataDir, 'idp5-saml2/private-key.pem')
 
-        server = lasso.Server(idp_metadata, idp_private_key, None, None)
+        server = lasso.Server(wsp_metadata, wsp_private_key, None, None)
+        server.addProvider(lasso.PROVIDER_ROLE_IDP, idp_metadata, None, None)
+
+        return server;
+
+    def getWscServer(self):
+        wsc_metadata = os.path.join(dataDir, 'sp6-saml2/metadata.xml')
+        wsc_private_key = os.path.join(dataDir, 'sp6-saml2/private-key.xml')
+        idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
+
+        server = lasso.Server(wsc_metadata, wsc_private_key, None, None)
+        server.addProvider(lasso.PROVIDER_ROLE_IDP, idp_metadata, None, None)
+
+        return server;
+
+    def getIdpServer(self):
+        if hasattr(self, 'idp_server_dump') and self.idp_server_dump is not None:
+            server = lasso.Server.newFromDump(self.idp_server_dump)
+        else:
+            idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
+            idp_private_key = os.path.join(dataDir, 'idp5-saml2/private-key.pem')
+            wsp_metadata = os.path.join(dataDir, 'sp5-saml2/metadata.xml')
+            wsc_metadata = os.path.join(dataDir, 'sp6-saml2/metadata.xml')
+
+            server = lasso.Server(idp_metadata, idp_private_key, None, None)
+            server.addProvider(lasso.PROVIDER_ROLE_SP, wsp_metadata, None, None)
+            server.addProvider(lasso.PROVIDER_ROLE_SP, wsc_metadata, None, None)
+            self.idp_server_dump = server.dump()
         
         return server
 
+    def idpRegisterSelf(self, idp_server):
+        disco = lasso.IdWsf2Discovery(idp_server)
+        service_type = lasso.IDWSF2_DISCO_HREF
+        abstract = 'Disco service'
+        soapEndpoint = 'http://idp1/soapEndpoint'
+        disco.metadataRegisterSelf(service_type, abstract, soapEndpoint)
+
+        return idp_server
+
+    def metadataRegister(self, wsp, idp):
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        abstract = 'Personal Profile service'
+        soapEndpoint = 'http://idp1/soapEndpoint'
+        wsp_disco.initMetadataRegister(
+                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
+        wsp_disco.buildRequestMsg()
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        idp_disco.processMetadataRegisterMsg(wsp_disco.msgBody)
+        idp_disco.buildResponseMsg()
+
+        wsp_disco.processMetadataRegisterResponseMsg(idp_disco.msgBody)
+        return idp, wsp_disco.svcMDID
+
+    def login(self, sp, idp, sp_identity_dump=None, sp_session_dump=None,
+            idp_identity_dump=None, idp_session_dump=None):
+        sp_login = lasso.Login(sp)
+        idp_provider_id = 'http://idp5/metadata'
+        sp_login.initAuthnRequest(idp_provider_id, lasso.HTTP_METHOD_REDIRECT)
+        sp_login.request.nameIDPolicy.format = lasso.SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT
+        sp_login.request.nameIDPolicy.allowCreate = True
+        sp_login.buildAuthnRequestMsg()
+
+        idp_login = lasso.Login(idp)
+        query = sp_login.msgUrl.split('?')[1]
+        if idp_identity_dump is not None:
+            login.setIdentityFromDump(idp_identity_dump)
+        if idp_session_dump is not None:
+            login.setSessionFromDump(idp_session_dump)
+        idp_login.processAuthnRequestMsg(query)
+        idp_login.validateRequestMsg(True, True)
+        idp_login.buildAssertion(lasso.SAML_AUTHENTICATION_METHOD_PASSWORD, None, None, None, None)
+        idp_login.buildArtifactMsg(lasso.HTTP_METHOD_ARTIFACT_GET)
+        artifact_message = idp_login.artifactMessage
+
+        if idp_login.isIdentityDirty:
+            idp_identity_dump = idp_login.identity.dump()
+        if idp_login.isSessionDirty:
+            idp_session_dump = idp_login.session.dump()
+    
+        sp_login = lasso.Login(sp)
+        query = idp_login.msgUrl.split('?')[1]
+        query = query.replace("%3D", "=")
+        sp_login.initRequest(query, lasso.HTTP_METHOD_ARTIFACT_GET)
+        sp_login.buildRequestMsg()
+
+        idp_login = lasso.Login(idp)
+        idp_login.processRequestMsg(sp_login.msgBody)
+        idp_login.artifactMessage = artifact_message
+        idp_login.buildResponseMsg(None)
+
+        sp_login.processResponseMsg(idp_login.msgBody)
+        sp_login.acceptSso()
+        if sp_login.isIdentityDirty:
+            sp_identity_dump = sp_login.identity.dump()
+        if sp_login.isSessionDirty:
+            sp_session_dump = sp_login.session.dump()
+        
+        return sp_identity_dump, sp_session_dump, idp_identity_dump, idp_session_dump
+
+
+class IdpSelfRegistrationTestCase(IdWsf2TestCase):
     def test01(self):
         """Register IdP as Dicovery Service and get a random svcMDID"""
 
@@ -96,42 +196,7 @@ class IdpSelfRegistrationTestCase(unittest.TestCase):
         self.failIf(svcMDID, 'svcMDID should not be set')
 
 
-class MetadataRegisterTestCase(unittest.TestCase):
-    def getWspServer(self):
-        wsp_metadata = os.path.join(dataDir, 'sp5-saml2/metadata.xml')
-        wsp_private_key = os.path.join(dataDir, 'sp5-saml2/private-key.pem')
-        idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
-
-        server = lasso.Server(wsp_metadata, wsp_private_key, None, None)
-        server.addProvider(lasso.PROVIDER_ROLE_IDP, idp_metadata, None, None)
-
-        return server;
-
-    def getIdpServer(self):
-        if hasattr(self, 'idp_server_dump') and self.idp_server_dump is not None:
-            server = lasso.Server.newFromDump(self.idp_server_dump)
-        else:
-            idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
-            idp_private_key = os.path.join(dataDir, 'idp5-saml2/private-key.pem')
-            wsp_metadata = os.path.join(dataDir, 'sp5-saml2/metadata.xml')
-            wsc_metadata = os.path.join(dataDir, 'sp6-saml2/metadata.xml')
-
-            server = lasso.Server(idp_metadata, idp_private_key, None, None)
-            server.addProvider(lasso.PROVIDER_ROLE_SP, wsp_metadata, None, None)
-            server.addProvider(lasso.PROVIDER_ROLE_SP, wsc_metadata, None, None)
-            self.idp_server_dump = server.dump()
-        
-        return server
-
-    def idpRegisterSelf(self, idp_server):
-        disco = lasso.IdWsf2Discovery(idp_server)
-        service_type = lasso.IDWSF2_DISCO_HREF
-        abstract = 'Disco service'
-        soapEndpoint = 'http://idp1/soapEndpoint'
-        disco.metadataRegisterSelf(service_type, abstract, soapEndpoint)
-
-        return idp_server
-
+class MetadataRegisterTestCase(IdWsf2TestCase):
     def test01(self):
         """Init metadata registration request"""
 
@@ -280,103 +345,7 @@ class MetadataRegisterTestCase(unittest.TestCase):
 
         self.failUnless(wsp_disco.svcMDID, 'missing svcMDID')
 
-class MetadataAssociationAddTestCase(unittest.TestCase):
-    def getWspServer(self):
-        wsp_metadata = os.path.join(dataDir, 'sp5-saml2/metadata.xml')
-        wsp_private_key = os.path.join(dataDir, 'sp5-saml2/private-key.pem')
-        idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
-
-        server = lasso.Server(wsp_metadata, wsp_private_key, None, None)
-        server.addProvider(lasso.PROVIDER_ROLE_IDP, idp_metadata, None, None)
-
-        return server;
-
-    def getIdpServer(self):
-        if hasattr(self, 'idp_server_dump') and self.idp_server_dump is not None:
-            server = lasso.Server.newFromDump(self.idp_server_dump)
-        else:
-            idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
-            idp_private_key = os.path.join(dataDir, 'idp5-saml2/private-key.pem')
-            wsp_metadata = os.path.join(dataDir, 'sp5-saml2/metadata.xml')
-            wsc_metadata = os.path.join(dataDir, 'sp6-saml2/metadata.xml')
-
-            server = lasso.Server(idp_metadata, idp_private_key, None, None)
-            server.addProvider(lasso.PROVIDER_ROLE_SP, wsp_metadata, None, None)
-            server.addProvider(lasso.PROVIDER_ROLE_SP, wsc_metadata, None, None)
-            self.idp_server_dump = server.dump()
-        
-        return server
-
-    def idpRegisterSelf(self, idp_server):
-        disco = lasso.IdWsf2Discovery(idp_server)
-        service_type = lasso.IDWSF2_DISCO_HREF
-        abstract = 'Disco service'
-        soapEndpoint = 'http://idp1/soapEndpoint'
-        disco.metadataRegisterSelf(service_type, abstract, soapEndpoint)
-
-        return idp_server
-
-    def metadataRegister(self, wsp, idp):
-        wsp_disco = lasso.IdWsf2Discovery(wsp)
-        abstract = 'Personal Profile service'
-        soapEndpoint = 'http://idp1/soapEndpoint'
-        wsp_disco.initMetadataRegister(
-                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
-        wsp_disco.buildRequestMsg()
-
-        idp_disco = lasso.IdWsf2Discovery(idp)
-        idp_disco.processMetadataRegisterMsg(wsp_disco.msgBody)
-        idp_disco.buildResponseMsg()
-
-        wsp_disco.processMetadataRegisterResponseMsg(idp_disco.msgBody)
-        return idp, wsp_disco.svcMDID
-
-    def login(self, sp, idp, sp_identity_dump=None, sp_session_dump=None,
-            idp_identity_dump=None, idp_session_dump=None):
-        sp_login = lasso.Login(sp)
-        idp_provider_id = 'http://idp5/metadata'
-        sp_login.initAuthnRequest(idp_provider_id, lasso.HTTP_METHOD_REDIRECT)
-        sp_login.request.nameIDPolicy.format = lasso.SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT
-        sp_login.request.nameIDPolicy.allowCreate = True
-        sp_login.buildAuthnRequestMsg()
-
-        idp_login = lasso.Login(idp)
-        query = sp_login.msgUrl.split('?')[1]
-        if idp_identity_dump is not None:
-            login.setIdentityFromDump(idp_identity_dump)
-        if idp_session_dump is not None:
-            login.setSessionFromDump(idp_session_dump)
-        idp_login.processAuthnRequestMsg(query)
-        idp_login.validateRequestMsg(True, True)
-        idp_login.buildAssertion(lasso.SAML_AUTHENTICATION_METHOD_PASSWORD, None, None, None, None)
-        idp_login.buildArtifactMsg(lasso.HTTP_METHOD_ARTIFACT_GET)
-        artifact_message = idp_login.artifactMessage
-
-        if idp_login.isIdentityDirty:
-            idp_identity_dump = idp_login.identity.dump()
-        if idp_login.isSessionDirty:
-            idp_session_dump = idp_login.session.dump()
-    
-        sp_login = lasso.Login(sp)
-        query = idp_login.msgUrl.split('?')[1]
-        query = query.replace("%3D", "=")
-        sp_login.initRequest(query, lasso.HTTP_METHOD_ARTIFACT_GET)
-        sp_login.buildRequestMsg()
-
-        idp_login = lasso.Login(idp)
-        idp_login.processRequestMsg(sp_login.msgBody)
-        idp_login.artifactMessage = artifact_message
-        idp_login.buildResponseMsg(None)
-
-        sp_login.processResponseMsg(idp_login.msgBody)
-        sp_login.acceptSso()
-        if sp_login.isIdentityDirty:
-            sp_identity_dump = sp_login.identity.dump()
-        if sp_login.isSessionDirty:
-            sp_session_dump = sp_login.session.dump()
-        
-        return sp_identity_dump, sp_session_dump, idp_identity_dump, idp_session_dump
-
+class MetadataAssociationAddTestCase(IdWsf2TestCase):
     def test01(self):
         """Init metadata association add request"""
         idp = self.getIdpServer()
@@ -595,11 +564,17 @@ class MetadataAssociationAddTestCase(unittest.TestCase):
             self.fail(e)
 
 
+class DiscoveryQueryTestCase(IdWsf2TestCase):
+    pass
+
+
 idpSelfRegistrationSuite = unittest.makeSuite(IdpSelfRegistrationTestCase, 'test')
 metadataRegisterSuite = unittest.makeSuite(MetadataRegisterTestCase, 'test')
 metadataAssociationAddSuite = unittest.makeSuite(MetadataAssociationAddTestCase, 'test')
+discoveryQuerySuite = unittest.makeSuite(DiscoveryQueryTestCase, 'test')
 
-allTests = unittest.TestSuite((idpSelfRegistrationSuite, metadataRegisterSuite, metadataAssociationAddSuite))
+allTests = unittest.TestSuite((idpSelfRegistrationSuite, metadataRegisterSuite,
+    metadataAssociationAddSuite, discoveryQuerySuite))
 
 if __name__ == '__main__':
     sys.exit(not unittest.TextTestRunner(verbosity = 2).run(allTests).wasSuccessful())
