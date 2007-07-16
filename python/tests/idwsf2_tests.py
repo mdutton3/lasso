@@ -1311,8 +1311,350 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
             self.failUnless(wsp_service.queryItems[i] == items[i],
                 "query items don't match : %s != %s" % (wsp_service.queryItems[i], items[i]))
 
-    def test09(self):
-        """Data service check query items"""
+    def test10(self):
+        """Data service check name identifier"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        self.failUnless(wsp_service.nameIdentifier and wsp_service.nameIdentifier.content,
+            'missing name identifier')
+
+    def test11(self):
+        """Data service parse query items - success"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        try:
+            wsp_service.parseQueryItems()
+        except lasso.Error, e:
+            self.fail(e)
+
+    def test12(self):
+        """Data service parse query items - failure - no item"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        try:
+            wsp_service.parseQueryItems()
+        except lasso.Error, e:
+            if e[0] != lasso.DST_ERROR_QUERY_FAILED:
+                self.fail(e)
+        else:
+             self.fail('query items parsing should have failed because no item was requested')
+
+    def test13(self):
+        """Data service parse query items - failure - wrong item"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('not existing attribute', 'not existing attribute')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        try:
+            wsp_service.parseQueryItems()
+        except lasso.Error, e:
+            if e[0] != lasso.DST_ERROR_QUERY_FAILED:
+                self.fail(e)
+        else:
+             self.fail('query items parsing should have failed because a wrong query item was requested')
+
+    def test14(self):
+        """Data service parse query items - failure - no data"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        try:
+            wsp_service.parseQueryItems()
+        except lasso.Error, e:
+            if e[0] != lasso.DST_ERROR_QUERY_FAILED:
+                self.fail(e)
+        else:
+             self.fail('query items parsing should have failed because no data was provided')
+
+
+    def test15(self):
+        """Data service parse query items - partial failure"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+            </PP>"""
+
+        # No exception should be raised here but one will be raised on the WSC
+        # when parsing response status
+        try:
+            wsp_service.parseQueryItems()
+        except lasso.Error, e:
+            self.fail(e)
+
+    def test16(self):
+        """Data service build query response"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        wsp_service.parseQueryItems()
+        wsp_service.buildResponseMsg()
+
+        self.failUnless(wsp_service.msgBody, 'missing msgBody')
+
+    def test17(self):
+        """Data service process query response - success"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        wsp_service.parseQueryItems()
+        wsp_service.buildResponseMsg()
+
+        try:
+            service.processQueryResponseMsg(wsp_service.msgBody)
+        except lasso.Error, e:
+            self.fail(e)
+
+    def test18(self):
+        """Data service process query response - failure"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('not existing attribute', 'not existing attribute')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        try:
+            wsp_service.parseQueryItems()
+        except lasso.Error, e:
+            pass
+        wsp_service.buildResponseMsg()
+
+        try:
+            service.processQueryResponseMsg(wsp_service.msgBody)
+        except lasso.Error, e:
+            if e[0] != lasso.DST_ERROR_QUERY_FAILED:
+                self.fail(e)
+        else:
+             self.fail('response should have a "failed" status because a wrong query item was requested')
+
+    def test19(self):
+        """Data service process query response - partial failure"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('not existing attribute', 'not existing attribute')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        wsp_service.parseQueryItems()
+        wsp_service.buildResponseMsg()
+
+        try:
+            service.processQueryResponseMsg(wsp_service.msgBody)
+        except lasso.Error, e:
+            if e[0] != lasso.DST_ERROR_QUERY_PARTIALLY_FAILED:
+                self.fail(e)
+        else:
+             self.fail('response should have a "partially failed" status because a wrong query item was requested')
+
+    def test20(self):
+        """Data service get first attribute"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        wsp_service.parseQueryItems()
+        wsp_service.buildResponseMsg()
+
+        service.processQueryResponseMsg(wsp_service.msgBody)
+        informal_name = service.getAttributeNode()
+        
+        self.failUnlessEqual(informal_name, """<pp2:InformalName xmlns="urn:liberty:id-sis-pp:2005-05" xmlns:pp2="urn:liberty:id-sis-pp:2005-05">User name</pp2:InformalName>""", 'first attribute node is wrong')
+
+    def test21(self):
+        """Data service get attribute string"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        wsp_service.parseQueryItems()
+        wsp_service.buildResponseMsg()
+
+        service.processQueryResponseMsg(wsp_service.msgBody)
+        informal_name = service.getAttributeString('name')
+        
+        self.failUnlessEqual(informal_name, 'User name', 'attribute string is wrong')
+
+    def test22(self):
+        """Data service get attribute node"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        wsp_service.parseQueryItems()
+        wsp_service.buildResponseMsg()
+
+        service.processQueryResponseMsg(wsp_service.msgBody)
+        email = service.getAttributeNode('email')
+        
+        expected_result = """<pp2:MsgContact xmlns="urn:liberty:id-sis-pp:2005-05" xmlns:pp2="urn:liberty:id-sis-pp:2005-05">.*?<pp2:MsgAccount>Email account</pp2:MsgAccount>.*?<pp2:MsgProvider>Email server</pp2:MsgProvider>.*?</pp2:MsgContact>"""
+
+        import re
+        result = re.findall(expected_result, email, re.DOTALL)
+
+        self.failUnless(len(result) == 1, 'attribute node is wrong')
+
+    def test23(self):
+        """Data service get attribute node - partial failure"""
         service, wsp = self.getProfileService()
         lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
         service.initQuery()
@@ -1324,8 +1666,77 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
         wsp_service = lasso.IdWsf2DataService(wsp)
         wsp_service.processQueryMsg(service.msgBody)
 
-        self.failUnless(wsp_service.nameIdentifier and wsp_service.nameIdentifier.content,
-            'missing name identifier')
+        wsp_service.data = """<PP xmlns="urn:liberty:id-sis-pp:2005-05">
+                <InformalName>User name</InformalName>
+                <MsgContact>
+                    <MsgAccount>Email account</MsgAccount>
+                    <MsgProvider>Email server</MsgProvider>
+                </MsgContact>
+            </PP>"""
+
+        wsp_service.parseQueryItems()
+        wsp_service.buildResponseMsg()
+
+        try:
+            service.processQueryResponseMsg(wsp_service.msgBody)
+        except lasso.Error, e:
+            if e[0] == lasso.DST_ERROR_QUERY_PARTIALLY_FAILED:
+                pass
+        informal_name = service.getAttributeString('name')
+        email = service.getAttributeNode('email')
+
+        self.failUnlessEqual(informal_name, 'User name', 'attribute string is wrong')
+        self.failUnlessEqual(email, None, 'attribute node should be None')
+
+    def test24(self):
+        """Data service redirect request"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('not existing attribute', 'not existing attribute')
+        service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        if '/pp2:PP/pp2:MsgContact' in wsp_service.queryItems:
+            wsp_service.initRedirectUserForConsent('http://sp5/consent');
+        wsp_service.buildResponseMsg()
+
+        try:
+            service.processQueryResponseMsg(wsp_service.msgBody)
+        except lasso.Error, e:
+            if e[0] != lasso.SOAP_FAULT_REDIRECT_REQUEST:
+                self.fail(e)
+        else:
+            self.fail('a "soap fault redirect request" exception should have been raised')
+
+    def test25(self):
+        """Data service redirect request - check redirectUrl"""
+        service, wsp = self.getProfileService()
+        lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
+        service.initQuery()
+        service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
+        service.addQueryItem('not existing attribute', 'not existing attribute')
+        service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
+        service.buildRequestMsg()
+
+        wsp_service = lasso.IdWsf2DataService(wsp)
+        wsp_service.processQueryMsg(service.msgBody)
+
+        if '/pp2:PP/pp2:MsgContact' in wsp_service.queryItems:
+            wsp_service.initRedirectUserForConsent('http://sp5/consent');
+        wsp_service.buildResponseMsg()
+
+        try:
+            service.processQueryResponseMsg(wsp_service.msgBody)
+        except lasso.Error, e:
+            if e[0] == lasso.SOAP_FAULT_REDIRECT_REQUEST:
+                pass
+
+        self.failUnlessEqual(service.redirectUrl, 'http://sp5/consent')
 
 
 idpSelfRegistrationSuite = unittest.makeSuite(IdpSelfRegistrationTestCase, 'test')
