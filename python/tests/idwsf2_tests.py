@@ -1736,7 +1736,7 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
             if e[0] == lasso.SOAP_FAULT_REDIRECT_REQUEST:
                 pass
 
-        self.failUnlessEqual(service.redirectUrl, 'http://sp5/consent')
+        self.failUnlessEqual(service.redirectUrl, 'http://sp5/consent', 'redirectUrl is not set or wrong')
 
 
 idpSelfRegistrationSuite = unittest.makeSuite(IdpSelfRegistrationTestCase, 'test')
