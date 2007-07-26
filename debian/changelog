@@ -1,14 +1,38 @@
-lasso (0.6.5-0) unofficial; urgency=low
+lasso (2.0.0-1) unstable; urgency=low
 
-  * unofficial build.
+  * New upstream release.
+  * debian/control: removes php4-lasso since PHP4 is no longer provided.
+    (closes: #432422, #418268)
 
- -- Frederic Peters <fpeters@debian.org>  Tue, 21 Mar 2006 10:02:53 +0100
+ -- Frederic Peters <fpeters@debian.org>  Mon, 09 Jul 2007 22:55:58 +0200
 
-lasso (0.6.4-0) unofficial; urgency=low
+lasso (0.6.5-3) unstable; urgency=low
 
-  * unofficial build.
+  * Converted to new Python policy (merged from unreported Ubuntu patch)
+    * debian/control: keep conflict on python2.4-lasso which is unnecessary
+      for Debian but will reduce Ubuntu changes.
 
- -- Frederic Peters <fpeters@debian.org>  Wed,  8 Mar 2006 13:08:34 +0100
+ -- Frederic Peters <fpeters@debian.org>  Sat, 21 Oct 2006 17:31:47 +0200
+
+lasso (0.6.5-2) unstable; urgency=low
+
+  * debian/control: adding libgcj-dev and fastjar to build-depends since
+    liblasso-java is now built.
+
+ -- Frederic Peters <fpeters@debian.org>  Wed, 22 Mar 2006 11:06:56 +0100
+
+lasso (0.6.5-1) unstable; urgency=low
+
+  * New upstream release.
+    * Incorporates Ubuntu patch for phpapi version.
+
+ -- Frederic Peters <fpeters@debian.org>  Tue, 21 Mar 2006 10:48:05 +0100
+
+lasso (0.6.4-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Frederic Peters <fpeters@debian.org>  Mon, 13 Mar 2006 11:38:09 +0100
 
 lasso (0.6.3-4) unstable; urgency=low
 
