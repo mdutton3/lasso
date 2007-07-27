@@ -596,7 +596,7 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 #endif
 	node_info_count++;
 	if (node_info_count >= NODE_INFOS_SIZE) {
-		fprintf(stderr,	"Too many allocated objects. You must increase the size of node_infos array in Lasso.i.\n");
+		fprintf(stderr,	"Too many allocated objects. You must increase NODE_INFOS_SIZE constant in Lasso.i.\n");
 		abort();
 	}
 }
