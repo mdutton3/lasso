@@ -537,7 +537,8 @@ typedef struct node_info {
 #endif
 } node_info;
 
-static node_info node_infos[250]; /* FIXME: Size should be computed */
+#define NODE_INFOS_SIZE 250
+static node_info node_infos[NODE_INFOS_SIZE]; /* FIXME: Size should be computed */
 
 /* Cast a LassoNode into the appropriate derivated class. */
 static swig_type_info *dynamic_cast_node(void **nodePointer) {
@@ -594,8 +595,9 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 	info->php = php;
 #endif
 	node_info_count++;
-	if (node_info_count > 249) {
-		fprintf(stderr,	"node_infos has reached its limit. Call Fred to fix this bug.");
+	if (node_info_count >= NODE_INFOS_SIZE) {
+		fprintf(stderr,	"node_infos has reached its limit. This is a know bug. \
+It should be dynamically reallocated");
 		abort();
 	}
 }
