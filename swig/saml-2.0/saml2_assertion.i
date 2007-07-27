@@ -48,6 +48,18 @@ typedef struct {
 	%newobject AuthnStatement_get;
 	LassoNodeList *AuthnStatement;
 
+#ifndef SWIG_PHP_RENAMES
+	%rename(authzDecisionStatement) AuthzDecisionStatement;
+#endif
+	%newobject AuthzDecisionStatement_get;
+	LassoNodeList *AuthzDecisionStatement;
+
+#ifndef SWIG_PHP_RENAMES
+	%rename(attributeStatement) AttributeStatement;
+#endif
+	%newobject AttributeStatement_get;
+	LassoNodeList *AttributeStatement;
+
 	/* Constructor, Destructor & Static Methods */
 	LassoSaml2Assertion();
 	~LassoSaml2Assertion();
@@ -96,6 +108,24 @@ typedef struct {
 #define LassoSaml2Assertion_AuthnStatement_get(self) get_node_list((self)->AuthnStatement)
 #define LassoSaml2Assertion_set_AuthnStatement(self, value) set_node_list(&(self)->AuthnStatement, (value))
 #define LassoSaml2Assertion_AuthnStatement_set(self, value) set_node_list(&(self)->AuthnStatement, (value))
+
+
+/* AuthzDecisionStatement */
+
+#define LassoSaml2Assertion_get_AuthzDecisionStatement(self) get_node_list((self)->AuthzDecisionStatement)
+#define LassoSaml2Assertion_AuthzDecisionStatement_get(self) get_node_list((self)->AuthzDecisionStatement)
+#define LassoSaml2Assertion_set_AuthzDecisionStatement(self, value) set_node_list(&(self)->AuthzDecisionStatement, (value))
+#define LassoSaml2Assertion_AuthzDecisionStatement_set(self, value) set_node_list(&(self)->AuthzDecisionStatement, (value))
+
+
+/* AttributeStatement */
+
+#define LassoSaml2Assertion_get_AttributeStatement(self) get_node_list((self)->AttributeStatement)
+#define LassoSaml2Assertion_AttributeStatement_get(self) get_node_list((self)->AttributeStatement)
+#define LassoSaml2Assertion_set_AttributeStatement(self, value) set_node_list(&(self)->AttributeStatement, (value))
+#define LassoSaml2Assertion_AttributeStatement_set(self, value) set_node_list(&(self)->AttributeStatement, (value))
+
+
 
 
 /* Constructors, destructors & static methods implementations */
