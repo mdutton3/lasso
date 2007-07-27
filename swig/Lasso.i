@@ -573,6 +573,7 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 static void set_node_info(node_info *info, char *name, char *superName, swig_type_info *swig) {
 #endif
 	node_info *super;
+	static int node_info_count = 0;
 
 	info->name = name;
 	if (superName) {
@@ -592,6 +593,11 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 #if defined(PHP_VERSION) && ! defined(PHP_VERSION_ID)
 	info->php = php;
 #endif
+	node_info_count++;
+	if (node_info_count > 249) {
+		fprintf(stderr,	"node_infos has reached its limit. Call Fred to fix this bug.");
+		abort();
+	}
 }
 
 %}
