@@ -393,6 +393,7 @@ typedef struct {
 
 	THROW_ERROR()
 	int processModifyMsg(const char *message);
+	END_THROW_ERROR()	
 }
 
 %{
