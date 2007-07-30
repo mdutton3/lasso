@@ -36,6 +36,8 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
+	{ "", SNIPPET_LIST_XMLNODES,
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefAppData, any) },
 	{ "Subscription", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2SubsRefAppData, Subscription) },
 	{NULL, 0, 0}
@@ -51,6 +53,7 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2SubsRefAppData *node)
 {
+	node->any = NULL;
 	node->Subscription = NULL;
 }
 

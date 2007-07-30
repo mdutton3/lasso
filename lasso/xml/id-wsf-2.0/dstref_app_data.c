@@ -40,8 +40,8 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "content", SNIPPET_TEXT_CHILD,
-		G_STRUCT_OFFSET(LassoIdWsf2DstRefAppData, content) },
+	{ "", SNIPPET_LIST_XMLNODES,
+		G_STRUCT_OFFSET(LassoIdWsf2DstRefAppData, any) },
 	{NULL, 0, 0}
 };
 
@@ -55,7 +55,7 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2DstRefAppData *node)
 {
-	node->content = NULL;
+	node->any = NULL;
 }
 
 static void
@@ -105,23 +105,4 @@ LassoIdWsf2DstRefAppData*
 lasso_idwsf2_dstref_app_data_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DSTREF_APP_DATA, NULL);
-}
-
-
-/**
- * lasso_idwsf2_dstref_app_data_new_with_string:
- * @content: 
- *
- * Creates a new #LassoIdWsf2DstRefAppData object and initializes it
- * with @content.
- *
- * Return value: a newly created #LassoIdWsf2DstRefAppData object
- **/
-LassoIdWsf2DstRefAppData*
-lasso_idwsf2_dstref_app_data_new_with_string(char *content)
-{
-	LassoIdWsf2DstRefAppData *object;
-	object = g_object_new(LASSO_TYPE_IDWSF2_DSTREF_APP_DATA, NULL);
-	object->content = g_strdup(content);
-	return object;
 }

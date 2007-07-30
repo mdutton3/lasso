@@ -30,6 +30,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
+#include "dstref_app_data.h"
 
 #define LASSO_TYPE_IDWSF2_DSTREF_ITEM_DATA (lasso_idwsf2_dstref_item_data_get_type())
 #define LASSO_IDWSF2_DSTREF_ITEM_DATA(obj) \
@@ -57,11 +58,9 @@ typedef struct _LassoIdWsf2DstRefItemDataClass LassoIdWsf2DstRefItemDataClass;
 
 
 struct _LassoIdWsf2DstRefItemData {
-	LassoNode parent;
+	LassoIdWsf2DstRefAppData parent;
 
 	/*< public >*/
-	/* elements */
-	GList *any; /* of xmlNode */
 	/* attributes */
 	char *itemIDRef;
 	char *notSorted;
@@ -70,7 +69,7 @@ struct _LassoIdWsf2DstRefItemData {
 
 
 struct _LassoIdWsf2DstRefItemDataClass {
-	LassoNodeClass parent;
+	LassoIdWsf2DstRefAppDataClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_dstref_item_data_get_type(void);

@@ -26,7 +26,6 @@
 %rename(IdWsf2DstRefAppData) LassoIdWsf2DstRefAppData;
 #endif
 typedef struct {
-	char *content;
 } LassoIdWsf2DstRefAppData;
 %extend LassoIdWsf2DstRefAppData {
 

@@ -114,7 +114,7 @@ lasso_idwsf2_disco_provider_id_new()
  * Return value: a newly created #LassoIdWsf2DiscoProviderID object
  **/
 LassoIdWsf2DiscoProviderID*
-lasso_idwsf2_disco_provider_id_new_with_string(char *content)
+lasso_idwsf2_disco_provider_id_new_with_string(const char *content)
 {
 	LassoIdWsf2DiscoProviderID *object;
 	object = g_object_new(LASSO_TYPE_IDWSF2_DISCO_PROVIDER_ID, NULL);

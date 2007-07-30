@@ -114,7 +114,7 @@ lasso_idwsf2_disco_service_type_new()
  * Return value: a newly created #LassoIdWsf2DiscoServiceType object
  **/
 LassoIdWsf2DiscoServiceType*
-lasso_idwsf2_disco_service_type_new_with_string(char *content)
+lasso_idwsf2_disco_service_type_new_with_string(const char *content)
 {
 	LassoIdWsf2DiscoServiceType *object;
 	object = g_object_new(LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE, NULL);

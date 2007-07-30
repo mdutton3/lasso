@@ -64,6 +64,10 @@ struct _LassoIdWsf2DstRefModify {
 	/* elements */
 	GList *ModifyItem; /* of LassoIdWsf2DstRefModifyItem */
 	GList *ResultQuery; /* of LassoIdWsf2DstRefResultQuery */
+
+	/*< private >*/
+	char *prefixServiceType;
+	char *hrefServiceType;
 };
 
 

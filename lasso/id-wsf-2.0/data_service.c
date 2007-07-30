@@ -232,7 +232,9 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 			node = xpathObj->nodesetval->nodeTab[0];
 			data = lasso_idwsf2_dstref_data_new();
 			data_item = LASSO_IDWSF2_DSTREF_ITEM_DATA(data);
-			data_item->any = g_list_append(data_item->any, xmlCopyNode(node, 1));
+			LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any = g_list_append(
+					LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any,
+					xmlCopyNode(node, 1));
 			if (item_result_query_base->itemID != NULL) {
 				data_item->itemIDRef = g_strdup(item_result_query_base->itemID);
 			}
@@ -359,7 +361,7 @@ lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, co
 {
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoIdWsf2DstRefQueryResponse *response;
-	LassoIdWsf2DstRefItemData *data = NULL;
+	LassoIdWsf2DstRefAppData *data = NULL;
 	GList *iter;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
@@ -371,7 +373,7 @@ lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, co
 
 	/* If no item_id is given, return the first item */
 	if (item_id == NULL && response->Data != NULL && response->Data->data != NULL) {
-		data = LASSO_IDWSF2_DSTREF_ITEM_DATA(response->Data->data);
+		data = LASSO_IDWSF2_DSTREF_APP_DATA(response->Data->data);
 		if (data->any != NULL && data->any->data != NULL) {
 			return xmlCopyNode(data->any->data, 1);
 		}
@@ -386,7 +388,7 @@ lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, co
 			continue;
 		}
 		if (strcmp(LASSO_IDWSF2_DSTREF_ITEM_DATA(iter->data)->itemIDRef, item_id) == 0) {
-			data = LASSO_IDWSF2_DSTREF_ITEM_DATA(iter->data);
+			data = LASSO_IDWSF2_DSTREF_APP_DATA(iter->data);
 			break;
 		}
 	}

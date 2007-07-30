@@ -114,7 +114,7 @@ lasso_idwsf2_disco_abstract_new()
  * Return value: a newly created #LassoIdWsf2DiscoAbstract object
  **/
 LassoIdWsf2DiscoAbstract*
-lasso_idwsf2_disco_abstract_new_with_string(char *content)
+lasso_idwsf2_disco_abstract_new_with_string(const char *content)
 {
 	LassoIdWsf2DiscoAbstract *object;
 	object = g_object_new(LASSO_TYPE_IDWSF2_DISCO_ABSTRACT, NULL);
