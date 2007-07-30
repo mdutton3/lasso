@@ -537,7 +537,7 @@ typedef struct node_info {
 #endif
 } node_info;
 
-#define NODE_INFOS_SIZE 250
+#define NODE_INFOS_SIZE 500
 static node_info node_infos[NODE_INFOS_SIZE]; /* FIXME: Size should be computed */
 
 /* Cast a LassoNode into the appropriate derivated class. */
