@@ -98,6 +98,15 @@ LASSO_EXPORT gchar* lasso_idwsf2_data_service_get_attribute_string(LassoIdWsf2Da
 LASSO_EXPORT gint lasso_idwsf2_data_service_init_redirect_user_for_consent(
 	LassoIdWsf2DataService *service, const gchar *redirect_url);
 
+LASSO_EXPORT gint lasso_idwsf2_data_service_init_modify(LassoIdWsf2DataService *service);
+
+LASSO_EXPORT gint lasso_idwsf2_data_service_add_modify_item(
+	LassoIdWsf2DataService *service, const gchar *item_xpath, const gchar *item_id,
+	const gchar *new_data, const gboolean overrideAllowed);
+
+LASSO_EXPORT gint lasso_idwsf2_data_service_process_modify_msg(LassoIdWsf2DataService *service,
+	const gchar *message);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

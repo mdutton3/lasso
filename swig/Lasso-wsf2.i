@@ -379,8 +379,20 @@ typedef struct {
 	char* getAttributeString(const char *item_id = NULL);
 
 	THROW_ERROR()
-	gint initRedirectUserForConsent(const char *redirect_url);
+	int initRedirectUserForConsent(const char *redirect_url);
 	END_THROW_ERROR()
+	
+	THROW_ERROR()
+	int initModify();
+	END_THROW_ERROR()
+	
+	THROW_ERROR()
+	int addModifyItem(const char *item_xpath, const char *item_id, const char *new_data,
+		const gboolean overrideAllowed=FALSE);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int processModifyMsg(const char *message);
 }
 
 %{
@@ -463,6 +475,9 @@ typedef struct {
 	get_xml_string(lasso_idwsf2_data_service_get_attribute_node(self, itemId))
 #define LassoIdWsf2DataService_getAttributeString lasso_idwsf2_data_service_get_attribute_string
 #define LassoIdWsf2DataService_initRedirectUserForConsent lasso_idwsf2_data_service_init_redirect_user_for_consent
+#define LassoIdWsf2DataService_initModify lasso_idwsf2_data_service_init_modify
+#define LassoIdWsf2DataService_addModifyItem lasso_idwsf2_data_service_add_modify_item
+#define LassoIdWsf2DataService_processModifyMsg lasso_idwsf2_data_service_process_modify_msg
 
 %}
 

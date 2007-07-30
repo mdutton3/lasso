@@ -79,7 +79,9 @@ struct _LassoIdWsf2DstRefModifyItemClass {
 LASSO_EXPORT GType lasso_idwsf2_dstref_modify_item_get_type(void);
 LASSO_EXPORT LassoIdWsf2DstRefModifyItem* lasso_idwsf2_dstref_modify_item_new(void);
 
-
+LASSO_EXPORT LassoIdWsf2DstRefModifyItem* lasso_idwsf2_dstref_modify_item_new_full(
+	const gchar *item_xpath, const gchar *item_id, xmlNode *new_data,
+	const gboolean overrideAllowed);
 
 #ifdef __cplusplus
 }

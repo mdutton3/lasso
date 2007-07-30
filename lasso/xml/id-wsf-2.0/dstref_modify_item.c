@@ -124,3 +124,20 @@ lasso_idwsf2_dstref_modify_item_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_DSTREF_MODIFY_ITEM, NULL);
 }
+
+LassoIdWsf2DstRefModifyItem*
+lasso_idwsf2_dstref_modify_item_new_full(const gchar *item_xpath, const gchar *item_id,
+	xmlNode *new_data, const gboolean overrideAllowed)
+{
+	LassoIdWsf2DstRefModifyItem *item;
+
+	item = g_object_new(LASSO_TYPE_IDWSF2_DSTREF_MODIFY_ITEM, NULL);
+	item->Select = g_strdup(item_xpath);
+	item->id = g_strdup(item_id);
+	item->NewData = lasso_idwsf2_dstref_app_data_new();
+	item->NewData->any = g_list_append(item->NewData->any, new_data);
+	item->overrideAllowed = overrideAllowed;
+
+	return item;
+}
+

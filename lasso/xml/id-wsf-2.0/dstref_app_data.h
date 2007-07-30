@@ -72,8 +72,6 @@ struct _LassoIdWsf2DstRefAppDataClass {
 LASSO_EXPORT GType lasso_idwsf2_dstref_app_data_get_type(void);
 LASSO_EXPORT LassoIdWsf2DstRefAppData* lasso_idwsf2_dstref_app_data_new(void);
 
-
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

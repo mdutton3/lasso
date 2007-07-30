@@ -56,7 +56,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
@@ -90,7 +89,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
        return 0;
 }
-
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
