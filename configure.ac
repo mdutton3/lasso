@@ -895,6 +895,9 @@ tests/data/ca1-la/Makefile
 tests/data/idp1-la/Makefile
 tests/data/lecp1-la/Makefile
 tests/data/sp1-la/Makefile
+tests/data/idp5-saml2/Makefile
+tests/data/sp5-saml2/Makefile
+tests/data/sp6-saml2/Makefile
 tests/metadata/Makefile
 lasso.pc
 win32/Makefile
