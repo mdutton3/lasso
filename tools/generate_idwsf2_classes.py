@@ -1352,7 +1352,8 @@ for filename in xsd_filenames:
             # also use that other name
             klass.node_set_name = t[0].attributes['name'].value
 
-        if klass.prefix == 'dstref' and klass.name in ('Query', 'QueryResponse', 'Modify',):
+        if klass.prefix == 'dstref' and klass.name in \
+                ('Query', 'QueryResponse', 'Modify', 'ModifyResponse'):
             klass.has_custom_ns = True
 
         if element.nodeName == 'element':
