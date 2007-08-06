@@ -210,10 +210,16 @@ lasso_strerror(int error_code)
 		case LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE:
 			return "Failed to build Endpoint Reference";
 
+		case LASSO_DST_ERROR_MISSING_SERVICE_DATA:
+			return "Missing service data";
 		case LASSO_DST_ERROR_QUERY_FAILED:
 			return "Query failed";
 		case LASSO_DST_ERROR_QUERY_PARTIALLY_FAILED:
 			return "Query partially failed : some items were correctly processed";
+		case LASSO_DST_ERROR_MODIFY_FAILED:
+			return "Modify failed";
+		case LASSO_DST_ERROR_NEW_DATA_MISSING:
+			return "Missing new data";
 
 		default:
 			return "Error";

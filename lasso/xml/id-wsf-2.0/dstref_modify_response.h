@@ -62,6 +62,10 @@ struct _LassoIdWsf2DstRefModifyResponse {
 	LassoIdWsf2DstRefDataResponse parent;
 
 	/*< public >*/
+
+	/*< private >*/
+	char *prefixServiceType;
+	char *hrefServiceType;
 };
 
 

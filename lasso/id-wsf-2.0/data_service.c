@@ -200,6 +200,10 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	}
 	request = LASSO_IDWSF2_DSTREF_QUERY(LASSO_PROFILE(profile)->request);
 
+	if (service->data == NULL) {
+		return LASSO_DST_ERROR_MISSING_SERVICE_DATA;
+	}
+
 	/* Response envelope and body */
 	envelope = profile->soap_envelope_response;
 	if (envelope == NULL) {
@@ -571,8 +575,6 @@ lasso_idwsf2_data_service_process_modify_msg(LassoIdWsf2DataService *service, co
 {
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoIdWsf2DstRefModify *request = NULL;
-	LassoIdWsf2DstRefModifyItem *item = NULL;
-	GList *i;
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
@@ -587,6 +589,145 @@ lasso_idwsf2_data_service_process_modify_msg(LassoIdWsf2DataService *service, co
 		request = LASSO_IDWSF2_DSTREF_MODIFY(LASSO_PROFILE(profile)->request);
 		service->type = g_strdup(request->hrefServiceType);
 	}
+
+	return res;
+}
+
+static gint
+lasso_idwsf2_data_service_parse_one_modify_item(LassoIdWsf2DstRefModifyItem *item,
+	LassoIdWsf2DstRefModifyResponse *response, xmlDoc *cur_doc, xmlXPathContext *cur_xpathCtx)
+{
+	xmlXPathObject *cur_xpathObj;
+	xmlNode *new_node;
+	xmlNode *cur_node;
+	int res = 0;
+
+	if (item == NULL) {
+		return LASSO_DST_ERROR_MODIFY_FAILED;
+	}
+
+	/* Check NewData existence */
+	if (item->NewData == NULL || item->NewData->any == NULL
+			|| item->NewData->any->data == NULL) {
+		if (item->overrideAllowed == TRUE) {
+			new_node = NULL;
+		} else {
+			return LASSO_DST_ERROR_NEW_DATA_MISSING;
+		}
+	} else {
+		new_node = (xmlNode*)item->NewData->any->data;
+	}
+
+	if (item->overrideAllowed == FALSE) {
+		/* Add the new item and add it to the current data */
+		/* FIXME : when the ancestor nodes of the new node do not */
+		/* exist either, they MUST be added */
+		xmlAddChild(xmlDocGetRootElement(cur_doc), xmlCopyNode(new_node, 1));
+	} else {
+		/* Modify an existing node */
+		cur_xpathObj = xmlXPathEvalExpression((xmlChar*)item->Select, cur_xpathCtx);
+		if (cur_xpathObj && cur_xpathObj->nodesetval && cur_xpathObj->nodesetval->nodeNr) {
+			/* XXX: assuming there is only one matching node */
+			cur_node = cur_xpathObj->nodesetval->nodeTab[0];
+			if (new_node != NULL) {
+				/* Replace old node with new data */
+				xmlReplaceNode(cur_node, xmlCopyNode(new_node, 1));
+			} else {
+				/* Remove old node as new data is empty */
+				xmlUnlinkNode(cur_node);
+				xmlFreeNode(cur_node);
+			}
+		} else {
+			res = LASSO_DST_ERROR_MODIFY_FAILED;
+		}
+		xmlXPathFreeObject(cur_xpathObj);
+	}
+
+	return res;
+}
+
+gint
+lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
+{
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoIdWsf2DstRefModify *request;
+	LassoIdWsf2DstRefModifyResponse *response;
+	LassoIdWsf2UtilResponse *response2;
+	LassoSoapEnvelope *envelope;
+	xmlDoc *cur_doc;
+	xmlXPathContext *cur_xpathCtx;
+	LassoIdWsf2DstRefModifyItem *item;
+	xmlNode *cur_data;
+	LassoIdWsf2UtilStatus *secondary_status;
+	GList *iter;
+	int res = 0;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	if (! LASSO_IS_IDWSF2_DSTREF_MODIFY(LASSO_PROFILE(profile)->request)) {
+		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+	}
+	request = LASSO_IDWSF2_DSTREF_MODIFY(LASSO_PROFILE(profile)->request);
+
+	if (service->data == NULL) {
+		return LASSO_DST_ERROR_MISSING_SERVICE_DATA;
+	} else {
+		cur_data = xmlCopyNode(service->data, 1);
+	}
+
+	/* Response envelope and body */
+	envelope = profile->soap_envelope_response;
+	if (envelope == NULL) {
+		return LASSO_SOAP_ERROR_MISSING_ENVELOPE;
+	}
+	response = lasso_idwsf2_dstref_modify_response_new();
+	response->prefixServiceType = g_strdup(request->prefixServiceType);
+	response->hrefServiceType = g_strdup(request->hrefServiceType);
+	LASSO_PROFILE(profile)->response = LASSO_NODE(response);
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	response2 = LASSO_IDWSF2_UTIL_RESPONSE(response);
+	response2->Status = lasso_idwsf2_util_status_new();
+
+	/* Initialise XML parsing */
+	cur_doc = xmlNewDoc((xmlChar*)"1.0");
+	xmlDocSetRootElement(cur_doc, cur_data);
+	cur_xpathCtx = xmlXPathNewContext(cur_doc);
+	xmlXPathRegisterNs(cur_xpathCtx, (xmlChar*)response->prefixServiceType,
+		(xmlChar*)response->hrefServiceType);
+
+	/* Parse request ModifyItems and modify user current data accordingly */
+	/* XXX: needs another level, since there may be more than one <dst:Modify> */
+	for (iter = g_list_first(request->ModifyItem); iter != NULL; iter = g_list_next(iter)) {
+		item = iter->data;
+		res = lasso_idwsf2_data_service_parse_one_modify_item(
+			item, response, cur_doc, cur_xpathCtx);
+		if (res != 0) {
+			/* If one item fails, stop and roll back */
+			break;
+		}
+	}
+
+	if (res == 0) {
+		response2->Status->code = g_strdup(LASSO_DST_STATUS_CODE_OK);
+		/* Save new service data */
+		xmlFreeNode(service->data);
+		service->data = xmlCopyNode(cur_data, 1);
+	} else {
+		response2->Status->code = g_strdup(LASSO_DST_STATUS_CODE_FAILED);
+		if (res == LASSO_DST_ERROR_NEW_DATA_MISSING) {
+			secondary_status = lasso_idwsf2_util_status_new();
+			secondary_status->code = g_strdup(
+				LASSO_DST_STATUS_CODE_MISSING_NEW_DATA_ELEMENT);
+			response2->Status->Status = g_list_append(
+				response2->Status->Status, secondary_status);
+		}
+	}
+
+	/* Free XML parsing objects */
+	xmlXPathFreeContext(cur_xpathCtx);
+	xmlFreeDoc(cur_doc);
 
 	return res;
 }
