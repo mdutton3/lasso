@@ -218,6 +218,8 @@ lasso_strerror(int error_code)
 			return "Query partially failed : some items were correctly processed";
 		case LASSO_DST_ERROR_MODIFY_FAILED:
 			return "Modify failed";
+		case LASSO_DST_ERROR_MODIFY_PARTIALLY_FAILED:
+			return "Modify partially failed : some items were correctly processed";
 		case LASSO_DST_ERROR_NEW_DATA_MISSING:
 			return "Missing new data";
 

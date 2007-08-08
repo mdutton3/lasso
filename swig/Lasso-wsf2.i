@@ -398,6 +398,10 @@ typedef struct {
 	THROW_ERROR()
 	int parseModifyItems();
 	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int processModifyResponseMsg(const char *message);
+	END_THROW_ERROR()
 }
 
 %{
@@ -484,6 +488,8 @@ typedef struct {
 #define LassoIdWsf2DataService_addModifyItem lasso_idwsf2_data_service_add_modify_item
 #define LassoIdWsf2DataService_processModifyMsg lasso_idwsf2_data_service_process_modify_msg
 #define LassoIdWsf2DataService_parseModifyItems lasso_idwsf2_data_service_parse_modify_items
+#define LassoIdWsf2DataService_processModifyResponseMsg \
+	lasso_idwsf2_data_service_process_modify_response_msg
 
 %}
 

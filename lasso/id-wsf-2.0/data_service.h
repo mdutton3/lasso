@@ -109,6 +109,9 @@ LASSO_EXPORT gint lasso_idwsf2_data_service_process_modify_msg(LassoIdWsf2DataSe
 	
 LASSO_EXPORT gint lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service);
 
+LASSO_EXPORT gint lasso_idwsf2_data_service_process_modify_response_msg(
+	LassoIdWsf2DataService *service, const gchar *message);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

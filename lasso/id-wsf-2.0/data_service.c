@@ -732,6 +732,41 @@ lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
 	return res;
 }
 
+gint
+lasso_idwsf2_data_service_process_modify_response_msg(LassoIdWsf2DataService *service,
+	const gchar *message)
+{
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoIdWsf2UtilResponse *response;
+	int res;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	res = lasso_idwsf2_profile_process_soap_response_msg(profile, message);
+	if (res != 0) {
+		return res;
+	}
+
+	if (! LASSO_IS_IDWSF2_DSTREF_MODIFY_RESPONSE(LASSO_PROFILE(profile)->response)) {
+		return LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+	}
+
+	/* Check response status code */
+	response = LASSO_IDWSF2_UTIL_RESPONSE(LASSO_PROFILE(profile)->response);
+	if (response->Status == NULL || response->Status->code == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+	}
+	if (strcmp(response->Status->code, LASSO_DST_STATUS_CODE_PARTIAL) == 0) {
+		return LASSO_DST_ERROR_MODIFY_PARTIALLY_FAILED;
+	} else if (strcmp(response->Status->code, LASSO_DST_STATUS_CODE_OK) != 0) {
+		return LASSO_DST_ERROR_MODIFY_FAILED;
+	}
+
+	return 0;
+}
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
