@@ -1283,7 +1283,7 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 		}
 	}
 
-	doc = xmlParseMemory(message, strlen(message));
+	doc = lasso_xml_parse_memory(message, strlen(message));
 
 	/* Verify authentication mecanisms */
 	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
@@ -1352,7 +1352,7 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	doc = xmlParseMemory(message, strlen(message));
+	doc = lasso_xml_parse_memory(message, strlen(message));
 
 	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
 		xmlNode *xmlnode;

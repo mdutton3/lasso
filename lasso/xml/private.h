@@ -128,6 +128,8 @@ gboolean lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate
 
 char* lasso_concat_url_query(char *url, char *query);
 
+xmlDocPtr lasso_xml_parse_memory(const char *buffer, int size);
+
 void _debug(GLogLevelFlags level, const char *filename, int line,
 		const char *function, const char *format, ...);
 

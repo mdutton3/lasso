@@ -165,8 +165,7 @@ lasso_server_get_svc_metadatas_with_id_and_type(LassoServer *server, GList *svcM
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 	g_return_val_if_fail(service_type != NULL, NULL);
 
-	for (i = g_list_first(server->private_data->svc_metadatas); i != NULL;
-			i = g_list_next(i)) {
+	for (i = g_list_first(server->private_data->svc_metadatas); i != NULL; i = g_list_next(i)) {
 		md = LASSO_IDWSF2_DISCO_SVC_METADATA(i->data);
 		/* FIXME: this assumes there is one and only one service
 		 * context, and service type, this should be fixed to iterate

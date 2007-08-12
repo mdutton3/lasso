@@ -26,6 +26,8 @@
 
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+#include <libxml/parser.h>
+#include <libxml/parserInternals.h>
 
 #include <xmlsec/base64.h>
 #include <xmlsec/xmltree.h>
@@ -119,6 +121,83 @@ lasso_get_prefix_for_idwsf2_dst_service_href(const gchar *href)
 
 	return g_strdup(g_hash_table_lookup(idwsf2_dst_services_by_href, href));
 }
+
+/* (almost) straight from libxml2 internal API */
+static void
+xmlDetectSAX2(xmlParserCtxtPtr ctxt) {
+	if (ctxt == NULL) return;
+#ifdef LIBXML_SAX1_ENABLED
+	if ((ctxt->sax) &&  (ctxt->sax->initialized == XML_SAX2_MAGIC) &&
+			((ctxt->sax->startElementNs != NULL) ||
+			 (ctxt->sax->endElementNs != NULL))) ctxt->sax2 = 1;
+#else
+	ctxt->sax2 = 1;
+#endif /* LIBXML_SAX1_ENABLED */
+
+	ctxt->str_xml = xmlDictLookup(ctxt->dict, BAD_CAST "xml", 3);
+	ctxt->str_xmlns = xmlDictLookup(ctxt->dict, BAD_CAST "xmlns", 5);
+	ctxt->str_xml_ns = xmlDictLookup(ctxt->dict, XML_XML_NAMESPACE, 36);
+	if ((ctxt->str_xml==NULL) || (ctxt->str_xmlns==NULL) ||
+			(ctxt->str_xml_ns == NULL)) {
+		ctxt->errNo = XML_ERR_NO_MEMORY;
+	}
+}
+
+
+/**
+ * lasso_xml_parse_memory:
+ * @buffer:  an pointer to a char array
+ * @size:  the size of the array
+ *
+ * Parse an XML in-memory block and build a tree; exactly like xmlParseMemory
+ * safe two exceptions:
+ * <itemizedlist>
+ * <listitem><para>
+ *  it won't download anything from the network (XML_PARSE_NONET)
+ * </listitem></para>
+ * <listitem><para>
+ *  it will refuse documents with a DTD (for security reason)
+ * </para></listitem>
+ * </itemizedlist>
+ *
+ * Return value: the resulting document tree
+ **/
+xmlDocPtr
+lasso_xml_parse_memory(const char *buffer, int size)
+{
+	xmlDocPtr ret;
+	xmlParserCtxtPtr ctxt;
+
+	ctxt = xmlCreateMemoryParserCtxt(buffer, size);
+	if (ctxt == NULL) {
+		return NULL;
+	}
+	xmlDetectSAX2(ctxt);
+	if (ctxt->errNo == XML_ERR_NO_MEMORY) {
+		return NULL;
+	}
+	ctxt->recovery = 0;
+	xmlCtxtUseOptions(ctxt, XML_PARSE_NONET);
+
+	xmlParseDocument(ctxt);
+
+	if (ctxt->wellFormed && ctxt->myDoc->intSubset != NULL) {
+		message(G_LOG_LEVEL_WARNING, "Denied message with DTD content");
+		ctxt->wellFormed = 0;
+	}
+
+	if (ctxt->wellFormed) {
+		ret = ctxt->myDoc;
+	} else {
+		ret = NULL;
+		xmlFreeDoc(ctxt->myDoc);
+		ctxt->myDoc = NULL;
+	}
+	xmlFreeParserCtxt(ctxt);
+
+	return ret;
+}
+
 
 /*****************************************************************************/
 /* virtual public methods                                                    */
@@ -1349,7 +1428,7 @@ lasso_node_new_from_dump(const char *dump)
 	if (dump == NULL)
 		return NULL;
 
-	doc = xmlParseMemory(dump, strlen(dump));
+	doc = lasso_xml_parse_memory(dump, strlen(dump));
 	if (doc == NULL)
 		return NULL;
 
@@ -1377,7 +1456,7 @@ lasso_node_new_from_soap(const char *soap)
 	xmlNode *xmlnode;
 	LassoNode *node = NULL;
 
-	doc = xmlParseMemory(soap, strlen(soap));
+	doc = lasso_xml_parse_memory(soap, strlen(soap));
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body/*", xpathCtx);

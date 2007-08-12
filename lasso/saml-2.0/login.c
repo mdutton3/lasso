@@ -1037,7 +1037,7 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
-	doc = xmlParseMemory(msg, strlen(msg));
+	doc = lasso_xml_parse_memory(msg, strlen(msg));
 	xpathCtx = xmlXPathNewContext(doc);
 
 	/* XXX:BEFORE-LASSO-2.0 */

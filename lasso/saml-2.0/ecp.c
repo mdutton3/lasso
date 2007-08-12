@@ -130,7 +130,7 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 
 	profile = LASSO_PROFILE(ecp);
 
-	doc = xmlParseMemory(authn_request_msg, strlen(authn_request_msg));
+	doc = lasso_xml_parse_memory(authn_request_msg, strlen(authn_request_msg));
 	xpathCtx = xmlXPathNewContext(doc);
 
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ecp", (xmlChar*)LASSO_ECP_HREF);
@@ -205,7 +205,7 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	g_return_val_if_fail(LASSO_IS_ECP(ecp), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	doc = xmlParseMemory(response_msg, strlen(response_msg));
+	doc = lasso_xml_parse_memory(response_msg, strlen(response_msg));
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body", xpathCtx);

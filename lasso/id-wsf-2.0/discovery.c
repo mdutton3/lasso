@@ -185,8 +185,7 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 		request = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_PROFILE(profile)->request);
 		/* FIXME : foreach on the list instead */
 		if (request != NULL && request->SvcMD != NULL) {
-			discovery->metadata =
-				LASSO_IDWSF2_DISCO_SVC_METADATA(request->SvcMD->data);
+			discovery->metadata = LASSO_IDWSF2_DISCO_SVC_METADATA(request->SvcMD->data);
 			/* Build a unique SvcMDID */
 			lasso_build_random_sequence(unique_id, 32);
 			unique_id[32] = 0;

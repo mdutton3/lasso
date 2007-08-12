@@ -310,7 +310,7 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	doc = xmlParseMemory(message, strlen(message));
+	doc = lasso_xml_parse_memory(message, strlen(message));
 	if (doc == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
