@@ -32,8 +32,8 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	Ecp.java \
 	Federation.java \
 	Identity.java \
-	lassoConstants.java \
 	lasso.java \
+	lassoConstants.java \
 	lassoJNI.java \
 	Lecp.java \
 	LibAssertion.java \
@@ -48,6 +48,7 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	LibStatusResponse.java \
 	Login.java \
 	Logout.java \
+	MiscTextNode.java \
 	NameIdentifierMapping.java \
 	NameIdManagement.java \
 	NameRegistration.java \
@@ -73,14 +74,14 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	Saml2OneTimeUse.java \
 	Saml2ProxyRestriction.java \
 	Saml2StatementAbstract.java \
-	Saml2SubjectConfirmationData.java \
-	Saml2SubjectConfirmation.java \
 	Saml2Subject.java \
+	Saml2SubjectConfirmation.java \
+	Saml2SubjectConfirmationData.java \
 	Saml2SubjectLocality.java \
 	SamlAdvice.java \
 	SamlAssertion.java \
-	SamlAttributeDesignator.java \
 	SamlAttribute.java \
+	SamlAttributeDesignator.java \
 	SamlAttributeStatement.java \
 	SamlAttributeValue.java \
 	SamlAudienceRestrictionCondition.java \
@@ -89,6 +90,12 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	SamlConditionAbstract.java \
 	SamlConditions.java \
 	SamlNameIdentifier.java \
+	SamlStatementAbstract.java \
+	SamlSubject.java \
+	SamlSubjectConfirmation.java \
+	SamlSubjectLocality.java \
+	SamlSubjectStatement.java \
+	SamlSubjectStatementAbstract.java \
 	Samlp2ArtifactResolve.java \
 	Samlp2ArtifactResponse.java \
 	Samlp2AssertionIDRequest.java \
@@ -108,30 +115,26 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	Samlp2RequestedAuthnContext.java \
 	Samlp2Response.java \
 	Samlp2Scoping.java \
+	Samlp2Status.java \
 	Samlp2StatusCode.java \
 	Samlp2StatusDetail.java \
-	Samlp2Status.java \
 	Samlp2StatusResponse.java \
 	Samlp2SubjectQueryAbstract.java \
 	Samlp2Terminate.java \
-	SamlpRequestAbstract.java \
 	SamlpRequest.java \
-	SamlpResponseAbstract.java \
+	SamlpRequestAbstract.java \
 	SamlpResponse.java \
-	SamlpStatusCode.java \
+	SamlpResponseAbstract.java \
 	SamlpStatus.java \
-	SamlStatementAbstract.java \
-	SamlSubjectConfirmation.java \
-	SamlSubject.java \
-	SamlSubjectLocality.java \
-	SamlSubjectStatementAbstract.java \
-	SamlSubjectStatement.java \
+	SamlpStatusCode.java \
 	Server.java \
 	Session.java \
+	StringDict.java \
 	StringList.java \
+	SWIGTYPE_p_GHashTable.java \
 	SWIGTYPE_p_LassoSignatureType.java \
 	SWIGTYPE_p_void.java
-	
+
 if WSF_ENABLED
 SWIG_WSF_OUTPUTS = Authentication.java \
 	DataService.java \
