@@ -1,1 +1,1 @@
-EXTRA_DIST = saml2_metadata.xml private-key.pem
+EXTRA_DIST = metadata.xml private-key.pem
