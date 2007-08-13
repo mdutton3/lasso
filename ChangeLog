@@ -1,3 +1,2759 @@
+2007-08-13  fpeters
+
+	* trunk/NEWS, trunk/configure.ac, trunk/doap.rdf,
+	  trunk/website/web/news/09-release-2.1.0.xml: bumped to 2.1.0
+
+2007-08-13  fpeters
+
+	* trunk/swig/saml-2.0/saml2_action.i,
+	  trunk/swig/saml-2.0/saml2_advice.i,
+	  trunk/swig/saml-2.0/saml2_assertion.i,
+	  trunk/swig/saml-2.0/saml2_attribute.i,
+	  trunk/swig/saml-2.0/saml2_attribute_statement.i,
+	  trunk/swig/saml-2.0/saml2_audience_restriction.i,
+	  trunk/swig/saml-2.0/saml2_authn_context.i,
+	  trunk/swig/saml-2.0/saml2_authn_statement.i,
+	  trunk/swig/saml-2.0/saml2_authz_decision_statement.i,
+	  trunk/swig/saml-2.0/saml2_base_idabstract.i,
+	  trunk/swig/saml-2.0/saml2_condition_abstract.i,
+	  trunk/swig/saml-2.0/saml2_conditions.i,
+	  trunk/swig/saml-2.0/saml2_encrypted_element.i,
+	  trunk/swig/saml-2.0/saml2_evidence.i,
+	  trunk/swig/saml-2.0/saml2_key_info_confirmation_data.i,
+	  trunk/swig/saml-2.0/saml2_name_id.i,
+	  trunk/swig/saml-2.0/saml2_one_time_use.i,
+	  trunk/swig/saml-2.0/saml2_proxy_restriction.i,
+	  trunk/swig/saml-2.0/saml2_statement_abstract.i,
+	  trunk/swig/saml-2.0/saml2_subject.i,
+	  trunk/swig/saml-2.0/saml2_subject_confirmation.i,
+	  trunk/swig/saml-2.0/saml2_subject_confirmation_data.i,
+	  trunk/swig/saml-2.0/saml2_subject_locality.i,
+	  trunk/swig/saml-2.0/samlp2_artifact_resolve.i,
+	  trunk/swig/saml-2.0/samlp2_artifact_response.i,
+	  trunk/swig/saml-2.0/samlp2_assertion_idrequest.i,
+	  trunk/swig/saml-2.0/samlp2_attribute_query.i,
+	  trunk/swig/saml-2.0/samlp2_authn_query.i,
+	  trunk/swig/saml-2.0/samlp2_authn_request.i,
+	  trunk/swig/saml-2.0/samlp2_authz_decision_query.i,
+	  trunk/swig/saml-2.0/samlp2_extensions.i,
+	  trunk/swig/saml-2.0/samlp2_idp_entry.i,
+	  trunk/swig/saml-2.0/samlp2_idp_list.i,
+	  trunk/swig/saml-2.0/samlp2_logout_request.i,
+	  trunk/swig/saml-2.0/samlp2_manage_name_id_request.i,
+	  trunk/swig/saml-2.0/samlp2_name_id_mapping_request.i,
+	  trunk/swig/saml-2.0/samlp2_name_id_mapping_response.i,
+	  trunk/swig/saml-2.0/samlp2_name_id_policy.i,
+	  trunk/swig/saml-2.0/samlp2_request_abstract.i,
+	  trunk/swig/saml-2.0/samlp2_requested_authn_context.i,
+	  trunk/swig/saml-2.0/samlp2_response.i,
+	  trunk/swig/saml-2.0/samlp2_scoping.i,
+	  trunk/swig/saml-2.0/samlp2_status.i,
+	  trunk/swig/saml-2.0/samlp2_status_code.i,
+	  trunk/swig/saml-2.0/samlp2_status_detail.i,
+	  trunk/swig/saml-2.0/samlp2_status_response.i,
+	  trunk/swig/saml-2.0/samlp2_subject_query_abstract.i,
+	  trunk/swig/saml-2.0/samlp2_terminate.i: updated SAML2 bindings
+	  with all attributes; and added copyright / licence
+	  notice.
+
+2007-08-13  fpeters
+
+	* trunk/java/Makefile.am: updated with current list of swig
+	  generated files
+
+2007-08-13  fpeters
+
+	* trunk/swig/Makefile.am: remove reference to inexistent file
+
+2007-08-13  fpeters
+
+	* trunk/tests/data/idp5-saml2/Makefile.am,
+	  trunk/tests/data/sp5-saml2/Makefile.am,
+	  trunk/tests/data/sp6-saml2/Makefile.am: fixed reference to
+	  metadata files
+
+2007-08-12  fpeters
+
+	* trunk/lasso/id-ff/server.c, trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf/data_service.c,
+	  trunk/lasso/id-wsf/wsf_profile.c, trunk/lasso/saml-2.0/ecp.c,
+	  trunk/lasso/saml-2.0/login.c, trunk/lasso/xml/private.h,
+	  trunk/lasso/xml/xml.c: added a wrapper around xmlParseMemory to
+	  avoid network and DTD
+
+2007-08-08  dlaniel
+
+	* trunk/lasso/errors.c, trunk/lasso/errors.h,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h, trunk/swig/Lasso-wsf2.i:
+	  processModifyResponseMsg
+
+2007-08-06  dlaniel
+
+	* trunk/swig/Lasso-wsf2.i: swig binding for parse modify items
+
+2007-08-06  dlaniel
+
+	* trunk/lasso/errors.c, trunk/lasso/errors.h,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify_response.h: parse modify
+	  items
+
+2007-08-06  dlaniel
+
+	* trunk/tools/generate_idwsf2_classes.py: added ModifyResponse as
+	  custom namespace
+
+2007-08-02  dlaniel
+
+	* trunk/configure.ac: added some missing Makefiles to configure.ac
+
+2007-07-30  dlaniel
+
+	* trunk/swig/Lasso-wsf2.i: added a missing END_THROW_ERROR
+
+2007-07-30  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_app_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify_item.h,
+	  trunk/swig/Lasso-wsf2.i: added first functions for ID-WSF 2
+	  attribute modification
+
+2007-07-30  dlaniel
+
+	* trunk/swig/Lasso.i: increased the number of allocatable objects
+
+2007-07-30  fpeters
+
+	* trunk/tools, trunk/tools/generate_idwsf2_classes.py: added script
+	  to generate idwsf2 low level classes to repository
+
+2007-07-30  fpeters
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_abstract.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_abstract.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_provider_id.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_provider_id.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_type.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_type.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_app_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_app_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_item_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_item_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_app_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_app_data.h,
+	  trunk/swig/id-wsf-2.0/dstref_app_data.i,
+	  trunk/swig/id-wsf-2.0/inheritance.h: DstRefAppData is just a
+	  template, don't consider it a string but a container
+	  for anything
+
+2007-07-27  dlaniel
+
+	* trunk/swig/Lasso.i: changed abort message when too many objects
+	  are allocated
+
+2007-07-27  dlaniel
+
+	* trunk/swig/Lasso.i: changed abort message when too many objects
+	  are allocated
+
+2007-07-27  dlaniel
+
+	* trunk/swig/Lasso.i: use a constant for node_infos size
+
+2007-07-27  dlaniel
+
+	* trunk/swig/Lasso.i: abort when node_infos array has reached its
+	  limit
+
+2007-07-27  fpeters
+
+	* trunk/swig/saml-2.0/saml2_assertion.i: access to saml2 attribute
+	  statement
+
+2007-07-26  fpeters
+
+	* trunk/debian/python2.3-lasso.files: python2.3-lasso was package
+	  for old policy
+
+2007-07-26  fpeters
+
+	* trunk/debian/changelog, trunk/debian/control,
+	  trunk/debian/pycompat, trunk/debian/python-lasso.files,
+	  trunk/debian/rules: updated packaging to current sid package
+
+2007-07-16  dlaniel
+
+	* trunk/python/tests/idwsf2_tests.py: added one error message
+
+2007-07-16  dlaniel
+
+	* trunk/python/tests/idwsf2_tests.py: some more data service tests
+
+2007-07-16  dlaniel
+
+	* trunk/python/tests/idwsf2_tests.py: data service query tests +
+	  one more test for discovery + some fixes to previous code
+
+2007-07-11  dlaniel
+
+	* trunk/python/tests/idwsf2_tests.py: discovery query test suite
+
+2007-07-11  dlaniel
+
+	* trunk/python/tests/idwsf2_tests.py: moved common function to a
+	  super class
+
+2007-07-11  dlaniel
+
+	* trunk/python/tests/idwsf2_tests.py: test suite for metadata
+	  association add
+
+2007-07-11  dlaniel
+
+	* trunk/python/tests/idwsf2_tests.py: split id-wsf 2 tests in
+	  smaller functions
+
+2007-07-10  dlaniel
+
+	* trunk/python/tests/Makefile.am,
+	  trunk/python/tests/idwsf2_tests.py, trunk/python/tests/tests.py:
+	  some unit tests for id-wsf 2
+
+2007-07-10  dlaniel
+
+	* trunk/lasso/xml/xml.c: fixed prefix changes for soap binding and
+	  ws security
+
+2007-07-10  dlaniel
+
+	* trunk/tests/data/idp5-saml2/metadata.xml,
+	  trunk/tests/data/idp5-saml2/saml2_metadata.xml,
+	  trunk/tests/data/sp5-saml2/metadata.xml,
+	  trunk/tests/data/sp5-saml2/saml2_metadata.xml,
+	  trunk/tests/data/sp6-saml2/metadata.xml,
+	  trunk/tests/data/sp6-saml2/saml2_metadata.xml: renamed some files
+
+2007-07-10  dlaniel
+
+	* trunk/swig/ws: added files to svn:ignore
+
+2007-07-10  dlaniel
+
+	* trunk/tests/data/Makefile.am, trunk/tests/data/idp5-saml2,
+	  trunk/tests/data/idp5-saml2/Makefile.am,
+	  trunk/tests/data/idp5-saml2/private-key.pem,
+	  trunk/tests/data/idp5-saml2/saml2_metadata.xml,
+	  trunk/tests/data/sp5-saml2,
+	  trunk/tests/data/sp5-saml2/Makefile.am,
+	  trunk/tests/data/sp5-saml2/private-key.pem,
+	  trunk/tests/data/sp5-saml2/saml2_metadata.xml,
+	  trunk/tests/data/sp6-saml2,
+	  trunk/tests/data/sp6-saml2/Makefile.am,
+	  trunk/tests/data/sp6-saml2/private-key.pem,
+	  trunk/tests/data/sp6-saml2/saml2_metadata.xml: added saml2
+	  metadatas and keys for 1 idp and 2 sp
+
+2007-07-10  fpeters
+
+	* trunk/lasso/id-ff/login.c: don't call lasso_node_destroy on a
+	  NULL variable
+
+2007-07-10  fpeters
+
+	* trunk/swig/Lasso.i: initialize global variables
+
+2007-07-10  fpeters
+
+	* trunk/configure.ac, trunk/lasso/Makefile.am,
+	  trunk/lasso/id-ff/server.c, trunk/lasso/id-ff/session.c,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/profile.c, trunk/lasso/saml-2.0/login.c,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/disco_abstract.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_abstract.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_keys.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_keys.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_options.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_options.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_provider_id.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_provider_id.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_providerid.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_providerid.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_requested_service.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_security_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_security_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_type.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_type.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_delete.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_delete.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_delete_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_delete_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_delete.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_delete.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_delete_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_delete_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_replace.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_replace.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_replace_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_replace_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.h,
+	  trunk/lasso/xml/id-wsf-2.0/dst_data_response_base.c,
+	  trunk/lasso/xml/id-wsf-2.0/dst_data_response_base.h,
+	  trunk/lasso/xml/id-wsf-2.0/dst_delete_item_base.c,
+	  trunk/lasso/xml/id-wsf-2.0/dst_delete_item_base.h,
+	  trunk/lasso/xml/id-wsf-2.0/dst_delete_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/dst_delete_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/dst_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/dst_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/dst_result_query_base.c,
+	  trunk/lasso/xml/id-wsf-2.0/dst_result_query_base.h,
+	  trunk/lasso/xml/id-wsf-2.0/dst_test_item_base.c,
+	  trunk/lasso/xml/id-wsf-2.0/dst_test_item_base.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_app_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_app_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_create.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_create.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_create_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_create_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_create_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_create_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_data_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_data_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_delete.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_delete.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_delete_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_delete_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_delete_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_delete_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_item_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_item_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_modify_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_result_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_result_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_sort.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_sort.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_test_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_test_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/ims_identity_mapping_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ims_identity_mapping_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ims_identity_mapping_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/ims_identity_mapping_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/ims_mapping_input.c,
+	  trunk/lasso/xml/id-wsf-2.0/ims_mapping_input.h,
+	  trunk/lasso/xml/id-wsf-2.0/ims_mapping_output.c,
+	  trunk/lasso/xml/id-wsf-2.0/ims_mapping_output.h,
+	  trunk/lasso/xml/id-wsf-2.0/is_help.c,
+	  trunk/lasso/xml/id-wsf-2.0/is_help.h,
+	  trunk/lasso/xml/id-wsf-2.0/is_inquiry.c,
+	  trunk/lasso/xml/id-wsf-2.0/is_inquiry.h,
+	  trunk/lasso/xml/id-wsf-2.0/is_inquiry_element.c,
+	  trunk/lasso/xml/id-wsf-2.0/is_inquiry_element.h,
+	  trunk/lasso/xml/id-wsf-2.0/is_interaction_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/is_interaction_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/is_interaction_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/is_interaction_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/is_interaction_statement.c,
+	  trunk/lasso/xml/id-wsf-2.0/is_interaction_statement.h,
+	  trunk/lasso/xml/id-wsf-2.0/is_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/is_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/is_parameter.c,
+	  trunk/lasso/xml/id-wsf-2.0/is_parameter.h,
+	  trunk/lasso/xml/id-wsf-2.0/is_select.c,
+	  trunk/lasso/xml/id-wsf-2.0/is_select.h,
+	  trunk/lasso/xml/id-wsf-2.0/is_text.c,
+	  trunk/lasso/xml/id-wsf-2.0/is_text.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_collection_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_collection_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_collection_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_collection_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_entity_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_entity_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_entity_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_entity_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_known_entity_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_known_entity_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_known_entity_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_known_entity_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_to_collection_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_add_to_collection_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_get_object_info_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_get_object_info_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_get_object_info_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_get_object_info_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_item_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_item_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_list_members_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_list_members_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_list_members_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_list_members_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_notification.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_notification.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_notify.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_notify.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_object.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_object.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_query_objects_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_query_objects_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_query_objects_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_query_objects_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_remove_collection_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_remove_collection_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_remove_entity_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_remove_entity_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_remove_from_collection_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_remove_from_collection_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_request_abstract.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_request_abstract.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_resolve_identifier_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_resolve_identifier_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_resolve_identifier_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_resolve_identifier_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_resolve_input.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_resolve_input.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_response_abstract.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_response_abstract.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_set_object_info_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_set_object_info_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_test_membership_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_test_membership_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/ps_test_membership_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/ps_test_membership_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_consent.c,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_consent.h,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_credentials_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_credentials_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_endpoint_update.c,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_endpoint_update.h,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_redirect_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_redirect_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_sender.c,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_sender.h,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_target_identity.c,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_target_identity.h,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_timeout.c,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_timeout.h,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_usage_directive.c,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_usage_directive.h,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_user_interaction_header.c,
+	  trunk/lasso/xml/id-wsf-2.0/sb2_user_interaction_header.h,
+	  trunk/lasso/xml/id-wsf-2.0/sbf_framework.c,
+	  trunk/lasso/xml/id-wsf-2.0/sbf_framework.h,
+	  trunk/lasso/xml/id-wsf-2.0/sec_token.c,
+	  trunk/lasso/xml/id-wsf-2.0/sec_token.h,
+	  trunk/lasso/xml/id-wsf-2.0/sec_token_policy.c,
+	  trunk/lasso/xml/id-wsf-2.0/sec_token_policy.h,
+	  trunk/lasso/xml/id-wsf-2.0/sec_transited_provider_path.c,
+	  trunk/lasso/xml/id-wsf-2.0/sec_transited_provider_path.h,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding2_redirect_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding2_redirect_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.h,
+	  trunk/lasso/xml/id-wsf-2.0/subs_notification.c,
+	  trunk/lasso/xml/id-wsf-2.0/subs_notification.h,
+	  trunk/lasso/xml/id-wsf-2.0/subs_notify_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/subs_notify_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/subs_ref_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/subs_ref_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/subs_subscription.c,
+	  trunk/lasso/xml/id-wsf-2.0/subs_subscription.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_app_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_app_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_create.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_create.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_create_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_create_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_create_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_create_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_data_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_data_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_delete.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_delete.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_delete_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_delete_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_delete_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_delete_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_item_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_item_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_modify.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_modify.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_modify_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_modify_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_modify_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_modify_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_notification.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_notification.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_notify.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_notify.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_notify_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_notify_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_query_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_query_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_result_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_result_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_subscription.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_subscription.h,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_test_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/subsref_test_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/util_empty.c,
+	  trunk/lasso/xml/id-wsf-2.0/util_empty.h,
+	  trunk/lasso/xml/id-wsf-2.0/util_extension.c,
+	  trunk/lasso/xml/id-wsf-2.0/util_extension.h,
+	  trunk/lasso/xml/id-wsf-2.0/util_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/util_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/util_status.c,
+	  trunk/lasso/xml/id-wsf-2.0/util_status.h,
+	  trunk/lasso/xml/ws/Makefile.am,
+	  trunk/lasso/xml/ws/wsa_attributed_any.c,
+	  trunk/lasso/xml/ws/wsa_attributed_any.h,
+	  trunk/lasso/xml/ws/wsa_attributed_qname.c,
+	  trunk/lasso/xml/ws/wsa_attributed_qname.h,
+	  trunk/lasso/xml/ws/wsa_attributed_unsigned_long.c,
+	  trunk/lasso/xml/ws/wsa_attributed_unsigned_long.h,
+	  trunk/lasso/xml/ws/wsa_attributed_uri.c,
+	  trunk/lasso/xml/ws/wsa_attributed_uri.h,
+	  trunk/lasso/xml/ws/wsa_endpoint_reference.c,
+	  trunk/lasso/xml/ws/wsa_endpoint_reference.h,
+	  trunk/lasso/xml/ws/wsa_metadata.c,
+	  trunk/lasso/xml/ws/wsa_metadata.h,
+	  trunk/lasso/xml/ws/wsa_problem_action.c,
+	  trunk/lasso/xml/ws/wsa_problem_action.h,
+	  trunk/lasso/xml/ws/wsa_reference_parameters.c,
+	  trunk/lasso/xml/ws/wsa_reference_parameters.h,
+	  trunk/lasso/xml/ws/wsa_relates_to.c,
+	  trunk/lasso/xml/ws/wsa_relates_to.h,
+	  trunk/lasso/xml/ws/wsse_200401_security.c,
+	  trunk/lasso/xml/ws/wsse_200401_security.h,
+	  trunk/lasso/xml/ws/wsse_embedded.c,
+	  trunk/lasso/xml/ws/wsse_embedded.h,
+	  trunk/lasso/xml/ws/wsse_reference.c,
+	  trunk/lasso/xml/ws/wsse_reference.h,
+	  trunk/lasso/xml/ws/wsse_security_header.c,
+	  trunk/lasso/xml/ws/wsse_security_header.h,
+	  trunk/lasso/xml/ws/wsse_security_token_reference.c,
+	  trunk/lasso/xml/ws/wsse_security_token_reference.h,
+	  trunk/lasso/xml/ws/wsse_transformation_parameters.c,
+	  trunk/lasso/xml/ws/wsse_transformation_parameters.h,
+	  trunk/lasso/xml/ws/wsse_username_token.c,
+	  trunk/lasso/xml/ws/wsse_username_token.h,
+	  trunk/lasso/xml/ws/wsu_timestamp.c,
+	  trunk/lasso/xml/ws/wsu_timestamp.h, trunk/swig/Lasso.i,
+	  trunk/swig/Makefile.am, trunk/swig/id-wsf-2.0/Makefile.am,
+	  trunk/swig/id-wsf-2.0/disco_abstract.i,
+	  trunk/swig/id-wsf-2.0/disco_endpoint_context.i,
+	  trunk/swig/id-wsf-2.0/disco_keys.i,
+	  trunk/swig/id-wsf-2.0/disco_options.i,
+	  trunk/swig/id-wsf-2.0/disco_provider_id.i,
+	  trunk/swig/id-wsf-2.0/disco_query.i,
+	  trunk/swig/id-wsf-2.0/disco_query_response.i,
+	  trunk/swig/id-wsf-2.0/disco_requested_service.i,
+	  trunk/swig/id-wsf-2.0/disco_security_context.i,
+	  trunk/swig/id-wsf-2.0/disco_service_context.i,
+	  trunk/swig/id-wsf-2.0/disco_service_type.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_association_add.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_association_add_response.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_association_delete.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_association_delete_response.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_association_query.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_association_query_response.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_delete.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_delete_response.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_query.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_query_response.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_register.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_register_response.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_replace.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_md_replace_response.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_metadata.i,
+	  trunk/swig/id-wsf-2.0/dst_data_response_base.i,
+	  trunk/swig/id-wsf-2.0/dst_delete_item_base.i,
+	  trunk/swig/id-wsf-2.0/dst_delete_response.i,
+	  trunk/swig/id-wsf-2.0/dst_request.i,
+	  trunk/swig/id-wsf-2.0/dst_result_query_base.i,
+	  trunk/swig/id-wsf-2.0/dst_test_item_base.i,
+	  trunk/swig/id-wsf-2.0/dstref_app_data.i,
+	  trunk/swig/id-wsf-2.0/dstref_create.i,
+	  trunk/swig/id-wsf-2.0/dstref_create_item.i,
+	  trunk/swig/id-wsf-2.0/dstref_create_response.i,
+	  trunk/swig/id-wsf-2.0/dstref_data.i,
+	  trunk/swig/id-wsf-2.0/dstref_data_response.i,
+	  trunk/swig/id-wsf-2.0/dstref_delete.i,
+	  trunk/swig/id-wsf-2.0/dstref_delete_item.i,
+	  trunk/swig/id-wsf-2.0/dstref_delete_response.i,
+	  trunk/swig/id-wsf-2.0/dstref_item_data.i,
+	  trunk/swig/id-wsf-2.0/dstref_modify.i,
+	  trunk/swig/id-wsf-2.0/dstref_modify_item.i,
+	  trunk/swig/id-wsf-2.0/dstref_modify_response.i,
+	  trunk/swig/id-wsf-2.0/dstref_query.i,
+	  trunk/swig/id-wsf-2.0/dstref_query_item.i,
+	  trunk/swig/id-wsf-2.0/dstref_query_response.i,
+	  trunk/swig/id-wsf-2.0/dstref_result_query.i,
+	  trunk/swig/id-wsf-2.0/dstref_test_item.i,
+	  trunk/swig/id-wsf-2.0/ims_identity_mapping_request.i,
+	  trunk/swig/id-wsf-2.0/ims_identity_mapping_response.i,
+	  trunk/swig/id-wsf-2.0/ims_mapping_input.i,
+	  trunk/swig/id-wsf-2.0/ims_mapping_output.i,
+	  trunk/swig/id-wsf-2.0/inheritance.h,
+	  trunk/swig/id-wsf-2.0/is_help.i,
+	  trunk/swig/id-wsf-2.0/is_inquiry.i,
+	  trunk/swig/id-wsf-2.0/is_inquiry_element.i,
+	  trunk/swig/id-wsf-2.0/is_interaction_request.i,
+	  trunk/swig/id-wsf-2.0/is_interaction_response.i,
+	  trunk/swig/id-wsf-2.0/is_interaction_statement.i,
+	  trunk/swig/id-wsf-2.0/is_item.i,
+	  trunk/swig/id-wsf-2.0/is_parameter.i,
+	  trunk/swig/id-wsf-2.0/is_select.i,
+	  trunk/swig/id-wsf-2.0/is_text.i, trunk/swig/id-wsf-2.0/main.h,
+	  trunk/swig/id-wsf-2.0/ps_add_collection_request.i,
+	  trunk/swig/id-wsf-2.0/ps_add_collection_response.i,
+	  trunk/swig/id-wsf-2.0/ps_add_entity_request.i,
+	  trunk/swig/id-wsf-2.0/ps_add_entity_response.i,
+	  trunk/swig/id-wsf-2.0/ps_add_known_entity_request.i,
+	  trunk/swig/id-wsf-2.0/ps_add_known_entity_response.i,
+	  trunk/swig/id-wsf-2.0/ps_add_to_collection_request.i,
+	  trunk/swig/id-wsf-2.0/ps_get_object_info_request.i,
+	  trunk/swig/id-wsf-2.0/ps_get_object_info_response.i,
+	  trunk/swig/id-wsf-2.0/ps_item_data.i,
+	  trunk/swig/id-wsf-2.0/ps_list_members_request.i,
+	  trunk/swig/id-wsf-2.0/ps_list_members_response.i,
+	  trunk/swig/id-wsf-2.0/ps_notification.i,
+	  trunk/swig/id-wsf-2.0/ps_notify.i,
+	  trunk/swig/id-wsf-2.0/ps_object.i,
+	  trunk/swig/id-wsf-2.0/ps_query_objects_request.i,
+	  trunk/swig/id-wsf-2.0/ps_query_objects_response.i,
+	  trunk/swig/id-wsf-2.0/ps_remove_collection_request.i,
+	  trunk/swig/id-wsf-2.0/ps_remove_entity_request.i,
+	  trunk/swig/id-wsf-2.0/ps_remove_from_collection_request.i,
+	  trunk/swig/id-wsf-2.0/ps_request_abstract.i,
+	  trunk/swig/id-wsf-2.0/ps_resolve_identifier_request.i,
+	  trunk/swig/id-wsf-2.0/ps_resolve_identifier_response.i,
+	  trunk/swig/id-wsf-2.0/ps_resolve_input.i,
+	  trunk/swig/id-wsf-2.0/ps_response_abstract.i,
+	  trunk/swig/id-wsf-2.0/ps_set_object_info_request.i,
+	  trunk/swig/id-wsf-2.0/ps_test_membership_request.i,
+	  trunk/swig/id-wsf-2.0/ps_test_membership_response.i,
+	  trunk/swig/id-wsf-2.0/sb2_consent.i,
+	  trunk/swig/id-wsf-2.0/sb2_credentials_context.i,
+	  trunk/swig/id-wsf-2.0/sb2_endpoint_update.i,
+	  trunk/swig/id-wsf-2.0/sb2_redirect_request.i,
+	  trunk/swig/id-wsf-2.0/sb2_sender.i,
+	  trunk/swig/id-wsf-2.0/sb2_target_identity.i,
+	  trunk/swig/id-wsf-2.0/sb2_timeout.i,
+	  trunk/swig/id-wsf-2.0/sb2_usage_directive.i,
+	  trunk/swig/id-wsf-2.0/sb2_user_interaction_header.i,
+	  trunk/swig/id-wsf-2.0/sbf_framework.i,
+	  trunk/swig/id-wsf-2.0/sec_token.i,
+	  trunk/swig/id-wsf-2.0/sec_token_policy.i,
+	  trunk/swig/id-wsf-2.0/sec_transited_provider_path.i,
+	  trunk/swig/id-wsf-2.0/subs_notification.i,
+	  trunk/swig/id-wsf-2.0/subs_notify_response.i,
+	  trunk/swig/id-wsf-2.0/subs_ref_item.i,
+	  trunk/swig/id-wsf-2.0/subs_subscription.i,
+	  trunk/swig/id-wsf-2.0/subsref_app_data.i,
+	  trunk/swig/id-wsf-2.0/subsref_create.i,
+	  trunk/swig/id-wsf-2.0/subsref_create_item.i,
+	  trunk/swig/id-wsf-2.0/subsref_create_response.i,
+	  trunk/swig/id-wsf-2.0/subsref_data.i,
+	  trunk/swig/id-wsf-2.0/subsref_data_response.i,
+	  trunk/swig/id-wsf-2.0/subsref_delete.i,
+	  trunk/swig/id-wsf-2.0/subsref_delete_item.i,
+	  trunk/swig/id-wsf-2.0/subsref_delete_response.i,
+	  trunk/swig/id-wsf-2.0/subsref_item_data.i,
+	  trunk/swig/id-wsf-2.0/subsref_modify.i,
+	  trunk/swig/id-wsf-2.0/subsref_modify_item.i,
+	  trunk/swig/id-wsf-2.0/subsref_modify_response.i,
+	  trunk/swig/id-wsf-2.0/subsref_notification.i,
+	  trunk/swig/id-wsf-2.0/subsref_notify.i,
+	  trunk/swig/id-wsf-2.0/subsref_notify_response.i,
+	  trunk/swig/id-wsf-2.0/subsref_query.i,
+	  trunk/swig/id-wsf-2.0/subsref_query_item.i,
+	  trunk/swig/id-wsf-2.0/subsref_query_response.i,
+	  trunk/swig/id-wsf-2.0/subsref_result_query.i,
+	  trunk/swig/id-wsf-2.0/subsref_subscription.i,
+	  trunk/swig/id-wsf-2.0/subsref_test_item.i,
+	  trunk/swig/id-wsf-2.0/util_empty.i,
+	  trunk/swig/id-wsf-2.0/util_extension.i,
+	  trunk/swig/id-wsf-2.0/util_response.i,
+	  trunk/swig/id-wsf-2.0/util_status.i, trunk/swig/ws,
+	  trunk/swig/ws/Makefile.am, trunk/swig/ws/inheritance.h,
+	  trunk/swig/ws/main.h, trunk/swig/ws/wsa_attributed_any.i,
+	  trunk/swig/ws/wsa_attributed_qname.i,
+	  trunk/swig/ws/wsa_attributed_unsigned_long.i,
+	  trunk/swig/ws/wsa_attributed_uri.i,
+	  trunk/swig/ws/wsa_endpoint_reference.i,
+	  trunk/swig/ws/wsa_metadata.i, trunk/swig/ws/wsa_problem_action.i,
+	  trunk/swig/ws/wsa_reference_parameters.i,
+	  trunk/swig/ws/wsa_relates_to.i, trunk/swig/ws/wsse_embedded.i,
+	  trunk/swig/ws/wsse_reference.i,
+	  trunk/swig/ws/wsse_security_header.i,
+	  trunk/swig/ws/wsse_security_token_reference.i,
+	  trunk/swig/ws/wsse_transformation_parameters.i,
+	  trunk/swig/ws/wsse_username_token.i,
+	  trunk/swig/ws/wsu_timestamp.i: adds all classes from ID-WSF 2
+	  required schemas; with appropriate changes to
+	  other files.
+
+2007-07-09  dlaniel
+
+	* trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.h: _new
+	  function have no parameters and added some _new_full function
+	  instead
+
+2007-07-09  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.h: changed
+	  metadata_list attribute to SvcMD
+
+2007-07-06  fpeters
+
+	* trunk/lasso/xml/strings.h: added namespaces used by other parts
+	  of id-wsf 2
+
+2007-07-05  dlaniel
+
+	* trunk/lasso/errors.c, trunk/lasso/errors.h,
+	  trunk/lasso/id-wsf-2.0/data_service.c: check enveloppe existence
+	  in case lasso functions are called in wrong order
+
+2007-07-03  fpeters
+
+	* trunk/swig/Lasso.i: hack around swig not declaring functions by
+	  declaring it ourself here,
+	  but it may break in a future swig version, this is just to get a
+	  clean
+	  build without any warning of the Python binding with SWIG
+	  1.3.31...
+
+2007-07-03  fpeters
+
+	* trunk/swig/Lasso.i: get_node_info_with_swig may not be used by
+	  the python binding, but it sure is
+	  used by other bindings (and if we were only concerned by python
+	  we wouldn't use
+	  swig).
+
+2007-07-02  dlaniel
+
+	* trunk/swig/Lasso.i: commented out an usused function to fix
+	  another swig warning
+
+2007-07-02  dlaniel
+
+	* trunk/swig/Lasso-saml2.i, trunk/swig/Lasso-wsf-disco.i,
+	  trunk/swig/Lasso-wsf.i, trunk/swig/Lasso.i: cleaned methods
+	  definitions to fix swig warnings
+
+2007-07-02  dlaniel
+
+	* trunk/swig/Lasso.i: fixed a swig warning in LassoServer
+
+2007-07-02  dlaniel
+
+	* trunk/swig/Lasso-wsf.i: fixed swig warnings for ID-WSF 1
+
+2007-07-02  dlaniel
+
+	* trunk/swig/Lasso-wsf.i: removed no more existing methods from
+	  id-wsf 1 swig bindings
+
+2007-07-02  dlaniel
+
+	* trunk/swig/Lasso-wsf2.i: moved type attribute which isn't herited
+
+2007-07-02  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h, trunk/swig/Lasso-wsf2.i:
+	  added service.queryItems + some attributes initialisation and
+	  destruction
+
+2007-06-29  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h, trunk/swig/Lasso-wsf2.i:
+	  added lasso.SOAP_FAULT_REDIRECT_REQUEST eception when WSP needs
+	  user consent + service.redirectUrl
+
+2007-06-29  dlaniel
+
+	* trunk/lasso/errors.c, trunk/lasso/errors.h: added one soap error
+	  and text for other soap errors
+
+2007-06-29  dlaniel
+
+	* trunk/lasso/xml/xml.c: added SoapBinding2 prefix to handle
+	  RedirectRequest
+
+2007-06-29  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding2_redirect_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding2_redirect_request.h,
+	  trunk/lasso/xml/strings.h, trunk/swig/Lasso-wsf2.i: added
+	  initRedirectUserForConsent
+
+2007-06-19  fpeters
+
+	* trunk/lasso/id-ff/profile.c, trunk/lasso/id-ff/profileprivate.h,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/profile.c,
+	  trunk/lasso/id-wsf-2.0/profile.h, trunk/swig/Lasso-wsf2.i: fixed
+	  class hierarchy, with ID-WSF 2 specific stuffs going into
+	  LassoIdWsf2Profile (which now inherits from LassoProfile).
+
+2007-06-18  dlaniel
+
+	* trunk/lasso/id-ff/profile.c, trunk/lasso/id-ff/profile.h,
+	  trunk/lasso/id-ff/profileprivate.h,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/profile.c,
+	  trunk/lasso/id-wsf-2.0/profile.h, trunk/swig/Lasso-wsf2.i: moved
+	  soap_envelope_request and soap_envelope_response to
+	  ProfilePrivate to avoid ABI breackage
+
+2007-06-14  dlaniel
+
+	* trunk/docs/lasso-book/writing-a-c-sp.txt,
+	  trunk/docs/lasso-book/writing-a-php-sp.txt: rephrase a
+	  meaningless sentence
+
+2007-06-14  dlaniel
+
+	* trunk/docs/lasso-book/writing-a-c-sp.txt,
+	  trunk/docs/lasso-book/writing-a-php-sp.txt: fixed spelling
+	  mistake
+
+2007-06-14  dlaniel
+
+	* trunk/docs/lasso-book/writing-a-php-sp.txt: changed responseMsg
+	  to answer for consistency
+
+2007-06-14  dlaniel
+
+	* trunk/docs/lasso-book/writing-a-php-sp.txt: added 2 lines to get
+	  the
+
+2007-06-14  dlaniel
+
+	* trunk/docs/lasso-book/writing-a-c-sp.txt,
+	  trunk/docs/lasso-book/writing-a-java-sp.txt,
+	  trunk/docs/lasso-book/writing-a-php-sp.txt: added keys and
+	  metadata creation
+
+2007-06-14  dlaniel
+
+	* trunk/docs/lasso-book/writing-a-php-sp.txt: added a line to tell
+	  to restart Apache 2
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c: moved epr free from
+	  finalize to dispose
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/profile.c: fixed EncryptedID usage ; last
+	  commit was a mistake
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/profile.c: use nameIdentifier attribute of
+	  LassoProfile for IdWsf2 profiles
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/profile.c: uncomment a useful line
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-ff/profile.h,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/profile.c, trunk/swig/Lasso-wsf2.i: use
+	  nameIdentifier attribute of LassoProfile for IdWsf2 profiles
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-ff/profile.c: initialise and destroy new
+	  attributes
+
+2007-06-13  dlaniel
+
+	* trunk/java: svn ignore all generated java classes
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/profile.c,
+	  trunk/lasso/id-wsf-2.0/profile.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile_private.h: removed
+	  IdWsf2Profile and use LassoProfile instead
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-ff/profile.h, trunk/lasso/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h, trunk/swig/Lasso-wsf2.i:
+	  removed IdWsf2Profile and use LassoProfile instead
+
+2007-06-13  dlaniel
+
+	* trunk/java/tests/LoginTest.java: fixed gcj warnings + added 2
+	  checks
+
+2007-06-13  dlaniel
+
+	* trunk/java/tests/LoginTest.java: fixed tabs and spaces mix
+
+2007-06-13  dlaniel
+
+	* trunk/docs/lasso-book/writing-a-java-sp.txt: fix documentation
+	  for getting nameIdentifier content
+
+2007-06-13  dlaniel
+
+	* trunk/java/tests/LoginTest.java: fix for getting nameIdentifier
+	  content
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h, trunk/swig/Lasso-wsf2.i:
+	  renamed Wsf2Profile to IdWsf2Profile
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h, trunk/swig/Lasso-wsf2.i:
+	  changed buildQueryResponseMsg to parseQueryItems +
+	  buildResponseMsg
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-wsf/discovery.c: coding style
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h, trunk/swig/Lasso-wsf2.i:
+	  changed buildQueryResponseMsg to buildQueryResponseEprs +
+	  buildResponseMsg
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: replaced two strings with a
+	  constant
+
+2007-06-13  dlaniel
+
+	* trunk/lasso/errors.c, trunk/lasso/errors.h,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/discovery.c, trunk/lasso/xml/strings.h,
+	  trunk/swig/Lasso.i: better error handling + some refactoring
+
+2007-06-13  dlaniel
+
+	* trunk/swig/Lasso.i: removed a duplicate
+
+2007-06-12  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h, trunk/swig/Lasso-wsf2.i:
+	  split lasso_idwsf2_discovery_process_query_msg for the SP to get
+	  the name_id and load the identity dump in between
+
+2007-06-12  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/wsf2_profile.c: decrypt nameId in identity
+	  token
+
+2007-06-12  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: encrypt nameId in profile
+	  identity token
+
+2007-06-12  dlaniel
+
+	* trunk/lasso/saml-2.0/provider.c: coding style
+
+2007-06-12  dlaniel
+
+	* trunk/lasso/saml-2.0/login.c: added comments
+
+2007-06-12  dlaniel
+
+	* trunk/lasso/id-ff/provider.c: coding style + comments
+
+2007-06-12  dlaniel
+
+	* trunk/lasso/id-ff/provider.c: save provider encryption in dumps
+	  and reload it from dump + reloads the keys after loading a dump
+
+2007-06-12  dlaniel
+
+	* trunk/lasso/xml/xml.h, trunk/lasso/xml/xml_enc.h: moved xmlenc.h
+	  include where it is really needed
+
+2007-06-11  dlaniel
+
+	* trunk/lasso/id-ff/session.c,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/session.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h: get the identity token
+	  from the current epr
+
+2007-06-11  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: added a security token in all
+	  eprs (only disco eprs had one before)
+
+2007-06-11  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/discovery.c, trunk/lasso/saml-2.0/login.c:
+	  fixed warnings
+
+2007-06-11  dlaniel
+
+	* trunk/lasso/id-ff/federation.c: removed a duplicate line
+
+2007-06-11  dlaniel
+
+	* trunk/lasso/errors.h, trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/discovery.c: various error checks, coding
+	  style and refactoring
+
+2007-06-11  dlaniel
+
+	* trunk/python/tests/binding_tests.py: removed a useless line
+
+2007-06-09  fpeters
+
+	* trunk/swig/id-wsf-2.0/disco_svc_metadata.i: fixed
+	  LassoIdWsf2DiscoSvcMetadata binding constructor
+
+2007-06-08  fpeters
+
+	* trunk/lasso/id-ff/profile.c: differentiate between id-wsf 1 & 2
+	  since this is what is expected in other
+	  places (won't work as easily for DST)
+
+2007-06-08  fpeters
+
+	* trunk/lasso/id-ff/profile.c: recognize ID-WSF 2 disco query
+	  messages
+
+2007-06-08  dlaniel
+
+	* trunk/lasso/errors.c, trunk/lasso/errors.h,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_requested_service.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_requested_service.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register_response.h,
+	  trunk/lasso/xml/ws/wsa_attributed_uri.c,
+	  trunk/lasso/xml/ws/wsa_attributed_uri.h,
+	  trunk/lasso/xml/ws/wsa_endpoint_reference.c,
+	  trunk/lasso/xml/ws/wsa_endpoint_reference.h,
+	  trunk/lasso/xml/ws/wsa_metadata.c,
+	  trunk/lasso/xml/ws/wsa_metadata.h: various error checks, coding
+	  style and refactoring
+
+2007-06-08  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h, trunk/swig/Lasso-wsf2.i:
+	  removed useless arguments for
+	  lasso_idwsf2_discovery_init_metadata_association_add
+
+2007-06-08  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h, trunk/swig/Lasso-wsf2.i:
+	  removed lasso_idwsf2_data_service_get_personal_profile_email
+
+2007-06-08  dlaniel
+
+	* trunk/lasso/saml-2.0/login.c: if the user wasn't yet associated
+	  to a discovery metadata, associate it + added some commments
+
+2007-06-08  dlaniel
+
+	* trunk/lasso/id-ff/server.c, trunk/lasso/saml-2.0/login.c: if a
+	  user hasn't been associated to a discovery metadata, give him a
+	  default disco epr
+
+2007-06-08  dlaniel
+
+	* trunk/lasso/id-ff/server.c,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h, trunk/swig/Lasso-wsf2.i:
+	  added lasso_idwsf2_discovery_metadata_register_self and
+	  lasso_idwsf2_data_service_get_personal_profile_email
+
+2007-06-07  fpeters
+
+	* trunk/lasso/id-ff/identity.c: noted about memleak to be fixed
+	  later
+
+2007-06-07  fpeters
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: properly allocate memory for
+	  svcMDID
+
+2007-06-07  dlaniel
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-ff/session.c: check
+	  all function arguments in session and identity
+
+2007-06-07  dlaniel
+
+	* trunk/lasso/id-ff/session.c: check session existence
+
+2007-06-07  fpeters
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: be robust, check for possible
+	  NULL variables.
+
+2007-06-07  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c: memory management in
+	  lasso_idwsf2_data_service_get_attribute_string
+
+2007-06-07  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c: small fixes in
+	  lasso_idwsf2_data_service_get_attribute_string
+
+2007-06-07  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c: one more argument check +
+	  free node memory
+
+2007-06-07  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c: added some checks on
+	  arguments
+
+2007-06-07  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h, trunk/swig/Lasso-wsf2.i:
+	  added lasso_idwsf2_data_service_get_attribute_string
+
+2007-06-07  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h, trunk/lasso/xml/xml.c,
+	  trunk/swig/Lasso-wsf2.i: added
+	  lasso_idwsf2_data_service_get_attribute_node
+
+2007-06-07  dlaniel
+
+	* trunk/lasso/xml/id-wsf-2.0/dstref_query_response.c,
+	  trunk/lasso/xml/private.h, trunk/lasso/xml/xml.c: fixed gcc
+	  warnings
+
+2007-06-07  fpeters
+
+	* trunk/lasso/xml/id-wsf-2.0/dstref_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_response.c,
+	  trunk/lasso/xml/private.h, trunk/lasso/xml/xml.c: extended
+	  xml_insure_namespace so it creates the namespace itself, after
+	  having
+	  looked for a preexisting namespace; the function was previously
+	  called with ns
+	  == NULL, which caused namespace to be *removed* from elements (ns
+	  was NULL
+	  because xmlNewNs will return NULL when the namespace is already
+	  defined).
+
+2007-06-07  fpeters
+
+	* trunk/lasso/xml/id-wsf-2.0/dstref_item_data.c: first snippet
+	  member is a name; looking for an element named "any" won't work
+	  that often...
+
+2007-06-07  fpeters
+
+	* trunk/docs/reference/snippet-types.rst: copied note from
+	  LIST_NODES to LIST_XMLNODES since the same behaviour is
+	  present in both.
+
+2007-06-06  dlaniel
+
+	* trunk/lasso/id-wsf/data_service.c: removed useless line
+
+2007-06-06  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h, trunk/swig/Lasso-wsf2.i:
+	  DST processQueryResponseMsg
+
+2007-06-06  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_item_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_item_data.h: changed
+	  QueryResponse items data from string to xmlNode
+
+2007-06-06  dlaniel
+
+	* trunk/lasso/xml/id-wsf-2.0/dstref_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_data.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_item_data.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_item_data.h: added missing
+	  files
+
+2007-06-05  fpeters
+
+	* trunk/php/patch_swig_output.py,
+	  trunk/python/tests/XmlTestRunner.py,
+	  trunk/python/tests/binding_tests.py,
+	  trunk/python/tests/errorchecking_tests.py,
+	  trunk/python/tests/profiles_tests.py,
+	  trunk/python/tests/tests.py: fixed Python scripts Damien broke
+	  when he updated copyright without checking.
+
+2007-06-05  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/util_response.h,
+	  trunk/lasso/xml/private.h, trunk/lasso/xml/xml.c,
+	  trunk/swig/Lasso-wsf2.i: added service.data and
+	  lasso_idwsf2_data_service_build_query_response_msg
+
+2007-06-05  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c: remove a print
+
+2007-06-05  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: Copy session form discovery
+	  to data service object
+
+2007-06-05  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query.c, trunk/lasso/xml/xml.c,
+	  trunk/lasso/xml/xml.h, trunk/swig/Lasso-wsf2.i,
+	  trunk/swig/Lasso.i: added dst profile registration
+
+2007-06-05  dlaniel
+
+	* trunk/lasso/xml/xml.c: cosmetics
+
+2007-06-04  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query.h: use profile namespace
+	  for dst queries + added server as parameter to basic
+	  IdWsf2DataService constructor
+
+2007-06-04  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c: moved identity token code
+	  from discovery to wsf2_profile
+
+2007-06-04  dlaniel
+
+	* trunk/lasso/xml/id-wsf-2.0/dst_result_query_base.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_item.h: make some
+	  queryItem attributes optional
+
+2007-06-04  fpeters
+
+	* trunk/swig/Lasso-wsf2.i: returned objects must go through the
+	  binding; fix ID-WSF2 disco.getService
+
+2007-06-04  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: removed useless code
+
+2007-06-04  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/dst_data_response_base.c,
+	  trunk/swig/Lasso-wsf2.i: swig binding for some ID WSF 2 functions
+	  + changed some types
+
+2007-06-01  dlaniel
+
+	* trunk/lasso/errors.h, trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query.h: added
+	  lasso_idwsf2_data_service_init_query and
+	  lasso_idwsf2_data_service_add_query_item
+
+2007-06-01  dlaniel
+
+	* trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/dst_data_response_base.c,
+	  trunk/lasso/xml/id-wsf-2.0/dst_data_response_base.h,
+	  trunk/lasso/xml/id-wsf-2.0/dst_request.c,
+	  trunk/lasso/xml/id-wsf-2.0/dst_request.h,
+	  trunk/lasso/xml/id-wsf-2.0/dst_result_query_base.c,
+	  trunk/lasso/xml/id-wsf-2.0/dst_result_query_base.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_item.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_item.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_result_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_result_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_sort.c,
+	  trunk/lasso/xml/id-wsf-2.0/dstref_sort.h,
+	  trunk/lasso/xml/id-wsf-2.0/util_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/util_response.h: added some node class
+	  for id-wsf-2.0 DST
+
+2007-05-30  dlaniel
+
+	* trunk/README, trunk/debian/copyright,
+	  trunk/docs/lasso-book/book.rst,
+	  trunk/docs/lasso-book/writing-a-c-sp.txt,
+	  trunk/docs/lasso-book/writing-a-java-sp.txt,
+	  trunk/docs/lasso-book/writing-a-php-sp.txt,
+	  trunk/docs/lasso-book/writing-a-saml2-php-sp.txt,
+	  trunk/website/templates/base.ezt, trunk/website/web/license.xml,
+	  trunk/win32/lasso.rc.in: updated Copyright dates in some more
+	  remaining files
+
+2007-05-30  dlaniel
+
+	* trunk/website/ezt.py: revert copyright changed by mistake
+
+2007-05-30  dlaniel
+
+	* trunk/csharp/tests/BindingTests.cs,
+	  trunk/java/coldfusion/src/CFLassoSingleLogout.java,
+	  trunk/java/coldfusion/src/CFLassoSingleSignOn.java,
+	  trunk/java/tests/BindingTests.java,
+	  trunk/java/tests/LoginTest.java,
+	  trunk/perl/tests/binding_tests.pl,
+	  trunk/php/patch_swig_output.py,
+	  trunk/php/tests/binding_tests.php, trunk/php/tests/perfs.php,
+	  trunk/python/tests/XmlTestRunner.py,
+	  trunk/python/tests/binding_tests.py,
+	  trunk/python/tests/errorchecking_tests.py,
+	  trunk/python/tests/profiles_tests.py,
+	  trunk/python/tests/tests.py, trunk/website/ezt.py: updated
+	  Copyright dates in remaining files
+
+2007-05-30  dlaniel
+
+	* trunk/lasso/errors.c, trunk/lasso/errors.h, trunk/lasso/export.h,
+	  trunk/lasso/id-ff/defederation.c,
+	  trunk/lasso/id-ff/defederation.h, trunk/lasso/id-ff/federation.c,
+	  trunk/lasso/id-ff/federation.h, trunk/lasso/id-ff/identity.c,
+	  trunk/lasso/id-ff/identity.h,
+	  trunk/lasso/id-ff/identityprivate.h, trunk/lasso/id-ff/lecp.c,
+	  trunk/lasso/id-ff/lecp.h, trunk/lasso/id-ff/login.c,
+	  trunk/lasso/id-ff/login.h, trunk/lasso/id-ff/loginprivate.h,
+	  trunk/lasso/id-ff/logout.c, trunk/lasso/id-ff/logout.h,
+	  trunk/lasso/id-ff/logoutprivate.h,
+	  trunk/lasso/id-ff/name_identifier_mapping.c,
+	  trunk/lasso/id-ff/name_identifier_mapping.h,
+	  trunk/lasso/id-ff/name_registration.c,
+	  trunk/lasso/id-ff/name_registration.h,
+	  trunk/lasso/id-ff/profile.c, trunk/lasso/id-ff/profile.h,
+	  trunk/lasso/id-ff/profileprivate.h, trunk/lasso/id-ff/provider.c,
+	  trunk/lasso/id-ff/provider.h,
+	  trunk/lasso/id-ff/providerprivate.h, trunk/lasso/id-ff/server.c,
+	  trunk/lasso/id-ff/server.h, trunk/lasso/id-ff/serverprivate.h,
+	  trunk/lasso/id-ff/session.c, trunk/lasso/id-ff/session.h,
+	  trunk/lasso/id-ff/sessionprivate.h,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/identity.h,
+	  trunk/lasso/id-wsf-2.0/server.h,
+	  trunk/lasso/id-wsf-2.0/session.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile_private.h,
+	  trunk/lasso/id-wsf/authentication.c,
+	  trunk/lasso/id-wsf/authentication.h,
+	  trunk/lasso/id-wsf/data_service.c,
+	  trunk/lasso/id-wsf/data_service.h,
+	  trunk/lasso/id-wsf/data_service_private.h,
+	  trunk/lasso/id-wsf/discovery.c, trunk/lasso/id-wsf/discovery.h,
+	  trunk/lasso/id-wsf/identity.h,
+	  trunk/lasso/id-wsf/interaction_profile_service.c,
+	  trunk/lasso/id-wsf/interaction_profile_service.h,
+	  trunk/lasso/id-wsf/personal_profile_service.c,
+	  trunk/lasso/id-wsf/personal_profile_service.h,
+	  trunk/lasso/id-wsf/wsf_profile.c,
+	  trunk/lasso/id-wsf/wsf_profile.h,
+	  trunk/lasso/id-wsf/wsf_profile_private.h, trunk/lasso/lasso.c,
+	  trunk/lasso/lasso.h, trunk/lasso/saml-2.0/ecp.c,
+	  trunk/lasso/saml-2.0/ecp.h, trunk/lasso/saml-2.0/ecpprivate.h,
+	  trunk/lasso/saml-2.0/federation.c,
+	  trunk/lasso/saml-2.0/federationprivate.h,
+	  trunk/lasso/saml-2.0/login.c,
+	  trunk/lasso/saml-2.0/loginprivate.h,
+	  trunk/lasso/saml-2.0/logout.c,
+	  trunk/lasso/saml-2.0/logoutprivate.h,
+	  trunk/lasso/saml-2.0/name_id_management.c,
+	  trunk/lasso/saml-2.0/name_id_management.h,
+	  trunk/lasso/saml-2.0/profile.c, trunk/lasso/saml-2.0/profile.h,
+	  trunk/lasso/saml-2.0/profileprivate.h,
+	  trunk/lasso/saml-2.0/provider.c,
+	  trunk/lasso/saml-2.0/providerprivate.h,
+	  trunk/lasso/saml-2.0/server.c,
+	  trunk/lasso/saml-2.0/serverprivate.h,
+	  trunk/lasso/xml/disco_authenticate_requester.c,
+	  trunk/lasso/xml/disco_authenticate_requester.h,
+	  trunk/lasso/xml/disco_authenticate_session_context.c,
+	  trunk/lasso/xml/disco_authenticate_session_context.h,
+	  trunk/lasso/xml/disco_authorize_requester.c,
+	  trunk/lasso/xml/disco_authorize_requester.h,
+	  trunk/lasso/xml/disco_credentials.c,
+	  trunk/lasso/xml/disco_credentials.h,
+	  trunk/lasso/xml/disco_description.c,
+	  trunk/lasso/xml/disco_description.h,
+	  trunk/lasso/xml/disco_encrypt_resource_id.c,
+	  trunk/lasso/xml/disco_encrypt_resource_id.h,
+	  trunk/lasso/xml/disco_encrypted_resource_id.c,
+	  trunk/lasso/xml/disco_encrypted_resource_id.h,
+	  trunk/lasso/xml/disco_generate_bearer_token.c,
+	  trunk/lasso/xml/disco_generate_bearer_token.h,
+	  trunk/lasso/xml/disco_insert_entry.c,
+	  trunk/lasso/xml/disco_insert_entry.h,
+	  trunk/lasso/xml/disco_modify.c, trunk/lasso/xml/disco_modify.h,
+	  trunk/lasso/xml/disco_modify_response.c,
+	  trunk/lasso/xml/disco_modify_response.h,
+	  trunk/lasso/xml/disco_options.c, trunk/lasso/xml/disco_options.h,
+	  trunk/lasso/xml/disco_query.c, trunk/lasso/xml/disco_query.h,
+	  trunk/lasso/xml/disco_query_response.c,
+	  trunk/lasso/xml/disco_query_response.h,
+	  trunk/lasso/xml/disco_remove_entry.c,
+	  trunk/lasso/xml/disco_remove_entry.h,
+	  trunk/lasso/xml/disco_requested_service_type.c,
+	  trunk/lasso/xml/disco_requested_service_type.h,
+	  trunk/lasso/xml/disco_resource_id.c,
+	  trunk/lasso/xml/disco_resource_id.h,
+	  trunk/lasso/xml/disco_resource_offering.c,
+	  trunk/lasso/xml/disco_resource_offering.h,
+	  trunk/lasso/xml/disco_send_single_logout.c,
+	  trunk/lasso/xml/disco_send_single_logout.h,
+	  trunk/lasso/xml/disco_service_instance.c,
+	  trunk/lasso/xml/disco_service_instance.h,
+	  trunk/lasso/xml/ds_key_info.c, trunk/lasso/xml/ds_key_info.h,
+	  trunk/lasso/xml/ds_key_value.c, trunk/lasso/xml/ds_key_value.h,
+	  trunk/lasso/xml/ds_rsa_key_value.c,
+	  trunk/lasso/xml/ds_rsa_key_value.h, trunk/lasso/xml/dst_data.c,
+	  trunk/lasso/xml/dst_data.h, trunk/lasso/xml/dst_modification.c,
+	  trunk/lasso/xml/dst_modification.h, trunk/lasso/xml/dst_modify.c,
+	  trunk/lasso/xml/dst_modify.h,
+	  trunk/lasso/xml/dst_modify_response.c,
+	  trunk/lasso/xml/dst_modify_response.h,
+	  trunk/lasso/xml/dst_new_data.c, trunk/lasso/xml/dst_new_data.h,
+	  trunk/lasso/xml/dst_query.c, trunk/lasso/xml/dst_query.h,
+	  trunk/lasso/xml/dst_query_item.c,
+	  trunk/lasso/xml/dst_query_item.h,
+	  trunk/lasso/xml/dst_query_response.c,
+	  trunk/lasso/xml/dst_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_abstract.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_abstract.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_options.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_options.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_providerid.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_providerid.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_type.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_type.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.h,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.h,
+	  trunk/lasso/xml/is_help.c, trunk/lasso/xml/is_help.h,
+	  trunk/lasso/xml/is_inquiry.c, trunk/lasso/xml/is_inquiry.h,
+	  trunk/lasso/xml/is_inquiry_element.c,
+	  trunk/lasso/xml/is_inquiry_element.h,
+	  trunk/lasso/xml/is_interaction_request.c,
+	  trunk/lasso/xml/is_interaction_request.h,
+	  trunk/lasso/xml/is_interaction_response.c,
+	  trunk/lasso/xml/is_interaction_response.h,
+	  trunk/lasso/xml/is_interaction_statement.c,
+	  trunk/lasso/xml/is_interaction_statement.h,
+	  trunk/lasso/xml/is_item.c, trunk/lasso/xml/is_item.h,
+	  trunk/lasso/xml/is_parameter.c, trunk/lasso/xml/is_parameter.h,
+	  trunk/lasso/xml/is_redirect_request.c,
+	  trunk/lasso/xml/is_redirect_request.h,
+	  trunk/lasso/xml/is_select.c, trunk/lasso/xml/is_select.h,
+	  trunk/lasso/xml/is_text.c, trunk/lasso/xml/is_text.h,
+	  trunk/lasso/xml/is_user_interaction.c,
+	  trunk/lasso/xml/is_user_interaction.h,
+	  trunk/lasso/xml/lib_assertion.c, trunk/lasso/xml/lib_assertion.h,
+	  trunk/lasso/xml/lib_authentication_statement.c,
+	  trunk/lasso/xml/lib_authentication_statement.h,
+	  trunk/lasso/xml/lib_authn_context.c,
+	  trunk/lasso/xml/lib_authn_context.h,
+	  trunk/lasso/xml/lib_authn_request.c,
+	  trunk/lasso/xml/lib_authn_request.h,
+	  trunk/lasso/xml/lib_authn_request_envelope.c,
+	  trunk/lasso/xml/lib_authn_request_envelope.h,
+	  trunk/lasso/xml/lib_authn_response.c,
+	  trunk/lasso/xml/lib_authn_response.h,
+	  trunk/lasso/xml/lib_authn_response_envelope.c,
+	  trunk/lasso/xml/lib_authn_response_envelope.h,
+	  trunk/lasso/xml/lib_federation_termination_notification.c,
+	  trunk/lasso/xml/lib_federation_termination_notification.h,
+	  trunk/lasso/xml/lib_idp_entries.c,
+	  trunk/lasso/xml/lib_idp_entries.h,
+	  trunk/lasso/xml/lib_idp_entry.c, trunk/lasso/xml/lib_idp_entry.h,
+	  trunk/lasso/xml/lib_idp_list.c, trunk/lasso/xml/lib_idp_list.h,
+	  trunk/lasso/xml/lib_logout_request.c,
+	  trunk/lasso/xml/lib_logout_request.h,
+	  trunk/lasso/xml/lib_logout_response.c,
+	  trunk/lasso/xml/lib_logout_response.h,
+	  trunk/lasso/xml/lib_name_identifier_mapping_request.c,
+	  trunk/lasso/xml/lib_name_identifier_mapping_request.h,
+	  trunk/lasso/xml/lib_name_identifier_mapping_response.c,
+	  trunk/lasso/xml/lib_name_identifier_mapping_response.h,
+	  trunk/lasso/xml/lib_register_name_identifier_request.c,
+	  trunk/lasso/xml/lib_register_name_identifier_request.h,
+	  trunk/lasso/xml/lib_register_name_identifier_response.c,
+	  trunk/lasso/xml/lib_register_name_identifier_response.h,
+	  trunk/lasso/xml/lib_request_authn_context.c,
+	  trunk/lasso/xml/lib_request_authn_context.h,
+	  trunk/lasso/xml/lib_scoping.c, trunk/lasso/xml/lib_scoping.h,
+	  trunk/lasso/xml/lib_status_response.c,
+	  trunk/lasso/xml/lib_status_response.h,
+	  trunk/lasso/xml/lib_subject.c, trunk/lasso/xml/lib_subject.h,
+	  trunk/lasso/xml/private.h, trunk/lasso/xml/sa_credentials.c,
+	  trunk/lasso/xml/sa_credentials.h, trunk/lasso/xml/sa_parameter.c,
+	  trunk/lasso/xml/sa_parameter.h,
+	  trunk/lasso/xml/sa_password_transforms.c,
+	  trunk/lasso/xml/sa_password_transforms.h,
+	  trunk/lasso/xml/sa_sasl_request.c,
+	  trunk/lasso/xml/sa_sasl_request.h,
+	  trunk/lasso/xml/sa_sasl_response.c,
+	  trunk/lasso/xml/sa_sasl_response.h,
+	  trunk/lasso/xml/sa_transform.c, trunk/lasso/xml/sa_transform.h,
+	  trunk/lasso/xml/saml-2.0/saml2_action.c,
+	  trunk/lasso/xml/saml-2.0/saml2_action.h,
+	  trunk/lasso/xml/saml-2.0/saml2_advice.c,
+	  trunk/lasso/xml/saml-2.0/saml2_advice.h,
+	  trunk/lasso/xml/saml-2.0/saml2_assertion.c,
+	  trunk/lasso/xml/saml-2.0/saml2_assertion.h,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute.c,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute.h,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute_statement.c,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute_statement.h,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute_value.c,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute_value.h,
+	  trunk/lasso/xml/saml-2.0/saml2_audience_restriction.c,
+	  trunk/lasso/xml/saml-2.0/saml2_audience_restriction.h,
+	  trunk/lasso/xml/saml-2.0/saml2_authn_context.c,
+	  trunk/lasso/xml/saml-2.0/saml2_authn_context.h,
+	  trunk/lasso/xml/saml-2.0/saml2_authn_statement.c,
+	  trunk/lasso/xml/saml-2.0/saml2_authn_statement.h,
+	  trunk/lasso/xml/saml-2.0/saml2_authz_decision_statement.c,
+	  trunk/lasso/xml/saml-2.0/saml2_authz_decision_statement.h,
+	  trunk/lasso/xml/saml-2.0/saml2_base_idabstract.c,
+	  trunk/lasso/xml/saml-2.0/saml2_base_idabstract.h,
+	  trunk/lasso/xml/saml-2.0/saml2_condition_abstract.c,
+	  trunk/lasso/xml/saml-2.0/saml2_condition_abstract.h,
+	  trunk/lasso/xml/saml-2.0/saml2_conditions.c,
+	  trunk/lasso/xml/saml-2.0/saml2_conditions.h,
+	  trunk/lasso/xml/saml-2.0/saml2_encrypted_element.c,
+	  trunk/lasso/xml/saml-2.0/saml2_encrypted_element.h,
+	  trunk/lasso/xml/saml-2.0/saml2_evidence.c,
+	  trunk/lasso/xml/saml-2.0/saml2_evidence.h,
+	  trunk/lasso/xml/saml-2.0/saml2_key_info_confirmation_data.c,
+	  trunk/lasso/xml/saml-2.0/saml2_key_info_confirmation_data.h,
+	  trunk/lasso/xml/saml-2.0/saml2_name_id.c,
+	  trunk/lasso/xml/saml-2.0/saml2_name_id.h,
+	  trunk/lasso/xml/saml-2.0/saml2_one_time_use.c,
+	  trunk/lasso/xml/saml-2.0/saml2_one_time_use.h,
+	  trunk/lasso/xml/saml-2.0/saml2_proxy_restriction.c,
+	  trunk/lasso/xml/saml-2.0/saml2_proxy_restriction.h,
+	  trunk/lasso/xml/saml-2.0/saml2_statement_abstract.c,
+	  trunk/lasso/xml/saml-2.0/saml2_statement_abstract.h,
+	  trunk/lasso/xml/saml-2.0/saml2_subject.c,
+	  trunk/lasso/xml/saml-2.0/saml2_subject.h,
+	  trunk/lasso/xml/saml-2.0/saml2_subject_confirmation.c,
+	  trunk/lasso/xml/saml-2.0/saml2_subject_confirmation.h,
+	  trunk/lasso/xml/saml-2.0/saml2_subject_confirmation_data.c,
+	  trunk/lasso/xml/saml-2.0/saml2_subject_confirmation_data.h,
+	  trunk/lasso/xml/saml-2.0/saml2_subject_locality.c,
+	  trunk/lasso/xml/saml-2.0/saml2_subject_locality.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_artifact_resolve.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_artifact_resolve.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_artifact_response.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_artifact_response.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_assertion_idrequest.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_assertion_idrequest.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_attribute_query.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_attribute_query.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_authn_query.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_authn_query.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_authn_request.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_authn_request.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_authz_decision_query.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_authz_decision_query.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_extensions.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_extensions.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_idp_entry.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_idp_entry.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_idp_list.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_idp_list.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_logout_request.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_logout_request.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_logout_response.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_logout_response.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_manage_name_id_request.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_manage_name_id_request.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_manage_name_id_response.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_manage_name_id_response.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_name_id_mapping_request.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_name_id_mapping_request.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_name_id_mapping_response.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_name_id_mapping_response.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_name_id_policy.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_name_id_policy.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_request_abstract.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_request_abstract.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_requested_authn_context.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_requested_authn_context.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_response.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_response.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_scoping.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_scoping.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_status.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_status.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_status_code.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_status_code.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_status_detail.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_status_detail.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_status_response.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_status_response.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_subject_query_abstract.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_subject_query_abstract.h,
+	  trunk/lasso/xml/saml-2.0/samlp2_terminate.c,
+	  trunk/lasso/xml/saml-2.0/samlp2_terminate.h,
+	  trunk/lasso/xml/saml_advice.c, trunk/lasso/xml/saml_advice.h,
+	  trunk/lasso/xml/saml_assertion.c,
+	  trunk/lasso/xml/saml_assertion.h,
+	  trunk/lasso/xml/saml_attribute.c,
+	  trunk/lasso/xml/saml_attribute.h,
+	  trunk/lasso/xml/saml_attribute_designator.c,
+	  trunk/lasso/xml/saml_attribute_designator.h,
+	  trunk/lasso/xml/saml_attribute_statement.c,
+	  trunk/lasso/xml/saml_attribute_statement.h,
+	  trunk/lasso/xml/saml_attribute_value.c,
+	  trunk/lasso/xml/saml_attribute_value.h,
+	  trunk/lasso/xml/saml_audience_restriction_condition.c,
+	  trunk/lasso/xml/saml_audience_restriction_condition.h,
+	  trunk/lasso/xml/saml_authentication_statement.c,
+	  trunk/lasso/xml/saml_authentication_statement.h,
+	  trunk/lasso/xml/saml_authority_binding.c,
+	  trunk/lasso/xml/saml_authority_binding.h,
+	  trunk/lasso/xml/saml_condition_abstract.c,
+	  trunk/lasso/xml/saml_condition_abstract.h,
+	  trunk/lasso/xml/saml_conditions.c,
+	  trunk/lasso/xml/saml_conditions.h,
+	  trunk/lasso/xml/saml_name_identifier.c,
+	  trunk/lasso/xml/saml_name_identifier.h,
+	  trunk/lasso/xml/saml_statement_abstract.c,
+	  trunk/lasso/xml/saml_statement_abstract.h,
+	  trunk/lasso/xml/saml_subject.c, trunk/lasso/xml/saml_subject.h,
+	  trunk/lasso/xml/saml_subject_confirmation.c,
+	  trunk/lasso/xml/saml_subject_confirmation.h,
+	  trunk/lasso/xml/saml_subject_locality.c,
+	  trunk/lasso/xml/saml_subject_locality.h,
+	  trunk/lasso/xml/saml_subject_statement.c,
+	  trunk/lasso/xml/saml_subject_statement.h,
+	  trunk/lasso/xml/saml_subject_statement_abstract.c,
+	  trunk/lasso/xml/saml_subject_statement_abstract.h,
+	  trunk/lasso/xml/samlp_request.c, trunk/lasso/xml/samlp_request.h,
+	  trunk/lasso/xml/samlp_request_abstract.c,
+	  trunk/lasso/xml/samlp_request_abstract.h,
+	  trunk/lasso/xml/samlp_response.c,
+	  trunk/lasso/xml/samlp_response.h,
+	  trunk/lasso/xml/samlp_response_abstract.c,
+	  trunk/lasso/xml/samlp_response_abstract.h,
+	  trunk/lasso/xml/samlp_status.c, trunk/lasso/xml/samlp_status.h,
+	  trunk/lasso/xml/samlp_status_code.c,
+	  trunk/lasso/xml/samlp_status_code.h,
+	  trunk/lasso/xml/sec_resource_access_statement.c,
+	  trunk/lasso/xml/sec_resource_access_statement.h,
+	  trunk/lasso/xml/soap_binding_consent.c,
+	  trunk/lasso/xml/soap_binding_consent.h,
+	  trunk/lasso/xml/soap_binding_correlation.c,
+	  trunk/lasso/xml/soap_binding_correlation.h,
+	  trunk/lasso/xml/soap_binding_ext_credential.c,
+	  trunk/lasso/xml/soap_binding_ext_credential.h,
+	  trunk/lasso/xml/soap_binding_ext_credentials_context.c,
+	  trunk/lasso/xml/soap_binding_ext_credentials_context.h,
+	  trunk/lasso/xml/soap_binding_ext_service_instance_update.c,
+	  trunk/lasso/xml/soap_binding_ext_service_instance_update.h,
+	  trunk/lasso/xml/soap_binding_ext_timeout.c,
+	  trunk/lasso/xml/soap_binding_ext_timeout.h,
+	  trunk/lasso/xml/soap_binding_processing_context.c,
+	  trunk/lasso/xml/soap_binding_processing_context.h,
+	  trunk/lasso/xml/soap_binding_provider.c,
+	  trunk/lasso/xml/soap_binding_provider.h,
+	  trunk/lasso/xml/soap_binding_usage_directive.c,
+	  trunk/lasso/xml/soap_binding_usage_directive.h,
+	  trunk/lasso/xml/soap_body.c, trunk/lasso/xml/soap_body.h,
+	  trunk/lasso/xml/soap_detail.c, trunk/lasso/xml/soap_detail.h,
+	  trunk/lasso/xml/soap_envelope.c, trunk/lasso/xml/soap_envelope.h,
+	  trunk/lasso/xml/soap_fault.c, trunk/lasso/xml/soap_fault.h,
+	  trunk/lasso/xml/soap_header.c, trunk/lasso/xml/soap_header.h,
+	  trunk/lasso/xml/strings.h, trunk/lasso/xml/tools.c,
+	  trunk/lasso/xml/utility_status.c,
+	  trunk/lasso/xml/utility_status.h,
+	  trunk/lasso/xml/ws/wsse_200401_security.c,
+	  trunk/lasso/xml/ws/wsse_200401_security.h,
+	  trunk/lasso/xml/ws/wsu_timestamp.c,
+	  trunk/lasso/xml/ws/wsu_timestamp.h,
+	  trunk/lasso/xml/wsse_security.c, trunk/lasso/xml/wsse_security.h,
+	  trunk/lasso/xml/xml.c, trunk/lasso/xml/xml.h,
+	  trunk/lasso/xml/xml_enc.h, trunk/swig/Lasso-wsf-disco.i,
+	  trunk/swig/Lasso-wsf-dst.i, trunk/swig/Lasso-wsf-is.i,
+	  trunk/swig/Lasso-wsf-sa.i, trunk/swig/Lasso-wsf-soap.i,
+	  trunk/swig/Lasso-wsf.i, trunk/swig/Lasso-wsf2.i,
+	  trunk/swig/Lasso.i, trunk/swig/inheritance.h,
+	  trunk/tests/basic_tests.c, trunk/tests/login_tests.c,
+	  trunk/tests/metadata_tests.c, trunk/tests/perfs.c,
+	  trunk/tests/random_tests.c, trunk/tests/tests.c: updated
+	  Copyright dates in all files
+
+2007-05-30  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/id-wsf-2.0/data_service.c,
+	  trunk/lasso/id-wsf-2.0/data_service.h,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h: added data service class and
+	  lasso_idwsf2_discovery_get_service function
+
+2007-05-09  dlaniel
+
+	* trunk/lasso/id-ff/identity.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c: fixed usage of an identity
+	  without federation
+
+2007-05-09  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: in
+	  lasso_idwsf2_discovery_register_metadata, create idenity if it
+	  doesn't exist
+
+2007-05-09  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: filled msgUrl in
+	  initMetadataAssociationAdd
+
+2007-05-09  dlaniel
+
+	* trunk/lasso/id-ff/identity.c: fixed memory management
+
+2007-05-09  dlaniel
+
+	* trunk/lasso/id-ff/identity.c: don't use misc_text_node
+
+2007-05-09  dlaniel
+
+	* trunk/lasso/id-ff/session.c: don't use g_return_if_fail here
+
+2007-05-09  dlaniel
+
+	* trunk/lasso/id-ff/session.c, trunk/lasso/id-wsf-2.0/discovery.c:
+	  moved session check to where it's really needed
+
+2007-05-09  dlaniel
+
+	* trunk/swig/Lasso.i: added LassoIdentity_getSvcMDIDs method to
+	  swig
+
+2007-05-09  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/session.h: added a forgotten file
+
+2007-05-08  dlaniel
+
+	* trunk/lasso/id-ff/Makefile.am, trunk/lasso/id-ff/identity.c,
+	  trunk/lasso/id-ff/server.c, trunk/lasso/id-ff/session.c,
+	  trunk/lasso/id-ff/session.h, trunk/lasso/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/identity.h,
+	  trunk/lasso/id-wsf-2.0/server.h, trunk/lasso/saml-2.0/login.c,
+	  trunk/lasso/xml/id-wsf-2.0/identity.h, trunk/swig/Lasso.i:
+	  replaced svcMDs with svcMDIDs in identity and moved EPRs from
+	  identity to session
+
+2007-05-08  fpeters
+
+	* trunk/swig/Lasso-saml2.i, trunk/swig/Lasso-wsf-disco.i,
+	  trunk/swig/Lasso-wsf-dst.i, trunk/swig/Lasso-wsf-is.i,
+	  trunk/swig/Lasso-wsf-sa.i, trunk/swig/Lasso-wsf-soap.i,
+	  trunk/swig/Lasso-wsf.i, trunk/swig/Lasso-wsf2.i,
+	  trunk/swig/Lasso.i, trunk/swig/id-wsf-2.0/disco_svc_metadata.i,
+	  trunk/swig/saml-2.0/saml2_action.i,
+	  trunk/swig/saml-2.0/saml2_advice.i,
+	  trunk/swig/saml-2.0/saml2_assertion.i,
+	  trunk/swig/saml-2.0/saml2_attribute.i,
+	  trunk/swig/saml-2.0/saml2_attribute_statement.i,
+	  trunk/swig/saml-2.0/saml2_audience_restriction.i,
+	  trunk/swig/saml-2.0/saml2_authn_context.i,
+	  trunk/swig/saml-2.0/saml2_authn_statement.i,
+	  trunk/swig/saml-2.0/saml2_authz_decision_statement.i,
+	  trunk/swig/saml-2.0/saml2_base_idabstract.i,
+	  trunk/swig/saml-2.0/saml2_condition_abstract.i,
+	  trunk/swig/saml-2.0/saml2_conditions.i,
+	  trunk/swig/saml-2.0/saml2_encrypted_element.i,
+	  trunk/swig/saml-2.0/saml2_evidence.i,
+	  trunk/swig/saml-2.0/saml2_key_info_confirmation_data.i,
+	  trunk/swig/saml-2.0/saml2_name_id.i,
+	  trunk/swig/saml-2.0/saml2_one_time_use.i,
+	  trunk/swig/saml-2.0/saml2_proxy_restriction.i,
+	  trunk/swig/saml-2.0/saml2_statement_abstract.i,
+	  trunk/swig/saml-2.0/saml2_subject.i,
+	  trunk/swig/saml-2.0/saml2_subject_confirmation.i,
+	  trunk/swig/saml-2.0/saml2_subject_confirmation_data.i,
+	  trunk/swig/saml-2.0/saml2_subject_locality.i,
+	  trunk/swig/saml-2.0/samlp2_artifact_resolve.i,
+	  trunk/swig/saml-2.0/samlp2_artifact_response.i,
+	  trunk/swig/saml-2.0/samlp2_assertion_idrequest.i,
+	  trunk/swig/saml-2.0/samlp2_attribute_query.i,
+	  trunk/swig/saml-2.0/samlp2_authn_query.i,
+	  trunk/swig/saml-2.0/samlp2_authn_request.i,
+	  trunk/swig/saml-2.0/samlp2_authz_decision_query.i,
+	  trunk/swig/saml-2.0/samlp2_extensions.i,
+	  trunk/swig/saml-2.0/samlp2_idp_entry.i,
+	  trunk/swig/saml-2.0/samlp2_idp_list.i,
+	  trunk/swig/saml-2.0/samlp2_logout_request.i,
+	  trunk/swig/saml-2.0/samlp2_manage_name_id_request.i,
+	  trunk/swig/saml-2.0/samlp2_name_id_mapping_request.i,
+	  trunk/swig/saml-2.0/samlp2_name_id_mapping_response.i,
+	  trunk/swig/saml-2.0/samlp2_name_id_policy.i,
+	  trunk/swig/saml-2.0/samlp2_request_abstract.i,
+	  trunk/swig/saml-2.0/samlp2_requested_authn_context.i,
+	  trunk/swig/saml-2.0/samlp2_response.i,
+	  trunk/swig/saml-2.0/samlp2_scoping.i,
+	  trunk/swig/saml-2.0/samlp2_status.i,
+	  trunk/swig/saml-2.0/samlp2_status_code.i,
+	  trunk/swig/saml-2.0/samlp2_status_detail.i,
+	  trunk/swig/saml-2.0/samlp2_status_response.i,
+	  trunk/swig/saml-2.0/samlp2_subject_query_abstract.i,
+	  trunk/swig/saml-2.0/samlp2_terminate.i: also keep lasso prefix in
+	  PHP5 binding
+
+2007-05-03  dlaniel
+
+	* trunk/lasso/saml-2.0/login.c, trunk/lasso/xml/strings.h: fixed
+	  attribute name and name format
+
+2007-05-03  dlaniel
+
+	* trunk/lasso/xml/xml.h: added LASSO_EXPORT for a function in a
+	  public header
+
+2007-05-03  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h, trunk/swig/Lasso-wsf2.i:
+	  changed function names to match binding function names
+
+2007-05-03  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/wsf2_profile.c, trunk/lasso/xml/xml.c,
+	  trunk/lasso/xml/xml.h: don't use lasso_node_dump to create xml
+	  soap messages
+
+2007-05-03  dlaniel
+
+	* trunk/lasso/saml-2.0/login.c: fixed SecMechID
+
+2007-05-03  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h, trunk/swig/Lasso-wsf2.i:
+	  changed registerMetadata prototype + small fixes
+
+2007-05-03  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h, trunk/swig/Lasso-wsf2.i:
+	  split processMetadataAssociationAddMsg into
+	  processMetadataAssociationAddMsg + registerMetadata - new API
+
+2007-05-02  dlaniel
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/saml-2.0/login.c: get assertion from disco epr and
+	  put this assertion into soap header for metadata_association_add
+
+2007-05-02  fpeters
+
+	* trunk/lasso/xml/xml.c: SNIPPE_ALLOW_TEXT doesn't have to be
+	  handled, but Damien gcc is warning-happy.
+
+2007-05-02  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf/discovery.c: replaced status codes with
+	  constants
+
+2007-05-02  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: don't segfault when receiving
+	  bad soap request or response
+
+2007-05-02  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: replaced
+	  LASSO_WSF2_PROFILE(discovery) with profile everywhere
+
+2007-05-02  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/identity.h: wrap too long line
+
+2007-05-02  dlaniel
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-wsf-2.0/identity.h:
+	  fixed function name
+
+2007-05-02  dlaniel
+
+	* trunk/lasso/saml-2.0/login.c,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/disco_security_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_security_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/sec_token.c,
+	  trunk/lasso/xml/id-wsf-2.0/sec_token.h, trunk/lasso/xml/xml.c:
+	  added assertion identity token into disco EPR
+
+2007-05-02  dlaniel
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-wsf-2.0/identity.h:
+	  added method to get an assertion security token from an EPR
+
+2007-05-02  dlaniel
+
+	* trunk/lasso/xml/strings.h: fixed spaces
+
+2007-05-02  fpeters
+
+	* trunk/lasso/xml/private.h,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute_value.c,
+	  trunk/lasso/xml/saml_attribute_value.c, trunk/lasso/xml/xml.c:
+	  don't put text nodes in list nodes unless SNIPPET_ALLOW_TEXT is
+	  set
+
+2007-05-02  fpeters
+
+	* trunk/lasso/xml/xml.c: fixed xmlCleanNs on recursing namespaces
+
+2007-05-02  fpeters
+
+	* trunk/lasso/id-wsf/discovery.c: hardened id-wsf1 disco detection
+	  against misc nodes
+
+2007-05-02  fpeters
+
+	* trunk/lasso/xml/misc_text_node.c,
+	  trunk/lasso/xml/misc_text_node.h, trunk/lasso/xml/xml.c,
+	  trunk/swig/Lasso.i: SNIPPET_LIST_NODES can now host
+	  LassoMiscTextNode, also useful now to directly
+	  embed a text element (instead of a node with a text element as
+	  content)
+
+2007-05-02  fpeters
+
+	* trunk/swig/Lasso.i: whitespace cleaning
+
+2007-05-02  fpeters
+
+	* trunk/swig/Lasso.i: binding for LassoLogin->assertion
+
+2007-05-02  fpeters
+
+	* trunk/swig/Lasso.i, trunk/swig/inheritance.h: binding for
+	  LassoMiscTextNode
+
+2007-04-30  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c, trunk/lasso/xml/strings.h,
+	  trunk/lasso/xml/ws/Makefile.am,
+	  trunk/lasso/xml/ws/wsse_200401_security.c,
+	  trunk/lasso/xml/ws/wsse_200401_security.h, trunk/lasso/xml/xml.c:
+	  added identity token into metadata_association_add messages
+
+2007-04-30  fpeters
+
+	* trunk/lasso/xml/Makefile.am: xml_enc.h should have been public;
+	  so much for QA.
+
+2007-04-25  fpeters
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/identity.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.h: const'ified a
+	  bunch of parameter that are immutable
+
+2007-04-25  dlaniel
+
+	* trunk/lasso/id-ff/server.c: fixed gcc warning
+
+2007-04-25  dlaniel
+
+	* trunk/lasso/id-ff/profile.c, trunk/lasso/id-ff/profile.h,
+	  trunk/swig/Lasso.i: added id-wsf 2.0 request types + added a
+	  missing include
+
+2007-04-25  dlaniel
+
+	* trunk/swig/Lasso-wsf2.i: removed const warning from gcc
+
+2007-04-25  fpeters
+
+	* trunk/lasso/id-ff/server.c, trunk/lasso/id-ff/server.h,
+	  trunk/lasso/xml/xml.c, trunk/swig/Lasso.i: new
+	  server.addServiceFromDump method, and extended addService to work
+	  for both
+	  id-wsf 1 and 2; also necessary to add quick hack in
+	  new_from_xmlnode to map
+	  SvcMD to SvcMetadata.
+
+2007-04-25  dlaniel
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-ff/server.c,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.h,
+	  trunk/swig/Lasso-wsf2.i: fill profile->request in
+	  init_metadata_register + added soap_endpoint parameter
+
+2007-04-25  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: fill profile->request in
+	  init_metadata_register
+
+2007-04-24  fpeters
+
+	* trunk/swig/Lasso.i: added getSvcMetadatas method to
+	  lasso.Identity, to bind
+	  lasso_identity_get_svc_metadatas().
+
+2007-04-24  dlaniel
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/identity.h, trunk/swig/Lasso-wsf2.i:
+	  coding style fixes
+
+2007-04-24  dlaniel
+
+	* trunk/lasso/id-ff/identity.c: coding style fix
+
+2007-04-24  dlaniel
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-ff/login.c,
+	  trunk/lasso/id-ff/server.c, trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/identity.h, trunk/lasso/saml-2.0/login.c,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_requested_service.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_requested_service.h,
+	  trunk/lasso/xml/strings.h,
+	  trunk/lasso/xml/ws/wsa_endpoint_reference.c,
+	  trunk/lasso/xml/ws/wsa_endpoint_reference.h,
+	  trunk/lasso/xml/xml.c, trunk/swig/Lasso-wsf2-disco.i,
+	  trunk/swig/Lasso-wsf2.i: implemented discovery query
+
+2007-04-19  fpeters
+
+	* trunk/lasso/xml/Makefile.am, trunk/lasso/xml/misc_text_node.c,
+	  trunk/lasso/xml/misc_text_node.h,
+	  trunk/lasso/xml/ws/wsa_metadata.c, trunk/lasso/xml/xml.c: a
+	  little bit of imagination to avoid new classes for each and every
+	  simple element with a different name.
+
+2007-04-19  dlaniel
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h,
+	  trunk/lasso/saml-2.0/login.c,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/disco_abstract.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_abstract.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_providerid.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_providerid.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_type.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_type.h,
+	  trunk/lasso/xml/ws/wsa_attributed_uri.c,
+	  trunk/lasso/xml/ws/wsa_metadata.c,
+	  trunk/lasso/xml/ws/wsa_metadata.h: Build a Disco EPR within saml
+	  2 login assertion
+
+2007-04-19  fpeters
+
+	* trunk/lasso/id-wsf/authentication.c: cleaning warnings signaled
+	  by gcc
+
+2007-04-19  dlaniel
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-ff/server.c,
+	  trunk/lasso/id-wsf-2.0/discovery.c, trunk/lasso/saml-2.0/login.c:
+	  fixed gcc warnings
+
+2007-04-19  dlaniel
+
+	* trunk/lasso/id-ff/identity.c, trunk/lasso/id-ff/server.c: minor
+	  fixes
+
+2007-04-18  dlaniel
+
+	* trunk/docs/lasso-book, trunk/lasso/id-wsf-2.0,
+	  trunk/lasso/xml/id-wsf-2.0, trunk/lasso/xml/ws, trunk/php5,
+	  trunk/python, trunk/swig/id-wsf-2.0, trunk/tests/metadata:
+	  updated svn:ignore properties
+
+2007-04-18  dlaniel
+
+	* trunk, trunk/lasso/id-ff/identity.c, trunk/lasso/id-ff/server.c,
+	  trunk/lasso/id-ff/serverprivate.h,
+	  trunk/lasso/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/identity.h,
+	  trunk/lasso/id-wsf-2.0/server.h, trunk/lasso/id-wsf/identity.h,
+	  trunk/lasso/xml/id-wsf-2.0/identity.h: completed
+	  metatada_register and metadata_association_add
+
+2007-04-17  dlaniel
+
+	* trunk/lasso/xml/saml-2.0/Makefile.am: added
+	  saml_attribute_value.[ch] to Makefile.am
+
+2007-04-16  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: typo
+
+2007-04-16  dlaniel
+
+	* trunk/lasso/xml/ds_key_info.c, trunk/lasso/xml/ds_key_value.c,
+	  trunk/lasso/xml/ds_rsa_key_value.c,
+	  trunk/lasso/xml/lib_subject.c,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute_value.c,
+	  trunk/lasso/xml/saml_advice.c, trunk/lasso/xml/saml_assertion.c,
+	  trunk/lasso/xml/saml_attribute_designator.c,
+	  trunk/lasso/xml/saml_attribute_statement.c,
+	  trunk/lasso/xml/saml_attribute_value.c,
+	  trunk/lasso/xml/saml_audience_restriction_condition.c,
+	  trunk/lasso/xml/saml_authentication_statement.c,
+	  trunk/lasso/xml/saml_authority_binding.c,
+	  trunk/lasso/xml/saml_condition_abstract.c,
+	  trunk/lasso/xml/saml_conditions.c,
+	  trunk/lasso/xml/saml_name_identifier.c,
+	  trunk/lasso/xml/saml_statement_abstract.c,
+	  trunk/lasso/xml/saml_subject.c,
+	  trunk/lasso/xml/saml_subject_confirmation.c,
+	  trunk/lasso/xml/saml_subject_locality.c,
+	  trunk/lasso/xml/saml_subject_statement.c,
+	  trunk/lasso/xml/saml_subject_statement_abstract.c,
+	  trunk/lasso/xml/sec_resource_access_statement.c: fixed typo (no
+	  idea how long it had been there)
+
+2007-04-16  dlaniel
+
+	* trunk/lasso/saml-2.0/login.c,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute.c,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute.h,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute_value.c,
+	  trunk/lasso/xml/saml-2.0/saml2_attribute_value.h: start writing
+	  an ID-WSF EPR in saml 2 assertions
+
+2007-04-16  dlaniel
+
+	* trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.h:
+	  md_association_add xml nodes
+
+2007-04-16  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am, trunk/swig/Lasso-wsf2.i:
+	  identity + session in discovery + SvcMDAssociationAdd
+
+2007-04-14  fpeters
+
+	* trunk/swig/Lasso.i: new StringDict to map GHashTable of strings
+	  to a structure similar to a python
+	  dictionary (necessary to support mapping of "any" attributes)
+
+2007-04-14  fpeters
+
+	* trunk/docs/lasso-book/lasso-architecture.rst,
+	  trunk/docs/lasso-book/writing-a-c-sp.txt,
+	  trunk/docs/lasso-book/writing-a-java-sp.txt,
+	  trunk/docs/lasso-book/writing-a-php-sp.txt: updated liberty
+	  document uris
+
+2007-04-14  fpeters
+
+	* trunk/lasso/xml/ws/wsa_attributed_unsigned_long.c: updated with
+	  version from a newer generator (initialize anyAttribute hash
+	  table
+	  and correctly set content to 0 instead of NULL)
+
+2007-04-14  fpeters
+
+	* trunk/lasso/saml-2.0/name_id_management.c: add profileprivate.h
+	  header for lasso_profile_clean_info function declaration
+
+2007-04-14  fpeters
+
+	* trunk/lasso/id-ff/defederation.c, trunk/lasso/id-ff/lecp.c,
+	  trunk/lasso/id-ff/name_registration.c: add missing
+	  profileprivate.h header for lasso_profile_clean_info function
+	  declaration.
+
+2007-04-14  fpeters
+
+	* trunk/lasso/xml/xml.c: optimize type autodetection in
+	  lasso_node_new_from_xmlNode by reordering
+	  namespace matches and stopping at first success
+
+2007-04-14  fpeters
+
+	* trunk/lasso/xml/xml.c: added reference to WsAddr
+
+2007-04-14  fpeters
+
+	* trunk/lasso/xml/xml.c: implemented support for SNIPPET_ATTRIBUTE
+	  | SNIPPET_ANY (using GHashTable).
+
+2007-04-14  fpeters
+
+	* trunk/lasso/xml/saml-2.0/saml2_encrypted_element.h: removed
+	  useless glib/glist.h include
+
+2007-04-13  fpeters
+
+	* trunk/website/convert-to-static.py: fixed last commit author in
+	  buildbox
+
+2007-04-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_options.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_options.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.h,
+	  trunk/lasso/xml/xml.c, trunk/swig/Lasso-wsf2-disco.i,
+	  trunk/swig/Lasso-wsf2.i,
+	  trunk/swig/id-wsf-2.0/disco_svc_metadata.i,
+	  trunk/swig/id-wsf-2.0/inheritance.h:
+	  disco.processMetadataRegisterResponseMsg(soap_answer) and
+	  disco.svcMDID + renamed Idwsf2 to IdWsf2 to make it work with new
+	  classes
+
+2007-04-13  fpeters
+
+	* trunk/lasso/extract_symbols.py, trunk/lasso/extract_types.py:
+	  don't include wsu_ symbols in non-id-wsf builds
+
+2007-04-13  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h,
+	  trunk/lasso/xml/id-wsf-2.0/util_status.c,
+	  trunk/lasso/xml/id-wsf-2.0/util_status.h,
+	  trunk/swig/Lasso-wsf2.i:
+	  disco.processMetadataRegisterMsg(soap_answer) and
+	  disco.buildResponseMsg()
+
+2007-04-12  dlaniel
+
+	* trunk/configure.ac, trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.h,
+	  trunk/swig/Lasso-wsf2-disco.i, trunk/swig/Lasso-wsf2.i,
+	  trunk/swig/Lasso.i, trunk/swig/Makefile.am,
+	  trunk/swig/id-wsf-2.0, trunk/swig/id-wsf-2.0/Makefile.am,
+	  trunk/swig/id-wsf-2.0/disco_svc_metadata.i,
+	  trunk/swig/id-wsf-2.0/inheritance.h,
+	  trunk/swig/id-wsf-2.0/main.h: implemented disco.metadata.dump()
+
+2007-04-12  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.h,
+	  trunk/lasso/xml/soap_envelope.c, trunk/lasso/xml/xml.c: changed
+	  disco classes and methods names + make
+	  lasso_idwsf2_discovery_process_metadata_register_msg work
+
+2007-04-12  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: removed useless check
+
+2007-04-12  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c: removed useless headers
+
+2007-04-12  dlaniel
+
+	* trunk/lasso/xml/ws/wsu_timestamp.c,
+	  trunk/lasso/xml/ws/wsu_timestamp.h: added wsu_timestamp class
+
+2007-04-12  dlaniel
+
+	* trunk/lasso/Makefile.am, trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.c,
+	  trunk/lasso/xml/strings.h, trunk/lasso/xml/ws/Makefile.am:
+	  removed id-wsf 1 soap headers and added wsu_timestamp id-wsf 2.0
+	  element
+
+2007-04-11  fpeters
+
+	* trunk/lasso/extract_symbols.py, trunk/lasso/extract_types.py:
+	  only include wsa_ when ID-WSF is enabled
+
+2007-04-11  fpeters
+
+	* trunk/configure.ac, trunk/lasso/xml/Makefile.am,
+	  trunk/lasso/xml/strings.h, trunk/lasso/xml/ws,
+	  trunk/lasso/xml/ws/Makefile.am,
+	  trunk/lasso/xml/ws/wsa_attributed_any.c,
+	  trunk/lasso/xml/ws/wsa_attributed_any.h,
+	  trunk/lasso/xml/ws/wsa_attributed_qname.c,
+	  trunk/lasso/xml/ws/wsa_attributed_qname.h,
+	  trunk/lasso/xml/ws/wsa_attributed_unsigned_long.c,
+	  trunk/lasso/xml/ws/wsa_attributed_unsigned_long.h,
+	  trunk/lasso/xml/ws/wsa_attributed_uri.c,
+	  trunk/lasso/xml/ws/wsa_attributed_uri.h,
+	  trunk/lasso/xml/ws/wsa_endpoint_reference.c,
+	  trunk/lasso/xml/ws/wsa_endpoint_reference.h,
+	  trunk/lasso/xml/ws/wsa_metadata.c,
+	  trunk/lasso/xml/ws/wsa_metadata.h,
+	  trunk/lasso/xml/ws/wsa_problem_action.c,
+	  trunk/lasso/xml/ws/wsa_problem_action.h,
+	  trunk/lasso/xml/ws/wsa_reference_parameters.c,
+	  trunk/lasso/xml/ws/wsa_reference_parameters.h,
+	  trunk/lasso/xml/ws/wsa_relates_to.c,
+	  trunk/lasso/xml/ws/wsa_relates_to.h: added WS-Addr classes
+
+2007-04-11  dlaniel
+
+	* trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.c: removed useless
+	  g_object_ref
+
+2007-04-11  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.h: fixed include
+
+2007-04-11  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/util_status.c,
+	  trunk/lasso/xml/id-wsf-2.0/util_status.h,
+	  trunk/swig/Lasso-wsf2.i: implementing
+	  lasso_idwsf2_discovery_process_metadata_register_msg, not working
+	  yet
+
+2007-04-11  fpeters
+
+	* trunk/lasso/xml/strings.h: target namespace for disco would
+	  better be disco, not ds, to avoid confusion
+
+2007-04-11  fpeters
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_metadata.h: renamed
+	  disco_service_metadata to disco_svc_metadata
+
+2007-04-10  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata_register.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_svc_md_register.h,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.c: renaming +
+	  removed some useless casts
+
+2007-04-10  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.c,
+	  trunk/swig/Lasso-wsf2.i: some more work on metadata registration
+
+2007-04-08  fpeters
+
+	* trunk/lasso/xml/strings.h: adding all ID-WSF 2.0 namespaces
+
+2007-04-07  fpeters
+
+	* trunk/docs/lasso-book/figures/single-logout.png,
+	  trunk/docs/lasso-book/figures/single-sign-on.png: fixing figures
+	  from cvs2svn conversion
+
+2007-04-06  fpeters
+
+	* trunk/configure.ac, trunk/lasso/Makefile.am,
+	  trunk/lasso/extract_symbols.py, trunk/lasso/extract_types.py,
+	  trunk/swig/Lasso.i, trunk/swig/Makefile.am,
+	  trunk/swig/wsf2-support.i.in: keep a single --enable-wsf
+	  configure option, for both ID-WSF 1 and 2.
+
+2007-04-05  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.h: removed
+	  useless comments and wrap too long lines
+
+2007-04-05  dlaniel
+
+	* trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata_register.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata_register.h,
+	  trunk/swig/Lasso-wsf2-disco.i, trunk/swig/Lasso-wsf2.i: 'service
+	  metadata register' message construction
+
+2007-04-05  dlaniel
+
+	* trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.h: moved and
+	  renamed attributes
+
+2007-04-04  fpeters
+
+	* trunk/lasso/id-wsf/wsf_profile.c: fixed segfault on invalid input
+	  passed to
+	  lasso_wsf_profile_process_soap_response_msg
+
+2007-04-04  fpeters
+
+	* trunk/perl/tests/binding_tests.pl: fixed usage of constant
+	  strings in Perl binding
+
+2007-04-03  dlaniel
+
+	* trunk/swig/Lasso-wsf2-disco.i, trunk/swig/Lasso.i,
+	  trunk/swig/Makefile.am, trunk/swig/wsf2-support.i,
+	  trunk/swig/wsf2-support.i.in: ID-WSF 2.0 : basix swig support
+
+2007-04-03  dlaniel
+
+	* trunk/configure.ac, trunk/lasso/Makefile.am,
+	  trunk/lasso/id-wsf-2.0/Makefile.am, trunk/lasso/xml/Makefile.am,
+	  trunk/lasso/xml/id-wsf-2.0/Makefile.am: build configuration for
+	  id-wsf 2.0
+
+2007-04-03  dlaniel
+
+	* trunk/lasso/xml/strings.h: new strings declarations
+
+2007-04-03  dlaniel
+
+	* trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_options.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_options.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.h,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.h: ID-WSF 2.0
+	  Discovery query : not yet working classes
+
+2007-04-03  dlaniel
+
+	* trunk/lasso/id-wsf-2.0, trunk/lasso/id-wsf-2.0/discovery.c,
+	  trunk/lasso/id-wsf-2.0/discovery.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.c,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile.h,
+	  trunk/lasso/id-wsf-2.0/wsf2_profile_private.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_query_response.h: ID-WSF 2.0
+	  Discovery Query : not yet working classes
+
+2007-04-03  dlaniel
+
+	* trunk/lasso/xml/id-wsf-2.0,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_endpoint_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_options.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_options.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_context.h,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.c,
+	  trunk/lasso/xml/id-wsf-2.0/disco_service_metadata.h,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.c,
+	  trunk/lasso/xml/id-wsf-2.0/soap_binding_framework.h: ID-WSF 2.0
+	  Discovery : Some XML nodes
+
+2007-03-29  fpeters
+
+	* trunk/doap.rdf, trunk/website/convert-to-static.py,
+	  trunk/website/templates/base.ezt,
+	  trunk/website/templates/changelog.ezt,
+	  trunk/website/web/download/index.xml,
+	  trunk/website/web/mailinglists/index.xml,
+	  trunk/website/web/souk/index.xml: website update; Lasso is now
+	  managed in Subversion
+
+2007-03-26  fpeters
+
+	* trunk/website, trunk/website/convert-to-static.py,
+	  trunk/website/ezt.py, trunk/website/templates,
+	  trunk/website/templates/base.ezt,
+	  trunk/website/templates/buildlog.ezt,
+	  trunk/website/templates/changelog.ezt,
+	  trunk/website/templates/tests.ezt, trunk/website/web,
+	  trunk/website/web/buildbox.xml, trunk/website/web/css,
+	  trunk/website/web/css/buildbox.css,
+	  trunk/website/web/css/lasso.css, trunk/website/web/css/lasso.png,
+	  trunk/website/web/css/leaf-style.css,
+	  trunk/website/web/css/my-leaf.jpeg,
+	  trunk/website/web/css/note.png,
+	  trunk/website/web/css/warning.png, trunk/website/web/devnotes,
+	  trunk/website/web/devnotes/id-wsf-stating.html,
+	  trunk/website/web/doap.rdf,
+	  trunk/website/web/doap.rdf.config.xml,
+	  trunk/website/web/documentation,
+	  trunk/website/web/documentation/default.css,
+	  trunk/website/web/documentation/index.xml,
+	  trunk/website/web/documentation/interoperability.xml,
+	  trunk/website/web/documentation/perfs.xml,
+	  trunk/website/web/documentation/slides,
+	  trunk/website/web/documentation/slides/20050201-lasso-solutions-linux.pdf,
+	  trunk/website/web/download, trunk/website/web/download/index.xml,
+	  trunk/website/web/figures, trunk/website/web/figures/caution.png,
+	  trunk/website/web/figures/important.png,
+	  trunk/website/web/figures/lasso.png,
+	  trunk/website/web/figures/note.png,
+	  trunk/website/web/figures/perfs-sp-libs-large.png,
+	  trunk/website/web/figures/perfs-sp-libs.png,
+	  trunk/website/web/figures/perfs-sp-stability-large.png,
+	  trunk/website/web/figures/perfs-sp-stability.png,
+	  trunk/website/web/figures/perfs-sp-stability.svg,
+	  trunk/website/web/figures/tip.png,
+	  trunk/website/web/figures/warning.png,
+	  trunk/website/web/index.xml, trunk/website/web/license.xml,
+	  trunk/website/web/links.xml, trunk/website/web/mailinglists,
+	  trunk/website/web/mailinglists/index.xml, trunk/website/web/news,
+	  trunk/website/web/news/00-release-0.6.0.xml,
+	  trunk/website/web/news/01-release-0.6.1.xml,
+	  trunk/website/web/news/02-slides-solution-linux.xml,
+	  trunk/website/web/news/03-release-0.6.2.xml,
+	  trunk/website/web/news/04-release-0.6.3.xml,
+	  trunk/website/web/news/05-release-0.6.4.xml,
+	  trunk/website/web/news/06-release-0.6.5.xml,
+	  trunk/website/web/news/07-saml2.xml,
+	  trunk/website/web/news/08-release-2.0.0.xml,
+	  trunk/website/web/news/index.xml, trunk/website/web/souk,
+	  trunk/website/web/souk/example-schema.png,
+	  trunk/website/web/souk/index.xml,
+	  trunk/website/web/souk/sp1-sso.png: website import
+
+2007-03-24  fpeters
+
+	* trunk/lasso/Attic: Attic shouldn't have been imported during the
+	  switch to svn
+
+2007-01-16  fpeters
+
+	* trunk/ChangeLog, trunk/NEWS, trunk/doap.rdf: updated changelog
+	  for 2.0.0
+
 2007-01-16  fpeters
 
         * tests/login_tests.c, tests/perfs.c: fixed memory leaks
