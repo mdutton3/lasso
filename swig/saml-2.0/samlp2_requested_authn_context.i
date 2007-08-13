@@ -1,3 +1,26 @@
+/* $Id$ 
+ *
+ * Lasso - A free implementation of the Liberty Alliance specifications.
+ *
+ * Copyright (C) 2004-2007 Entr'ouvert
+ * http://lasso.entrouvert.org
+ * 
+ * Authors: See AUTHORS file in top-level directory.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
 #ifndef SWIG_PHP_RENAMES
 %rename(Samlp2RequestedAuthnContext) LassoSamlp2RequestedAuthnContext;
@@ -9,11 +32,19 @@ typedef struct {
 	char *Comparison;
 } LassoSamlp2RequestedAuthnContext;
 %extend LassoSamlp2RequestedAuthnContext {
-	%newobject authnContextClassRef_get;
-	LassoStringList *authnContextClassRef;
 
-	%newobject authnContextDeclRef_get;
-	LassoStringList *authnContextDeclRef;
+#ifndef SWIG_PHP_RENAMES
+	%rename(authnContextClassRef) AuthnContextClassRef;
+#endif
+	%newobject AuthnContextClassRef_get;
+	LassoStringList *AuthnContextClassRef;
+
+#ifndef SWIG_PHP_RENAMES
+	%rename(authnContextDeclRef) AuthnContextDeclRef;
+#endif
+	%newobject AuthnContextDeclRef_get;
+	LassoStringList *AuthnContextDeclRef;
+
 
 	/* Constructor, Destructor & Static Methods */
 	LassoSamlp2RequestedAuthnContext();
@@ -26,17 +57,21 @@ typedef struct {
 
 %{
 
-/* authnContextClassRef */
-#define LassoSamlp2RequestedAuthnContext_get_authnContextClassRef(self) get_string_list((self)->AuthnContextClassRef)
-#define LassoSamlp2RequestedAuthnContext_authnContextClassRef_get(self) get_string_list((self)->AuthnContextClassRef)
-#define LassoSamlp2RequestedAuthnContext_set_authnContextClassRef(self, value) set_string_list(&(self)->AuthnContextClassRef, (value))
-#define LassoSamlp2RequestedAuthnContext_authnContextClassRef_set(self, value) set_string_list(&(self)->AuthnContextClassRef, (value))
+/* AuthnContextClassRef */
 
-/* authnContextDeclRef */
-#define LassoSamlp2RequestedAuthnContext_get_authnContextDeclRef(self) get_string_list((self)->AuthnContextDeclRef)
-#define LassoSamlp2RequestedAuthnContext_authnContextDeclRef_get(self) get_string_list((self)->AuthnContextDeclRef)
-#define LassoSamlp2RequestedAuthnContext_set_authnContextDeclRef(self, value) set_string_list(&(self)->AuthnContextDeclRef, (value))
-#define LassoSamlp2RequestedAuthnContext_authnContextDeclRef_set(self, value) set_string_list(&(self)->AuthnContextDeclRef, (value))
+#define LassoSamlp2RequestedAuthnContext_get_AuthnContextClassRef(self) get_node((self)->AuthnContextClassRef)
+#define LassoSamlp2RequestedAuthnContext_AuthnContextClassRef_get(self) get_node((self)->AuthnContextClassRef)
+#define LassoSamlp2RequestedAuthnContext_set_AuthnContextClassRef(self,value) set_node((gpointer*)&(self)->AuthnContextClassRef, (value))
+#define LassoSamlp2RequestedAuthnContext_AuthnContextClassRef_set(self,value) set_node((gpointer*)&(self)->AuthnContextClassRef, (value))
+                    
+
+/* AuthnContextDeclRef */
+
+#define LassoSamlp2RequestedAuthnContext_get_AuthnContextDeclRef(self) get_node((self)->AuthnContextDeclRef)
+#define LassoSamlp2RequestedAuthnContext_AuthnContextDeclRef_get(self) get_node((self)->AuthnContextDeclRef)
+#define LassoSamlp2RequestedAuthnContext_set_AuthnContextDeclRef(self,value) set_node((gpointer*)&(self)->AuthnContextDeclRef, (value))
+#define LassoSamlp2RequestedAuthnContext_AuthnContextDeclRef_set(self,value) set_node((gpointer*)&(self)->AuthnContextDeclRef, (value))
+                    
 
 
 /* Constructors, destructors & static methods implementations */
