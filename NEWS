@@ -1,7 +1,15 @@
 NEWS
 ====
 
-2.0.0 - January 16th 2006
+2.1.0 - August 13rd 2007
+------------------------
+
+Added preliminary support for ID-WSF 2, Discovery and Data Service Template,
+added missing accessors for class elements in SAML 2 language bindings, fixed
+potential DoS in message parsing.
+
+
+2.0.0 - January 16th 2007
 -------------------------
 
 Completed SAMLv2 support, passed conformance event organized by the Liberty
