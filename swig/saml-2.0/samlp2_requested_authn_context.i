@@ -61,16 +61,16 @@ typedef struct {
 
 #define LassoSamlp2RequestedAuthnContext_get_AuthnContextClassRef(self) get_string_list((self)->AuthnContextClassRef)
 #define LassoSamlp2RequestedAuthnContext_AuthnContextClassRef_get(self) get_string_list((self)->AuthnContextClassRef)
-#define LassoSamlp2RequestedAuthnContext_set_AuthnContextClassRef(self,value) set_string_list((gpointer*)&(self)->AuthnContextClassRef, (value))
-#define LassoSamlp2RequestedAuthnContext_AuthnContextClassRef_set(self,value) set_string_list((gpointer*)&(self)->AuthnContextClassRef, (value))
+#define LassoSamlp2RequestedAuthnContext_set_AuthnContextClassRef(self,value) set_string_list(&(self)->AuthnContextClassRef, (value))
+#define LassoSamlp2RequestedAuthnContext_AuthnContextClassRef_set(self,value) set_string_list(&(self)->AuthnContextClassRef, (value))
                     
 
 /* AuthnContextDeclRef */
 
 #define LassoSamlp2RequestedAuthnContext_get_AuthnContextDeclRef(self) get_string_list((self)->AuthnContextDeclRef)
 #define LassoSamlp2RequestedAuthnContext_AuthnContextDeclRef_get(self) get_string_list((self)->AuthnContextDeclRef)
-#define LassoSamlp2RequestedAuthnContext_set_AuthnContextDeclRef(self,value) set_string_list((gpointer*)&(self)->AuthnContextDeclRef, (value))
-#define LassoSamlp2RequestedAuthnContext_AuthnContextDeclRef_set(self,value) set_string_list((gpointer*)&(self)->AuthnContextDeclRef, (value))
+#define LassoSamlp2RequestedAuthnContext_set_AuthnContextDeclRef(self,value) set_string_list(&(self)->AuthnContextDeclRef, (value))
+#define LassoSamlp2RequestedAuthnContext_AuthnContextDeclRef_set(self,value) set_string_list(&(self)->AuthnContextDeclRef, (value))
                     
 
 

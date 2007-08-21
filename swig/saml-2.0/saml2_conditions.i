@@ -77,32 +77,32 @@ typedef struct {
 
 #define LassoSaml2Conditions_get_Condition(self) get_node_list((self)->Condition)
 #define LassoSaml2Conditions_Condition_get(self) get_node_list((self)->Condition)
-#define LassoSaml2Conditions_set_Condition(self,value) set_node_list((gpointer*)&(self)->Condition, (value))
-#define LassoSaml2Conditions_Condition_set(self,value) set_node_list((gpointer*)&(self)->Condition, (value))
+#define LassoSaml2Conditions_set_Condition(self,value) set_node_list(&(self)->Condition, (value))
+#define LassoSaml2Conditions_Condition_set(self,value) set_node_list(&(self)->Condition, (value))
                     
 
 /* AudienceRestriction */
 
 #define LassoSaml2Conditions_get_AudienceRestriction(self) get_node_list((self)->AudienceRestriction)
 #define LassoSaml2Conditions_AudienceRestriction_get(self) get_node_list((self)->AudienceRestriction)
-#define LassoSaml2Conditions_set_AudienceRestriction(self,value) set_node_list((gpointer*)&(self)->AudienceRestriction, (value))
-#define LassoSaml2Conditions_AudienceRestriction_set(self,value) set_node_list((gpointer*)&(self)->AudienceRestriction, (value))
+#define LassoSaml2Conditions_set_AudienceRestriction(self,value) set_node_list(&(self)->AudienceRestriction, (value))
+#define LassoSaml2Conditions_AudienceRestriction_set(self,value) set_node_list(&(self)->AudienceRestriction, (value))
                     
 
 /* OneTimeUse */
 
 #define LassoSaml2Conditions_get_OneTimeUse(self) get_node_list((self)->OneTimeUse)
 #define LassoSaml2Conditions_OneTimeUse_get(self) get_node_list((self)->OneTimeUse)
-#define LassoSaml2Conditions_set_OneTimeUse(self,value) set_node_list((gpointer*)&(self)->OneTimeUse, (value))
-#define LassoSaml2Conditions_OneTimeUse_set(self,value) set_node_list((gpointer*)&(self)->OneTimeUse, (value))
+#define LassoSaml2Conditions_set_OneTimeUse(self,value) set_node_list(&(self)->OneTimeUse, (value))
+#define LassoSaml2Conditions_OneTimeUse_set(self,value) set_node_list(&(self)->OneTimeUse, (value))
                     
 
 /* ProxyRestriction */
 
 #define LassoSaml2Conditions_get_ProxyRestriction(self) get_node_list((self)->ProxyRestriction)
 #define LassoSaml2Conditions_ProxyRestriction_get(self) get_node_list((self)->ProxyRestriction)
-#define LassoSaml2Conditions_set_ProxyRestriction(self,value) set_node_list((gpointer*)&(self)->ProxyRestriction, (value))
-#define LassoSaml2Conditions_ProxyRestriction_set(self,value) set_node_list((gpointer*)&(self)->ProxyRestriction, (value))
+#define LassoSaml2Conditions_set_ProxyRestriction(self,value) set_node_list(&(self)->ProxyRestriction, (value))
+#define LassoSaml2Conditions_ProxyRestriction_set(self,value) set_node_list(&(self)->ProxyRestriction, (value))
                     
 
 

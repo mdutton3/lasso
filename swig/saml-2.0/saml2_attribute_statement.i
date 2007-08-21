@@ -58,16 +58,16 @@ typedef struct {
 
 #define LassoSaml2AttributeStatement_get_Attribute(self) get_node_list((self)->Attribute)
 #define LassoSaml2AttributeStatement_Attribute_get(self) get_node_list((self)->Attribute)
-#define LassoSaml2AttributeStatement_set_Attribute(self,value) set_node_list((gpointer*)&(self)->Attribute, (value))
-#define LassoSaml2AttributeStatement_Attribute_set(self,value) set_node_list((gpointer*)&(self)->Attribute, (value))
+#define LassoSaml2AttributeStatement_set_Attribute(self,value) set_node_list(&(self)->Attribute, (value))
+#define LassoSaml2AttributeStatement_Attribute_set(self,value) set_node_list(&(self)->Attribute, (value))
                     
 
 /* EncryptedAttribute */
 
 #define LassoSaml2AttributeStatement_get_EncryptedAttribute(self) get_node_list((self)->EncryptedAttribute)
 #define LassoSaml2AttributeStatement_EncryptedAttribute_get(self) get_node_list((self)->EncryptedAttribute)
-#define LassoSaml2AttributeStatement_set_EncryptedAttribute(self,value) set_node_list((gpointer*)&(self)->EncryptedAttribute, (value))
-#define LassoSaml2AttributeStatement_EncryptedAttribute_set(self,value) set_node_list((gpointer*)&(self)->EncryptedAttribute, (value))
+#define LassoSaml2AttributeStatement_set_EncryptedAttribute(self,value) set_node_list(&(self)->EncryptedAttribute, (value))
+#define LassoSaml2AttributeStatement_EncryptedAttribute_set(self,value) set_node_list(&(self)->EncryptedAttribute, (value))
                     
 
 
