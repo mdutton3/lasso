@@ -98,18 +98,18 @@ typedef struct {
 
 /* Assertion */
 
-#define LassoSamlp2Response_get_Assertion(self) get_node((self)->Assertion)
-#define LassoSamlp2Response_Assertion_get(self) get_node((self)->Assertion)
-#define LassoSamlp2Response_set_Assertion(self,value) set_node((gpointer*)&(self)->Assertion, (value))
-#define LassoSamlp2Response_Assertion_set(self,value) set_node((gpointer*)&(self)->Assertion, (value))
+#define LassoSamlp2Response_get_Assertion(self) get_node_list((self)->Assertion)
+#define LassoSamlp2Response_Assertion_get(self) get_node_list((self)->Assertion)
+#define LassoSamlp2Response_set_Assertion(self,value) set_node_list((gpointer*)&(self)->Assertion, (value))
+#define LassoSamlp2Response_Assertion_set(self,value) set_node_list((gpointer*)&(self)->Assertion, (value))
                     
 
 /* EncryptedAssertion */
 
-#define LassoSamlp2Response_get_EncryptedAssertion(self) get_node((self)->EncryptedAssertion)
-#define LassoSamlp2Response_EncryptedAssertion_get(self) get_node((self)->EncryptedAssertion)
-#define LassoSamlp2Response_set_EncryptedAssertion(self,value) set_node((gpointer*)&(self)->EncryptedAssertion, (value))
-#define LassoSamlp2Response_EncryptedAssertion_set(self,value) set_node((gpointer*)&(self)->EncryptedAssertion, (value))
+#define LassoSamlp2Response_get_EncryptedAssertion(self) get_node_list((self)->EncryptedAssertion)
+#define LassoSamlp2Response_EncryptedAssertion_get(self) get_node_list((self)->EncryptedAssertion)
+#define LassoSamlp2Response_set_EncryptedAssertion(self,value) set_node_list((gpointer*)&(self)->EncryptedAssertion, (value))
+#define LassoSamlp2Response_EncryptedAssertion_set(self,value) set_node_list((gpointer*)&(self)->EncryptedAssertion, (value))
                     
 
 /* inherited from StatusResponse */

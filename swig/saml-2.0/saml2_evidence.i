@@ -67,34 +67,34 @@ typedef struct {
 
 /* AssertionIDRef */
 
-#define LassoSaml2Evidence_get_AssertionIDRef(self) get_node((self)->AssertionIDRef)
-#define LassoSaml2Evidence_AssertionIDRef_get(self) get_node((self)->AssertionIDRef)
-#define LassoSaml2Evidence_set_AssertionIDRef(self,value) set_node((gpointer*)&(self)->AssertionIDRef, (value))
-#define LassoSaml2Evidence_AssertionIDRef_set(self,value) set_node((gpointer*)&(self)->AssertionIDRef, (value))
+#define LassoSaml2Evidence_get_AssertionIDRef(self) get_node_list((self)->AssertionIDRef)
+#define LassoSaml2Evidence_AssertionIDRef_get(self) get_node_list((self)->AssertionIDRef)
+#define LassoSaml2Evidence_set_AssertionIDRef(self,value) set_node_list((gpointer*)&(self)->AssertionIDRef, (value))
+#define LassoSaml2Evidence_AssertionIDRef_set(self,value) set_node_list((gpointer*)&(self)->AssertionIDRef, (value))
                     
 
 /* AssertionURIRef */
 
-#define LassoSaml2Evidence_get_AssertionURIRef(self) get_node((self)->AssertionURIRef)
-#define LassoSaml2Evidence_AssertionURIRef_get(self) get_node((self)->AssertionURIRef)
-#define LassoSaml2Evidence_set_AssertionURIRef(self,value) set_node((gpointer*)&(self)->AssertionURIRef, (value))
-#define LassoSaml2Evidence_AssertionURIRef_set(self,value) set_node((gpointer*)&(self)->AssertionURIRef, (value))
+#define LassoSaml2Evidence_get_AssertionURIRef(self) get_string_list((self)->AssertionURIRef)
+#define LassoSaml2Evidence_AssertionURIRef_get(self) get_string_list((self)->AssertionURIRef)
+#define LassoSaml2Evidence_set_AssertionURIRef(self,value) set_string_list((gpointer*)&(self)->AssertionURIRef, (value))
+#define LassoSaml2Evidence_AssertionURIRef_set(self,value) set_string_list((gpointer*)&(self)->AssertionURIRef, (value))
                     
 
 /* Assertion */
 
-#define LassoSaml2Evidence_get_Assertion(self) get_node((self)->Assertion)
-#define LassoSaml2Evidence_Assertion_get(self) get_node((self)->Assertion)
-#define LassoSaml2Evidence_set_Assertion(self,value) set_node((gpointer*)&(self)->Assertion, (value))
-#define LassoSaml2Evidence_Assertion_set(self,value) set_node((gpointer*)&(self)->Assertion, (value))
+#define LassoSaml2Evidence_get_Assertion(self) get_node_list((self)->Assertion)
+#define LassoSaml2Evidence_Assertion_get(self) get_node_list((self)->Assertion)
+#define LassoSaml2Evidence_set_Assertion(self,value) set_node_list((gpointer*)&(self)->Assertion, (value))
+#define LassoSaml2Evidence_Assertion_set(self,value) set_node_list((gpointer*)&(self)->Assertion, (value))
                     
 
 /* EncryptedAssertion */
 
-#define LassoSaml2Evidence_get_EncryptedAssertion(self) get_node((self)->EncryptedAssertion)
-#define LassoSaml2Evidence_EncryptedAssertion_get(self) get_node((self)->EncryptedAssertion)
-#define LassoSaml2Evidence_set_EncryptedAssertion(self,value) set_node((gpointer*)&(self)->EncryptedAssertion, (value))
-#define LassoSaml2Evidence_EncryptedAssertion_set(self,value) set_node((gpointer*)&(self)->EncryptedAssertion, (value))
+#define LassoSaml2Evidence_get_EncryptedAssertion(self) get_node_list((self)->EncryptedAssertion)
+#define LassoSaml2Evidence_EncryptedAssertion_get(self) get_node_list((self)->EncryptedAssertion)
+#define LassoSaml2Evidence_set_EncryptedAssertion(self,value) set_node_list((gpointer*)&(self)->EncryptedAssertion, (value))
+#define LassoSaml2Evidence_EncryptedAssertion_set(self,value) set_node_list((gpointer*)&(self)->EncryptedAssertion, (value))
                     
 
 
