@@ -1,6 +1,13 @@
 NEWS
 ====
 
+2.1.1 - August 21st 2007
+------------------------
+
+Added support for LassoSignatureType to bindings (support was already but
+implicitely present for Python), fixed references to Node and String lists
+in all bindings.
+
 2.1.0 - August 13rd 2007
 ------------------------
 

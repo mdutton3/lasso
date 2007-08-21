@@ -1,3 +1,43 @@
+2007-08-21  fpeters
+
+	* trunk/swig/saml-2.0/saml2_advice.i,
+	  trunk/swig/saml-2.0/saml2_assertion.i,
+	  trunk/swig/saml-2.0/saml2_attribute_statement.i,
+	  trunk/swig/saml-2.0/saml2_conditions.i,
+	  trunk/swig/saml-2.0/saml2_evidence.i,
+	  trunk/swig/saml-2.0/samlp2_requested_authn_context.i,
+	  trunk/swig/saml-2.0/samlp2_response.i: fixed bad casting on
+	  get/set lists
+
+2007-08-21  fpeters
+
+	* trunk/java/Makefile.am: removed LassoSignatureType
+
+2007-08-21  fpeters
+
+	* trunk/swig/saml-2.0/saml2_advice.i,
+	  trunk/swig/saml-2.0/saml2_assertion.i,
+	  trunk/swig/saml-2.0/saml2_attribute_statement.i,
+	  trunk/swig/saml-2.0/saml2_conditions.i,
+	  trunk/swig/saml-2.0/saml2_evidence.i,
+	  trunk/swig/saml-2.0/samlp2_requested_authn_context.i,
+	  trunk/swig/saml-2.0/samlp2_response.i: fixed usage of
+	  set|get_node_list and set|get_string_list
+
+2007-08-21  fpeters
+
+	* trunk/swig/Lasso.i: added binding for LassoSignatureType
+	  which is just an enum but SWIG creates such ugly things.
+
+2007-08-13  fpeters
+
+	* trunk/website/web/download/index.xml,
+	  trunk/website/web/index.xml: added pointers to 2.1.0 tarball
+
+2007-08-13  fpeters
+
+	* trunk/ChangeLog: updated changelog for 2.1.0
+
 2007-08-13  fpeters
 
 	* trunk/NEWS, trunk/configure.ac, trunk/doap.rdf,
