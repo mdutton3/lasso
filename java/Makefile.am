@@ -132,7 +132,6 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	StringDict.java \
 	StringList.java \
 	SWIGTYPE_p_GHashTable.java \
-	SWIGTYPE_p_LassoSignatureType.java \
 	SWIGTYPE_p_void.java
 
 if WSF_ENABLED
