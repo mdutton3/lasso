@@ -101,7 +101,6 @@ SectionEnd
 
 Section "Lasso version @VERSION@" SEC09
   File "..\msvc\Release\@DLL_FILENAME@"
-  #File  "..\..\lasso\.libs\@DLL_FILENAME@"
 SectionEnd
 
 Section -AdditionalIcons

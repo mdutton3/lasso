@@ -61,7 +61,7 @@ FunctionEnd
 Section "Lasso version @VERSION@" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "..\..\lasso\.libs\@DLL_FILENAME@"
+  File "..\msvc\Release\@DLL_FILENAME@"
 SectionEnd
 
 Section -AdditionalIcons

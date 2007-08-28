@@ -60,7 +60,7 @@ FunctionEnd
 Section "Java Lasso binding" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-    File "..\..\java\.libs\jlasso.dll"
+    File "..\msvc\java\Release\jlasso.dll"
   File "..\..\java\lasso.jar"
 SectionEnd
 
