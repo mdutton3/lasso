@@ -459,18 +459,29 @@ lasso_data_service_build_response_msg(LassoDataService *service)
 	iter = request->QueryItem;
 	while (iter) {
 		LassoDstQueryItem *item = iter->data;
+		LassoDstData *data;
+
 		xpathObj = xmlXPathEvalExpression((xmlChar*)item->Select, xpathCtx);
 		if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-			LassoDstData *data;
 			xmlNode *node = xpathObj->nodesetval->nodeTab[0];
 			/* XXX: assuming there is only one matching node */
 			data = lasso_dst_data_new();
 			data->any = g_list_append(data->any, xmlCopyNode(node, 1));
-			if (item->itemID) {
-				data->itemIDRef = g_strdup(item->itemID);
+		} else if (xpathObj && xpathObj->type == XPATH_STRING) {
+			data = lasso_dst_data_new();
+			data->any = g_list_append(data->any,
+					xmlNewText(xpathObj->stringval));
+		} else {
+			/* no response was found, break here */
+			if (xpathObj) {
+				xmlXPathFreeObject(xpathObj);
 			}
-			response->Data = g_list_append(response->Data, data);
+			break;
 		}
+		if (item->itemID) {
+			data->itemIDRef = g_strdup(item->itemID);
+		}
+		response->Data = g_list_append(response->Data, data);
 		xmlXPathFreeObject(xpathObj);
 		xpathObj = NULL;
 		iter = g_list_next(iter);

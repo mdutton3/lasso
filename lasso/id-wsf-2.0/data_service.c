@@ -242,17 +242,12 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 			LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any = g_list_append(
 					LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any,
 					xmlCopyNode(node, 1));
-			if (item_result_query_base->itemID != NULL) {
-				data_item->itemIDRef = g_strdup(item_result_query_base->itemID);
-			}
-			response->Data = g_list_append(response->Data, data);
-			/* Success : change status code to OK */
-			if (strcmp(response2->Status->code, LASSO_DST_STATUS_CODE_FAILED) == 0) {
-				g_free(response2->Status->code);
-				response2->Status->code = g_strdup(LASSO_DST_STATUS_CODE_OK);
-			}
-			xmlXPathFreeObject(xpathObj);
-			xpathObj = NULL;
+		} else if (xpathObj && xpathObj->type == XPATH_STRING) {
+			data = lasso_idwsf2_dstref_data_new();
+			data_item = LASSO_IDWSF2_DSTREF_ITEM_DATA(data);
+			LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any = g_list_append(
+					LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any,
+					xmlNewText(xpathObj->stringval));
 		} else {
 			/* If status was OK, change it to Partial */
 			if (strcmp(response2->Status->code, LASSO_DST_STATUS_CODE_OK) == 0) {
@@ -268,6 +263,19 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 			/* Stop processing at first error */
 			break;
 		}
+
+
+		if (item_result_query_base->itemID != NULL) {
+			data_item->itemIDRef = g_strdup(item_result_query_base->itemID);
+		}
+		response->Data = g_list_append(response->Data, data);
+		/* Success : change status code to OK */
+		if (strcmp(response2->Status->code, LASSO_DST_STATUS_CODE_FAILED) == 0) {
+			g_free(response2->Status->code);
+			response2->Status->code = g_strdup(LASSO_DST_STATUS_CODE_OK);
+		}
+		xmlXPathFreeObject(xpathObj);
+		xpathObj = NULL;
 	}
 
 	/* Free XML parsing objects */
