@@ -766,12 +766,14 @@ lasso_data_service_process_modify_response_msg(LassoDataService *service, const 
 static LassoNodeClass *parent_class = NULL;
 
 void
-lasso_data_service_set_offering(LassoDataService *service,
-		LassoDiscoResourceOffering *offering)
+lasso_data_service_set_offering(LassoDataService *service, LassoDiscoResourceOffering *offering)
 {
 	service->private_data->offering = g_object_ref(offering);
+	service->resource_id = g_object_ref(offering->ResourceID);
+	service->encrypted_resource_id = g_object_ref(offering->EncryptedResourceID);
+	service->provider_id = g_strdup(offering->ServiceInstance->ProviderID);
+	service->abstract_description = g_strdup(offering->Abstract);
 }
-
 
 /*****************************************************************************/
 /* overrided parent class methods */
@@ -865,7 +867,7 @@ lasso_data_service_new(LassoServer *server)
 {
 	LassoDataService *service;
 
-	g_return_val_if_fail(LASSO_IS_SERVER(server) == TRUE, NULL);
+	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	service = g_object_new(LASSO_TYPE_PROFILE_SERVICE, NULL);
 	LASSO_WSF_PROFILE(service)->server = g_object_ref(server);
@@ -876,13 +878,15 @@ lasso_data_service_new(LassoServer *server)
 LassoDataService*
 lasso_data_service_new_full(LassoServer *server, LassoDiscoResourceOffering *offering)
 {
-	LassoDataService *service;
+	LassoDataService *service = lasso_data_service_new(server);
 
-	service = lasso_data_service_new(server);
-	if (service == NULL)
+	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(offering), NULL);
+	
+	if (service == NULL) {
 		return NULL;
+	}
 
-	service->private_data->offering = g_object_ref(offering);
+	lasso_data_service_set_offering(LASSO_DATA_SERVICE(service), offering);
 
 	return service;
 }

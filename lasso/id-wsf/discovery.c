@@ -969,7 +969,7 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 	}
 
 	if (strcmp(offering->ServiceInstance->ServiceType, LASSO_PP_HREF) == 0) {
-		service = LASSO_DATA_SERVICE(lasso_personal_profile_service_new(
+		service = LASSO_DATA_SERVICE(lasso_personal_profile_service_new_full(
 					LASSO_WSF_PROFILE(discovery)->server, offering));
 	} else {
 		service = lasso_data_service_new_full(LASSO_WSF_PROFILE(discovery)->server,
@@ -1011,18 +1011,15 @@ lasso_discovery_get_services(LassoDiscovery *discovery)
 	while (iter) {
 		offering = iter->data;
 		iter = g_list_next(iter);
-		if (offering->ServiceInstance == NULL)
+		if (offering->ServiceInstance == NULL) {
 			continue;
+		}
 		if (strcmp(offering->ServiceInstance->ServiceType, LASSO_PP_HREF) == 0) {
-			service = LASSO_DATA_SERVICE(lasso_personal_profile_service_new(
-						LASSO_WSF_PROFILE(discovery)->server, offering));
-			service->provider_id = g_strdup(offering->ServiceInstance->ProviderID);
-			service->abstract_description = g_strdup(offering->Abstract);
+			service = LASSO_DATA_SERVICE(lasso_personal_profile_service_new_full(
+				LASSO_WSF_PROFILE(discovery)->server, offering));
 		} else {
-			service = lasso_data_service_new_full(LASSO_WSF_PROFILE(discovery)->server,
-					offering);
-			service->provider_id = g_strdup(offering->ServiceInstance->ProviderID);
-			service->abstract_description = g_strdup(offering->Abstract);
+			service = lasso_data_service_new_full(
+				LASSO_WSF_PROFILE(discovery)->server, offering);
 		}
 		services = g_list_append(services, service);
 	}

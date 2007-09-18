@@ -115,15 +115,31 @@ lasso_personal_profile_service_get_type()
 }
 
 LassoPersonalProfileService*
-lasso_personal_profile_service_new(LassoServer *server, LassoDiscoResourceOffering *offering)
+lasso_personal_profile_service_new(LassoServer *server)
 {
 	LassoPersonalProfileService *service;
 
-	g_return_val_if_fail(LASSO_IS_SERVER(server) == TRUE, NULL);
+	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	service = g_object_new(LASSO_TYPE_PERSONAL_PROFILE_SERVICE, NULL);
 	LASSO_WSF_PROFILE(service)->server = g_object_ref(server);
+
+	return service;
+}
+
+LassoPersonalProfileService*
+lasso_personal_profile_service_new_full(LassoServer *server, LassoDiscoResourceOffering *offering)
+{
+	LassoPersonalProfileService *service = lasso_personal_profile_service_new(server);
+
+	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(offering), NULL);
+	
+	if (service == NULL) {
+		return NULL;
+	}
+
 	lasso_data_service_set_offering(LASSO_DATA_SERVICE(service), offering);
 
 	return service;
 }
+

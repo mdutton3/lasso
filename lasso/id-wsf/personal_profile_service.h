@@ -65,8 +65,10 @@ struct _LassoPersonalProfileServiceClass {
 
 LASSO_EXPORT GType lasso_personal_profile_service_get_type(void);
 
-LASSO_EXPORT LassoPersonalProfileService* lasso_personal_profile_service_new(
-		LassoServer *server, LassoDiscoResourceOffering *offering);
+LASSO_EXPORT LassoPersonalProfileService* lasso_personal_profile_service_new(LassoServer *server);
+
+LASSO_EXPORT LassoPersonalProfileService* lasso_personal_profile_service_new_full(
+	LassoServer *server, LassoDiscoResourceOffering *offering);
 
 LASSO_EXPORT gchar* lasso_personal_profile_service_get_email(LassoPersonalProfileService *service);
 
