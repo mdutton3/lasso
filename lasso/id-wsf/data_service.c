@@ -769,8 +769,12 @@ void
 lasso_data_service_set_offering(LassoDataService *service, LassoDiscoResourceOffering *offering)
 {
 	service->private_data->offering = g_object_ref(offering);
-	service->resource_id = g_object_ref(offering->ResourceID);
-	service->encrypted_resource_id = g_object_ref(offering->EncryptedResourceID);
+	if (offering->ResourceID != NULL) {
+		service->resource_id = g_object_ref(offering->ResourceID);
+	}
+	if (offering->EncryptedResourceID != NULL) {
+		service->encrypted_resource_id = g_object_ref(offering->EncryptedResourceID);
+	}
 	service->provider_id = g_strdup(offering->ServiceInstance->ProviderID);
 	service->abstract_description = g_strdup(offering->Abstract);
 }
