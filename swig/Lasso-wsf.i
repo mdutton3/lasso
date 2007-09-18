@@ -268,6 +268,10 @@ typedef struct {
 								char *option = NULL);
 
 	THROW_ERROR()
+	int addResourceOffering(LassoDiscoResourceOffering *resourceOffering);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
 	int initModify(LassoDiscoResourceOffering *resourceOffering,
 			LassoDiscoDescription *description);
 	END_THROW_ERROR()
