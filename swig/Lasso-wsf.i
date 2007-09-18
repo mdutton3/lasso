@@ -268,10 +268,6 @@ typedef struct {
 								char *option = NULL);
 
 	THROW_ERROR()
-	int addResourceOffering(LassoDiscoResourceOffering *resourceOffering);
-	END_THROW_ERROR()
-
-	THROW_ERROR()
 	int initModify(LassoDiscoResourceOffering *resourceOffering,
 			LassoDiscoDescription *description);
 	END_THROW_ERROR()
@@ -398,7 +394,6 @@ typedef struct {
 #define LassoDiscovery_addInsertEntry lasso_discovery_add_insert_entry
 #define LassoDiscovery_addRemoveEntry lasso_discovery_add_remove_entry
 #define LassoDiscovery_addRequestedServiceType lasso_discovery_add_requested_service_type
-#define LassoDiscovery_addResourceOffering lasso_discovery_add_resource_offering
 #define LassoDiscovery_initInsert lasso_discovery_init_insert
 #define LassoDiscovery_initRemove lasso_discovery_init_remove
 #define LassoDiscovery_buildModifyResponseMsg lasso_discovery_build_modify_response_msg
