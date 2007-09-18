@@ -854,6 +854,8 @@ lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile)
 	LassoSoapBindingProcessingContext *processing_context = NULL;
 	GList *iter;
 
+	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request), FALSE);
+
 	header = profile->soap_envelope_request->Header;
 	iter = header->Other;
 	while (iter) {
@@ -890,10 +892,12 @@ lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile, const char *sta
 	LassoSoapBindingProcessingContext *processing_context = NULL;
 	GList *iter;
 
+	g_return_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request));
+
 	header = profile->soap_envelope_request->Header;
 	iter = header->Other;
 	while (iter) {
-		if (LASSO_IS_SOAP_BINDING_PROCESSING_CONTEXT(iter->data) == TRUE) {
+		if (LASSO_IS_SOAP_BINDING_PROCESSING_CONTEXT(iter->data)) {
 			processing_context = iter->data;
 			break;
 		}
@@ -1083,8 +1087,9 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	xmlXPathObject *xpathObj = NULL;
 			
 
-	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request),
+		LASSO_SOAP_ERROR_MISSING_ENVELOPE);
 
 	envelope = profile->soap_envelope_request;
 
@@ -1417,14 +1422,11 @@ LassoSoapBindingProvider *lasso_wsf_profile_set_provider_soap_request(LassoWsfPr
 	const char *providerId)
 {
 	LassoSoapBindingProvider *provider;
-	LassoSoapEnvelope *soap_request;
 	LassoSoapHeader *header;
 
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), NULL);
 	g_return_val_if_fail(providerId != NULL, NULL);
-
-	soap_request = profile->soap_envelope_request;
-	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(soap_request) == TRUE, NULL);
+	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request), NULL);
 
 	header = profile->soap_envelope_request->Header;
 	provider = lasso_soap_binding_provider_new(providerId);
