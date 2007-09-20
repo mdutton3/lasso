@@ -211,7 +211,7 @@ test -f lasso/lasso.h  || {
 }
 
 REQUIRED_AUTOCONF_VERSION=2.53
-REQUIRED_AUTOMAKE_VERSION=1.8
+REQUIRED_AUTOMAKE_VERSION=1.9
 REQUIRED_LIBTOOL_VERSION=1.5
 REQUIRED_SWIG_VERSION=1.3.28
 REQUIRED_PKG_CONFIG_VERSION=0.14.0
@@ -236,11 +236,12 @@ AUTOHEADER=`echo $AUTOCONF | sed s/autoconf/autoheader/`
 
 case $REQUIRED_AUTOMAKE_VERSION in
     1.4*) automake_progs="automake-1.4" ;;
-    1.5*) automake_progs="automake-1.5 automake-1.6 automake-1.7 automake-1.8 automake-1.9" ;;
-    1.6*) automake_progs="automake-1.6 automake-1.7 automake-1.8 automake-1.9" ;;
-    1.7*) automake_progs="automake-1.7 automake-1.8 automake-1.9" ;;
-    1.8*) automake_progs="automake-1.8 automake-1.9" ;;
-    1.9*) automake_progs="automake-1.9" ;;
+    1.5*) automake_progs="automake-1.5 automake-1.6 automake-1.7 automake-1.8 automake-1.9 automake-1.10" ;;
+    1.6*) automake_progs="automake-1.6 automake-1.7 automake-1.8 automake-1.9 automake-1.10" ;;
+    1.7*) automake_progs="automake-1.7 automake-1.8 automake-1.9 automake-1.10" ;;
+    1.8*) automake_progs="automake-1.8 automake-1.9 automake-1.10" ;;
+    1.9*) automake_progs="automake-1.9 automake-1.10" ;;
+    1.10*) automake_progs="automake-1.10" ;;
 esac
 
 version_check automake AUTOMAKE "$automake_progs" $REQUIRED_AUTOMAKE_VERSION \
