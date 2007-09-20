@@ -567,7 +567,7 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoPersonalProfileService(LassoServer *server, LassoDiscoResourceOffering *offering);
+	LassoPersonalProfileService(LassoServer *server);
 
 	~LassoPersonalProfileService();
 
