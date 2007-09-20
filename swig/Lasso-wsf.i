@@ -185,6 +185,9 @@ typedef struct {
 	%newobject identity_get;
 	LassoIdentity *identity;
 
+	%newobject session_get;
+	LassoSession *session;
+
 	%immutable isIdentityDirty;
 	gboolean isIdentityDirty;
 
