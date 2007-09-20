@@ -201,17 +201,18 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 
 	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(service), LASSO_NODE(query));
 
+        /* Set description */
 	if (security_mech_id == NULL) {
 		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
 	} else {
 		description = lasso_discovery_get_description_auto(offering, security_mech_id);
 	}
-
 	if (description == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION;
 	}
 	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(service), description);
 
+        /* Set msgUrl */
 	if (description->Endpoint != NULL) {
 		profile->msg_url = g_strdup(description->Endpoint);
 	} else {
@@ -663,10 +664,8 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 	LassoDiscoResourceOffering *offering;
 	LassoDiscoDescription *description;
 	LassoWsfProfile *profile;
-
 	LassoSoapEnvelope *envelope;
 	LassoDstModify *modify;
-
 
 	profile = LASSO_WSF_PROFILE(service);
 
@@ -692,20 +691,29 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 	if (offering->ResourceID) {
 		modify->ResourceID = offering->ResourceID;
 	} else if (offering->EncryptedResourceID) {
-	  modify->EncryptedResourceID = offering->EncryptedResourceID;
+	        modify->EncryptedResourceID = offering->EncryptedResourceID;
 	} else {
 		/* XXX: no resource id, implied:resource, etc. */
 		return LASSO_ERROR_UNIMPLEMENTED;
 	}
 
-	envelope = lasso_wsf_profile_build_soap_envelope(NULL, NULL);
-	LASSO_WSF_PROFILE(service)->soap_envelope_request = envelope;
-	envelope->Body->any = g_list_append(envelope->Body->any, modify);
+	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(service), LASSO_NODE(modify));
 
-	/* set msg_url */
-	/* TODO : implement WSDLRef */
-	if (description->Endpoint) {
+        /* Set description */
+	if (offering->ServiceInstance != NULL && offering->ServiceInstance->Description != NULL) {
+		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
+	}
+	if (description == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION;
+	}
+	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(service), description);
+
+        /* Set msgUrl */
+	if (description->Endpoint != NULL) {
 		profile->msg_url = g_strdup(description->Endpoint);
+	} else {
+		/* XXX: else, description->WsdlURLI, get endpoint automatically */
+		return LASSO_ERROR_UNIMPLEMENTED;
 	}
 
 	return 0;
