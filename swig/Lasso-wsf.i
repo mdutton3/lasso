@@ -670,41 +670,42 @@ typedef struct {
 #define LassoPersonalProfileService_set_resourceData(self, value) set_xml_string(&(LASSO_DATA_SERVICE(self))->resource_data, (value))
 #define LassoPersonalProfileService_resourceData_set(self, value) set_xml_string(&(LASSO_DATA_SERVICE(self))->resource_data, (value))
 
-
-
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoPersonalProfileService lasso_personal_profile_service_new
 #define delete_LassoPersonalProfileService(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Implementations of methods inherited from WsfProfile */
+
 #define LassoPersonalProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
 
 /* Implementations of methods inherited from DataService */
-#define LassoPersonalProfileService_buildResponseMsg(self) \
-	lasso_data_service_build_response_msg(LASSO_DATA_SERVICE(self))
-#define LassoPersonalProfileService_addModification(self, select) \
-	lasso_data_service_add_modification(LASSO_DATA_SERVICE(self), select)
-#define LassoPersonalProfileService_addQueryItem(self, select, item_id) \
-	lasso_data_service_add_query_item(LASSO_DATA_SERVICE(self), select, item_id)
+
 #define LassoPersonalProfileService_initQuery(self, select, item_id, security_mech_id) \
 	lasso_data_service_init_query(LASSO_DATA_SERVICE(self), select, item_id, security_mech_id)
-#define LassoPersonalProfileService_processModifyMsg(self, soap_msg, security_mech_id) \
-	lasso_data_service_process_modify_msg(LASSO_DATA_SERVICE(self), soap_msg, security_mech_id)
-#define LassoPersonalProfileService_processModifyResponseMsg(self, soap_msg) \
-	lasso_data_service_process_modify_response_msg(LASSO_DATA_SERVICE(self), soap_msg)
+#define LassoPersonalProfileService_addQueryItem(self, select, item_id) \
+	lasso_data_service_add_query_item(LASSO_DATA_SERVICE(self), select, item_id)
 #define LassoPersonalProfileService_processQueryMsg(self, message, security_mech_id) \
 	lasso_data_service_process_query_msg(LASSO_DATA_SERVICE(self), message, security_mech_id)
-#define LassoPersonalProfileService_processQueryResponseMsg(self, message) \
-	lasso_data_service_process_query_response_msg(LASSO_DATA_SERVICE(self), message)
+#define LassoPersonalProfileService_buildResponseMsg(self) \
+	lasso_data_service_build_response_msg(LASSO_DATA_SERVICE(self))
+#define LassoPersonalProfileService_processModifyResponseMsg(self, soap_msg) \
+	lasso_data_service_process_modify_response_msg(LASSO_DATA_SERVICE(self), soap_msg)
 #define LassoPersonalProfileService_getAnswer(self, select) \
 	get_xml_string(lasso_data_service_get_answer(LASSO_DATA_SERVICE(self), select))
 #define LassoPersonalProfileService_getAnswerForItemId(self, itemId) \
 	get_xml_string(lasso_data_service_get_answer_for_item_id(LASSO_DATA_SERVICE(self), itemId))
 #define LassoPersonalProfileService_initModify(self, select, xmlString) \
 	lasso_data_service_init_modify(LASSO_DATA_SERVICE(self), select, get_string_xml(xmlString))
+#define LassoPersonalProfileService_addModification(self, select) \
+	lasso_data_service_add_modification(LASSO_DATA_SERVICE(self), select)
+#define LassoPersonalProfileService_processModifyMsg(self, soap_msg, security_mech_id) \
+	lasso_data_service_process_modify_msg(LASSO_DATA_SERVICE(self), soap_msg, security_mech_id)
+#define LassoPersonalProfileService_processQueryResponseMsg(self, message) \
+	lasso_data_service_process_query_response_msg(LASSO_DATA_SERVICE(self), message)
 
 /* Methods implementations */
+
 #define LassoPersonalProfileService_getEmail lasso_personal_profile_service_get_email
 
 %}
@@ -818,10 +819,10 @@ typedef struct {
 	void setPrincipalOnline();
 	void setPrincipalOffline();
 
+	int needRedirectUser(const char *redirectUrl);
+
 	%newobject getRedirectRequestUrl;
 	char* getRedirectRequestUrl();
-
-	int needRedirectUser(const char *redirectUrl);
 }
 
 %{
@@ -882,7 +883,6 @@ typedef struct {
 #define LassoDataService_set_resourceData(self, value) set_xml_string(&(self)->resource_data, (value))
 #define LassoDataService_resourceData_set(self, value) set_xml_string(&(self)->resource_data, (value))
 
-
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoDataService lasso_data_service_new
@@ -892,8 +892,8 @@ typedef struct {
 
 #define LassoDataService_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-
 /* Implementations of methods inherited from WsfProfile */
+
 #define LassoDataService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
 
 #define LassoDataService_isPrincipalOnline(self) lasso_wsf_profile_principal_is_online(LASSO_WSF_PROFILE(self))
@@ -902,21 +902,21 @@ typedef struct {
 #define LassoDataService_setPrincipalOffline(self) lasso_wsf_profile_set_principal_offline(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
-#define LassoDataService_buildModifyResponseMsg lasso_data_service_build_modify_response_msg
-#define LassoDataService_buildResponseMsg lasso_data_service_build_response_msg
-#define LassoDataService_addModification lasso_data_service_add_modification
-#define LassoDataService_addQueryItem lasso_data_service_add_query_item
-#define LassoDataService_initModify(self, select, xmlString) lasso_data_service_init_modify(self, select, get_string_xml(xmlString))
+
 #define LassoDataService_initQuery lasso_data_service_init_query
-#define LassoDataService_processModifyMsg lasso_data_service_process_modify_msg
-#define LassoDataService_processModifyResponseMsg lasso_data_service_process_modify_response_msg
+#define LassoDataService_addQueryItem lasso_data_service_add_query_item
 #define LassoDataService_processQueryMsg lasso_data_service_process_query_msg
+#define LassoDataService_buildResponseMsg lasso_data_service_build_response_msg
 #define LassoDataService_processQueryResponseMsg lasso_data_service_process_query_response_msg
 #define LassoDataService_getAnswer(self,select) get_xml_string(lasso_data_service_get_answer(self, select))
 #define LassoDataService_getAnswerForItemId(self,itemId) get_xml_string(lasso_data_service_get_answer_for_item_id(self, itemId))
-
-#define LassoDataService_getRedirectRequestUrl lasso_data_service_get_redirect_request_url
+#define LassoDataService_initModify(self, select, xmlString) lasso_data_service_init_modify(self, select, get_string_xml(xmlString))
+#define LassoDataService_addModification lasso_data_service_add_modification
+#define LassoDataService_processModifyMsg lasso_data_service_process_modify_msg
+#define LassoDataService_buildModifyResponseMsg lasso_data_service_build_modify_response_msg
+#define LassoDataService_processModifyResponseMsg lasso_data_service_process_modify_response_msg
 #define LassoDataService_needRedirectUser lasso_data_service_need_redirect_user
+#define LassoDataService_getRedirectRequestUrl lasso_data_service_get_redirect_request_url
 
 %}
 
