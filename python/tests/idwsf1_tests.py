@@ -166,6 +166,9 @@ class IdWsf1TestCase(unittest.TestCase):
         wsc_service = self.get_pp_service()
         wsc_service.initQuery('/pp:PP/pp:InformalName', 'name')
         wsc_service.buildRequestMsg()
+        self.failUnless(lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
+                        == lasso.REQUEST_TYPE_DST_QUERY)
+
         self.wsp = self.get_wsp_server()
         wsp_service = lasso.DataService(self.wsp)
         wsp_service.processQueryMsg(wsc_service.msgBody)
@@ -180,7 +183,7 @@ class IdWsf1TestCase(unittest.TestCase):
                 '<InformalName xmlns="urn:liberty:id-sis-pp:2003-08">Damien</InformalName>')
 
     def test03(self):
-        '''Test a data service modify query'''
+        '''Test a data service modify'''
         wsc_service = self.get_pp_service()
 
         xpath = '/pp:PP/pp:InformalName'
@@ -196,6 +199,8 @@ class IdWsf1TestCase(unittest.TestCase):
 
         wsc_service.initModify(xpath, new_data)
         wsc_service.buildRequestMsg()
+        self.failUnless(lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
+                        == lasso.REQUEST_TYPE_DST_MODIFY)
 
         self.wsp = self.get_wsp_server()
         wsp_service = lasso.DataService(self.wsp)
