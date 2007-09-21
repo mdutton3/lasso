@@ -587,35 +587,35 @@ static LassoNodeClass *parent_class = NULL;
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
-       xmlNode *xmlnode;
+\txmlNode *xmlnode;
 
-       xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-       xml_insure_namespace(xmlnode, NULL, TRUE,
-                       LASSO_%(category_upper)s%(file_name_upper)s(node)->hrefServiceType,
-                       LASSO_%(category_upper)s%(file_name_upper)s(node)->prefixServiceType);
+\txmlnode = parent_class->get_xmlNode(node, lasso_dump);
+\txml_insure_namespace(xmlnode, NULL, TRUE,
+\t\t\tLASSO_%(category_upper)s%(file_name_upper)s(node)->hrefServiceType,
+\t\t\tLASSO_%(category_upper)s%(file_name_upper)s(node)->prefixServiceType);
 
-       return xmlnode;
+\treturn xmlnode;
 }
 
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-       Lasso%(prefix_cap)s%(name)s *object = LASSO_%(category_upper)s%(file_name_upper)s(node);
-       int res;
+\tLasso%(prefix_cap)s%(name)s *object = LASSO_%(category_upper)s%(file_name_upper)s(node);
+\tint res;
 
-       res = parent_class->init_from_xml(node, xmlnode);
-       if (res != 0) {
-               return res;
-       }
+\tres = parent_class->init_from_xml(node, xmlnode);
+\tif (res != 0) {
+\t\treturn res;
+\t}
 
-       object->hrefServiceType = g_strdup((char*)xmlnode->ns->href);
-       object->prefixServiceType = lasso_get_prefix_for_idwsf2_dst_service_href(
-                       object->hrefServiceType);
-       if (object->prefixServiceType == NULL) {
-               /* XXX: what to do here ? */
-       }
+\tobject->hrefServiceType = g_strdup((char*)xmlnode->ns->href);
+\tobject->prefixServiceType = lasso_get_prefix_for_idwsf2_dst_service_href(
+\t\t\tobject->hrefServiceType);
+\tif (object->prefixServiceType == NULL) {
+\t\t/* XXX: what to do here ? */
+\t}
 
-       return 0;
+\treturn 0;
 }
 ''' % self.__dict__)
 
