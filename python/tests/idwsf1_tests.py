@@ -48,10 +48,13 @@ idp_metadata = os.path.join(dataDir, 'idp1-la/metadata.xml')
 idp_private_key = os.path.join(dataDir, 'idp1-la/private-key-raw.pem')
 idp_public_key = os.path.join(dataDir, 'idp1-la/public-key.pem')
 
+abstract_description = "Personal Profile Resource"
+resource_id = "http://idp/user/resources/1"
+
 class IdWsf1TestCase(unittest.TestCase):
     def get_wsp_server(self):
         server = lasso.Server(wsp_metadata, wsp_private_key, None, None)
-        server.addProvider(lasso.PROVIDER_ROLE_IDP, idp_metadata, idp_private_key, None)
+        server.addProvider(lasso.PROVIDER_ROLE_IDP, idp_metadata, idp_public_key, None)
         return server
 
     def get_wsc_server(self):
@@ -112,32 +115,30 @@ class IdWsf1TestCase(unittest.TestCase):
 
         return sp_login.identity.dump(), sp_login.session.dump(), idp_login.identity.dump(), idp_login.session.dump()
 
-    def test01(self):
-        wsc = self.get_wsc_server()
-        idp = self.get_idp_server()
-        idp = self.add_services(idp)
-        abstract_description = "Personal Profile Resource"
-        resource_id = "http://idp/user/resources/1"
+    def get_pp_service(self):
+        self.wsc = self.get_wsc_server()
+        self.idp = self.get_idp_server()
+        self.idp = self.add_services(self.idp)
 
         # Login from WSC
-        sp_identity_dump, sp_session_dump, idp_identity_dump, idp_session_dump = self.login(wsc, idp)
+        sp_identity_dump, sp_session_dump, idp_identity_dump, idp_session_dump = self.login(self.wsc, self.idp)
         
         # Init discovery query
-        wsc_disco = lasso.Discovery(wsc)
+        wsc_disco = lasso.Discovery(self.wsc)
         wsc_disco.setSessionFromDump(sp_session_dump)
         wsc_disco.initQuery()
         wsc_disco.addRequestedServiceType(lasso.PP_HREF)
         wsc_disco.buildRequestMsg();
 
         # Process query
-        idp_disco = lasso.Discovery(idp)
+        idp_disco = lasso.Discovery(self.idp)
         idp_disco.processQueryMsg(wsc_disco.msgBody)
         idp_disco.setIdentityFromDump(idp_identity_dump)
 
         # Build resource offering
         service_instance = lasso.DiscoServiceInstance(
                 lasso.PP_HREF,
-                idp.providerId,
+                self.idp.providerId,
                 lasso.DiscoDescription_newWithBriefSoapHttpDescription(
                     lasso.SECURITY_MECH_NULL,
                     'http://idp/pp/soapEndpoint'))
@@ -149,13 +150,64 @@ class IdWsf1TestCase(unittest.TestCase):
 
         # Process response
         wsc_disco.processQueryResponseMsg(idp_disco.msgBody);
-        service = wsc_disco.getService()
+        return wsc_disco.getService()
 
+    def test01(self):
+        '''Test a discovery query'''
+        service = self.get_pp_service()
         # Check service attributes
         self.failUnless(service.resourceId is not None)
         self.failUnless(service.resourceId.content == resource_id)
-        self.failUnless(service.providerId == wsc.providerIds[0])
+        self.failUnless(service.providerId == self.wsc.providerIds[0])
         self.failUnless(service.abstractDescription == abstract_description)
+
+    def test02(self):
+        '''Test a data service query'''
+        wsc_service = self.get_pp_service()
+        wsc_service.initQuery('/pp:PP/pp:InformalName', 'name')
+        wsc_service.buildRequestMsg()
+        self.wsp = self.get_wsp_server()
+        wsp_service = lasso.DataService(self.wsp)
+        wsp_service.processQueryMsg(wsc_service.msgBody)
+        wsp_service.resourceData = '''
+        <PP xmlns="urn:liberty:id-sis-pp:2003-08">
+                <InformalName>Damien</InformalName>
+        </PP>'''
+        wsp_service.buildResponseMsg()
+
+        wsc_service.processQueryResponseMsg(wsp_service.msgBody)
+        self.failUnless(wsc_service.getAnswer('/pp:PP/pp:InformalName') ==
+                '<InformalName xmlns="urn:liberty:id-sis-pp:2003-08">Damien</InformalName>')
+
+    def test03(self):
+        '''Test a data service modify query'''
+        wsc_service = self.get_pp_service()
+
+        xpath = '/pp:PP/pp:InformalName'
+        old_data = '''
+            <PP xmlns="urn:liberty:id-sis-pp:2003-08">
+                <InformalName>Damien</InformalName>
+            </PP>'''
+        new_data = '<InformalName>Alain</InformalName>'
+
+        new_full_data = '''<PP xmlns="urn:liberty:id-sis-pp:2003-08">
+                <pp:InformalName xmlns:pp="urn:liberty:id-sis-pp:2003-08">Alain</pp:InformalName>
+            </PP>'''
+
+        wsc_service.initModify(xpath, new_data)
+        wsc_service.buildRequestMsg()
+
+        self.wsp = self.get_wsp_server()
+        wsp_service = lasso.DataService(self.wsp)
+        wsp_service.processModifyMsg(wsc_service.msgBody)
+        wsp_service.resourceData = old_data
+        wsp_service.buildModifyResponseMsg()
+        # Save the new wsp_service.resourceData here
+
+        self.failUnless(wsp_service.resourceData == new_full_data)
+        
+        wsc_service.processModifyResponseMsg(wsp_service.msgBody)
+
 
 idWsf1Suite = unittest.makeSuite(IdWsf1TestCase, 'test')
 
