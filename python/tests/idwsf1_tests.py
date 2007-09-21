@@ -210,7 +210,7 @@ class IdWsf1TestCase(unittest.TestCase):
         # Save the new wsp_service.resourceData here
 
         self.failUnless(wsp_service.resourceData == new_full_data)
-        
+
         wsc_service.processModifyResponseMsg(wsp_service.msgBody)
 
 
