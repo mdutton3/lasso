@@ -159,8 +159,8 @@ lasso_strerror(int error_code)
 		        return "Missing service instance";
 		case LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE:
 		        return "Missing endpoint reference";
-                case LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS:
-                        return "Missing endpoint reference address";
+		case LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS:
+			return "Missing endpoint reference address";
 
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
 			return "An object type provided as parameter "\

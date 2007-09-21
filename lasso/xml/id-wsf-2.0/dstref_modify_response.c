@@ -49,35 +49,35 @@ static LassoNodeClass *parent_class = NULL;
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
-       xmlNode *xmlnode;
+	xmlNode *xmlnode;
 
-       xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-       xml_insure_namespace(xmlnode, NULL, TRUE,
-                       LASSO_IDWSF2_DSTREF_MODIFY_RESPONSE(node)->hrefServiceType,
-                       LASSO_IDWSF2_DSTREF_MODIFY_RESPONSE(node)->prefixServiceType);
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+	xml_insure_namespace(xmlnode, NULL, TRUE,
+			LASSO_IDWSF2_DSTREF_MODIFY_RESPONSE(node)->hrefServiceType,
+			LASSO_IDWSF2_DSTREF_MODIFY_RESPONSE(node)->prefixServiceType);
 
-       return xmlnode;
+	return xmlnode;
 }
 
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-       LassoIdWsf2DstRefModifyResponse *object = LASSO_IDWSF2_DSTREF_MODIFY_RESPONSE(node);
-       int res;
+	LassoIdWsf2DstRefModifyResponse *object = LASSO_IDWSF2_DSTREF_MODIFY_RESPONSE(node);
+	int res;
 
-       res = parent_class->init_from_xml(node, xmlnode);
-       if (res != 0) {
-               return res;
-       }
+	res = parent_class->init_from_xml(node, xmlnode);
+	if (res != 0) {
+		return res;
+	}
 
-       object->hrefServiceType = g_strdup((char*)xmlnode->ns->href);
-       object->prefixServiceType = lasso_get_prefix_for_idwsf2_dst_service_href(
-                       object->hrefServiceType);
-       if (object->prefixServiceType == NULL) {
-               /* XXX: what to do here ? */
-       }
+	object->hrefServiceType = g_strdup((char*)xmlnode->ns->href);
+	object->prefixServiceType = lasso_get_prefix_for_idwsf2_dst_service_href(
+			object->hrefServiceType);
+	if (object->prefixServiceType == NULL) {
+		/* XXX: what to do here ? */
+	}
 
-       return 0;
+	return 0;
 }
 
 

@@ -126,7 +126,7 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 
 	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(service), LASSO_NODE(query));
 
-        /* Set description */
+	/* Set description */
 	if (security_mech_id == NULL) {
 		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
 	} else {
@@ -137,7 +137,7 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 	}
 	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(service), description);
 
-        /* Set msgUrl */
+	/* Set msgUrl */
 	if (description->Endpoint != NULL) {
 		profile->msg_url = g_strdup(description->Endpoint);
 	} else {
@@ -637,7 +637,7 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 
 	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(service), LASSO_NODE(modify));
 
-        /* Set description */
+	/* Set description */
 	if (offering->ServiceInstance != NULL && offering->ServiceInstance->Description != NULL) {
 		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
 	}
@@ -646,7 +646,7 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 	}
 	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(service), description);
 
-        /* Set msgUrl */
+	/* Set msgUrl */
 	if (description->Endpoint != NULL) {
 		profile->msg_url = g_strdup(description->Endpoint);
 	} else {
