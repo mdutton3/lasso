@@ -687,7 +687,7 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 	xmlDoc *doc;
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
-        int res = 0;
+	int res = 0;
 
 	profile = LASSO_WSF_PROFILE(service);
 	request = LASSO_DST_MODIFY(profile->request);
@@ -729,11 +729,11 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 		xpathObj = NULL;
 	}
 
-        if (res == 0) {
-                /* Save new service resource data */
+	if (res == 0) {
+		/* Save new service resource data */
 		xmlFreeNode(service->resource_data);
 		service->resource_data = xmlCopyNode(cur_data, 1);
-        }
+	}
 
 	xmlXPathFreeContext(xpathCtx);
 	xmlFreeDoc(doc);
