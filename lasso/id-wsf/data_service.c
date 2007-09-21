@@ -683,12 +683,20 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 	LassoDstModifyResponse *response;
 	LassoSoapEnvelope *envelope;
 	GList *iter;
+	xmlNode *cur_data;
 	xmlDoc *doc;
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
+        int res = 0;
 
 	profile = LASSO_WSF_PROFILE(service);
 	request = LASSO_DST_MODIFY(profile->request);
+
+	if (service->resource_data == NULL) {
+		return LASSO_DST_ERROR_MISSING_SERVICE_DATA;
+	} else {
+		cur_data = xmlCopyNode(service->resource_data, 1);
+	}
 
 	response = lasso_dst_modify_response_new(
 		lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
@@ -699,12 +707,12 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	doc = xmlNewDoc((xmlChar*)"1.0");
-	xmlDocSetRootElement(doc, service->resource_data);
+	xmlDocSetRootElement(doc, cur_data);
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)response->prefixServiceType,
 			(xmlChar*)response->hrefServiceType);
 
-	for (iter = request->Modification; iter != NULL; iter = g_list_next(iter)) {
+	for (iter = request->Modification; iter != NULL; iter = g_list_next(iter)) {
 		LassoDstModification *modification = iter->data;
 		xmlNode *newNode = modification->NewData->any->data;
 		xpathObj = xmlXPathEvalExpression((xmlChar*)modification->Select,
@@ -714,10 +722,18 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 			if (node != NULL) {
 				xmlReplaceNode(node, newNode);
 			}
+		} else {
+			res = LASSO_DST_ERROR_MODIFY_FAILED;
 		}
 		xmlXPathFreeObject(xpathObj);
 		xpathObj = NULL;
 	}
+
+        if (res == 0) {
+                /* Save new service resource data */
+		xmlFreeNode(service->resource_data);
+		service->resource_data = xmlCopyNode(cur_data, 1);
+        }
 
 	xmlXPathFreeContext(xpathCtx);
 	xmlFreeDoc(doc);
