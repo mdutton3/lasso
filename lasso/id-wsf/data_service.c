@@ -732,8 +732,26 @@ lasso_data_service_process_modify_msg(LassoDataService *service,
 {
 	LassoDstModify *modify;
 	LassoWsfProfile *profile;
+	LassoSoapEnvelope *envelope;
+	xmlDoc *doc;
 	int rc;
 	gchar *service_type;
+
+
+	doc = lasso_xml_parse_memory(modify_soap_msg, strlen(modify_soap_msg));
+	if (doc == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
+
+	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
+	if (envelope->Body == NULL || envelope->Body->any == NULL
+			|| envelope->Body->any->data == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
+
+	modify = LASSO_DST_MODIFY(envelope->Body->any->data);
+	service_type = g_strdup(modify->hrefServiceType);
+	xmlFreeDoc(doc);
 
 	profile = LASSO_WSF_PROFILE(service);
 	rc = lasso_wsf_profile_process_soap_request_msg(profile, modify_soap_msg, service_type,
@@ -742,7 +760,6 @@ lasso_data_service_process_modify_msg(LassoDataService *service,
 		return rc;
 	}
 
-	modify = LASSO_DST_MODIFY(profile->request);
 	if (modify->ResourceID) {
 		service->resource_id = g_object_ref(modify->ResourceID);
 	} else if (modify->EncryptedResourceID) {
