@@ -704,20 +704,19 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)response->prefixServiceType,
 			(xmlChar*)response->hrefServiceType);
 
-	iter = request->Modification;
-	while (iter) {
+	for (iter = request->Modification; iter != NULL; iter = g_list_next(iter)) {
 		LassoDstModification *modification = iter->data;
 		xmlNode *newNode = modification->NewData->any->data;
 		xpathObj = xmlXPathEvalExpression((xmlChar*)modification->Select,
 			xpathCtx);
 		if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 			xmlNode *node = xpathObj->nodesetval->nodeTab[0];
-			xmlReplaceNode(node, newNode);
+			if (node != NULL) {
+				xmlReplaceNode(node, newNode);
+			}
 		}
 		xmlXPathFreeObject(xpathObj);
 		xpathObj = NULL;
-
-		iter = g_list_next(iter);
 	}
 
 	xmlXPathFreeContext(xpathCtx);
