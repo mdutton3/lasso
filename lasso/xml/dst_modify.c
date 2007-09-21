@@ -80,8 +80,9 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 
 	xmlSetNs(xmlnode, ns);
 	while (t) {
-		if (t->type == XML_ELEMENT_NODE && t->ns == NULL)
+		if (t->type == XML_ELEMENT_NODE && t->ns == NULL) {
 			insure_namespace(t, ns);
+		}
 		t = t->next;
 	}
 }
@@ -103,16 +104,18 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
+	LassoDstModify *modify = LASSO_DST_MODIFY(node);
 	int rc;
-	LassoDstModify *query = LASSO_DST_MODIFY(node);
 
 	rc = parent_class->init_from_xml(node, xmlnode);
-	if (rc) return rc;
+	if (rc) {
+		return rc;
+	}
 
-	query->hrefServiceType = g_strdup((char*)xmlnode->ns->href);
-	query->prefixServiceType = lasso_get_prefix_for_dst_service_href(
-			query->hrefServiceType);
-	if (query->prefixServiceType == NULL) {
+	modify->hrefServiceType = g_strdup((char*)xmlnode->ns->href);
+	modify->prefixServiceType = lasso_get_prefix_for_dst_service_href(
+			modify->hrefServiceType);
+	if (modify->prefixServiceType == NULL) {
 		/* XXX: what to do here ? */
 	}
 

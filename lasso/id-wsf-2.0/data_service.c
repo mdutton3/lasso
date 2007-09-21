@@ -96,7 +96,7 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 			query->hrefServiceType);
 	}
 	if (query->prefixServiceType == NULL) {
-		return LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE;
+		return LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST;
 	}
 
 	lasso_idwsf2_profile_init_soap_request(profile, LASSO_NODE(query), service_type);
@@ -516,7 +516,7 @@ lasso_idwsf2_data_service_init_modify(LassoIdWsf2DataService *service)
 			modify->hrefServiceType);
 	}
 	if (modify->prefixServiceType == NULL) {
-		return LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE;
+		return LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST;
 	}
 
 	lasso_idwsf2_profile_init_soap_request(profile, LASSO_NODE(modify), service_type);
