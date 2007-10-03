@@ -692,6 +692,13 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 	profile = LASSO_WSF_PROFILE(service);
 	request = LASSO_DST_MODIFY(profile->request);
 
+	if (service->private_data->fault != NULL) {
+		envelope = profile->soap_envelope_response;
+		envelope->Body->any = g_list_append(
+			envelope->Body->any, service->private_data->fault);
+		return lasso_wsf_profile_build_soap_response_msg(profile);
+	}
+
 	if (service->resource_data == NULL) {
 		return LASSO_DST_ERROR_MISSING_SERVICE_DATA;
 	} else {
