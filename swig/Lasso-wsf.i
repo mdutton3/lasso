@@ -826,6 +826,9 @@ typedef struct {
 
 	%newobject getRedirectRequestUrl;
 	char* getRedirectRequestUrl();
+
+        %newobject getResourceOffering;
+        LassoDiscoResourceOffering* getResourceOffering();
 }
 
 %{
@@ -920,6 +923,7 @@ typedef struct {
 #define LassoDataService_processModifyMsg lasso_data_service_process_modify_msg
 #define LassoDataService_buildModifyResponseMsg lasso_data_service_build_modify_response_msg
 #define LassoDataService_processModifyResponseMsg lasso_data_service_process_modify_response_msg
+#define LassoDataService_getResourceOffering lasso_data_service_get_resource_offering
 
 %}
 

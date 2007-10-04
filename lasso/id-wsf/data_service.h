@@ -122,6 +122,9 @@ LASSO_EXPORT gboolean lasso_data_service_need_redirect_user(LassoDataService *se
 
 LASSO_EXPORT  gchar* lasso_data_service_get_redirect_request_url(LassoDataService *service);
 
+LASSO_EXPORT LassoDiscoResourceOffering* lasso_data_service_get_resource_offering(
+		LassoDataService *service);
+
 
 #ifdef __cplusplus
 }

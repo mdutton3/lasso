@@ -812,6 +812,20 @@ lasso_data_service_process_modify_response_msg(LassoDataService *service, const 
 	return 0;
 }
 
+/**
+ * lasso_data_service_get_resource_offering:
+ * @service: a #LassoDataService
+ *
+ * Gets the #LassoDiscoResourceOffering of the @service.
+ *
+ * Return value: the #LassoDiscoResourceOffering associated to service.
+ **/
+LassoDiscoResourceOffering*
+lasso_data_service_get_resource_offering(LassoDataService *service)
+{
+	return g_object_ref(service->private_data->offering);
+}
+
 
 /*****************************************************************************/
 /* private methods                                                           */
