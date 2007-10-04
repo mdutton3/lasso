@@ -190,7 +190,8 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	LassoIdWsf2DstRefItemData *data_item;
 	xmlNode *node;
 	GList *iter;
-	int res = 0;
+	/* Default is Failed, will be OK or Partial when some items are successfully parsed */
+	char *status_code = LASSO_DST_STATUS_CODE_FAILED;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -214,11 +215,6 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	response->hrefServiceType = g_strdup(request->hrefServiceType);
 	LASSO_PROFILE(profile)->response = LASSO_NODE(response);
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
-
-	response2 = LASSO_IDWSF2_UTIL_RESPONSE(response);
-	/* Default is Failed, will be OK or Partial when some items are successfully parsed */
-	response2->Status = lasso_idwsf2_util_status_new();
-	response2->Status->code = g_strdup(LASSO_DST_STATUS_CODE_FAILED);
 
 	/* Initialise XML parsing */
 	doc = xmlNewDoc((xmlChar*)"1.0");
@@ -249,12 +245,9 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 					LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any,
 					xmlNewText(xpathObj->stringval));
 		} else {
-			/* If status was OK, change it to Partial */
-			if (strcmp(response2->Status->code, LASSO_DST_STATUS_CODE_OK) == 0) {
-				g_free(response2->Status->code);
-				response2->Status->code = g_strdup(LASSO_DST_STATUS_CODE_PARTIAL);
-			} else {
-				res = LASSO_DST_ERROR_QUERY_FAILED;
+			/* If status was OK, change it to Partial, else keep it Failed */
+			if (strcmp(status_code, LASSO_DST_STATUS_CODE_OK) == 0) {
+				status_code = LASSO_DST_STATUS_CODE_PARTIAL;
 			}
 			if (xpathObj != NULL) {
 				xmlXPathFreeObject(xpathObj);
@@ -264,16 +257,13 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 			break;
 		}
 
-
+		/* Finish handling of a successful item parsing */
+		status_code = LASSO_DST_STATUS_CODE_OK;
 		if (item_result_query_base->itemID != NULL) {
 			data_item->itemIDRef = g_strdup(item_result_query_base->itemID);
 		}
 		response->Data = g_list_append(response->Data, data);
-		/* Success : change status code to OK */
-		if (strcmp(response2->Status->code, LASSO_DST_STATUS_CODE_FAILED) == 0) {
-			g_free(response2->Status->code);
-			response2->Status->code = g_strdup(LASSO_DST_STATUS_CODE_OK);
-		}
+
 		xmlXPathFreeObject(xpathObj);
 		xpathObj = NULL;
 	}
@@ -283,11 +273,15 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	xmlXPathFreeContext(xpathCtx);
 	xmlFreeDoc(doc);
 
-	if (res == 0 && strcmp(response2->Status->code, LASSO_DST_STATUS_CODE_FAILED) == 0) {
-		res = LASSO_DST_ERROR_QUERY_FAILED;
+	response2 = LASSO_IDWSF2_UTIL_RESPONSE(response);
+	response2->Status = lasso_idwsf2_util_status_new();
+	response2->Status->code = g_strdup(status_code);
+
+	if (strcmp(status_code, LASSO_DST_STATUS_CODE_FAILED) == 0) {
+		return LASSO_DST_ERROR_QUERY_FAILED;
 	}
 
-	return res;
+	return 0;
 }
 
 static gint
