@@ -65,7 +65,8 @@ struct _LassoSamlNameIdentifierClass {
 LASSO_EXPORT GType lasso_saml_name_identifier_get_type(void);
 LASSO_EXPORT LassoSamlNameIdentifier* lasso_saml_name_identifier_new(void);
 
-LASSO_EXPORT LassoSamlNameIdentifier* lasso_saml_name_identifier_new_from_xmlNode(xmlNode*);
+LASSO_EXPORT LassoSamlNameIdentifier* lasso_saml_name_identifier_new_from_xmlNode(
+		xmlNode *xmlnode);
 
 #ifdef __cplusplus
 }
