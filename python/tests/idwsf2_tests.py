@@ -1418,7 +1418,7 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
         try:
             wsp_service.parseQueryItems()
         except lasso.Error, e:
-            if e[0] != lasso.LASSO_DST_ERROR_MISSING_SERVICE_DATA:
+            if e[0] != lasso.DST_ERROR_MISSING_SERVICE_DATA:
                 self.fail(e)
         else:
              self.fail('query items parsing should have failed because no data was provided')
