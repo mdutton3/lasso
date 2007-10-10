@@ -1472,7 +1472,7 @@ static char* get_xml_string(xmlNode *xmlnode)
 		}
 		xmlOutputBufferClose(buf);
 	}
-	xmlFreeNode(xmlnode);
+
 	return xmlString;
 }
 
