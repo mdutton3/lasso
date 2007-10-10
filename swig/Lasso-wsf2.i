@@ -443,8 +443,8 @@ typedef struct {
 /* Attributes */
 
 /* data */
-#define LassoIdWsf2DataService_get_data(self) get_xml_string((self)->data)
-#define LassoIdWsf2DataService_data_get(self) get_xml_string((self)->data)
+#define LassoIdWsf2DataService_get_data(self) get_xml_string(xmlCopyNode((self)->data, 1)
+#define LassoIdWsf2DataService_data_get(self) get_xml_string(xmlCopyNode((self)->data, 1)
 #define LassoIdWsf2DataService_set_data(self, value) set_xml_string(&(self)->data, (value))
 #define LassoIdWsf2DataService_data_set(self, value) set_xml_string(&(self)->data, (value))
 

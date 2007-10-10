@@ -668,8 +668,8 @@ typedef struct {
 #define LassoPersonalProfileService_resourceId_set(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->resource_id, (value))
 
 /* resourceData */
-#define LassoPersonalProfileService_get_resourceData(self) get_xml_string(LASSO_DATA_SERVICE(self)->resource_data)
-#define LassoPersonalProfileService_resourceData_get(self) get_xml_string(LASSO_DATA_SERVICE(self)->resource_data)
+#define LassoPersonalProfileService_get_resourceData(self) get_xml_string(xmlCopyNode(LASSO_DATA_SERVICE(self)->resource_data, 1))
+#define LassoPersonalProfileService_resourceData_get(self) get_xml_string(xmlCopyNode(LASSO_DATA_SERVICE(self)->resource_data, 1))
 #define LassoPersonalProfileService_set_resourceData(self, value) set_xml_string(&(LASSO_DATA_SERVICE(self))->resource_data, (value))
 #define LassoPersonalProfileService_resourceData_set(self, value) set_xml_string(&(LASSO_DATA_SERVICE(self))->resource_data, (value))
 
@@ -884,8 +884,8 @@ typedef struct {
 #define LassoDataService_resourceId_set(self, value) set_node((gpointer *) &(self)->resource_id, (value))
 
 /* resourceData */
-#define LassoDataService_get_resourceData(self) get_xml_string((self)->resource_data)
-#define LassoDataService_resourceData_get(self) get_xml_string((self)->resource_data)
+#define LassoDataService_get_resourceData(self) get_xml_string(xmlCopyNode(self->resource_data, 1))
+#define LassoDataService_resourceData_get(self) get_xml_string(xmlCopyNode(self->resource_data, 1))
 #define LassoDataService_set_resourceData(self, value) set_xml_string(&(self)->resource_data, (value))
 #define LassoDataService_resourceData_set(self, value) set_xml_string(&(self)->resource_data, (value))
 
