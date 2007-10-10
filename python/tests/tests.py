@@ -41,12 +41,16 @@ if not '../.libs' in sys.path:
     sys.path.insert(0, '../.libs')
 
 
-testSuites = (
+testSuites = [
     'binding_tests',
     'profiles_tests',
     'errorchecking_tests',
-    'idwsf2_tests'
-    )
+    ]
+
+import lasso
+if lasso.WSF_SUPPORT:
+    testSuites.append('idwsf1_tests')
+    testSuites.append('idwsf2_tests')
 
 
 # Parse command line options.
