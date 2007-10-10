@@ -594,7 +594,6 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 	LassoDiscoResourceOffering *offering;
 	LassoDiscoDescription *description;
 	LassoWsfProfile *profile;
-	LassoSoapEnvelope *envelope;
 	LassoDstModify *modify;
 
 	profile = LASSO_WSF_PROFILE(service);
