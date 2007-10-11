@@ -726,7 +726,14 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 		if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 			xmlNode *node = xpathObj->nodesetval->nodeTab[0];
 			if (node != NULL) {
-				xmlReplaceNode(node, newNode);
+				/* If we must replace the root element, change it in the xmlDoc */
+				if (node == cur_data) {
+					xmlDocSetRootElement(doc, newNode);					
+					xmlFreeNode(cur_data);
+					cur_data = NULL;
+				} else {
+					xmlReplaceNode(node, newNode);
+				}
 			}
 		} else {
 			res = LASSO_DST_ERROR_MODIFY_FAILED;
@@ -735,10 +742,10 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 		xpathObj = NULL;
 	}
 
-	if (res == 0) {
+	if (res == 0 && doc->children != NULL) {
 		/* Save new service resource data */
 		xmlFreeNode(service->resource_data);
-		service->resource_data = xmlCopyNode(cur_data, 1);
+		service->resource_data = xmlCopyNode(doc->children, 1);
 	}
 
 	xmlXPathFreeContext(xpathCtx);
