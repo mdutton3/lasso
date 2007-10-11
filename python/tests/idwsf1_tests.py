@@ -213,6 +213,40 @@ class IdWsf1TestCase(unittest.TestCase):
 
         wsc_service.processModifyResponseMsg(wsp_service.msgBody)
 
+    def test10(self):
+        '''Test a data service modify - root element'''
+        wsc_service = self.get_pp_service()
+
+        xpath = '/pp:PP'
+        old_data = '''
+            <PP xmlns="urn:liberty:id-sis-pp:2003-08">
+                <InformalName>Damien</InformalName>
+            </PP>'''
+        new_data = '''<PP xmlns="urn:liberty:id-sis-pp:2003-08">
+                <InformalName>Alain</InformalName>
+            </PP>'''
+
+        new_full_data = '''<PP xmlns="urn:liberty:id-sis-pp:2003-08">
+                <InformalName>Alain</InformalName>
+            </PP>'''
+
+        wsc_service.initModify(xpath, new_data)
+        wsc_service.buildRequestMsg()
+ 
+        self.failUnless(lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
+                        == lasso.REQUEST_TYPE_DST_MODIFY)
+
+        self.wsp = self.get_wsp_server()
+        wsp_service = lasso.DataService(self.wsp)
+        wsp_service.processModifyMsg(wsc_service.msgBody)
+        wsp_service.resourceData = old_data
+        wsp_service.buildModifyResponseMsg()
+        # Save the new wsp_service.resourceData here
+
+        self.failUnless(wsp_service.resourceData == new_full_data)
+
+        wsc_service.processModifyResponseMsg(wsp_service.msgBody)
+        
 
 idWsf1Suite = unittest.makeSuite(IdWsf1TestCase, 'test')
 
