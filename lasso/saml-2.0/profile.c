@@ -279,10 +279,23 @@ int
 lasso_saml20_profile_process_artifact_response(LassoProfile *profile, const char *msg)
 {
 	LassoNode *response;
+	LassoSamlp2ArtifactResponse *artifact_response;
+
+	/* XXX: handle errors properly */
 
 	response = lasso_node_new_from_soap(msg);
-	/* XXX: check status code */
-	profile->response = g_object_ref(LASSO_SAMLP2_ARTIFACT_RESPONSE(response)->any);
+	if (!LASSO_IS_SAMLP2_ARTIFACT_RESPONSE(response)) {
+		profile->response = lasso_samlp2_response_new();
+		return LASSO_PROFILE_ERROR_INVALID_ARTIFACT;
+	}
+	artifact_response = LASSO_SAMLP2_ARTIFACT_RESPONSE(response);
+
+	if (artifact_response->any == NULL) {
+		profile->response = lasso_samlp2_response_new();
+		return LASSO_PROFILE_ERROR_MISSING_RESPONSE;
+	}
+	
+	profile->response = g_object_ref(artifact_response->any);
 	lasso_node_destroy(response);
 
 	return 0;
