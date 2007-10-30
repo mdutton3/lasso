@@ -54,9 +54,9 @@ struct _LassoLibRequestAuthnContext {
 
 	/*< public >*/
 	/* <xs:element name="AuthnContextClassRef" type="xs:anyURI" maxOccurs="unbounded"/> */
-	GList *AuthnContextClassRef;
+	GList *AuthnContextClassRef; /* of char* */
 	/* <xs:element name="AuthnContextStatementRef" type="xs:anyURI" maxOccurs="unbounded"/> */
-	GList *AuthnContextStatementRef;
+	GList *AuthnContextStatementRef; /* of char* */
 	/* <xs:element name="AuthnContextComparison" type="AuthnContextComparisonType" 
 	 *   minOccurs="0"/> */
 	char *AuthnContextComparison;
