@@ -54,7 +54,7 @@ struct _LassoDstQuery {
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 	GList *QueryItem;
-	GList *Extension;
+	GList *Extension; /* of xmlNode* */
 
 	char *id;
 	char *itemID;

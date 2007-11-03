@@ -54,7 +54,7 @@ struct _LassoDstQueryResponse {
 	/*< public >*/
 	LassoUtilityStatus *Status;
 	GList *Data;
-	GList *Extension;
+	GList *Extension; /* of xmlNode* */
 
 	char *id;
 	char *itemIDRef;

@@ -48,7 +48,7 @@ typedef struct _LassoDstNewDataClass LassoDstNewDataClass;
 struct _LassoDstNewData {
 	LassoNode parent;
 
-	GList *any;
+	GList *any; /* of xmlNode* */
 };
 
 struct _LassoDstNewDataClass {

@@ -53,7 +53,7 @@ struct _LassoLibAuthnRequest {
 
 	/*< public >*/
 	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
-	GList *Extension;
+	GList *Extension; /* of xmlNode* */
 	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
 	/* <xs:element ref="AffiliationID" minOccurs="0"/> */

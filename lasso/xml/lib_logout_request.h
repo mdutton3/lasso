@@ -54,7 +54,7 @@ struct _LassoLibLogoutRequest {
 
 	/*< public >*/
 	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
-	GList *Extension;
+	GList *Extension; /* of xmlNode* */
 	char *ProviderID;
 	LassoSamlNameIdentifier *NameIdentifier;
 	char *SessionIndex;

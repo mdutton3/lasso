@@ -61,7 +61,7 @@ struct _LassoIdWsf2DstRefAppData {
 
 	/*< public >*/
 	/* elements */
-	GList *any; /* of xmlNode */
+	GList *any; /* of xmlNode* */
 };
 
 
