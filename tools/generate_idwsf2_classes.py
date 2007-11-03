@@ -342,7 +342,7 @@ struct _Lasso%(prefix_cap)s%(name)s {""" % self.__dict__)
 
             if type == 'GList':
                 if elem[2] == 'xmlNode':
-                    s[-1] = s[-1] + ' /* of xmlNode */'
+                    s[-1] = s[-1] + ' /* of xmlNode* */'
                 else:
                     t = ref_to_class_name(elem[2])
                     if not 'XXX' in t:
