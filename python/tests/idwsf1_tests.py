@@ -246,7 +246,7 @@ class IdWsf1TestCase(unittest.TestCase):
         self.failUnless(wsp_service.resourceData == new_full_data)
 
         wsc_service.processModifyResponseMsg(wsp_service.msgBody)
-        
+
 
 idWsf1Suite = unittest.makeSuite(IdWsf1TestCase, 'test')
 
