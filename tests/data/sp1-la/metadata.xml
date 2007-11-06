@@ -34,4 +34,8 @@
   <AuthnRequestsSigned>true</AuthnRequestsSigned>
 
  </SPDescriptor>
+ <Organization>
+  <OrganizationName>Name of the organization</OrganizationName>
+ </Organization>
+
 </EntityDescriptor>
