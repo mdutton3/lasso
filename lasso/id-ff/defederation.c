@@ -164,14 +164,21 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	g_return_val_if_fail(LASSO_IS_DEFEDERATION(defederation),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	if (remote_providerID == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
-	}
-
 	profile = LASSO_PROFILE(defederation);
 
-	/* set the remote provider id */
-	profile->remote_providerID = g_strdup(remote_providerID);
+	if (profile->remote_providerID)
+		g_free(profile->remote_providerID);
+	if (profile->request)
+		lasso_node_destroy(LASSO_NODE(profile->request));
+
+	if (remote_providerID != NULL) {
+		profile->remote_providerID = g_strdup(remote_providerID);
+	} else {
+		profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
+		if (profile->remote_providerID == NULL) {
+			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+		}
+	}
 
 	remote_provider = g_hash_table_lookup(
 			profile->server->providers, profile->remote_providerID);
