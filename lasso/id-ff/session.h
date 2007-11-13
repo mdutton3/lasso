@@ -50,7 +50,8 @@ struct _LassoSession {
 	LassoNode parent;
 
 	/*< public >*/
-	GHashTable *assertions;
+	/* Can actually contain LassoSamlAssertion or LassoSaml2Assertion */
+	GHashTable *assertions; /* of LassoSamlAssertion */
 	gboolean is_dirty;
 
 	/*< private >*/

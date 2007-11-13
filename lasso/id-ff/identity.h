@@ -49,7 +49,7 @@ struct _LassoIdentity {
 	LassoNode parent;
 
 	/*< public >*/
-	GHashTable *federations;
+	GHashTable *federations; /* of LassoFederation */
 	gboolean is_dirty;
 
 	/*< private >*/

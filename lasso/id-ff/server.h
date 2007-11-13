@@ -57,8 +57,9 @@ struct _LassoServer {
 	LassoProvider parent;
 
 	/*< public >*/
-	GHashTable *providers;
-	GHashTable *services;
+	GHashTable *providers; /* of LassoProvider */
+	/* Can actually contain LassoDataService or LassoIdWsf2DataService or any subclass */
+	GHashTable *services; /* of LassoDataService */
 
 	gchar *private_key;
 	gchar *private_key_password;
