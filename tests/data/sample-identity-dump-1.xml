@@ -1,0 +1,12 @@
+<Identity xmlns="http://www.entrouvert.org/namespaces/lasso/0.0" Version="2">
+  <Federation xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" RemoteProviderID="http://idp1.lasso.lan" FederationDumpVersion="2">
+    <LocalNameIdentifier>
+      <saml:NameIdentifier NameQualifier="http://idp1.lasso.lan" Format="urn:liberty:iff:nameid:federated">first name id</saml:NameIdentifier>
+    </LocalNameIdentifier>
+  </Federation>
+  <Federation xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" RemoteProviderID="http://idp2.lasso.lan" FederationDumpVersion="2">
+    <LocalNameIdentifier>
+      <saml:NameIdentifier NameQualifier="http://idp2.lasso.lan" Format="urn:liberty:iff:nameid:federated">second name id</saml:NameIdentifier>
+    </LocalNameIdentifier>
+  </Federation>
+</Identity>
