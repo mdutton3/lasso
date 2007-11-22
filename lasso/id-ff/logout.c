@@ -768,24 +768,29 @@ gint lasso_logout_reset_providerID_index(LassoLogout *logout)
  * @logout: a #LassoLogout
  * 
  * <itemizedlist>
- * <listitem>
+ * <listitem><para>
  *   Sets the remote provider id
- * </listitem><listitem>
+ * </para></listitem>
+ * <listitem><para>
  *   Sets a logout response with status code value to success.
- * </listitem><listitem>
+ * </para></listitem>
+ * <listitem><para>
  *   Verifies federation and authentication.
- * </listitem><listitem>
+ * </para></listitem>
+ * <listitem><para>
  *   If the request http method is a SOAP method, then verifies every other
  *   Service Providers supports SOAP method : if not, then sets status code
  *   value to UnsupportedProfile and returns a code error with
  *   LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE.
- * </listitem><listitem>
+ * </para></listitem>
+ * <listitem><para>
  *   Every tests are ok, then removes assertion.
- * </listitem><listitem>
+ * </para></listitem>
+ * <listitem><para>
  *   If local server is an Identity Provider and if there is more than one
  *   Service Provider (except the initial Service Provider), then saves the
  *   initial request, response and remote provider id.
- * </listitem>
+ * </para></listitem>
  * </itemizedlist>
  *
  * Return value: 0 on success; or a negative value otherwise.
