@@ -64,7 +64,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
-		/* this means lasso_logout_init_request was not called before */
+		/* this means lasso_name_identifer_mapping_init_request was not called before */
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
@@ -135,7 +135,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
-		/* this means lasso_logout_init_request was not called before */
+		/* this means lasso_name_identifer_mapping_init_request was not called before */
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
