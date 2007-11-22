@@ -353,7 +353,7 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 void
 lasso_discovery_destroy(LassoDiscovery *discovery)
 {
-	g_object_unref(G_OBJECT(discovery));
+	lasso_node_destroy(LASSO_NODE(discovery));
 }
 
 gint

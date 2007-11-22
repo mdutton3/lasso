@@ -135,7 +135,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 void
 lasso_defederation_destroy(LassoDefederation *defederation)
 {
-	g_object_unref(G_OBJECT(defederation));
+	lasso_node_destroy(LASSO_NODE(defederation));
 }
 
 /**

@@ -163,7 +163,7 @@ lasso_authentication_client_step(LassoAuthentication *authentication)
 void
 lasso_authentication_destroy(LassoAuthentication *authentication)
 {
-	g_object_unref(G_OBJECT(authentication));
+	lasso_node_destroy(LASSO_NODE(authentication));
 }
 
 char*

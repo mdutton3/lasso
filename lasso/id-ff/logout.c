@@ -252,7 +252,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 void
 lasso_logout_destroy(LassoLogout *logout)
 {
-	g_object_unref(G_OBJECT(logout));
+	lasso_node_destroy(LASSO_NODE(logout));
 }
 
 /**

@@ -82,7 +82,7 @@ struct _LassoIdWsf2DiscoveryPrivate
 void
 lasso_idwsf2_discovery_destroy(LassoIdWsf2Discovery *discovery)
 {
-	g_object_unref(G_OBJECT(discovery));
+	lasso_node_destroy(LASSO_NODE(discovery));
 }
 
 gchar*
