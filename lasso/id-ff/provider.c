@@ -1100,7 +1100,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 /**
  * lasso_provider_set_encryption_mode:
  * @provider: provider to set encryption for
- * @encryption_activation: TRUE to activate, FALSE, to desactivate
+ * @encryption_mode: TRUE to activate, FALSE to desactivate
  *
  * Activate or desactivate encryption
  **/
