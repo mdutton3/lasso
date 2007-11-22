@@ -81,7 +81,7 @@ LASSO_EXPORT void lasso_name_identifier_mapping_destroy(
 
 LASSO_EXPORT gint lasso_name_identifier_mapping_init_request(
 		LassoNameIdentifierMapping *mapping,
-		gchar *targetNameSpace, gchar *remote_providerID);
+		gchar *targetNamespace, gchar *remote_providerID);
 
 LASSO_EXPORT gint lasso_name_identifier_mapping_process_request_msg(
 		LassoNameIdentifierMapping *mapping, gchar *request_msg); 
