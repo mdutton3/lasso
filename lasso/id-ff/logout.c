@@ -273,7 +273,10 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
 	profile = LASSO_PROFILE(logout);
 
-	g_return_val_if_fail(LASSO_IS_SESSION(profile->session), NULL);
+	if (profile->session == NULL) {
+		return NULL;
+	}
+
 	providerID = lasso_session_get_provider_index(
 			profile->session, logout->providerID_index);
 	logout->providerID_index++;
