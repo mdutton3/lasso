@@ -49,7 +49,7 @@
  * #LassoSaml2NameID in SAML 2.0).
  *
  * Return value: the name identifier or NULL if none was found.  The #LassoNode
- *     object is internally allocated and must not be *     freed by the caller.
+ *     object is internally allocated and must not be freed by the caller.
  **/
 LassoNode*
 lasso_profile_get_nameIdentifier(LassoProfile *profile)
