@@ -265,6 +265,8 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
 		} else if (strcmp(binding, "HTTP-POST") == 0) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
+		} else if (strcmp(binding, "HTTP-Redirect") == 0) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT;
 		} else if (strcmp(binding, "SOAP") == 0) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 		} else if (strcmp(binding, "PAOS") == 0) {
@@ -1360,7 +1362,8 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 	LassoProvider *remote_provider;
 	LassoSaml2Assertion *assertion;
 
-	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
+	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST &&
+		login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
@@ -1386,19 +1389,35 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 
 	profile->msg_url = lasso_saml20_login_get_assertion_consumer_service_url(
 			login, remote_provider);
-
 	if (profile->msg_url == NULL) {
 		return LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL;
 	}
-
+	
 	assertion = login->private_data->saml2_assertion;
 	if (LASSO_IS_SAML2_ASSERTION(assertion) == TRUE) {
 		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient =
 			g_strdup(profile->msg_url);
 	}
 
-	/* build an lib:AuthnResponse base64 encoded */
-	profile->msg_body = lasso_node_export_to_base64(LASSO_NODE(profile->response));
+
+	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
+		/* build an lib:AuthnResponse base64 encoded */
+		profile->msg_body = lasso_node_export_to_base64(LASSO_NODE(profile->response));
+	} else {
+		char *url, *query;
+
+		url = profile->msg_url;
+		query = lasso_node_export_to_query(profile->response,
+				profile->server->signature_method,
+				profile->server->private_key);
+		if (query == NULL) {
+			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
+		}
+		profile->msg_url = lasso_concat_url_query(url, query);
+		profile->msg_body = NULL;
+		g_free(query);
+		g_free(url);
+	}
 
 
 	return 0;

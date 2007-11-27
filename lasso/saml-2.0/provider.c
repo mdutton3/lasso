@@ -241,7 +241,7 @@ lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider
 	char *sid;
 	char *name;
 	const char *possible_bindings[] = {
-		"HTTP-Artifact", "HTTP-Post", "HTTP-POST", "SOAP", NULL
+		"HTTP-Artifact", "HTTP-Post", "HTTP-POST", "HTTP-Redirect", "SOAP", NULL
 	};
 	int i;
 
@@ -341,7 +341,7 @@ lasso_saml20_provider_get_assertion_consumer_service_binding(LassoProvider *prov
 	char *name;
 	char *binding = NULL;
 	const char *possible_bindings[] = {
-		"HTTP-Artifact", "HTTP-Post", "HTTP-POST", "SOAP", NULL
+		"HTTP-Artifact", "HTTP-Post", "HTTP-POST", "HTTP-Redirect", "SOAP", NULL
 	};
 	int i;
 
