@@ -28,6 +28,7 @@
 #include <lasso/id-ff/sessionprivate.h>
 #include <lasso/id-ff/identityprivate.h>
 #include <lasso/id-ff/profileprivate.h>
+#include <lasso/id-ff/serverprivate.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
