@@ -1860,8 +1860,10 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART)
 		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"ProtocolProfile", (xmlChar*)"Artifact");
-	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST)
+	else if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST)
 		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"ProtocolProfile", (xmlChar*)"POST");
+	else if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT)
+		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"ProtocolProfile", (xmlChar*)"Redirect");
 
 	return xmlnode;
 }
@@ -1887,8 +1889,10 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			s = (char*)xmlNodeGetContent(t);
 			if (strcmp(s, "Artifact") == 0)
 				login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
-			if (strcmp(s, "POST") == 0)
+			else if (strcmp(s, "POST") == 0)
 				login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
+			else if (strcmp(s, "Redirect") == 0)
+				login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT;
 			xmlFree(s);
 		}
 		t = t->next;
