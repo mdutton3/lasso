@@ -47,7 +47,9 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 	xmlNode *t;
 	GList *elements;
 	char *name, *binding, *response_name;
-	xmlChar *value, *response_value;
+	xmlChar *value;
+	xmlChar *response_value;
+	xmlChar *use;
 
 	t = xmlnode->children;
 	while (t) {
@@ -56,7 +58,7 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			continue;
 		}
 		if (strcmp((char*)t->name, "KeyDescriptor") == 0) {
-			char *use = (char*)xmlGetProp(t, (xmlChar*)"use");
+			use = xmlGetProp(t, (xmlChar*)"use");
 			if (use && strcmp(use, "signing") == 0) {
 				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
 			}
@@ -64,7 +66,9 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 				provider->private_data->encryption_key_descriptor = 
 					xmlCopyNode(t, 1);
 			}
-			xmlFree(use);
+			if (use) {
+				xmlFree(use);
+			}
 			t = t->next;
 			continue;
 		}

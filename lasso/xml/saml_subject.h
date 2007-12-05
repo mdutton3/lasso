@@ -32,6 +32,7 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include <lasso/xml/saml_name_identifier.h>
 #include <lasso/xml/saml_subject_confirmation.h>
+#include <lasso/xml/saml-2.0/saml2_encrypted_element.h>
 
 #define LASSO_TYPE_SAML_SUBJECT (lasso_saml_subject_get_type())
 #define LASSO_SAML_SUBJECT(obj) \
@@ -52,6 +53,7 @@ struct _LassoSamlSubject {
 
 	/*< public >*/
 	LassoSamlNameIdentifier *NameIdentifier;
+	LassoSaml2EncryptedElement *EncryptedNameIdentifier;
 	LassoSamlSubjectConfirmation *SubjectConfirmation;
 };
 

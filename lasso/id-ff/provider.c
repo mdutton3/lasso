@@ -364,6 +364,7 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 	GList *elements;
 	char *name;
 	xmlChar *value;
+	xmlChar *use;
 
 	t = xmlnode->children;
 	while (t) {
@@ -372,9 +373,13 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			continue;
 		}
 		if (strcmp((char*)t->name, "KeyDescriptor") == 0) {
-			xmlChar *use = xmlGetProp(t, (xmlChar*)"use");
-			if (use && strcmp((char*)use, "signing") == 0) {
+			use = xmlGetProp(t, (xmlChar*)"use");
+			if (use && strcmp(use, "signing") == 0) {
 				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
+			}
+			if (use && strcmp(use, "encryption") == 0) {
+				provider->private_data->encryption_key_descriptor = 
+					xmlCopyNode(t, 1);
 			}
 			if (use) {
 				xmlFree(use);

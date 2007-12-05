@@ -46,6 +46,9 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "NameIdentifier", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlSubject, NameIdentifier) },
+	{ "EncryptedNameIdentifier", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoSamlSubject, EncryptedNameIdentifier),
+		"LassoSaml2EncryptedElement" },
 	{ "SubjectConfirmation", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlSubject, SubjectConfirmation) },
 	{ NULL, 0, 0}
@@ -59,6 +62,7 @@ static void
 instance_init(LassoSamlSubject *node)
 {
 	node->NameIdentifier = NULL;
+	node->EncryptedNameIdentifier = NULL;
 	node->SubjectConfirmation = NULL;
 }
 
