@@ -53,8 +53,8 @@ struct _LassoSamlSubject {
 
 	/*< public >*/
 	LassoSamlNameIdentifier *NameIdentifier;
-	LassoSaml2EncryptedElement *EncryptedNameIdentifier;
 	LassoSamlSubjectConfirmation *SubjectConfirmation;
+	LassoSaml2EncryptedElement *EncryptedNameIdentifier;
 };
 
 struct _LassoSamlSubjectClass {
