@@ -364,6 +364,14 @@
 /* Name Identifier Format */
 
 /* note that SAML 2.0 can also use SAML 1.1 name identifier formats */
+#define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_UNSPECIFIED \
+		"urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
+#define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_EMAIL \
+		"urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+#define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_X509 \
+		"urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName"
+#define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_WINDOWS \
+		"urn:oasis:names:tc:SAML:1.1:nameid-format:WindowsDomainQualifiedName"
 #define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_KERBEROS \
 		"urn:oasis:names:tc:SAML:2.0:nameid-format:kerberos"
 #define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY \
