@@ -773,7 +773,17 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter = g_strdup(
 		notOnOrAfter);
 
-	if (federation == NULL || 
+	if (name_id_policy && (strcmp(name_id_policy->Format,
+			LASSO_SAML2_NAME_IDENTIFIER_FORMAT_EMAIL) == 0 ||
+			strcmp(name_id_policy->Format,
+			LASSO_SAML2_NAME_IDENTIFIER_FORMAT_UNSPECIFIED) == 0)) {
+		/* caller must set the name identifier content afterwards */
+		name_id = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new());
+		name_id->NameQualifier = g_strdup(
+				LASSO_PROVIDER(profile->server)->ProviderID);
+		name_id->Format = g_strdup(name_id_policy->Format);
+		assertion->Subject->NameID = name_id;
+	} else if (federation == NULL || 
 			(name_id_policy && strcmp(name_id_policy->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0)) {
 		/* transient -> don't use a federation */
@@ -782,7 +792,6 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 		name_id->NameQualifier = g_strdup(
 				LASSO_PROVIDER(profile->server)->ProviderID);
 		name_id->Format = g_strdup(LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT);
-
 		assertion->Subject->NameID = name_id;
 	} else {
 		if (provider && name_id_policy && strcmp(name_id_policy->Format,
@@ -800,7 +809,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 	/* Encrypt NameID */
 	if (provider && provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_NAMEID
-			&& provider->private_data->encryption_public_key != NULL) {
+			&& provider->private_data->encryption_public_key != NULL
+			&& assertion->Subject->NameID->content != NULL) {
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
 			LASSO_NODE(assertion->Subject->NameID),
 			provider->private_data->encryption_public_key,
