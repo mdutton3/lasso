@@ -139,7 +139,7 @@ typedef struct {
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoSamlp2AssertionIDRequest lasso_samlp2_assertion_idrequest_new
+#define new_LassoSamlp2AssertionIDRequest lasso_samlp2_assertion_id_request_new
 #define delete_LassoSamlp2AssertionIDRequest(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Implementations of methods inherited from LassoNode */
