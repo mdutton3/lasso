@@ -35,7 +35,7 @@ liblasso_xml_saml2_la_SOURCES = \
 	saml2_subject_locality.c \
 	samlp2_artifact_resolve.c \
 	samlp2_artifact_response.c \
-	samlp2_assertion_idrequest.c \
+	samlp2_assertion_id_request.c \
 	samlp2_attribute_query.c \
 	samlp2_authn_query.c \
 	samlp2_authn_request.c \
@@ -88,7 +88,7 @@ liblassoinclude_HEADERS = \
 	saml2_subject_locality.h \
 	samlp2_artifact_resolve.h \
 	samlp2_artifact_response.h \
-	samlp2_assertion_idrequest.h \
+	samlp2_assertion_id_request.h \
 	samlp2_attribute_query.h \
 	samlp2_authn_query.h \
 	samlp2_authn_request.h \
