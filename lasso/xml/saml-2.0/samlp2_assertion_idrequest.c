@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "samlp2_assertion_idrequest.h"
+#include "samlp2_assertion_id_request.h"
 
 /*
  * Schema fragment (saml-schema-protocol-2.0.xsd):
@@ -106,7 +106,7 @@ class_init(LassoSamlp2AssertionIDRequestClass *klass)
 }
 
 GType
-lasso_samlp2_assertion_idrequest_get_type()
+lasso_samlp2_assertion_id_request_get_type()
 {
 	static GType this_type = 0;
 
@@ -130,14 +130,14 @@ lasso_samlp2_assertion_idrequest_get_type()
 }
 
 /**
- * lasso_samlp2_assertion_idrequest_new:
+ * lasso_samlp2_assertion_id_request_new:
  *
  * Creates a new #LassoSamlp2AssertionIDRequest object.
  *
  * Return value: a newly created #LassoSamlp2AssertionIDRequest object
  **/
 LassoNode*
-lasso_samlp2_assertion_idrequest_new()
+lasso_samlp2_assertion_id_request_new()
 {
-	return g_object_new(LASSO_TYPE_SAMLP2_ASSERTION_IDREQUEST, NULL);
+	return g_object_new(LASSO_TYPE_SAMLP2_ASSERTION_ID_REQUEST, NULL);
 }

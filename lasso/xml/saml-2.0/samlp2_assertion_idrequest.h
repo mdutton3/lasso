@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_SAMLP2_ASSERTION_IDREQUEST_H__
-#define __LASSO_SAMLP2_ASSERTION_IDREQUEST_H__
+#ifndef __LASSO_SAMLP2_ASSERTION_ID_REQUEST_H__
+#define __LASSO_SAMLP2_ASSERTION_ID_REQUEST_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,19 +31,19 @@ extern "C" {
 
 #include "samlp2_request_abstract.h"
 
-#define LASSO_TYPE_SAMLP2_ASSERTION_IDREQUEST (lasso_samlp2_assertion_idrequest_get_type())
-#define LASSO_SAMLP2_ASSERTION_IDREQUEST(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP2_ASSERTION_IDREQUEST, \
+#define LASSO_TYPE_SAMLP2_ASSERTION_ID_REQUEST (lasso_samlp2_assertion_id_request_get_type())
+#define LASSO_SAMLP2_ASSERTION_ID_REQUEST(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP2_ASSERTION_ID_REQUEST, \
 				LassoSamlp2AssertionIDRequest))
-#define LASSO_SAMLP2_ASSERTION_IDREQUEST_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAMLP2_ASSERTION_IDREQUEST, \
+#define LASSO_SAMLP2_ASSERTION_ID_REQUEST_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAMLP2_ASSERTION_ID_REQUEST, \
 				LassoSamlp2AssertionIDRequestClass))
-#define LASSO_IS_SAMLP2_ASSERTION_IDREQUEST(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAMLP2_ASSERTION_IDREQUEST))
-#define LASSO_IS_SAMLP2_ASSERTION_IDREQUEST_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAMLP2_ASSERTION_IDREQUEST))
-#define LASSO_SAMLP2_ASSERTION_IDREQUEST_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAMLP2_ASSERTION_IDREQUEST, \
+#define LASSO_IS_SAMLP2_ASSERTION_ID_REQUEST(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAMLP2_ASSERTION_ID_REQUEST))
+#define LASSO_IS_SAMLP2_ASSERTION_ID_REQUEST_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAMLP2_ASSERTION_ID_REQUEST))
+#define LASSO_SAMLP2_ASSERTION_ID_REQUEST_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAMLP2_ASSERTION_ID_REQUEST, \
 				LassoSamlp2AssertionIDRequestClass)) 
 
 typedef struct _LassoSamlp2AssertionIDRequest LassoSamlp2AssertionIDRequest;
@@ -63,8 +63,8 @@ struct _LassoSamlp2AssertionIDRequestClass {
 	LassoSamlp2RequestAbstractClass parent;
 };
 
-LASSO_EXPORT GType lasso_samlp2_assertion_idrequest_get_type(void);
-LASSO_EXPORT LassoNode* lasso_samlp2_assertion_idrequest_new(void);
+LASSO_EXPORT GType lasso_samlp2_assertion_id_request_get_type(void);
+LASSO_EXPORT LassoNode* lasso_samlp2_assertion_id_request_new(void);
 
 
 
@@ -72,4 +72,4 @@ LASSO_EXPORT LassoNode* lasso_samlp2_assertion_idrequest_new(void);
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_SAMLP2_ASSERTION_IDREQUEST_H__ */
+#endif /* __LASSO_SAMLP2_ASSERTION_ID_REQUEST_H__ */
