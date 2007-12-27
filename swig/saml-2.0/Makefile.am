@@ -28,7 +28,7 @@ EXTRA_DIST = \
 	saml2_subject_locality.i \
 	samlp2_artifact_resolve.i \
 	samlp2_artifact_response.i \
-	samlp2_assertion_idrequest.i \
+	samlp2_assertion_id_request.i \
 	samlp2_attribute_query.i \
 	samlp2_authn_query.i \
 	samlp2_authn_request.i \
