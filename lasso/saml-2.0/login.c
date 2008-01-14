@@ -1272,12 +1272,14 @@ lasso_saml20_login_copy_assertion_epr(LassoLogin *login)
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoSession *session = profile->session;
 	LassoSaml2Assertion *assertion;
-	GList *attribute_statement_item;
 	LassoSaml2AttributeStatement *attribute_statement;
 	LassoSaml2Attribute *attribute;
 	LassoSaml2AttributeValue *attribute_value;
-	GList *attribute_value_item;
 	GList *i;
+	GList *j;
+	GList *k;
+	GList *l;
+	gboolean found = FALSE;
 	LassoWsAddrEndpointReference *epr;
 
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
@@ -1285,20 +1287,31 @@ lasso_saml20_login_copy_assertion_epr(LassoLogin *login)
 	assertion = LASSO_SAML2_ASSERTION(
 		LASSO_SAMLP2_RESPONSE(profile->response)->Assertion->data);
 
-	attribute_statement_item = assertion->AttributeStatement;
-	if (attribute_statement_item == NULL || g_list_length(attribute_statement_item) == 0) {
-		return 0;
-	}
-
-	attribute_statement = LASSO_SAML2_ATTRIBUTE_STATEMENT(attribute_statement_item->data);
-	attribute = LASSO_SAML2_ATTRIBUTE(attribute_statement->Attribute->data);
-	if (strcmp(attribute->Name, LASSO_SAML2_ATTRIBUTE_NAME_EPR) == 0) {
-		attribute_value = LASSO_SAML2_ATTRIBUTE_VALUE(attribute->AttributeValue->data);
-		attribute_value_item = attribute_value->any;
-		for (i = g_list_first(attribute_value_item); i != NULL; i = g_list_next(i)) {
-			if (LASSO_IS_WSA_ENDPOINT_REFERENCE(i->data)) {
-				epr = LASSO_WSA_ENDPOINT_REFERENCE(i->data);
-				lasso_session_add_endpoint_reference(session, epr);
+	for (i = g_list_first(assertion->AttributeStatement);
+			i != NULL && found == FALSE;
+			i = g_list_next(i)) {
+		attribute_statement = LASSO_SAML2_ATTRIBUTE_STATEMENT(i->data);
+		for (j = g_list_first(attribute_statement->Attribute);
+				j != NULL;
+				j = g_list_next(j)) {
+			attribute = LASSO_SAML2_ATTRIBUTE(j->data);
+			if (strcmp(attribute->Name, LASSO_SAML2_ATTRIBUTE_NAME_EPR) != 0) {
+				continue;
+			}
+			for (k = g_list_first(attribute->AttributeValue);
+					k != NULL;
+					k = g_list_next(k)) {
+				attribute_value = LASSO_SAML2_ATTRIBUTE_VALUE(k->data);
+				for (l = g_list_first(attribute_value->any);
+						l != NULL;
+						l = g_list_next(l)) {
+					if (LASSO_IS_WSA_ENDPOINT_REFERENCE(l->data)) {
+						epr = LASSO_WSA_ENDPOINT_REFERENCE(l->data);
+						lasso_session_add_endpoint_reference(session, epr);
+						found = TRUE;
+						break;
+					}
+				}
 			}
 		}
 	}
