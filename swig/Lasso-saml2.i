@@ -45,6 +45,18 @@ gboolean lasso_profile_is_saml_query(char *query);
 #define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED \
 		"urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"
 
+/* Attribute Name */
+#ifndef SWIG_PHP_RENAMES
+%rename(SAML2_ATTRIBUTE_NAME_EPR) LASSO_SAML2_ATTRIBUTE_NAME_EPR;
+#endif
+#define LASSO_SAML2_ATTRIBUTE_NAME_EPR "urn:liberty:disco:2006-08:DiscoveryEPR"
+
+/* Attribute Name Format */
+#ifndef SWIG_PHP_RENAMES
+%rename(SAML2_ATTRIBUTE_NAME_FORMAT_URI) LASSO_SAML2_ATTRIBUTE_NAME_FORMAT_URI;
+#endif
+#define LASSO_SAML2_ATTRIBUTE_NAME_FORMAT_URI "urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+
 /* Protocol Bindings */
 #ifndef SWIG_PHP_RENAMES
 %rename(SAML2_METADATA_BINDING_SOAP) LASSO_SAML2_METADATA_BINDING_SOAP;

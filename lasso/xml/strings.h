@@ -386,7 +386,7 @@
 /* Attribute Name */
 #define LASSO_SAML2_ATTRIBUTE_NAME_EPR "urn:liberty:disco:2006-08:DiscoveryEPR"
 
-/* Attribute Name Format*/
+/* Attribute Name Format */
 #define LASSO_SAML2_ATTRIBUTE_NAME_FORMAT_URI "urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
 
 /* Consent */

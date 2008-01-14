@@ -1292,12 +1292,14 @@ lasso_saml20_login_copy_assertion_epr(LassoLogin *login)
 
 	attribute_statement = LASSO_SAML2_ATTRIBUTE_STATEMENT(attribute_statement_item->data);
 	attribute = LASSO_SAML2_ATTRIBUTE(attribute_statement->Attribute->data);
-	attribute_value = LASSO_SAML2_ATTRIBUTE_VALUE(attribute->AttributeValue->data);
-	attribute_value_item = attribute_value->any;
-	for (i = g_list_first(attribute_value_item); i != NULL; i = g_list_next(i)) {
-		if (LASSO_IS_WSA_ENDPOINT_REFERENCE(i->data)) {
-			epr = LASSO_WSA_ENDPOINT_REFERENCE(i->data);
-			lasso_session_add_endpoint_reference(session, epr);
+	if (strcmp(attribute->Name, LASSO_SAML2_ATTRIBUTE_NAME_EPR) == 0) {
+		attribute_value = LASSO_SAML2_ATTRIBUTE_VALUE(attribute->AttributeValue->data);
+		attribute_value_item = attribute_value->any;
+		for (i = g_list_first(attribute_value_item); i != NULL; i = g_list_next(i)) {
+			if (LASSO_IS_WSA_ENDPOINT_REFERENCE(i->data)) {
+				epr = LASSO_WSA_ENDPOINT_REFERENCE(i->data);
+				lasso_session_add_endpoint_reference(session, epr);
+			}
 		}
 	}
 #endif
