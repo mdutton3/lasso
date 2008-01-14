@@ -8,6 +8,7 @@ EXTRA_DIST = \
 	saml2_assertion.i \
 	saml2_attribute.i \
 	saml2_attribute_statement.i \
+	saml2_attribute_value.i \
 	saml2_audience_restriction.i \
 	saml2_authn_context.i \
 	saml2_authn_statement.i \

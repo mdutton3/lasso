@@ -21,6 +21,7 @@
 #include <lasso/xml/saml-2.0/saml2_statement_abstract.h>
 #include <lasso/xml/saml-2.0/saml2_authn_statement.h>
 #include <lasso/xml/saml-2.0/saml2_attribute_statement.h>
+#include <lasso/xml/saml-2.0/saml2_attribute_value.h>
 #include <lasso/xml/saml-2.0/samlp2_idp_entry.h>
 #include <lasso/xml/saml-2.0/samlp2_extensions.h>
 #include <lasso/xml/saml-2.0/saml2_action.h>
@@ -70,6 +71,7 @@
 %include saml2_statement_abstract.i
 %include saml2_authn_statement.i
 %include saml2_attribute_statement.i
+%include saml2_attribute_value.i
 %include samlp2_idp_entry.i
 %include samlp2_extensions.i
 %include saml2_action.i

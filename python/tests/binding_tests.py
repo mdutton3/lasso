@@ -238,6 +238,73 @@ class BindingTestCase(unittest.TestCase):
 
         del login
 
+    def test07(self):
+        """Get & set SAML 2.0 assertion attribute values"""
+
+        attribute1_name = 'first attribute'
+        attribute1_string = 'first string'
+        attribute2_name = 'second attribute'
+        attribute2_string = 'second string'
+        attribute3_string = 'third string'
+
+        expected_assertion_dump = '''\
+<saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" SignType="0" SignMethod="0" EncryptionActivated="false" EncryptionSymKeyType="0">
+  <saml:AttributeStatement>
+    <saml:Attribute Name="first attribute">
+      <saml:AttributeValue>
+        <XXX>first string</XXX>
+      </saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="second attribute">
+      <saml:AttributeValue>
+        <XXX>second string</XXX>
+        <XXX>third string</XXX>
+      </saml:AttributeValue>
+    </saml:Attribute>
+  </saml:AttributeStatement>
+</saml:Assertion>'''
+
+        text_node1 = lasso.MiscTextNode()
+        text_node1.content = attribute1_string
+        any1 = lasso.NodeList()
+        any1.append(text_node1)
+        attribute_value1 = lasso.Saml2AttributeValue()
+        attribute_value1.any = any1
+        attribute_values1 = lasso.NodeList()
+        attribute_values1.append(attribute_value1)
+        attribute1 = lasso.Saml2Attribute()
+        attribute1.name = attribute1_name
+        attribute1.attributeValue = attribute_values1
+
+        text_node2 = lasso.MiscTextNode()
+        text_node2.content = attribute2_string
+        text_node3 = lasso.MiscTextNode()
+        text_node3.content = attribute3_string
+        any1 = lasso.NodeList()
+        any1.append(text_node2)
+        any1.append(text_node3)
+        attribute_value2 = lasso.Saml2AttributeValue()
+        attribute_value2.any = any1
+        attribute_values2 = lasso.NodeList()
+        attribute_values2.append(attribute_value2)
+        attribute2 = lasso.Saml2Attribute()
+        attribute2.name = attribute2_name
+        attribute2.attributeValue = attribute_values2
+
+        attributes = lasso.NodeList()
+        attributes.append(attribute1)
+        attributes.append(attribute2)
+
+        attributeStatement = lasso.Saml2AttributeStatement()
+        attributeStatement.attribute = attributes
+        attributeStatements = lasso.NodeList()
+        attributeStatements.append(attributeStatement)
+
+        assertion = lasso.Saml2Assertion()
+        assertion.attributeStatement = attributeStatements
+
+        self.failUnlessEqual(assertion.dump(), expected_assertion_dump, 'resulting assertion dump is not as expected')
+
 
 bindingSuite = unittest.makeSuite(BindingTestCase, 'test')
 

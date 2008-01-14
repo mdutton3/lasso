@@ -1,4 +1,4 @@
-/* $Id$ 
+/* $Id: saml2_attribute_value.i 3378 2007-08-13 10:43:37Z dlaniel $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -23,37 +23,22 @@
  */
 
 #ifndef SWIG_PHP_RENAMES
-%rename(Saml2Attribute) LassoSaml2Attribute;
+%rename(Saml2AttributeValue) LassoSaml2AttributeValue;
 #endif
 typedef struct {
-#ifndef SWIG_PHP_RENAMES
-	%rename(name) Name;
-#endif
-	char *Name;
-
-#ifndef SWIG_PHP_RENAMES
-	%rename(nameFormat) NameFormat;
-#endif
-	char *NameFormat;
-
-#ifndef SWIG_PHP_RENAMES
-	%rename(friendlyName) FriendlyName;
-#endif
-	char *FriendlyName;
-
-} LassoSaml2Attribute;
-%extend LassoSaml2Attribute {
+} LassoSaml2AttributeValue;
+%extend LassoSaml2AttributeValue {
 
 	/* Attribute */
-#ifndef SWIG_PHP_RENAMES
-	%rename(attributeValue) AttributeValue;
+#ifdef SWIG_PHP_RENAMES
+	%rename(Any) any;
 #endif
-	%newobject AttributeValue_get;
-	LassoNodeList *AttributeValue;
+	%newobject any_get;
+	LassoNodeList *any;
 
 	/* Constructor, Destructor & Static Methods */
-	LassoSaml2Attribute();
-	~LassoSaml2Attribute();
+	LassoSaml2AttributeValue();
+	~LassoSaml2AttributeValue();
 
 	/* Method inherited from LassoNode */
 	%newobject dump;
@@ -64,19 +49,19 @@ typedef struct {
 
 /* Attributes */
 
-#define LassoSaml2Attribute_get_AttributeValue(self) get_node_list((self)->AttributeValue)
-#define LassoSaml2Attribute_AttributeValue_get(self) get_node_list((self)->AttributeValue)
-#define LassoSaml2Attribute_set_AttributeValue(self,value) set_node_list(&(self)->AttributeValue, (value))
-#define LassoSaml2Attribute_AttributeValue_set(self,value) set_node_list(&(self)->AttributeValue, (value))
+#define LassoSaml2AttributeValue_get_any(self) get_node_list((self)->any)
+#define LassoSaml2AttributeValue_any_get(self) get_node_list((self)->any)
+#define LassoSaml2AttributeValue_set_any(self,value) set_node_list(&(self)->any, (value))
+#define LassoSaml2AttributeValue_any_set(self,value) set_node_list(&(self)->any, (value))
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoSaml2Attribute lasso_saml2_attribute_new
-#define delete_LassoSaml2Attribute(self) lasso_node_destroy(LASSO_NODE(self))
+#define new_LassoSaml2AttributeValue lasso_saml2_attribute_value_new
+#define delete_LassoSaml2AttributeValue(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoSaml2Attribute_dump(self) lasso_node_dump(LASSO_NODE(self))
+#define LassoSaml2AttributeValue_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
