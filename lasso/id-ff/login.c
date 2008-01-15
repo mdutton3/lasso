@@ -502,7 +502,6 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 	LassoNode *encrypted_id = NULL;
 	LassoSaml2EncryptedElement* encrypted_element = NULL;
 	xmlSecKey *encryption_private_key = NULL;
-	LassoNode *decrypted_node = NULL;
 	int ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
