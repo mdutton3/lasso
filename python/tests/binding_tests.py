@@ -258,6 +258,8 @@ class BindingTestCase(unittest.TestCase):
     <saml:Attribute Name="second attribute">
       <saml:AttributeValue>
         <XXX>second string</XXX>
+      </saml:AttributeValue>
+      <saml:AttributeValue>
         <XXX>third string</XXX>
       </saml:AttributeValue>
     </saml:Attribute>
@@ -278,15 +280,22 @@ class BindingTestCase(unittest.TestCase):
 
         text_node2 = lasso.MiscTextNode()
         text_node2.content = attribute2_string
+        any2 = lasso.NodeList()
+        any2.append(text_node2)
+        attribute_value2 = lasso.Saml2AttributeValue()
+        attribute_value2.any = any2
+
         text_node3 = lasso.MiscTextNode()
         text_node3.content = attribute3_string
-        any1 = lasso.NodeList()
-        any1.append(text_node2)
-        any1.append(text_node3)
-        attribute_value2 = lasso.Saml2AttributeValue()
-        attribute_value2.any = any1
+        any3 = lasso.NodeList()
+        any3.append(text_node3)
+        attribute_value3 = lasso.Saml2AttributeValue()
+        attribute_value3.any = any3
+
         attribute_values2 = lasso.NodeList()
         attribute_values2.append(attribute_value2)
+        attribute_values2.append(attribute_value3)
+
         attribute2 = lasso.Saml2Attribute()
         attribute2.name = attribute2_name
         attribute2.attributeValue = attribute_values2
