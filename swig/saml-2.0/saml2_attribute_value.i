@@ -30,9 +30,6 @@ typedef struct {
 %extend LassoSaml2AttributeValue {
 
 	/* Attribute */
-#ifdef SWIG_PHP_RENAMES
-	%rename(Any) any;
-#endif
 	%newobject any_get;
 	LassoNodeList *any;
 
