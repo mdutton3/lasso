@@ -1274,41 +1274,42 @@ lasso_saml20_login_copy_assertion_epr(LassoLogin *login)
 	LassoSaml2AttributeStatement *attribute_statement;
 	LassoSaml2Attribute *attribute;
 	LassoSaml2AttributeValue *attribute_value;
-	GList *i;
-	GList *j;
-	GList *k;
-	GList *l;
-	gboolean found = FALSE;
 	LassoWsAddrEndpointReference *epr;
+	GList *i;
 
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 
 	assertion = LASSO_SAML2_ASSERTION(
 		LASSO_SAMLP2_RESPONSE(profile->response)->Assertion->data);
 
-	for (i = g_list_first(assertion->AttributeStatement);
-			i != NULL && found == FALSE;
-			i = g_list_next(i)) {
+	for (i = g_list_first(assertion->AttributeStatement); i; i = g_list_next(i)) {
+		GList *j;
 		attribute_statement = LASSO_SAML2_ATTRIBUTE_STATEMENT(i->data);
-		for (j = g_list_first(attribute_statement->Attribute);
-				j != NULL;
-				j = g_list_next(j)) {
+		if (attribute_statement == NULL) {
+			continue;
+		}
+
+		for (j = g_list_first(attribute_statement->Attribute); j; j = g_list_next(j)) {
+			GList *k;
 			attribute = LASSO_SAML2_ATTRIBUTE(j->data);
+			if (attribute == NULL || attribute->Name == NULL) {
+				continue;
+			}
 			if (strcmp(attribute->Name, LASSO_SAML2_ATTRIBUTE_NAME_EPR) != 0) {
 				continue;
 			}
-			for (k = g_list_first(attribute->AttributeValue);
-					k != NULL;
-					k = g_list_next(k)) {
+			for (k = g_list_first(attribute->AttributeValue); k; k = g_list_next(k)) {
+				GList *l;
 				attribute_value = LASSO_SAML2_ATTRIBUTE_VALUE(k->data);
+				if (attribute_value == NULL) {
+					continue;
+				}
 				for (l = g_list_first(attribute_value->any);
-						l != NULL;
-						l = g_list_next(l)) {
+						l; l = g_list_next(l)) {
 					if (LASSO_IS_WSA_ENDPOINT_REFERENCE(l->data)) {
 						epr = LASSO_WSA_ENDPOINT_REFERENCE(l->data);
 						lasso_session_add_endpoint_reference(session, epr);
-						found = TRUE;
-						break;
+						return 0;
 					}
 				}
 			}
