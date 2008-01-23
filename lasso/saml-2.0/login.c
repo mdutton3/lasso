@@ -955,7 +955,6 @@ lasso_saml20_login_build_request_msg(LassoLogin *login)
 	LassoProvider *remote_provider;
 
 	profile = LASSO_PROFILE(login);
-	profile->msg_body = lasso_node_export_to_soap(profile->request);
 
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file =
 		g_strdup(profile->server->private_key);
