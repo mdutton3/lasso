@@ -131,9 +131,14 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 
 	if (lasso_dump == FALSE && request->sign_type) {
-		rc = lasso_sign_node(xmlnode, "ID", request->ID,
+		if (request->private_key_file == NULL) {
+			message(G_LOG_LEVEL_WARNING,
+					"No Private Key set for signing samlp2:RequestAbstract");
+		} else {
+			rc = lasso_sign_node(xmlnode, "ID", request->ID,
 				request->private_key_file, request->certificate_file);
-		/* signature may have failed; what to do ? */
+			/* signature may have failed; what to do ? */
+		}
 	}
 
 	return xmlnode;
