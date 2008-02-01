@@ -47,6 +47,10 @@ struct _LassoIdWsf2DataServicePrivate
 	GList *credentials;
 };
 
+extern GHashTable *idwsf2_dst_services_by_prefix; /* cf xml/xml.c */
+
+static void lasso_register_idwsf2_xpath_namespaces(xmlXPathContext *xpathCtx);
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -220,8 +224,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	doc = xmlNewDoc((xmlChar*)"1.0");
 	xmlDocSetRootElement(doc, service->data);
 	xpathCtx = xmlXPathNewContext(doc);
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)response->prefixServiceType,
-		(xmlChar*)response->hrefServiceType);
+	lasso_register_idwsf2_xpath_namespaces(xpathCtx);
 
 	/* Parse request QueryItems and fill response Data accordingly */
 	/* XXX: needs another level, since there may be more than one <dst:Query> */
@@ -696,8 +699,7 @@ lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
 	cur_doc = xmlNewDoc((xmlChar*)"1.0");
 	xmlDocSetRootElement(cur_doc, cur_data);
 	cur_xpathCtx = xmlXPathNewContext(cur_doc);
-	xmlXPathRegisterNs(cur_xpathCtx, (xmlChar*)response->prefixServiceType,
-		(xmlChar*)response->hrefServiceType);
+	lasso_register_idwsf2_xpath_namespaces(cur_xpathCtx);
 
 	/* Parse request ModifyItems and modify user current data accordingly */
 	/* XXX: needs another level, since there may be more than one <dst:Modify> */
@@ -774,6 +776,23 @@ lasso_idwsf2_data_service_process_modify_response_msg(LassoIdWsf2DataService *se
 /*****************************************************************************/
 
 static LassoNodeClass *parent_class = NULL;
+
+static void
+register_xpath_namespace(gchar *prefix, gchar *href, xmlXPathContext *xpathCtx)
+{
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)prefix, (xmlChar*)href);
+}
+
+static void
+lasso_register_idwsf2_xpath_namespaces(xmlXPathContext *xpathCtx)
+{
+	if (idwsf2_dst_services_by_prefix == NULL)
+		return;
+	g_hash_table_foreach(idwsf2_dst_services_by_prefix,
+			(GHFunc)register_xpath_namespace, xpathCtx);
+}
+
+
 
 /*****************************************************************************/
 /* overrided parent class methods */

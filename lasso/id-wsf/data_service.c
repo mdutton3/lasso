@@ -41,6 +41,7 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
+extern GHashTable *dst_services_by_prefix; /* cf xml/xml.c */
 
 struct _LassoDataServicePrivate
 {
@@ -49,6 +50,8 @@ struct _LassoDataServicePrivate
 	GList *credentials;
 	LassoSoapFault *fault;
 };
+
+static void lasso_register_idwsf_xpath_namespaces(xmlXPathContext *xpathCtx);
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -323,8 +326,7 @@ lasso_data_service_build_response_msg(LassoDataService *service)
 	doc = xmlNewDoc((xmlChar*)"1.0");
 	xmlDocSetRootElement(doc, service->resource_data);
 	xpathCtx = xmlXPathNewContext(doc);
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)response->prefixServiceType,
-			(xmlChar*)response->hrefServiceType);
+	lasso_register_idwsf_xpath_namespaces(xpathCtx);
 
 	/* XXX: needs another level, since there may be more than one <dst:Query> */
 	iter = request->QueryItem;
@@ -715,8 +717,7 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 	doc = xmlNewDoc((xmlChar*)"1.0");
 	xmlDocSetRootElement(doc, cur_data);
 	xpathCtx = xmlXPathNewContext(doc);
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)response->prefixServiceType,
-			(xmlChar*)response->hrefServiceType);
+	lasso_register_idwsf_xpath_namespaces(xpathCtx);
 
 	for (iter = request->Modification; iter != NULL; iter = g_list_next(iter)) {
 		LassoDstModification *modification = iter->data;
@@ -852,6 +853,28 @@ lasso_data_service_set_offering(LassoDataService *service, LassoDiscoResourceOff
 	service->provider_id = g_strdup(offering->ServiceInstance->ProviderID);
 	service->abstract_description = g_strdup(offering->Abstract);
 }
+
+static void
+register_xpath_namespace(gchar *prefix, gchar *href, xmlXPathContext *xpathCtx)
+{
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)prefix, (xmlChar*)href);
+}
+
+static void
+lasso_register_idwsf_xpath_namespaces(xmlXPathContext *xpathCtx)
+{
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)LASSO_PP_PREFIX,
+			(xmlChar*)LASSO_PP_HREF);
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)LASSO_EP_PREFIX,
+			(xmlChar*)LASSO_EP_HREF);
+	if (dst_services_by_prefix == NULL)
+		return;
+	g_hash_table_foreach(dst_services_by_prefix,
+			(GHFunc)register_xpath_namespace, xpathCtx);
+}
+
+
+
 
 /*****************************************************************************/
 /* overrided parent class methods */
