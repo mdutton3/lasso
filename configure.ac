@@ -255,7 +255,7 @@ fi
 dnl If the java compiler is the GNU Java Compiler.
 if test "x$JAVAC" = "xgcj"; then
     changequote(<<, >>)dnl
-    JAVA_VERSION=`$JAVAC --version 2>&1 | $SED -ne 's/gcj (GCC) \([^"]*\) (.*/\1/p' 2>/dev/null`
+    JAVA_VERSION=`$JAVAC --version 2>&1 | $SED -ne 's/gcj.*\([0-9]\.[0-9]\.[0-9]\).*/\1/p' 2>/dev/null`
     changequote([, ])dnl
     
     dnl Byte-compiled .class file
