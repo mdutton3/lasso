@@ -187,7 +187,6 @@ SWIG_WSF_OUTPUTS = Authentication.java \
 	SoapBody.java \
 	SoapEnvelope.java \
 	SoapHeader.java \
-	SWIGTYPE_p_LassoSoapBindingProvider.java \
 	UserAccount.java \
 	UtilityStatus.java \
 	WsfProfile.java \
