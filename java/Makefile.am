@@ -60,6 +60,7 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	Saml2Assertion.java \
 	Saml2Attribute.java \
 	Saml2AttributeStatement.java \
+	Saml2AttributeValue.java \
 	Saml2AudienceRestriction.java \
 	Saml2AuthnContext.java \
 	Saml2AuthnStatement.java \
