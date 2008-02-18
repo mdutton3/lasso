@@ -277,7 +277,8 @@ lasso_login_build_assertion(LassoLogin *login,
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST || \
 			login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP) {
 		/* only add assertion if response is an AuthnResponse */
-		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = g_list_append(NULL, assertion);
+		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = g_list_append(NULL,
+				g_object_ref(assertion));
 	}
 
 	lasso_login_assertion_add_discovery(login, assertion);
@@ -288,9 +289,8 @@ lasso_login_build_assertion(LassoLogin *login,
 	}
 	if (login->assertion)
 		lasso_node_destroy(LASSO_NODE(login->assertion));
-	login->assertion = LASSO_SAML_ASSERTION(g_object_ref(assertion));
-	lasso_session_add_assertion(profile->session, profile->remote_providerID,
-			g_object_ref(assertion));
+	login->assertion = LASSO_SAML_ASSERTION(assertion);
+	lasso_session_add_assertion(profile->session, profile->remote_providerID, assertion);
 
 	if (LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion == 1 && 
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MinorVersion < 2) {
@@ -656,8 +656,7 @@ lasso_login_accept_sso(LassoLogin *login)
 	if (assertion == NULL)
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 
-	lasso_session_add_assertion(profile->session, profile->remote_providerID,
-			g_object_ref(assertion));
+	lasso_session_add_assertion(profile->session, profile->remote_providerID, assertion);
 
 	authentication_statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
 			assertion->AuthenticationStatement);

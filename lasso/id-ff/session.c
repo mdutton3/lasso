@@ -63,7 +63,8 @@ lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	g_hash_table_insert(session->assertions, g_strdup(providerID), assertion);
+	g_hash_table_insert(session->assertions, g_strdup(providerID),
+			g_object_ref(assertion));
 
 	session->is_dirty = TRUE;
 
