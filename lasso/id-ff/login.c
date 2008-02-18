@@ -290,7 +290,8 @@ lasso_login_build_assertion(LassoLogin *login,
 	if (login->assertion)
 		lasso_node_destroy(LASSO_NODE(login->assertion));
 	login->assertion = LASSO_SAML_ASSERTION(assertion);
-	lasso_session_add_assertion(profile->session, profile->remote_providerID, assertion);
+	lasso_session_add_assertion(profile->session, profile->remote_providerID,
+			LASSO_NODE(assertion));
 
 	if (LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion == 1 && 
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MinorVersion < 2) {
@@ -656,7 +657,8 @@ lasso_login_accept_sso(LassoLogin *login)
 	if (assertion == NULL)
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 
-	lasso_session_add_assertion(profile->session, profile->remote_providerID, assertion);
+	lasso_session_add_assertion(profile->session, profile->remote_providerID,
+			LASSO_NODE(assertion));
 
 	authentication_statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
 			assertion->AuthenticationStatement);

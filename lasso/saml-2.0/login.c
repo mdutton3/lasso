@@ -858,7 +858,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 		profile->session = lasso_session_new();
 	}
 
-	lasso_session_add_assertion(profile->session, profile->remote_providerID, assertion);
+	lasso_session_add_assertion(profile->session, profile->remote_providerID,
+			LASSO_NODE(assertion));
 
 	response = LASSO_SAMLP2_RESPONSE(profile->response);
 	response->Assertion = g_list_append(NULL, assertion);
@@ -1353,7 +1354,8 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	}
 	g_list_free(previous_assertions);
 
-	lasso_session_add_assertion(profile->session, profile->remote_providerID, assertion);
+	lasso_session_add_assertion(profile->session, profile->remote_providerID,
+			LASSO_NODE(assertion));
 
 	if (assertion->Subject && assertion->Subject->NameID) {
 		ni = assertion->Subject->NameID;
