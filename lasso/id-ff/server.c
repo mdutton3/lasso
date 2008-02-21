@@ -672,10 +672,10 @@ lasso_server_get_type()
 
 /**
  * lasso_server_new:
- * @metadata: path to the provider metadata file
+ * @metadata: path to the provider metadata file or NULL, for a LECP server
  * @private_key: path to the the server private key file or NULL
- * @private_key_password: password to private key (if it is encrypted)
- * @certificate: path to the server certificate file
+ * @private_key_password: password to private key if it is encrypted, or NULL
+ * @certificate: path to the server certificate file, or NULL
  * 
  * Creates a new #LassoServer.
  * 
