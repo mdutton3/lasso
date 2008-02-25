@@ -3,7 +3,6 @@ import twill
 def test_sso_default():
     twill.commands.reset_browser()
     twill.execute_string('''
-go http://localhost:10001
 go http://localhost:10002
 submit
 fv 1 username fred
