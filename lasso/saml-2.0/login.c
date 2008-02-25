@@ -538,6 +538,11 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 		name_id_policy_format = LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT;
 	}
 
+	if (login->nameIDPolicy) {
+		g_free(login->nameIDPolicy);
+	}
+	login->nameIDPolicy = g_strdup(name_id_policy_format);
+
 	if (name_id_policy_format && strcmp(name_id_policy_format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
 		return 0;
@@ -730,7 +735,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 
-	if (profile->identity) {
+	if (profile->identity && strcmp(login->nameIDPolicy,
+				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) != 0) {
 		char *name_id_sp_name_qualifier;
 		if (provider->private_data->affiliation_id) {
 			name_id_sp_name_qualifier = provider->private_data->affiliation_id;
