@@ -24,6 +24,9 @@ def setup():
         print >> sys.stderr, 'Create it or edit tests/config.py to match your local installation'
         sys.exit(1)
 
+    twill.commands.reset_browser()
+    twill.set_output(file('/dev/null', 'w'))
+
     os.mkdir('/tmp/.tests')
     sp = subprocess.Popen([AUTHENTICCTL, 'start',
             '--app-dir', '/tmp/.tests/authentictests',
@@ -39,12 +42,12 @@ def setup():
 
     time.sleep(2) # let process bind ports
 
-    twill.commands.reset_browser()
-    twill.set_output(file('/dev/null', 'w'))
-
 
 def teardown():
     for pid in pids:
-        os.kill(pid, signal.SIGTERM)
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            print >> sys.stderr, 'failed to kill pid %s' % pid
     os.system('rm -rf /tmp/.tests/')
 
