@@ -1,0 +1,15 @@
+README for Lasso Integration Tests
+==================================
+
+Requirements:
+ - twill (no Debian packages)
+ - nose (apt-get install python-nose)
+ - Authentic & LCS from Subversion and CVS
+
+Default configuration is to look for apps in their installation directories,
+but it is also possible to run tests without installing anything.  Example
+of a config file is in tests/config.py.example (must be renamed to config.py to
+be effective).
+
+Tests are run with nosetests from this directory.
+
