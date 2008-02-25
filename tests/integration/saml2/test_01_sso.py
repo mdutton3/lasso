@@ -4,13 +4,11 @@ def test_sso_default():
     twill.commands.reset_browser()
     twill.execute_string('''
 go http://localhost:10001
-save_html /tmp/haze.html
 go http://localhost:10002
 submit
 fv 1 username fred
 fv 1 password fred
 submit
-#submit consent
 url http://localhost:10002
 find 'Logged in'
 ''')
