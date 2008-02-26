@@ -57,7 +57,6 @@ struct _LassoMiscTextNode {
 	/* elements */
 	char *content;
 
-	/*< private >*/
 	char *name;
 	char *ns_href;
 	char *ns_prefix;
