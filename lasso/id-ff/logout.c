@@ -330,6 +330,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 
 	/* get the remote provider id
 	   If remote_providerID is NULL, then get the first remote provider id in session */
+        g_free(profile->remote_providerID);
 	if (remote_providerID == NULL) {
 		profile->remote_providerID = lasso_session_get_provider_index(session, 0);
 	} else {
@@ -441,7 +442,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	}
 
 	/* before setting profile->request, verify it is not already set */
-	if (LASSO_IS_LIB_LOGOUT_REQUEST(profile->request) == TRUE) {
+	if (LASSO_IS_NODE(profile->request) == TRUE) {
 		lasso_node_destroy(LASSO_NODE(profile->request));
 		profile->request = NULL;
 	}
