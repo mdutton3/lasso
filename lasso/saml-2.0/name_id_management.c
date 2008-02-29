@@ -59,7 +59,7 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 	LassoSaml2NameID *name_id, *name_id_n;
 	LassoSamlp2RequestAbstract *request;
 	LassoSession *session;
-        LassoNameIdentifer *oldNameIdentifier;
+        LassoNode *oldNameIdentifier;
 
 	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -78,7 +78,7 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 	}
 
 	/* set the remote provider id */
-        g_free (profile->remote_providerID)
+        g_free (profile->remote_providerID);
 	if (remote_provider_id == NULL) {
 		profile->remote_providerID = lasso_session_get_provider_index(session, 0);
 	} else {
