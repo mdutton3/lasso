@@ -58,8 +58,8 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 	LassoFederation *federation;
 	LassoSaml2NameID *name_id, *name_id_n;
 	LassoSamlp2RequestAbstract *request;
-	LassoSession *session;
-        LassoNode *oldNameIdentifier;
+	LassoSession *session = NULL;
+	LassoNode *oldNameIdentifier;
 
 	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -71,15 +71,14 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 	}
 
-	/* verify if session exists */
-	session = lasso_profile_get_session(profile);
-	if (session == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
-	}
-
 	/* set the remote provider id */
-        g_free (profile->remote_providerID);
+	g_free (profile->remote_providerID);
 	if (remote_provider_id == NULL) {
+		/* verify if session exists */
+		session = lasso_profile_get_session(profile);
+		if (session == NULL) {
+			return critical_error(LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
+		}
 		profile->remote_providerID = lasso_session_get_provider_index(session, 0);
 	} else {
 		profile->remote_providerID = g_strdup(remote_provider_id);
@@ -101,14 +100,14 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 	/* get the current NameID */
 	name_id_n = LASSO_SAML2_NAME_ID(lasso_profile_get_nameIdentifier(profile));
 	name_id = LASSO_SAML2_NAME_ID(name_id_n);
-        oldNameIdentifier = profile->nameIdentifier;
+	oldNameIdentifier = profile->nameIdentifier;
 	if (federation->local_nameIdentifier) {
 		profile->nameIdentifier = g_object_ref(federation->local_nameIdentifier);
 	} else {
 		profile->nameIdentifier = g_object_ref(name_id_n);
 	}
-        if (oldNameIdentifier != NULL) 
-            g_object_unref(oldNameIdentifier);
+	if (oldNameIdentifier != NULL) 
+		g_object_unref(oldNameIdentifier);
 
 	/* XXX: check HTTP method is supported */
 
