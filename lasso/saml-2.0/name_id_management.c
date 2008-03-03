@@ -220,6 +220,8 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 	xmlSecKey *encryption_private_key = NULL;
 
 	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(request_msg != NULL, 
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 	
 	profile = LASSO_PROFILE(name_id_management);
