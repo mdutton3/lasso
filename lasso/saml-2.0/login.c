@@ -508,7 +508,7 @@ lasso_saml20_login_validate_request_msg(LassoLogin *login, gboolean authenticati
 	if (profile->signature_status == 0 && authentication_result == TRUE) {
 		ret = lasso_saml20_login_process_federation(login, is_consent_obtained);
 		if (ret == LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED) {
-			lasso_saml20_profile_set_response_status(profile, LASSO_SAM);
+			lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_AUTHN_FAILED);
 			return ret;
 		}
 		if (ret) {
