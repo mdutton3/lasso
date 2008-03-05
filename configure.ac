@@ -98,8 +98,9 @@ dnl Find tar command for make dist
 AC_CHECK_PROGS(TAR, gnutar gtar tar)
 
 dnl Check existence of binding programs
-AC_CHECK_PROGS(JAVA, java)
+AC_CHECK_PROGS(JAVA, gij java)
 AC_CHECK_PROGS(JAVAC, gcj javac)
+AC_CHECK_PROGS(JAVAH, gjavah gcjh javah)
 AC_CHECK_PROGS(JAR, fastjar jar)
 AC_CHECK_PROGS(PERL, perl)
 AC_CHECK_PROGS(PHP4, php4 php)
@@ -222,15 +223,14 @@ AC_ARG_ENABLE(java, [  --disable-java          disable the Java binding],,
               enable_java="yes")
 AC_ARG_WITH(java-home,
             [  --with-java-home=(JAVA_HOME)  set the full path to the java home directory.])
-JAVAC_FLAGS=
-JDK_INCLUDE=
 SUN=no
-if test "X$with_java_home" != "X"; then
-    JDK_INCLUDE="$with_java_home/include"
-fi
 
 dnl If the java compiler seems to be a Sun JDK-like compile (Kaffe, Sun JDK...)
-if test "x$JAVA" = "xjava" && test "x$JAVAC" = "xjavac"; then
+if test "x$JAVAC" = "xjavac"; then
+    JAVAC_PATH=`which $JAVAC`
+    if test "x$with_java_home" = "x"; then
+	    with_java_home=`readlink -f $JAVAC_PATH | s#/bin/.*##`
+    fi
     dnl If we have a java compiler
     dnl need to change quotes to allow square brackets
     changequote(<<, >>)dnl
@@ -239,40 +239,49 @@ if test "x$JAVA" = "xjava" && test "x$JAVAC" = "xjavac"; then
     dnl If no java version found, perphas it is a kaffee environment...
     if test "x$JAVA_VERSION" = x; then
         JAVA_VERSION=`$JAVA -version 2>&1 | grep "Java Version" | $SED 's/^.*Java Version: //g'`
-        dnl If the java environment is kaffe, specify the JDK_INCLUDE directory.
-        if test "x$JAVA_VERSION" != "x"; then
-            JDK_INCLUDE="/usr/lib/kaffe/include"
-        fi
+        dnl If the java environment is kaffe, specify the JAVA_INCLUDE directory.
     else
         dnl We assume it is a SUN environment.
         SUN=yes
     fi
-    if ! test -f "$JDK_INCLUDE/jni.h"; then
-        JAVA_VERSION=""
-    fi
+    CLASSPATH_OPT="-classpath"
+fi
+
+if test "x$with_java_home" != x; then
+    JAVA_INCLUDE="$with_java_home/include"
+fi
+
+if ! test -f "$JAVA_INCLUDE/jni.h"; then
+    JAVA_VERSION=""
+fi
+
+dnl GNU java environment
+if test "x$JAVAH" = "xgcjh" || test "x$JAVAH" = "xgjavah"  ; then
+    dnl JNI compatible header files. (not used with SWIG.)
+    JAVAH_FLAGS="-jni"
+    JAVA_INCLUDE=""
 fi
 
 dnl If the java compiler is the GNU Java Compiler.
 if test "x$JAVAC" = "xgcj"; then
     changequote(<<, >>)dnl
-    JAVA_VERSION=`$JAVAC --version 2>&1 | $SED -ne 's/gcj.*\([0-9]\.[0-9]\.[0-9]\).*/\1/p' 2>/dev/null`
+    JAVA_VERSION=`$JAVAC --version 2>&1 | $SED -ne 's/gcj ([^)]*) \([^ ]*\).*/\1/p' 2>/dev/null`
     changequote([, ])dnl
     
     dnl Byte-compiled .class file
-    JAVAC_FLAGS="-C"
-    dnl JNI compatible header files. (not used with SWIG.)
-    dnl JAVAH_FLAGS="-jni"
+    JAVAC_FLAGS="-fsource=1.4 -ftarget=1.4 -C"
     dnl Checking for jni.h if gcj is the java interpreter.
     AC_CHECK_HEADERS([jni.h], [], [JAVA_VERSION=""])
+    CLASSPATH_OPT="--classpath"
 fi
 
-dnl Now transform JDK_INCLUDE in CFLAG option if applicable.
-if test "X$JDK_INCLUDE" != "X"; then
+dnl Now transform JAVA_INCLUDE in CFLAG option if applicable.
+if test "X$JAVA_INCLUDE" != "X"; then
     dnl If it is a sun environment
     if test "x$SUN" = "xyes"; then
-        JDK_INCLUDE="$JDK_INCLUDE -I$JDK_INCLUDE/$SUN_EXTRA_INCLUDE"
+        JAVA_INCLUDE="$JAVA_INCLUDE -I$JAVA_INCLUDE/$SUN_EXTRA_INCLUDE"
     fi
-    JDK_INCLUDE=-I$JDK_INCLUDE
+    JAVA_INCLUDE=-I$JAVA_INCLUDE
 fi
 
 dnl If we found a java version information, we have java compilation environment.
@@ -287,7 +296,9 @@ dnl Conditional java sub dir test.
 AM_CONDITIONAL([JAVA_ENABLED],[test "x$enable_java" = "xyes"])
 AC_SUBST(JAVA_VERSION)
 AC_SUBST(JAVAC_FLAGS)
-AC_SUBST(JDK_INCLUDE)
+AC_SUBST(JAVAH_FLAGS)
+AC_SUBST(JAVA_INCLUDE)
+AC_SUBST(CLASSPATH_OPT)
 
 
 # --------------
@@ -914,6 +925,11 @@ win32/nsis/lasso-deps.nsi
 win32/nsis/lasso-full.nsi
 win32/nsis/lasso-lite.nsi
 win32/nsis/python.nsi
+bindings/Makefile
+bindings/php5/Makefile
+bindings/python/Makefile
+bindings/python/tests/Makefile
+bindings/java/Makefile
 ])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `
