@@ -229,7 +229,7 @@ dnl If the java compiler seems to be a Sun JDK-like compile (Kaffe, Sun JDK...)
 if test "x$JAVAC" = "xjavac"; then
     JAVAC_PATH=`which $JAVAC`
     if test "x$with_java_home" = "x"; then
-	    with_java_home=`readlink -f $JAVAC_PATH | s#/bin/.*##`
+	    with_java_home=`readlink -f $JAVAC_PATH | sed s#/bin/.*##`
     fi
     dnl If we have a java compiler
     dnl need to change quotes to allow square brackets
