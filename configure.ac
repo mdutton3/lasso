@@ -926,11 +926,6 @@ win32/nsis/lasso-deps.nsi
 win32/nsis/lasso-full.nsi
 win32/nsis/lasso-lite.nsi
 win32/nsis/python.nsi
-bindings/Makefile
-bindings/php5/Makefile
-bindings/python/Makefile
-bindings/python/tests/Makefile
-bindings/java/Makefile
 ])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `
