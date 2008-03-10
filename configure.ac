@@ -18,6 +18,9 @@ dnl See libtool explanations about current, age and release, later in this file.
 AC_INIT([Liberty Alliance Single Sign On], 2.1.1, lasso-devel@lists.labs.libre-entreprise.org)
 dnl Check if autoconf ver > 2.53
 AC_PREREQ(2.53)
+dnl Perform only subset commands and variable relevant to the host type.
+AC_CANONICAL_HOST
+AC_CANONICAL_SYSTEM
 dnl Check existence of a relative pathed source file.
 AC_CONFIG_SRCDIR(lasso/lasso.c)
 dnl Copy stamp REVISIO-INFO in the configure script.
@@ -30,8 +33,6 @@ AM_CONFIG_HEADER(lasso/lasso_config.h)
 dnl Add --enable-maintainer-mode option to configure.
 AM_MAINTAINER_MODE
 
-dnl Perform only subset commands and variable relevant to the host type.
-AC_CANONICAL_HOST
 dnl ==========================================================================
 dnl Perform host specific configuration
 dnl ==========================================================================
@@ -84,7 +85,6 @@ dnl
 AC_PROG_CC
 AC_HEADER_STDC
 LT_AC_PROG_RC
-AM_PROG_GCJ
 AC_EXEEXT
 AC_PROG_CC_C_O
 AM_SANITY_CHECK
@@ -98,10 +98,26 @@ dnl Find tar command for make dist
 AC_CHECK_PROGS(TAR, gnutar gtar tar)
 
 dnl Check existence of binding programs
-AC_CHECK_PROGS(JAVA, gij java)
-AC_CHECK_PROGS(JAVAC, gcj javac)
-AC_CHECK_PROGS(JAVAH, gjavah gcjh javah)
-AC_CHECK_PROGS(JAR, fastjar jar)
+AC_CHECK_CLASSPATH
+AC_PROG_JAVAC
+AC_PROG_JAVA
+AC_PROG_JAVAH
+AC_PROG_JAR
+DPS_XTRA_CLASSPATH(CLASSPATH_JUNIT, junit.framework.Test, junit.jar)
+old_cp=$CLASSPATH
+export CLASSPATH=${CLASSPATH}:${CLASSPATH_JUNIT}
+AC_CHECK_JUNIT
+if test "x$old_cp" = "x"; then
+    unset CLASSPATH
+else
+    $CLASSPATH=$old_cp
+fi
+unset old_cp
+dnl AC_CHECK_PROGS(JAVA, gij java)
+dnl AC_CHECK_PROGS(JAVAC, gcj javac)
+dnl AC_CHECK_PROGS(JAVAH, gjavah gcjh javah)
+dnl AC_CHECK_PROGS(JAR, fastjar jar)
+
 AC_CHECK_PROGS(PERL, perl)
 AC_CHECK_PROGS(PHP4, php4 php)
 AC_CHECK_PROGS(PHP5, php5 php)
@@ -264,13 +280,13 @@ if test "x$JAVAH" = "xgcjh" || test "x$JAVAH" = "xgjavah"  ; then
 fi
 
 dnl If the java compiler is the GNU Java Compiler.
-if test "x$JAVAC" = "xgcj"; then
+if test "x$JAVAC" = "xgcj -C"; then
     changequote(<<, >>)dnl
     JAVA_VERSION=`$JAVAC --version 2>&1 | $SED -ne 's/gcj ([^)]*) \([^ ]*\).*/\1/p' 2>/dev/null`
     changequote([, ])dnl
     
     dnl Byte-compiled .class file
-    JAVAC_FLAGS="-fsource=1.4 -ftarget=1.4 -C"
+    JAVAC_FLAGS="-fsource=1.4 -ftarget=1.4"
     dnl Checking for jni.h if gcj is the java interpreter.
     AC_CHECK_HEADERS([jni.h], [], [JAVA_VERSION=""])
     CLASSPATH_OPT="--classpath"
@@ -286,7 +302,7 @@ if test "X$JAVA_INCLUDE" != "X"; then
 fi
 
 dnl If we found a java version information, we have java compilation environment.
-if test "X$JAVA_VERSION" != "X" && test "X$JAR" != "X"; then
+if test "X$JAVA_VERSION" != "X" && test "X$JAR" != "X" && test "x$JAVAH" != "x"; then
   languages_available="$languages_available $JAVA($JAVA_VERSION)"
 else
   enable_java=no
@@ -295,6 +311,7 @@ fi
 
 dnl Conditional java sub dir test.
 AM_CONDITIONAL([JAVA_ENABLED],[test "x$enable_java" = "xyes"])
+AM_CONDITIONAL([JUNIT_ENABLED],[test "x$JUNIT" != "x"])
 AC_SUBST(JAVA_VERSION)
 AC_SUBST(JAVAC_FLAGS)
 AC_SUBST(JAVAH_FLAGS)
@@ -442,7 +459,7 @@ AC_SUBST(PHP4_VERSION)
 
 dnl Check if php is explicitly enabled.
 AC_ARG_ENABLE(php5, [  --enable-php5          enable the PHP 5 binding],,
-              enable_php5="no")
+              enable_php5="yes")
 
 AC_ARG_ENABLE(php5-force, [  --enable-php5-force     always enable of the PHP 5 binding (win32)],
               [ENABLE_PHP5_FORCE="yes"],
@@ -865,10 +882,13 @@ AC_SUBST(LASSO_APP_DEFINES)
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
+AC_SUBST(CLASSPATH_JUNIT)
 
 dnl Dirty system often means dirty hacks...
 AM_CONDITIONAL(MINGW, test $MINGW == 1)
 AM_CONDITIONAL(DARWIN, test $DARWIN == 1)
+
+dnl bindings
 
 
 dnl ==========================================================================
@@ -927,6 +947,12 @@ win32/nsis/lasso-full.nsi
 win32/nsis/lasso-lite.nsi
 win32/nsis/python.nsi
 ])
+dnl AC_OUTPUT([
+dnl bindings/Makefile
+dnl bindings/python/Makefile
+dnl bindings/java/Makefile
+dnl bindings/php5/Makefile
+dnl ])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `
 AC_MSG_RESULT(
