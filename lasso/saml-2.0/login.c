@@ -423,6 +423,9 @@ lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login)
 		if (strcmp(format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
 			return FALSE;
 		}
+		if (name_id_policy->AllowCreate == FALSE) {
+			return FALSE;
+		}
 	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -507,12 +510,15 @@ lasso_saml20_login_validate_request_msg(LassoLogin *login, gboolean authenticati
 
 	if (profile->signature_status == 0 && authentication_result == TRUE) {
 		ret = lasso_saml20_login_process_federation(login, is_consent_obtained);
-		if (ret == LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED) {
-			lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_AUTHN_FAILED);
+		if (ret == LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND) {
+			lasso_saml20_profile_set_response_status(profile, 
+				LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 			return ret;
 		}
+		/* Only possibility, consent not obtained. */
 		if (ret) {
-			lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_RESPONDER);
+			lasso_saml20_profile_set_response_status(profile, 
+				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 			return ret;
 		}
 	}
