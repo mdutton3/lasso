@@ -24,6 +24,7 @@ LassoSamlSubject
 
 @NameIdentifier: 
 @SubjectConfirmation: 
+@EncryptedNameIdentifier: 
 
 <!-- ##### FUNCTION lasso_saml_subject_new ##### -->
 <para>

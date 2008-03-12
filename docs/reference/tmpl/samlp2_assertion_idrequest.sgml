@@ -25,11 +25,3 @@ LassoSamlp2AssertionIDRequest
 @parent: 
 @AssertionIDRef: 
 
-<!-- ##### FUNCTION lasso_samlp2_assertion_idrequest_new ##### -->
-<para>
-
-</para>
-
-@Returns: 
-
-

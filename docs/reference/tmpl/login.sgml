@@ -152,6 +152,7 @@ Identifies the two possible profiles for Single Sign-On and Federation.
 @LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART: 
 @LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST: 
 @LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP: 
+@LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT: 
 
 <!-- ##### FUNCTION lasso_login_new ##### -->
 <para>

@@ -65,7 +65,7 @@ Name Identifier Mapping Profile (ID-FF)
 </para>
 
 @mapping: 
-@targetNameSpace: 
+@targetNamespace: 
 @remote_providerID: 
 @Returns: 
 
