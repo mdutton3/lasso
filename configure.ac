@@ -280,13 +280,20 @@ if test "x$JAVAH" = "xgcjh" || test "x$JAVAH" = "xgjavah"  ; then
 fi
 
 dnl If the java compiler is the GNU Java Compiler.
-if test "x$JAVAC" = "xgcj -C"; then
+if echo "$JAVAC" | grep -q "gcj"; then
     changequote(<<, >>)dnl
-    JAVA_VERSION=`$JAVAC --version 2>&1 | $SED -ne 's/gcj ([^)]*) \([^ ]*\).*/\1/p' 2>/dev/null`
+    JAVA_VERSION=`$JAVAC --version 2>&1 | $SED -ne 's/gcj[^[:blank:]]* ([^)]*) \([^ ]*\).*/\1/p' 2>/dev/null`
+    MAJOR=`echo $JAVA_VERSION | sed 's/.*[^[:digit:]]\?\([[:digit:]]\+\)\.[[:digit:]]\+\.[[:digit:]]\+/\1/'`
+    MINOR=`echo $JAVA_VERSION | sed 's/.*[^[:digit:]]\?[[:digit:]]\+\.\([[:digit:]]\+\)\.[[:digit:]]\+/\1/'`
+    RELEASE=`echo $JAVA_VERSION | sed 's/.*[^[:digit:]]\?[[:digit:]]\+\.[[:digit:]]\+\.\([[:digit:]]\+\).*/\1/'`
     changequote([, ])dnl
-    
     dnl Byte-compiled .class file
-    JAVAC_FLAGS="-fsource=1.4 -ftarget=1.4"
+    if test $MAJOR -gt 4 -o \( $MAJOR -eq 4 -a $MINOR -gt 1 \) -o \( $MAJOR -eq 4 -a $MINOR -eq 1 -a $RELEASE -ge 3 \); then
+        JAVAC_FLAGS="-fsource=1.4 -ftarget=1.4"
+    fi
+    unset MAJOR
+    unset MINOR
+    unset RELEASE
     dnl Checking for jni.h if gcj is the java interpreter.
     AC_CHECK_HEADERS([jni.h], [], [JAVA_VERSION=""])
     CLASSPATH_OPT="--classpath"
@@ -916,7 +923,6 @@ lasso/xml/id-wsf-2.0/Makefile
 lasso/xml/ws/Makefile
 perl/Makefile
 php/Makefile
-php5/Makefile
 python/Makefile
 swig/Makefile
 swig/wsf-support.i
@@ -952,6 +958,7 @@ win32/nsis/python.nsi
 dnl AC_OUTPUT([
 dnl bindings/Makefile
 dnl bindings/python/Makefile
+dnl bindings/python/tests/Makefile
 dnl bindings/java/Makefile
 dnl bindings/php5/Makefile
 dnl ])
