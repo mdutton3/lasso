@@ -800,6 +800,13 @@ lasso_data_service_process_modify_msg(LassoDataService *service,
 	return 0;
 }
 
+/**
+ * lasso_data_service_process_modify_response_msg
+ * @service: a #LassoDataService
+ * @soap_msg: the SOAP message
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_data_service_process_modify_response_msg(LassoDataService *service, const gchar *soap_msg)
 {
@@ -811,8 +818,11 @@ lasso_data_service_process_modify_response_msg(LassoDataService *service, const 
 	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(soap_msg));
-	LASSO_WSF_PROFILE(service)->soap_envelope_response = envelope;
+	if (envelope == NULL || ! envelope->Body || ! envelope->Body>any || ! LASSO_IS_NODE(envelope->Body->any->data)) {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
 
+	LASSO_WSF_PROFILE(service)->soap_envelope_response = envelope;
 	response = envelope->Body->any->data;
 	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(response);
 
