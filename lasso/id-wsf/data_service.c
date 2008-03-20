@@ -184,7 +184,7 @@ lasso_data_service_add_query_item(LassoDataService *service,
 	LassoDstQuery *query;
 	LassoDstQueryItem *item;
 
-	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), NULL);
+	g_return_val_if_fail(LASSO_IS_DATA_SERVICE(service), NULL);
 	g_return_val_if_fail(select != NULL, NULL);
 
 	if (! LASSO_IS_DST_QUERY(LASSO_WSF_PROFILE(service)->request)) {
@@ -598,6 +598,11 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 	LassoWsfProfile *profile;
 	LassoDstModify *modify;
 
+	g_return_val_if_fail(LASSO_IS_DATA_SERVICE(service),
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(service != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(xmlData != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
 	profile = LASSO_WSF_PROFILE(service);
 
 	/* init Modify */
@@ -664,7 +669,7 @@ lasso_data_service_add_modification(LassoDataService *service, const gchar *sele
 	LassoWsfProfile *profile;
 	LassoDstModification *modification;
 
-	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), NULL);
+	g_return_val_if_fail(LASSO_IS_DATA_SERVICE(service), NULL);
 	g_return_val_if_fail(select != NULL, NULL);
 
 	profile = LASSO_WSF_PROFILE(service);
@@ -813,7 +818,7 @@ lasso_data_service_process_modify_response_msg(LassoDataService *service, const 
 	LassoDstModifyResponse *response;
 	LassoSoapEnvelope *envelope;
 
-	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service),
+	g_return_val_if_fail(LASSO_IS_DATA_SERVICE(service),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
@@ -980,7 +985,7 @@ lasso_data_service_new(LassoServer *server)
 
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
-	service = g_object_new(LASSO_TYPE_PROFILE_SERVICE, NULL);
+	service = g_object_new(LASSO_TYPE_DATA_SERVICE, NULL);
 	LASSO_WSF_PROFILE(service)->server = g_object_ref(server);
 
 	return service;

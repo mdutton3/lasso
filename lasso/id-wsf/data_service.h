@@ -40,17 +40,17 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include <lasso/xml/saml_assertion.h>
 
-#define LASSO_TYPE_PROFILE_SERVICE (lasso_data_service_get_type())
+#define LASSO_TYPE_DATA_SERVICE (lasso_data_service_get_type())
 #define LASSO_DATA_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-       LASSO_TYPE_PROFILE_SERVICE, LassoDataService))
+       LASSO_TYPE_DATA_SERVICE, LassoDataService))
 #define LASSO_DATA_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-       LASSO_TYPE_PROFILE_SERVICE, LassoDataServiceClass))
-#define LASSO_IS_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-       LASSO_TYPE_PROFILE_SERVICE))
-#define LASSO_IS_PROFILE_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-       LASSO_TYPE_PROFILE_SERVICE))
+       LASSO_TYPE_DATA_SERVICE, LassoDataServiceClass))
+#define LASSO_IS_DATA_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+       LASSO_TYPE_DATA_SERVICE))
+#define LASSO_IS_DATA_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
+       LASSO_TYPE_DATA_SERVICE))
 #define LASSO_DATA_SERVICE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-       LASSO_TYPE_PROFILE_SERVICE, LassoDataServiceClass)) 
+       LASSO_TYPE_DATA_SERVICE, LassoDataServiceClass)) 
 
 typedef struct _LassoDataService LassoDataService;
 typedef struct _LassoDataServiceClass LassoDataServiceClass;
