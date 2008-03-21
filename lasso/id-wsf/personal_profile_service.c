@@ -108,7 +108,7 @@ lasso_personal_profile_service_get_type()
 			(GInstanceInitFunc) instance_init,
 		};
 
-		this_type = g_type_register_static(LASSO_TYPE_PROFILE_SERVICE,
+		this_type = g_type_register_static(LASSO_TYPE_DATA_SERVICE,
 				"LassoPersonalProfileService", &this_info, 0);
 	}
 	return this_type;
