@@ -40,3 +40,14 @@ url http://localhost:10002
 find 'Logged in'
 ''')
 
+def test_sso_ispassive():
+    twill.commands.reset_browser()
+    twill.execute_string('''
+go http://localhost:10002
+fv 1 is_passive true
+submit
+url http://localhost:10002
+find 'Unknown authentication failure'
+''')
+
+
