@@ -127,7 +127,7 @@ lasso_idwsf2_dstref_modify_item_new()
 
 LassoIdWsf2DstRefModifyItem*
 lasso_idwsf2_dstref_modify_item_new_full(const gchar *item_xpath, const gchar *item_id,
-	xmlNode *new_data, const gboolean overrideAllowed)
+	xmlNode *new_data, gboolean overrideAllowed)
 {
 	LassoIdWsf2DstRefModifyItem *item;
 

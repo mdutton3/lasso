@@ -81,7 +81,7 @@ LASSO_EXPORT LassoIdWsf2DstRefModifyItem* lasso_idwsf2_dstref_modify_item_new(vo
 
 LASSO_EXPORT LassoIdWsf2DstRefModifyItem* lasso_idwsf2_dstref_modify_item_new_full(
 	const gchar *item_xpath, const gchar *item_id, xmlNode *new_data,
-	const gboolean overrideAllowed);
+	gboolean overrideAllowed);
 
 #ifdef __cplusplus
 }
