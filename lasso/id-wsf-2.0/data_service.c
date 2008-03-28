@@ -549,7 +549,7 @@ static void set_xml_string(xmlNode **xmlnode, const char* string)
 
 gint
 lasso_idwsf2_data_service_add_modify_item(LassoIdWsf2DataService *service, const gchar *item_xpath,
-	const gchar *item_id, const gchar *new_data, const gboolean overrideAllowed)
+	const gchar *item_id, const gchar *new_data, gboolean overrideAllowed)
 {
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoIdWsf2DstRefModify *modify;

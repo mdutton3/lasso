@@ -102,7 +102,7 @@ LASSO_EXPORT gint lasso_idwsf2_data_service_init_modify(LassoIdWsf2DataService *
 
 LASSO_EXPORT gint lasso_idwsf2_data_service_add_modify_item(
 	LassoIdWsf2DataService *service, const gchar *item_xpath, const gchar *item_id,
-	const gchar *new_data, const gboolean overrideAllowed);
+	const gchar *new_data, gboolean overrideAllowed);
 
 LASSO_EXPORT gint lasso_idwsf2_data_service_process_modify_msg(LassoIdWsf2DataService *service,
 	const gchar *message);
