@@ -961,6 +961,8 @@ dnl bindings/python/Makefile
 dnl bindings/python/tests/Makefile
 dnl bindings/java/Makefile
 dnl bindings/php5/Makefile
+dnl bindings/php5/examples/Makefile
+dnl bindings/php5/tests/Makefile
 dnl ])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `
