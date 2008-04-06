@@ -229,7 +229,8 @@ lasso_login_build_assertion(LassoLogin *login,
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID,
 			profile->remote_providerID, notBefore, notOnOrAfter));
 
-	if (strcmp(login->nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME) == 0) {
+	if (strcmp(login->nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME) == 0 ||
+			federation == NULL) {
 		/* if NameIDPolicy is 'onetime', don't use a federation */
 		nameIdentifier = lasso_saml_name_identifier_new();
 		nameIdentifier->content = lasso_build_unique_id(32);
