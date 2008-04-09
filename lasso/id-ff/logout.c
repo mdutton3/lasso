@@ -309,10 +309,11 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 {
 	LassoProfile      *profile;
 	LassoProvider     *remote_provider;
-	LassoSamlNameIdentifier *nameIdentifier;
+	LassoSamlNameIdentifier *nameIdentifier = NULL;
+	LassoSaml2EncryptedElement *encryptedNameIdentifier = NULL;
 	LassoNode *assertion_n, *name_identifier_n;
 	LassoSamlAssertion *assertion;
-	LassoSamlSubjectStatementAbstract *subject_statement;
+	LassoSamlSubjectStatementAbstract *subject_statement = NULL;
 	LassoFederation   *federation = NULL;
 	gboolean           is_http_redirect_get_method = FALSE;
 	LassoSession *session;
@@ -330,7 +331,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 
 	/* get the remote provider id
 	   If remote_providerID is NULL, then get the first remote provider id in session */
-        g_free(profile->remote_providerID);
+	g_free(profile->remote_providerID);
 	if (remote_providerID == NULL) {
 		profile->remote_providerID = lasso_session_get_provider_index(session, 0);
 	} else {
@@ -369,19 +370,21 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 
 	/* if format is one time, then get name identifier from assertion,
 	   else get name identifier from federation */
-	subject_statement = NULL;
-	nameIdentifier = NULL;
 	if (LASSO_IS_SAML_SUBJECT_STATEMENT_ABSTRACT(assertion->AuthenticationStatement)) {
 		subject_statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
 				assertion->AuthenticationStatement);
 		if (subject_statement && subject_statement->Subject) {
 			nameIdentifier = subject_statement->Subject->NameIdentifier;
+			encryptedNameIdentifier = subject_statement->Subject->EncryptedNameIdentifier;
 		}
 	}
 
+	/* FIXME: Should first decrypt the EncryptedNameIdentifier */
 
-	if (nameIdentifier && strcmp(nameIdentifier->Format,
-				LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME) != 0) {
+	if ((nameIdentifier && strcmp(nameIdentifier->Format,
+				LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME) != 0)
+				|| encryptedNameIdentifier) {
+
 		if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
 			return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 		}
@@ -463,6 +466,8 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 				LASSO_SIGNATURE_TYPE_NONE,
 				0);
 	}
+
+	/* FIXME: Should encrypt nameIdentifier in the request here */
 
 	if (lasso_provider_get_protocol_conformance(remote_provider) < LASSO_PROTOCOL_LIBERTY_1_2) {
 		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion = 1;
