@@ -2,7 +2,7 @@ README for Lasso Integration Tests
 ==================================
 
 Requirements:
- - twill (no Debian packages)
+ - twill (apt-get install python-twill)
  - nose (apt-get install python-nose)
  - Authentic & LCS from Subversion and CVS
 
