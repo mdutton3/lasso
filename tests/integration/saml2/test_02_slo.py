@@ -63,7 +63,6 @@ fv 1 password fred
 submit
 url http://localhost:10002
 go http://localhost:10001
-save_html /tmp/a1.html
 fv 2 binding SOAP
 fv 2 slo 'Single Logout'
 submit 'Single Logout'
