@@ -1375,6 +1375,22 @@ class_init(LassoNodeClass *class)
 	class->node_data = NULL;
 }
 
+static void
+base_class_finalize(LassoNodeClass *class)
+{
+    if (class->node_data) {
+        LassoNodeClassData *data = class->node_data;
+
+        if (data->ns) {
+            xmlFreeNs(data->ns);
+        }
+        if (data->node_name) {
+            g_free(data->node_name);
+        }
+        g_free(class->node_data);
+    }
+}
+
 GType
 lasso_node_get_type()
 {
@@ -1384,7 +1400,7 @@ lasso_node_get_type()
 		static const GTypeInfo this_info = {
 			sizeof (LassoNodeClass),
 			NULL,
-			NULL,
+			(GBaseFinalizeFunc) base_class_finalize,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
