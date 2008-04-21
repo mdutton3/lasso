@@ -56,7 +56,7 @@ struct _LassoSamlp2AttributeQuery {
 
 	/*< public >*/
 	/* elements */
-	LassoSaml2Attribute *Attribute;
+	GList *Attribute; /* of LassoSaml2Attribute */
 };
 
 
