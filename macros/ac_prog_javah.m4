@@ -39,5 +39,5 @@ changequote([, ])dnl
                AC_MSG_WARN([unable to include <jni.h>]))
     CPPFLAGS="$ac_save_CPPFLAGS"])
 else
- AC_MSG_ERROR([no acceptable Javah compiler found in \$PATH])
+true
 fi])

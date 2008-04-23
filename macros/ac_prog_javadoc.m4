@@ -48,6 +48,6 @@ if test "x$JAVAPREFIX" = x; then
 else
         test "x$JAVADOC" = x && AC_CHECK_PROGS(JAVADOC, javadoc, $JAVAPREFIX)
 fi
-test "x$JAVADOC" = x && AC_MSG_ERROR([no acceptable javadoc generator found in \$PATH])
+true
 AC_PROVIDE([$0])dnl
 ])

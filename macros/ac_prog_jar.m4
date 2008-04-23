@@ -47,6 +47,6 @@ if test "x$JAVAPREFIX" = x; then
 else
         test "x$JAR" = x && AC_CHECK_PROGS(JAR, jar, $JAVAPREFIX)
 fi
-test "x$JAR" = x && AC_MSG_ERROR([no acceptable jar program found in \$PATH])
+true
 AC_PROVIDE([$0])dnl
 ])

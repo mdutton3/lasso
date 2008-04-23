@@ -671,21 +671,23 @@ AC_ARG_WITH(zlib,
     LDFLAGS="${LDFLAGS} -L$withval/lib"
   fi
 ]) 
+saved_LIB=$LIBS
+LIBS=
 AC_CHECK_HEADERS(zlib.h,
-    AC_CHECK_LIB(z, gzread,[
+    AC_SEARCH_LIBS(gzread, [z zlib1],[
         AC_DEFINE([HAVE_LIBZ], [], [Have compression library])
         if test "x${Z_DIR}" != "x"; then
             Z_CFLAGS="-I${Z_DIR}/include"
-            Z_LIBS="-L${Z_DIR}/lib -lz"
+            Z_LIBS="-L${Z_DIR}/lib $LIBS"
             [case ${host} in
                 *-*-solaris*)
-                    Z_LIBS="-L${Z_DIR}/lib -R${Z_DIR}/lib -lz"
+                    Z_LIBS="-L${Z_DIR}/lib -R${Z_DIR}/lib $LIBS"
                     ;;
             esac]
         else
-            Z_LIBS="-lz"
+            Z_LIBS="$LIBS"
         fi]))
-
+LIBS=$saved_LIB
 test "z$Z_LIBS" != "z" || AC_MSG_ERROR(missing zlib)
 
 AC_SUBST(Z_CFLAGS)
