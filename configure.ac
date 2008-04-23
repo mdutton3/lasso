@@ -474,12 +474,6 @@ AC_ARG_ENABLE(php5-force, [  --enable-php5-force     always enable of the PHP 5 
               [ENABLE_PHP5_FORCE="yes"],
               [ENABLE_PHP5_FORCE="no"])
 
-AC_ARG_WITH(php5-config,
-            [  --with-php5-config=(PHP5_CONFIG)      Specify full path to php-config5.])
-
-AC_ARG_WITH(php5-extension-dir,
-            [  --with-php5-extension-dir=(PHP5_EXTENSION_DIR)      Specify full path to php 5 extension dir.],
-            [PHP5_EXTENSION_DIR="$withval"],[PHP5_EXTENSION_DIR=])
 
 dnl Check if user passed a specific php-config program.
 if test "X$with_php5_config" != "X" ; then
@@ -503,12 +497,29 @@ else
   PHP5_UNPREFIXED_EXTENSION_DIR=
   PHP5_PREFIX=
 fi
+AC_ARG_WITH(php5-config,
+            [  --with-php5-config=(PHP5_CONFIG)      Specify full path to php-config5.])
+
+AC_ARG_WITH(php5-extension-dir,
+            [  --with-php5-extension-dir=(PHP5_EXTENSION_DIR)      Specify full path to php 5 extension dir.],
+            [PHP5_EXTENSION_DIR="$withval"],[PHP5_EXTENSION_DIR=`$PHP5_CONFIG --extension-dir`])
+
+AC_ARG_WITH(php5-include-dir,
+            [  --with-php5-include-dir=(PHP5_INCLUDE_DIR)      Specify full path to php 5 include dir.],
+            [PHP5_INCLUDE_DIR="$withval"],[PHP5_INCLUDE_DIR=/usr/share/php])
+
+AC_ARG_WITH(php5-config-dir,
+            [  --with-php5-config-dir=(PHP5_CONFIG_DIR)      Specify full path to php 5 config dir.],
+            [PHP5_CONFIG_DIR="$withval"],[PHP5_CONFIG_DIR=${sysconfdir}])
+
 AC_SUBST(PHP5_INCLUDES)
 AC_SUBST(PHP5_LDFLAGS)
 AC_SUBST(PHP5_LIBS)
 AC_SUBST(PHP5_UNPREFIXED_EXTENSION_DIR)
 AC_SUBST(PHP5_EXTENSION_DIR)
 AC_SUBST(PHP5_PREFIX)
+AC_SUBST(PHP5_INCLUDE_DIR)
+AC_SUBST(PHP5_CONFIG_DIR)
 
 dnl Check for expat
 have_expat_include=no
@@ -957,15 +968,15 @@ win32/nsis/lasso-full.nsi
 win32/nsis/lasso-lite.nsi
 win32/nsis/python.nsi
 ])
-dnl AC_OUTPUT([
-dnl bindings/Makefile
-dnl bindings/python/Makefile
-dnl bindings/python/tests/Makefile
-dnl bindings/java/Makefile
-dnl bindings/php5/Makefile
-dnl bindings/php5/examples/Makefile
-dnl bindings/php5/tests/Makefile
-dnl ])
+AC_OUTPUT([
+bindings/Makefile
+bindings/python/Makefile
+bindings/python/tests/Makefile
+bindings/java/Makefile
+bindings/php5/Makefile
+bindings/php5/examples/Makefile
+bindings/php5/tests/Makefile
+])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `
 AC_MSG_RESULT(
