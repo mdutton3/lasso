@@ -1152,8 +1152,8 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
-#ifndef SWIG_PHP_RENAMES
-  /* XXX: SWIG 1.3.31 fails to compile the PHP binding it generates if this
+#ifndef SWIGPHP4
+  /* XXX: SWIG 1.3.31 fails to compile the PHP 4 binding it generates if this
    * part is present */
 
 #if !defined(SWIG_PHP_RENAMES) && !defined(SWIGCSHARP) && !defined(SWIGJAVA)
@@ -1162,7 +1162,7 @@ typedef struct {
 #endif
 	char *Abstract;
 
-#endif /* !SWIG_PHP_RENAMES */
+#endif /* !SWIG_PHP4 */
 
 #ifndef SWIG_PHP_RENAMES
 	%rename(entryId) entryID;
