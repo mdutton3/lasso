@@ -354,6 +354,7 @@ static LassoNodeClass *parent_class = NULL;
 xmlSecKey*
 lasso_provider_get_public_key(LassoProvider *provider)
 {
+        g_return_val_if_fail(provider, NULL);
 	return provider->private_data->public_key;
 }
 
