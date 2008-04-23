@@ -510,7 +510,7 @@ AC_ARG_WITH(php5-include-dir,
 
 AC_ARG_WITH(php5-config-dir,
             [  --with-php5-config-dir=(PHP5_CONFIG_DIR)      Specify full path to php 5 config dir.],
-            [PHP5_CONFIG_DIR="$withval"],[PHP5_CONFIG_DIR=${sysconfdir}])
+            [PHP5_CONFIG_DIR="$withval"],[PHP5_CONFIG_DIR=${sysconfdir}/php5/conf.d/])
 
 AC_SUBST(PHP5_INCLUDES)
 AC_SUBST(PHP5_LDFLAGS)
