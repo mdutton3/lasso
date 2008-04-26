@@ -15,7 +15,7 @@ dnl - Second number is the number of supported API versions where API version >
 dnl   first number.
 dnl - Third number is the current API version implementation version number.
 dnl See libtool explanations about current, age and release, later in this file.
-AC_INIT([Liberty Alliance Single Sign On], 2.1.1, lasso-devel@lists.labs.libre-entreprise.org)
+AC_INIT([Liberty Alliance Single Sign On], 2.1.98, lasso-devel@lists.labs.libre-entreprise.org)
 dnl Check if autoconf ver > 2.53
 AC_PREREQ(2.53)
 dnl Perform only subset commands and variable relevant to the host type.
@@ -27,7 +27,7 @@ dnl Copy stamp REVISIO-INFO in the configure script.
 AC_REVISION($Revision$)
 
 dnl Run many macros mostly needed by configure.ac.
-AM_INIT_AUTOMAKE(lasso, 2.1.1)
+AM_INIT_AUTOMAKE(lasso, 2.1.98)
 dnl Create rules to automaticaly regenerate the config header.
 AM_CONFIG_HEADER(lasso/lasso_config.h)
 dnl Add --enable-maintainer-mode option to configure.
@@ -178,7 +178,7 @@ dnl - interfaces removed -> AGE = 0
 # m = a
 # r = r
 current=`expr $VERSION_MAJOR + $VERSION_MINOR`
-LASSO_VERSION_INFO="8:1:5"
+LASSO_VERSION_INFO="9:0:6"
 AC_SUBST(LASSO_VERSION_INFO)
 
 dnl Compute the minimal supported ABI version for Win32 scripts and resources files.
@@ -417,8 +417,9 @@ if test "X$PHP4_CONFIG" != "X" ; then
   PHP4_INCLUDES=`$PHP4_CONFIG --includes`
   PHP4_LDFLAGS=`$PHP4_CONFIG --ldflags`
   PHP4_LIBS=`$PHP4_CONFIG --libs`
-  PHP4_UNPREFIXED_EXTENSION_DIR=`$PHP4_CONFIG --extension-dir | $SED 's/\/usr//g'`
   PHP4_PREFIX=`$PHP4_CONFIG --prefix`
+  PHP4_QUOTED_PREFIX=$(echo $PHP4_PREFIX | $SED 's/\//\\\//g')
+  PHP4_UNPREFIXED_EXTENSION_DIR=$($PHP4_CONFIG --extension-dir | $SED "s/$PHP4_QUOTED_PREFIX//g")
 else
   # We assume PHP are in /usr/local directory.
   if test $MINGW -eq 1; then 
@@ -446,7 +447,7 @@ else
 fi
   
 if test x$have_expat_lib = xno; then
-    enable_php4=no
+    enable_php4="no (missing expat)"
 fi
 
 AC_MSG_CHECKING(for PHP 4 development files)
@@ -470,6 +471,9 @@ dnl Check if php is explicitly enabled.
 AC_ARG_ENABLE(php5, [  --enable-php5          enable the PHP 5 binding],,
               enable_php5="yes")
 
+AC_ARG_WITH(php5-config,
+            [  --with-php5-config=(PHP5_CONFIG)      Specify full path to php-config5.])
+
 AC_ARG_ENABLE(php5-force, [  --enable-php5-force     always enable of the PHP 5 binding (win32)],
               [ENABLE_PHP5_FORCE="yes"],
               [ENABLE_PHP5_FORCE="no"])
@@ -484,8 +488,9 @@ if test "X$PHP5_CONFIG" != "X" ; then
   PHP5_INCLUDES=`$PHP5_CONFIG --includes`
   PHP5_LDFLAGS=`$PHP5_CONFIG --ldflags`
   PHP5_LIBS=`$PHP5_CONFIG --libs`
-  PHP5_UNPREFIXED_EXTENSION_DIR=`$PHP5_CONFIG --extension-dir | $SED 's/\/usr//g'`
   PHP5_PREFIX=`$PHP5_CONFIG --prefix`
+  PHP5_QUOTED_PREFIX=$(echo $PHP5_PREFIX | $SED 's/\//\\\//g')
+  PHP5_UNPREFIXED_EXTENSION_DIR=$($PHP5_CONFIG --extension-dir | $SED "s/$PHP5_QUOTED_PREFIX//g")
 else
   # We assume PHP are in /usr/local directory.
   if test $MINGW -eq 1; then 
@@ -497,16 +502,10 @@ else
   PHP5_UNPREFIXED_EXTENSION_DIR=
   PHP5_PREFIX=
 fi
-AC_ARG_WITH(php5-config,
-            [  --with-php5-config=(PHP5_CONFIG)      Specify full path to php-config5.])
-
-AC_ARG_WITH(php5-extension-dir,
-            [  --with-php5-extension-dir=(PHP5_EXTENSION_DIR)      Specify full path to php 5 extension dir.],
-            [PHP5_EXTENSION_DIR="$withval"],[PHP5_EXTENSION_DIR=`$PHP5_CONFIG --extension-dir`])
 
 AC_ARG_WITH(php5-include-dir,
             [  --with-php5-include-dir=(PHP5_INCLUDE_DIR)      Specify full path to php 5 include dir.],
-            [PHP5_INCLUDE_DIR="$withval"],[PHP5_INCLUDE_DIR=/usr/share/php])
+            [PHP5_INCLUDE_DIR="$withval"],[PHP5_INCLUDE_DIR=${datadir}/php])
 
 AC_ARG_WITH(php5-config-dir,
             [  --with-php5-config-dir=(PHP5_CONFIG_DIR)      Specify full path to php 5 config dir.],
@@ -793,7 +792,7 @@ if test "z$PKG_CONFIG_PATH" != "z"; then
     export PKG_CONFIG_PATH
 fi
 
-PKG_CHECK_MODULES(LASSO, glib-2.0 >= 2.4.0 gobject-2.0 >= 2.4.0 libxml-2.0 libxslt xmlsec1 >= 1.2.6 xmlsec1-openssl >= 1.2.6 openssl)
+PKG_CHECK_MODULES(LASSO, glib-2.0 >= 2.4.0 gobject-2.0 >= 2.4.0 libxml-2.0 xmlsec1 >= 1.2.6 xmlsec1-openssl >= 1.2.6 openssl)
 
 AC_ARG_WITH(sasl2, [  --with-sasl2[=PFX]         Use Cyrus SASL library version 2 for WSF-Auth])
 if test "x$enable_wsf" = "xyes"; then
@@ -967,15 +966,6 @@ win32/nsis/lasso-deps.nsi
 win32/nsis/lasso-full.nsi
 win32/nsis/lasso-lite.nsi
 win32/nsis/python.nsi
-])
-AC_OUTPUT([
-bindings/Makefile
-bindings/python/Makefile
-bindings/python/tests/Makefile
-bindings/java/Makefile
-bindings/php5/Makefile
-bindings/php5/examples/Makefile
-bindings/php5/tests/Makefile
 ])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `
