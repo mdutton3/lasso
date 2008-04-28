@@ -1734,9 +1734,20 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 	return LASSO_MESSAGE_FORMAT_UNKNOWN;
 }
 
-
 /**
  * lasso_node_class_add_snippets:
+ * @klass: object class
+ * @snippets: array of XmlSnippet (NULL terminated)
+ **/
+void
+lasso_node_class_add_snippets(LassoNodeClass *klass, struct XmlSnippet *snippets)
+{
+	klass->node_data->snippets = snippets;
+}
+
+
+/**
+ * lasso_node_class_add_query_snippets:
  * @klass: object class
  * @snippets: array of QuerySnippet (NULL terminated)
  **/
