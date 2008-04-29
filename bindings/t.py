@@ -7,14 +7,12 @@ class Binding:
     def __init__(self):
         self.constants = []
         self.structs = []
-        self.struct_names = {}
+        self.struct_dict = {}
         self.functions = []
 
     def display_structs(self):
         for struct in self.structs:
-            print struct
-            for m in struct.members:
-                print '  ', m
+            struct.display()
 
     def display_funcs(self):
         for func in self.functions:
@@ -32,21 +30,53 @@ class Binding:
                     break
         self.structs = new_order
 
+    def create_struct_dict(self):
+        for c in self.structs:
+            self.struct_dict[c.name] = c
+
+    def attach_methods(self):
+        self.create_struct_dict()
+        for f in self.functions[:]:
+            if len(f.args) == 0:
+                continue
+            if f.name.endswith('_new'):
+                # constructor for another class
+                continue
+            arg_type = f.args[0][0]
+            if arg_type[-1] == '*':
+                arg_type = arg_type[:-1]
+            c = self.struct_dict.get(arg_type)
+            if not c:
+                continue
+            c.methods.append(f)
+            self.functions.remove(f)
+
 
 class Struct:
     def __init__(self, name):
         self.name = name[1:] # skip leading _
         self.parent = None
         self.members = []
+        self.methods = []
 
     def __repr__(self):
         return '<Struct name:%s, childof:%s>' % (self.name, self.parent)
+
+    def display(self):
+        print self.__repr__()
+        for m in self.members:
+            print '  ', m
+        for m in self.methods:
+            print '  ', m
 
 
 class Function:
     return_type = None
     name = None
     args = None
+    
+    def __repr__(self):
+        return '%s %s %r' % (self.return_type, self.name, self.args)
 
 
 def normalise_var(type, name):
@@ -59,6 +89,7 @@ def normalise_var(type, name):
 def parse_header(header_file):
     global binding
 
+    struct_names = {}
     in_comment = False
     in_enum = False
     in_struct = None
@@ -98,11 +129,11 @@ def parse_header(header_file):
             if m:
                 struct_name = m.group(1)
                 if not (struct_name.endswith('Class') or struct_name.endswith('Private')):
-                    binding.struct_names[struct_name] = True
+                    struct_names[struct_name] = True
         elif line.startswith('struct _'):
             m = re.match('struct ([a-zA-Z0-9_]+)', line)
             struct_name = m.group(1)
-            if struct_name in binding.struct_names:
+            if struct_name in struct_names:
                 in_struct = Struct(struct_name)
                 in_struct_private = False
         elif in_struct:
@@ -134,9 +165,6 @@ def parse_header(header_file):
                 f = Function()
                 binding.functions.append(f)
                 return_type, function_name, args = m.groups()
-                if function_name is None:
-                    print line
-                    sys.exit(1)
                 f.return_type = return_type
                 f.name = function_name
                 f.args = []
@@ -170,8 +198,9 @@ def parse_headers():
 
 binding = Binding()
 parse_headers()
+binding.order_class_hierarchy()
+binding.attach_methods()
 
 import pprint
-binding.order_class_hierarchy()
 binding.display_structs()
-#binding.display_funcs()
+binding.display_funcs()
