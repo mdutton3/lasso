@@ -57,7 +57,7 @@ for base, dirnames, filenames in os.walk('../lasso/'):
     makefile_am = open(os.path.join(base, 'Makefile.am')).read()
     filenames = [x for x in filenames if x.endswith('.h') if x in makefile_am]
     for filename in filenames:
-        if filename == 'lasso_config.h':
+        if filename == 'lasso_config.h' or 'private' in filename:
             continue
         parse(os.path.join(base, filename))
 
