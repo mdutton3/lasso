@@ -98,6 +98,7 @@ def parse_header(header_file):
     in_enum = False
     in_struct = None
     in_struct_private = False
+    in_ifdef_zero = False
 
     lines = file(header_file).readlines()
     i = 0
@@ -112,6 +113,12 @@ def parse_header(header_file):
                 in_comment = False
         elif '/*' in line and not '*/' in line:
             in_comment = True
+        elif in_ifdef_zero:
+            # minimal support for code sections commented with #if 0
+            if line.startswith('#endif'):
+                in_ifdef_zero = False
+        elif line.startswith('#if 0'):
+            in_ifdef_zero = True
         elif in_enum:
             if line.startswith('}'):
                 in_enum = False

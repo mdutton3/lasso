@@ -162,11 +162,64 @@ _lasso.init()
         for m in self.binding_data.functions:
             self.generate_function_wrapper(m, fd)
         for c in self.binding_data.structs:
+            self.generate_member_wrapper(c, fd)
             for m in c.methods:
                 self.generate_function_wrapper(m, fd)
         self.generate_wrapper_list(fd)
         print >> fd, open('lang_python_wrapper_bottom.c').read()
 
+    def generate_member_wrapper(self, c, fd):
+        klassname = c.name
+        for m in c.members:
+            mname = format_as_python(m[1])
+            print >> fd, '''static PyObject*
+%s_%s_get(PyObject *self, PyObject *args)
+{''' % (klassname[5:], mname)
+            self.wrapper_list.append('%s_%s_get' % (klassname[5:], mname))
+
+            print >> fd, '    %s return_value;' % m[0]
+            print >> fd, '    PyObject* return_pyvalue;'
+            print >> fd, '    PyGObjectPtr* cvt_this;'
+            print >> fd, '    %s* this;' % klassname
+
+            print >> fd, '    if (! PyArg_ParseTuple(args, "O", &cvt_this)) return NULL;'
+            print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
+
+            print >> fd, '    return_value = this->%s;' % m[1];
+
+            if m[0] == 'gboolean':
+                print >> fd, '    if (return_value) {'
+                print >> fd, '        Py_INCREF(Py_True);'
+                print >> fd, '        return Py_True;'
+                print >> fd, '    } else {'
+                print >> fd, '        Py_INCREF(Py_False);'
+                print >> fd, '        return Py_False;'
+                print >> fd, '    }'
+            elif m[0] in ('int', 'gint'):
+                print >> fd, '    return_pyvalue = PyInt_FromLong(return_value);'
+                print >> fd, '    Py_INCREF(return_pyvalue);'
+                print >> fd, '    return return_pyvalue;'
+            elif m[0] in ('char*', 'gchar*'):
+                print >> fd, '    if (return_value) {'
+                print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
+                print >> fd, '        Py_INCREF(return_pyvalue);'
+                print >> fd, '        return return_pyvalue;'
+                print >> fd, '    } else {'
+                print >> fd, '        Py_INCREF(Py_None);'
+                print >> fd, '        return Py_None;'
+                print >> fd, '    }'
+            else:
+                print >> fd, '    if (return_value) {'
+                print >> fd, '        return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));'
+                print >> fd, '        Py_INCREF(return_pyvalue);'
+                print >> fd, '        return return_pyvalue;'
+                print >> fd, '    } else {'
+                print >> fd, '        Py_INCREF(Py_None);'
+                print >> fd, '        return Py_None;'
+                print >> fd, '    }'
+
+            print >> fd, '}'
+            print >> fd, ''
 
     def generate_function_wrapper(self, m, fd):
         name = m.name[6:]
