@@ -66,6 +66,11 @@ class WrapperSource:
 /* this file has been generated automatically; do not edit */
 
 #include <php.h>
+#undef PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
 #include <lasso/lasso.h>
 '''
         for h in self.binding_data.headers:
