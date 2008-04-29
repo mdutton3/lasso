@@ -459,8 +459,12 @@ register_constants(PyObject *d)
                 print >> fd, '    this->%s = g_strdup(value);' % m[1]
             elif parse_format == 'O' and arg_type == 'GList*':
                 elem_type = m[2].get('elem_type')
-                # XXX: raise appropriate exception (TypeError)
-                print >> fd, '    if (!PyTuple_Check(cvt_value)) return NULL;'
+                print >> fd, '''\
+    if (!PyTuple_Check(cvt_value)) {
+        PyErr_SetString(PyExc_TypeError, "value should be tuple");
+        return NULL;
+    }
+'''
                 if elem_type == 'char*':
                     print >> fd, '''\
     if (this->%(v)s) {
