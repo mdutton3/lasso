@@ -457,6 +457,12 @@ if WSF_SUPPORT:
                 print >> fd, '        if rc == 0:'
                 print >> fd, '            return'
                 print >> fd, '        raise Error.raise_on_rc(rc)'
+            elif m.return_type == 'GList*' and self.is_pygobject(m.return_type_qualifier):
+                print >> fd, '        value = _lasso.%s(self._cptr%s)' % (
+                        function_name, c_args)
+                print >> fd, '        if value is not None:'
+                print >> fd, '            value = tuple([x._cptr for x in value])'
+                print >> fd, '        return value'
             elif self.is_pygobject(m.return_type):
                 print >> fd, '        return cptrToPy(_lasso.%s(self._cptr%s))' % (
                         function_name, c_args)

@@ -25,7 +25,7 @@
   <!-- LassoIdentity -->
   <func name="lasso_identity_get_federation" return_owner="false" />
   <func name="lasso_identity_get_svc_md_ids" return_type_qualifier="char*"/>
-  <func name="lasso_identity_get_offerings">
+  <func name="lasso_identity_get_offerings" return_type_qualifier="LassoNode*">
     <param name="service_type" optional="true"/>
   </func>
   <!-- LassoServer -->
