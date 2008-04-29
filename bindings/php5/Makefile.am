@@ -12,7 +12,7 @@ php_includedir=@PHP5_INCLUDE_DIR@
 nodist_php_include_DATA = lasso.php
 
 php_configdir=@PHP5_CONFIG_DIR@
-php_config_DATA=lasso.ini
+php_config_DATA = lasso.ini
 
 lasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir) $(PHP5_INCLUDES)
 lasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version
@@ -37,3 +37,5 @@ clean-local:
 .PHONY: doc
 
 endif
+
+EXTRA_DIST = lasso.ini
