@@ -1,4 +1,4 @@
-SUBDIRS = python php5
+SUBDIRS = python php5 java
 
 EXTRA_DIST = bindings.py \
 	lang_python.py \

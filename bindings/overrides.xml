@@ -8,9 +8,10 @@
   <func name="lasso_profile_is_saml_query" rename="isSamlQuery"/>
   <func name="lasso_profile_get_request_type_from_soap_msg"
   	rename="getRequestTypeFromSoapMsg"/>
+  <func name="lasso_session_get_assertions" return_owner="true"/>
   <!-- LassoProfile -->
   <func name="lasso_profile_get_nameIdentifier"
-  	rename="lasso_profile_get_federation_nameIdentifier"
+  	rename="getFederationNameIdentifier"
 	return_owner="false" />
   <func name="lasso_profile_get_identity" return_owner="false" />
   <func name="lasso_profile_get_session" return_owner="false" />
@@ -57,6 +58,27 @@
   <func name="lasso_name_identifier_mapping_init_request">
     <param name="remote_providerID" optional="true" />
   </func>
+  <!-- Fonctions utilisant des types venant de la partie id-wsf de la librarie -->
+  <func name="lasso_server_get_service" skip="true">
+  </func>
+  <func name="lasso_login_set_encryptedResourceId" skip="true">
+  </func>
+  <func name="lasso_node_new_from_dump" skip="true"/>
+  <func name="lasso_node_new_from_soap" skip="true"/>
+  <func name="lasso_node_new_from_xmlNode" skip="true"/>
+  <func name="lasso_provider_new_from_dump" skip="true"/>
+  <func name="lasso_saml2_name_id_new_with_string" return_type="LassoSaml2NameID*"/>
+  <func name="lasso_saml2_action_new_with_string" return_type="LassoSaml2Action*"/>
+  <func name="lasso_misc_text_node_new_with_string" return_type="LassoMiscTextNode*"/>
+
+  <func name="lasso_lib_name_identifier_mapping_response_new_full" return_type="LassoLibNameIdentifierMappingResponse*"/>
+  <func name="lasso_lib_logout_request_new_full" return_type="LassoLibLogoutRequest*"/>
+  <func name="lasso_lib_logout_response_new_full" return_type="LassoLibLogoutResponse*"/>
+  <func name="lasso_lib_register_name_identifier_response_new_full" return_type="LassoLibRegisterNameIdentifierResponse*"/>
+  <func name="lasso_lib_federation_termination_notification_new_full" return_type="LassoLibFederationTerminationNotification*"/>
+  <func name="lasso_lib_name_identifier_mapping_request_new_full" return_type="LassoLibNameIdentifierMappingRequest*"/>
+  <func name="lasso_lib_register_name_identifier_request_new_full" return_type="LassoLibRegisterNameIdentifierRequest*"/>
+
   <!-- Exceptions -->
   <exception>
     <category name="Profile"/>

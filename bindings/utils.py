@@ -48,3 +48,55 @@ def format_underscore_as_camelcase(var):
     var = re.sub(r'([a-z])(ID)([A-Z]|$)', r'\1Id\3', var) # replace standing ID by Id
     return var
 
+
+
+def last(x):
+    return x[len(x)-1]
+
+def common_prefix(x,y):
+    max = min(len(x),len(y))
+    last = 0
+    for i in range(max):
+        if x[i] != y[i]:
+            return min(i,last+1)
+        if x[i] == '_':
+            last = i
+    return max
+
+def pgroup(group,prev):
+    level, l = group
+    i = 0
+    for x in l:
+        if i == 0:
+            prefix = prev
+        else:
+            prefix = level
+        if isinstance(x,tuple):
+            pgroup(x,prefix)
+        else:
+            print prefix * ' ' + x[prefix:]
+        i = i + 1
+
+def group(list):
+    list.sort()
+    pile = [(0,[])]
+    prev = ""
+    for x in list:
+        l, g = last(pile)
+        u = common_prefix(x,prev)
+        # Find the good level of insertion
+        while u < l:
+            pile.pop()
+            l, g = last(pile)
+        # Insert here
+        if u == l:
+            g.append(x)
+        elif u > l:
+            t = (u, [g.pop(),x])
+            g.append(t)
+            pile.append(t)
+        prev = x
+    return pile[0]
+            
+            
+

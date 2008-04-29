@@ -25,6 +25,7 @@
 import os
 import re
 import sys
+import utils
 
 from optparse import OptionParser
 import elementtree.ElementTree as ET
@@ -70,7 +71,7 @@ class BindingData:
         for f in self.functions[:]:
             if len(f.args) == 0:
                 continue
-            if f.name.endswith('_new'):
+            if f.name.endswith('_new') or '_new_' in f.name:
                 # constructor for another class
                 continue
             arg_type = f.args[0][0]
@@ -85,7 +86,13 @@ class BindingData:
                 f.docstring.parameters = f.docstring.parameters[1:]
             self.functions.remove(f)
 
-    def look_for_docstrings(self, srcdir):
+    def look_for_docstrings(self, srcdir, exception_doc):
+        def getfunc(name):
+            funcs = [f for f in self.functions if f.name == name]
+            if not funcs:
+                return None
+            else:
+                return funcs[0]
         regex = re.compile(r'\/\*\*\s(.*?)\*\*\/', re.DOTALL)
         for base, dirnames, filenames in os.walk(srcdir):
             if base.endswith('/.svn'):
@@ -102,12 +109,17 @@ class BindingData:
                 for d in docstrings:
                     docstring = '\n'.join([x[3:] for x in d.splitlines()])
                     function_name = docstring.splitlines(1)[0].strip().strip(':')
-                    func = [f for f in self.functions if f.name == function_name]
+                    func = getfunc(function_name)
                     if not func:
                         continue
-                    func = func[0]
                     func.docstring = DocString(func, docstring)
-                    
+        if exception_doc:
+            lines = os.popen('perl ../utility-scripts/error-analyzer.pl %s' % srcdir, 'r').readlines()
+            for line in lines:
+                elts = re.split(r' +',line.strip())
+                func = getfunc(elts[0])
+                if func:
+                    func.errors = elts[1:]
 
 
 class Struct:
@@ -136,6 +148,7 @@ class Function:
     docstring = None
     return_owner = True
     skip = False
+    errors = None
     
     def __repr__(self):
         return '%s %s %r' % (self.return_type, self.name, self.args)
@@ -159,6 +172,8 @@ class Function:
                 self.rename = func.attrib.get('rename')
             if func.attrib.get('return_owner'):
                 self.return_owner = (func.attrib.get('return_owner') != 'false')
+            if func.attrib.get('return_type'):
+                self.return_type = func.attrib.get('return_type')
             if func.attrib.get('skip') == 'true':
                 self.skip = True
 
@@ -283,7 +298,9 @@ def parse_header(header_file):
         elif line.startswith('struct _'):
             m = re.match('struct ([a-zA-Z0-9_]+)', line)
             struct_name = m.group(1)
+            #print struct_name
             if struct_name in struct_names:
+                #print struct_name
                 in_struct = Struct(struct_name)
                 in_struct_private = False
         elif in_struct:
@@ -352,7 +369,7 @@ def parse_header(header_file):
 def parse_headers(srcdir, enable_idwsf):
     wsf_prefixes = ['disco', 'dst', 'is', 'profile_service', 'discovery',
             'wsf', 'interaction', 'utility', 'sa', 'soap', 'authentication',
-            'wsse', 'sec', 'ds', 'idwsf2', 'wsf2', 'wsa', 'wsu']
+            'wsse', 'sec', 'idwsf2', 'wsf2', 'wsa', 'wsu']
 
     for base, dirnames, filenames in os.walk(srcdir):
         if base.endswith('/.svn'):
@@ -377,7 +394,6 @@ def parse_headers(srcdir, enable_idwsf):
         binding.headers.insert(0, 'lasso/xml/saml-2.0/saml2_assertion.h')
     binding.constants.append(('b', 'LASSO_WSF_ENABLED'))
 
-
 def main():
     global binding
 
@@ -385,6 +401,7 @@ def main():
     parser.add_option('-l', '--language', dest = 'language')
     parser.add_option('-s', '--src-dir', dest = 'srcdir', default = '../lasso/')
     parser.add_option('--enable-id-wsf', dest = 'idwsf', action = 'store_true')
+    parser.add_option('--enable-exception-docs', dest= 'exception_doc', action = 'store_true')
 
     options, args = parser.parse_args()
     if not options.language:
@@ -393,7 +410,7 @@ def main():
 
     binding = BindingData()
     parse_headers(options.srcdir, options.idwsf)
-    binding.look_for_docstrings(options.srcdir)
+    binding.look_for_docstrings(options.srcdir,options.exception_doc)
     binding.order_class_hierarchy()
     binding.attach_methods()
 
@@ -408,6 +425,11 @@ def main():
 
         php5_binding = lang_php5.Php5Binding(binding)
         php5_binding.generate()
+    elif options.language == 'java':
+        import lang_java
+
+	java_binding = lang_java.JavaBinding(binding)
+	java_binding.generate();
 
 if __name__ == '__main__':
     main()
