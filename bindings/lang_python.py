@@ -43,6 +43,7 @@ def format_underscore_as_py(var):
     def rep(s):
         return s.group(1)[0].upper() + s.group(1)[1:]
     var = re.sub(r'_([A-Za-z0-9]+)', rep, var)
+    var = re.sub(r'([a-z])(ID)([A-Z]|$)', r'\1Id\3', var) # replace standing ID by Id
     return var
 
 class PythonBinding:
@@ -252,9 +253,17 @@ import lasso
             except IndexError:
                 setter = None
             mname = re.match(r'lasso_.*_get_(\w+)', m.name).group(1)
+            mname = format_underscore_as_py(mname)
 
             print >> fd, '    def get_%s(self):' % mname
             print >> fd, '        return _lasso.%s(self._cptr)' % m.name[6:]
+
+            if mname[0] == mname[0].lower():
+                # API compatibility with SWIG bindings which didn't have
+                # accessors for those methods and used totally pythonified
+                # method name instead, such as getNextProviderId
+                print >> fd, '    get%s%s = get_%s' % (
+                        mname[0].upper(), mname[1:], mname)
             if setter:
                 print >> fd, '    def set_%s(self, value):' % mname
                 print >> fd, '        _lasso.%s(self._cptr, value)' % setter.name[6:]
