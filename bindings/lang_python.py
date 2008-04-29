@@ -57,7 +57,9 @@ import _lasso
 
 _lasso.init()
 
-def cptrToPy( cptr):
+def cptrToPy(cptr):
+    if cptr is None:
+        return None
     klass = getattr(lasso, cptr.typename)
     o = klass.__new__(klass)
     o._cptr = cptr
@@ -515,7 +517,11 @@ register_constants(PyObject *d)
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
 
             if self.is_pygobject(m[0]):
-                print >> fd, '    return_value = g_object_ref(this->%s);' % m[1];
+                print >> fd, '    if (this->%s) {' % m[1]
+                print >> fd, '        return_value = g_object_ref(this->%s);' % m[1];
+                print >> fd, '    } else {'
+                print >> fd, '        return_value = NULL;'
+                print >> fd, '    }'
             elif m[0] in ('char*', 'const char*', 'gchar*', 'const gchar*'):
                 print >> fd, '    return_value = g_strdup(this->%s);' % m[1]
             else:
@@ -644,7 +650,7 @@ register_constants(PyObject *d)
             print >> fd, '    if (return_value) {'
             print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
             print >> fd, '        g_free(return_value);'
-            #print >> fd, '        Py_INCREF(return_pyvalue);'
+            print >> fd, '        Py_INCREF(return_pyvalue);'
             print >> fd, '        return return_pyvalue;'
             print >> fd, '    } else {'
             print >> fd, '        Py_INCREF(Py_None);'
@@ -653,7 +659,7 @@ register_constants(PyObject *d)
         elif vtype in ('const char*', 'const gchar*'):
             print >> fd, '    if (return_value) {'
             print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
-            #print >> fd, '        Py_INCREF(return_pyvalue);'
+            print >> fd, '        Py_INCREF(return_pyvalue);'
             print >> fd, '        return return_pyvalue;'
             print >> fd, '    } else {'
             print >> fd, '        Py_INCREF(Py_None);'
@@ -713,7 +719,7 @@ register_constants(PyObject *d)
             # convert xmlNode* to strings
             print >> fd, '    if (return_value) {'
             print >> fd, '        return_pyvalue = get_pystring_from_xml_node(return_value);'
-            #print >> fd, '        Py_INCREF(return_pyvalue);'
+            print >> fd, '        Py_INCREF(return_pyvalue);'
             print >> fd, '        return return_pyvalue;'
             print >> fd, '    } else {'
             print >> fd, '        Py_INCREF(Py_None);'
@@ -727,7 +733,6 @@ register_constants(PyObject *d)
             print >> fd, '''\
     if (return_value) {
         return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));
-        /*Py_INCREF(return_pyvalue);*/
         return return_pyvalue;
     } else {
         Py_INCREF(Py_None);
