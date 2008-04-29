@@ -113,6 +113,46 @@
     <param name="select"/>
     <param name="item_id" optional="true"/>
   </func>
+  <!-- LassoDiscovery -->
+  <func name="lasso_discovery_init_insert">
+    <param name="new_offering"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_discovery_add_requested_service_type">
+    <param name="service_type"/>
+    <param name="option" optional="true"/>
+  </func>
+  <func name="lasso_discovery_init_query">
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_discovery_process_modify_msg">
+    <param name="message"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_discovery_process_query_msg">
+    <param name="message"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_discovery_get_service">
+    <param name="service_type" optional="true"/>
+  </func>
+  <!-- LassoDataService -->
+  <func name="lasso_data_service_init_query">
+    <param name="select" optional="true"/>
+    <param name="item_id" optional="true"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_data_service_process_query_msg">
+    <param name="message"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_data_service_get_answer">
+    <param name="select" optional="true"/>
+  </func>
+  <func name="lasso_data_service_process_modify_msg">
+    <param name="soap_msg"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
   <!-- Fonctions utilisant des types venant de la partie id-wsf de la librarie -->
   <func name="lasso_server_get_service" skip="true">
   </func>

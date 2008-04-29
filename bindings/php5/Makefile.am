@@ -1,4 +1,4 @@
-SUBDIRS = tests examples
+SUBDIRS = examples
 
 if PHP5_ENABLED
 INCLUDES = -I$(top_srcdir) \
