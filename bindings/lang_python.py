@@ -270,7 +270,10 @@ register_constants(PyObject *d)
             print >> fd, '    if (! PyArg_ParseTuple(args, "O", &cvt_this)) return NULL;'
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
 
-            print >> fd, '    return_value = this->%s;' % m[1];
+            if self.is_pygobject(m[0]):
+                print >> fd, '    return_value = g_object_ref(this->%s);' % m[1];
+            else:
+                print >> fd, '    return_value = this->%s;' % m[1];
 
             self.return_value(fd, m[0])
 
@@ -335,7 +338,7 @@ register_constants(PyObject *d)
         elif vtype in ('char*', 'gchar*'):
             print >> fd, '    if (return_value) {'
             print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
-            print >> fd, '        Py_INCREF(return_pyvalue);'
+            #print >> fd, '        Py_INCREF(return_pyvalue);'
             print >> fd, '        return return_pyvalue;'
             print >> fd, '    } else {'
             print >> fd, '        Py_INCREF(Py_None);'
@@ -346,14 +349,14 @@ register_constants(PyObject *d)
             print >> fd, '''\
     if (return_value) {
         return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));
-        Py_INCREF(return_pyvalue);
+        /*Py_INCREF(return_pyvalue);*/
         type_name = PyString_FromString(G_OBJECT_TYPE_NAME(return_value)+5);
-        Py_INCREF(type_name);
+        /*Py_INCREF(type_name);*/
         return_tuple = PyTuple_New(2);
         PyTuple_SetItem(return_tuple, 0, type_name);
         PyTuple_SetItem(return_tuple, 1, return_pyvalue);
         return_pyvalue = return_tuple;
-        Py_INCREF(return_pyvalue);
+        /*Py_INCREF(return_pyvalue);*/
         return return_pyvalue;
     } else {
         Py_INCREF(Py_None);

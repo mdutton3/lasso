@@ -14,6 +14,12 @@ static PyTypeObject PyGObjectPtrType;
 static void
 PyGObjectPtr_dealloc(PyGObjectPtr *self)
 {
+#ifdef LASSO_DEBUG
+	fprintf(stderr, "dealloc (%p ptr to %p (type:%s, rc:%d))\n",
+			self, self->obj,
+			G_OBJECT_TYPE_NAME(self->obj),
+			self->obj->ref_count);
+#endif
 	g_object_unref(self->obj);
 	self->ob_type->tp_free((PyObject*)self);
 }
