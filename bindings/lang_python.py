@@ -816,11 +816,11 @@ register_constants(PyObject *d)
             if arg[0] == 'GList*':
                 qualifier = arg[2].get('elem_type')
                 if qualifier == 'char*':
-                    print >> fd, '    free_list(&%s, g_free);' % arg[1]
+                    print >> fd, '    free_list(&%s, (GFunc)g_free);' % arg[1]
                 elif qualifier == 'xmlNode*':
-                    print >> fd, '    free_list(&%s, xmlFreeNode);' % arg[1]
+                    print >> fd, '    free_list(&%s, (GFunc)xmlFreeNode);' % arg[1]
                 elif qualifier == 'LassoNode':
-                    print >> fd, '    free_list(&%s, g_object_unref);' % arg[1]
+                    print >> fd, '    free_list(&%s, (GFunc)g_object_unref);' % arg[1]
 
         if not m.return_type:
             print >> fd, '    return noneRef();'
