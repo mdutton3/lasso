@@ -164,9 +164,25 @@ class %sError(%sError):
     def generate_footer(self, fd):
         print >> fd, '''
 
-WSF_SUPPORT = WSF_ENABLED # compatibility
-
 import lasso
+
+# backward compatibility with the SWIG binding
+
+WSF_SUPPORT = WSF_ENABLED
+
+def identity_get_provider_ids(self):
+    return self.federations.keys()
+Identity.providerIds = property(identity_get_provider_ids)
+
+def server_get_provider_ids(self):
+    return self.providers.keys()
+Server.providerIds = property(server_get_provider_ids)
+
+def session_get_provider_ids(self):
+    return self.assertions.keys()
+Session.providerIds = property(session_get_provider_ids)
+
+
 '''
 
     def generate_constants(self, fd):
