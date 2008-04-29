@@ -43,7 +43,46 @@ function test01() {
     echo "OK.\n";
 }
 
+function test02() {
+    echo "Get and set a GList of strings... ";
+
+    $requestAuthnContext = new LassoLibRequestAuthnContext();
+    $requestAuthnContext->authnContextClassRef = array(LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD);
+    assert(! is_null($requestAuthnContext->authnContextClassRef));
+    assert(sizeof($requestAuthnContext->authnContextClassRef) == 1);
+    assert($requestAuthnContext->authnContextClassRef[0] == LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD);
+
+    echo "OK.\n";
+}
+
+function test03() {
+    echo "Get and set 'providers' attribute (hashtable) of a server object... ";
+
+    $server = new LassoServer(
+        DATA_DIR . "sp1-la/metadata.xml",
+        DATA_DIR . "sp1-la/private-key-raw.pem",
+        NULL,
+        DATA_DIR . "sp1-la/certificate.pem");
+    $server->addProvider(
+        LASSO_PROVIDER_ROLE_IDP,
+        DATA_DIR . "idp1-la/metadata.xml",
+        DATA_DIR . "idp1-la/public-key.pem",
+        DATA_DIR . "idp1-la/certificate.pem");
+    assert(!is_null($server->providers));
+    assert($server->providers["https://idp1/metadata"]->providerId == "https://idp1/metadata");
+    $tmp_providers = $server->providers;
+    $server->providers = NULL;
+    assert(!$server->providers);
+    $server->providers = $tmp_providers;
+    assert($server->providers["https://idp1/metadata"]->providerId == "https://idp1/metadata");
+
+    echo "OK.\n";
+}
+
+
 lasso_init();
 test01();
+test02();
+test03();
 lasso_shutdown();
 

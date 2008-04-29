@@ -31,7 +31,7 @@ class WrapperSource:
         self.functions_list = []
 
     def is_object(self, t):
-        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*',
+        return t not in [None, 'char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*',
                 'xmlNode*', 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
@@ -98,7 +98,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 
     def return_value(self, vtype, options):
         if vtype is None:
-            print >> self.fd, '    RETURN_NULL();'
+            return
         elif vtype == 'gboolean':
             print >> self.fd, '    RETURN_BOOL(return_c_value);'
         elif vtype in ['int', 'gint'] + self.binding_data.enums:
@@ -134,10 +134,15 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
     for (item = g_list_first(return_c_value); item != NULL; item = g_list_next(item)) {
         add_next_index_string(return_value, item->data, 1);
     }
-    
 '''
         elif vtype in ('GList*',) and options.get('elem_type') != 'char*':
             print >> self.fd, '    RETURN_NULL();'
+        elif vtype in ('GHashTable*',) and options.get('elem_type') == 'char*':
+            print >> self.fd, '    RETURN_NULL();'
+        elif vtype in ('GHashTable*',) and options.get('elem_type') != 'char*':
+            print >> self.fd, '''\
+    set_array_from_hashtable_of_objects(return_c_value, &return_value);
+'''
         else:
             print >> self.fd, '''\
     if (return_c_value) {
@@ -225,6 +230,10 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         print >> self.fd, '}'
         print >> self.fd, ''
 
+    def generate_members(self, c):
+        for m_type, m_name, m_options in c.members:
+            self.generate_getter(c.name, m_type, m_name, m_options)
+            self.generate_setter(c.name, m_type, m_name, m_options)
 
     def generate_getter(self, klassname, m_type, m_name, m_options):
         if m_type == 'GList*' and m_options.get('elem_type') != 'char*':
@@ -302,14 +311,10 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             parse_tuple_args.append('&%s' % arg_name)
             print >> self.fd, '    %s %s;' % ('long', arg_name)
         # Must also handle lists of Objects
-        elif arg_type == 'GList*' and arg_options.get('elem_type') == 'char*':
+        elif arg_type in ('GList*', 'GHashTable*'):
             parse_tuple_format += 'a'
             parse_tuple_args.append('&zval_%s' % arg_name)
             print >> self.fd, '    %s zval_%s;' % ('zval*', arg_name)
-            print >> self.fd, '    %s %s_data;' % ('zval**', arg_name)
-            print >> self.fd, '    %s %s_hashtable;' % ('HashTable*', arg_name)
-            print >> self.fd, '    %s %s_pointer;' % ('HashPosition', arg_name)
-            print >> self.fd, '    %s %s_size;' % ('int', arg_name)
         else:
             parse_tuple_format += 'r'
             parse_tuple_args.append('&zval_%s' % arg_name)
@@ -351,7 +356,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             print >> self.fd, '    } else {'
             print >> self.fd, '        this->%s = NULL;' % m_name
             print >> self.fd, '    }'
-        elif parse_tuple_format == 'a':
+        elif arg_type == 'GList*' and arg_options.get('elem_type') == 'char*':
             if m_options.get('elem_type') == 'char*':
                 print >> self.fd, '''
     if (this->%(name)s) {
@@ -359,15 +364,12 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         g_list_foreach(this->%(name)s, (GFunc)g_free, NULL);
         g_list_free(this->%(name)s);
     }
-    %(name)s_hashtable = Z_ARRVAL_P(zval_%(name)s);
-    %(name)s_size = zend_hash_num_elements(%(name)s_hashtable);
-    for (zend_hash_internal_pointer_reset_ex(%(name)s_hashtable, &%(name)s_pointer);
-            zend_hash_get_current_data_ex(%(name)s_hashtable, (void**) &%(name)s_data, &%(name)s_pointer) == SUCCESS;
-            zend_hash_move_forward_ex(%(name)s_hashtable, &%(name)s_pointer)) {
-        if (Z_TYPE_PP(%(name)s_data) == IS_STRING) {
-            this->%(name)s = g_list_append(this->%(name)s, estrndup(Z_STRVAL_PP(%(name)s_data), Z_STRLEN_PP(%(name)s_data)));
-        }
-    }
+    this->%(name)s = get_list_from_array_of_strings(zval_%(name)s);
+''' % { 'name': m_name }
+        elif arg_type == 'GHashTable*' and arg_options.get('elem_type') != 'char*':
+            print >> self.fd, '''\
+    /* FIXME: Free the existing hashtable */
+    this->%(name)s = get_hashtable_from_array_of_objects(zval_%(name)s);
 ''' % { 'name': m_name }
         elif parse_tuple_format == 'r':
             print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%s, PhpGObjectPtr*, &zval_%s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % (m_name, m_name)
@@ -375,11 +377,6 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 
         print >> self.fd, '}'
         print >> self.fd, ''
-
-    def generate_members(self, c):
-        for m_type, m_name, m_options in c.members:
-            self.generate_getter(c.name, m_type, m_name, m_options)
-            self.generate_setter(c.name, m_type, m_name, m_options)
 
     def generate_functions_list(self):
         print >> self.fd, '''\

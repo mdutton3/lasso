@@ -30,8 +30,8 @@ class PhpCode:
         self.fd = fd
 
     def is_object(self, t):
-        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*',
-                'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
+        return t not in [None, 'char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*',
+                'xmlNode*', 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
         self.generate_header()
@@ -167,43 +167,38 @@ function cptrToPhp ($cptr) {
             options = m[2]
             
             # Getters
-            for m2 in klass.methods:
-                # If method is already defined in C, don't define it twice
-                if m2.rename:
-                    m2name = m2.rename
-                else:
-                    m2name = m2.name
-                if '_get_' in m2name:
-                    class_name = re.match(r'lasso_(.*)_get_\w+', m2name).group(1)
-                    attr_name = re.match(r'lasso_.*_get_(\w+)', m2name).group(1)
-                    if class_name and attr_name:
-                        class_name = 'Lasso' + class_name.capitalize()
-                        if class_name == klass.name and attr_name == mname:
-                            print >> sys.stderr, 'W: Bad function name : %s function prevents \
-writing a standard accessor for attribute "%s"' % (m2name, attr_name)
-                            break
+            print >> self.fd, '    protected function get_%s() {' % mname
+            if self.is_object(m[0]):
+                print >> self.fd, '        return cptrToPhp(%s_%s_get($this->_cptr));' % (
+                        klass.name, mname)
+            elif m[0] == 'GHashTable*':
+                print >> self.fd, '        $cptr_array = %s_%s_get($this->_cptr);' % (klass.name, mname)
+                if options.get('elem_type') != 'char*':
+                    print >> self.fd, '        $array = array();'
+                    print >> self.fd, '        foreach ($cptr_array as $key => $value) {'
+                    print >> self.fd, '            $array[$key] = cptrToPhp($value);'
+                    print >> self.fd, '        }'
+                print >> self.fd, '        return $array;'
             else:
-                print >> self.fd, '    protected function get_%s() {' % mname
-                if self.is_object(m[0]):
-                    print >> self.fd, '        return cptrToPhp(%s_%s_get($this->_cptr));' % (
-                            klass.name, mname)
-                else:
-                    print >> self.fd, '        return %s_%s_get($this->_cptr);' % (klass.name, mname)
-                print >> self.fd, '    }'
+                print >> self.fd, '        return %s_%s_get($this->_cptr);' % (klass.name, mname)
+            print >> self.fd, '    }'
 
             # Setters
-            for m2 in klass.methods:
-                # If method is already defined in C, don't define it twice
-                if m2.name == 'set_%s' % mname:
-                    break
+            print >> self.fd, '    protected function set_%s($value) {' % mname
+            if self.is_object(m[0]):
+                print >> self.fd, '        %s_%s_set($this->_cptr, $value->_cptr);' % (klass.name, mname)
+            elif m[0] == 'GHashTable*' and options.get('elem_type') != 'char*':
+                print >> self.fd, '        $cptr_array = array();'
+                print >> self.fd, '        if (!is_null($value)) {'
+                print >> self.fd, '            foreach ($value as $key => $item_value) {'
+                print >> self.fd, '                $cptr_array[$key] = $item_value->_cptr;'
+                print >> self.fd, '            }'
+                print >> self.fd, '        }'
+                print >> self.fd, '        %s_%s_set($this->_cptr, $cptr_array);' % (klass.name, mname)
             else:
-                print >> self.fd, '    protected function set_%s($value) {' % mname
-                if self.is_object(m[0]):
-                    print >> self.fd, '        %s_%s_set($this->_cptr, $value->_cptr);' % (klass.name, mname)
-                else:
-                    print >> self.fd, '        %s_%s_set($this->_cptr, $value);' % (klass.name, mname)
-                print >> self.fd, '    }'
-                print >> self.fd, ''
+                print >> self.fd, '        %s_%s_set($this->_cptr, $value);' % (klass.name, mname)
+            print >> self.fd, '    }'
+            print >> self.fd, ''
 
 
     def generate_methods(self, klass):
@@ -227,11 +222,21 @@ writing a standard accessor for attribute "%s"' % (m2name, attr_name)
             mname = re.match(r'lasso_.*_get_(\w+)', meth_name).group(1)
 
             print >> self.fd, '    protected function get_%s() {' % mname
-            print >> self.fd, '        return %s($this->_cptr);' % (meth_name)
+            if self.is_object(m.return_type):
+                print >> self.fd, '        $cptr = %s($this->_cptr);' % meth_name
+                print >> self.fd, '        if (! is_null($cptr)) {'
+                print >> self.fd, '            return cptrToPhp($cptr);'
+                print >> self.fd, '        }'
+                print >> self.fd, '        return null;'
+            else:
+                print >> self.fd, '        return %s($this->_cptr);' % meth_name
             print >> self.fd, '    }'
             if setter:
                 print >> self.fd, '    protected function set_%s($value) {' % mname
-                print >> self.fd, '        %s($this->_cptr, $value);' % (setter.name)
+                if self.is_object(m.return_type):
+                    print >> self.fd, '        %s($this->_cptr, $value->_cptr);' % setter.name
+                else:
+                    print >> self.fd, '        %s($this->_cptr, $value);' % setter.name
                 print >> self.fd, '    }'
             print >> self.fd, ''
 
@@ -360,13 +365,12 @@ class LassoError extends Exception {
         if (! class_exists($exception)) {
             $exception = "LassoError";
         }
-        throw new $exception(lasso_strerror($rc), $rc);
+        throw new $exception(strError($rc), $rc);
     }
 }
 '''
 
     def generate_footer(self):
         print >> self.fd, '''\
-?>
-'''
+?>'''
 

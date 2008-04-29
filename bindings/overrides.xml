@@ -42,6 +42,11 @@
     <param name="remote_providerID" optional="true"/>
     <param name="request_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
   </func>
+  <!-- LassoDefederation -->
+  <func name="lasso_defederation_init_notification">
+    <param name="remote_providerID" optional="true"/>
+    <param name="http_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
+  </func>
   <!-- LassoNameIdentifier -->
   <func name="lasso_name_identifier_mapping_init_request">
     <param name="remote_providerID" optional="true" />
