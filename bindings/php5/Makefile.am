@@ -5,10 +5,10 @@ INCLUDES = -I$(top_srcdir) \
 	-I$(top_builddir) \
 	$(SASL_CFLAGS)
 
-php_extensiondir=@PHP5_EXTENSION_DIR@
+php_extensiondir = ${prefix}@PHP5_UNPREFIXED_EXTENSION_DIR@
 php_extension_LTLIBRARIES = lasso.la
 
-php_includedir=@PHP5_INCLUDE_DIR@
+php_includedir = @PHP5_INCLUDE_DIR@
 nodist_php_include_DATA = lasso.php
 
 php_configdir=@PHP5_CONFIG_DIR@
