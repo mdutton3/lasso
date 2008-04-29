@@ -89,7 +89,7 @@ get_dict_from_hashtable_of_objects(GHashTable *value)
 {
 	GList *keys;
 	PyObject *dict;
-	char *item_value;
+	GObject *item_value;
 	PyObject *item;
 
 	dict = PyDict_New();
