@@ -35,7 +35,10 @@ except ImportError:
     try:
         import cElementTree as ET
     except ImportError:
-        import elementtree.ElementTree as ET
+        try:
+            import elementtree.ElementTree as ET
+        except ImportError:
+            import xml.etree.ElementTree as ET
 
 class BindingData:
     src_dir = os.path.dirname(__file__)
