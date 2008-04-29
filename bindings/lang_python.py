@@ -211,6 +211,7 @@ MiscTextNode.text_child = MiscTextNode.textChild
 NodeList = list
 StringList = list
 StringDict = dict
+registerIdWsf2DstService = registerIdwsf2DstService
 
 if WSF_SUPPORT:
     DiscoDescription_newWithBriefSoapHttpDescription = DiscoDescription.newWithBriefSoapHttpDescription
