@@ -341,6 +341,8 @@ register_constants(PyObject *d)
 
             if self.is_pygobject(m[0]):
                 print >> fd, '    return_value = g_object_ref(this->%s);' % m[1];
+            elif m[0] in ('char*', 'const char*', 'gchar*', 'const gchar*'):
+                print >> fd, '    return_value = g_strdup(this->%s);' % m[1]
             else:
                 print >> fd, '    return_value = this->%s;' % m[1];
 
@@ -360,7 +362,7 @@ register_constants(PyObject *d)
             arg_type = m[0]
             if m[0] in ('char*', 'const char*', 'gchar*', 'const gchar*'):
                 arg_type = arg_type.replace('const ', '')
-                parse_format = 's'
+                parse_format = 'z'
                 parse_arg = '&value'
                 print >> fd, '    %s value;' % arg_type
             elif arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
@@ -379,7 +381,8 @@ register_constants(PyObject *d)
 
             if parse_format == 'i':
                 print >> fd, '    this->%s = value;' % m[1]
-            elif parse_format == 's':
+            elif parse_format in ('s', 'z'):
+                print >> fd, '    if (this->%s) g_free(this->%s);' % (m[1], m[1])
                 print >> fd, '    this->%s = g_strdup(value);' % m[1]
             elif parse_format == 'O':
                 print >> fd, '    this->%s = (%s)g_object_ref(cvt_value->obj);' % (m[1], m[0])
