@@ -1,3 +1,4 @@
+import sys
 import re
 import string
 
@@ -178,7 +179,7 @@ import lasso
             if m.name == method_prefix + 'new_from_dump':
                 print >> fd, '    @classmethod'
                 print >> fd, '    def newFromDump(cls, dump):'
-                print >> fd, '         obj = cls()'
+                print >> fd, '         obj = cls.__new__(cls)'
                 print >> fd, '         obj._cptr = _lasso.%s(dump)[1]' % m.name[6:]
                 print >> fd, '         if obj._cptr is None:'
                 print >> fd, '             raise "XXX"'
@@ -244,7 +245,15 @@ import lasso
             for o in m.args[1:]:
                 arg_type, arg_name, arg_options = o
                 if arg_options.get('optional'):
-                    py_args.append('%s = None' % arg_name)
+                    if arg_options.get('default'):
+                        defval = arg_options.get('default')
+                        if defval.startswith('c:'): # constant
+                            py_args.append('%s = %s' % (arg_name, defval[8:]))
+                        else:
+                            print >> sys.stderr, "E: don't know what to do with %s" % defval
+                            sys.exit(1)
+                    else:
+                        py_args.append('%s = None' % arg_name)
                 else:
                     py_args.append(arg_name)
                 if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*') or \

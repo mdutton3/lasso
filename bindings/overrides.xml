@@ -9,6 +9,23 @@
     <param name="public_key" optional="true"/>
     <param name="ca_cert_chain" optional="true"/>
   </func>
+  <func name="lasso_login_init_authn_request">
+    <param name="remote_providerID" optional="true"/>
+    <param name="http_method" optional="true" default="c:LASSO_HTTP_METHOD_REDIRECT"/>
+  </func>
+  <func name="lasso_login_init_request">
+    <param name="response_http_method" optional="true" default="c:LASSO_HTTP_METHOD_REDIRECT"/>
+  </func>
+  <func name="lasso_login_init_idp_initiated_request">
+    <param name="remote_providerID" optional="true"/>
+  </func>
+  <func name="lasso_logout_init_request">
+    <param name="remote_providerID" optional="true"/>
+    <param name="request_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
+  </func>
+  <func name="lasso_name_identifier_mapping_init_request">
+    <param name="remote_providerID" optional="true" />
+  </func>
   <exception>
     <category name="Profile"/>
     <category name="Provider"/>

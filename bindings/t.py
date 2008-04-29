@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 
 import elementtree.ElementTree as ET
 
@@ -98,6 +99,8 @@ class Function:
                     continue
                 if param.attrib.get('optional') == 'true':
                     arg[2]['optional'] = True
+                if param.attrib.get('default'):
+                    arg[2]['default'] = param.attrib.get('default')
 
 
 def normalise_var(type, name):
