@@ -211,7 +211,9 @@ MiscTextNode.text_child = MiscTextNode.textChild
 NodeList = list
 StringList = list
 StringDict = dict
-DiscoDescription_newWithBriefSoapHttpDescription = DiscoDescription.newWithBriefSoapHttpDescription
+
+if WSF_SUPPORT:
+    DiscoDescription_newWithBriefSoapHttpDescription = DiscoDescription.newWithBriefSoapHttpDescription
 '''
 
     def generate_constants(self, fd):
