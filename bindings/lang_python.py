@@ -211,6 +211,7 @@ MiscTextNode.text_child = MiscTextNode.textChild
 NodeList = list
 StringList = list
 StringDict = dict
+DiscoDescription_newWithBriefSoapHttpDescription = DiscoDescription.newWithBriefSoapHttpDescription
 '''
 
     def generate_constants(self, fd):
@@ -272,7 +273,8 @@ StringDict = dict
                 print >> fd, ''
 
         for m in self.binding_data.functions:
-            if m.name == method_prefix + 'new_from_dump':
+            if m.name.startswith(method_prefix + 'new_'):
+                constructor_name = utils.format_as_camelcase(m.name[len(method_prefix):])
                 c_args = []
                 py_args = []
                 for o in m.args:
@@ -289,15 +291,13 @@ StringDict = dict
                 c_args = ', '.join(c_args)
                 py_args = ', ' + ', '.join(py_args)
                 print >> fd, '    @classmethod'
-                print >> fd, '    def newFromDump(cls%s):' % py_args
+                print >> fd, '    def %s(cls%s):' % (constructor_name, py_args)
                 print >> fd, '         obj = cls.__new__(cls)'
                 print >> fd, '         obj._cptr = _lasso.%s(%s)' % (m.name[6:], c_args)
                 print >> fd, '         if obj._cptr is None:'
-                print >> fd, '             raise "XXX"'
+                print >> fd, '             raise RuntimeError(\'lasso failed to create object\')'
                 print >> fd, '         return obj'
                 print >> fd, ''
-            elif m.name == method_prefix + 'new_full':
-                pass
 
         # create properties for members
         for m in clss.members:
