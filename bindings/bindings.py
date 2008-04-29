@@ -1,12 +1,33 @@
 #! /usr/bin/env python
+#
+# Lasso - A free implementation of the Liberty Alliance specifications.
+# 
+# Copyright (C) 2004-2007 Entr'ouvert
+# http://lasso.entrouvert.org
+#
+# Authors: See AUTHORS file in top-level directory.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 
 import os
 import re
 import sys
 
+from optparse import OptionParser
 import elementtree.ElementTree as ET
-
-import lang_python
 
 class BindingData:
     def __init__(self):
@@ -59,9 +80,9 @@ class BindingData:
             c.methods.append(f)
             self.functions.remove(f)
 
-    def look_for_docstrings(self):
+    def look_for_docstrings(self, srcdir):
         regex = re.compile(r'\/\*\*\s(.*?)\*\*\/', re.DOTALL)
-        for base, dirnames, filenames in os.walk('../lasso/'):
+        for base, dirnames, filenames in os.walk(srcdir):
             if base.endswith('/.svn'):
                 # ignore svn directories
                 continue
@@ -255,8 +276,8 @@ def parse_header(header_file):
         i += 1
 
 
-def parse_headers():
-    for base, dirnames, filenames in os.walk('../lasso/'):
+def parse_headers(srcdir):
+    for base, dirnames, filenames in os.walk(srcdir):
         if base.endswith('/.svn'):
             # ignore svn directories
             continue
@@ -273,15 +294,31 @@ def parse_headers():
         binding.headers.insert(0, 'lasso/xml/saml-2.0/saml2_assertion.h')
 
 
-binding = BindingData()
-parse_headers()
-binding.order_class_hierarchy()
-binding.look_for_docstrings()
-binding.attach_methods()
+def main():
+    global binding
 
-python_binding = lang_python.PythonBinding(binding)
-python_binding.generate()
+    parser = OptionParser()
+    parser.add_option('-l', '--language', dest = 'language')
+    parser.add_option('-s', '--src-dir', dest = 'srcdir', default = '../lasso/')
 
-import pprint
-#binding.display_structs()
-#binding.display_funcs()
+    options, args = parser.parse_args()
+    if not options.language:
+        parser.print_help()
+        sys.exit(1)
+
+    binding = BindingData()
+    parse_headers(options.srcdir)
+    binding.look_for_docstrings(options.srcdir)
+    binding.order_class_hierarchy()
+    binding.attach_methods()
+
+    if options.language == 'python':
+        import lang_python
+
+        python_binding = lang_python.PythonBinding(binding)
+        python_binding.generate()
+
+
+if __name__ == '__main__':
+    main()
+
