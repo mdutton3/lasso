@@ -182,7 +182,10 @@ function cptrToPhp ($cptr) {
 
             # Setters
             print >> self.fd, '    protected function set_%s($value) {' % mname
-            print >> self.fd, '        %s_%s_set($this->_cptr, $value);' % (klass.name, mname)
+            if self.is_object(m[0]):
+                print >> self.fd, '        %s_%s_set($this->_cptr, $value->_cptr);' % (klass.name, mname)
+            else:
+                print >> self.fd, '        %s_%s_set($this->_cptr, $value);' % (klass.name, mname)
             print >> self.fd, '    }'
             print >> self.fd, ''
 
@@ -262,7 +265,7 @@ function cptrToPhp ($cptr) {
                 print >> self.fd, '        } else if ($rc > 0) {' # recoverable error
                 print >> self.fd, '            return $rc;'
                 print >> self.fd, '        } else if ($rc < 0) {' # unrecoverable error
-                print >> self.fd, '            Error::throw_on_rc($rc);'
+                print >> self.fd, '            LassoError::throw_on_rc($rc);'
                 print >> self.fd, '        }'
             else:
                 print >> self.fd, '        return %s($this->_cptr%s);' % (m.name, c_args)
@@ -279,7 +282,7 @@ function cptrToPhp ($cptr) {
             done_cats.append(cat)
             parent_cat = exc_cat.attrib.get('parent', '')
             print >> self.fd, '''\
-class %sError extends %sError {}
+class Lasso%sError extends Lasso%sError {}
 ''' % (cat, parent_cat)
 
         exceptions_dict = {}
@@ -301,40 +304,34 @@ class %sError extends %sError {}
                     parent_cat = ''
 
                 print >> self.fd, '''\
-class %sError extends %sError {}
+class Lasso%sError extends Lasso%sError {}
 ''' % (cat, parent_cat)
 
             if detail not in exceptions_dict:
                 print >> self.fd, '''\
-class %sError extends %sError {
+class Lasso%sError extends Lasso%sError {
     protected $code = %s;
 }
 ''' % (detail, cat, c[1])
                 exceptions_dict[detail] = c[1]
 
         print >> self.fd, '''\
-class Error extends Exception {
-    protected $code = null;
+class LassoError extends Exception {
     protected static $exceptions_dict = array('''
 
         for k, v in exceptions_dict.items():
-            print >> self.fd, '        %s => "%sError",' % (v, k)
+            print >> self.fd, '        %s => "Lasso%sError",' % (v, k)
 
         print >> self.fd, '''\
     );
 
     public static function throw_on_rc($rc) {
         $exception = self::$exceptions_dict[$rc];
-        if (class_exists($exception)) {
-            throw new $exception();
-        } else {
-            throw new Exception();
+        if (! class_exists($exception)) {
+            $exception = "LassoError";
         }
+        throw new $exception(lasso_strerror($rc), $rc);
     }
-
-/*    public function __toString() {
-        return "<" . get_class($this) . "(" . $this->code . "): " . lasso_strerror($this->code) . ">";
-    } */
 }
 '''
 

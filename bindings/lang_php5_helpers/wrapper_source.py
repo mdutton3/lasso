@@ -137,7 +137,15 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
     } else {
         RETURN_NULL();
     }'''
-        elif vtype in ('GList*',):
+        elif vtype in ('GList*',) and options.get('elem_type') == 'char*':
+            print >> self.fd, '''\
+    array_init(return_value);
+    for (item = g_list_first(return_c_value); item != NULL; item = g_list_next(item)) {
+        add_next_index_string(return_value, item->data, 1);
+    }
+    
+'''
+        elif vtype in ('GList*',) and options.get('elem_type') != 'char*':
             print >> self.fd, '    RETURN_NULL();'
         else:
             print >> self.fd, '''\
@@ -223,26 +231,30 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         print >> self.fd, '}'
         print >> self.fd, ''
 
+
     def generate_getter(self, klassname, m_type, m_name, m_options):
+        if m_type == 'GList*' and m_options.get('elem_type') != 'char*':
+            print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('elem_type'))
+            return
+
+        function_name = '%s_%s_get' % (klassname, format_attribute(m_name))
         function_name = '%s_%s_get' % (klassname, utils.format_as_camelcase(m_name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
         self.functions_list.append(function_name)
 
-        # FIXME: must handle GLists and objects as well
-        if m_type  == "GList*":
-            print >> self.fd, '''\
-    RETURN_NULL();
-}
-'''
-            return
 
-        print >> self.fd, '    %s return_c_value;' % m_type
+        if self.is_object(m_type):
+            print >> self.fd, '    %s return_c_value = NULL;' % m_type
+        else:
+            print >> self.fd, '    %s return_c_value;' % m_type
         print >> self.fd, '    %s* this;' % klassname
         print >> self.fd, '    zval* zval_this;'
         print >> self.fd, '    PhpGObjectPtr *cvt_this;'
         if self.is_object(m_type):
             print >> self.fd, '    PhpGObjectPtr *self;'
+        elif m_type == 'GList*' and m_options.get('elem_type') == 'char*':
+            print >> self.fd, '    GList* item = NULL;'
         print >> self.fd, ''
         print >> self.fd, '''\
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zval_this) == FAILURE) {
@@ -254,30 +266,28 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 ''' % (klassname)
 
         if self.is_object(m_type):
-            print >> self.fd, '    return_c_value = g_object_ref(this->%s);' % m_name;
+            print >> self.fd, '    if (this->%s != NULL) {' % m_name
+            print >> self.fd, '        return_c_value = g_object_ref(this->%s);' % m_name
+            print >> self.fd, '    }'
         else:
-            print >> self.fd, '    return_c_value = this->%s;' % m_name;
+            print >> self.fd, '    return_c_value = this->%s;' % m_name
 
         self.return_value(m_type, m_options)
 
         print >> self.fd, '}'
         print >> self.fd, ''
 
+
     def generate_setter(self, klassname, m_type, m_name, m_options):
+        if m_type == 'GList*' and m_options.get('elem_type') != 'char*':
+            print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('elem_type'))
+            return
+
+        function_name = '%s_%s_set' % (klassname, format_attribute(m_name))
         function_name = '%s_%s_set' % (klassname, utils.format_as_camelcase(m_name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
         self.functions_list.append(function_name)
-
-        # FIXME: must handle GLists and objects as well
-        if m_type not in ['char*', 'const char*', 'gchar*', 'const gchar*'] \
-                         + ['int', 'gint', 'gboolean', 'const gboolean'] \
-                         + self.binding_data.enums :
-            print >> self.fd, '''\
-    RETURN_NULL();
-}
-'''
-            return
 
         print >> self.fd, '    %s* this;' % klassname
         print >> self.fd, '    zval* zval_this;'
@@ -288,6 +298,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         parse_tuple_args = []
         arg_type = m_type
         arg_name = m_name
+        arg_options = m_options
         if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
             arg_type = arg_type.replace('const ', '')
             parse_tuple_format += 's'
@@ -298,18 +309,27 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             parse_tuple_format += 'l'
             parse_tuple_args.append('&%s' % arg_name)
             print >> self.fd, '    %s %s;' % ('long', arg_name)
-        elif arg_type == 'GList*':
-            print >> sys.stderr, 'E: GList argument : ', m_name
-            print >> self.fd, '    %s %s = NULL;' % (arg_type, arg_name)
+        # Must also handle lists of Objects
+        elif arg_type == 'GList*' and arg_options.get('elem_type') == 'char*':
+            parse_tuple_format += 'a'
+            parse_tuple_args.append('&zval_%s' % arg_name)
+            print >> self.fd, '    %s zval_%s;' % ('zval*', arg_name)
+            print >> self.fd, '    %s %s_data;' % ('zval**', arg_name)
+            print >> self.fd, '    %s %s_hashtable;' % ('HashTable*', arg_name)
+            print >> self.fd, '    %s %s_pointer;' % ('HashPosition', arg_name)
+            print >> self.fd, '    %s %s_size;' % ('int', arg_name)
         else:
             parse_tuple_format += 'r'
             parse_tuple_args.append('&zval_%s' % arg_name)
-            print >> self.fd, '    %s %s = NULL;' % (arg_type, arg_name)
             print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', arg_name)
             print >> self.fd, '    %s cvt_%s = NULL;' % ('PhpGObjectPtr*', arg_name)
 
         if parse_tuple_args:
             parse_tuple_arg = parse_tuple_args[0]
+        else:
+            print >> self.fd, '}'
+            print >> self.fd, ''
+            return
 
         print >> self.fd, ''
         print >> self.fd, '''\
@@ -336,6 +356,24 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             print >> self.fd, '    } else {'
             print >> self.fd, '        this->%s = NULL;' % m_name
             print >> self.fd, '    }'
+        elif parse_tuple_format == 'a':
+            if m_options.get('elem_type') == 'char*':
+                print >> self.fd, '''
+    if (this->%(name)s) {
+        /* free existing list */
+        g_list_foreach(this->%(name)s, (GFunc)g_free, NULL);
+        g_list_free(this->%(name)s);
+    }
+    %(name)s_hashtable = Z_ARRVAL_P(zval_%(name)s);
+    %(name)s_size = zend_hash_num_elements(%(name)s_hashtable);
+    for (zend_hash_internal_pointer_reset_ex(%(name)s_hashtable, &%(name)s_pointer);
+            zend_hash_get_current_data_ex(%(name)s_hashtable, (void**) &%(name)s_data, &%(name)s_pointer) == SUCCESS;
+            zend_hash_move_forward_ex(%(name)s_hashtable, &%(name)s_pointer)) {
+        if (Z_TYPE_PP(%(name)s_data) == IS_STRING) {
+            this->%(name)s = g_list_append(this->%(name)s, estrndup(Z_STRVAL_PP(%(name)s_data), Z_STRLEN_PP(%(name)s_data)));
+        }
+    }
+''' % { 'name': m_name }
         elif parse_tuple_format == 'r':
             print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%s, PhpGObjectPtr *, &zval_%s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % (m_name, m_name)
             print >> self.fd, '    this->%s = (%s)cvt_%s->obj;' % (m_name, m_type, m_name)
