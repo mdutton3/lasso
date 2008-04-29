@@ -412,6 +412,8 @@ if WSF_SUPPORT:
                         defval = arg_options.get('default')
                         if defval.startswith('c:'): # constant
                             py_args.append('%s = %s' % (arg_name, defval[8:]))
+                        elif defval.startswith('b:'): # boolean
+                            py_args.append('%s = %s' % (arg_name, defval[2:]))
                         else:
                             print >> sys.stderr, "E: don't know what to do with %s" % defval
                             sys.exit(1)

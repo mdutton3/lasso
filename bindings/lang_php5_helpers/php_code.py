@@ -309,6 +309,8 @@ function getRequestTypeFromSoapMsg($mesg) {
                         defval = arg_options.get('default')
                         if defval.startswith('c:'): # constant
                             php_args.append('%s = %s' % (arg_name, defval[2:]))
+                        elif defval.startswith('b:'): # boolean
+                            php_args.append('%s = %s' % (arg_name, defval[2:]))
                         else:
                             print >> sys.stderr, "E: don't know what to do with %s" % defval
                             sys.exit(1)
