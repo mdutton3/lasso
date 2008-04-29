@@ -25,6 +25,9 @@
   <!-- LassoIdentity -->
   <func name="lasso_identity_get_federation" return_owner="false" />
   <func name="lasso_identity_get_svc_md_ids" return_type_qualifier="char*"/>
+  <func name="lasso_identity_get_offerings">
+    <param name="service_type" optional="true"/>
+  </func>
   <!-- LassoServer -->
   <func name="lasso_server_new">
     <param name="metadata" optional="true"/>
@@ -74,6 +77,10 @@
     <param name="remote_providerID" optional="true"/>
     <param name="request_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
   </func>
+  <!-- LassoLecp -->
+  <func name="lasso_lecp_init_authn_request">
+    <param name="remote_providerID" optional="true"/>
+  </func>
   <!-- LassoDefederation -->
   <func name="lasso_defederation_init_notification">
     <param name="remote_providerID" optional="true"/>
@@ -85,9 +92,26 @@
     <param name="new_name_id" optional="true"/>
     <param name="http_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
   </func>
-  <!-- LassoNameIdentifier -->
+  <!-- LassoNameIdentifierMapping -->
   <func name="lasso_name_identifier_mapping_init_request">
+    <param name="targetNamespace"/>
     <param name="remote_providerID" optional="true" />
+  </func>
+  <!-- LassoNameRegistration -->
+  <func name="lasso_name_registration_init_request">
+    <param name="remote_providerID"/>
+    <param name="http_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
+  </func>
+  <!-- LassoDiscoDescription -->
+  <func name="lasso_disco_description_new_with_BriefSoapHttpDescription">
+    <param name="securityMechID"/>
+    <param name="endpoint"/>
+    <param name="soapAction" optional="true"/>
+  </func>
+  <!-- LassoDstQueryItem -->
+  <func name="lasso_dst_query_item_new">
+    <param name="select"/>
+    <param name="item_id" optional="true"/>
   </func>
   <!-- Fonctions utilisant des types venant de la partie id-wsf de la librarie -->
   <func name="lasso_server_get_service" skip="true">
@@ -122,7 +146,25 @@
     <param name="soap_endpoint"/>
     <param name="svcMDID" optional="true"/>
   </func>
-
+  <func name="lasso_idwsf2_discovery_init_query">
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_idwsf2_discovery_get_service">
+    <param name="service_type" optional="true"/>
+  </func>
+  <!-- LassoIdWsf2DataService -->
+  <func name="lasso_idwsf2_data_service_get_attribute_node">
+    <param name="item_id" optional="true"/>
+  </func>
+  <func name="lasso_idwsf2_data_service_get_attribute_string">
+    <param name="item_id" optional="true"/>
+  </func>
+  <func name="lasso_idwsf2_data_service_add_modify_item">
+    <param name="item_xpath"/>
+    <param name="item_id"/>
+    <param name="new_data"/>
+    <param name="overrideAllowed" optional="true" default="b:False"/>
+  </func>
   <!-- Exceptions -->
   <exception>
     <category name="Profile"/>
