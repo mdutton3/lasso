@@ -76,6 +76,82 @@ static int get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Co
 //#define get_hash_of_objects_by_name(end,hash,key) get_hash_by_name(end,hash,key,(Converter)gobject_to_jobject_and_ref)
 
 /* Helper functions to access JNI interface functions */
+#if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 12)
+void
+g_hash_table_remove_all (GHashTable *hash_table)
+{
+    g_return_if_fail (hash_table != NULL);
+
+#ifndef G_DISABLE_ASSERT
+    if (hash_table->nnodes != 0)
+        hash_table->version++;
+#endif
+
+    g_hash_table_remove_all_nodes (hash_table, TRUE);
+    g_hash_table_maybe_resize (hash_table);
+}
+#endif
+#if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 14)
+  /* copy of private struct and g_hash_table_get_keys from GLib internals
+   * (as this function is useful but new in 2.14) */
+
+typedef struct _GHashNode  GHashNode;
+
+struct _GHashNode
+{
+  gpointer   key;
+  gpointer   value;
+  GHashNode *next;
+  guint      key_hash;
+};
+
+struct _GHashTable
+{
+  gint             size;
+  gint             nnodes;
+  GHashNode      **nodes;
+  GHashFunc        hash_func;
+  GEqualFunc       key_equal_func;
+  volatile gint    ref_count;
+  GDestroyNotify   key_destroy_func;
+  GDestroyNotify   value_destroy_func;
+};
+
+static GList *
+g_hash_table_get_keys (GHashTable *hash_table)
+{
+  GHashNode *node;
+  gint i;
+  GList *retval;
+
+  g_return_val_if_fail (hash_table != NULL, NULL);
+
+  retval = NULL;
+  for (i = 0; i < hash_table->size; i++)
+    for (node = hash_table->nodes[i]; node; node = node->next)
+      retval = g_list_prepend (retval, node->key);
+
+  return retval;
+}
+
+GList *
+g_hash_table_get_values (GHashTable *hash_table)
+{
+    GHashNode *node;
+    gint i;
+    GList *retval;
+
+    g_return_val_if_fail (hash_table != NULL, NULL);
+
+    retval = NULL;
+    for (i = 0; i < hash_table->size; i++)
+        for (node = hash_table->nodes[i]; node; node = node->next)
+            retval = g_list_prepend (retval, node->value);
+
+    return retval;
+}
+#endif
+
 static int
 gpointer_equal(gpointer p1, gpointer p2) {
     return p1 != p2;
@@ -87,9 +163,9 @@ new_object_with_gobject(JNIEnv *env, GObject *obj, char *clsName, jobject *jobj)
 
     g_error_if_fail(env && clsName && obj && G_IS_OBJECT(obj));
 
-    g_return_val_if_fail(cls = (*env)->FindClass(env, clsName), 0);
-    g_return_val_if_fail(mid = (*env)->GetMethodID(env, cls, "<init>", "(J)V"), 0);
-    g_return_val_if_fail(*jobj = (*env)->NewObject(env, cls, mid, PTR_TO_JLONG(obj)), 0);
+    g_return_val_if_fail((cls = (*env)->FindClass(env, clsName)), 0);
+    g_return_val_if_fail((mid = (*env)->GetMethodID(env, cls, "<init>", "(J)V")), 0);
+    g_return_val_if_fail((*jobj = (*env)->NewObject(env, cls, mid, PTR_TO_JLONG(obj))), 0);
     return 1;
 }
 /** Convert a java string to a jstring */
@@ -251,7 +327,6 @@ string_to_jstring_and_free(JNIEnv *env, char* str, jstring *jstr) {
 static int
 jstring_to_string(JNIEnv *env, jstring jstr, char **str) {
     const char *local_str;
-    char * ret;
 
     g_return_val_if_fail(jstring_to_local_string(env, jstr, &local_str), 0);
     if (local_str) {
@@ -285,7 +360,7 @@ xml_node_to_jstring(JNIEnv *env, xmlNode *xmlnode, jstring *jstr) {
         int ret = 1;
         xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
         xmlOutputBufferFlush(buf);
-        char *str;
+        xmlChar *str;
         if (buf->conv == NULL) {
             str = (char*)buf->buffer->content;
         } else {
@@ -351,7 +426,6 @@ create_class_name(char *dest, const char *typename) {
  * Throws if obj is not a GObject or if anyhting fail. */
 static int
 gobject_to_jobject_aux(JNIEnv *env, GObject *obj, gboolean doRef, jobject *jobj) {
-    jweak weakRef = NULL;
     jobject self = NULL;
     int ret = 1;
 
@@ -574,7 +648,6 @@ static int
 get_hash(JNIEnv *env, char *clsName, GHashTable *hashtable, Converter convert, jobjectArray *jarr)
 {
     jsize l,i;
-    jclass cls;
 
     GList *keys = NULL, *values = NULL;
     int ret = 1;
@@ -639,7 +712,8 @@ set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr)
             g_object_ref(gobj);
         }
     }
-    /** Remove old values, if hashtable is well initialized it should unref objects automatically. */
+    /** Remove old values, if hashtable is well initialized 
+     * it should unref objects automatically. */
     g_hashtable_remove_all(hashtable);
     /** Insert new values */
     if (jarr) {

@@ -170,7 +170,7 @@ public abstract interface LassoConstants {
 	       print >> fd, 'String ',
             elif c[0] == 'b':
                print >> fd, 'boolean ',
-	    print >> fd, '%s = LassoJNI.%s_get();' % (c[1], c[1])
+	    print >> fd, '%s = LassoJNI.%s_get();' % (c[1][6:], c[1])
 
     def generate_Constants_footer(self, fd):
         print >> fd, '}'
@@ -651,7 +651,7 @@ protected static native void destroy(long cptr);
 
 #
     def generate_exception_switch_case(self, fd, name, orig):
-        print >> fd, '        if (errorCode == LassoConstants.%s) {' % orig
+        print >> fd, '        if (errorCode == LassoConstants.%s) {' % orig[6:]
         print >> fd, '            throw new %s(errorCode);' % name
         print >> fd, '        }'
 
@@ -698,7 +698,7 @@ protected static native void destroy(long cptr);
             print >> fd, 'public class %s extends %s {' % (name,super)
             if not abstract:
                 print >> fd, '    public %s() {' % name
-                print >> fd, '       super(LassoConstants.%s);' % orig
+                print >> fd, '       super(LassoConstants.%s);' % orig[6:]
                 print >> fd, '    }'
             print >> fd, '    protected %s(int errorCode) {' % name
             print >> fd, '        super(errorCode);'

@@ -47,7 +47,7 @@ public class LoginTest extends TestCase {
             null,
             "../../../tests/data/idp1-la/certificate.pem");
         server.addProvider(
-            LassoConstants.LASSO_PROVIDER_ROLE_SP,
+            LassoConstants.PROVIDER_ROLE_SP,
             "../../../tests/data/sp1-la/metadata.xml",
             "../../../tests/data/sp1-la/public-key.pem",
             "../../../tests/data/ca1-la/certificate.pem");
@@ -62,7 +62,7 @@ public class LoginTest extends TestCase {
             null,
             "../../../tests/data/sp1-la/certificate.pem");
         server.addProvider(
-            LassoConstants.LASSO_PROVIDER_ROLE_IDP,
+            LassoConstants.PROVIDER_ROLE_IDP,
             "../../../tests/data/idp1-la/metadata.xml",
             "../../../tests/data/idp1-la/public-key.pem",
             "../../../tests/data/ca1-la/certificate.pem");
@@ -97,11 +97,11 @@ public class LoginTest extends TestCase {
         assertNotNull(spDump);
         sp = Server.newFromDump(spDump);
         spLogin = new Login(sp);
-        spLogin.initAuthnRequest("https://idp1/metadata", LassoConstants.LASSO_HTTP_METHOD_REDIRECT);
+        spLogin.initAuthnRequest("https://idp1/metadata", LassoConstants.HTTP_METHOD_REDIRECT);
         authnRequest = (LibAuthnRequest) spLogin.getRequest();
         authnRequest.setIsPassive(false);
-        authnRequest.setNameIdPolicy(LassoConstants.LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
-        authnRequest.setConsent(LassoConstants.LASSO_LIB_CONSENT_OBTAINED);
+        authnRequest.setNameIdPolicy(LassoConstants.LIB_NAMEID_POLICY_TYPE_FEDERATED);
+        authnRequest.setConsent(LassoConstants.LIB_CONSENT_OBTAINED);
         relayState = "fake";
         authnRequest.setRelayState(relayState);
         spLogin.buildAuthnRequestMsg();
@@ -120,15 +120,15 @@ public class LoginTest extends TestCase {
         userAuthenticated = true;
         userConsentObtained = false;
         idpLogin.validateRequestMsg(userAuthenticated, userConsentObtained);
-        authenticationMethod = LassoConstants.LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD;
+        authenticationMethod = LassoConstants.SAML_AUTHENTICATION_METHOD_PASSWORD;
         idpLogin.buildAssertion(
                 authenticationMethod,
                 null, // authenticationInstant
                 null, // reauthenticateOnOrAfter
                 null, // notBefore
                 null);// notOnOrAfter
-        assertEquals(LassoConstants.LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART, idpLogin.getProtocolProfile());
-        idpLogin.buildArtifactMsg(LassoConstants.LASSO_HTTP_METHOD_REDIRECT);
+        assertEquals(LassoConstants.LOGIN_PROTOCOL_PROFILE_BRWS_ART, idpLogin.getProtocolProfile());
+        idpLogin.buildArtifactMsg(LassoConstants.HTTP_METHOD_REDIRECT);
         idpIdentityDump = idpLogin.getIdentity().dump();
         assertNotNull(idpIdentityDump);
         idpSessionDump = idpLogin.getSession().dump();
@@ -139,7 +139,7 @@ public class LoginTest extends TestCase {
         nameIdentifier = ((SamlNameIdentifier)idpLogin.getNameIdentifier()).getContent();
         artifact = idpLogin.getAssertionArtifact();
         assertNotNull(artifact);
-        method = LassoConstants.LASSO_HTTP_METHOD_REDIRECT;
+        method = LassoConstants.HTTP_METHOD_REDIRECT;
 
         // Service provider assertion consumer.
         spDump = generateServiceProviderDump();
@@ -156,7 +156,7 @@ public class LoginTest extends TestCase {
 
         // Identity provider SOAP endpoint.
         requestType = LassoJNI.lasso_get_request_type_from_soap_msg(soapRequestMsg);
-        assertEquals(LassoConstants.LASSO_REQUEST_TYPE_LOGIN, requestType);
+        assertEquals(LassoConstants.REQUEST_TYPE_LOGIN, requestType);
         idpDump = generateIdentityProviderDump();
         assertNotNull(idpDump);
         idp = Server.newFromDump(idpDump);
@@ -184,7 +184,7 @@ public class LoginTest extends TestCase {
         assertNotNull(spSessionDump);
         assertion = (SamlAssertion) spSession.getAssertions("https://idp1/metadata").get(0);
         authenticationMethod = assertion.getAuthenticationStatement().getAuthenticationMethod();
-        assertEquals(LassoConstants.LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD, authenticationMethod);
+        assertEquals(LassoConstants.SAML_AUTHENTICATION_METHOD_PASSWORD, authenticationMethod);
 
         // Service provider logout.
         spDump = generateServiceProviderDump();
@@ -196,14 +196,14 @@ public class LoginTest extends TestCase {
         spLogout.setIdentityFromDump(spIdentityDump);
         assertNotNull(spSessionDump);
         spLogout.setSessionFromDump(spSessionDump);
-        spLogout.initRequest(null, LassoConstants.LASSO_HTTP_METHOD_ANY);
+        spLogout.initRequest(null, LassoConstants.HTTP_METHOD_ANY);
         spLogout.buildRequestMsg();
         soapEndpoint = spLogout.getMsgUrl();
         soapRequestMsg = spLogout.getMsgBody();
 
         // Identity provider SOAP endpoint.
         requestType = LassoJNI.lasso_get_request_type_from_soap_msg(soapRequestMsg);
-        assertEquals(LassoConstants.LASSO_REQUEST_TYPE_LOGOUT, requestType);
+        assertEquals(LassoConstants.REQUEST_TYPE_LOGOUT, requestType);
         idpDump = generateIdentityProviderDump();
         assertNotNull(idpDump);
         idp = Server.newFromDump(idpDump);

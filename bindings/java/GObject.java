@@ -5,6 +5,9 @@ class GObject {
         private long cptr;
 
         protected GObject(long ptr) {
+                if (ptr == 0) {
+                    throw new RuntimeException("Error creating " + getClass().getName());
+                }
                 cptr = ptr;
         }
         protected Map arrayToMap(Object[] arr) {

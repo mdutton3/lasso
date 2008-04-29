@@ -4,7 +4,7 @@
  * Java unit tests for Lasso library
  *
  * Copyright (C) 2004-2007 Entr'ouvert
- * http://LassoConstants.LASSO_entrouvert.org
+ * http://lasso.entrouvert.org
  *
  * Authors: See AUTHORS file in top-level directory.
  *
@@ -22,16 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-// To run it:
-// $ export LD_LIBRARY_PATH=../
-// $ javac -classpath /usr/share/java/junit.jar:../LassoConstants.LASSO_jar:. BindingTests.java
-// $ java -classpath /usr/share/java/junit.jar:../LassoConstants.LASSO_jar:. BindingTests
-// or for gcj:
-// $ export LD_LIBRARY_PATH=../
-// $ gcj -C -classpath /usr/share/java/junit.jar:../LassoConstants.LASSO_jar:. BindingTests.java
-// $ gij -classpath /usr/share/java/junit.jar:../LassoConstants.LASSO_jar:. BindingTests
-
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -65,8 +55,8 @@ public class BindingTests extends TestCase {
 
 	// Test a string attribute.
 	assertNull(authnRequest.getConsent());
-	authnRequest.setConsent(LassoConstants.LASSO_LIB_CONSENT_OBTAINED);
-	assertEquals(authnRequest.getConsent(), LassoConstants.LASSO_LIB_CONSENT_OBTAINED);
+	authnRequest.setConsent(LassoConstants.LIB_CONSENT_OBTAINED);
+	assertEquals(authnRequest.getConsent(), LassoConstants.LIB_CONSENT_OBTAINED);
 	authnRequest.setConsent(null);
 	assertNull(authnRequest.getConsent());
 
@@ -249,8 +239,8 @@ public class BindingTests extends TestCase {
 
         assertNull(login.getRequest());
         login.setRequest((SamlpRequestAbstract) new LibAuthnRequest());
-        ((LibAuthnRequest) login.getRequest()).setConsent(LassoConstants.LASSO_LIB_CONSENT_OBTAINED);
-        assertEquals(((LibAuthnRequest) login.getRequest()).getConsent(), LassoConstants.LASSO_LIB_CONSENT_OBTAINED);
+        ((LibAuthnRequest) login.getRequest()).setConsent(LassoConstants.LIB_CONSENT_OBTAINED);
+        assertEquals(((LibAuthnRequest) login.getRequest()).getConsent(), LassoConstants.LIB_CONSENT_OBTAINED);
         login.setRequest(null);
         assertNull(login.getRequest());
 

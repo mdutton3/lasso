@@ -284,7 +284,12 @@ function cptrToPhp ($cptr) {
                 print >> sys.stderr, 'W:', m.name, 'vs', method_prefix
                 continue
 
-            mname = m.name[len(method_prefix):]
+            if m.rename:
+                mname = m.rename
+            else:
+                mname = m.name
+            cname = mname
+            mname = mname[len(method_prefix):]
             php_args = []
             c_args = []
             for arg in m.args[1:]:
@@ -323,7 +328,7 @@ function cptrToPhp ($cptr) {
             print >> self.fd, '    public function %s(%s) {' % (
                     utils.format_underscore_as_camelcase(mname), php_args)
             if m.return_type == 'void':
-                print >> self.fd, '        %s($this->_cptr%s);' % (m.name, c_args)
+                print >> self.fd, '        %s($this->_cptr%s);' % (cname, c_args)
             elif m.return_type in ('gint', 'int'):
                 print >> self.fd, '        $rc = %s($this->_cptr%s);' % (m.name, c_args)
                 print >> self.fd, '        if ($rc == 0) {'

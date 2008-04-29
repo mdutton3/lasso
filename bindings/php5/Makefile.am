@@ -8,7 +8,7 @@ php_extensiondir = ${prefix}@PHP5_UNPREFIXED_EXTENSION_DIR@
 
 nodist_php_extension_DATA = lasso.php
 
-lasso_la_CFLAGS = $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir) $(PHP5_INCLUDES)
+lasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir) $(PHP5_INCLUDES)
 lasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version
 lasso_la_LIBADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS) $(PHP5_LDFLAGS)
 nodist_lasso_la_SOURCES = _lasso.c
