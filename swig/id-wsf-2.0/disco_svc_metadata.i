@@ -26,10 +26,19 @@
 %rename(IdWsf2DiscoSvcMetadata) LassoIdWsf2DiscoSvcMetadata;
 #endif
 typedef struct {
+
 #ifndef SWIGPHP4
+  /* XXX: SWIG 1.3.31 and more fails to compile the PHP 4 binding it
+     generates if this * part is present */
+
+#if !defined(SWIG_PHP_RENAMES) && !defined(SWIGCSHARP) && !defined(SWIGJAVA)
+	/* "abstract" is a reserved word in PHP, C# and Java. */
 	%rename(abstract) Abstract;
 #endif
 	char *Abstract;
+
+#endif /* !SWIGPHP4 */
+
 #ifndef SWIGPHP4
 	%rename(providerID) ProviderID;
 #endif
