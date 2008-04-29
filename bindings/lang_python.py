@@ -55,6 +55,31 @@ _lasso.init()
             print >> fd, ''
             return
 
+        methods = clss.methods[:]
+        # constructor(s)
+        method_prefix = 'lasso_' + format_as_underscored(klassname) + '_'
+        for m in self.binding_data.functions:
+            if m.name == method_prefix + 'new':
+                args = oargs = ', '.join([x[1] for x in m.args[1:]])
+                if oargs:
+                    oargs = ', ' + oargs
+                print >> fd, '    def __init__(self%s):' % oargs
+                print >> fd, '        self._cptr = _lasso.%s(%s)' % (
+                        m.name[6:], args)
+                print >> fd, ''
+
+        for m in self.binding_data.functions:
+            if m.name == method_prefix + 'new_from_dump':
+                print >> fd, '    @classmethod'
+                print >> fd, '    def newFromDump(cls, dump):'
+                print >> fd, '         obj = cls()'
+                print >> fd, '         obj._cptr = _lasso.%s(dump)' % m.name[6:]
+                print >> fd, '         if obj._cptr is None:'
+                print >> fd, '             raise "XXX"'
+                print >> fd, ''
+            elif m.name == method_prefix + 'new_full':
+                pass
+
         # create properties for members
         for m in clss.members:
             mname = format_as_python(m[1])
@@ -68,7 +93,6 @@ _lasso.init()
             print >> fd, ''
 
         # first pass on methods, getting accessors
-        methods = clss.methods[:]
         for m in clss.methods:
             if not ('_get_' in m.name and len(m.args) == 1):
                 continue
@@ -92,7 +116,6 @@ _lasso.init()
             print >> fd, ''
 
         # second pass on methods, real methods
-        method_prefix = 'lasso_' + format_as_underscored(klassname) + '_'
         for m in methods:
             if m.name.endswith('_new') or m.name.endswith('_new_from_dump') or \
                     m.name.endswith('_new_full'):
