@@ -654,7 +654,7 @@ register_constants(PyObject *d)
                 parse_format = 'i'
                 parse_arg = '&value'
                 print >> fd, '    %s value;' % arg_type
-            elif arg_type in ('GList*','GHashTable*'):
+            elif arg_type in ('GList*','GHashTable*', 'xmlNode*'):
                 parse_format = 'O'
                 print >> fd, '    PyObject *cvt_value;'
                 parse_arg = '&cvt_value'
@@ -682,6 +682,9 @@ register_constants(PyObject *d)
                     print >> fd, '    set_list_of_pygobject(&this->%s, cvt_value);' % m[1]
             elif parse_format == 'O' and arg_type == 'GHashTable*':
                 print >> fd, '    set_hashtable_of_pygobject(this->%s, cvt_value);' % m[1]
+            elif parse_format == 'O' and arg_type == 'xmlNode*':
+                print >> fd, '    if (this->%s) xmlFreeNode(this->%s);' % (m[1], m[1])
+                print >> fd, '    this->%s = get_xml_node_from_pystring(cvt_value);' % m[1]
             elif parse_format == 'O':
                 print >> fd, '    set_object_field((GObject**)&this->%s, cvt_value);' % m[1]
             print >> fd, '    return noneRef();'
