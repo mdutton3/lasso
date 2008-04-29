@@ -18,6 +18,8 @@
   <!-- LassoWsfProfile -->
   <func name="lasso_wsf_profile_get_identity" return_owner="false" />
   <func name="lasso_wsf_profile_get_session" return_owner="false" />
+  <!-- LassoIdentity -->
+  <func name="lasso_identity_get_federation" return_owner="false" />
   <!-- LassoServer -->
   <func name="lasso_server_new">
     <param name="private_key" optional="true"/>
@@ -78,6 +80,8 @@
   <func name="lasso_lib_federation_termination_notification_new_full" return_type="LassoLibFederationTerminationNotification*"/>
   <func name="lasso_lib_name_identifier_mapping_request_new_full" return_type="LassoLibNameIdentifierMappingRequest*"/>
   <func name="lasso_lib_register_name_identifier_request_new_full" return_type="LassoLibRegisterNameIdentifierRequest*"/>
+  <!-- LassoServer -->
+  <func name="lasso_server_get_provider" return_owner="false" />
 
   <!-- Exceptions -->
   <exception>

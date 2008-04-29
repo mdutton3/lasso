@@ -42,22 +42,9 @@ import java.util.*;
 
 
 public class BindingTests extends TestCase {
-    String[] toStringArray(Object[] array) {
-        String[] str = new String[array.length];
-        int i;
-        for (i=0;i<array.length;i++)
-            str[i] = (String)array[i];
-        return str;
-    }
-    SamlAssertion[] toSamlAssertionArray(Object[] array) {
-        SamlAssertion[] str = new SamlAssertion[array.length];
-        int i;
-        for (i=0;i<array.length;i++)
-            str[i] = (SamlAssertion)array[i];
-        return str;
-    }
     public static void main(String args[]) { 
 	junit.textui.TestRunner.run(suite());
+        System.gc();
     }
 
     public static Test suite() { 
@@ -120,27 +107,33 @@ public class BindingTests extends TestCase {
 	assertEquals(respondWith.get(0), "first string");
 	assertEquals(respondWith.get(1), "second string");
 	assertEquals(respondWith.get(2), "third string");
-	authnRequest.setRespondWith(toStringArray(respondWith.toArray()));
-	assertEquals(authnRequest.getRespondWith()[0], "first string");
-	assertEquals(authnRequest.getRespondWith()[1], "second string");
-	assertEquals(authnRequest.getRespondWith()[2], "third string");
+	authnRequest.setRespondWith(respondWith);
+	assertEquals(authnRequest.getRespondWith().get(0), "first string");
+	assertEquals(authnRequest.getRespondWith().get(1), "second string");
+	assertEquals(authnRequest.getRespondWith().get(2), "third string");
 	assertEquals(respondWith.get(0), "first string");
 	assertEquals(respondWith.get(1), "second string");
 	assertEquals(respondWith.get(2), "third string");
 	respondWith = null;
-	assertEquals(authnRequest.getRespondWith()[0], "first string");
-	assertEquals(authnRequest.getRespondWith()[1], "second string");
-	assertEquals(authnRequest.getRespondWith()[2], "third string");
-	respondWith = Arrays.asList(authnRequest.getRespondWith());
+	assertEquals(authnRequest.getRespondWith().get(0), "first string");
+	assertEquals(authnRequest.getRespondWith().get(1), "second string");
+	assertEquals(authnRequest.getRespondWith().get(2), "third string");
+	respondWith = authnRequest.getRespondWith();
 	assertEquals(respondWith.get(0), "first string");
 	assertEquals(respondWith.get(1), "second string");
 	assertEquals(respondWith.get(2), "third string");
 	respondWith = null;
-	assertEquals(authnRequest.getRespondWith()[0], "first string");
-	assertEquals(authnRequest.getRespondWith()[1], "second string");
-	assertEquals(authnRequest.getRespondWith()[2], "third string");
+	assertEquals(authnRequest.getRespondWith().get(0), "first string");
+	assertEquals(authnRequest.getRespondWith().get(1), "second string");
+	assertEquals(authnRequest.getRespondWith().get(2), "third string");
+        authnRequest.removeFromRespondWith("second string");
+	assertEquals(authnRequest.getRespondWith().get(0), "first string");
+	assertEquals(authnRequest.getRespondWith().get(1), "third string");
+        authnRequest.addToRespondWith("second string");
+	assertEquals(authnRequest.getRespondWith().get(0), "first string");
+	assertEquals(authnRequest.getRespondWith().get(1), "third string");
+	assertEquals(authnRequest.getRespondWith().get(2), "second string");
 	authnRequest.setRespondWith(null);
-        System.out.println("coin"+authnRequest.getRespondWith());
 	assertNull(authnRequest.getRespondWith());
 
 	authnRequest = null;
@@ -174,34 +167,25 @@ public class BindingTests extends TestCase {
         assertEquals(((SamlAssertion) assertions.get(0)).getAssertionId(), "assertion 1");
         assertEquals(((SamlAssertion) assertions.get(1)).getAssertionId(), "assertion 2");
         assertEquals(((SamlAssertion) assertions.get(2)).getAssertionId(), "assertion 3");
-        response.setAssertion(toSamlAssertionArray(assertions.toArray()));
-        assertEquals(((SamlAssertion) response.getAssertion()[0]).getAssertionId(),
-		     "assertion 1");
-        assertEquals(((SamlAssertion) response.getAssertion()[1]).getAssertionId(),
-		     "assertion 2");
-        assertEquals(((SamlAssertion) response.getAssertion()[2]).getAssertionId(),
-		     "assertion 3");
+        response.setAssertion(assertions);
+        assertEquals(((SamlAssertion) response.getAssertion().get(0)).getAssertionId(), "assertion 1");
+        assertEquals(((SamlAssertion) response.getAssertion().get(1)).getAssertionId(), "assertion 2");
+        assertEquals(((SamlAssertion) response.getAssertion().get(2)).getAssertionId(), "assertion 3");
         assertEquals(((SamlAssertion) assertions.get(0)).getAssertionId(), "assertion 1");
         assertEquals(((SamlAssertion) assertions.get(1)).getAssertionId(), "assertion 2");
         assertEquals(((SamlAssertion) assertions.get(2)).getAssertionId(), "assertion 3");
         assertions = null;;
-        assertEquals(((SamlAssertion) response.getAssertion()[0]).getAssertionId(),
-		     "assertion 1");
-        assertEquals(((SamlAssertion) response.getAssertion()[1]).getAssertionId(),
-		     "assertion 2");
-        assertEquals(((SamlAssertion) response.getAssertion()[2]).getAssertionId(),
-		     "assertion 3");
-        assertions = Arrays.asList(response.getAssertion());
+        assertEquals(((SamlAssertion) response.getAssertion().get(0)).getAssertionId(), "assertion 1");
+        assertEquals(((SamlAssertion) response.getAssertion().get(1)).getAssertionId(), "assertion 2");
+        assertEquals(((SamlAssertion) response.getAssertion().get(2)).getAssertionId(), "assertion 3");
+        assertions = response.getAssertion();
         assertEquals(((SamlAssertion) assertions.get(0)).getAssertionId(), "assertion 1");
         assertEquals(((SamlAssertion) assertions.get(1)).getAssertionId(), "assertion 2");
         assertEquals(((SamlAssertion) assertions.get(2)).getAssertionId(), "assertion 3");
         assertions = null;
-        assertEquals(((SamlAssertion) response.getAssertion()[0]).getAssertionId(),
-		     "assertion 1");
-        assertEquals(((SamlAssertion) response.getAssertion()[1]).getAssertionId(),
-		     "assertion 2");
-        assertEquals(((SamlAssertion) response.getAssertion()[2]).getAssertionId(),
-		     "assertion 3");
+        assertEquals(((SamlAssertion) response.getAssertion().get(0)).getAssertionId(), "assertion 1");
+        assertEquals(((SamlAssertion) response.getAssertion().get(1)).getAssertionId(), "assertion 2");
+        assertEquals(((SamlAssertion) response.getAssertion().get(2)).getAssertionId(), "assertion 3");
         response.setAssertion(null);
         assertNull(response.getAssertion());
 
@@ -215,15 +199,9 @@ public class BindingTests extends TestCase {
 
 	assertNull(authnRequest.getExtension());
 
-        String actionString1 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n"
-	    + "  <action>do 1</action>\n"
-	    + "</lib:Extension>";
-        String actionString2 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n"
-	    + "  <action>do 2</action>\n"
-	    + "</lib:Extension>";
-        String actionString3 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n"
-	    + "  <action>do 3</action>\n"
-	    + "</lib:Extension>";
+        String actionString1 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n" + "  <action>do 1</action>\n" + "</lib:Extension>";
+        String actionString2 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n" + "  <action>do 2</action>\n" + "</lib:Extension>";
+        String actionString3 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n" + "  <action>do 3</action>\n" + "</lib:Extension>";
 	List extension = new ArrayList();
 	assertEquals(extension.size(), 0);
 	extension.add(actionString1);
@@ -239,25 +217,25 @@ public class BindingTests extends TestCase {
 	assertEquals(extension.get(0), actionString1);
 	assertEquals(extension.get(1), actionString2);
 	assertEquals(extension.get(2), actionString3);
-	authnRequest.setExtension(toStringArray(extension.toArray()));
-	assertEquals(authnRequest.getExtension()[0], actionString1);
-	assertEquals(authnRequest.getExtension()[1], actionString2);
-	assertEquals(authnRequest.getExtension()[2], actionString3);
+	authnRequest.setExtension(extension);
+	assertEquals(authnRequest.getExtension().get(0), actionString1);
+	assertEquals(authnRequest.getExtension().get(1), actionString2);
+	assertEquals(authnRequest.getExtension().get(2), actionString3);
 	assertEquals(extension.get(0), actionString1);
 	assertEquals(extension.get(1), actionString2);
 	assertEquals(extension.get(2), actionString3);
 	extension = null;
-	assertEquals(authnRequest.getExtension()[0], actionString1);
-	assertEquals(authnRequest.getExtension()[1], actionString2);
-	assertEquals(authnRequest.getExtension()[2], actionString3);
-	extension = Arrays.asList(authnRequest.getExtension());
+	assertEquals(authnRequest.getExtension().get(0), actionString1);
+	assertEquals(authnRequest.getExtension().get(1), actionString2);
+	assertEquals(authnRequest.getExtension().get(2), actionString3);
+	extension = authnRequest.getExtension();
 	assertEquals(extension.get(0), actionString1);
 	assertEquals(extension.get(1), actionString2);
 	assertEquals(extension.get(2), actionString3);
 	extension = null;
-	assertEquals(authnRequest.getExtension()[0], actionString1);
-	assertEquals(authnRequest.getExtension()[1], actionString2);
-	assertEquals(authnRequest.getExtension()[2], actionString3);
+	assertEquals(authnRequest.getExtension().get(0), actionString1);
+	assertEquals(authnRequest.getExtension().get(1), actionString2);
+	assertEquals(authnRequest.getExtension().get(2), actionString3);
 	authnRequest.setExtension(null);
 	assertNull(authnRequest.getExtension());
 
@@ -272,8 +250,7 @@ public class BindingTests extends TestCase {
         assertNull(login.getRequest());
         login.setRequest((SamlpRequestAbstract) new LibAuthnRequest());
         ((LibAuthnRequest) login.getRequest()).setConsent(LassoConstants.LASSO_LIB_CONSENT_OBTAINED);
-        assertEquals(((LibAuthnRequest) login.getRequest()).getConsent(),
-		     LassoConstants.LASSO_LIB_CONSENT_OBTAINED);
+        assertEquals(((LibAuthnRequest) login.getRequest()).getConsent(), LassoConstants.LASSO_LIB_CONSENT_OBTAINED);
         login.setRequest(null);
         assertNull(login.getRequest());
 

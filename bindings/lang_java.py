@@ -29,6 +29,12 @@ import utils
 lasso_package_name = 'com.entrouvert.lasso'
 lasso_java_path = 'com/entrouvert/lasso/'
 
+debug = 0
+
+def with_return_owner(d):
+    c = d.copy()
+    c['return_owner'] = 1
+    return c
 
 def generate_arg_list(self,args):
     def arg_to_decl(arg):
@@ -88,11 +94,40 @@ def wrapper_decl(name, jnitype, fd):
     print >> fd, 'JNIEXPORT %s JNICALL %s(JNIEnv *env, jclass clss' % \
      (jnitype,jniname),
 
+def is_collection(type):
+    return type in ('GList*','GHashTable*')
+
+def is_string_type(type):
+    return type in ['char*', 'const char*', 'gchar*', 'const gchar*']
+
 class JavaBinding:
     def __init__(self, binding_data):
         self.binding_data = binding_data
 
-    def is_pygobject(self, t):
+    def print_list_of_files(self):
+        l = ['GObject.java','LassoConstants.java','LassoJNI.java','LassoException.java', 'LassoUndefinedException.java', 'LassoUnimplementedException.java']
+        for c in self.binding_data.structs:
+            class_name = convert_class_name(c.name)
+            l.append(class_name + '.java')
+        for c in self.binding_data.constants:
+            type, orig = c
+            if 'LASSO_ERROR_' in orig or '_ERROR_' not in orig:
+                continue
+            name, super = error_to_exception(orig)
+            l.append(name + '.java')
+            if not super + '.java' in l:
+                l.append(super + '.java')
+        l = [ lasso_java_path + p for p in l]
+        for p in l:
+            print p,
+        print
+        print
+    
+    def is_int_type(self, type):
+        return type in ['gboolean','int','gint'] + self.binding_data.enums
+
+
+    def is_gobject_type(self, t):
         return t not in ['char*', 'const char*', 'gchar*', 'const gchar*',
                 'GList*', 'GHashTable*',
                 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
@@ -162,7 +197,8 @@ public abstract interface LassoConstants {
 package %s;
 
 public final class LassoJNI {
-public static native void init2();
+protected static native void init2();
+protected static native void destroy(long cptr);
 ''' % lasso_package_name
     def generate_JNI_constants(self, fd):
         print >>fd, '/* Constants getters */'
@@ -252,8 +288,9 @@ public static native void init2();
                 print >> fd, '   public static native void %s(GObject obj, %s[] value);' % (name,jtype)
                 name = '%s_add' % prefix
                 print >> fd, '   public static native void %s(GObject obj, %s value);' % (name,jtype)
-                name = '%s_remove' % prefix
-                print >> fd, '   public static native void %s(GObject obj, %s value);' % (name,jtype)
+                if not m[2].get('elem_type') in ('xmlNode*',): 
+                    name = '%s_remove' % prefix
+                    print >> fd, '   public static native void %s(GObject obj, %s value);' % (name,jtype)
             elif mtype == 'GHashTable*':
                 name = '%s_get' % prefix
                 print >> fd, '   public static native %s[] %s(GObject obj);' % (jtype,name)
@@ -261,10 +298,10 @@ public static native void init2();
                 print >> fd, '   public static native void %s(GObject obj, %s[] value);' % (name,jtype)
                 name = '%s_add' % prefix
                 print >> fd, '   public static native void %s(GObject obj, String key, %s value);' % (name,jtype)
-                name = '%s_remove' % prefix
-                print >> fd, '   public static native void %s(GObject obj, String key);' % (name)
-                name = '%s_get_by_name' % prefix
-                print >> fd, '   public static native %s[] %s(GObject obj, String key);' % (jtype,name)
+#                name = '%s_remove' % prefix
+#                print >> fd, '   public static native void %s(GObject obj, String key);' % (name)
+#                name = '%s_get_by_name' % prefix
+#                print >> fd, '   public static native %s[] %s(GObject obj, String key);' % (jtype,name)
             else:
                 name = '%s_get' % prefix
                 print >> fd, '   public static native %s %s(GObject obj);' % (jtype,name)
@@ -336,61 +373,57 @@ public static native void init2();
                 print >>fd, '}'
         print >> fd, '/* End of declaration of constants */'
 
-    def jni_return_type(self, vtype):
-        if vtype == 'gboolean':
+    def jni_return_type(self, type):
+        if type == 'gboolean':
             return 'jboolean'
-        elif vtype in ['int','gint'] + self.binding_data.enums:
+        elif type in ['int','gint'] + self.binding_data.enums:
             return 'jint'
-        elif vtype in ('char*', 'gchar*', 'const char*', 'const gchar*'):
+        elif type in ('char*', 'gchar*', 'const char*', 'const gchar*'):
             return 'jstring'
-        elif vtype in ('GList*','GHashTable*'):
+        elif type in ('GList*','GHashTable*'):
             return 'jobjectArray'
-        elif vtype == 'xmlNode*':
+        elif type == 'xmlNode*':
             return 'jstring'
-        elif not vtype:
+        elif not type:
             return 'void'
         else:
             return 'jobject'
 
-    def c_to_java_value(self, name, vtype, options):
-        if vtype == 'gboolean':
-            return '(jboolean)%s' % name
-        elif vtype in ['int', 'gint'] + self.binding_data.enums:
-            return '(jint)%s' % name
-        elif vtype in ('char*', 'gchar*'):
-            return 'string_to_jstring(env, %s)' % name
-        elif vtype in ('const char*', 'const gchar*'):
-            return 'string_to_jstring(env, %s)' % name
-        elif vtype in ('GList*',):
+    def c_to_java_value(self, left, right, type, options):
+        if type == 'gboolean':
+            return '%s = (jboolean)%s' % (left,right)
+        elif type in ['int', 'gint'] + self.binding_data.enums:
+            return '%s = (jint)%s' % (left, right)
+        elif is_string_type(type):
+            return 'string_to_jstring(env, %s, &%s)' % (right, left)
+        elif type in ('GList*',):
             elem_type = options.get('elem_type')
             if elem_type == 'char*':
-                return 'get_list_of_strings(env, %s)' % name
+                return 'get_list_of_strings(env, %s, &%s)' % (right, left)
             elif elem_type == 'xmlNode*':
-                return 'get_list_of_xml_nodes(env, %s)' % name
+                return 'get_list_of_xml_nodes(env, %s, &%s)' % (right, left)
             else:
-                return 'get_list_of_objects(env, %s)' % name
-        elif vtype in ('GHashTable*',):
+                return 'get_list_of_objects(env, %s, &%s)' % (right, left)
+        elif type in ('GHashTable*',):
             elem_type = options.get('elem_type')
             if elem_type == 'char*':
-                return 'get_hash_of_strings(env, %s)' % name
+                return 'get_hash_of_strings(env, %s, &%s)' % (right, left)
             else:
-                return 'get_hash_of_objects(env, %s)' % name
-        elif vtype == 'xmlNode*':
-                return 'xml_node_to_jstring(env, %s)' % name
+                return 'get_hash_of_objects(env, %s, &%s)' % (right, left)
+        elif type == 'xmlNode*':
+                return 'xml_node_to_jstring(env, %s, &%s)' % (right, left)
         else:
-            if 'return_owner' in options:
-                return 'gobject_to_jobject(env, (GObject*)%s);' % name
+            if options.get('return_owner'):
+                return 'gobject_to_jobject(env, (GObject*)%s, &%s);' % (right, left)
             else:
-                return 'gobject_to_jobject_and_ref(env, (GObject*)%s);' % name
+                return 'gobject_to_jobject_and_ref(env, (GObject*)%s, &%s);' % (right, left)
 
-    def java_to_c_value(self, left, right, vtype, options):
-        if vtype in ['gboolean','int', 'gint'] + self.binding_data.enums:
-            return '%s = (%s)%s;' % (left,vtype,right)
-        elif vtype in ('char*', 'gchar*'):
-            return '%s = (%s) jstring_to_string_dup(env, %s);' % (left,vtype,right)
-        elif vtype in ('const char*', 'const gchar*'):
-            return '%s = (%s) jstring_to_string(env, %s);' % (left,vtype,right)
-        elif vtype in ('GList*',):
+    def java_to_c_value(self, left, right, type, options):
+        if type in ['gboolean','int', 'gint'] + self.binding_data.enums:
+            return '%s = (%s)%s;' % (left,type,right)
+        elif is_string_type(type):
+            return 'jstring_to_string(env, %s, (char**)&%s);' % (right,left)
+        elif type in ('GList*',):
             elem_type = options.get('elem_type')
             if elem_type == 'char*':
                 return 'set_list_of_strings(env, &%s,%s);' % (left,right)
@@ -398,19 +431,16 @@ public static native void init2();
                 return 'set_list_of_xml_nodes(env, &%s, %s);' % (left, right)
             else:
                 return 'set_list_of_objects(env, &%s, %s);' % (left, right)
-        elif vtype in ('GHashTable*',):
+        elif type in ('GHashTable*',):
             elem_type = options.get('elem_type')
             if elem_type == 'char*':
                 return 'set_hash_of_strings(env, %s, %s);' % (left,right)
             else:
                 return 'set_hash_of_objects(env, %s, %s);' % (left,right)
-        elif vtype == 'xmlNode*':
-                return '%s = jstring_to_xml_node(env, %s);' % (left, right)
+        elif type == 'xmlNode*':
+            return 'jstring_to_xml_node(env, %s, &%s);' % (right, left)
         else:
-            if 'return_owner' in options:
-                return '%s = (%s)jobject_to_gobject(env, %s);' % (left,vtype,right)
-            else:
-                return '%s = (%s)jobject_to_gobject_and_ref(env, %s);' % (left,vtype,right)
+            return 'jobject_to_gobject(env, %s, (GObject**)&%s);' % (right, left)
 
     def generate_wrapper_function(self, m, fd):
         print >> fd, '/* Wrapper function for ',
@@ -447,12 +477,12 @@ public static native void init2();
         print >> fd, '  {'
         idx = 0
         if m.return_type:
-            print >> fd, '%s ret;' % jtype
+            print >> fd, '    %s ret;' % jtype
         # Declare C args
         for arg in m.args:
             idx = idx + 1
             arg_type, arg_name, arg_options = arg
-            print >> fd, '    %s %s;' % (arg_type,arg_name)
+            print >> fd, '    %s %s;' % (arg_type.replace('const ',''),arg_name)
         # Declare return vars
         if m.return_type:
             print >> fd, '    %s return_value;' % m.return_type
@@ -461,33 +491,50 @@ public static native void init2();
         for arg in m.args:
             idx = idx + 1
             arg_type, arg_name, arg_options = arg
-            option = arg_options.copy()
-            option['return_owner'] = 1
-            print >> fd, '    %s' % self.java_to_c_value(arg_name, 'jarg%s' % idx, arg_type, option)
+            print >> fd, '    %s' % self.java_to_c_value(arg_name, 'jarg%s' % idx, arg_type, arg_options)
+        if debug:
+            print >> fd, '    printf("%s' % name,
+            arglist = ''
+            for  arg in m.args:
+                arg_type, arg_name, arg_options = arg
+                arglist = arglist + ', %s' % arg_name
+                if self.is_int_type(arg_type):
+                    print >> fd, '%i',
+                elif is_string_type(arg_type):
+                    print >> fd, '%s',
+                else:
+                    print >> fd, '%p',
+            print >> fd, '\\n"%s);' % arglist
         # Call function
         print >> fd, '   ',
         if m.return_type:
             print >> fd, 'return_value = (%s)' % m.return_type,
         print >> fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))
-        options = {}
         # Free const char * args
         idx=0
         for arg in m.args:
             idx=idx+1
             arg_type, arg_name, arg_options = arg
-            if  arg_type in ('const gchar*', 'const char*'):
-                print >> fd, '    release_utf_string(env, jarg%s, %s);' % (idx,arg_name)
+            if is_string_type(arg_type):
+                print >> fd, '    if (%s)' % arg_name
+                print >> fd, '        g_free(%s);' % arg_name
 
         # Return
         if m.return_type:
             if m.name.endswith('_new'):
-                print >> fd, '    return (jlong) return_value;'
+                print >> fd, '    ret = (jlong)(int) return_value;'
             else:
+                options = {}
                 if m.return_owner:
-                    options['return_owner'] = 1
-                print >> fd, '    ret = %s;' % self.c_to_java_value('return_value', m.return_type, options)
-                if m.return_type == 'GList*' and not m.return_owner:
-                    print >> fd, '    free_glist(return_value, NULL);'
+                    options = with_return_owner({})
+                print >> fd, '    %s;' % self.c_to_java_value('ret','return_value', m.return_type, options)
+                if m.return_owner:
+                    if m.return_type == 'GList*':
+                        print >> fd, '    free_glist(&return_value, NULL);'
+                    elif is_string_type(m.return_type):
+                        print >> fd, '    if (return_value)'
+                        print >> fd, '        g_free(return_value);'
+            print >> fd, '    return ret;'
         print >> fd, '  }'
 
     def generate_wrapper_getter_setter(self, c, fd):
@@ -500,23 +547,42 @@ public static native void init2();
             print >> fd,'/* Getter for %s %s.%s */' % (mtype,klassname,m[1])
             wrapper_decl("%s_get" % prefix, jtype, fd)
             print >> fd, ', jobject jobj)\n  {'
-            print >> fd, '    %s *gobj = (%s*)jobject_to_gobject(env, jobj);' % (klassname,klassname)
+            print >> fd, '    %s *gobj;' % klassname
+            print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
+            if debug:
+                print >> fd, '    printf("%s_get %%p %%p\\n", gobj, gobj->%s);' % (prefix, m[1])
+            print >> fd, '    %s ret = 0;' % jtype
             print >> fd, '    if (gobj) {'
-            print >> fd, '         return %s;' % self.c_to_java_value ('gobj->%s' % m[1], mtype, m[2])
+            print >> fd, '         %s;' % self.c_to_java_value ('ret','gobj->%s' % m[1], mtype, m[2])
             print >> fd, '    } else {'
             print >> fd, '         (*env)->ThrowNew(env, "java/lang/NullPointerException", "no gobject correspond to the given object");'
-            print >> fd, '         return 0;'
             print >> fd, '    }'
+            print >> fd, '    return ret;'
             print >> fd, '}'
             print >> fd, ''
             # setter
             print >> fd,'/* Setter for %s %s.%s */' % (mtype,klassname,m[1])
             wrapper_decl("%s_set" % prefix, 'void', fd)
             print >> fd, ', jobject jobj, %s value)\n  {' % self.jni_return_type(mtype)
-            print >> fd, '    %s *gobj = (%s*)jobject_to_gobject(env, jobj);' % (klassname,klassname)
-            if mtype in ('char*', 'const char*', 'gchar*', 'const gchar*'):
-                print >> fd, '    g_free(gobj->%s);' % m[1]
+            print >> fd, '    %s *gobj;' % klassname
+            if debug:
+                print >> fd, '    printf("%s_set %%p %%p\\n", gobj, value);' % prefix
+            print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
+            print >> fd, '    if (!gobj) {'
+            print >> fd, '        (*env)->ThrowNew(env, "java/lang/NullPointerException", "no gobject correspond to the given object");'
+            print >> fd, '    }'
+            if not self.is_int_type(mtype) and not is_collection(mtype):
+                print >> fd, '    if (gobj->%s) {' % m[1]
+                if is_string_type(mtype):
+                    print >> fd, '    g_free(gobj->%s);' % m[1]
+                else:
+                    print >> fd, '    g_object_unref(gobj->%s);' % m[1]
+                print >> fd, '    }'
             print >> fd, '    %s' % self.java_to_c_value('gobj->%s' % m[1], 'value', mtype, m[2])
+            if self.is_gobject_type(mtype):
+                print >> fd, '    if (gobj->%s) {' % m[1]
+                print >> fd, '         g_object_ref(gobj->%s);' % m[1]
+                print >> fd, '    }'
             print >> fd, '}'
             # add/remove
             if mtype in ('GList*', ):
@@ -525,8 +591,9 @@ public static native void init2();
                 elem_type = m[2].get('elem_type')
                 wrapper_decl("%s_add" % prefix, 'void', fd)
                 print >> fd, ', jobject jobj, %s value)\n  {' % jni_elem_type(elem_type)
-                print >> fd, '    %s *gobj = (%s*)jobject_to_gobject(env, jobj);' % (klassname,klassname)
-                if elem_type in ('char*','gchar*'):
+                print >> fd, '    %s *gobj;' % klassname
+                print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
+                if is_string_type(elem_type):
                     print >> fd, '    add_to_list_of_strings(env, &gobj->%s,value);' % m[1]
                 elif elem_type in ('xmlNode*',):
                     print >> fd, '    add_to_list_of_xml_nodes(env, &gobj->%s,value);' % m[1]
@@ -534,17 +601,17 @@ public static native void init2();
                     print >> fd, '    add_to_list_of_objects(env, &gobj->%s,value);' % m[1]
                 print >> fd, '}'
                 # remove
-                print >> fd,'/* Remover for %s %s.%s */' % (mtype,klassname,m[1])
-                wrapper_decl("%s_remove" % prefix, 'void', fd)
-                print >> fd, ', jobject jobj, %s value)\n  {' % jni_elem_type(elem_type)
-                print >> fd, '    %s *gobj = (%s*)jobject_to_gobject(env, jobj);' % (klassname,klassname)
-                if elem_type in ('char*','gchar*'):
-                    print >> fd, '    remove_from_list_of_strings(env, &gobj->%s,value);' % m[1]
-                elif elem_type in ('xmlNode*',):
-                    print >> fd, '    remove_from_list_of_xml_nodes(env, &gobj->%s,value);' % m[1]
-                else:
-                    print >> fd, '    remove_from_list_of_objects(env, &gobj->%s,value);' % m[1]
-                print >> fd, '}'
+                if elem_type not in ('xmlNode*',):
+                    print >> fd,'/* Remover for %s %s.%s */' % (mtype,klassname,m[1])
+                    wrapper_decl("%s_remove" % prefix, 'void', fd)
+                    print >> fd, ', jobject jobj, %s value)\n  {' % jni_elem_type(elem_type)
+                    print >> fd, '    %s *gobj;' % klassname
+                    print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
+                    if elem_type in ('char*','gchar*'):
+                        print >> fd, '    remove_from_list_of_strings(env, &gobj->%s,value);' % m[1]
+                    else:
+                        print >> fd, '    remove_from_list_of_objects(env, &gobj->%s,value);' % m[1]
+                    print >> fd, '}'
             # add/remove/get_by_name
             if mtype in ('GHashTable*',):
                 # add
@@ -552,32 +619,35 @@ public static native void init2();
                 elem_type = m[2].get('elem_type')
                 wrapper_decl("%s_add" % prefix, 'void', fd)
                 print >> fd, ', jobject jobj, jstring key, %s value)\n  {' % jni_elem_type(elem_type)
-                print >> fd, '    %s *gobj = (%s*)jobject_to_gobject(env, jobj);' % (klassname,klassname)
+                print >> fd, '    %s *gobj;' % klassname
+                print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
                 if elem_type in ('char*','gchar*'):
                     print >> fd, '    add_to_hash_of_strings(env, gobj->%s,value,key);' % m[1]
                 else:
                     print >> fd, '    add_to_hash_of_objects(env, gobj->%s,value,key);' % m[1]
                 print >> fd, '}'
-                # remove
-                print >> fd,'/* Remover for %s %s.%s */' % (mtype,klassname,m[1])
-                wrapper_decl("%s_remove" % prefix, 'void', fd)
-                print >> fd, ', jobject jobj, jstring key)\n  {'
-                print >> fd, '    %s *gobj = (%s*)jobject_to_gobject(env, jobj);' % (klassname,klassname)
-                if elem_type in ('char*','gchar*'):
-                    print >> fd, '    remove_from_hash_of_strings(env, gobj->%s,key);' % m[1]
-                else:
-                    print >> fd, '    remove_from_hash_of_objects(env, gobj->%s,key);' % m[1]
-                print >> fd, '}'
-                # get by name
-                print >> fd,'/* Get by name for %s %s.%s */' % (mtype,klassname,m[1])
-                wrapper_decl("%s_get_by_name" % prefix, jni_elem_type(elem_type) , fd)
-                print >> fd, ', jobject jobj, jstring key)\n  {'
-                print >> fd, '    %s *gobj = (%s*)jobject_to_gobject(env, jobj);' % (klassname,klassname)
-                if elem_type in ('char*','gchar*'):
-                    print >> fd, '    return get_hash_of_strings_by_name(env, gobj->%s,key);' % m[1]
-                else:
-                    print >> fd, '    return get_hash_of_objects_by_name(env, gobj->%s,key);' % m[1]
-                print >> fd, '}'
+#                # remove
+#                print >> fd,'/* Remover for %s %s.%s */' % (mtype,klassname,m[1])
+#                wrapper_decl("%s_remove" % prefix, 'void', fd)
+#                print >> fd, ', jobject jobj, jstring key)\n  {'
+#                print >> fd, '    %s *gobj;' % klassname
+#                print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
+#                if elem_type in ('char*','gchar*'):
+#                    print >> fd, '    remove_from_hash_of_strings(env, gobj->%s,key);' % m[1]
+#                else:
+#                    print >> fd, '    remove_from_hash_of_objects(env, gobj->%s,key);' % m[1]
+#                print >> fd, '}'
+#                # get by name
+#                print >> fd,'/* Get by name for %s %s.%s */' % (mtype,klassname,m[1])
+#                wrapper_decl("%s_get_by_name" % prefix, jni_elem_type(elem_type) , fd)
+#                print >> fd, ', jobject jobj, jstring key)\n  {'
+#                print >> fd, '    %s *gobj;' % klassname
+#                print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
+#                if elem_type in ('char*','gchar*'):
+#                    print >> fd, '    return get_hash_of_strings_by_name(env, gobj->%s,key);' % m[1]
+#                else:
+#                    print >> fd, '    return get_hash_of_objects_by_name(env, gobj->%s,key);' % m[1]
+#                print >> fd, '}'
 
 #
     def generate_exception_switch_case(self, fd, name, orig):
@@ -654,6 +724,7 @@ public static native void init2();
             path = lasso_java_path + '%s.java' % class_name
             fd = open(path,'w')
             print >> fd, 'package %s;' % lasso_package_name
+            print >> fd, 'import java.util.*;'
             print >> fd, ''
             #print 'class %s extends %s {' % (class_name,parent_name)
             print >> fd, 'public class %s extends %s {' % (class_name,parent_name)
@@ -690,31 +761,46 @@ public static native void init2();
                 jname = utils.format_as_camelcase('_'+name)
                 jtype = self.JNI_member_type(m)
                 if type == 'GList*':
-                    print >> fd, '    public void set%s(%s[] value) {' % (jname,jtype)
-                    print >> fd, '        LassoJNI.%s_set(this, value);' % prefix
+                    print >> fd, '    public void set%s(List list) {' % jname
+                    print >> fd, '        %s[] arr = null;' % jtype
+                    print >> fd, '        if (list != null) {'
+                    print >> fd, '            arr = new %s[list.size()];' % jtype
+                    print >> fd, '            listToArray(list, arr);'
+                    print >> fd, '        }'
+                    print >> fd, '        LassoJNI.%s_set(this, arr);' % prefix
                     print >> fd, '    }'
-                    print >> fd, '    public %s[] get%s() {' % (jtype,jname)
-                    print >> fd, '        return LassoJNI.%s_get(this);' % prefix
+                    print >> fd, '    public List get%s() {' % jname
+                    print >> fd, '        %s[] arr = LassoJNI.%s_get(this);' % (jtype,prefix)
+                    print >> fd, '        if (arr != null)'
+                    print >> fd, '            return Arrays.asList(arr);'
+                    print >> fd, '        else'
+                    print >> fd, '            return null;'
                     print >> fd, '    }'
                     print >> fd, '    public void addTo%s(%s value) {' % (jname,jtype)
                     print >> fd, '        LassoJNI.%s_add(this, value);' % prefix
                     print >> fd, '    }'
-                    print >> fd, '    public void removeFrom%s(%s value) {' % (jname,jtype)
-                    print >> fd, '        LassoJNI.%s_remove(this, value);' % prefix
-                    print >> fd, '    }'
+                    if m[2].get('elem_type') not in ('xmlNode*',):
+                        print >> fd, '    public void removeFrom%s(%s value) {' % (jname,jtype)
+                        print >> fd, '        LassoJNI.%s_remove(this, value);' % prefix
+                        print >> fd, '    }'
                 elif type == 'GHashTable*':
-                    print >> fd, '    public void set%s(%s[] value) {' % (jname,jtype)
-                    print >> fd, '        LassoJNI.%s_set(this, value);' % prefix
+                    print >> fd, '    public void set%s(Map map) {' % jname
+                    print >> fd, '        %s[] arr = null;' % jtype
+                    print >> fd, '        if (map != null) {'
+                    print >> fd, '            arr = new %s[map.size()*2];' % jtype
+                    print >> fd, '            mapToArray(map,arr);'
+                    print >> fd, '        }'
+                    print >> fd, '        LassoJNI.%s_set(this, arr);' % prefix
                     print >> fd, '    }'
-                    print >> fd, '    public %s[] get%s() {' % (jtype,jname)
-                    print >> fd, '        return LassoJNI.%s_get(this);' % prefix
+                    print >> fd, '    public Map get%s() {' % jname
+                    print >> fd, '        return arrayToMap(LassoJNI.%s_get(this));' % prefix
                     print >> fd, '    }'
                     print >> fd, '    public void addTo%s(String key, %s value) {' % (jname,jtype)
                     print >> fd, '        LassoJNI.%s_add(this, key, value);' % prefix
                     print >> fd, '    }'
-                    print >> fd, '    public void removeFrom%s(String key) {' % (jname)
-                    print >> fd, '        LassoJNI.%s_remove(this, key);' % prefix
-                    print >> fd, '    }'
+#                    print >> fd, '    public void removeFrom%s(String key) {' % (jname)
+#                    print >> fd, '        LassoJNI.%s_remove(this, key);' % prefix
+#                    print >> fd, '    }'
                     #print '  void set%s(%s[] value)' % (jname,jtype)
                     #print '  %s[] get%s()' % (jtype,jname)
                     #print '  void addTo%s(String key, %s value)' % (jname,jtype)
@@ -741,7 +827,7 @@ public static native void init2();
                     wrapper.initial_indent = first
                     wrapper.subsequent_indent = '      * '
                     str = re.sub(r'\bNULL\b','null', str)
-                    str = re.sub(r'#Lasso(\w+)',r'{@link \1}',str)
+                    str = re.sub(r'#Lasso(\w+)',r'{@@link \1}',str)
                     str = re.sub(r'[^.]*must *be *freed *by[^.]*\.?', '', str)
                     str = re.sub(r'[^.]*internally[^.]*\.?[^.]*freed[^.]*\.?', '', str)
 
@@ -760,20 +846,32 @@ public static native void init2();
                             err = error_to_exception(err)[0]
                             print >> fd, normalize(err,'      * @throws ')
                     print >> fd, '    **/'
-                print >> fd, '    public %s %s(%s) {' % (return_type,mname,generate_arg_list(self,args[1:]))
-                print >> fd, '       ',
-                if m.return_type:
-                    print >> fd, 'return',
-                arglist = generate_arg_list2(args[1:])
-                if arglist:
-                    arglist = ', ' + arglist
-                if m.errors:
-                    print >> fd, 'LassoException.throwError(',
-                print >> fd,'LassoJNI.%s(this%s)' % (jni_name,arglist),
-                if m.errors:
-                    print >> fd, ');'
+                if m.return_type == 'GList*':
+                    print >> fd, '    public List %s(%s) {' % (mname,generate_arg_list(self,args[1:]))
+                    arglist = generate_arg_list2(args[1:])
+                    if arglist:
+                        arglist = ', ' + arglist
+                    print >> fd, '        Object[] arr = LassoJNI.%s(this%s);' % (jni_name,arglist)
+                    print >> fd, '        if (arr != null)'
+                    print >> fd, '            return Arrays.asList(arr);'
+                    print >> fd, '        else'
+                    print >> fd, '            return null;'
+                    print >> fd, '    }'
                 else:
-                    print >> fd, ';'
-                print >> fd, '    }'
+                    print >> fd, '    public %s %s(%s) {' % (return_type,mname,generate_arg_list(self,args[1:]))
+                    print >> fd, '       ',
+                    if m.return_type:
+                        print >> fd, 'return',
+                    arglist = generate_arg_list2(args[1:])
+                    if arglist:
+                        arglist = ', ' + arglist
+                    if m.errors:
+                        print >> fd, 'LassoException.throwError(',
+                    print >> fd,'LassoJNI.%s(this%s)' % (jni_name,arglist),
+                    if m.errors:
+                        print >> fd, ');'
+                    else:
+                        print >> fd, ';'
+                    print >> fd, '    }'
             print >> fd, '}'
             fd.close()

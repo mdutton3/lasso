@@ -11,4 +11,5 @@
  -> recencer par fonction les erreurs émises DONE
  -> remonter les infos dans le graphe DONE
 * doc DONE
-* renvoyer des listes et des hashmap au lieu de tableaux
+* renvoyer des listes et des hashmap au lieu de tableaux DONE
+* utiliser les numéros de version de lasso dans la doc/noms de fichiers

@@ -430,6 +430,12 @@ def main():
 
 	java_binding = lang_java.JavaBinding(binding)
 	java_binding.generate();
+    elif options.language == 'java-list':
+        import lang_java
+
+	java_binding = lang_java.JavaBinding(binding)
+	java_binding.print_list_of_files();
+        
 
 if __name__ == '__main__':
     main()
