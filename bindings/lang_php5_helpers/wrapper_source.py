@@ -101,6 +101,9 @@ PHP_MINIT_FUNCTION(lasso)
         }
         print >> self.fd, '    /* Constants (both enums and defines) */'
         for c in self.binding_data.constants:
+            if c[0] not in constant_types:
+                print >> sys.stderr, 'W: no support for %s constant type (%s)' % (c[0], c[1])
+                continue
             print >> self.fd, '    REGISTER_%(type)s_CONSTANT("%(name)s", %(name)s, CONST_CS|CONST_PERSISTENT);' \
                 % {'type': constant_types[c[0]], 'name': c[1]}
         print >> self.fd, ''
@@ -237,7 +240,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('elem_type'))
             return
 
-        function_name = '%s_%s_get' % (klassname, format_attribute(m_name))
+        function_name = '%s_%s_get' % (klassname, utils.format_as_camelcase(m_name))
         function_name = '%s_%s_get' % (klassname, utils.format_as_camelcase(m_name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
@@ -283,7 +286,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('elem_type'))
             return
 
-        function_name = '%s_%s_set' % (klassname, format_attribute(m_name))
+        function_name = '%s_%s_set' % (klassname, utils.format_as_camelcase(m_name))
         function_name = '%s_%s_set' % (klassname, utils.format_as_camelcase(m_name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
