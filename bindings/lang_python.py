@@ -105,7 +105,12 @@ class Error(Exception):
     @staticmethod
     def raise_on_rc(rc):
         global exceptions_dict
-        raise exceptions_dict.get(rc)
+        exception = exceptions_dict.get(rc)
+        if not exception:
+            raise LassoError()
+        else:
+            exception.code = rc
+            raise exception
 
     def __str__(self):
         return '<lasso.%s(%s): %s>' % (self.__class__.__name__, self.code, _lasso.strError(self.code))
@@ -151,12 +156,23 @@ class %sError(%sError):
     pass
 ''' % (cat, parent_cat)
 
+            exceptions_dict[detail] = c[1][6:]
+
+            if (detail, cat) == ('UnsupportedProfile', 'Logout'):
+                # skip Logout/UnsupportedProfile exception as its name would
+                # be the same as Profile/UnsupportedProfile; it is not a
+                # problem skipping it as they both inherit from ProfileError
+                # and the exception code will correctly be set by raise_on_rc
+                # afterwards.  (actually it is even totally unnecessary to skip
+                # it here as Profile/UnsupportedProfile is handled after
+                # Logout/UnsupportedProfile, this is just done in the case the
+                # ordering would change)
+                continue
+
             print >> fd, '''\
 class %sError(%sError):
-    code = _lasso.%s
-''' % (detail, cat, c[1][6:])
-
-            exceptions_dict[detail] = c[1][6:]
+    pass
+''' % (detail, cat)
 
         print >> fd, 'exceptions_dict = {'
         for k, v in exceptions_dict.items():
