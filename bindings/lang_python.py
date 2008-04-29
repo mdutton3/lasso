@@ -449,10 +449,7 @@ StringDict = dict
                         function_name, c_args)
                 print >> fd, '        if rc == 0:'
                 print >> fd, '            return'
-                print >> fd, '        elif rc > 0:' # recoverable error
-                print >> fd, '            return rc'
-                print >> fd, '        elif rc < 0:' # unrecoverable error
-                print >> fd, '            raise Error.raise_on_rc(rc)'
+                print >> fd, '        raise Error.raise_on_rc(rc)'
             elif self.is_pygobject(m.return_type):
                 print >> fd, '        return cptrToPy(_lasso.%s(self._cptr%s))' % (
                         function_name, c_args)
