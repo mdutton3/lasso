@@ -215,6 +215,21 @@ static PyMemberDef PyGObjectPtr_members[] = {
 	{NULL}
 };
 
+static PyObject* PyGObjectPtr_get_refcount(PyGObjectPtr *self, void *closure)
+{
+	PyObject *refcount;
+
+	refcount = PyInt_FromLong(self->obj->ref_count);
+	Py_INCREF(refcount);
+	return refcount;
+}
+
+static PyGetSetDef PyGObjectPtr_getseters[] = {
+	{"refcount", (getter)PyGObjectPtr_get_refcount, NULL,
+		"reference count of intern GObject*", NULL},
+	{NULL}  /* Sentinel */
+};
+
 
 static PyTypeObject PyGObjectPtrType = {
 	PyObject_HEAD_INIT(NULL)
@@ -247,5 +262,6 @@ static PyTypeObject PyGObjectPtrType = {
 	0,       /* tp_iternext */
 	0,       /* tp_methods */
 	PyGObjectPtr_members,   /* tp_members */
+	PyGObjectPtr_getseters, /* tp_getset */
 };
 
