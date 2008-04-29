@@ -181,7 +181,6 @@ import lasso
         method_prefix = 'lasso_' + format_as_underscored(klassname) + '_'
         for m in self.binding_data.functions:
             if m.name == method_prefix + 'new':
-                args = ', '.join([x[1] for x in m.args])
                 c_args = []
                 py_args = []
                 for o in m.args:

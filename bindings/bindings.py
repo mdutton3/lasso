@@ -329,6 +329,11 @@ def main():
         python_binding = lang_python.PythonBinding(binding)
         python_binding.generate()
 
+    elif options.language == 'php5':
+        import lang_php5
+
+        php5_binding = lang_php5.Php5Binding(binding)
+        php5_binding.generate()
 
 if __name__ == '__main__':
     main()
