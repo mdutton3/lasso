@@ -1,6 +1,9 @@
 SUBDIRS = python php5 java
 
 EXTRA_DIST = bindings.py \
+	lang_java.py \
+	lang_java_wrapper_bottom.c \
+	lang_java_wrapper_top.c \
 	lang_python.py \
 	lang_python_wrapper_bottom.c \
 	lang_python_wrapper_top.c \
