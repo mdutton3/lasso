@@ -128,6 +128,7 @@ class Struct:
 class Function:
     return_type = None
     name = None
+    rename = None
     args = None
     docstring = None
     
@@ -149,6 +150,8 @@ class Function:
                     arg[2]['optional'] = True
                 if param.attrib.get('default'):
                     arg[2]['default'] = param.attrib.get('default')
+            if func.attrib.get('rename'):
+                self.rename = func.attrib.get('rename')
 
 
 def normalise_var(type, name):

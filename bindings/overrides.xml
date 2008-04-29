@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
 <overrides>
+  <!-- functions -->
+  <func name="lasso_strerror" rename="strError"/>
+  <func name="lasso_profile_is_liberty_query" rename="isLibertyQuery"/>
+  <func name="lasso_profile_is_saml_query" rename="isSamlQuery"/>
+  <func name="lasso_profile_get_request_type_from_soap_msg"
+  	rename="getRequestTypeFromSoapMsg"/>
   <!-- LassoServer -->
   <func name="lasso_server_new">
     <param name="private_key" optional="true"/>

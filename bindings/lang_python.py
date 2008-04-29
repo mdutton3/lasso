@@ -41,6 +41,7 @@ class PythonBinding:
         self.generate_constants(fd)
         for clss in self.binding_data.structs:
             self.generate_class(clss, fd)
+        self.generate_functions(fd)
         self.generate_footer(fd)
         fd.close()
 
@@ -400,6 +401,19 @@ import lasso
         s = regex.sub(rep, s)
         return s
 
+    def generate_functions(self, fd):
+        for m in self.binding_data.functions:
+            if m.name.endswith('_new') or '_new_' in m.name:
+                continue
+            if m.rename:
+                pname = m.rename
+                name = m.rename
+            else:
+                name = m.name[6:]
+                pname = utils.format_as_camelcase(name)
+            print >> fd, '%s = _lasso.%s' % (pname, name)
+
+
     def generate_wrapper(self, fd):
         print >> fd, open(os.path.join(self.binding_data.src_dir, 
                     'lang_python_wrapper_top.c')).read()
@@ -656,9 +670,10 @@ register_constants(PyObject *d)
 '''
 
     def generate_function_wrapper(self, m, fd):
-        name = m.name[6:]
-        if name == 'strerror': # special case so it doesn't conflict with strerror(3)
-            name = 'strError'
+        if m.rename:
+            name = m.rename
+        else:
+            name = m.name[6:]
         self.wrapper_list.append(name)
         print >> fd, '''static PyObject*
 %s(PyObject *self, PyObject *args)
