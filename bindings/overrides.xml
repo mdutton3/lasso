@@ -36,6 +36,10 @@
     <param name="public_key" optional="true"/>
     <param name="ca_cert_chain" optional="true"/>
   </func>
+  <func name="lasso_server_get_svc_metadatas_with_id_and_type">
+    <param name="svcMDIDs" type="GList*" type_qualifier="char*"/>
+    <param name="service_type"/>
+  </func>
   <!-- LassoProvider -->
   <func name="lasso_provider_new">
     <param name="public_key" optional="true"/>

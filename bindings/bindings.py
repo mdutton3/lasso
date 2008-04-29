@@ -171,6 +171,10 @@ class Function:
                     arg[2]['optional'] = True
                 if param.attrib.get('default'):
                     arg[2]['default'] = param.attrib.get('default')
+                if param.attrib.get('type'):
+                    arg[0] = param.attrib.get('type')
+                if param.attrib.get('type_qualifier'):
+                    arg[2]['type_qualifier'] = param.attrib.get('type_qualifier')
             if func.attrib.get('rename'):
                 self.rename = func.attrib.get('rename')
             if func.attrib.get('return_owner'):

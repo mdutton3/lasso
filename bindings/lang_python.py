@@ -770,9 +770,10 @@ register_constants(PyObject *d)
                 parse_tuple_args.append('&%s' % arg_name)
                 print >> fd, '    %s %s;' % (arg[0], arg[1])
             elif arg_type == 'GList*':
-                print >> sys.stderr, 'E: GList argument in', name
                 print >> fd, '    %s %s = NULL;' % (arg[0], arg[1])
-                print >> fd, '    PyGObjectPtr *cvt_%s = NULL;' % arg_name
+                print >> fd, '    PyObject *cvt_%s = NULL;' % arg_name
+                parse_tuple_format.append('O')
+                parse_tuple_args.append('&cvt_%s' % arg_name)
             else:
                 parse_tuple_format.append('O')
                 parse_tuple_args.append('&cvt_%s' % arg_name)
@@ -792,7 +793,17 @@ register_constants(PyObject *d)
                 ''.join(parse_tuple_format), parse_tuple_args)
 
         for f, arg in zip(parse_tuple_format, m.args):
-            if f == 'O':
+            if arg[0] == 'GList*':
+                qualifier = arg[2].get('type_qualifier')
+                if qualifier == 'char*':
+                    print >> fd, '    set_list_of_strings(&%s, cvt_%s);' % (arg[1], arg[1])
+                elif qualifier == 'xmlNode*':
+                    print >> fd, '    set_list_of_xml_nodes(&%s, cvt_%s);' % (arg[1], arg[1])
+                elif qualifier == 'LassoNode':
+                    print >> fd, '    set_list_of_pygobject(&%s, cvt_%s);' % (arg[1], arg[1])
+                else:
+                    print >> sys.stderr, 'E: unqualified GList argument in', name
+            elif f == 'O':
                 print >> fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
 
         if m.return_type:
