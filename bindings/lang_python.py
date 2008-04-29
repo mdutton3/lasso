@@ -22,10 +22,13 @@ def format_underscore_as_py(var):
     var = re.sub(r'_([A-Za-z0-9]+)', rep, var)
     return var
 
-
 class PythonBinding:
     def __init__(self, binding_data):
         self.binding_data = binding_data
+
+    def is_pygobject(self, t):
+        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*',
+                'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
         fd = open('python/lasso.py', 'w')
@@ -33,6 +36,7 @@ class PythonBinding:
         self.generate_constants(fd)
         for clss in self.binding_data.structs:
             self.generate_class(clss, fd)
+        self.generate_footer(fd)
         fd.close()
 
         fd = open('python/_lasso.c', 'w')
@@ -46,6 +50,11 @@ class PythonBinding:
 import _lasso
 
 _lasso.init()
+'''
+
+    def generate_footer(self, fd):
+        print >> fd, '''
+import lasso
 '''
 
     def generate_constants(self, fd):
@@ -82,17 +91,17 @@ _lasso.init()
                     else:
                         py_args.append(arg_name)
 
-                    if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*') or \
-                            arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] or \
-                            arg_type in self.binding_data.enums:
-                        c_args.append(arg_name)
-                    else:
+                    if self.is_pygobject(arg_type):
                         c_args.append('%s._cptr' % arg_name)
+                    else:
+                        c_args.append(arg_name)
                     
                 c_args = ', '.join(c_args)
                 py_args = ', ' + ', '.join(py_args)
                 print >> fd, '    def __init__(self%s):' % py_args
-                print >> fd, '        self._cptr = _lasso.%s(%s)' % (
+                # XXX: could check _lasso....(...)[0] to see if it got the
+                # right class type
+                print >> fd, '        self._cptr = _lasso.%s(%s)[1]' % (
                         m.name[6:], c_args)
                 print >> fd, ''
 
@@ -101,7 +110,7 @@ _lasso.init()
                 print >> fd, '    @classmethod'
                 print >> fd, '    def newFromDump(cls, dump):'
                 print >> fd, '         obj = cls()'
-                print >> fd, '         obj._cptr = _lasso.%s(dump)' % m.name[6:]
+                print >> fd, '         obj._cptr = _lasso.%s(dump)[1]' % m.name[6:]
                 print >> fd, '         if obj._cptr is None:'
                 print >> fd, '             raise "XXX"'
                 print >> fd, ''
@@ -112,8 +121,16 @@ _lasso.init()
         for m in clss.members:
             mname = format_as_python(m[1])
             print >> fd, '    def get_%s(self):' % mname
-            print >> fd, '        return _lasso.%s_%s_get(self._cptr)' % (
-                    klassname, mname)
+            if self.is_pygobject(m[0]):
+                print >> fd, '        t, cptr = _lasso.%s_%s_get(self._cptr)' % (
+                        klassname, mname)
+                print >> fd, '        klass = getattr(lasso, t)'
+                print >> fd, '        o = klass.__new__(klass)'
+                print >> fd, '        o._cptr = cptr'
+                print >> fd, '        return o'
+            else:
+                print >> fd, '        return _lasso.%s_%s_get(self._cptr)' % (
+                        klassname, mname)
             print >> fd, '    def set_%s(self, value):' % mname
             print >> fd, '        _lasso.%s_%s_set(self._cptr, value)' % (
                     klassname, mname)
@@ -246,6 +263,9 @@ register_constants(PyObject *d)
             print >> fd, '    PyObject* return_pyvalue;'
             print >> fd, '    PyGObjectPtr* cvt_this;'
             print >> fd, '    %s* this;' % klassname
+            if self.is_pygobject(m[0]):
+                print >> fd, '    PyObject* return_tuple;'
+                print >> fd, '    PyObject* type_name;'
 
             print >> fd, '    if (! PyArg_ParseTuple(args, "O", &cvt_this)) return NULL;'
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
@@ -289,7 +309,6 @@ register_constants(PyObject *d)
                 print >> fd, '    this->%s = value;' % m[1]
             elif parse_format == 's':
                 print >> fd, '    this->%s = g_strdup(value);' % m[1]
-                print >> fd, '    free(value);'
             elif parse_format == 'O':
                 print >> fd, '    this->%s = (%s)g_object_ref(cvt_value->obj);' % (m[1], m[0])
 
@@ -309,7 +328,7 @@ register_constants(PyObject *d)
             print >> fd, '        Py_INCREF(Py_False);'
             print >> fd, '        return Py_False;'
             print >> fd, '    }'
-        elif vtype in ('int', 'gint'):
+        elif vtype in ['int', 'gint'] + self.binding_data.enums:
             print >> fd, '    return_pyvalue = PyInt_FromLong(return_value);'
             print >> fd, '    Py_INCREF(return_pyvalue);'
             print >> fd, '    return return_pyvalue;'
@@ -323,14 +342,24 @@ register_constants(PyObject *d)
             print >> fd, '        return Py_None;'
             print >> fd, '    }'
         else:
-            print >> fd, '    if (return_value) {'
-            print >> fd, '        return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));'
-            print >> fd, '        Py_INCREF(return_pyvalue);'
-            print >> fd, '        return return_pyvalue;'
-            print >> fd, '    } else {'
-            print >> fd, '        Py_INCREF(Py_None);'
-            print >> fd, '        return Py_None;'
-            print >> fd, '    }'
+            # return a tuple with (object type, cPtr)
+            print >> fd, '''\
+    if (return_value) {
+        return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));
+        Py_INCREF(return_pyvalue);
+        type_name = PyString_FromString(G_OBJECT_TYPE_NAME(return_value)+5);
+        Py_INCREF(type_name);
+        return_tuple = PyTuple_New(2);
+        PyTuple_SetItem(return_tuple, 0, type_name);
+        PyTuple_SetItem(return_tuple, 1, return_pyvalue);
+        return_pyvalue = return_tuple;
+        Py_INCREF(return_pyvalue);
+        return return_pyvalue;
+    } else {
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+'''
 
     def generate_function_wrapper(self, m, fd):
         name = m.name[6:]
@@ -365,6 +394,9 @@ register_constants(PyObject *d)
         if m.return_type:
             print >> fd, '    %s return_value;' % m.return_type
             print >> fd, '    PyObject* return_pyvalue;'
+            if self.is_pygobject(m.return_type):
+                print >> fd, '    PyObject* return_tuple;'
+                print >> fd, '    PyObject* type_name;'
         print >> fd, ''
 
         parse_tuple_args = ', '.join(parse_tuple_args)
@@ -387,8 +419,8 @@ register_constants(PyObject *d)
             print >> fd, '    return Py_None;'
         else:
             self.return_value(fd, m.return_type)
-        print >> fd, '''}
-'''
+        print >> fd, '}'
+        print >> fd, ''
 
     def generate_wrapper_list(self, fd):
         print >> fd, '''
