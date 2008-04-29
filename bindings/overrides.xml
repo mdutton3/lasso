@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <overrides>
-  <!-- functions -->
+  <!-- Constants -->
+  <constant name="LASSO_SAML2_SUPPORT" value="True"/>
+  <!-- Functions -->
   <func name="lasso_strerror" rename="strError"/>
   <func name="lasso_profile_is_liberty_query" rename="isLibertyQuery"/>
   <func name="lasso_profile_is_saml_query" rename="isSamlQuery"/>

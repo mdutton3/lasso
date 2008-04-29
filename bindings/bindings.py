@@ -307,6 +307,7 @@ def parse_headers(srcdir, enable_idwsf):
             binding.headers.append(os.path.join(base, filename)[3:])
             parse_header(os.path.join(base, filename))
         binding.headers.insert(0, 'lasso/xml/saml-2.0/saml2_assertion.h')
+    binding.constants.append(('b', 'LASSO_WSF_ENABLED'))
 
 
 def main():

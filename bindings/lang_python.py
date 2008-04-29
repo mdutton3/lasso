@@ -163,6 +163,9 @@ class %sError(%sError):
 
     def generate_footer(self, fd):
         print >> fd, '''
+
+WSF_SUPPORT = WSF_ENABLED # compatibility
+
 import lasso
 '''
 
@@ -170,6 +173,15 @@ import lasso
         print >> fd, '### Constants (both enums and defines)'
         for c in self.binding_data.constants:
             print >> fd, '%s = _lasso.%s' % (c[1][6:], c[1][6:])
+        for c in self.binding_data.overrides.findall('constant'):
+            name = c.attrib.get('name')
+            if c.attrib.get('value'):
+                name = name[6:] # dropping LASSO_
+                value = c.attrib.get('value')
+                if value == 'True':
+                    print >> fd, '%s = True' % name
+                else:
+                    print >> sys.stderr, 'E: unknown value for constant: %r' % value
         print >> fd, ''
 
     def generate_class(self, clss, fd):
@@ -445,6 +457,15 @@ register_constants(PyObject *d)
                 print >> fd, '    obj = PyInt_FromLong(%s);' % c[1]
             elif c[0] == 's':
                 print >> fd, '    obj = PyString_FromString(%s);' % c[1]
+            elif c[0] == 'b':
+                print >> fd, '''\
+#ifdef %s
+    obj = Py_True;
+#else
+    obj = Py_False;
+#endif''' % c[1]
+            else:
+                print >> sys.stderr, 'E: unknown constant type: %r' % c[0]
             print >> fd, '    PyDict_SetItemString(d, "%s", obj);' % c[1][6:]
             print >> fd, '    Py_DECREF(obj);'
         print >> fd, '}'
