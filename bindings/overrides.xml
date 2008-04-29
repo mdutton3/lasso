@@ -154,15 +154,13 @@
     <param name="security_mech_id" optional="true"/>
   </func>
   <func name="lasso_data_service_add_query_item" return_owner="false"/>
-  <!-- Fonctions utilisant des types venant de la partie id-wsf de la librarie -->
-  <func name="lasso_server_get_service" skip="true">
-  </func>
-  <func name="lasso_login_set_encryptedResourceId" skip="true">
-  </func>
-  <func name="lasso_node_new_from_dump" skip="true"/>
-  <func name="lasso_node_new_from_soap" skip="true"/>
-  <func name="lasso_node_new_from_xmlNode" skip="true"/>
-  <func name="lasso_provider_new_from_dump" skip="true"/>
+
+  <func name="lasso_server_get_service" skip="unless-id-wsf" />
+  <func name="lasso_login_set_encryptedResourceId" skip="unless-id-wsf"/>
+  <func name="lasso_node_new_from_dump" skip="java"/>
+  <func name="lasso_node_new_from_soap" skip="java"/>
+  <func name="lasso_node_new_from_xmlNode" skip="java"/>
+  <func name="lasso_provider_new_from_dump" skip="java"/>
   <func name="lasso_saml2_name_id_new_with_string" return_type="LassoSaml2NameID*"/>
   <func name="lasso_saml2_action_new_with_string" return_type="LassoSaml2Action*"/>
   <func name="lasso_misc_text_node_new_with_string" return_type="LassoMiscTextNode*"/>

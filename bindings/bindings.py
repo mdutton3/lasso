@@ -198,8 +198,14 @@ class Function:
                 self.return_owner = (func.attrib.get('return_owner') != 'false')
             if func.attrib.get('return_type'):
                 self.return_type = func.attrib.get('return_type')
-            if func.attrib.get('skip') == 'true':
-                self.skip = True
+            if func.attrib.get('skip'):
+                skip = func.attrib.get('skip')
+                if skip == 'true':
+                    self.skip = True
+                elif skip == 'unless-id-wsf' and not binding.options.idwsf:
+                    self.skip = True
+                elif binding.options.language in skip.split(','):
+                    self.skip = True
             if func.attrib.get('return_type_qualifier'):
                 self.return_type_qualifier = func.attrib.get('return_type_qualifier')
         for param in binding.overrides.findall('arg'):
@@ -401,7 +407,7 @@ def parse_header(header_file):
         i += 1
 
 
-def parse_headers(srcdir, enable_idwsf):
+def parse_headers(srcdir):
     wsf_prefixes = ['disco', 'dst', 'is', 'profile_service', 'discovery',
             'wsf', 'interaction', 'utility', 'sa', 'soap', 'authentication',
             'wsse', 'sec', 'idwsf2', 'wsf2', 'wsa', 'wsu']
@@ -413,7 +419,7 @@ def parse_headers(srcdir, enable_idwsf):
         if not 'Makefile.am' in filenames:
             # not a source dir
             continue
-        if not enable_idwsf and (base.endswith('/id-wsf') or \
+        if not binding.options.idwsf and (base.endswith('/id-wsf') or \
                 base.endswith('/id-wsf-2.0') or base.endswith('/ws')):
             # ignore ID-WSF
             continue
@@ -422,7 +428,7 @@ def parse_headers(srcdir, enable_idwsf):
         for filename in filenames:
             if filename == 'lasso_config.h' or 'private' in filename:
                 continue
-            if not enable_idwsf and filename.split('_')[0] in wsf_prefixes:
+            if not binding.options.idwsf and filename.split('_')[0] in wsf_prefixes:
                 continue
             binding.headers.append(os.path.join(base, filename)[3:])
             parse_header(os.path.join(base, filename))
@@ -444,7 +450,7 @@ def main():
         sys.exit(1)
 
     binding = BindingData(options)
-    parse_headers(options.srcdir, options.idwsf)
+    parse_headers(options.srcdir)
     binding.look_for_docstrings(options.srcdir, options.exception_doc)
     binding.order_class_hierarchy()
     binding.attach_methods()
