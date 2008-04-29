@@ -2,7 +2,7 @@ Source: lasso
 Priority: optional
 Section: libs
 Maintainer: Frederic Peters <fpeters@debian.org>
-Build-Depends: debhelper (>= 5.0.37.2), libxml2-dev, libxslt1-dev, libxmlsec1-dev, libxmlsec1-openssl, libglib2.0-dev, python-all-dev (>= 2.3.5-11), libexpat1-dev, fastjar, python-central (>= 0.5), gcc-4.3, gcj, gcj-4.3
+Build-Depends: debhelper (>= 5.0.37.2), libxml2-dev, libxslt1-dev, libxmlsec1-dev, libxmlsec1-openssl, libglib2.0-dev, python-all-dev (>= 2.3.5-11), libexpat1-dev, fastjar, python-central (>= 0.5), gcc-4.3, gcj, gcj-4.3, php5-dev
 XS-Python-Version: all
 Standards-Version: 3.7.2
 
