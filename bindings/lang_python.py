@@ -2,6 +2,8 @@ import re
 import string
 
 def format_as_python(var):
+    if '_' in var:
+        return format_underscore_as_py(var)
     if var[0] in string.uppercase:
         var = var[0].lower() + var[1:]
     return var
