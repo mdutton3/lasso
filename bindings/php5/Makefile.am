@@ -22,7 +22,7 @@ doc:
 	phpdoc -o HTML:frames:earthli -f lasso.php -t docs
 
 clean-local:
-	-rm lasso.php php_lasos.h _lasso.c
+	-rm lasso.php php_lasso.h _lasso.c
 
 .PHONY: doc
 
