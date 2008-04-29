@@ -785,7 +785,7 @@ register_constants(PyObject *d)
                 # assume GObject*
                 print >> fd, '''\
         for (i = 0; item; i++) {
-            PyTuple_SetItem(return_pyvalue, i, PyGObjectPtr_New(item->data));
+            PyTuple_SetItem(return_pyvalue, i, PyGObjectPtr_New(g_object_ref(item->data)));
             item = g_list_next(item);
         }'''
             print >> fd, '''\
