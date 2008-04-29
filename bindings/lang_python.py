@@ -207,7 +207,7 @@ import lasso
                 print >> fd, '    @classmethod'
                 print >> fd, '    def newFromDump(cls, dump):'
                 print >> fd, '         obj = cls.__new__(cls)'
-                print >> fd, '         obj._cptr = _lasso.%s(dump)[1]' % m.name[6:]
+                print >> fd, '         obj._cptr = _lasso.%s(dump)' % m.name[6:]
                 print >> fd, '         if obj._cptr is None:'
                 print >> fd, '             raise "XXX"'
                 print >> fd, '         return obj'
@@ -221,9 +221,9 @@ import lasso
             options = m[2]
             print >> fd, '    def get_%s(self):' % mname
             if self.is_pygobject(m[0]):
-                print >> fd, '        t, cptr = _lasso.%s_%s_get(self._cptr)' % (
+                print >> fd, '        t = _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
-                print >> fd, '        return cptrToPy(t, cptr)'
+                print >> fd, '        return cptrToPy(t)'
             elif m[0] == 'GList*' and options.get('elem_type') != 'char*':
                 print >> fd, '        l = _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
