@@ -170,6 +170,9 @@ import lasso
 
 WSF_SUPPORT = WSF_ENABLED
 
+Profile.isIdentityDirty = property(Profile.isIdentityDirty)
+Profile.isSessionDirty = property(Profile.isSessionDirty)
+
 def identity_get_provider_ids(self):
     return self.federations.keys()
 Identity.providerIds = property(identity_get_provider_ids)
