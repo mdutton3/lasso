@@ -143,6 +143,7 @@ class Struct:
 
 class Function:
     return_type = None
+    return_type_qualifier = None
     name = None
     rename = None
     args = None
@@ -178,6 +179,8 @@ class Function:
                 self.return_type = func.attrib.get('return_type')
             if func.attrib.get('skip') == 'true':
                 self.skip = True
+            if func.attrib.get('return_type_qualifier'):
+                self.return_type_qualifier = func.attrib.get('return_type_qualifier')
         for param in binding.overrides.findall('arg'):
             arg_name = param.attrib.get('name')
             arg_sub = param.attrib.get('substitute')

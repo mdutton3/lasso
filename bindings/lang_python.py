@@ -369,8 +369,6 @@ StringDict = dict
             if self.is_pygobject(m.return_type):
                 print >> fd, '        t = _lasso.%s(self._cptr)' % function_name
                 print >> fd, '        return cptrToPy(t)'
-            elif m.return_type in ('GList*', 'GHashTable*'):
-                raise NotImplementedError
             else:
                 print >> fd, '        return _lasso.%s(self._cptr)' % function_name
 
@@ -808,7 +806,7 @@ register_constants(PyObject *d)
         else:
             # Constructor so decrease refcount (it was incremented by PyGObjectPtr_New called
             # in self.return_value
-            self.return_value(fd, m.return_type, {})
+            self.return_value(fd, m.return_type, {'elem_type': m.return_type_qualifier})
             if m.return_owner and self.is_pygobject(m.return_type):
                 print >> fd, '    if (return_value) g_object_unref(return_value);'
             print >> fd, '    return return_pyvalue;'

@@ -24,6 +24,7 @@
   <func name="lasso_wsf_profile_get_session" return_owner="false" />
   <!-- LassoIdentity -->
   <func name="lasso_identity_get_federation" return_owner="false" />
+  <func name="lasso_identity_get_svc_md_ids" return_type_qualifier="char*"/>
   <!-- LassoServer -->
   <func name="lasso_server_new">
     <param name="metadata" optional="true"/>
