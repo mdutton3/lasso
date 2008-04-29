@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 # Lasso - A free implementation of the Liberty Alliance specifications.
 # 

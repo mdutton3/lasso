@@ -64,7 +64,7 @@ class WrapperSource:
         print >> self.fd, '''\
 PHP_MINIT_FUNCTION(lasso)
 {
-    le_lasso_server = zend_register_list_destructors_ex(NULL, NULL, PHP_LASSO_SERVER_RES_NAME, module_number);
+    le_lasso_server = zend_register_list_destructors_ex(php_gobject_generic_destructor, NULL, PHP_LASSO_SERVER_RES_NAME, module_number);
 '''
 
     def generate_constants(self):
@@ -149,9 +149,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         else:
             print >> self.fd, '''\
     if (return_c_value) {
-        self = (PhpGObjectPtr *)emalloc(sizeof(PhpGObjectPtr));
-        self->obj = G_OBJECT(return_c_value);
-        self->typename = estrdup(G_OBJECT_TYPE_NAME(G_OBJECT(return_c_value)));
+        self = PhpGObjectPtr_New(G_OBJECT(return_c_value));
         ZEND_REGISTER_RESOURCE(return_value, self, le_lasso_server);
     } else {
         RETURN_NULL();
@@ -287,7 +285,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 
         if self.is_object(m_type):
             print >> self.fd, '    if (this->%s != NULL) {' % m_name
-            print >> self.fd, '        return_c_value = g_object_ref(this->%s);' % m_name
+            print >> self.fd, '        return_c_value = this->%s;' % m_name
             print >> self.fd, '    }'
         else:
             print >> self.fd, '    return_c_value = this->%s;' % m_name

@@ -34,7 +34,7 @@ PhpGObjectPtr_New(GObject *obj)
 	}
 
 	self = (PhpGObjectPtr *)emalloc(sizeof(PhpGObjectPtr));
-	self->obj = obj;
+	self->obj = g_object_ref(obj);
 	self->typename = estrdup(G_OBJECT_TYPE_NAME(obj));
 
 	return self;
@@ -51,6 +51,22 @@ PHP_FUNCTION(lasso_get_object_typename)
 
 	ZEND_FETCH_RESOURCE(self, PhpGObjectPtr *, &zval_self, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);
 	RETURN_STRING(self->typename, 1);
+}
+
+/* Generic destructor for PHP GObject  */
+static void php_gobject_generic_destructor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+{
+    PhpGObjectPtr* gobject = (PhpGObjectPtr*)rsrc->ptr;
+
+    if (gobject) {
+        if (gobject->obj) {
+            g_object_unref(G_OBJECT(gobject->obj));
+        }
+        if (gobject->typename) {
+            efree(gobject->typename);
+        }
+        efree(gobject);
+    }
 }
 
 /* List handling */

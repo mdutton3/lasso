@@ -72,7 +72,7 @@ if (!extension_loaded('lasso')) {
  * Convert a C object to a PHP object
  */
 function cptrToPhp ($cptr) {
-    if (is_null($cptr)) return null;
+    if (is_null($cptr) || !$cptr) return null;
     $typename = lasso_get_object_typename($cptr);
     $class_name = $typename . "NoInit";
     $obj = new $class_name(); 
@@ -138,7 +138,7 @@ function getRequestTypeFromSoapMsg($mesg) {
 
                 php_args = ', '.join(php_args)
                 c_args = ', '.join(c_args)
-                # XXX: could check self._cptr.typename to see if it got the
+                # XXX: could check $this->_cptr->typename to see if it got the
                 # right class type
                 print >> self.fd, '    public $_cptr = null;'
                 print >> self.fd, ''
