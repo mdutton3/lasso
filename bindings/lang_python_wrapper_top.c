@@ -8,12 +8,43 @@ GQuark lasso_wrapper_key;
 PyMODINIT_FUNC init_lasso(void);
 static PyObject* get_pystring_from_xml_node(xmlNode *xmlnode);
 static xmlNode*  get_xml_node_from_pystring(PyObject *string);
-static PyObject* get_dict_from_hashtable_of_strings(GHashTable *value);
 static PyObject* get_dict_from_hashtable_of_objects(GHashTable *value);
 static PyObject* PyGObjectPtr_New(GObject *obj);
+static void set_hashtable_of_pygobject(GHashTable *a_hash, PyObject *dict);
+static void set_list_of_strings(GList **a_list, PyObject *seq);
+static void set_list_of_xml_nodes(GList **a_list, PyObject *seq);
+static void set_list_of_pygobject(GList **a_list, PyObject *seq);
+static PyObject *get_list_of_strings(GList *a_list);
+static PyObject *get_list_of_xml_nodes(GList *a_list);
+static PyObject *get_list_of_pygobject(GList *a_list);
+typedef struct {
+	PyObject_HEAD
+	GObject *obj;
+	PyObject *typename;
+} PyGObjectPtr;
+static PyTypeObject PyGObjectPtrType;
 
 /* utility functions */
+static PyObject *
+noneRef() {
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+#if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 12)
+void
+g_hash_table_remove_all (GHashTable *hash_table)
+{
+    g_return_if_fail (hash_table != NULL);
 
+#ifndef G_DISABLE_ASSERT
+    if (hash_table->nnodes != 0)
+        hash_table->version++;
+#endif
+
+    g_hash_table_remove_all_nodes (hash_table, TRUE);
+    g_hash_table_maybe_resize (hash_table);
+}
+#endif
 #if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 14)
   /* copy of private struct and g_hash_table_get_keys from GLib internals
    * (as this function is useful but new in 2.14) */
@@ -56,40 +87,13 @@ g_hash_table_get_keys (GHashTable *hash_table)
 
   return retval;
 }
-
 #endif
-
-static PyObject*
-get_dict_from_hashtable_of_strings(GHashTable *value)
-{
-	GList *keys;
-	PyObject *dict;
-	char *item_value;
-	PyObject *item;
-
-	dict = PyDict_New();
-
-	keys = g_hash_table_get_keys(value);
-	for (; keys; keys = g_list_next(keys)) {
-		item_value = g_hash_table_lookup(value, keys->data);
-		if (item_value) {
-			item = PyString_FromString(item_value);
-			PyDict_SetItemString(dict, (char*)keys->data, item); 
-			Py_DECREF(item);
-		} else {
-			PyDict_SetItemString(dict, (char*)keys->data, Py_None); 
-		}
-	}
-	g_list_free(keys);
-
-	return PyDictProxy_New(dict);
-}
 
 static PyObject*
 get_dict_from_hashtable_of_objects(GHashTable *value)
 {
 	GList *keys;
-	PyObject *dict;
+	PyObject *dict,*proxy;
 	GObject *item_value;
 	PyObject *item;
 
@@ -103,12 +107,14 @@ get_dict_from_hashtable_of_objects(GHashTable *value)
 			PyDict_SetItemString(dict, (char*)keys->data, item); 
 			Py_DECREF(item);
 		} else {
-			PyDict_SetItemString(dict, (char*)keys->data, Py_None); 
+			PyErr_Warn(PyExc_RuntimeWarning, "hashtable contains a null value");
 		}
 	}
 	g_list_free(keys);
 
-	return PyDictProxy_New(dict);
+	proxy = PyDictProxy_New(dict);
+	Py_DECREF(dict);
+	return proxy;
 }
 
 static PyObject*
@@ -138,6 +144,158 @@ get_pystring_from_xml_node(xmlNode *xmlnode)
 	return pystring;
 }
 
+gboolean
+valid_seq(PyObject *seq) {
+	if (! seq || ( seq != Py_None && ! PyTuple_Check(seq))) {
+		 PyErr_SetString(PyExc_TypeError, "value should be tuple");
+		 return 0;
+	}
+	return 1;
+}
+
+void free_list(GList **a_list, GFunc free_help) {
+	if (*a_list) {
+		g_list_foreach(*a_list, free_help, NULL);
+		g_list_free(*a_list);
+	}
+}
+
+/** Remove all elements from a_hash and replace them with
+ * the key-values pairs from the python dict. 
+ * Increase reference of new values before removeing
+ * values from the hash, so if there are somme common
+ * values with RefCoun = 1 they won't be deallocated.
+ * */
+static void 
+set_hashtable_of_pygobject(GHashTable *a_hash, PyObject *dict) {
+	PyObject *key, *value;
+	int i;
+
+	if (! a_hash) {
+		 PyErr_SetString(PyExc_TypeError, "hashtable does not exist");
+		 return;
+	}
+	if (dict != Py_None && ! PyDict_Check(dict)) {
+		 PyErr_SetString(PyExc_TypeError, "value should be a frozen dict");
+		 return;
+	}
+	i = 0;
+	// Increase ref count of common object between old and new
+	// value of the hashtable
+	while (PyDict_Next(dict, &i, &key, &value)) {
+		if (! PyString_Check(key) || ! PyObject_TypeCheck(value, &PyGObjectPtrType))
+		{
+		    	PyErr_SetString(PyExc_TypeError, 
+					"value should be a dict,"
+					"with string keys"
+					"and GObjectPtr values");
+			goto failure;
+		}
+		g_object_ref(((PyGObjectPtr*)value)->obj);
+	}
+	g_hash_table_remove_all (a_hash);
+	while (PyDict_Next(dict, &i, &key, &value)) {
+		char *ckey = g_strdup(PyString_AsString(key));
+		g_hash_table_replace (a_hash, ckey, ((PyGObjectPtr*)value)->obj);
+	}
+	return;
+failure:
+	i = 0;
+	while (PyDict_Next(dict, &i, &key, &value)) {
+		if (! PyString_Check(key) || ! PyObject_TypeCheck(value, &PyGObjectPtrType))
+			break;
+		g_object_unref((PyGObjectPtr*)value);
+	}
+}
+
+/** Set the GList* pointer, pointed by a_list, to a pointer on a new GList 
+ * created by converting the python seq into a GList of char*.
+ */
+static void
+set_list_of_strings(GList **a_list, PyObject *seq) {
+	GList *list = NULL;
+	int l = 0,i;
+
+	g_return_if_fail(valid_seq(seq));
+	if (seq != Py_None) {
+		l = PySequence_Length(seq);
+	}
+	for (i=0; i<l; i++) {
+		PyObject *pystr = PySequence_Fast_GET_ITEM(seq, i);
+		if (! PyString_Check(pystr)) {
+			PyErr_SetString(PyExc_TypeError, 
+					"value should be a tuple of strings");
+			goto failure;
+		}
+		list = g_list_append(list, g_strdup(PyString_AsString(pystr)));
+	}
+	free_list(a_list, (GFunc)g_free);
+	*a_list = list;
+	return;
+failure:
+	free_list(&list, (GFunc)g_free);
+}
+
+/** Set the GList* pointer, pointed by a_list, to a pointer on a new GList 
+ * created by converting the python seq into a GList of xmlNode*.
+ */
+static void
+set_list_of_xml_nodes(GList **a_list, PyObject *seq) {
+	GList *list = NULL;
+	int l = 0,i;
+
+	g_return_if_fail(valid_seq(seq));
+	if (seq != Py_None) {
+		l = PySequence_Length(seq);
+	}
+	for (i=0; i<l; i++) {
+		PyObject *item = PySequence_Fast_GET_ITEM(seq, i);
+		xmlNode *item_node;
+		if (! PyString_Check(item)) {
+			PyErr_SetString(PyExc_TypeError, 
+					"value should be a tuple of strings");
+			goto failure;
+		}
+		item_node = get_xml_node_from_pystring(item);
+		list = g_list_append(list, item_node);
+	}
+	free_list(a_list, (GFunc)xmlFreeNode);
+	*a_list = list;
+	return;
+failure:
+	free_list(&list, (GFunc)xmlFreeNode);
+}
+
+/** Set the GList* pointer, pointed by a_list, to a pointer on a new GList 
+ * created by converting the python seq into a GList of GObject*.
+ */
+static void
+set_list_of_pygobject(GList **a_list, PyObject *seq) {
+	GList *list = NULL;
+	int l = 0,i;
+
+	g_return_if_fail(valid_seq(seq));
+	if (seq != Py_None) {
+		l = PySequence_Length(seq);
+	}
+	for (i=0; i<l; i++) {
+		PyObject *item = PySequence_Fast_GET_ITEM(seq, i);
+		GObject *gobject;
+		if (! PyObject_TypeCheck(item, &PyGObjectPtrType)) {
+			PyErr_SetString(PyExc_TypeError, 
+					"value should be a tuple of PyGobject");
+			goto failure;
+		}
+		gobject = g_object_ref(((PyGObjectPtr*)item)->obj);
+		list = g_list_append(list, gobject);
+	}
+	free_list(a_list, (GFunc)g_object_unref);
+	*a_list = list;
+	return;
+failure:
+	free_list(&list, (GFunc)g_object_unref);
+}
+
 static xmlNode*
 get_xml_node_from_pystring(PyObject *string) {
 	xmlDoc *doc;
@@ -152,17 +310,117 @@ get_xml_node_from_pystring(PyObject *string) {
 
 	return node;
 }
+/** Return a tuple containing the string contained in a_list */
+static PyObject *
+get_list_of_strings(GList *a_list) {
+	PyObject *a_tuple = NULL;
+	int i = 0;
 
+	if (! a_list) {
+		return noneRef();
+	}
+	a_tuple = PyTuple_New(g_list_length(a_list));
+	if (! a_tuple)
+		goto failure;
+	while (a_list) {
+		if (a_list->data) {
+			PyObject *str = PyString_FromString((const char*)a_list->data);
+			if (!str) {
+				goto failure;
+			}
+			PyTuple_SetItem(a_tuple, i, str);
+			i++;
+		} else {
+			PyErr_Warn(PyExc_RuntimeWarning, 
+				"list contains a NULL value");
+		}
+		a_list = a_list->next;
+	}
+	if (_PyTuple_Resize(&a_tuple, i))
+		goto failure;
+	return a_tuple;
+failure:
+	PyErr_SetString(PyExc_TypeError, "Allocation problem in get_list_of_strings");
+	Py_XDECREF(a_tuple); 	
+	return noneRef();
+}
+
+static PyObject *
+get_list_of_xml_nodes(GList *a_list) {
+	PyObject *a_tuple = NULL;
+	int i = 0;
+
+	if (! a_list) {
+		return noneRef();
+	}
+	a_tuple = PyTuple_New(g_list_length(a_list));
+	if (! a_tuple)
+		goto failure;
+	while (a_list) {
+		if (a_list->data) {
+			PyObject *str = get_pystring_from_xml_node((xmlNode*)a_list->data);
+			if (str) {
+				PyTuple_SetItem(a_tuple, i, str);
+				i++;
+			} else {
+				PyErr_Warn(PyExc_RuntimeWarning, 
+					"could not convert an xmlNode to a string");
+			}
+		} else {
+			PyErr_Warn(PyExc_RuntimeWarning, 
+				"list contains a NULL value");
+		}
+		a_list = a_list->next;
+	}
+	if (_PyTuple_Resize(&a_tuple, i))
+		goto failure;
+	return a_tuple;
+failure:
+	PyErr_SetString(PyExc_TypeError, "Allocation problem in get_list_of_strings");
+	Py_XDECREF(a_tuple); 	
+	return noneRef();
+}
+
+static PyObject *
+get_list_of_pygobject(GList *a_list) {
+	PyObject *a_tuple = NULL;
+	int i = 0;
+
+	if (! a_list) {
+		return noneRef();
+	}
+	a_tuple = PyTuple_New(g_list_length(a_list));
+	if (! a_tuple)
+		goto failure;
+	while (a_list) {
+		if (a_list->data) {
+			PyObject *pygobject;
+			pygobject = PyGObjectPtr_New((GObject*)a_list->data);
+			if (pygobject) {
+				PyTuple_SetItem(a_tuple, i, pygobject);
+				i++;
+			} else {
+				PyErr_Warn(PyExc_RuntimeWarning, 
+					"could not convert a GObject to a PyGobject");
+			}
+		} else {
+			PyErr_Warn(PyExc_RuntimeWarning, 
+				"list contains a NULL value");
+		}
+		a_list = a_list->next;
+	}
+	if (_PyTuple_Resize(&a_tuple, i))
+		goto failure;
+	return a_tuple;
+failure:
+	PyErr_SetString(PyExc_TypeError, "Allocation problem in get_list_of_strings");
+	Py_XDECREF(a_tuple); 	
+	return noneRef();
+}
 
 /* wrapper around GObject */
 
-typedef struct {
-	PyObject_HEAD
-	GObject *obj;
-	PyObject *typename;
-} PyGObjectPtr;
 
-static PyTypeObject PyGObjectPtrType;
 
 static void
 PyGObjectPtr_dealloc(PyGObjectPtr *self)
@@ -185,8 +443,7 @@ PyGObjectPtr_New(GObject *obj)
 	PyGObjectPtr *self;
 
 	if (obj == NULL) {
-		Py_INCREF(Py_None);
-		return Py_None;
+		return noneRef();
 	}
 
 	self = (PyGObjectPtr*)g_object_get_qdata(obj, lasso_wrapper_key);
@@ -195,7 +452,7 @@ PyGObjectPtr_New(GObject *obj)
 	} else {
 		self = (PyGObjectPtr*)PyObject_NEW(PyGObjectPtr, &PyGObjectPtrType);
 		g_object_set_qdata_full(obj, lasso_wrapper_key, self, NULL);
-		self->obj = obj;
+		self->obj = g_object_ref(obj);
 		self->typename = PyString_FromString(G_OBJECT_TYPE_NAME(obj)+5);
 	}
 	return (PyObject*)self;
@@ -215,7 +472,8 @@ static PyMemberDef PyGObjectPtr_members[] = {
 	{NULL}
 };
 
-static PyObject* PyGObjectPtr_get_refcount(PyGObjectPtr *self, void *closure)
+static PyObject* 
+PyGObjectPtr_get_refcount(PyGObjectPtr *self, void *closure)
 {
 	PyObject *refcount;
 
@@ -265,3 +523,14 @@ static PyTypeObject PyGObjectPtrType = {
 	PyGObjectPtr_getseters, /* tp_getset */
 };
 
+static void
+set_object_field(GObject **a_gobject_ptr, PyGObjectPtr *a_pygobject) {
+	if (*a_gobject_ptr) {
+		g_object_unref(*a_gobject_ptr);
+	}
+	if ((PyObject*)a_pygobject == Py_None) {
+		*a_gobject_ptr = NULL; 
+	} else {
+		*a_gobject_ptr = g_object_ref(a_pygobject->obj);
+	}
+}

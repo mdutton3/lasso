@@ -217,7 +217,9 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 print >> self.fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
 
         if m.return_type is not None:
-            print >> self.fd, '    return_c_value =',
+            print >> self.fd, '    return_c_value = ',
+            if 'new' in m.name:
+                print >> self.fd, '(%s)' % m.return_type,
         else:
             print >> self.fd, '   ',
         print >> self.fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))

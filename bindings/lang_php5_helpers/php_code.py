@@ -82,6 +82,10 @@ function cptrToPhp ($cptr) {
     }
     return null;
 }
+
+function getRequestTypeFromSoapMsg($mesg) {
+    return lasso_get_request_type_from_soap_msg($mesg);
+}
 '''
 
     def generate_class(self, klass):
@@ -330,7 +334,7 @@ function cptrToPhp ($cptr) {
             if m.return_type == 'void':
                 print >> self.fd, '        %s($this->_cptr%s);' % (cname, c_args)
             elif m.return_type in ('gint', 'int'):
-                print >> self.fd, '        $rc = %s($this->_cptr%s);' % (m.name, c_args)
+                print >> self.fd, '        $rc = %s($this->_cptr%s);' % (cname, c_args)
                 print >> self.fd, '        if ($rc == 0) {'
                 print >> self.fd, '            return 0;'
                 print >> self.fd, '        } else if ($rc > 0) {' # recoverable error
@@ -339,7 +343,7 @@ function cptrToPhp ($cptr) {
                 print >> self.fd, '            LassoError::throw_on_rc($rc);'
                 print >> self.fd, '        }'
             else:
-                print >> self.fd, '        return %s($this->_cptr%s);' % (m.name, c_args)
+                print >> self.fd, '        return %s($this->_cptr%s);' % (cname, c_args)
             print >> self.fd, '    }'
             print >> self.fd, ''
 

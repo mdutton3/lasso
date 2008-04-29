@@ -141,7 +141,7 @@ class %sError(%sError):
                 continue
             cat, detail = m.groups()
             cat = cat.title().replace('_', '')
-            detail = detail.title().replace('_', '')
+            detail = (cat + '_' + detail).title().replace('_', '')
             if not cat in done_cats:
                 done_cats.append(cat)
                 for exc_cat in self.binding_data.overrides.findall('exception/category'):
@@ -611,28 +611,27 @@ register_constants(PyObject *d)
 {''' % (klassname[5:], mname)
             self.wrapper_list.append('%s_%s_get' % (klassname[5:], mname))
 
-            print >> fd, '    %s return_value;' % m[0]
-            if m[0] != 'gboolean':
-                print >> fd, '    PyObject* return_pyvalue;'
+            ftype = m[0]
+            if ftype in ('char*', 'const char*', 'gchar*', 'const gchar*'):
+                ftype = 'char*'
+            print >> fd, '    %s return_value;' % ftype
+            print >> fd, '    PyObject* return_pyvalue;'
             print >> fd, '    PyGObjectPtr* cvt_this;'
             print >> fd, '    %s* this;' % klassname
             print >> fd, ''
             print >> fd, '    if (! PyArg_ParseTuple(args, "O", &cvt_this)) return NULL;'
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
 
-            if self.is_pygobject(m[0]):
-                print >> fd, '    if (this->%s) {' % m[1]
-                print >> fd, '        return_value = g_object_ref(this->%s);' % m[1];
-                print >> fd, '    } else {'
-                print >> fd, '        return_value = NULL;'
-                print >> fd, '    }'
-            elif m[0] in ('char*', 'const char*', 'gchar*', 'const gchar*'):
+            if self.is_pygobject(ftype):
+                print >> fd, '    return_value = this->%s;' % m[1];
+            elif ftype in ('char*',):
                 print >> fd, '    return_value = g_strdup(this->%s);' % m[1]
             else:
                 print >> fd, '    return_value = this->%s;' % m[1];
 
-            self.return_value(fd, m[0], m[2])
+            self.return_value(fd, ftype, m[2])
 
+            print >> fd, '    return return_pyvalue;'
             print >> fd, '}'
             print >> fd, ''
 
@@ -645,6 +644,7 @@ register_constants(PyObject *d)
             print >> fd, '    PyGObjectPtr* cvt_this;'
             print >> fd, '    %s* this;' % klassname
             arg_type = m[0]
+            # Determine type class
             if m[0] in ('char*', 'const char*', 'gchar*', 'const gchar*'):
                 arg_type = arg_type.replace('const ', '')
                 parse_format = 'z'
@@ -654,20 +654,19 @@ register_constants(PyObject *d)
                 parse_format = 'i'
                 parse_arg = '&value'
                 print >> fd, '    %s value;' % arg_type
-            elif arg_type == 'GList*':
+            elif arg_type in ('GList*','GHashTable*'):
                 parse_format = 'O'
                 print >> fd, '    PyObject *cvt_value;'
-                print >> fd, '    int i, l;'
                 parse_arg = '&cvt_value'
             else:
                 parse_format = 'O'
                 print >> fd, '    PyGObjectPtr *cvt_value;'
                 parse_arg = '&cvt_value'
-
+            # Get GObject
             print >> fd, '    if (! PyArg_ParseTuple(args, "O%s", &cvt_this, %s)) return NULL;' % (
                     parse_format, parse_arg)
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
-
+            # Change value
             if parse_format == 'i':
                 print >> fd, '    this->%s = value;' % m[1]
             elif parse_format in ('s', 'z'):
@@ -675,83 +674,17 @@ register_constants(PyObject *d)
                 print >> fd, '    this->%s = g_strdup(value);' % m[1]
             elif parse_format == 'O' and arg_type == 'GList*':
                 elem_type = m[2].get('elem_type')
-                print >> fd, '''\
-    if (cvt_value != Py_None && !PyTuple_Check(cvt_value)) {
-        PyErr_SetString(PyExc_TypeError, "value should be tuple");
-        return NULL;
-    }
-'''
                 if elem_type == 'char*':
-                    print >> fd, '''\
-    if (this->%(v)s) {
-        /* free existing list */
-        g_list_foreach(this->%(v)s, (GFunc)g_free, NULL);
-        g_list_free(this->%(v)s);
-    }
-    this->%(v)s = NULL;
-    /* create new list */
-    if (cvt_value == Py_None) {
-        l = 0;
-    } else {
-        l = PyTuple_Size(cvt_value);
-    }
-    for (i=0; i<l; i++) {
-        PyObject *pystr = PyTuple_GET_ITEM(cvt_value, i);
-        this->%(v)s = g_list_append(this->%(v)s, g_strdup(PyString_AsString(pystr)));
-    }''' % {'v': m[1]}
+                    print >> fd, '    set_list_of_strings(&this->%s, cvt_value);' % m[1]
                 elif elem_type == 'xmlNode*':
-                    # each item is a xmlNode*
-                    print >> fd, '''\
-    if (this->%(v)s) {
-        /* free existing list */
-        g_list_foreach(this->%(v)s, (GFunc)xmlFreeNode, NULL);
-        g_list_free(this->%(v)s);
-    }
-    this->%(v)s = NULL;
-    /* create new list */
-    if (cvt_value == Py_None) {
-        l = 0;
-    } else {
-        l = PyTuple_Size(cvt_value);
-    }
-    for (i=0; i<l; i++) {
-        xmlNode *item_node = get_xml_node_from_pystring(PyTuple_GET_ITEM(cvt_value, i));
-        this->%(v)s = g_list_append(this->%(v)s, item_node);
-    }''' % {'v': m[1]}
-                    pass
+                    print >> fd, '    set_list_of_xml_nodes(&this->%s, cvt_value);' % m[1]
                 else:
-                    # assumes type is GObject
-                    print >> fd, '''\
-    if (this->%(v)s) {
-        /* free existing list */
-        g_list_foreach(this->%(v)s, (GFunc)g_object_unref, NULL);
-        g_list_free(this->%(v)s);
-    }
-    this->%(v)s = NULL;
-    /* create new list */
-    if (cvt_value == Py_None) {
-        l = 0;
-    } else {
-        l = PyTuple_Size(cvt_value);
-    }
-    for (i=0; i<l; i++) {
-        /* XXX: should check it is really a PyGObjectPtr */
-        PyGObjectPtr *pyobj = (PyGObjectPtr*)PyTuple_GET_ITEM(cvt_value, i);
-        this->%(v)s = g_list_append(this->%(v)s, g_object_ref(pyobj->obj));
-    }''' % {'v': m[1]}
-
+                    print >> fd, '    set_list_of_pygobject(&this->%s, cvt_value);' % m[1]
+            elif parse_format == 'O' and arg_type == 'GHashTable*':
+                print >> fd, '    set_hashtable_of_pygobject(this->%s, cvt_value);' % m[1]
             elif parse_format == 'O':
-                print >> fd, '    if (this->%s) {' % m[1]
-                print >> fd, '        g_object_unref(this->%s);' % m[1]
-                print >> fd, '    }'
-                print >> fd, '    if ((PyObject*)cvt_value == Py_None) {'
-                print >> fd, '        this->%s = NULL;' % m[1]
-                print >> fd, '    } else {'
-                print >> fd, '        this->%s = (%s)g_object_ref(cvt_value->obj);' % (m[1], m[0])
-                print >> fd, '    }'
-
-            print >> fd, '    Py_INCREF(Py_None);'
-            print >> fd, '    return Py_None;'
+                print >> fd, '    set_object_field((GObject**)&this->%s, cvt_value);' % m[1]
+            print >> fd, '    return noneRef();'
             print >> fd, '}'
             print >> fd, ''
 
@@ -760,106 +693,54 @@ register_constants(PyObject *d)
         if vtype == 'gboolean':
             print >> fd, '    if (return_value) {'
             print >> fd, '        Py_INCREF(Py_True);'
-            print >> fd, '        return Py_True;'
+            print >> fd, '        return_pyvalue = Py_True;'
             print >> fd, '    } else {'
             print >> fd, '        Py_INCREF(Py_False);'
-            print >> fd, '        return Py_False;'
+            print >> fd, '        return_pyvalue = Py_False;'
             print >> fd, '    }'
         elif vtype in ['int', 'gint'] + self.binding_data.enums:
             print >> fd, '    return_pyvalue = PyInt_FromLong(return_value);'
-            print >> fd, '    Py_INCREF(return_pyvalue);'
-            print >> fd, '    return return_pyvalue;'
         elif vtype in ('char*', 'gchar*'):
             print >> fd, '    if (return_value) {'
             print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
             print >> fd, '        g_free(return_value);'
-            print >> fd, '        Py_INCREF(return_pyvalue);'
-            print >> fd, '        return return_pyvalue;'
             print >> fd, '    } else {'
-            print >> fd, '        Py_INCREF(Py_None);'
-            print >> fd, '        return Py_None;'
+            print >> fd, '        return_pyvalue = noneRef();'
             print >> fd, '    }'
         elif vtype in ('const char*', 'const gchar*'):
             print >> fd, '    if (return_value) {'
             print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
-            print >> fd, '        Py_INCREF(return_pyvalue);'
-            print >> fd, '        return return_pyvalue;'
             print >> fd, '    } else {'
-            print >> fd, '        Py_INCREF(Py_None);'
-            print >> fd, '        return Py_None;'
+            print >> fd, '        return_pyvalue = noneRef();'
             print >> fd, '    }'
         elif vtype in ('GList*',):
-            print >> fd, '''\
-    if (return_value == NULL) {
-        Py_INCREF(Py_None);
-        return Py_None;
-    } else {
-        GList *item;
-        int i;
-
-        item = return_value;
-        return_pyvalue = PyTuple_New(g_list_length(return_value));'''
             elem_type = options.get('elem_type')
             if elem_type == 'char*':
-                print >> fd, '''\
-        for (i = 0; item; i++) {
-            PyTuple_SetItem(return_pyvalue, i, PyString_FromString(item->data));
-            item = g_list_next(item);
-        }'''
+                print >> fd, '    return_pyvalue = get_list_of_strings(return_value);'
             elif elem_type == 'xmlNode*':
-                print >> fd, '''\
-        for (i = 0; item; i++) {
-            PyTuple_SetItem(return_pyvalue, i, get_pystring_from_xml_node(item->data));
-            item = g_list_next(item);
-        }'''
+                print >> fd, '    return_pyvalue = get_list_of_xml_nodes(return_value);'
             else:
-                # assume GObject*
-                print >> fd, '''\
-        for (i = 0; item; i++) {
-            PyTuple_SetItem(return_pyvalue, i, PyGObjectPtr_New(g_object_ref(item->data)));
-            item = g_list_next(item);
-        }'''
-            print >> fd, '''\
-        return return_pyvalue;
-    }'''
+                print >> fd, '    return_pyvalue = get_list_of_pygobject(return_value);'
         elif vtype in ('GHashTable*',):
-            print >> fd, '''\
-    if (return_value == NULL) {
-        Py_INCREF(Py_None);
-        return Py_None;
-    } else {'''
             elem_type = options.get('elem_type')
             if elem_type == 'char*':
-                print >> fd, '''\
-            return_pyvalue = get_dict_from_hashtable_of_strings(return_value);'''
+                print >> fd, '    return_pyvalue = get_dict_from_hashtable_of_strings(return_value);'
             else:
-                print >> fd, '''\
-            return_pyvalue = get_dict_from_hashtable_of_objects(return_value);'''
-            print >> fd, '''\
-        return return_pyvalue;
-    }'''
+                print >> fd, '    return_pyvalue = get_dict_from_hashtable_of_objects(return_value);'
         elif vtype == 'xmlNode*':
             # convert xmlNode* to strings
             print >> fd, '    if (return_value) {'
             print >> fd, '        return_pyvalue = get_pystring_from_xml_node(return_value);'
-            print >> fd, '        Py_INCREF(return_pyvalue);'
-            print >> fd, '        return return_pyvalue;'
             print >> fd, '    } else {'
-            print >> fd, '        Py_INCREF(Py_None);'
-            print >> fd, '        return Py_None;'
+            print >> fd, '        return_pyvalue = noneRef();'
             print >> fd, '    }'
-        elif vtype in ('GList*',):
-
-            pass
         else:
             # return a PyGObjectPtr (wrapper around GObject)
             print >> fd, '''\
     if (return_value) {
         return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));
-        return return_pyvalue;
     } else {
-        Py_INCREF(Py_None);
-        return Py_None;
+        return_pyvalue = noneRef();
     }
 '''
 
@@ -904,8 +785,7 @@ register_constants(PyObject *d)
 
         if m.return_type:
             print >> fd, '    %s return_value;' % m.return_type
-            if m.return_type != 'gboolean':
-                print >> fd, '    PyObject* return_pyvalue;'
+            print >> fd, '    PyObject* return_pyvalue;'
         print >> fd, ''
 
         parse_tuple_args = ', '.join(parse_tuple_args)
@@ -920,17 +800,20 @@ register_constants(PyObject *d)
                 print >> fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
 
         if m.return_type:
-            print >> fd, '    return_value =',
+            print >> fd, '    return_value = ',
+            if 'new' in m.name:
+                print >> fd, '(%s)' % m.return_type,
         print >> fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))
 
-        if not m.return_owner:
-            print >> fd, '    if (return_value) return_value = g_object_ref(return_value);'
-
         if not m.return_type:
-            print >> fd, '    Py_INCREF(Py_None);'
-            print >> fd, '    return Py_None;'
+            print >> fd, '    return noneRef();'
         else:
+            # Constructor so decrease refcount (it was incremented by PyGObjectPtr_New called
+            # in self.return_value
             self.return_value(fd, m.return_type, {})
+            if m.return_owner and self.is_pygobject(m.return_type):
+                print >> fd, '    if (return_value) g_object_unref(return_value);'
+            print >> fd, '    return return_pyvalue;'
         print >> fd, '}'
         print >> fd, ''
 

@@ -100,6 +100,9 @@ def is_collection(type):
 def is_string_type(type):
     return type in ['char*', 'const char*', 'gchar*', 'const gchar*']
 
+def is_const_type(type):
+    return type in ['const char*', 'const gchar*']
+
 class JavaBinding:
     def __init__(self, binding_data):
         self.binding_data = binding_data
@@ -508,7 +511,10 @@ protected static native void destroy(long cptr);
         # Call function
         print >> fd, '   ',
         if m.return_type:
-            print >> fd, 'return_value = (%s)' % m.return_type,
+            print >> fd, 'return_value = ',
+            if 'new' in m.name:
+                print >>fd, '(%s)' % m.return_type,
+
         print >> fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))
         # Free const char * args
         idx=0
@@ -531,7 +537,7 @@ protected static native void destroy(long cptr);
                 if m.return_owner:
                     if m.return_type == 'GList*':
                         print >> fd, '    free_glist(&return_value, NULL);'
-                    elif is_string_type(m.return_type):
+                    elif is_string_type(m.return_type) and not is_const_type(m.return_type):
                         print >> fd, '    if (return_value)'
                         print >> fd, '        g_free(return_value);'
             print >> fd, '    return ret;'
@@ -696,6 +702,7 @@ protected static native void destroy(long cptr);
             if abstract:
                 print >> fd, 'abstract ',
             print >> fd, 'public class %s extends %s {' % (name,super)
+            print >> fd, '    private static final long serialVersionUID = 6170037639785281128L;'
             if not abstract:
                 print >> fd, '    public %s() {' % name
                 print >> fd, '       super(LassoConstants.%s);' % orig[6:]
@@ -724,7 +731,15 @@ protected static native void destroy(long cptr);
             path = lasso_java_path + '%s.java' % class_name
             fd = open(path,'w')
             print >> fd, 'package %s;' % lasso_package_name
-            print >> fd, 'import java.util.*;'
+            do_import_util = 0
+            for m in c.members:
+                if m[0] in ('GList*','GHashTable*'):
+                    do_import_util = 1
+            for m in c.methods:
+                if m.return_type in ('GList*','GHashTable*'):
+                    do_import_util = 1
+            if do_import_util:
+                print >> fd, 'import java.util.*;'
             print >> fd, ''
             #print 'class %s extends %s {' % (class_name,parent_name)
             print >> fd, 'public class %s extends %s {' % (class_name,parent_name)

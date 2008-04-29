@@ -1,6 +1,7 @@
 package com.entrouvert.lasso;
 
 public class LassoException extends RuntimeException {
+    private static final long serialVersionUID = 6170037639785281128L;
     public int errorCode;
     private static boolean throws_for_recoverable_errors = true;
     /** If set to true, enables throwing of exception for
@@ -18,13 +19,12 @@ public class LassoException extends RuntimeException {
 
     protected LassoException(int errorCode) {
         super(LassoJNI.strError(errorCode));
-        errorCode = errorCode;
+        this.errorCode = errorCode;
     }
     protected LassoException(int errorCode, String message) {
         super(message);
-        errorCode = errorCode;
+        this.errorCode = errorCode;
     }
-    private static final Class[] paramst = { Integer.class };
     protected static int throwError(int errorCode) throws LassoException {
             if (errorCode == 0 || (! throws_for_recoverable_errors && errorCode > 0))
                 return errorCode;

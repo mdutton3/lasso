@@ -28,6 +28,6 @@ _lasso.c:
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l python --src-dir=$(top_srcdir)/lasso/
 
 clean-local:
-	-rm lasso.py lasso.pyc _lasso.c
+	-rm -f lasso.py lasso.pyc _lasso.c
 
 endif

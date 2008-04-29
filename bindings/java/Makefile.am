@@ -3,9 +3,8 @@ INCLUDES = -I$(top_srcdir) \
 	-I$(top_builddir) \
 	$(SASL_CFLAGS)
 
-AM_JAVACFLAGS=-C
-CLASSPATH_ENV= CLASSPATH=.:lasso.jar:/usr/share/java/junit.jar
-JAVAROOT=.
+# CLASSPATH_ENV= CLASSPATH=.:lasso.jar:/usr/share/java/junit.jar
+CLASSPATH=.:tests
 
 java_extension_LTLIBRARIES = libjnilasso.la
 java_extensiondir = ${libdir}/java
@@ -16,10 +15,8 @@ lasso_jardir=$(prefix)/share/java
 lasso_jar_DATA=lasso.jar
 lasso_jar_class_files = $(java_lasso_source_files:.java=.class)
 
-JAVAH=gcjh
-
-$(lasso_jar_class_files): %.class: %.java
-	$(JAVAC) -ftarget=1.4 -C -classpath . -d . $<
+%.class: %.java
+	$(JAVAC) $(CLASSPATH_OPT) $(CLASSPATH) $(JAVAC_FLAGS) $<
 
 all_jar_class_files = $(shell find com/entrouvert/lasso -name '*.class' | sed 's%\$$%\\$$%g')
 
@@ -35,8 +32,8 @@ doc:
 	mv .doc doc
 
 
-com_entrouvert_lasso_LassoJNI.h: $(lasso_jar_class_files)
-	$(JAVAH) -jni -d . --classpath=. com.entrouvert.lasso.LassoJNI
+com_entrouvert_lasso_LassoJNI.h: com/entrouvert/lasso/LassoJNI.class
+	$(JAVAH) $(JAVAH_FLAGS) -classpath . `echo $< | sed 'su/u.ug;su.classuu'`
 
 libjnilasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir)
 libjnilasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version
@@ -61,8 +58,12 @@ clean-local:
 	-rm -rf doc 
 	-rm tests/*.class
 
+check tests/BindingTests.class tests/LoginTest.class : CLASSPATH :=$(CLASSPATH):/usr/share/java/junit.jar
 
-check_JAVA = tests/BindingTests.java tests/LoginTest.java
+check: tests/BindingTests.class tests/LoginTest.class
+	LD_LIBRARY_PATH=.libs $(JAVA) -cp $(CLASSPATH):/usr/share/java/junit.jar BindingTests
+	LD_LIBRARY_PATH=.libs $(JAVA) -cp $(CLASSPATH):/usr/share/java/junit.jar LoginTest
+
 
 endif
 

@@ -15,14 +15,14 @@ nodist_lasso_la_SOURCES = _lasso.c
 
 BUILT_SOURCES = _lasso.c
 
-_lasso.c:
+lasso.php _lasso.c:
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l php5 --src-dir=$(top_srcdir)/lasso/
 
 doc:
 	phpdoc -o HTML:frames:earthli -f lasso.php -t docs
 
 clean-local:
-	-rm lasso.php php_lasso.h _lasso.c
+	-rm -f lasso.php php_lasso.h _lasso.c
 
 .PHONY: doc
 

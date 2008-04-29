@@ -42,30 +42,30 @@ import com.entrouvert.lasso.*;
 public class LoginTest extends TestCase {
     public String generateIdentityProviderDump() {
         Server server = new Server(
-            "../../../tests/data/idp1-la/metadata.xml",
-            "../../../tests/data/idp1-la/private-key-raw.pem",
+            "../../tests/data/idp1-la/metadata.xml",
+            "../../tests/data/idp1-la/private-key-raw.pem",
             null,
-            "../../../tests/data/idp1-la/certificate.pem");
+            "../../tests/data/idp1-la/certificate.pem");
         server.addProvider(
             LassoConstants.PROVIDER_ROLE_SP,
-            "../../../tests/data/sp1-la/metadata.xml",
-            "../../../tests/data/sp1-la/public-key.pem",
-            "../../../tests/data/ca1-la/certificate.pem");
+            "../../tests/data/sp1-la/metadata.xml",
+            "../../tests/data/sp1-la/public-key.pem",
+            "../../tests/data/ca1-la/certificate.pem");
         String serverDump = server.dump();
         return serverDump;
     }
 
     public String generateServiceProviderDump() {
         Server server = new Server(
-            "../../../tests/data/sp1-la/metadata.xml",
-            "../../../tests/data/sp1-la/private-key-raw.pem",
+            "../../tests/data/sp1-la/metadata.xml",
+            "../../tests/data/sp1-la/private-key-raw.pem",
             null,
-            "../../../tests/data/sp1-la/certificate.pem");
+            "../../tests/data/sp1-la/certificate.pem");
         server.addProvider(
             LassoConstants.PROVIDER_ROLE_IDP,
-            "../../../tests/data/idp1-la/metadata.xml",
-            "../../../tests/data/idp1-la/public-key.pem",
-            "../../../tests/data/ca1-la/certificate.pem");
+            "../../tests/data/idp1-la/metadata.xml",
+            "../../tests/data/idp1-la/public-key.pem",
+            "../../tests/data/ca1-la/certificate.pem");
         String serverDump = server.dump();
         return serverDump;
     }
