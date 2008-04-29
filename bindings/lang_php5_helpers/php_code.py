@@ -169,14 +169,18 @@ function cptrToPhp ($cptr) {
             # Getters
             for m2 in klass.methods:
                 # If method is already defined in C, don't define it twice
-                if '_get_' in m2.name:
-                    class_name = re.match(r'lasso_(.*)_get_\w+', m2.name).group(1)
-                    attr_name = re.match(r'lasso_.*_get_(\w+)', m2.name).group(1)
+                if m2.rename:
+                    m2name = m2.rename
+                else:
+                    m2name = m2.name
+                if '_get_' in m2name:
+                    class_name = re.match(r'lasso_(.*)_get_\w+', m2name).group(1)
+                    attr_name = re.match(r'lasso_.*_get_(\w+)', m2name).group(1)
                     if class_name and attr_name:
                         class_name = 'Lasso' + class_name.capitalize()
                         if class_name == klass.name and attr_name == mname:
                             print >> sys.stderr, 'W: Bad function name : %s function prevents \
-writing a standard accessor for attribute "%s"' % (m2.name, attr_name)
+writing a standard accessor for attribute "%s"' % (m2name, attr_name)
                             break
             else:
                 print >> self.fd, '    protected function get_%s() {' % mname
@@ -207,19 +211,23 @@ writing a standard accessor for attribute "%s"' % (m2.name, attr_name)
 
         # first pass on methods, removing accessors
         for m in klass.methods:
-            if not ('_get_' in m.name and len(m.args) == 1):
+            if m.rename:
+                meth_name = m.rename
+            else:
+                meth_name = m.name
+            if not ('_get_' in meth_name and len(m.args) == 1):
                 continue
             methods.remove(m)
             try:
-                setter_name = m.name.replace('_get_', '_set_')
+                setter_name = meth_name.replace('_get_', '_set_')
                 setter = [x for x in methods if x.name == setter_name][0]
                 methods.remove(setter)
             except IndexError:
                 setter = None
-            mname = re.match(r'lasso_.*_get_(\w+)', m.name).group(1)
+            mname = re.match(r'lasso_.*_get_(\w+)', meth_name).group(1)
 
             print >> self.fd, '    protected function get_%s() {' % mname
-            print >> self.fd, '        return %s($this->_cptr);' % (m.name)
+            print >> self.fd, '        return %s($this->_cptr);' % (meth_name)
             print >> self.fd, '    }'
             if setter:
                 print >> self.fd, '    protected function set_%s($value) {' % mname

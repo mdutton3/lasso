@@ -150,7 +150,10 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
     }'''
 
     def generate_function(self, m):
-        name = m.name
+        if m.rename:
+            name = m.rename
+        else:
+            name = m.name
         self.functions_list.append(name)
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % name
