@@ -172,6 +172,7 @@ _lasso.init()
         klassname = c.name
         for m in c.members:
             mname = format_as_python(m[1])
+            # getter
             print >> fd, '''static PyObject*
 %s_%s_get(PyObject *self, PyObject *args)
 {''' % (klassname[5:], mname)
@@ -187,39 +188,85 @@ _lasso.init()
 
             print >> fd, '    return_value = this->%s;' % m[1];
 
-            if m[0] == 'gboolean':
-                print >> fd, '    if (return_value) {'
-                print >> fd, '        Py_INCREF(Py_True);'
-                print >> fd, '        return Py_True;'
-                print >> fd, '    } else {'
-                print >> fd, '        Py_INCREF(Py_False);'
-                print >> fd, '        return Py_False;'
-                print >> fd, '    }'
-            elif m[0] in ('int', 'gint'):
-                print >> fd, '    return_pyvalue = PyInt_FromLong(return_value);'
-                print >> fd, '    Py_INCREF(return_pyvalue);'
-                print >> fd, '    return return_pyvalue;'
-            elif m[0] in ('char*', 'gchar*'):
-                print >> fd, '    if (return_value) {'
-                print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
-                print >> fd, '        Py_INCREF(return_pyvalue);'
-                print >> fd, '        return return_pyvalue;'
-                print >> fd, '    } else {'
-                print >> fd, '        Py_INCREF(Py_None);'
-                print >> fd, '        return Py_None;'
-                print >> fd, '    }'
-            else:
-                print >> fd, '    if (return_value) {'
-                print >> fd, '        return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));'
-                print >> fd, '        Py_INCREF(return_pyvalue);'
-                print >> fd, '        return return_pyvalue;'
-                print >> fd, '    } else {'
-                print >> fd, '        Py_INCREF(Py_None);'
-                print >> fd, '        return Py_None;'
-                print >> fd, '    }'
+            self.return_value(fd, m[0])
 
             print >> fd, '}'
             print >> fd, ''
+
+            # setter
+            print >> fd, '''static PyObject*
+%s_%s_set(PyObject *self, PyObject *args)
+{''' % (klassname[5:], mname)
+            self.wrapper_list.append('%s_%s_set' % (klassname[5:], mname))
+
+            print >> fd, '    PyGObjectPtr* cvt_this;'
+            print >> fd, '    %s* this;' % klassname
+            arg_type = m[0]
+            if m[0] in ('char*', 'const char*', 'gchar*', 'const gchar*'):
+                arg_type = arg_type.replace('const ', '')
+                parse_format = 's'
+                parse_arg = '&value'
+                print >> fd, '    %s value;' % arg_type
+            elif arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
+                parse_format = 'i'
+                parse_arg = '&value'
+                print >> fd, '    %s value;' % arg_type
+            else:
+                parse_format = 'O'
+                print >> fd, '    %s value;' % arg_type
+                print >> fd, '    PyGObjectPtr *cvt_value;'
+                parse_arg = '&cvt_value'
+
+            print >> fd, '    if (! PyArg_ParseTuple(args, "O%s", &cvt_this, %s)) return NULL;' %(
+                    parse_format, parse_arg)
+            print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
+
+            if parse_format == 'i':
+                print >> fd, '    this->%s = value;' % m[1]
+            elif parse_format == 's':
+                print >> fd, '    this->%s = g_strdup(value);' % m[1]
+                print >> fd, '    free(value);'
+            elif parse_format == 'O':
+                print >> fd, '    this->%s = (%s)g_object_ref(cvt_value->obj);' % (m[1], m[0])
+
+            print >> fd, '    Py_INCREF(Py_None);'
+            print >> fd, '    return Py_None;'
+            print >> fd, '}'
+            print >> fd, ''
+
+
+
+    def return_value(self, fd, vtype):
+        if vtype == 'gboolean':
+            print >> fd, '    if (return_value) {'
+            print >> fd, '        Py_INCREF(Py_True);'
+            print >> fd, '        return Py_True;'
+            print >> fd, '    } else {'
+            print >> fd, '        Py_INCREF(Py_False);'
+            print >> fd, '        return Py_False;'
+            print >> fd, '    }'
+        elif vtype in ('int', 'gint'):
+            print >> fd, '    return_pyvalue = PyInt_FromLong(return_value);'
+            print >> fd, '    Py_INCREF(return_pyvalue);'
+            print >> fd, '    return return_pyvalue;'
+        elif vtype in ('char*', 'gchar*'):
+            print >> fd, '    if (return_value) {'
+            print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
+            print >> fd, '        Py_INCREF(return_pyvalue);'
+            print >> fd, '        return return_pyvalue;'
+            print >> fd, '    } else {'
+            print >> fd, '        Py_INCREF(Py_None);'
+            print >> fd, '        return Py_None;'
+            print >> fd, '    }'
+        else:
+            print >> fd, '    if (return_value) {'
+            print >> fd, '        return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));'
+            print >> fd, '        Py_INCREF(return_pyvalue);'
+            print >> fd, '        return return_pyvalue;'
+            print >> fd, '    } else {'
+            print >> fd, '        Py_INCREF(Py_None);'
+            print >> fd, '        return Py_None;'
+            print >> fd, '    }'
 
     def generate_function_wrapper(self, m, fd):
         name = m.name[6:]
@@ -267,19 +314,8 @@ _lasso.init()
         if not m.return_type:
             print >> fd, '    Py_INCREF(Py_None);'
             print >> fd, '    return Py_None;'
-        elif m.return_type in ('int', 'gint'):
-            print >> fd, '    return_pyvalue = PyInt_FromLong(return_value);'
-            print >> fd, '    Py_INCREF(return_pyvalue);'
-            print >> fd, '    return return_pyvalue;'
-        elif m.return_type in ('char*', 'gchar*'):
-            print >> fd, '    return_pyvalue = PyString_FromString(return_value);'
-            print >> fd, '    Py_INCREF(return_pyvalue);'
-            print >> fd, '    return return_pyvalue;'
         else:
-            print >> fd, '    return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));'
-            print >> fd, '    Py_INCREF(return_pyvalue);'
-            print >> fd, '    return return_pyvalue;'
-
+            self.return_value(fd, m.return_type)
         print >> fd, '''}
 '''
 
