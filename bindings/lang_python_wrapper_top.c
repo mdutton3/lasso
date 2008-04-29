@@ -39,6 +39,15 @@ PyGObjectPtr_New(GObject *obj)
 	return (PyObject*)self;
 }
 
+static PyObject *
+PyGObjectPtr_repr(PyGObjectPtr *obj)
+{
+	return PyString_FromFormat("<PyGObjectPtr to %p (type: %s, refcount: %d)>",
+			obj->obj,
+			G_OBJECT_TYPE_NAME(obj->obj),
+			obj->obj->ref_count);
+}
+
 static PyTypeObject PyGObjectPtrType = {
 	PyObject_HEAD_INIT(NULL)
 	0, /* ob_size */
@@ -50,7 +59,7 @@ static PyTypeObject PyGObjectPtrType = {
 	0,                      /*tp_getattr*/
 	0,       /*tp_setattr*/
 	0,       /*tp_compare*/
-	0,       /*tp_repr*/
+	(reprfunc)PyGObjectPtr_repr,       /*tp_repr*/
 	0,       /*tp_as_number*/
 	0,       /*tp_as_sequence*/
 	0,       /*tp_as_mapping*/
