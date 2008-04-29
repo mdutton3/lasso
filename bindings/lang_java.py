@@ -526,7 +526,7 @@ protected static native void destroy(long cptr);
                 print >> fd, '        g_free(%s);' % arg_name
             elif arg_type == 'GList*':
                 if arg_options.get('elem_type') == 'char*':
-                    print >> fd, '    free_glist(&%s, free);' % arg_name
+                    print >> fd, '    free_glist(&%s, (GFunc)free);' % arg_name
                 else:
                     raise Exception('Freeing args of type list of \'%s\' not supported.' % arg_options.get('elem_type'))
 
