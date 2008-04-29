@@ -410,7 +410,7 @@ def main():
 
     binding = BindingData()
     parse_headers(options.srcdir, options.idwsf)
-    binding.look_for_docstrings(options.srcdir,options.exception_doc)
+    binding.look_for_docstrings(options.srcdir, options.exception_doc)
     binding.order_class_hierarchy()
     binding.attach_methods()
 
