@@ -113,7 +113,6 @@ static PyObject*
 get_pystring_from_xml_node(xmlNode *xmlnode)
 {
 	xmlOutputBufferPtr buf;
-	char *xmlString;
 	PyObject *pystring = NULL;
 
 	if (xmlnode == NULL) {
@@ -122,7 +121,7 @@ get_pystring_from_xml_node(xmlNode *xmlnode)
 
 	buf = xmlAllocOutputBuffer(NULL);
 	if (buf == NULL) {
-		xmlString = NULL;
+		pystring = NULL;
 	} else {
 		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
 		xmlOutputBufferFlush(buf);

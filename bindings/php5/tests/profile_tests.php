@@ -1,10 +1,8 @@
 #! /usr/bin/env php
 <?php
-# $Id: binding_tests.php 3238 2007-05-30 17:24:50Z dlaniel $
-#
-# PHP unit tests for Lasso library
-#
-# * Copyright (C) 2004-2007 Entr'ouvert
+# Lasso - A free implementation of the Liberty Alliance specifications.
+# 
+# Copyright (C) 2004-2007 Entr'ouvert
 # http://lasso.entrouvert.org
 #
 # Authors: See AUTHORS file in top-level directory.
@@ -209,6 +207,25 @@ function test06() {
     echo "OK.\n";
 }
 
+function test07() {
+    echo "IDP logout without session and identity; testing logout.getNextProviderId... ";
+
+    $server = new LassoServer(
+        DATA_DIR . "idp1-la/metadata.xml",
+        DATA_DIR . "idp1-la/private-key-raw.pem",
+        NULL,
+        DATA_DIR . "idp1-la/certificate.pem");
+    $server->addProvider(
+        LASSO_PROVIDER_ROLE_IDP,
+        DATA_DIR . "sp1-la/metadata.xml",
+        DATA_DIR . "sp1-la/public-key.pem",
+        DATA_DIR . "sp1-la/certificate.pem");
+
+    $logout = new LassoLogout($server);
+    assert(is_null($logout->next_providerID));
+
+    echo "OK.\n";
+}
 
 lasso_init();
 test01();

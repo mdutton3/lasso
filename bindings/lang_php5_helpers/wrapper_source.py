@@ -20,6 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import sys
+import os
 
 import utils
 
@@ -31,7 +32,7 @@ class WrapperSource:
 
     def is_object(self, t):
         return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*',
-                'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
+                'xmlNode*', 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
         self.generate_header()
@@ -51,61 +52,37 @@ class WrapperSource:
 
         print >> self.fd, '''\
 /* this file has been generated automatically; do not edit */
-
-#include <php.h>
-#undef PACKAGE_BUGREPORT
-#undef PACKAGE_NAME
-#undef PACKAGE_STRING
-#undef PACKAGE_TARNAME
-#undef PACKAGE_VERSION
-#include <lasso/lasso.h>
 '''
+
+        print >> self.fd, open(os.path.join(self.binding_data.src_dir,
+            'lang_php5_helpers/wrapper_source_top.c')).read()
+
         for h in self.binding_data.headers:
             print >> self.fd, '#include <%s>' % h
         print >> self.fd, ''
 
         print >> self.fd, '''\
-#include "php_lasso.h"
-
-int le_lasso_server;
-
-ZEND_GET_MODULE(lasso)
-
-typedef struct {
-    GObject *obj;
-    char *typename;
-} PhpGObjectPtr;
-
-PHP_FUNCTION(lasso_get_object_typename)
-{
-    PhpGObjectPtr *self;
-    zval *zval_self;
-
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zval_self) == FAILURE) {
-        RETURN_FALSE;
-    }
-
-    ZEND_FETCH_RESOURCE(self, PhpGObjectPtr *, &zval_self, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);
-    RETURN_STRING(self->typename, 1);
-}
-
 PHP_MINIT_FUNCTION(lasso)
 {
     le_lasso_server = zend_register_list_destructors_ex(NULL, NULL, PHP_LASSO_SERVER_RES_NAME, module_number);
 '''
 
     def generate_constants(self):
-        constant_types = {
-            'i': 'LONG',
-            's': 'STRING'
-        }
         print >> self.fd, '    /* Constants (both enums and defines) */'
         for c in self.binding_data.constants:
-            if c[0] not in constant_types:
-                print >> sys.stderr, 'W: no support for %s constant type (%s)' % (c[0], c[1])
-                continue
-            print >> self.fd, '    REGISTER_%(type)s_CONSTANT("%(name)s", %(name)s, CONST_CS|CONST_PERSISTENT);' \
-                % {'type': constant_types[c[0]], 'name': c[1]}
+            if c[0] == 'i':
+                print >> self.fd, '    REGISTER_LONG_CONSTANT("%s", %s, CONST_CS|CONST_PERSISTENT);' % (c[1], c[1])
+            elif c[0] == 's':
+                print >> self.fd, '    REGISTER_STRING_CONSTANT("%s", %s, CONST_CS|CONST_PERSISTENT);' % (c[1], c[1])
+            elif c[0] == 'b':
+                print >> self.fd, '''\
+#ifdef %s
+    REGISTER_LONG_CONSTANT("%s", 1, CONST_CS|CONST_PERSISTENT);
+#else
+    REGISTER_LONG_CONSTANT("%s", 0, CONST_CS|CONST_PERSISTENT);
+#endif''' % (c[1], c[1], c[1])
+            else:
+                print >> sys.stderr, 'E: unknown constant type: %r' % c[0]
         print >> self.fd, ''
 
     def generate_middle(self):
@@ -140,6 +117,15 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
     } else {
         RETURN_NULL();
     }'''
+        elif vtype == 'xmlNode*':
+            print >> self.fd, '''\
+    char* xmlString = get_string_from_xml_node(return_c_value);
+    if (xmlString) {
+        RETURN_STRING(xmlString, 1);
+    } else {
+        RETURN_NULL();
+    }
+'''
         elif vtype in ('GList*',) and options.get('elem_type') == 'char*':
             print >> self.fd, '''\
     array_init(return_value);
@@ -300,7 +286,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         arg_type = m_type
         arg_name = m_name
         arg_options = m_options
-        if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
+        if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*', 'xmlNode*'):
             arg_type = arg_type.replace('const ', '')
             parse_tuple_format += 's'
             parse_tuple_args.append('&%s_str, &%s_len' % (arg_name, arg_name))
@@ -353,7 +339,10 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             print >> self.fd, '        efree(this->%s);' % m_name
             print >> self.fd, '    }'
             print >> self.fd, '    if (%s_str && strcmp(%s_str, "") != 0) {' % (m_name, m_name)
-            print >> self.fd, '        this->%s = estrndup(%s_str, %s_len);' % (m_name, m_name, m_name)
+            if arg_type == 'xmlNode*':
+                print >> self.fd, '    this->%s = get_xml_node_from_string(%s_str);' % (m_name, m_name)
+            else:
+                print >> self.fd, '        this->%s = estrndup(%s_str, %s_len);' % (m_name, m_name, m_name)
             print >> self.fd, '    } else {'
             print >> self.fd, '        this->%s = NULL;' % m_name
             print >> self.fd, '    }'
@@ -376,7 +365,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
     }
 ''' % { 'name': m_name }
         elif parse_tuple_format == 'r':
-            print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%s, PhpGObjectPtr *, &zval_%s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % (m_name, m_name)
+            print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%s, PhpGObjectPtr*, &zval_%s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % (m_name, m_name)
             print >> self.fd, '    this->%s = (%s)cvt_%s->obj;' % (m_name, m_type, m_name)
 
         print >> self.fd, '}'

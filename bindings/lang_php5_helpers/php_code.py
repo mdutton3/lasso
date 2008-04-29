@@ -20,6 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import re
+import sys
 
 import utils
 
@@ -169,25 +170,42 @@ function cptrToPhp ($cptr) {
             options = m[2]
             
             # Getters
-            print >> self.fd, '    protected function get_%s() {' % mname
-            if self.is_object(m[0]):
-                print >> self.fd, '        $cptr = %s_%s_get($this->_cptr);' % (klass.name, mname)
-                print >> self.fd, '        if (! is_null($cptr)) {'
-                print >> self.fd, '            return cptrToPhp($cptr);'
-                print >> self.fd, '        }'
-                print >> self.fd, '        return null;'
+            for m2 in klass.methods:
+                # If method is already defined in C, don't define it twice
+                if '_get_' in m2.name:
+                    class_name = re.match(r'lasso_(.*)_get_\w+', m2.name).group(1)
+                    attr_name = re.match(r'lasso_.*_get_(\w+)', m2.name).group(1)
+                    if class_name and attr_name:
+                        class_name = 'Lasso' + class_name.capitalize()
+                        if class_name == klass.name and attr_name == mname:
+                            print >> sys.stderr, 'W: Bad function name : %s function prevents \
+writing a standard accessor for attribute "%s"' % (m2.name, attr_name)
+                            break
             else:
-                print >> self.fd, '        return %s_%s_get($this->_cptr);' % (klass.name, mname)
-            print >> self.fd, '    }'
+                print >> self.fd, '    protected function get_%s() {' % mname
+                if self.is_object(m[0]):
+                    print >> self.fd, '        $cptr = %s_%s_get($this->_cptr);' % (klass.name, mname)
+                    print >> self.fd, '        if (! is_null($cptr)) {'
+                    print >> self.fd, '            return cptrToPhp($cptr);'
+                    print >> self.fd, '        }'
+                    print >> self.fd, '        return null;'
+                else:
+                    print >> self.fd, '        return %s_%s_get($this->_cptr);' % (klass.name, mname)
+                print >> self.fd, '    }'
 
             # Setters
-            print >> self.fd, '    protected function set_%s($value) {' % mname
-            if self.is_object(m[0]):
-                print >> self.fd, '        %s_%s_set($this->_cptr, $value->_cptr);' % (klass.name, mname)
+            for m2 in klass.methods:
+                # If method is already defined in C, don't define it twice
+                if m2.name == 'set_%s' % mname:
+                    break
             else:
-                print >> self.fd, '        %s_%s_set($this->_cptr, $value);' % (klass.name, mname)
-            print >> self.fd, '    }'
-            print >> self.fd, ''
+                print >> self.fd, '    protected function set_%s($value) {' % mname
+                if self.is_object(m[0]):
+                    print >> self.fd, '        %s_%s_set($this->_cptr, $value->_cptr);' % (klass.name, mname)
+                else:
+                    print >> self.fd, '        %s_%s_set($this->_cptr, $value);' % (klass.name, mname)
+                print >> self.fd, '    }'
+                print >> self.fd, ''
 
 
     def generate_methods(self, klass):
@@ -203,7 +221,17 @@ function cptrToPhp ($cptr) {
                 setter = [x for x in methods if x.name == setter_name][0]
                 methods.remove(setter)
             except IndexError:
-                pass
+                setter = None
+            mname = re.match(r'lasso_.*_get_(\w+)', m.name).group(1)
+
+            print >> self.fd, '    protected function get_%s() {' % mname
+            print >> self.fd, '        return %s($this->_cptr);' % (m.name)
+            print >> self.fd, '    }'
+            if setter:
+                print >> self.fd, '    protected function set_%s($value) {' % mname
+                print >> self.fd, '        %s($this->_cptr, $value);' % (setter.name)
+                print >> self.fd, '    }'
+            print >> self.fd, ''
 
         # second pass on methods, real methods
         method_prefix = utils.format_as_underscored(klass.name) + '_'
