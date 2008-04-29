@@ -289,7 +289,11 @@ import lasso
                 methods.remove(setter)
             except IndexError:
                 setter = None
-            mname = re.match(r'lasso_.*_get_(\w+)', m.name).group(1)
+            if m.rename:
+                mname = m.rename
+            else:
+                mname = m.name
+            mname = re.match(r'lasso_.*_get_(\w+)', mname).group(1)
             mname = utils.format_underscore_as_camelcase(mname)
 
             print >> fd, '    def get_%s(self):' % mname

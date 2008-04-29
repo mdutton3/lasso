@@ -8,6 +8,9 @@
   <func name="lasso_profile_is_saml_query" rename="isSamlQuery"/>
   <func name="lasso_profile_get_request_type_from_soap_msg"
   	rename="getRequestTypeFromSoapMsg"/>
+  <!-- LassoProfile -->
+  <func name="lasso_profile_get_nameIdentifier"
+  	rename="lasso_profile_get_federation_nameIdentifier"/>
   <!-- LassoServer -->
   <func name="lasso_server_new">
     <param name="private_key" optional="true"/>
