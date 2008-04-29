@@ -75,6 +75,7 @@ get_dict_from_hashtable_of_strings(GHashTable *value)
 		if (item_value) {
 			item = PyString_FromString(item_value);
 			PyDict_SetItemString(dict, (char*)keys->data, item); 
+			Py_DECREF(item);
 		} else {
 			PyDict_SetItemString(dict, (char*)keys->data, Py_None); 
 		}
@@ -100,6 +101,7 @@ get_dict_from_hashtable_of_objects(GHashTable *value)
 		if (item_value) {
 			item = PyGObjectPtr_New(G_OBJECT(item_value));
 			PyDict_SetItemString(dict, (char*)keys->data, item); 
+			Py_DECREF(item);
 		} else {
 			PyDict_SetItemString(dict, (char*)keys->data, Py_None); 
 		}
