@@ -68,5 +68,8 @@ endif
 
 EXTRA_DIST = \
 	GObject.java \
-	LassoException_top.java
+	LassoException_top.java \
+	tests/BindingTests.java \
+	tests/LoginTest.java \
+	tests/Test.java
 
