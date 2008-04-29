@@ -30,7 +30,10 @@ class PythonBinding:
         self.generate_header(fd)
         for clss in self.binding_data.structs:
             self.generate_class(clss, fd)
+        fd.close()
 
+        fd = open('python/_lasso.c', 'w')
+        self.generate_wrapper(fd)
         fd.close()
 
     def generate_header(self, fd):
@@ -149,5 +152,22 @@ _lasso.init()
 
         print >> fd, ''
 
+    def generate_wrapper(self, fd):
+        print >> fd, open('lang_python_wrapper_top.c').read()
+        for m in self.binding_data.functions:
+            self.generate_function_wrapper(m, fd)
+        for c in self.binding_data.structs:
+            for m in c.methods:
+                self.generate_function_wrapper(m, fd)
+        print >> fd, open('lang_python_wrapper_bottom.c').read()
 
 
+    def generate_function_wrapper(self, m, fd):
+        name = m.name[6:]
+        print >> fd, '''static PyObject*
+%s(PyObject *self, PyObject *args)
+{''' % name
+        
+
+        print >> fd, '''}
+'''
