@@ -269,7 +269,7 @@ import lasso
                     m.name.endswith('_new_full'):
                 continue
             if not m.name.startswith(method_prefix):
-                print 'W:', m.name, 'vs', method_prefix
+                print >> sys.stderr, 'W:', m.name, 'vs', method_prefix
                 continue
 
             mname = m.name[len(method_prefix):]
