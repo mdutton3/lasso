@@ -61,8 +61,7 @@ clean:
 	dh_testroot
 	rm -f build-stamp 
 
-	# Add here commands to clean up after the build process.
-	-$(MAKE) distclean
+	[ ! -f Makefile ] || $(MAKE) distclean
 ifneq "$(wildcard /usr/share/misc/config.sub)" ""
 	cp -f /usr/share/misc/config.sub config.sub
 endif
@@ -91,7 +90,9 @@ install: build
 	done
 
 	mkdir $(CURDIR)/debian/tmp/usr/lib/jni/
-	mv $(CURDIR)/debian/tmp/usr/lib/java/*.so $(CURDIR)/debian/tmp/usr/lib/jni/
+	if [ -e $(CURDIR)/debian/tmp/usr/lib/java ]; then \
+	  mv $(CURDIR)/debian/tmp/usr/lib/java/*.so $(CURDIR)/debian/tmp/usr/lib/jni/ ; \
+	fi
 
 
 # Build architecture-independent files here.
