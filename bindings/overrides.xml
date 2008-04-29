@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <overrides>
+  <!-- LassoServer -->
   <func name="lasso_server_new">
     <param name="private_key" optional="true"/>
     <param name="private_key_password" optional="true"/>
@@ -9,6 +10,12 @@
     <param name="public_key" optional="true"/>
     <param name="ca_cert_chain" optional="true"/>
   </func>
+  <!-- LassoProvider -->
+  <func name="lasso_provider_new">
+    <param name="public_key" optional="true"/>
+    <param name="ca_cert_chain" optional="true"/>
+  </func>
+  <!-- LassoLogin -->
   <func name="lasso_login_init_authn_request">
     <param name="remote_providerID" optional="true"/>
     <param name="http_method" optional="true" default="c:LASSO_HTTP_METHOD_REDIRECT"/>
@@ -19,13 +26,16 @@
   <func name="lasso_login_init_idp_initiated_request">
     <param name="remote_providerID" optional="true"/>
   </func>
+  <!-- LassoLogout -->
   <func name="lasso_logout_init_request">
     <param name="remote_providerID" optional="true"/>
     <param name="request_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
   </func>
+  <!-- LassoNameIdentifier -->
   <func name="lasso_name_identifier_mapping_init_request">
     <param name="remote_providerID" optional="true" />
   </func>
+  <!-- Exceptions -->
   <exception>
     <category name="Profile"/>
     <category name="Provider"/>
