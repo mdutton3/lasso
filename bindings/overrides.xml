@@ -9,4 +9,17 @@
     <param name="public_key" optional="true"/>
     <param name="ca_cert_chain" optional="true"/>
   </func>
+  <exception>
+    <category name="Profile"/>
+    <category name="Provider"/>
+    <category name="Server" parent="Provider"/>
+    <category name="Login" parent="Profile"/>
+    <category name="Logout" parent="Profile"/>
+    <category name="Defederation" parent="Profile"/>
+    <category name="NameIdentifierMapping" parent="Profile"/>
+    <category name="WsfProfile" parent="Profile"/>
+    <category name="Discovery" parent="WsfProfile"/>
+    <category name="DataService" parent="WsfProfile"/>
+    <category name="Dst" parent="WsfProfile"/>
+  </exception>
 </overrides>

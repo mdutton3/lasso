@@ -33,6 +33,7 @@ class PythonBinding:
     def generate(self):
         fd = open('python/lasso.py', 'w')
         self.generate_header(fd)
+        self.generate_exceptions(fd)
         self.generate_constants(fd)
         for clss in self.binding_data.structs:
             self.generate_class(clss, fd)
@@ -51,6 +52,74 @@ import _lasso
 
 _lasso.init()
 '''
+
+    def generate_exceptions(self, fd):
+        done_cats = []
+        print >> fd, '''\
+class Error(Exception):
+    code = None
+    
+    @staticmethod
+    def raise_on_rc(rc):
+        global exceptions_dict
+        raise exceptions_dict.get(rc)
+
+    def __str__(self):
+        return '<lasso.%s(%s): %s>' % (self.__class__.__name__, self.code, _lasso.strError(self.code))
+
+    def __getitem__(self, i):
+        # compatibility with SWIG bindings
+        if i == 0:
+            return self.code
+        elif i == 1:
+            return _lasso.strError(self.code)
+        else:
+            raise IndexError()
+'''
+        for exc_cat in self.binding_data.overrides.findall('exception/category'):
+            cat = exc_cat.attrib.get('name')
+            done_cats.append(cat)
+            parent_cat = exc_cat.attrib.get('parent', '')
+            print >> fd, '''\
+class %sError(%sError):
+    pass
+''' % (cat, parent_cat)
+
+        exceptions_dict = {}
+
+        for c in self.binding_data.constants:
+            m = re.match(r'LASSO_(\w+)_ERROR_(.*)', c[1])
+            if not m:
+                continue
+            cat, detail = m.groups()
+            cat = cat.title().replace('_', '')
+            detail = detail.title().replace('_', '')
+            if not cat in done_cats:
+                done_cats.append(cat)
+                for exc_cat in self.binding_data.overrides.findall('exception/category'):
+                    if exc_cat.attrib.get('name') == cat:
+                        parent_cat = exc_cat.attrib.get('parent')
+                        break
+                else:
+                    parent_cat = ''
+
+                print >> fd, '''\
+class %sError(%sError):
+    pass
+''' % (cat, parent_cat)
+
+            print >> fd, '''\
+class %sError(%sError):
+    code = _lasso.%s
+''' % (detail, cat, c[1][6:])
+
+            exceptions_dict[detail] = c[1][6:]
+
+        print >> fd, 'exceptions_dict = {'
+        for k, v in exceptions_dict.items():
+            print >> fd, '    _lasso.%s: %sError,' % (v, k)
+        print >> fd, '}'
+        print >> fd, ''
 
     def generate_footer(self, fd):
         print >> fd, '''
@@ -206,7 +275,7 @@ import lasso
                 print >> fd, '        elif rc > 0:' # recoverable error
                 print >> fd, '            return rc'
                 print >> fd, '        elif rc < 0:' # unrecoverable error
-                print >> fd, '            raise \'XXX(rc)\'' # XXX: exception hierarchy
+                print >> fd, '            raise Error.raise_on_rc(rc)'
             else:
                 print >> fd, '        return _lasso.%s(self._cptr%s)' % (
                         m.name[6:], c_args)
@@ -321,7 +390,6 @@ register_constants(PyObject *d)
             print >> fd, ''
 
 
-
     def return_value(self, fd, vtype):
         if vtype == 'gboolean':
             print >> fd, '    if (return_value) {'
@@ -336,6 +404,16 @@ register_constants(PyObject *d)
             print >> fd, '    Py_INCREF(return_pyvalue);'
             print >> fd, '    return return_pyvalue;'
         elif vtype in ('char*', 'gchar*'):
+            print >> fd, '    if (return_value) {'
+            print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
+            print >> fd, '        g_free(return_value);'
+            #print >> fd, '        Py_INCREF(return_pyvalue);'
+            print >> fd, '        return return_pyvalue;'
+            print >> fd, '    } else {'
+            print >> fd, '        Py_INCREF(Py_None);'
+            print >> fd, '        return Py_None;'
+            print >> fd, '    }'
+        elif vtype in ('const char*', 'const gchar*'):
             print >> fd, '    if (return_value) {'
             print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
             #print >> fd, '        Py_INCREF(return_pyvalue);'
@@ -366,6 +444,8 @@ register_constants(PyObject *d)
 
     def generate_function_wrapper(self, m, fd):
         name = m.name[6:]
+        if name == 'strerror': # special case so it doesn't conflict with strerror(3)
+            name = 'strError'
         self.wrapper_list.append(name)
         print >> fd, '''static PyObject*
 %s(PyObject *self, PyObject *args)
