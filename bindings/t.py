@@ -191,7 +191,15 @@ def parse_header(header_file):
                     if member_name == 'parent':
                         in_struct.parent = member_type
                     else:
-                        in_struct.members.append(normalise_var(member_type, member_name))
+                        in_struct.members.append(
+                                list(normalise_var(member_type, member_name)) + [{}])
+                    if member_type == 'GList':
+                        options = in_struct.members[-1][-1]
+                        if '/* of' in line:
+                            of_type = line[line.index('/* of')+6:].split()[0]
+                            if of_type == 'strings':
+                                of_type = 'char*'
+                            options['elem_type'] = of_type
         elif line.startswith('LASSO_EXPORT '):
             while not line.strip().endswith(';'):
                 i += 1

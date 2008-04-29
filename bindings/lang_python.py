@@ -28,7 +28,7 @@ class PythonBinding:
         self.binding_data = binding_data
 
     def is_pygobject(self, t):
-        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*',
+        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*',
                 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
@@ -191,6 +191,7 @@ import lasso
         # create properties for members
         for m in clss.members:
             mname = format_as_python(m[1])
+            options = m[2]
             print >> fd, '    def get_%s(self):' % mname
             if self.is_pygobject(m[0]):
                 print >> fd, '        t, cptr = _lasso.%s_%s_get(self._cptr)' % (
@@ -199,6 +200,8 @@ import lasso
                 print >> fd, '        o = klass.__new__(klass)'
                 print >> fd, '        o._cptr = cptr'
                 print >> fd, '        return o'
+            elif m[0] == 'GList*' and options.get('elem_type') != 'char*':
+                print >> fd, '        XXX'
             else:
                 print >> fd, '        return _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
@@ -346,6 +349,8 @@ register_constants(PyObject *d)
                 print >> fd, '    PyObject* return_tuple;'
                 print >> fd, '    PyObject* type_name;'
 
+            print >> fd, ''
+
             print >> fd, '    if (! PyArg_ParseTuple(args, "O", &cvt_this)) return NULL;'
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
 
@@ -356,7 +361,7 @@ register_constants(PyObject *d)
             else:
                 print >> fd, '    return_value = this->%s;' % m[1];
 
-            self.return_value(fd, m[0])
+            self.return_value(fd, m[0], m[2])
 
             print >> fd, '}'
             print >> fd, ''
@@ -379,13 +384,19 @@ register_constants(PyObject *d)
                 parse_format = 'i'
                 parse_arg = '&value'
                 print >> fd, '    %s value;' % arg_type
+            elif arg_type == 'GList*':
+                parse_format = 'O'
+                print >> fd, '    %s value;' % arg_type
+                print >> fd, '    PyObject *cvt_value;'
+                print >> fd, '    int i, l;'
+                parse_arg = '&cvt_value'
             else:
                 parse_format = 'O'
                 print >> fd, '    %s value;' % arg_type
                 print >> fd, '    PyGObjectPtr *cvt_value;'
                 parse_arg = '&cvt_value'
 
-            print >> fd, '    if (! PyArg_ParseTuple(args, "O%s", &cvt_this, %s)) return NULL;' %(
+            print >> fd, '    if (! PyArg_ParseTuple(args, "O%s", &cvt_this, %s)) return NULL;' % (
                     parse_format, parse_arg)
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
 
@@ -394,6 +405,41 @@ register_constants(PyObject *d)
             elif parse_format in ('s', 'z'):
                 print >> fd, '    if (this->%s) g_free(this->%s);' % (m[1], m[1])
                 print >> fd, '    this->%s = g_strdup(value);' % m[1]
+            elif parse_format == 'O' and arg_type == 'GList*':
+                elem_type = m[2].get('elem_type')
+                # XXX: raise appropriate exception (TypeError)
+                print >> fd, '    if (!PyTuple_Check(cvt_value)) return NULL;'
+                if elem_type == 'char*':
+                    print >> fd, '''\
+    if (this->%(v)s) {
+        /* free existing list */
+        g_list_foreach(this->%(v)s, (GFunc)g_free, NULL);
+        g_list_free(this->%(v)s);
+    }
+    this->%(v)s = NULL;
+    /* create new list */
+    l = PyTuple_Size(cvt_value);
+    for (i=0; i<l; i++) {
+        PyObject *pystr = PyTuple_GET_ITEM(cvt_value, i);
+        this->%(v)s = g_list_append(this->%(v)s, g_strdup(PyString_AsString(pystr)));
+    }''' % {'v': m[1]}
+                else:
+                    # assumes type is GObject
+                    print >> fd, '''\
+    if (this->%(v)s) {
+        /* free existing list */
+        g_list_foreach(this->%(v)s, (GFunc)g_object_unref, NULL);
+        g_list_free(this->%(v)s);
+    }
+    this->%(v)s = NULL;
+    /* create new list */
+    l = PyTuple_Size(cvt_value);
+    for (i=0; i<l; i++) {
+        /* XXX: should check it is really a PyGObjectPtr */
+        PyGObjectPtr *pyobj = (PyGObjectPtr*)PyTuple_GET_ITEM(cvt_value, i);
+        this->%(v)s = g_list_append(this->%(v)s, g_object_ref(pyobj->obj));
+    }''' % {'v': m[1]}
+
             elif parse_format == 'O':
                 print >> fd, '    this->%s = (%s)g_object_ref(cvt_value->obj);' % (m[1], m[0])
 
@@ -403,7 +449,7 @@ register_constants(PyObject *d)
             print >> fd, ''
 
 
-    def return_value(self, fd, vtype):
+    def return_value(self, fd, vtype, options):
         if vtype == 'gboolean':
             print >> fd, '    if (return_value) {'
             print >> fd, '        Py_INCREF(Py_True);'
@@ -435,6 +481,30 @@ register_constants(PyObject *d)
             print >> fd, '        Py_INCREF(Py_None);'
             print >> fd, '        return Py_None;'
             print >> fd, '    }'
+        elif vtype in ('GList*',):
+            print >> fd, '''\
+    if (return_value == NULL) {
+        Py_INCREF(Py_None);
+        return Py_None;
+    } else {
+        GList *item;
+        int i;
+
+        item = return_value;
+        return_pyvalue = PyTuple_New(g_list_length(return_value));'''
+            elem_type = options.get('elem_type')
+            if elem_type == 'char*':
+                print >> fd, '''\
+        for (i = 0; item; i++) {
+            PyTuple_SetItem(return_pyvalue, i, PyString_FromString(item->data));
+            item = g_list_next(item);
+        }'''
+            else:
+                # assume GObject*
+                pass
+            print >> fd, '''\
+        return return_pyvalue;
+    }'''
         else:
             # return a tuple with (object type, cPtr)
             print >> fd, '''\
@@ -514,7 +584,7 @@ register_constants(PyObject *d)
             print >> fd, '    Py_INCREF(Py_None);'
             print >> fd, '    return Py_None;'
         else:
-            self.return_value(fd, m.return_type)
+            self.return_value(fd, m.return_type, {})
         print >> fd, '}'
         print >> fd, ''
 
