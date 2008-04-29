@@ -303,7 +303,7 @@ import lasso
                 print >> fd, "        '''"
                 print >> fd, self.format_docstring(m, mname, 8)
                 print >> fd, "        '''"
-            if m.return_type == 'void':
+            if m.return_type in (None, 'void'):
                 print >> fd, '        _lasso.%s(self._cptr%s)' % (
                         m.name[6:], c_args)
             elif m.return_type in ('gint', 'int'):
@@ -315,6 +315,9 @@ import lasso
                 print >> fd, '            return rc'
                 print >> fd, '        elif rc < 0:' # unrecoverable error
                 print >> fd, '            raise Error.raise_on_rc(rc)'
+            elif self.is_pygobject(m.return_type):
+                print >> fd, '        return cptrToPy(_lasso.%s(self._cptr%s))' % (
+                        m.name[6:], c_args)
             else:
                 print >> fd, '        return _lasso.%s(self._cptr%s)' % (
                         m.name[6:], c_args)
