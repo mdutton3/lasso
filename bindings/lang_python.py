@@ -105,12 +105,9 @@ class Error(Exception):
     @staticmethod
     def raise_on_rc(rc):
         global exceptions_dict
-        exception = exceptions_dict.get(rc)
-        if not exception:
-            raise LassoError()
-        else:
-            exception.code = rc
-            raise exception
+        exception = exceptions_dict.get(rc, Error())
+        exception.code = rc
+        raise exception
 
     def __str__(self):
         return '<lasso.%s(%s): %s>' % (self.__class__.__name__, self.code, _lasso.strError(self.code))
