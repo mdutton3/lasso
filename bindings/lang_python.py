@@ -830,7 +830,7 @@ register_constants(PyObject *d)
                 print >> fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
 
         if m.return_type:
-            print >> fd, '    return_value = ',
+            print >> fd, '    return_value =',
             if 'new' in m.name:
                 print >> fd, '(%s)' % m.return_type,
         print >> fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))
