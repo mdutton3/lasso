@@ -3,7 +3,9 @@
 import os
 import re
 
-class Binding:
+import lang_python
+
+class BindingData:
     def __init__(self):
         self.constants = []
         self.structs = []
@@ -165,6 +167,9 @@ def parse_header(header_file):
                 f = Function()
                 binding.functions.append(f)
                 return_type, function_name, args = m.groups()
+                if function_name[0] == '*':
+                    return_type += '*'
+                    function_name = function_name[1:]
                 f.return_type = return_type
                 f.name = function_name
                 f.args = []
@@ -196,11 +201,14 @@ def parse_headers():
             parse_header(os.path.join(base, filename))
 
 
-binding = Binding()
+binding = BindingData()
 parse_headers()
 binding.order_class_hierarchy()
 binding.attach_methods()
 
+python_binding = lang_python.PythonBinding(binding)
+python_binding.generate()
+
 import pprint
-binding.display_structs()
-binding.display_funcs()
+#binding.display_structs()
+#binding.display_funcs()
