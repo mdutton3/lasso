@@ -4,10 +4,21 @@ import os
 import re
 
 constants = []
+structs = []
+struct_names = {}
+
+class Struct:
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return '<Struct name:%s>' % self.name
+
 
 def parse(header_file):
     in_comment = False
     in_enum = False
+    in_struct = None
 
     content = file(header_file).read().replace('\\\n', ' ')
     for line in content.splitlines():
@@ -44,7 +55,29 @@ def parse(header_file):
             in_enum = True
             continue
 
+        if line.startswith('typedef struct'):
+            m = re.match('typedef struct ([a-zA-Z0-9_]+)', line)
+            if not m:
+                continue
+            struct_name = m.group(1)
+            if struct_name.endswith('Class') or struct_name.endswith('Private'):
+                continue
+            struct_names[struct_name] = True
+            continue
 
+        if line.startswith('struct _'):
+            m = re.match('struct ([a-zA-Z0-9_]+)', line)
+            struct_name = m.group(1)
+            if not struct_name in struct_names:
+                continue
+            in_struct = Struct(struct_name)
+            continue
+
+        if in_struct:
+            if line.startswith('}'):
+                structs.append(in_struct)
+                in_struct = None
+                continue
 
 
 for base, dirnames, filenames in os.walk('../lasso/'):
@@ -63,5 +96,5 @@ for base, dirnames, filenames in os.walk('../lasso/'):
 
 
 import pprint
-pprint.pprint(constants)
+pprint.pprint(structs)
 
