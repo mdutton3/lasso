@@ -45,6 +45,7 @@ public class BindingTests extends TestCase {
 	// Create and delete nodes.
 
 	LibAuthnRequest authnRequest = new LibAuthnRequest();
+        assertNotNull(authnRequest);
 	authnRequest = null;
     }
 

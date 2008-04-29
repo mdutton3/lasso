@@ -14,4 +14,5 @@ EXTRA_DIST = bindings.py \
 	lang_php5_helpers/__init__.py \
 	lang_php5_helpers/php_code.py \
 	lang_php5_helpers/wrapper_header.py \
-	lang_php5_helpers/wrapper_source.py
+	lang_php5_helpers/wrapper_source.py \
+	utility-scripts/error-analyzer.pl

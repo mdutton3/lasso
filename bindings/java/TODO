@@ -1,15 +1,6 @@
-* generate_wrapper_getter_setter DONE
-* generate_JNI_functions DONE 
-* generate_JNI_getter_setter DONE
-* get_glist_from_jlist_of_strings DONE
-* get_glist_from_jlist_of_xmlnodes DONE
-* get_glist_from_jlist_of_objects DONE
-* generate_class DOINE
-
-* Générer la liste des erreurs possibles par fonction
- -> Construire callgraph de lasso DONE
- -> recencer par fonction les erreurs émises DONE
- -> remonter les infos dans le graphe DONE
-* doc DONE
-* renvoyer des listes et des hashmap au lieu de tableaux DONE
 * utiliser les numéros de version de lasso dans la doc/noms de fichiers
+* créer une hiérarchie object pour différentier les services SAML 2 des
+ services ID-FF 1.2 ainsi que mutualiser certaines méthodes.
+* déplacer les points d'accés saml2 et id-ff dans leurs répertoires res
+pectifs.
+* supporter plusieurs IdP 
