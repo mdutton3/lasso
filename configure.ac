@@ -923,7 +923,6 @@ docs/lasso-book/Makefile
 docs/lasso-book/figures/Makefile
 docs/reference/Makefile
 docs/reference/version.xml
-java/Makefile
 lasso/Makefile
 lasso/id-ff/Makefile
 lasso/id-wsf/Makefile
@@ -935,7 +934,6 @@ lasso/xml/id-wsf-2.0/Makefile
 lasso/xml/ws/Makefile
 perl/Makefile
 php/Makefile
-python/Makefile
 swig/Makefile
 swig/wsf-support.i
 swig/saml-2.0/Makefile
@@ -966,6 +964,12 @@ win32/nsis/lasso-deps.nsi
 win32/nsis/lasso-full.nsi
 win32/nsis/lasso-lite.nsi
 win32/nsis/python.nsi
+bindings/Makefile
+bindings/java/Makefile
+bindings/python/Makefile
+bindings/python/tests/Makefile
+bindings/php5/Makefile
+bindings/php5/examples/Makefile
 ])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `
