@@ -70,8 +70,8 @@ static int get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Co
 #define get_hash_of_objects(env,hash,jarr) get_hash(env,"java/lang/String",hash,(Converter)gobject_to_jobject_and_ref, jarr)
 //#define remove_from_hash_of_strings(env,hash,key) remove_from_hash(env,hash,key)
 //#define remove_from_hash_of_objects(env,hash,key) remove_from_hash(env,hash,key)
-#define add_to_hash_of_strings(env,hash,key,obj) add_to_hash(env,hash,key,obj,(OutConverter)jstring_to_string)
-#define add_to_hash_of_objects(env,hash,key,obj) add_to_hash(env,hash,key,obj,(OutConverter)jobject_to_gobject_for_list)
+#define add_to_hash_of_strings(env,hash,key,obj) add_to_hash(env,hash,key,obj,(OutConverter)jstring_to_string,(GFunc)g_free)
+#define add_to_hash_of_objects(env,hash,key,obj) add_to_hash(env,hash,key,obj,(OutConverter)jobject_to_gobject_for_list,(GFunc)g_object_unref)
 //#define get_hash_of_strings_by_name(end,hash,key) get_hash_by_name(end,hash,key,(Converter)string_to_jstring)
 //#define get_hash_of_objects_by_name(end,hash,key) get_hash_by_name(end,hash,key,(Converter)gobject_to_jobject_and_ref)
 

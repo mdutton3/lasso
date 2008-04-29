@@ -33,7 +33,7 @@ class PythonBinding:
     def is_pygobject(self, t):
         return t not in ['char*', 'const char*', 'gchar*', 'const gchar*',
                 'GList*', 'GHashTable*',
-                'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
+                'int', 'gint', 'gboolean', 'const gboolean', 'xmlNode*'] + self.binding_data.enums
 
     def generate(self):
         fd = open('lasso.py', 'w')
@@ -252,10 +252,25 @@ Saml2Subject.nameID = Saml2Subject.nameId
 
         for m in self.binding_data.functions:
             if m.name == method_prefix + 'new_from_dump':
+                c_args = []
+                py_args = []
+                for o in m.args:
+                    arg_type, arg_name, arg_options = o
+                    if arg_options.get('optional'):
+                        py_args.append('%s = None' % arg_name)
+                    else:
+                        py_args.append(arg_name)
+
+                    if self.is_pygobject(arg_type):
+                        c_args.append('%s._cptr' % arg_name)
+                    else:
+                        c_args.append(arg_name)
+                c_args = ', '.join(c_args)
+                py_args = ', ' + ', '.join(py_args)
                 print >> fd, '    @classmethod'
-                print >> fd, '    def newFromDump(cls, dump):'
+                print >> fd, '    def newFromDump(cls%s):' % py_args
                 print >> fd, '         obj = cls.__new__(cls)'
-                print >> fd, '         obj._cptr = _lasso.%s(dump)' % m.name[6:]
+                print >> fd, '         obj._cptr = _lasso.%s(%s)' % (m.name[6:], c_args)
                 print >> fd, '         if obj._cptr is None:'
                 print >> fd, '             raise "XXX"'
                 print >> fd, '         return obj'

@@ -155,7 +155,7 @@ public class LoginTest extends TestCase {
         assertNotNull(soapRequestMsg);
 
         // Identity provider SOAP endpoint.
-        requestType = LassoJNI.getRequestTypeFromSoapMsg(soapRequestMsg);
+        requestType = LassoJNI.lasso_get_request_type_from_soap_msg(soapRequestMsg);
         assertEquals(LassoConstants.LASSO_REQUEST_TYPE_LOGIN, requestType);
         idpDump = generateIdentityProviderDump();
         assertNotNull(idpDump);
@@ -202,7 +202,7 @@ public class LoginTest extends TestCase {
         soapRequestMsg = spLogout.getMsgBody();
 
         // Identity provider SOAP endpoint.
-        requestType = LassoJNI.getRequestTypeFromSoapMsg(soapRequestMsg);
+        requestType = LassoJNI.lasso_get_request_type_from_soap_msg(soapRequestMsg);
         assertEquals(LassoConstants.LASSO_REQUEST_TYPE_LOGOUT, requestType);
         idpDump = generateIdentityProviderDump();
         assertNotNull(idpDump);

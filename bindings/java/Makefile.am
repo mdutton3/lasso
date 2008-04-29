@@ -5,6 +5,7 @@ INCLUDES = -I$(top_srcdir) \
 
 AM_JAVACFLAGS=-C
 CLASSPATH_ENV= CLASSPATH=.:lasso.jar:/usr/share/java/junit.jar
+JAVAROOT=.
 
 java_extension_LTLIBRARIES = libjnilasso.la
 java_extensiondir = ${libdir}/java
@@ -48,7 +49,6 @@ $(java_lasso_source_files)  com_entrouvert_lasso_LassoJNI.c: ../lang_java_wrappe
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l java --src-dir=$(top_srcdir)/lasso/
 	cp $(srcdir)/GObject.java com/entrouvert/lasso
 
-check: JAVAROOT=.
 
 doc-publish: doc
 	tar czf doc.tgz -C doc .

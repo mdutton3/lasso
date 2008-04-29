@@ -2,7 +2,7 @@ package com.entrouvert.lasso;
 
 public class LassoException extends RuntimeException {
     public int errorCode;
-    private static boolean throws_for_recoverable_errors = false;
+    private static boolean throws_for_recoverable_errors = true;
     /** If set to true, enables throwing of exception for
      * recoverable errors, i.e. errors with a positive error
      * code.

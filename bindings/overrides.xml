@@ -7,11 +7,11 @@
   <func name="lasso_profile_is_liberty_query" rename="isLibertyQuery"/>
   <func name="lasso_profile_is_saml_query" rename="isSamlQuery"/>
   <func name="lasso_profile_get_request_type_from_soap_msg"
-  	rename="getRequestTypeFromSoapMsg"/>
+  	rename="lasso_get_request_type_from_soap_msg"/>
   <func name="lasso_session_get_assertions" return_owner="true"/>
   <!-- LassoProfile -->
   <func name="lasso_profile_get_nameIdentifier"
-  	rename="getFederationNameIdentifier"
+  	rename="lasso_profile_get_federation_nameIdentifier"
 	return_owner="false" />
   <func name="lasso_profile_get_identity" return_owner="false" />
   <func name="lasso_profile_get_session" return_owner="false" />
@@ -22,6 +22,7 @@
   <func name="lasso_identity_get_federation" return_owner="false" />
   <!-- LassoServer -->
   <func name="lasso_server_new">
+    <param name="metadata" optional="true"/>
     <param name="private_key" optional="true"/>
     <param name="private_key_password" optional="true"/>
     <param name="certificate" optional="true"/>
@@ -44,6 +45,19 @@
     <param name="response_http_method" optional="true" default="c:LASSO_HTTP_METHOD_REDIRECT"/>
   </func>
   <func name="lasso_login_init_idp_initiated_request">
+    <param name="remote_providerID" optional="true"/>
+  </func>
+  <func name="lasso_login_build_assertion">
+    <param name="authenticationMethod" optional="true"/>
+    <param name="authenticationInstant" optional="true"/>
+    <param name="reauthenticateOnOrAfter" optional="true"/>
+    <param name="notBefore" optional="true"/>
+    <param name="notOnOrAfter" optional="true"/>
+  </func>
+  <func name="lasso_login_process_authn_request_msg">
+    <param name="authn_request_msg" optional="true"/>
+  </func>
+  <func name="lasso_login_build_response_msg">
     <param name="remote_providerID" optional="true"/>
   </func>
   <!-- LassoLogout -->
