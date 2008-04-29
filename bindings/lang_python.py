@@ -285,6 +285,10 @@ import lasso
                 c_args = ''
 
             print >> fd, '    def %s(self%s):' % (format_underscore_as_py(mname), py_args)
+            if m.docstring:
+                print >> fd, "        '''"
+                print >> fd, self.format_docstring(m, mname, 8)
+                print >> fd, "        '''"
             if m.return_type == 'void':
                 print >> fd, '        _lasso.%s(self._cptr%s)' % (
                         m.name[6:], c_args)
@@ -303,6 +307,40 @@ import lasso
             print >> fd, ''
 
         print >> fd, ''
+
+    def format_docstring(self, func, method_name, indent):
+        docstring = func.docstring
+        if func.args:
+            first_arg_name = func.args[0][1]
+        else:
+            first_arg_name = None
+        def rep(s):
+            type = s.group(1)[0]
+            var = s.group(1)[1:]
+            if type == '#': # struct
+                if var.startswith('Lasso'):
+                    return var[5:]
+            elif type == '%': # %TRUE, %FALSE
+                if var == 'TRUE':
+                    return 'True'
+                if var == 'FALSE':
+                    return 'False'
+                print >> sys.stderr, 'W: unknown docstring thingie: %s' % s.group(1)
+            elif type == '@':
+                if var == first_arg_name:
+                    return 'self'
+
+            return s.group(1)
+        lines = []
+        for l in docstring.splitlines():
+            if l.strip() and not lines:
+                continue
+            lines.append(l)
+        s = '\n'.join([indent * ' ' + x for x in lines[1:]])
+        s = s.replace('NULL', 'None')
+        regex = re.compile(r'([\#%@]\w+)', re.DOTALL)
+        s = regex.sub(rep, s)
+        return s
 
     def generate_wrapper(self, fd):
         print >> fd, open('lang_python_wrapper_top.c').read()

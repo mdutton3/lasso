@@ -59,6 +59,30 @@ class BindingData:
             c.methods.append(f)
             self.functions.remove(f)
 
+    def look_for_docstrings(self):
+        regex = re.compile(r'\/\*\*\s(.*?)\*\*\/', re.DOTALL)
+        for base, dirnames, filenames in os.walk('../lasso/'):
+            if base.endswith('/.svn'):
+                # ignore svn directories
+                continue
+            if not 'Makefile.am' in filenames:
+                # not a source dir
+                continue
+            makefile_am = open(os.path.join(base, 'Makefile.am')).read()
+            filenames = [x for x in filenames if x.endswith('.c') if x in makefile_am]
+            for filename in filenames:
+                s = open(os.path.join(base, filename)).read()
+                docstrings = regex.findall(s)
+                for d in docstrings:
+                    docstring = '\n'.join([x[3:] for x in d.splitlines()])
+                    function_name = docstring.splitlines(1)[0].strip().strip(':')
+                    func = [f for f in self.functions if f.name == function_name]
+                    if not func:
+                        continue
+                    func = func[0]
+                    func.docstring = docstring
+
+
 
 class Struct:
     def __init__(self, name):
@@ -82,6 +106,7 @@ class Function:
     return_type = None
     name = None
     args = None
+    docstring = None
     
     def __repr__(self):
         return '%s %s %r' % (self.return_type, self.name, self.args)
@@ -251,6 +276,7 @@ def parse_headers():
 binding = BindingData()
 parse_headers()
 binding.order_class_hierarchy()
+binding.look_for_docstrings()
 binding.attach_methods()
 
 python_binding = lang_python.PythonBinding(binding)
