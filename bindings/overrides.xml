@@ -9,6 +9,8 @@
   <func name="lasso_profile_get_request_type_from_soap_msg"
   	rename="lasso_get_request_type_from_soap_msg"/>
   <func name="lasso_session_get_assertions" return_owner="true"/>
+  <!-- LassoProvider -->
+  <func name="lasso_provider_get_metadata_list" return_owner="false"/>
   <!-- LassoProfile -->
   <func name="lasso_profile_get_nameIdentifier"
   	rename="lasso_profile_get_federation_nameIdentifier"
@@ -28,6 +30,7 @@
   <func name="lasso_identity_get_offerings" return_type_qualifier="LassoNode*">
     <param name="service_type" optional="true"/>
   </func>
+  <func name="lasso_identity_get_resource_offering" return_owner="false"/>
   <!-- LassoServer -->
   <func name="lasso_server_new">
     <param name="metadata" optional="true"/>
@@ -43,6 +46,9 @@
     <param name="svcMDIDs" type="GList*" elem_type="char*"/>
     <param name="service_type"/>
   </func>
+  <func name="lasso_server_get_service" return_owner="false"/>
+  <!-- LassoSession -->
+  <func name="lasso_session_get_endpoint_reference" return_owner="false"/>
   <!-- LassoProvider -->
   <func name="lasso_provider_new">
     <param name="public_key" optional="true"/>
@@ -136,6 +142,7 @@
   <func name="lasso_discovery_get_service">
     <param name="service_type" optional="true"/>
   </func>
+  <func name="lasso_discovery_get_description_auto" return_owner="false"/>
   <!-- LassoDataService -->
   <func name="lasso_data_service_init_query">
     <param name="select" optional="true"/>

@@ -52,20 +52,7 @@ class PhpCode:
 
 // Try to load Lasso extension if it's not already loaded.
 if (!extension_loaded('lasso')) {
-    if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
-        $extension_module = 'lasso.dll';
-    } else {
-        // PHP_SHLIB_SUFFIX is available as of PHP 4.3.0, for older PHP assume 'so'.
-        // It gives 'dylib' on MacOS X which is for libraries, modules are 'so'.
-        if (PHP_SHLIB_SUFFIX === 'PHP_SHLIB_SUFFIX' || PHP_SHLIB_SUFFIX === 'dylib') {
-            $extension_module = 'lasso.so';
-        } else {
-            $extension_module = 'lasso.'.PHP_SHLIB_SUFFIX;
-        }
-    }
-    if (!dl($extension_module)) {
-        die('E: Could not load Lasso extension module.\n');
-    }
+    die("Lasso extension is not loaded");
 }
 
 /*
@@ -83,8 +70,12 @@ function cptrToPhp ($cptr) {
     return null;
 }
 
-function getRequestTypeFromSoapMsg($mesg) {
+function lassoGetRequestTypeFromSoapMsg($mesg) {
     return lasso_get_request_type_from_soap_msg($mesg);
+}
+
+function lassoRegisterIdWsf2DstService($prefix, $href) {
+    lasso_register_idwsf2_dst_service($prefix, $href);
 }
 '''
 
@@ -482,6 +473,5 @@ class LassoError extends Exception {
 
     def generate_footer(self):
         print >> self.fd, '''\
-        lasso_init();
 ?>'''
 

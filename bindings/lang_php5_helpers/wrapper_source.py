@@ -65,6 +65,7 @@ class WrapperSource:
 PHP_MINIT_FUNCTION(lasso)
 {
     le_lasso_server = zend_register_list_destructors_ex(php_gobject_generic_destructor, NULL, PHP_LASSO_SERVER_RES_NAME, module_number);
+    lasso_init();
 '''
 
     def generate_constants(self):
@@ -92,39 +93,42 @@ PHP_MINIT_FUNCTION(lasso)
 
 PHP_MSHUTDOWN_FUNCTION(lasso)
 {
-    return SUCCESS;
+    lasso_shutdown();
 }
+
 '''
 
-    def return_value(self, vtype, options):
+    def return_value(self, vtype, options, free = False):
         if vtype is None:
             return
         elif vtype == 'gboolean':
-            print >> self.fd, '    RETURN_BOOL(return_c_value);'
+            print >> self.fd, '    RETVAL_BOOL(return_c_value);'
         elif vtype in ['int', 'gint'] + self.binding_data.enums:
-            print >> self.fd, '    RETURN_LONG(return_c_value);'
+            print >> self.fd, '    RETVAL_LONG(return_c_value);'
         elif vtype in ('char*', 'gchar*'):
             print >> self.fd, '''\
     if (return_c_value) {
-        RETURN_STRING(return_c_value, 1);
+        RETVAL_STRING(return_c_value, 1);
     } else {
-        RETURN_NULL();
+        RETVAL_NULL();
     }'''
+            if free:
+                print >> self.fd, '    free(return_c_value);'
         elif vtype in ('const char*', 'const gchar*'):
             print >> self.fd, '''\
     if (return_c_value) {
-        RETURN_STRING(estrndup(return_c_value, strlen(return_c_value)), 0);
+        RETVAL_STRING((char*)return_c_value, 1);
     } else {
-        RETURN_NULL();
+        RETVAL_NULL();
     }'''
         elif vtype == 'xmlNode*':
             print >> self.fd, '''\
     {
         char* xmlString = get_string_from_xml_node(return_c_value);
         if (xmlString) {
-            RETURN_STRING(xmlString, 1);
+            RETVAL_STRING(xmlString, 0);
         } else {
-            RETURN_NULL();
+            RETVAL_NULL();
         }
     }
 '''
@@ -133,14 +137,20 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 print >> self.fd, '''\
     set_array_from_list_of_strings(return_c_value, &return_value);
 '''
+                if free:
+                    print >> self.fd, '    free_glist(&return_c_value, (GFunc)free);'
             elif options.get('elem_type') == 'xmlNode*':
                 print >> self.fd, '''\
     set_array_from_list_of_xmlnodes(return_c_value, &return_value);
 '''
+                if free:
+                    print >> self.fd, '    free_glist(&return_c_value, (GFunc)efree);'
             else:
                 print >> self.fd, '''\
     set_array_from_list_of_objects(return_c_value, &return_value);
 '''
+                if free:
+                    print >> self.fd, '    free_glist(&return_c_value, NULL);'
         elif vtype == 'GHashTable*':
             if options.get('elem_type') not in ('char*', 'xmlNode*'):
                 print >> self.fd, '''\
@@ -152,10 +162,15 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         self = PhpGObjectPtr_New(G_OBJECT(return_c_value));
         ZEND_REGISTER_RESOURCE(return_value, self, le_lasso_server);
     } else {
-        RETURN_NULL();
+        RETVAL_NULL();
     }'''
+            if free:
+#                print >> self.fd, '    printf("UNREF %p line %i\\n", return_c_value, __LINE__);'
+                print >> self.fd, '    g_object_unref(return_c_value); // Constructor'
 
     def generate_function(self, m):
+        if m.name in ('lasso_init','lasso_shutdown'):
+            return
         if m.rename:
             name = m.rename
         else:
@@ -239,10 +254,10 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 elem_type = arg[2].get('elem_type')
                 if elem_type == 'char*':
                     print >> self.fd, '    if (%(name)s) {' % { 'name': arg[1] }
-                    print >> self.fd, '        free_glist(%(name)s,free);' % { 'name': arg[1] }
+                    print >> self.fd, '        free_glist(&%(name)s,(GFunc)free);' % { 'name': arg[1] }
                     print >> self.fd, '    }'
 
-        self.return_value(m.return_type, {})
+        self.return_value(m.return_type, {}, m.return_owner)
 
         print >> self.fd, '}'
         print >> self.fd, ''
@@ -394,17 +409,25 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 ''' % { 'name': m_name }
             else:
                 print >> self.fd, '''
-    /* FIXME: Free the existing list */
+    free_glist(&this->%(name)s, (GFunc)g_object_unref);
     this->%(name)s = get_list_from_array_of_objects(zval_%(name)s);
 ''' % { 'name': m_name }
         elif arg_type == 'GHashTable*' and arg_options.get('elem_type') != 'char*':
             print >> self.fd, '''\
-    /* FIXME: Free the existing hashtable */
-    this->%(name)s = get_hashtable_from_array_of_objects(zval_%(name)s);
+    {
+        GHashTable *oldhash = this->%(name)s;
+        this->%(name)s = get_hashtable_from_array_of_objects(zval_%(name)s);
+        g_hash_table_destroy(oldhash);
+    }
 ''' % { 'name': m_name }
         elif parse_tuple_format == 'r':
             print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%s, PhpGObjectPtr*, &zval_%s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % (m_name, m_name)
-            print >> self.fd, '    this->%s = (%s)cvt_%s->obj;' % (m_name, m_type, m_name)
+            print >> self.fd, '''
+    g_object_ref(cvt_%(name)s->obj);
+    if (this->%(name)s)
+        g_object_unref(this->%(name)s);
+    this->%(name)s = (%(type)s)cvt_%(name)s->obj;
+''' % { 'name': m_name, 'type': m_type }
 
         print >> self.fd, '}'
         print >> self.fd, ''

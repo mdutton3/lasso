@@ -24,6 +24,7 @@ typedef struct {
 	char *typename;
 } PhpGObjectPtr;
 
+/** FIXME: implement caching of objects inside GObjects using a GQuark */
 static PhpGObjectPtr*
 PhpGObjectPtr_New(GObject *obj)
 {
@@ -33,9 +34,10 @@ PhpGObjectPtr_New(GObject *obj)
 		return NULL;
 	}
 
-	self = (PhpGObjectPtr *)emalloc(sizeof(PhpGObjectPtr));
+	self = (PhpGObjectPtr *)malloc(sizeof(PhpGObjectPtr));
 	self->obj = g_object_ref(obj);
-	self->typename = estrdup(G_OBJECT_TYPE_NAME(obj));
+	self->typename = strdup(G_OBJECT_TYPE_NAME(obj));
+        //printf("Allocating container %p for object %p of type %s with refcnt %i\n", self, obj, self->typename, obj->ref_count);
 
 	return self;
 }
@@ -60,12 +62,15 @@ static void php_gobject_generic_destructor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 
     if (gobject) {
         if (gobject->obj) {
+            //printf("Deallocating container %p\n", gobject);
+            //printf("Deallocating %p that has %u refcounts\n", gobject->obj, gobject->obj->ref_count);
             g_object_unref(G_OBJECT(gobject->obj));
+            //printf("now %u refcounts\n", gobject->obj->ref_count);
         }
         if (gobject->typename) {
-            efree(gobject->typename);
+            free(gobject->typename);
         }
-        efree(gobject);
+        free(gobject);
     }
 }
 
@@ -172,7 +177,6 @@ get_list_from_array_of_xmlnodes(zval* array)
 	int size;
 	zval** data;
 	zval temp;
-    char *temp_str;
 	GList* result = NULL;
 
 	hashtable = Z_ARRVAL_P(array);
@@ -183,8 +187,7 @@ get_list_from_array_of_xmlnodes(zval* array)
 		temp = **data;
 		zval_copy_ctor(&temp);
 		convert_to_string(&temp);
-		temp_str = estrndup(Z_STRVAL(temp), Z_STRLEN(temp));
-		result = g_list_append(result, get_xml_node_from_string(temp_str));
+		result = g_list_append(result, get_xml_node_from_string(Z_STRVAL(temp)));
 		zval_dtor(&temp);
 	}
 	return result;
@@ -197,7 +200,7 @@ set_array_from_list_of_xmlnodes(GList* list, zval **array) {
 	array_init(*array);
 	for (item = g_list_first(list); item != NULL; item = g_list_next(item)) {
 		if (item->data != NULL) {
-			add_next_index_string(*array, get_string_from_xml_node(item->data), 1);
+			add_next_index_string(*array, get_string_from_xml_node(item->data), 0);
 		} else {
 			add_next_index_null(*array);
 		}
@@ -221,6 +224,7 @@ get_list_from_array_of_objects(zval *array)
 			zend_hash_move_forward_ex(hashtable, &pointer)) {
 		cvt_temp = (PhpGObjectPtr*) zend_fetch_resource(data TSRMLS_CC, -1, PHP_LASSO_SERVER_RES_NAME, NULL, 1, le_lasso_server);
 		if (cvt_temp != NULL) {
+                        g_object_ref(cvt_temp->obj);
 			result = g_list_append(result, cvt_temp->obj);
 		} else {
 			result = g_list_append(result, NULL);
@@ -238,7 +242,7 @@ set_array_from_list_of_objects(GList *list, zval **array)
 	array_init(*array);
 	for (item = g_list_first(list); item != NULL; item = g_list_next(item)) {
 		if (item->data != NULL) {
-		    zval_item = emalloc(sizeof(PhpGObjectPtr));
+                        MAKE_STD_ZVAL(zval_item);
 			ZEND_REGISTER_RESOURCE(zval_item, PhpGObjectPtr_New(item->data), le_lasso_server);
 			add_next_index_zval(*array, zval_item);
 		} else {
@@ -296,7 +300,7 @@ set_array_from_hashtable_of_objects(GHashTable *hashtable, zval **array)
 	for (keys = g_hash_table_get_keys(hashtable); keys; keys = g_list_next(keys)) {
 		item = g_hash_table_lookup(hashtable, keys->data);
 		if (item) {
-			zval_item = emalloc(sizeof(PhpGObjectPtr));
+			MAKE_STD_ZVAL(zval_item);
 			ZEND_REGISTER_RESOURCE(zval_item, PhpGObjectPtr_New(item), le_lasso_server);
 			add_assoc_zval(*array, (char*)keys->data, zval_item);
 		} else {
