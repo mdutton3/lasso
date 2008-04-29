@@ -19,7 +19,7 @@ if WSF_ENABLED
 EXTRA_ARGS = --enable-id-wsf
 endif
 
-lasso.php _lasso.c: ../lang_php5.py ../lang_php5_helpers/php_code.py
+lasso.php _lasso.c: ../lang_php5.py ../lang_php5_helpers/php_code.py ../lang_php5_helpers/wrapper_source.py
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l php5 --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 
 doc:

@@ -33,14 +33,29 @@ import elementtree.ElementTree as ET
 class BindingData:
     src_dir = os.path.dirname(__file__)
 
-    def __init__(self):
+    def __init__(self, options = None):
         self.headers = []
         self.constants = []
         self.structs = []
         self.struct_dict = {}
         self.functions = []
         self.enums = []
+        self.options = options
         self.overrides = ET.parse(os.path.join(self.src_dir, 'overrides.xml'))
+
+    def match_tag_language(self,tag):
+        if self.options and self.options.language:
+            languages = tag.attrib.get('language')
+            if languages:
+                lang_list = languages.split(' ')
+                if self.options.language in lang_list:
+                    return True
+                else:
+                    return False
+            else:
+                return True
+        else:
+            return True
 
     def display_structs(self):
         for struct in self.structs:
@@ -158,6 +173,8 @@ class Function:
 
     def apply_overrides(self):
         for func in binding.overrides.findall('func'):
+            if not binding.match_tag_language(func):
+                continue
             if func.attrib.get('name') != self.name:
                 continue
             for param in func.findall('param'):
@@ -173,8 +190,8 @@ class Function:
                     arg[2]['default'] = param.attrib.get('default')
                 if param.attrib.get('type'):
                     arg[0] = param.attrib.get('type')
-                if param.attrib.get('type_qualifier'):
-                    arg[2]['type_qualifier'] = param.attrib.get('type_qualifier')
+                if param.attrib.get('elem_type'):
+                    arg[2]['elem_type'] = param.attrib.get('elem_type')
             if func.attrib.get('rename'):
                 self.rename = func.attrib.get('rename')
             if func.attrib.get('return_owner'):
@@ -186,8 +203,10 @@ class Function:
             if func.attrib.get('return_type_qualifier'):
                 self.return_type_qualifier = func.attrib.get('return_type_qualifier')
         for param in binding.overrides.findall('arg'):
+            if not binding.match_tag_language(param):
+                continue
             arg_name = param.attrib.get('name')
-            arg_sub = param.attrib.get('substitute')
+            arg_sub = param.attrib.get('rename')
             if arg_name and arg_sub:
                 args = [ x for x in self.args if x[1] == arg_name]
                 for arg in args:
@@ -424,7 +443,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    binding = BindingData()
+    binding = BindingData(options)
     parse_headers(options.srcdir, options.idwsf)
     binding.look_for_docstrings(options.srcdir, options.exception_doc)
     binding.order_class_hierarchy()

@@ -794,7 +794,7 @@ register_constants(PyObject *d)
 
         for f, arg in zip(parse_tuple_format, m.args):
             if arg[0] == 'GList*':
-                qualifier = arg[2].get('type_qualifier')
+                qualifier = arg[2].get('elem_type')
                 if qualifier == 'char*':
                     print >> fd, '    set_list_of_strings(&%s, cvt_%s);' % (arg[1], arg[1])
                 elif qualifier == 'xmlNode*':

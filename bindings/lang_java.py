@@ -524,6 +524,11 @@ protected static native void destroy(long cptr);
             if is_string_type(arg_type):
                 print >> fd, '    if (%s)' % arg_name
                 print >> fd, '        g_free(%s);' % arg_name
+            elif arg_type == 'GList*':
+                if arg_options.get('elem_type') == 'char*':
+                    print >> fd, '    free_glist(&%s, free);' % arg_name
+                else:
+                    raise Exception('Freeing args of type list of \'%s\' not supported.' % arg_options.get('elem_type'))
 
         # Return
         if m.return_type:

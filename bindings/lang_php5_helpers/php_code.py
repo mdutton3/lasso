@@ -149,8 +149,12 @@ function getRequestTypeFromSoapMsg($mesg) {
                 print >> self.fd, ''
 
             if m.name == method_prefix + 'new_from_dump':
-                print >> self.fd, '    public static function newFromDump($dump) {'
-                print >> self.fd, '        return cptrToPhp(%s($dump));' % m.name
+                if len(m.args) == 1:
+                    print >> self.fd, '    public static function newFromDump($dump) {'
+                    print >> self.fd, '        return cptrToPhp(%s($dump));' % m.name
+                else:
+                    print >> self.fd, '    public static function newFromDump($server, $dump) {'
+                    print >> self.fd, '        return cptrToPhp(%s($server->_cptr, $dump));' % m.name
                 # XXX: Else throw an exception
                 print >> self.fd, '    }'
                 print >> self.fd, ''
