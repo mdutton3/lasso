@@ -28,6 +28,7 @@ def format_as_camelcase(var):
         return format_underscore_as_camelcase(var)
     if var[0] in string.uppercase:
         var = var[0].lower() + var[1:]
+    var = re.sub(r'([a-z])(ID)([A-Z]|$)', r'\1Id\3', var) # replace standing ID by Id
     return var
 
 def format_as_underscored(var):
