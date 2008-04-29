@@ -1,3 +1,5 @@
+SUBDIRS = tests
+
 if PYTHON_ENABLED
 INCLUDES = -I$(top_srcdir) \
 	-I$(top_builddir) \
