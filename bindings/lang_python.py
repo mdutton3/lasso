@@ -319,12 +319,21 @@ Saml2Subject.nameID = Saml2Subject.nameId
                 mname = '%s%s' % (mname[3].lower(), mname[4:])
                 print >> fd, '    def get_%s(self):' % mname
                 print >> fd, '        return _lasso.%s(self._cptr)' % m.rename
+                function_name = m.rename
             else:
                 mname = m.name
                 mname = re.match(r'lasso_.*_get_(\w+)', mname).group(1)
                 mname = utils.format_underscore_as_camelcase(mname)
                 print >> fd, '    def get_%s(self):' % mname
-                print >> fd, '        return _lasso.%s(self._cptr)' % m.name[6:]
+                function_name = m.name[6:]
+
+            if self.is_pygobject(m.return_type):
+                print >> fd, '        t = _lasso.%s(self._cptr)' % function_name
+                print >> fd, '        return cptrToPy(t)'
+            elif m.return_type in ('GList*', 'GHashTable*'):
+                raise NotImplementedError
+            else:
+                print >> fd, '        return _lasso.%s(self._cptr)' % function_name
 
             if mname[0] == mname[0].lower() and not m.rename:
                 # API compatibility with SWIG bindings which didn't have
