@@ -427,7 +427,7 @@ else
   fi
   PHP4_INCLUDES="-I/usr/local/include/php4 -I/usr/local/include/php4/main -I/usr/local/include/php4/Zend -I/usr/local/include/php4/TSRM -I/usr/local/include/php4/win32"
   PHP4_LDFLAGS=
-  PHP4_LIBS=-lphp4ts -lxmlparse -lxmltok
+  PHP4_LIBS="-lphp4ts -lxmlparse -lxmltok"
   PHP4_UNPREFIXED_EXTENSION_DIR=
   PHP4_PREFIX=
 fi
@@ -498,7 +498,7 @@ else
   fi
   PHP5_INCLUDES="-I/usr/local/include/php5 -I/usr/local/include/php5/main -I/usr/local/include/php5/Zend -I/usr/local/include/php5/TSRM -I/usr/local/include/php5/win32"
   PHP5_LDFLAGS=
-  PHP5_LIBS=-lphp5ts -lxmlparse -lxmltok
+  PHP5_LIBS="-lphp5ts -lxmlparse -lxmltok"
   PHP5_UNPREFIXED_EXTENSION_DIR=
   PHP5_PREFIX=
 fi
