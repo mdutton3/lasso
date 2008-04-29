@@ -276,7 +276,11 @@ def parse_header(header_file):
         i += 1
 
 
-def parse_headers(srcdir):
+def parse_headers(srcdir, enable_idwsf):
+    wsf_prefixes = ['disco', 'dst', 'is', 'profile_service', 'discovery',
+            'wsf', 'interaction', 'utility', 'sa', 'soap', 'authentication',
+            'wsse', 'sec', 'ds', 'idwsf2', 'wsf2', 'wsa', 'wsu']
+
     for base, dirnames, filenames in os.walk(srcdir):
         if base.endswith('/.svn'):
             # ignore svn directories
@@ -284,10 +288,16 @@ def parse_headers(srcdir):
         if not 'Makefile.am' in filenames:
             # not a source dir
             continue
+        if not enable_idwsf and (base.endswith('/id-wsf') or \
+                base.endswith('/id-wsf-2.0') or base.endswith('/ws')):
+            # ignore ID-WSF
+            continue
         makefile_am = open(os.path.join(base, 'Makefile.am')).read()
         filenames = [x for x in filenames if x.endswith('.h') if x in makefile_am]
         for filename in filenames:
             if filename == 'lasso_config.h' or 'private' in filename:
+                continue
+            if not enable_idwsf and filename.split('_')[0] in wsf_prefixes:
                 continue
             binding.headers.append(os.path.join(base, filename)[3:])
             parse_header(os.path.join(base, filename))
@@ -300,6 +310,7 @@ def main():
     parser = OptionParser()
     parser.add_option('-l', '--language', dest = 'language')
     parser.add_option('-s', '--src-dir', dest = 'srcdir', default = '../lasso/')
+    parser.add_option('--enable-id-wsf', dest = 'idwsf', action = 'store_true')
 
     options, args = parser.parse_args()
     if not options.language:
@@ -307,7 +318,7 @@ def main():
         sys.exit(1)
 
     binding = BindingData()
-    parse_headers(options.srcdir)
+    parse_headers(options.srcdir, options.idwsf)
     binding.look_for_docstrings(options.srcdir)
     binding.order_class_hierarchy()
     binding.attach_methods()

@@ -412,7 +412,8 @@ register_constants(PyObject *d)
             self.wrapper_list.append('%s_%s_get' % (klassname[5:], mname))
 
             print >> fd, '    %s return_value;' % m[0]
-            print >> fd, '    PyObject* return_pyvalue;'
+            if m[0] != 'gboolean':
+                print >> fd, '    PyObject* return_pyvalue;'
             print >> fd, '    PyGObjectPtr* cvt_this;'
             print >> fd, '    %s* this;' % klassname
             print >> fd, ''
@@ -451,13 +452,11 @@ register_constants(PyObject *d)
                 print >> fd, '    %s value;' % arg_type
             elif arg_type == 'GList*':
                 parse_format = 'O'
-                print >> fd, '    %s value;' % arg_type
                 print >> fd, '    PyObject *cvt_value;'
                 print >> fd, '    int i, l;'
                 parse_arg = '&cvt_value'
             else:
                 parse_format = 'O'
-                print >> fd, '    %s value;' % arg_type
                 print >> fd, '    PyGObjectPtr *cvt_value;'
                 parse_arg = '&cvt_value'
 
@@ -625,7 +624,8 @@ register_constants(PyObject *d)
 
         if m.return_type:
             print >> fd, '    %s return_value;' % m.return_type
-            print >> fd, '    PyObject* return_pyvalue;'
+            if m.return_type != 'gboolean':
+                print >> fd, '    PyObject* return_pyvalue;'
         print >> fd, ''
 
         parse_tuple_args = ', '.join(parse_tuple_args)

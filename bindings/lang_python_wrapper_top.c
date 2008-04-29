@@ -4,6 +4,7 @@
 
 GQuark lasso_wrapper_key;
 
+PyMODINIT_FUNC init_lasso(void);
 
 typedef struct {
 	PyObject_HEAD

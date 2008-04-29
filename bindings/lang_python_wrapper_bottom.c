@@ -10,13 +10,9 @@ init_lasso(void)
         d = PyModule_GetDict(m);
         register_constants(d);
 
-	lasso_init();
-
 	lasso_wrapper_key = g_quark_from_static_string("PyLasso::wrapper");
 
 	Py_INCREF(&PyGObjectPtrType);
 	PyModule_AddObject(m, "PyGObjectPtr", (PyObject *)&PyGObjectPtrType);
-
-
 }
 
