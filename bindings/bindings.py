@@ -132,6 +132,7 @@ class Function:
     args = None
     docstring = None
     return_owner = True
+    skip = False
     
     def __repr__(self):
         return '%s %s %r' % (self.return_type, self.name, self.args)
@@ -155,6 +156,8 @@ class Function:
                 self.rename = func.attrib.get('rename')
             if func.attrib.get('return_owner'):
                 self.return_owner = (func.attrib.get('return_owner') != 'false')
+            if func.attrib.get('skip') == 'true':
+                self.skip = True
 
 
 def normalise_var(type, name):
@@ -262,24 +265,30 @@ def parse_header(header_file):
             m = re.match(r'LASSO_EXPORT\s+((?:const |)[\w]+\*?)\s+(\*?\w+)\s*\((.*?)\)', line)
             if m and not m.group(2).endswith('_get_type'):
                 f = Function()
-                binding.functions.append(f)
                 return_type, function_name, args = m.groups()
                 if function_name[0] == '*':
                     return_type += '*'
                     function_name = function_name[1:]
                 if return_type != 'void':
                     f.return_type = return_type
-                f.name = function_name
-                f.args = []
-                for arg in [x.strip() for x in args.split(',')]:
-                    if arg == 'void' or arg == '':
-                        continue
-                    m = re.match(r'((const\s+)?\w+\*?)\s+(\*?\w+)', arg)
-                    if m:
-                        f.args.append(list(normalise_var(m.group(1), m.group(3))) + [{}])
-                    else:
-                        print 'failed to process:', arg, 'in line:', line
-                f.apply_overrides()
+                if function_name.endswith('_destroy'):
+                    # skip the _destroy functions, they are just wrapper over
+                    # g_object_unref
+                    pass
+                else:
+                    f.name = function_name
+                    f.args = []
+                    for arg in [x.strip() for x in args.split(',')]:
+                        if arg == 'void' or arg == '':
+                            continue
+                        m = re.match(r'((const\s+)?\w+\*?)\s+(\*?\w+)', arg)
+                        if m:
+                            f.args.append(list(normalise_var(m.group(1), m.group(3))) + [{}])
+                        else:
+                            print 'failed to process:', arg, 'in line:', line
+                    f.apply_overrides()
+                    if not f.skip:
+                        binding.functions.append(f)
 
         i += 1
 
