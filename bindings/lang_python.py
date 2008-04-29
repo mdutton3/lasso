@@ -518,6 +518,8 @@ Saml2Subject.nameID = Saml2Subject.nameId
             if m.rename:
                 pname = m.rename
                 name = m.rename
+                if name.startswith('lasso_'):
+                    pname = utils.format_as_camelcase(name[6:])
             else:
                 name = m.name[6:]
                 pname = utils.format_as_camelcase(name)
