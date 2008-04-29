@@ -213,7 +213,9 @@ import lasso
                 print >> fd, '        return _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
             print >> fd, '    def set_%s(self, value):' % mname
-            if m[0] == 'GList*' and options.get('elem_type') != 'char*':
+            if self.is_pygobject(m[0]):
+                print >> fd, '        value = value._cptr'
+            elif m[0] == 'GList*' and options.get('elem_type') != 'char*':
                 print >> fd, '        value = tuple([x._cptr for x in value])'
             print >> fd, '        _lasso.%s_%s_set(self._cptr, value)' % (
                     klassname, mname)
