@@ -80,6 +80,9 @@ class BindingData:
             if not c:
                 continue
             c.methods.append(f)
+            if f.docstring:
+                # remove first parameter, which is self/this/etc.
+                f.docstring.parameters = f.docstring.parameters[1:]
             self.functions.remove(f)
 
     def look_for_docstrings(self, srcdir):
@@ -103,8 +106,8 @@ class BindingData:
                     if not func:
                         continue
                     func = func[0]
-                    func.docstring = docstring
-
+                    func.docstring = DocString(func, docstring)
+                    
 
 
 class Struct:
@@ -158,6 +161,59 @@ class Function:
                 self.return_owner = (func.attrib.get('return_owner') != 'false')
             if func.attrib.get('skip') == 'true':
                 self.skip = True
+
+
+class DocString:
+    orig_docstring = None
+    parameters = None
+    return_value = None
+    description = None
+
+    def __init__(self, function, docstring):
+        self.orig_docstring = docstring
+        lines = docstring.splitlines()
+        # ignore the first line, it has the symbol name
+        lines = lines[1:]
+
+        # look for parameters
+        while lines[0].strip():
+            if not self.parameters and not lines[0].startswith('@'):
+                # function without parameters
+                break
+            if not self.parameters:
+                self.parameters = []
+
+            if lines[0][0] == '@':
+                param_name, param_desc = lines[0][1:].split(':', 2)
+                self.parameters.append([param_name, param_desc])
+            else:
+                # continuation of previous description
+                self.parameters[-1][1] = self.parameters[-1][1] + ' ' + lines[0].strip()
+
+            lines = lines[1:]
+
+        # blank line then description, till the end or the return value
+        lines = lines[1:]
+        self.description = ''
+        while not lines[0].startswith('Return value'):
+            self.description += lines[0] + '\n'
+            if len(lines) == 1:
+                self.description = self.description.strip()
+                return
+            lines = lines[1:]
+        self.description = self.description.strip()
+
+        # return value
+        if lines[0].startswith('Return value'):
+            lines[0] = lines[0].split(':', 1)[1]
+            self.return_value = ''
+            while lines[0].strip():
+                self.return_value = self.return_value + ' ' + lines[0].strip()
+                if len(lines) == 1:
+                    break
+                lines = lines[1:]
+            self.return_value = self.return_value[1:] # remove leading space
+
 
 
 def normalise_var(type, name):

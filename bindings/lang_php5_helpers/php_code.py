@@ -341,7 +341,7 @@ function cptrToPhp ($cptr) {
         print >> self.fd, ''
 
     def generate_docstring(self, func, method_name, indent):
-        docstring = func.docstring
+        docstring = func.docstring.orig_docstring
         if func.args:
             first_arg_name = func.args[0][1]
         else:

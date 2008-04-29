@@ -22,6 +22,7 @@
 import os
 import sys
 import re
+import textwrap
 
 import utils
 
@@ -407,17 +408,17 @@ Session.providerIds = property(session_get_provider_ids)
         print >> fd, ''
 
     def format_docstring(self, func, method_name, indent):
-        docstring = func.docstring
         if func.args:
             first_arg_name = func.args[0][1]
         else:
             first_arg_name = None
-        def rep(s):
+
+        def format_inlines_sub(s):
             type = s.group(1)[0]
             var = s.group(1)[1:]
             if type == '#': # struct
                 if var.startswith('Lasso'):
-                    return var[5:]
+                    return 'L{%s}' % var[5:]
             elif type == '%': # %TRUE, %FALSE
                 if var == 'TRUE':
                     return 'True'
@@ -426,19 +427,62 @@ Session.providerIds = property(session_get_provider_ids)
                 print >> sys.stderr, 'W: unknown docstring thingie: %s' % s.group(1)
             elif type == '@':
                 if var == first_arg_name:
-                    return 'self'
-
+                    var = 'self'
+                return 'C{%s}' % var
             return s.group(1)
-        lines = []
-        for l in docstring.splitlines():
-            if l.strip() and not lines:
-                continue
-            lines.append(l)
-        s = '\n'.join([indent * ' ' + x for x in lines[1:]])
-        s = s.replace('NULL', 'None')
+
         regex = re.compile(r'([\#%@]\w+)', re.DOTALL)
-        s = regex.sub(rep, s)
-        return s
+
+        def format_inline(s):
+            s = regex.sub(format_inlines_sub, s)
+            return s.replace('NULL', 'None')
+
+        docstring = func.docstring
+        s = []
+
+        if docstring.description:
+            for paragraph in docstring.description.split('\n\n'):
+                if '<itemizedlist>' in paragraph:
+                    before, after = paragraph.split('<itemizedlist>' ,1)
+                    if before:
+                        s.append('\n'.join(textwrap.wrap(
+                                        format_inline(before), 70)))
+
+                    # remove tags
+                    after = after.replace('<itemizedlist>', '')
+                    after = after.replace('</itemizedlist>', '')
+
+                    for listitem in after.split('<listitem><para>'):
+                        listitem = listitem.replace('</para></listitem>', '').strip()
+                        s.append('\n'.join(textwrap.wrap(
+                                        format_inline(listitem), 70,
+                                        initial_indent = ' - ',
+                                        subsequent_indent = '   ')))
+                        s.append('\n\n')
+
+                else:
+                    s.append('\n'.join(textwrap.wrap(
+                                    format_inline(paragraph), 70)))
+                    s.append('\n\n')
+
+        for param in docstring.parameters:
+            s.append('\n'.join(textwrap.wrap(
+                            format_inline(param[1]), 70,
+                            initial_indent = '@param %s: ' % param[0],
+                            subsequent_indent = 4*' ')))
+            s.append('\n')
+        if docstring.return_value:
+            s.append('\n'.join(textwrap.wrap(
+                            format_inline(docstring.return_value), 70,
+                            initial_indent = '@return: ',
+                            subsequent_indent = 4*' ')))
+            s.append('\n')
+
+
+        s[-1] = s[-1].rstrip() # remove trailing newline from last line
+
+        return '\n'.join([(indent*' ')+x for x in ''.join(s).splitlines()])
+
 
     def generate_functions(self, fd):
         for m in self.binding_data.functions:
