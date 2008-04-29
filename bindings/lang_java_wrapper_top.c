@@ -3,6 +3,7 @@
 #include <jni.h>
 #include "com_entrouvert_lasso_LassoJNI.h"
 #include <string.h>
+#include "../ghashtable.h"
 
 #define LASSO_ROOT "com/entrouvert/lasso/"
 #define check_exception (*env)->ExceptionCheck(env)
@@ -75,77 +76,6 @@ static int get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Co
 //#define get_hash_of_strings_by_name(end,hash,key) get_hash_by_name(end,hash,key,(Converter)string_to_jstring)
 //#define get_hash_of_objects_by_name(end,hash,key) get_hash_by_name(end,hash,key,(Converter)gobject_to_jobject_and_ref)
 
-/* Helper functions to access JNI interface functions */
-#if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 12)
-void
-g_hash_table_remove_all (GHashTable *hash_table)
-{
-    g_return_if_fail (hash_table != NULL);
-
-    g_hash_table_remove_all_nodes (hash_table, TRUE);
-    g_hash_table_maybe_resize (hash_table);
-}
-#endif
-#if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 14)
-  /* copy of private struct and g_hash_table_get_keys from GLib internals
-   * (as this function is useful but new in 2.14) */
-
-typedef struct _GHashNode  GHashNode;
-
-struct _GHashNode
-{
-  gpointer   key;
-  gpointer   value;
-  GHashNode *next;
-  guint      key_hash;
-};
-
-struct _GHashTable
-{
-  gint             size;
-  gint             nnodes;
-  GHashNode      **nodes;
-  GHashFunc        hash_func;
-  GEqualFunc       key_equal_func;
-  volatile gint    ref_count;
-  GDestroyNotify   key_destroy_func;
-  GDestroyNotify   value_destroy_func;
-};
-
-static GList *
-g_hash_table_get_keys (GHashTable *hash_table)
-{
-  GHashNode *node;
-  gint i;
-  GList *retval;
-
-  g_return_val_if_fail (hash_table != NULL, NULL);
-
-  retval = NULL;
-  for (i = 0; i < hash_table->size; i++)
-    for (node = hash_table->nodes[i]; node; node = node->next)
-      retval = g_list_prepend (retval, node->key);
-
-  return retval;
-}
-
-GList *
-g_hash_table_get_values (GHashTable *hash_table)
-{
-    GHashNode *node;
-    gint i;
-    GList *retval;
-
-    g_return_val_if_fail (hash_table != NULL, NULL);
-
-    retval = NULL;
-    for (i = 0; i < hash_table->size; i++)
-        for (node = hash_table->nodes[i]; node; node = node->next)
-            retval = g_list_prepend (retval, node->value);
-
-    return retval;
-}
-#endif
 
 static int
 gpointer_equal(gpointer p1, gpointer p2) {

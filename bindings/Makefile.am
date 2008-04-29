@@ -15,4 +15,6 @@ EXTRA_DIST = bindings.py \
 	lang_php5_helpers/php_code.py \
 	lang_php5_helpers/wrapper_header.py \
 	lang_php5_helpers/wrapper_source.py \
-	utility-scripts/error-analyzer.pl
+	utility-scripts/error-analyzer.pl \
+	ghashtable.h
+
