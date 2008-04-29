@@ -161,7 +161,7 @@ def parse_header(header_file):
                 line = line[:-1] + lines[i].lstrip()
 
             m = re.match(r'LASSO_EXPORT\s+([\w]+\*?)\s+(\*?\w+)\s*\((.*?)\)', line)
-            if m:
+            if m and not m.group(2).endswith('_get_type'):
                 f = Function()
                 binding.functions.append(f)
                 return_type, function_name, args = m.groups()
