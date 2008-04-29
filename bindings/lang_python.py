@@ -189,6 +189,7 @@ def session_get_provider_ids(self):
 Session.providerIds = property(session_get_provider_ids)
 
 Samlp2AuthnRequest.nameIDPolicy = Samlp2AuthnRequest.nameIdPolicy
+Saml2Subject.nameID = Saml2Subject.nameId
 '''
 
     def generate_constants(self, fd):
