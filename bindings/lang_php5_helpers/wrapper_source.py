@@ -119,11 +119,13 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
     }'''
         elif vtype == 'xmlNode*':
             print >> self.fd, '''\
-    char* xmlString = get_string_from_xml_node(return_c_value);
-    if (xmlString) {
-        RETURN_STRING(xmlString, 1);
-    } else {
-        RETURN_NULL();
+    {
+        char* xmlString = get_string_from_xml_node(return_c_value);
+        if (xmlString) {
+            RETURN_STRING(xmlString, 1);
+        } else {
+            RETURN_NULL();
+        }
     }
 '''
         elif vtype in ('GList*',) and options.get('elem_type') == 'char*':
