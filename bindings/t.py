@@ -22,11 +22,20 @@ class Binding:
             for a in func.args:
                 print '  ', a
 
+    def order_class_hierarchy(self):
+        new_order = []
+        while self.structs:
+            for c in self.structs:
+                if c.parent == 'GObject' or c.parent in [x.name for x in new_order]:
+                    self.structs.remove(c)
+                    new_order.append(c)
+                    break
+        self.structs = new_order
 
 
 class Struct:
     def __init__(self, name):
-        self.name = name
+        self.name = name[1:] # skip leading _
         self.parent = None
         self.members = []
 
@@ -163,5 +172,6 @@ binding = Binding()
 parse_headers()
 
 import pprint
+binding.order_class_hierarchy()
 binding.display_structs()
 #binding.display_funcs()
