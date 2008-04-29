@@ -5,10 +5,14 @@ INCLUDES = -I$(top_srcdir) \
 	-I$(top_builddir) \
 	$(SASL_CFLAGS)
 
+php_extensiondir=@PHP5_EXTENSION_DIR@
 php_extension_LTLIBRARIES = lasso.la
-php_extensiondir = ${prefix}@PHP5_UNPREFIXED_EXTENSION_DIR@
 
-nodist_php_extension_DATA = lasso.php
+php_includedir=@PHP5_INCLUDE_DIR@
+nodist_php_include_DATA = lasso.php
+
+php_configdir=@PHP5_CONFIG_DIR@
+php_config_DATA=lasso.ini
 
 lasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir) $(PHP5_INCLUDES)
 lasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version

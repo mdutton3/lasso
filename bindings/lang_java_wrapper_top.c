@@ -68,7 +68,7 @@ static int get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Co
 // Use jobject_to_gobject_for_list because ref count must be augmented by one when inserted inside a list
 #define add_to_list_of_objects(env,list,obj) add_to_list(env,list,obj,(OutConverter)jobject_to_gobject_for_list)
 #define get_hash_of_strings(env,hash,jarr) get_hash(env,"java/lang/String",hash,(Converter)string_to_jstring, jarr)
-#define get_hash_of_objects(env,hash,jarr) get_hash(env,"java/lang/String",hash,(Converter)gobject_to_jobject_and_ref, jarr)
+#define get_hash_of_objects(env,hash,jarr) get_hash(env,"java/lang/Object",hash,(Converter)gobject_to_jobject_and_ref, jarr)
 //#define remove_from_hash_of_strings(env,hash,key) remove_from_hash(env,hash,key)
 //#define remove_from_hash_of_objects(env,hash,key) remove_from_hash(env,hash,key)
 #define add_to_hash_of_strings(env,hash,key,obj) add_to_hash(env,hash,key,obj,(OutConverter)jstring_to_string,(GFunc)g_free)

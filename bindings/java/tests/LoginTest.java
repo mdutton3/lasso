@@ -38,6 +38,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import com.entrouvert.lasso.*;
+import java.util.*;
 
 public class LoginTest extends TestCase {
     public String generateIdentityProviderDump() {
@@ -231,6 +232,11 @@ public class LoginTest extends TestCase {
         spLogout.processResponseMsg(soapResponseMsg);
         spIdentityDump = spLogout.getIdentity().dump();
         assertNotNull(spIdentityDump);
+    }
+    public void test03_getProviders() {
+        String identityProviderDump = generateIdentityProviderDump();
+        Server server = Server.newFromDump(identityProviderDump);
+        Map providers = server.getProviders();
     }
 
     public static Test suite() { 
