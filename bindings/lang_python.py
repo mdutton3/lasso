@@ -53,8 +53,8 @@ import _lasso
 
 _lasso.init()
 
-def cptrToPy(t, cptr):
-    klass = getattr(lasso, t)
+def cptrToPy( cptr):
+    klass = getattr(lasso, cptr.typename)
     o = klass.__new__(klass)
     o._cptr = cptr
     return o
@@ -175,9 +175,9 @@ import lasso
                 c_args = ', '.join(c_args)
                 py_args = ', ' + ', '.join(py_args)
                 print >> fd, '    def __init__(self%s):' % py_args
-                # XXX: could check _lasso....(...)[0] to see if it got the
+                # XXX: could check self._cptr.typename to see if it got the
                 # right class type
-                print >> fd, '        self._cptr = _lasso.%s(%s)[1]' % (
+                print >> fd, '        self._cptr = _lasso.%s(%s)' % (
                         m.name[6:], c_args)
                 print >> fd, ''
 
@@ -207,7 +207,7 @@ import lasso
                 print >> fd, '        l = _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
                 print >> fd, '        if not l: return l'
-                print >> fd, '        return tuple([cptrToPy(x[0], x[1]) for x in l])'
+                print >> fd, '        return tuple([cptrToPy(x) for x in l])'
             else:
                 print >> fd, '        return _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
@@ -353,12 +353,7 @@ register_constants(PyObject *d)
             print >> fd, '    PyObject* return_pyvalue;'
             print >> fd, '    PyGObjectPtr* cvt_this;'
             print >> fd, '    %s* this;' % klassname
-            if self.is_pygobject(m[0]):
-                print >> fd, '    PyObject* return_tuple;'
-                print >> fd, '    PyObject* type_name;'
-
             print >> fd, ''
-
             print >> fd, '    if (! PyArg_ParseTuple(args, "O", &cvt_this)) return NULL;'
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
 
@@ -509,7 +504,11 @@ register_constants(PyObject *d)
         }'''
             else:
                 # assume GObject*
-                pass
+                print >> fd, '''\
+        for (i = 0; item; i++) {
+            PyTuple_SetItem(return_pyvalue, i, PyGObjectPtr_New(item->data));
+            item = g_list_next(item);
+        }'''
             print >> fd, '''\
         return return_pyvalue;
     }'''
@@ -518,13 +517,6 @@ register_constants(PyObject *d)
             print >> fd, '''\
     if (return_value) {
         return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));
-        /*Py_INCREF(return_pyvalue);*/
-        type_name = PyString_FromString(G_OBJECT_TYPE_NAME(return_value)+5);
-        /*Py_INCREF(type_name);*/
-        return_tuple = PyTuple_New(2);
-        PyTuple_SetItem(return_tuple, 0, type_name);
-        PyTuple_SetItem(return_tuple, 1, return_pyvalue);
-        return_pyvalue = return_tuple;
         /*Py_INCREF(return_pyvalue);*/
         return return_pyvalue;
     } else {
@@ -559,6 +551,10 @@ register_constants(PyObject *d)
                 parse_tuple_format.append('i')
                 parse_tuple_args.append('&%s' % arg_name)
                 print >> fd, '    %s %s;' % (arg[0], arg[1])
+            elif arg_type == 'GList*':
+                print >> sys.stderr, 'E: GList argument in', name
+                print >> fd, '    %s %s = NULL;' % (arg[0], arg[1])
+                print >> fd, '    PyGObjectPtr *cvt_%s = NULL;' % arg_name
             else:
                 parse_tuple_format.append('O')
                 parse_tuple_args.append('&cvt_%s' % arg_name)
@@ -568,9 +564,6 @@ register_constants(PyObject *d)
         if m.return_type:
             print >> fd, '    %s return_value;' % m.return_type
             print >> fd, '    PyObject* return_pyvalue;'
-            if self.is_pygobject(m.return_type):
-                print >> fd, '    PyObject* return_tuple;'
-                print >> fd, '    PyObject* type_name;'
         print >> fd, ''
 
         parse_tuple_args = ', '.join(parse_tuple_args)

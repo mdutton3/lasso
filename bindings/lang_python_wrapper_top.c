@@ -1,4 +1,5 @@
 #include <Python.h>
+#include <structmember.h>
 #include <lasso/lasso.h>
 
 GQuark lasso_wrapper_key;
@@ -7,6 +8,7 @@ GQuark lasso_wrapper_key;
 typedef struct {
 	PyObject_HEAD
 	GObject *obj;
+	PyObject *typename;
 } PyGObjectPtr;
 
 static PyTypeObject PyGObjectPtrType;
@@ -21,6 +23,7 @@ PyGObjectPtr_dealloc(PyGObjectPtr *self)
 			self->obj->ref_count);
 #endif
 	g_object_unref(self->obj);
+	Py_XDECREF(self->typename);
 	self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -41,6 +44,7 @@ PyGObjectPtr_New(GObject *obj)
 		self = (PyGObjectPtr*)PyObject_NEW(PyGObjectPtr, &PyGObjectPtrType);
 		g_object_set_qdata_full(obj, lasso_wrapper_key, self, NULL);
 		self->obj = obj;
+		self->typename = PyString_FromString(G_OBJECT_TYPE_NAME(obj)+5);
 	}
 	return (PyObject*)self;
 }
@@ -53,6 +57,12 @@ PyGObjectPtr_repr(PyGObjectPtr *obj)
 			G_OBJECT_TYPE_NAME(obj->obj),
 			obj->obj->ref_count);
 }
+
+static PyMemberDef PyGObjectPtr_members[] = {
+	{"typename", T_OBJECT, offsetof(PyGObjectPtr, typename), 0, "typename"},
+	{NULL}
+};
+
 
 static PyTypeObject PyGObjectPtrType = {
 	PyObject_HEAD_INIT(NULL)
@@ -77,5 +87,13 @@ static PyTypeObject PyGObjectPtrType = {
 	0,       /*tp_as_buffer*/
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,  /*tp_flags*/
 	"PyGObjectPtr objects",   /* tp_doc */
+	0,       /* tp_traverse */
+	0,       /* tp_clear */
+	0,       /* tp_richcompare */
+	0,       /* tp_weaklistoffset */
+	0,       /* tp_iter */
+	0,       /* tp_iternext */
+	0,       /* tp_methods */
+	PyGObjectPtr_members,   /* tp_members */
 };
 
