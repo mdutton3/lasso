@@ -22,29 +22,8 @@
 import os
 import sys
 import re
-import string
 
-def format_as_python(var):
-    if '_' in var:
-        return format_underscore_as_py(var)
-    if var[0] in string.uppercase:
-        var = var[0].lower() + var[1:]
-    return var
-
-def format_as_underscored(var):
-    def rep(s):
-        return s.group(0)[0] + '_' + s.group(1).lower()
-    var = re.sub(r'[a-z0-9]([A-Z])', rep, var).lower()
-    var = var.replace('id_wsf2_', 'idwsf2_')
-    var = var.replace('_saslresponse', '_sasl_response')
-    return var
-
-def format_underscore_as_py(var):
-    def rep(s):
-        return s.group(1)[0].upper() + s.group(1)[1:]
-    var = re.sub(r'_([A-Za-z0-9]+)', rep, var)
-    var = re.sub(r'([a-z])(ID)([A-Z]|$)', r'\1Id\3', var) # replace standing ID by Id
-    return var
+import utils
 
 class PythonBinding:
     def __init__(self, binding_data):
@@ -177,7 +156,7 @@ import lasso
 
         methods = clss.methods[:]
         # constructor(s)
-        method_prefix = 'lasso_' + format_as_underscored(klassname) + '_'
+        method_prefix = 'lasso_' + utils.format_as_underscored(klassname) + '_'
         for m in self.binding_data.functions:
             if m.name == method_prefix + 'new':
                 c_args = []
@@ -218,7 +197,7 @@ import lasso
 
         # create properties for members
         for m in clss.members:
-            mname = format_as_python(m[1])
+            mname = utils.format_as_camelcase(m[1])
             options = m[2]
             print >> fd, '    def get_%s(self):' % mname
             if self.is_pygobject(m[0]):
@@ -253,7 +232,7 @@ import lasso
             except IndexError:
                 setter = None
             mname = re.match(r'lasso_.*_get_(\w+)', m.name).group(1)
-            mname = format_underscore_as_py(mname)
+            mname = utils.format_underscore_as_camelcase(mname)
 
             print >> fd, '    def get_%s(self):' % mname
             print >> fd, '        return _lasso.%s(self._cptr)' % m.name[6:]
@@ -314,7 +293,8 @@ import lasso
             else:
                 c_args = ''
 
-            print >> fd, '    def %s(self%s):' % (format_underscore_as_py(mname), py_args)
+            print >> fd, '    def %s(self%s):' % (
+                    utils.format_underscore_as_camelcase(mname), py_args)
             if m.docstring:
                 print >> fd, "        '''"
                 print >> fd, self.format_docstring(m, mname, 8)
@@ -412,7 +392,7 @@ register_constants(PyObject *d)
     def generate_member_wrapper(self, c, fd):
         klassname = c.name
         for m in c.members:
-            mname = format_as_python(m[1])
+            mname = utils.format_as_camelcase(m[1])
             # getter
             print >> fd, '''static PyObject*
 %s_%s_get(PyObject *self, PyObject *args)

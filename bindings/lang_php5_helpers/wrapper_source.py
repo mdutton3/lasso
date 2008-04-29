@@ -20,21 +20,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import sys
-import re
-import string
 
-def format_attribute(var):
-    if '_' in var:
-        return format_underscore_as_py(var)
-    if var[0] in string.uppercase:
-        var = var[0].lower() + var[1:]
-    return var
-
-def format_underscore_as_py(var):
-    def rep(s):
-        return s.group(1)[0].upper() + s.group(1)[1:]
-    var = re.sub(r'_([A-Za-z0-9]+)', rep, var)
-    return var
+import utils
 
 class WrapperSource:
     def __init__(self, binding_data, fd):
@@ -237,7 +224,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         print >> self.fd, ''
 
     def generate_getter(self, klassname, m_type, m_name, m_options):
-        function_name = '%s_%s_get' % (klassname, format_attribute(m_name))
+        function_name = '%s_%s_get' % (klassname, utils.format_as_camelcase(m_name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
         self.functions_list.append(function_name)
@@ -277,7 +264,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         print >> self.fd, ''
 
     def generate_setter(self, klassname, m_type, m_name, m_options):
-        function_name = '%s_%s_set' % (klassname, format_attribute(m_name))
+        function_name = '%s_%s_set' % (klassname, utils.format_as_camelcase(m_name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
         self.functions_list.append(function_name)

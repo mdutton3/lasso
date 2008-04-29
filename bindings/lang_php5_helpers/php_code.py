@@ -20,28 +20,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import re
-import string
 
-def format_attribute(var):
-    if '_' in var:
-        return format_underscore_as_py(var)
-    if var[0] in string.uppercase:
-        var = var[0].lower() + var[1:]
-    return var
-
-def format_underscore_as_py(var):
-    def rep(s):
-        return s.group(1)[0].upper() + s.group(1)[1:]
-    var = re.sub(r'_([A-Za-z0-9]+)', rep, var)
-    return var
-
-def format_as_underscored(var):
-    def rep(s):
-        return s.group(0)[0] + '_' + s.group(1).lower()
-    var = re.sub(r'[a-z0-9]([A-Z])', rep, var).lower()
-    var = var.replace('id_wsf2_', 'idwsf2_')
-    var = var.replace('_saslresponse', '_sasl_response')
-    return var
+import utils
 
 class PhpCode:
     def __init__(self, binding_data, fd):
@@ -102,7 +82,7 @@ function cptrToPhp ($cptr) {
         print >> self.fd, ''
 
     def generate_constructors(self, klass):
-        method_prefix = format_as_underscored(klass.name) + '_'
+        method_prefix = utils.format_as_underscored(klass.name) + '_'
         for m in self.binding_data.functions:
             if m.name == method_prefix + 'new':
                 php_args = []
@@ -167,7 +147,7 @@ function cptrToPhp ($cptr) {
         print >> self.fd, ''
 
         for m in klass.members:
-            mname = format_attribute(m[1])
+            mname = utils.format_as_camelcase(m[1])
             options = m[2]
             
             # Getters
@@ -205,7 +185,7 @@ function cptrToPhp ($cptr) {
                 pass
 
         # second pass on methods, real methods
-        method_prefix = format_as_underscored(klass.name) + '_'
+        method_prefix = utils.format_as_underscored(klass.name) + '_'
         for m in methods:
             if m.name.endswith('_new') or m.name.endswith('_new_from_dump') or \
                     m.name.endswith('_new_full'):
@@ -248,7 +228,8 @@ function cptrToPhp ($cptr) {
             else:
                 c_args = ''
 
-            print >> self.fd, '    public function %s(%s) {' % (format_underscore_as_py(mname), php_args)
+            print >> self.fd, '    public function %s(%s) {' % (
+                    utils.format_underscore_as_camelcase(mname), php_args)
                 # FIXME: add php api documentation
 #            if m.docstring:
 #                print >> fd, "        '''"
