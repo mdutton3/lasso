@@ -30,19 +30,16 @@ class Php5Binding:
         self.binding_data = binding_data
 
     def generate(self):
-        if not os.path.exists('php5'):
-            os.mkdir('php5')
-
-        fd = open('php5/_lasso.c', 'w')
+        fd = open('_lasso.c', 'w')
         wrapper_source = WrapperSource(self.binding_data, fd)
         wrapper_source.generate()
         fd.close()
 
-        fd = open('php5/php_lasso.h', 'w')
+        fd = open('php_lasso.h', 'w')
         WrapperHeader(self.binding_data, fd, wrapper_source.functions_list).generate()
         fd.close()
 
-        fd = open('php5/lasso.php', 'w')
+        fd = open('lasso.php', 'w')
         PhpCode(self.binding_data, fd).generate()
         fd.close()
 

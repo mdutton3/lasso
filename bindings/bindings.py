@@ -30,6 +30,8 @@ from optparse import OptionParser
 import elementtree.ElementTree as ET
 
 class BindingData:
+    src_dir = os.path.dirname(__file__)
+
     def __init__(self):
         self.headers = []
         self.constants = []
@@ -37,7 +39,7 @@ class BindingData:
         self.struct_dict = {}
         self.functions = []
         self.enums = []
-        self.overrides = ET.parse('overrides.xml')
+        self.overrides = ET.parse(os.path.join(self.src_dir, 'overrides.xml'))
 
     def display_structs(self):
         for struct in self.structs:

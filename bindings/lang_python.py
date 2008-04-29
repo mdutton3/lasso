@@ -54,9 +54,7 @@ class PythonBinding:
                 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
-        if not os.path.exists('python'):
-            os.mkdir('python')
-        fd = open('python/lasso.py', 'w')
+        fd = open('lasso.py', 'w')
         self.generate_header(fd)
         self.generate_exceptions(fd)
         self.generate_constants(fd)
@@ -65,7 +63,7 @@ class PythonBinding:
         self.generate_footer(fd)
         fd.close()
 
-        fd = open('python/_lasso.c', 'w')
+        fd = open('_lasso.c', 'w')
         self.generate_wrapper(fd)
         fd.close()
 
@@ -366,7 +364,8 @@ import lasso
         return s
 
     def generate_wrapper(self, fd):
-        print >> fd, open('lang_python_wrapper_top.c').read()
+        print >> fd, open(os.path.join(self.binding_data.src_dir, 
+                    'lang_python_wrapper_top.c')).read()
         for h in self.binding_data.headers:
             print >> fd, '#include <%s>' % h
         print >> fd, ''
@@ -381,7 +380,8 @@ import lasso
             for m in c.methods:
                 self.generate_function_wrapper(m, fd)
         self.generate_wrapper_list(fd)
-        print >> fd, open('lang_python_wrapper_bottom.c').read()
+        print >> fd, open(os.path.join(self.binding_data.src_dir,
+                    'lang_python_wrapper_bottom.c')).read()
 
     def generate_constants_wrapper(self, fd):
         print >> fd, '''static void
