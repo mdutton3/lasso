@@ -84,12 +84,11 @@ function test03() {
     $login = new LassoLogin($server);
     $result = $login->initAuthnRequest();
     assert(! is_null($login->request));
-    $request = $login->request;
-    assert(get_class($request) == "LassoLibAuthnRequestNoInit");
-    $dump = $request->dump();
-    $request->protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART;
-    $dump2 = $request->dump();
-    assert($request->protocolProfile == LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART);
+    assert(get_class($login->request) == "LassoLibAuthnRequestNoInit");
+    $dump = $login->request->dump();
+    $login->request->protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART;
+    assert($login->request->protocolProfile == LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART);
+    $dump2 = $login->request->dump();
     assert($dump != $dump2);
 
     echo "OK.\n";
@@ -139,16 +138,13 @@ function test05() {
     $spLogin = new LassoLogin($spServer);
     $spLogin->initAuthnRequest();
     $requestAuthnContext = new LassoLibRequestAuthnContext();
-    $authnContextClassRefsList = array(LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD);
-    $requestAuthnContext->authnContextClassRef = $authnContextClassRefsList;
-    assert(! is_null($requestAuthnContext->authnContextClassRef));
-    assert(sizeof($requestAuthnContext->authnContextClassRef) == 1);
-    $request = $spLogin->request;
-    $request->requestAuthnContext = $requestAuthnContext;
-    assert(! is_null($request->requestAuthnContext));
-    $request->protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART;
+    $requestAuthnContext->authnContextClassRef = array(LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD);
+    assert($requestAuthnContext->authnContextClassRef[0] == LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD);
+    $spLogin->request->requestAuthnContext = $requestAuthnContext;
+    assert(! is_null($spLogin->request->requestAuthnContext));
+    $spLogin->request->protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART;
+    assert($spLogin->request->protocolProfile == LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART);
     $spLogin->buildAuthnRequestMsg();
-    $authnRequestUrl = $spLogin->msgUrl;
     assert(! is_null($spLogin->msgUrl));
     assert($spLogin->msgUrl != "");
 
@@ -167,13 +163,12 @@ function test05() {
     list($urlBase, $authnRequestQuery) = split("\?", $spLogin->msgUrl, 2);
     assert($authnRequestQuery != "");
     $idpLogin->processAuthnRequestMsg($authnRequestQuery);
-    $request = $idpLogin->request;
-    assert(! is_null($request));
-    assert(! is_null($request->requestAuthnContext));
-    assert($request->requestAuthnContext != "");
-    $requestAuthnContext = $request->requestAuthnContext;
-    assert(sizeof($requestAuthnContext->authnContextClassRef) == 1);
-    assert($requestAuthnContext->authnContextClassRef[0] == LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD);
+    assert(! is_null($idpLogin->request));
+    assert(! is_null($idpLogin->request->requestAuthnContext));
+    assert($idpLogin->request->requestAuthnContext != "");
+    assert(sizeof($idpLogin->request->requestAuthnContext->authnContextClassRef) == 1);
+    assert($idpLogin->request->requestAuthnContext->authnContextClassRef[0] ==
+        LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD);
 
     echo "OK.\n";
 }

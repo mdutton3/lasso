@@ -40,7 +40,7 @@ struct _GHashTable
   GDestroyNotify   value_destroy_func;
 };
 
-GList *
+static GList *
 g_hash_table_get_keys (GHashTable *hash_table)
 {
   GHashNode *node;

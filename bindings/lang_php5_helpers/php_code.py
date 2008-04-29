@@ -30,7 +30,7 @@ class PhpCode:
         self.fd = fd
 
     def is_object(self, t):
-        return t not in [None, 'char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*',
+        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*',
                 'xmlNode*', 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
@@ -45,6 +45,10 @@ class PhpCode:
 <?php
 
 /* this file has been generated automatically; do not edit */
+
+/**
+ * @package Lasso
+ */
 
 // Try to load Lasso extension if it's not already loaded.
 if (!extension_loaded('lasso')) {
@@ -64,6 +68,9 @@ if (!extension_loaded('lasso')) {
     }
 }
 
+/*
+ * Convert a C object to a PHP object
+ */
 function cptrToPhp ($cptr) {
     if (is_null($cptr)) return null;
     $typename = lasso_get_object_typename($cptr);
@@ -85,6 +92,9 @@ function cptrToPhp ($cptr) {
         else:
             inheritence = ''
 
+        print >> self.fd, '/**'
+        print >> self.fd, ' * @package Lasso'
+        print >> self.fd, ' */'
         print >> self.fd, 'class %(class_name)s%(inheritence)s {' % locals()
 
         if klass.members or klass.methods:
@@ -96,6 +106,9 @@ function cptrToPhp ($cptr) {
         print >> self.fd, ''
 
         # Add a special class to get an object instance without initialising
+        print >> self.fd, '/**'
+        print >> self.fd, ' * @package Lasso'
+        print >> self.fd, ' */'
         print >> self.fd, 'class %(class_name)sNoInit extends %(class_name)s {' % locals()
         print >> self.fd, '    public function __construct() {}'
         print >> self.fd, '}'
@@ -144,6 +157,9 @@ function cptrToPhp ($cptr) {
         # FIXME: handle objects and GLists
 
         # Generic getter
+        print >> self.fd, '    /**'
+        print >> self.fd, '     * @return mixed'
+        print >> self.fd, '     */'
         print >> self.fd, '    public function __get($attr) {'
         print >> self.fd, '        $func = "get_" . $attr;'
         print >> self.fd, '        if (method_exists($this, $func)) {'
@@ -163,21 +179,30 @@ function cptrToPhp ($cptr) {
         print >> self.fd, ''
 
         for m in klass.members:
+            mtype = m[0]
             mname = utils.format_as_camelcase(m[1])
             options = m[2]
             
             # Getters
+            print >> self.fd, '    /**'
+            print >> self.fd, '     * @return %s' % self.get_docstring_return_type(mtype)
+            print >> self.fd, '     */'
             print >> self.fd, '    protected function get_%s() {' % mname
-            if self.is_object(m[0]):
+            if self.is_object(mtype):
                 print >> self.fd, '        return cptrToPhp(%s_%s_get($this->_cptr));' % (
                         klass.name, mname)
-            elif m[0] == 'GHashTable*':
-                print >> self.fd, '        $cptr_array = %s_%s_get($this->_cptr);' % (klass.name, mname)
-                if options.get('elem_type') != 'char*':
-                    print >> self.fd, '        $array = array();'
-                    print >> self.fd, '        foreach ($cptr_array as $key => $value) {'
-                    print >> self.fd, '            $array[$key] = cptrToPhp($value);'
+            elif mtype in ('GList*', 'GHashTable*'):
+                print >> self.fd, '        $array = %s_%s_get($this->_cptr);' % (klass.name, mname)
+                if self.is_object(options.get('elem_type')):
+                    print >> self.fd, '        $obj_array = array();'
+                    if mtype == 'GList*':
+                        print >> self.fd, '        foreach ($array as $item) {'
+                        print >> self.fd, '            $obj_array[] = cptrToPhp($item);'
+                    else:
+                        print >> self.fd, '        foreach ($array as $key => $item) {'
+                        print >> self.fd, '            $obj_array[$key] = cptrToPhp($item);'
                     print >> self.fd, '        }'
+                    print >> self.fd, '        $array = $obj_array;'
                 print >> self.fd, '        return $array;'
             else:
                 print >> self.fd, '        return %s_%s_get($this->_cptr);' % (klass.name, mname)
@@ -185,16 +210,21 @@ function cptrToPhp ($cptr) {
 
             # Setters
             print >> self.fd, '    protected function set_%s($value) {' % mname
-            if self.is_object(m[0]):
+            if self.is_object(mtype):
                 print >> self.fd, '        %s_%s_set($this->_cptr, $value->_cptr);' % (klass.name, mname)
-            elif m[0] == 'GHashTable*' and options.get('elem_type') != 'char*':
-                print >> self.fd, '        $cptr_array = array();'
+            elif mtype in ('GList*', 'GHashTable*') and self.is_object(options.get('elem_type')):
+                print >> self.fd, '        $array = array();'
+                # FIXME: setting an array to NULL should really set it to NULL and not to an empty array
                 print >> self.fd, '        if (!is_null($value)) {'
-                print >> self.fd, '            foreach ($value as $key => $item_value) {'
-                print >> self.fd, '                $cptr_array[$key] = $item_value->_cptr;'
+                if mtype == 'GList*':
+                    print >> self.fd, '            foreach ($value as $item) {'
+                    print >> self.fd, '                $array[] = $item->_cptr;'
+                else:
+                    print >> self.fd, '            foreach ($value as $key => $item) {'
+                    print >> self.fd, '                $array[$key] = $item->_cptr;'
                 print >> self.fd, '            }'
                 print >> self.fd, '        }'
-                print >> self.fd, '        %s_%s_set($this->_cptr, $cptr_array);' % (klass.name, mname)
+                print >> self.fd, '        %s_%s_set($this->_cptr, $array);' % (klass.name, mname)
             else:
                 print >> self.fd, '        %s_%s_set($this->_cptr, $value);' % (klass.name, mname)
             print >> self.fd, '    }'
@@ -220,7 +250,11 @@ function cptrToPhp ($cptr) {
             except IndexError:
                 setter = None
             mname = re.match(r'lasso_.*_get_(\w+)', meth_name).group(1)
+            mname =utils.format_as_camelcase(mname)
 
+            print >> self.fd, '    /**'
+            print >> self.fd, '     * @return %s' % self.get_docstring_return_type(m.return_type)
+            print >> self.fd, '     */'
             print >> self.fd, '    protected function get_%s() {' % mname
             if self.is_object(m.return_type):
                 print >> self.fd, '        $cptr = %s($this->_cptr);' % meth_name
@@ -284,13 +318,10 @@ function cptrToPhp ($cptr) {
             else:
                 c_args = ''
 
+            if m.docstring:
+                print >> self.fd, self.generate_docstring(m, mname, 4)
             print >> self.fd, '    public function %s(%s) {' % (
                     utils.format_underscore_as_camelcase(mname), php_args)
-                # FIXME: add php api documentation
-#            if m.docstring:
-#                print >> fd, "        '''"
-#                print >> fd, self.format_docstring(m, mname, 8)
-#                print >> fd, "        '''"
             if m.return_type == 'void':
                 print >> self.fd, '        %s($this->_cptr%s);' % (m.name, c_args)
             elif m.return_type in ('gint', 'int'):
@@ -309,6 +340,57 @@ function cptrToPhp ($cptr) {
 
         print >> self.fd, ''
 
+    def generate_docstring(self, func, method_name, indent):
+        docstring = func.docstring
+        if func.args:
+            first_arg_name = func.args[0][1]
+        else:
+            first_arg_name = None
+
+        def rep(s):
+            type = s.group(1)[0]
+            var = s.group(1)[1:]
+            if type == '#': # struct
+                return var
+            elif type == '%': # %TRUE, %FALSE
+                if var in ('TRUE', 'FALSE'):
+                    return var
+                print >> sys.stderr, 'W: unknown docstring thingie: %s' % s.group(1)
+            elif type == '@':
+                if var == first_arg_name:
+                    return '$this'
+                else:
+                    return '$' + var
+            return s.group(1)
+
+        lines = []
+        for l in docstring.splitlines():
+            if l.strip() and not lines:
+                continue
+            lines.append(l)
+        s = indent * ' ' + '/**\n'
+        s += '\n'.join([indent * ' ' + ' * ' + x for x in lines[1:]])
+        s += '\n' + indent * ' ' + ' */'
+        regex = re.compile(r'([\#%@]\w+)', re.DOTALL)
+        s = regex.sub(rep, s)
+        s = s.replace('Return value: ', '@return %s ' % self.get_docstring_return_type(func.return_type))
+        return s
+
+    def get_docstring_return_type(self, return_type):
+        if return_type == None:
+            return ''
+        elif return_type == 'gboolean':
+            return 'boolean'
+        elif return_type in ['int', 'gint'] + self.binding_data.enums:
+            return 'int'
+        elif return_type in ('char*', 'gchar*', 'const char*', 'const gchar*', 'xmlNode*'):
+            return 'string'
+        elif return_type in ('GList*', 'GHashTable*'):
+            return 'array'
+        else:
+            # Objects
+            return return_type.replace('*', '')
+
     def generate_exceptions(self):
         done_cats = []
 
@@ -317,6 +399,9 @@ function cptrToPhp ($cptr) {
             done_cats.append(cat)
             parent_cat = exc_cat.attrib.get('parent', '')
             print >> self.fd, '''\
+/**
+ * @package Lasso
+ */
 class Lasso%sError extends Lasso%sError {}
 ''' % (cat, parent_cat)
 
@@ -339,11 +424,17 @@ class Lasso%sError extends Lasso%sError {}
                     parent_cat = ''
 
                 print >> self.fd, '''\
+/**
+ * @package Lasso
+ */
 class Lasso%sError extends Lasso%sError {}
 ''' % (cat, parent_cat)
 
             if detail not in exceptions_dict:
                 print >> self.fd, '''\
+/**
+ * @package Lasso
+ */
 class Lasso%sError extends Lasso%sError {
     protected $code = %s;
 }
@@ -351,8 +442,11 @@ class Lasso%sError extends Lasso%sError {
                 exceptions_dict[detail] = c[1]
 
         print >> self.fd, '''\
+/**
+ * @package Lasso
+ */
 class LassoError extends Exception {
-    protected static $exceptions_dict = array('''
+    private static $exceptions_dict = array('''
 
         for k, v in exceptions_dict.items():
             print >> self.fd, '        %s => "Lasso%sError",' % (v, k)

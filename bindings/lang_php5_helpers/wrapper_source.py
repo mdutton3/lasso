@@ -31,7 +31,7 @@ class WrapperSource:
         self.functions_list = []
 
     def is_object(self, t):
-        return t not in [None, 'char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*',
+        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*',
                 'xmlNode*', 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
@@ -128,19 +128,22 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         }
     }
 '''
-        elif vtype in ('GList*',) and options.get('elem_type') == 'char*':
-            print >> self.fd, '''\
-    array_init(return_value);
-    for (item = g_list_first(return_c_value); item != NULL; item = g_list_next(item)) {
-        add_next_index_string(return_value, item->data, 1);
-    }
+        elif vtype == 'GList*':
+            if options.get('elem_type') == 'char*':
+                print >> self.fd, '''\
+    set_array_from_list_of_strings(return_c_value, &return_value);
 '''
-        elif vtype in ('GList*',) and options.get('elem_type') != 'char*':
-            print >> self.fd, '    RETURN_NULL();'
-        elif vtype in ('GHashTable*',) and options.get('elem_type') == 'char*':
-            print >> self.fd, '    RETURN_NULL();'
-        elif vtype in ('GHashTable*',) and options.get('elem_type') != 'char*':
-            print >> self.fd, '''\
+            elif options.get('elem_type') == 'xmlNode*':
+                print >> self.fd, '''\
+    set_array_from_list_of_xmlnodes(return_c_value, &return_value);
+'''
+            else:
+                print >> self.fd, '''\
+    set_array_from_list_of_objects(return_c_value, &return_value);
+'''
+        elif vtype == 'GHashTable*':
+            if options.get('elem_type') not in ('char*', 'xmlNode*'):
+                print >> self.fd, '''\
     set_array_from_hashtable_of_objects(return_c_value, &return_value);
 '''
         else:
@@ -168,12 +171,6 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             arg_type, arg_name, arg_options = arg
             if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
                 arg_type = arg_type.replace('const ', '')
-                #if arg_options.get('optional'):
-                #    if not '|' in parse_tuple_format:
-                #        parse_tuple_format.append('|')
-                #    parse_tuple_format.append('z')
-                #else:
-                #    parse_tuple_format.append('s')
                 parse_tuple_format += 's'
                 parse_tuple_args.append('&%s_str, &%s_len' % (arg_name, arg_name))
                 print >> self.fd, '    %s %s = NULL;' % ('char*', arg_name)
@@ -195,7 +192,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 
         if m.return_type:
             print >> self.fd, '    %s return_c_value;' % m.return_type
-        if self.is_object(m.return_type):
+        if m.return_type is not None and self.is_object(m.return_type):
             print >> self.fd, '    PhpGObjectPtr *self;'
         print >> self.fd, ''
 
@@ -236,7 +233,8 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             self.generate_setter(c.name, m_type, m_name, m_options)
 
     def generate_getter(self, klassname, m_type, m_name, m_options):
-        if m_type == 'GList*' and m_options.get('elem_type') != 'char*':
+        if m_type == 'GList*' and m_options.get('elem_type') not in ('char*', 'xmlNode*') \
+                and not self.is_object(m_options.get('elem_type')):
             print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('elem_type'))
             return
 
@@ -255,8 +253,6 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         print >> self.fd, '    PhpGObjectPtr *cvt_this;'
         if self.is_object(m_type):
             print >> self.fd, '    PhpGObjectPtr *self;'
-        elif m_type == 'GList*' and m_options.get('elem_type') == 'char*':
-            print >> self.fd, '    GList* item = NULL;'
         print >> self.fd, ''
         print >> self.fd, '''\
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zval_this) == FAILURE) {
@@ -281,7 +277,8 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 
 
     def generate_setter(self, klassname, m_type, m_name, m_options):
-        if m_type == 'GList*' and m_options.get('elem_type') != 'char*':
+        if m_type == 'GList*' and m_options.get('elem_type') not in ('char*', 'xmlNode*') \
+                and not self.is_object(m_options.get('elem_type')):
             print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('elem_type'))
             return
 
@@ -350,13 +347,13 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             print >> self.fd, '    }'
             print >> self.fd, '    if (%s_str && strcmp(%s_str, "") != 0) {' % (m_name, m_name)
             if arg_type == 'xmlNode*':
-                print >> self.fd, '    this->%s = get_xml_node_from_string(%s_str);' % (m_name, m_name)
+                print >> self.fd, '        this->%s = get_xml_node_from_string(%s_str);' % (m_name, m_name)
             else:
                 print >> self.fd, '        this->%s = estrndup(%s_str, %s_len);' % (m_name, m_name, m_name)
             print >> self.fd, '    } else {'
             print >> self.fd, '        this->%s = NULL;' % m_name
             print >> self.fd, '    }'
-        elif arg_type == 'GList*' and arg_options.get('elem_type') == 'char*':
+        elif arg_type == 'GList*':
             if m_options.get('elem_type') == 'char*':
                 print >> self.fd, '''
     if (this->%(name)s) {
@@ -365,6 +362,20 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         g_list_free(this->%(name)s);
     }
     this->%(name)s = get_list_from_array_of_strings(zval_%(name)s);
+''' % { 'name': m_name }
+            elif m_options.get('elem_type') == 'xmlNode*':
+                print >> self.fd, '''
+    if (this->%(name)s) {
+        /* free existing list */
+        g_list_foreach(this->%(name)s, (GFunc)xmlFreeNode, NULL);
+        g_list_free(this->%(name)s);
+    }
+    this->%(name)s = get_list_from_array_of_xmlnodes(zval_%(name)s);
+''' % { 'name': m_name }
+            else:
+                print >> self.fd, '''
+    /* FIXME: Free the existing list */
+    this->%(name)s = get_list_from_array_of_objects(zval_%(name)s);
 ''' % { 'name': m_name }
         elif arg_type == 'GHashTable*' and arg_options.get('elem_type') != 'char*':
             print >> self.fd, '''\
