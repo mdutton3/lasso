@@ -343,13 +343,13 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             print >> self.fd, '    this->%s = %s;' % (m_name, m_name)
         elif parse_tuple_format == 's':
             print >> self.fd, '    if (this->%s) {' % m_name
-            print >> self.fd, '        efree(this->%s);' % m_name
+            print >> self.fd, '        g_free(this->%s);' % m_name
             print >> self.fd, '    }'
             print >> self.fd, '    if (%s_str && strcmp(%s_str, "") != 0) {' % (m_name, m_name)
             if arg_type == 'xmlNode*':
                 print >> self.fd, '        this->%s = get_xml_node_from_string(%s_str);' % (m_name, m_name)
             else:
-                print >> self.fd, '        this->%s = estrndup(%s_str, %s_len);' % (m_name, m_name, m_name)
+                print >> self.fd, '        this->%s = g_strndup(%s_str, %s_len);' % (m_name, m_name, m_name)
             print >> self.fd, '    } else {'
             print >> self.fd, '        this->%s = NULL;' % m_name
             print >> self.fd, '    }'

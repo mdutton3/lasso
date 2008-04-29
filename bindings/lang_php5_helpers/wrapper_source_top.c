@@ -159,7 +159,7 @@ get_list_from_array_of_strings(zval* array)
 		temp = **data;
 		zval_copy_ctor(&temp);
 		convert_to_string(&temp);
-		result = g_list_append(result, estrndup(Z_STRVAL(temp), Z_STRLEN(temp)));
+		result = g_list_append(result, g_strndup(Z_STRVAL(temp), Z_STRLEN(temp)));
 		zval_dtor(&temp);
 	}
 	return result;

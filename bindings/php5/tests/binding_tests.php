@@ -56,7 +56,7 @@ function test02() {
 }
 
 function test03() {
-    echo "Get and set a list of xmlNode*...";
+    echo "Get and set a list of xmlNode*... ";
 
     $server = new LassoServer(
         DATA_DIR . "sp1-la/metadata.xml",
@@ -87,7 +87,7 @@ function test03() {
 }
 
 function test04() {
-    echo "Get and set a list of Lasso objects...";
+    echo "Get and set a list of Lasso objects... ";
 
     $response = new LassoSamlpResponse();
     assert(!$response->assertion);
@@ -139,6 +139,83 @@ function test05() {
     echo "OK.\n";
 }
 
+function test06() {
+    echo "Get and set SAML 2.0 assertion attribute values... ";
+
+    $attribute1_name = "first attribute";
+    $attribute1_string = "first string";
+    $attribute2_name = "second attribute";
+    $attribute2_string = "second string";
+    $attribute3_string = "third string";
+
+    $expected_assertion_dump = '<saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" SignType="0" SignMethod="0" EncryptionActivated="false" EncryptionSymKeyType="0">
+  <saml:AttributeStatement>
+    <saml:Attribute Name="first attribute">
+      <saml:AttributeValue>
+        <XXX>first string</XXX>
+      </saml:AttributeValue>
+    </saml:Attribute>
+    <saml:Attribute Name="second attribute">
+      <saml:AttributeValue>
+        <XXX>second string</XXX>
+      </saml:AttributeValue>
+      <saml:AttributeValue>
+        <XXX>third string</XXX>
+      </saml:AttributeValue>
+    </saml:Attribute>
+  </saml:AttributeStatement>
+</saml:Assertion>';
+
+    $text_node1 = new LassoMiscTextNode();
+    $text_node1->content = $attribute1_string;
+    $any1 = array();
+    $any1[] = $text_node1;
+    $attribute_value1 = new LassoSaml2AttributeValue();
+    $attribute_value1->any = $any1;
+    $attribute_values1 = array();
+    $attribute_values1[] = $attribute_value1;
+    $attribute1 = new LassoSaml2Attribute();
+    $attribute1->name = $attribute1_name;
+    $attribute1->attributeValue = $attribute_values1;
+
+    $text_node2 = new LassoMiscTextNode();
+    $text_node2->content = $attribute2_string;
+    $any2 = array();
+    $any2[] = $text_node2;
+    $attribute_value2 = new LassoSaml2AttributeValue();
+    $attribute_value2->any = $any2;
+
+    $text_node3 = new LassoMiscTextNode();
+    $text_node3->content = $attribute3_string;
+    $any3 = array();
+    $any3[] = $text_node3;
+    $attribute_value3 = new LassoSaml2AttributeValue();
+    $attribute_value3->any = $any3;
+
+    $attribute_values2 = array();
+    $attribute_values2[] = $attribute_value2;
+    $attribute_values2[] = $attribute_value3;
+
+    $attribute2 = new LassoSaml2Attribute();
+    $attribute2->name = $attribute2_name;
+    $attribute2->attributeValue = $attribute_values2;
+
+    $attributes = array();
+    $attributes[] = $attribute1;
+    $attributes[] = $attribute2;
+
+    $attributeStatement = new LassoSaml2AttributeStatement();
+    $attributeStatement->attribute = $attributes;
+    $attributeStatements = array();
+    $attributeStatements[] = $attributeStatement;
+
+    $assertion = new LassoSaml2Assertion();
+    $assertion->attributeStatement = $attributeStatements;
+
+    assert($assertion->dump() == $expected_assertion_dump);
+
+    echo "OK.\n";
+}
 
 lasso_init();
 test01();
@@ -146,5 +223,6 @@ test02();
 test03();
 test04();
 //test05();
+test06();
 lasso_shutdown();
 
