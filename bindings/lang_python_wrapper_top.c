@@ -17,6 +17,9 @@ static void set_list_of_pygobject(GList **a_list, PyObject *seq);
 static PyObject *get_list_of_strings(GList *a_list);
 static PyObject *get_list_of_xml_nodes(GList *a_list);
 static PyObject *get_list_of_pygobject(GList *a_list);
+static gboolean valid_seq(PyObject *seq);
+static void free_list(GList **a_list, GFunc free_help);
+
 typedef struct {
 	PyObject_HEAD
 	GObject *obj;
@@ -144,7 +147,7 @@ get_pystring_from_xml_node(xmlNode *xmlnode)
 	return pystring;
 }
 
-gboolean
+static gboolean
 valid_seq(PyObject *seq) {
 	if (! seq || ( seq != Py_None && ! PyTuple_Check(seq))) {
 		 PyErr_SetString(PyExc_TypeError, "value should be tuple");
@@ -153,7 +156,8 @@ valid_seq(PyObject *seq) {
 	return 1;
 }
 
-void free_list(GList **a_list, GFunc free_help) {
+static void
+free_list(GList **a_list, GFunc free_help) {
 	if (*a_list) {
 		g_list_foreach(*a_list, free_help, NULL);
 		g_list_free(*a_list);
