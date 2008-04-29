@@ -216,6 +216,7 @@ if WSF_SUPPORT:
     InteractionProfileService.buildRequestMsg = InteractionProfileService.buildSoapRequestMsg
     InteractionProfileService.buildResponseMsg = InteractionProfileService.buildSoapResponseMsg
     DataService.buildRequestMsg = DataService.buildSoapRequestMsg
+    DiscoModifyResponse.newEntryIds = DiscoModifyResponse.newEntryIDs
 '''
 
     def generate_constants(self, fd):
