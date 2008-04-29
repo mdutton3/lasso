@@ -180,6 +180,8 @@ import lasso
                 # right class type
                 print >> fd, '        self._cptr = _lasso.%s(%s)' % (
                         m.name[6:], c_args)
+                print >> fd, '        if self._cptr is None:'
+                print >> fd, '            raise Exception(\'failed to create object\')'
                 print >> fd, ''
 
         for m in self.binding_data.functions:
