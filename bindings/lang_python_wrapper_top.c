@@ -5,6 +5,39 @@
 GQuark lasso_wrapper_key;
 
 PyMODINIT_FUNC init_lasso(void);
+static PyObject* get_pystring_from_xml_node(xmlNode *xmlnode);
+
+/* utility functions */
+
+static PyObject*
+get_pystring_from_xml_node(xmlNode *xmlnode)
+{
+	xmlOutputBufferPtr buf;
+	char *xmlString;
+	PyObject *pystring = NULL;
+
+	if (xmlnode == NULL) {
+		return NULL;
+	}
+
+	buf = xmlAllocOutputBuffer(NULL);
+	if (buf == NULL) {
+		xmlString = NULL;
+	} else {
+		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
+		xmlOutputBufferFlush(buf);
+		if (buf->conv == NULL) {
+			pystring = PyString_FromString((char*)buf->buffer->content);
+		} else {
+			pystring = PyString_FromString((char*)buf->conv->content);
+		}
+		xmlOutputBufferClose(buf);
+	}
+
+	return pystring;
+}
+
+/* wrapper around GObject */
 
 typedef struct {
 	PyObject_HEAD

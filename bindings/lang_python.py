@@ -572,8 +572,21 @@ register_constants(PyObject *d)
             print >> fd, '''\
         return return_pyvalue;
     }'''
+        elif vtype == 'xmlNode*':
+            # convert xmlNode* to strings
+            print >> fd, '    if (return_value) {'
+            print >> fd, '        return_pyvalue = get_pystring_from_xml_node(return_value);'
+            #print >> fd, '        Py_INCREF(return_pyvalue);'
+            print >> fd, '        return return_pyvalue;'
+            print >> fd, '    } else {'
+            print >> fd, '        Py_INCREF(Py_None);'
+            print >> fd, '        return Py_None;'
+            print >> fd, '    }'
+        elif vtype in ('GList*',):
+
+            pass
         else:
-            # return a tuple with (object type, cPtr)
+            # return a PyGObjectPtr (wrapper around GObject)
             print >> fd, '''\
     if (return_value) {
         return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));
