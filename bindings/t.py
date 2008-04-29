@@ -6,6 +6,7 @@ import re
 constants = []
 structs = []
 struct_names = {}
+functions = []
 
 class Struct:
     def __init__(self, name):
@@ -17,6 +18,17 @@ class Struct:
         return '<Struct name:%s, childof:%s>' % (self.name, self.parent)
 
 
+class Function:
+    return_type = None
+    name = None
+    args = None
+
+def normalise_var(type, name):
+    if name[0] == '*':
+        type += '*'
+        name = name[1:]
+    return type, name
+
 def parse(header_file):
     in_comment = False
     in_enum = False
@@ -27,9 +39,9 @@ def parse(header_file):
     i = 0
     while i < len(lines):
         line = lines[i]
-        if line.endswith('\\\n'):
+        while line.endswith('\\\n'):
             i += 1
-            line = line[:-2] + ' ' + lines[i]
+            line = line[:-2] + ' ' + lines[i].lstrip()
 
         if in_comment:
             if '*/' in line:
@@ -82,7 +94,31 @@ def parse(header_file):
                     if member_name == 'parent':
                         in_struct.parent = member_type
                     else:
-                        in_struct.members.append((member_type, member_name))
+                        in_struct.members.append(normalise_var(member_type, member_name))
+        elif line.startswith('LASSO_EXPORT '):
+            while not line.strip().endswith(';'):
+                i += 1
+                line = line[:-1] + lines[i].lstrip()
+
+            m = re.match(r'LASSO_EXPORT\s+([\w]+\*?)\s+(\*?\w+)\s*\((.*?)\)', line)
+            if m:
+                f = Function()
+                functions.append(f)
+                return_type, function_name, args = m.groups()
+                if function_name is None:
+                    print line
+                    sys.exit(1)
+                f.return_type = return_type
+                f.name = function_name
+                f.args = []
+                for arg in [x.strip() for x in args.split(',')]:
+                    if arg == 'void' or arg == '':
+                        continue
+                    m = re.match(r'((const\s+)?\w+\*?)\s+(\*?\w+)', arg)
+                    if m:
+                        f.args.append(normalise_var(m.group(1), m.group(3)))
+                    else:
+                        print 'failed to process:', arg, 'in line:', line
 
         i += 1
 
@@ -108,6 +144,14 @@ def display_structs():
         for m in struct.members:
             print '  ', m
 
+
+def display_funcs():
+    for func in functions:
+        print func.return_type, func.name
+        for a in func.args:
+            print '  ', a
+
 import pprint
-pprint.pprint(constants)
-display_structs()
+#pprint.pprint(constants)
+#display_structs()
+#display_funcs()
