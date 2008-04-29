@@ -45,6 +45,24 @@ class PhpCode:
 
 /* this file has been generated automatically; do not edit */
 
+// Try to load Lasso extension if it's not already loaded.
+if (!extension_loaded('lasso')) {
+    if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
+        $extension_module = 'lasso.dll';
+    } else {
+        // PHP_SHLIB_SUFFIX is available as of PHP 4.3.0, for older PHP assume 'so'.
+        // It gives 'dylib' on MacOS X which is for libraries, modules are 'so'.
+        if (PHP_SHLIB_SUFFIX === 'PHP_SHLIB_SUFFIX' || PHP_SHLIB_SUFFIX === 'dylib') {
+            $extension_module = 'lasso.so';
+        } else {
+            $extension_module = 'lasso.'.PHP_SHLIB_SUFFIX;
+        }
+    }
+    if (!dl($extension_module)) {
+        die('E: Could not load Lasso extension module.\n');
+    }
+}
+
 function cptrToPhp ($cptr) {
     $typename = lasso_get_object_typename($cptr);
     $class_name = $typename . "NoInit";
