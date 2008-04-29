@@ -249,7 +249,7 @@ import lasso
                 print >> fd, '        t = _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
                 print >> fd, '        return cptrToPy(t)'
-            elif m[0] == 'GList*' and options.get('elem_type') != 'char*':
+            elif m[0] == 'GList*' and options.get('elem_type') not in ('char*', 'xmlNode*'):
                 print >> fd, '        l = _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
                 print >> fd, '        if not l: return l'
@@ -271,7 +271,7 @@ import lasso
             print >> fd, '    def set_%s(self, value):' % mname
             if self.is_pygobject(m[0]):
                 print >> fd, '        value = value._cptr'
-            elif m[0] == 'GList*' and options.get('elem_type') != 'char*':
+            elif m[0] == 'GList*' and options.get('elem_type') not in ('char*', 'xmlNode*'):
                 print >> fd, '        value = tuple([x._cptr for x in value])'
             print >> fd, '        _lasso.%s_%s_set(self._cptr, value)' % (
                     klassname, mname)
@@ -562,6 +562,22 @@ register_constants(PyObject *d)
         PyObject *pystr = PyTuple_GET_ITEM(cvt_value, i);
         this->%(v)s = g_list_append(this->%(v)s, g_strdup(PyString_AsString(pystr)));
     }''' % {'v': m[1]}
+                elif elem_type == 'xmlNode*':
+                    # each item is a xmlNode*
+                    print >> fd, '''\
+    if (this->%(v)s) {
+        /* free existing list */
+        g_list_foreach(this->%(v)s, (GFunc)xmlFreeNode, NULL);
+        g_list_free(this->%(v)s);
+    }
+    this->%(v)s = NULL;
+    /* create new list */
+    l = PyTuple_Size(cvt_value);
+    for (i=0; i<l; i++) {
+        xmlNode *item_node = get_xml_node_from_pystring(PyTuple_GET_ITEM(cvt_value, i));
+        this->%(v)s = g_list_append(this->%(v)s, item_node);
+    }''' % {'v': m[1]}
+                    pass
                 else:
                     # assumes type is GObject
                     print >> fd, '''\
@@ -636,6 +652,12 @@ register_constants(PyObject *d)
                 print >> fd, '''\
         for (i = 0; item; i++) {
             PyTuple_SetItem(return_pyvalue, i, PyString_FromString(item->data));
+            item = g_list_next(item);
+        }'''
+            elif elem_type == 'xmlNode*':
+                print >> fd, '''\
+        for (i = 0; item; i++) {
+            PyTuple_SetItem(return_pyvalue, i, get_pystring_from_xml_node(item->data));
             item = g_list_next(item);
         }'''
             else:

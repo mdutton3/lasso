@@ -7,6 +7,7 @@ GQuark lasso_wrapper_key;
 
 PyMODINIT_FUNC init_lasso(void);
 static PyObject* get_pystring_from_xml_node(xmlNode *xmlnode);
+static xmlNode*  get_xml_node_from_pystring(PyObject *string);
 static PyObject* get_dict_from_hashtable_of_strings(GHashTable *value);
 static PyObject* get_dict_from_hashtable_of_objects(GHashTable *value);
 static PyObject* PyGObjectPtr_New(GObject *obj);
@@ -135,6 +136,22 @@ get_pystring_from_xml_node(xmlNode *xmlnode)
 
 	return pystring;
 }
+
+static xmlNode*
+get_xml_node_from_pystring(PyObject *string) {
+	xmlDoc *doc;
+	xmlNode *node;
+
+	doc = xmlReadDoc((xmlChar*)PyString_AsString(string), NULL, NULL, XML_PARSE_NONET);
+	node = xmlDocGetRootElement(doc);
+	if (node != NULL) {
+		node = xmlCopyNode(node, 1);
+	}
+	xmlFreeDoc(doc);
+
+	return node;
+}
+
 
 /* wrapper around GObject */
 
