@@ -188,7 +188,7 @@ def session_get_provider_ids(self):
     return self.assertions.keys()
 Session.providerIds = property(session_get_provider_ids)
 
-
+Samlp2AuthnRequest.nameIDPolicy = Samlp2AuthnRequest.nameIdPolicy
 '''
 
     def generate_constants(self, fd):
