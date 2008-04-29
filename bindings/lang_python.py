@@ -315,15 +315,17 @@ Session.providerIds = property(session_get_provider_ids)
                 setter = None
             if m.rename:
                 mname = m.rename
+                mname = '%s%s' % (mname[3].lower(), mname[4:])
+                print >> fd, '    def get_%s(self):' % mname
+                print >> fd, '        return _lasso.%s(self._cptr)' % m.rename
             else:
                 mname = m.name
-            mname = re.match(r'lasso_.*_get_(\w+)', mname).group(1)
-            mname = utils.format_underscore_as_camelcase(mname)
+                mname = re.match(r'lasso_.*_get_(\w+)', mname).group(1)
+                mname = utils.format_underscore_as_camelcase(mname)
+                print >> fd, '    def get_%s(self):' % mname
+                print >> fd, '        return _lasso.%s(self._cptr)' % m.name[6:]
 
-            print >> fd, '    def get_%s(self):' % mname
-            print >> fd, '        return _lasso.%s(self._cptr)' % m.name[6:]
-
-            if mname[0] == mname[0].lower():
+            if mname[0] == mname[0].lower() and not m.rename:
                 # API compatibility with SWIG bindings which didn't have
                 # accessors for those methods and used totally pythonified
                 # method name instead, such as getNextProviderId
