@@ -3,6 +3,8 @@
 import os
 import re
 
+import elementtree.ElementTree as ET
+
 import lang_python
 
 class BindingData:
@@ -13,6 +15,7 @@ class BindingData:
         self.struct_dict = {}
         self.functions = []
         self.enums = []
+        self.overrides = ET.parse('overrides.xml')
 
     def display_structs(self):
         for struct in self.structs:
@@ -81,6 +84,20 @@ class Function:
     
     def __repr__(self):
         return '%s %s %r' % (self.return_type, self.name, self.args)
+
+    def apply_overrides(self):
+        for func in binding.overrides.findall('func'):
+            if func.attrib.get('name') != self.name:
+                continue
+            for param in func.findall('param'):
+                try:
+                    arg = [x for x in self.args if x[1] == param.attrib.get('name')][0]
+                except IndexError:
+                    print >> sys.stderr, 'W: no such param (%s) in function (%s)' % (
+                            param.attrib.get('name'), self.name)
+                    continue
+                if param.attrib.get('optional') == 'true':
+                    arg[2]['optional'] = True
 
 
 def normalise_var(type, name):
@@ -190,9 +207,10 @@ def parse_header(header_file):
                         continue
                     m = re.match(r'((const\s+)?\w+\*?)\s+(\*?\w+)', arg)
                     if m:
-                        f.args.append(normalise_var(m.group(1), m.group(3)))
+                        f.args.append(list(normalise_var(m.group(1), m.group(3))) + [{}])
                     else:
                         print 'failed to process:', arg, 'in line:', line
+                f.apply_overrides()
 
         i += 1
 

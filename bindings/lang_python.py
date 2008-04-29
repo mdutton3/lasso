@@ -63,12 +63,28 @@ _lasso.init()
         method_prefix = 'lasso_' + format_as_underscored(klassname) + '_'
         for m in self.binding_data.functions:
             if m.name == method_prefix + 'new':
-                args = oargs = ', '.join([x[1] for x in m.args[1:]])
-                if oargs:
-                    oargs = ', ' + oargs
-                print >> fd, '    def __init__(self%s):' % oargs
+                args = ', '.join([x[1] for x in m.args])
+                c_args = []
+                py_args = []
+                for o in m.args:
+                    arg_type, arg_name, arg_options = o
+                    if arg_options.get('optional'):
+                        py_args.append('%s = None' % arg_name)
+                    else:
+                        py_args.append(arg_name)
+
+                    if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*') or \
+                            arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] or \
+                            arg_type in self.binding_data.enums:
+                        c_args.append(arg_name)
+                    else:
+                        c_args.append('%s._cptr' % arg_name)
+                    
+                c_args = ', '.join(c_args)
+                py_args = ', ' + ', '.join(py_args)
+                print >> fd, '    def __init__(self%s):' % py_args
                 print >> fd, '        self._cptr = _lasso.%s(%s)' % (
-                        m.name[6:], args)
+                        m.name[6:], c_args)
                 print >> fd, ''
 
         for m in self.binding_data.functions:
@@ -128,17 +144,37 @@ _lasso.init()
                 continue
 
             mname = m.name[len(method_prefix):]
-            args = ', '.join([x[1] for x in m.args[1:]])
-            if args:
-                args = ', ' + args
+            py_args = []
+            c_args = []
+            for o in m.args[1:]:
+                arg_type, arg_name, arg_options = o
+                if arg_options.get('optional'):
+                    py_args.append('%s = None' % arg_name)
+                else:
+                    py_args.append(arg_name)
+                if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*') or \
+                        arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] or \
+                        arg_type in self.binding_data.enums:
+                    c_args.append(arg_name)
+                else:
+                    c_args.append('%s._cptr' % arg_name)
 
-            print >> fd, '    def %s(self%s):' % (format_underscore_as_py(mname), args)
+            if py_args:
+                py_args = ', ' + ', '.join(py_args)
+            else:
+                py_args = ''
+            if c_args:
+                c_args = ', ' + ', '.join(c_args)
+            else:
+                c_args = ''
+
+            print >> fd, '    def %s(self%s):' % (format_underscore_as_py(mname), py_args)
             if m.return_type == 'void':
                 print >> fd, '        _lasso.%s(self._cptr%s)' % (
-                        m.name[6:], args)
+                        m.name[6:], c_args)
             elif m.return_type in ('gint', 'int'):
                 print >> fd, '        rc = _lasso.%s(self._cptr%s)' % (
-                        m.name[6:], args)
+                        m.name[6:], c_args)
                 print >> fd, '        if rc == 0:'
                 print >> fd, '            return'
                 print >> fd, '        elif rc > 0:' # recoverable error
@@ -147,7 +183,7 @@ _lasso.init()
                 print >> fd, '            raise \'XXX(rc)\'' # XXX: exception hierarchy
             else:
                 print >> fd, '        return _lasso.%s(self._cptr%s)' % (
-                        m.name[6:], args)
+                        m.name[6:], c_args)
             print >> fd, ''
 
         print >> fd, ''
@@ -277,19 +313,26 @@ _lasso.init()
         parse_tuple_format = []
         parse_tuple_args = []
         for arg in m.args:
-            arg_type, arg_name = arg
-            print >> fd, '    %s %s;' % (arg[0], arg[1])
+            arg_type, arg_name, arg_options = arg
             if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
                 arg_type = arg_type.replace('const ', '')
-                parse_tuple_format.append('s')
+                if arg_options.get('optional'):
+                    if not '|' in parse_tuple_format:
+                        parse_tuple_format.append('|')
+                    parse_tuple_format.append('z')
+                else:
+                    parse_tuple_format.append('s')
                 parse_tuple_args.append('&%s' % arg_name)
+                print >> fd, '    %s %s = NULL;' % (arg[0], arg[1])
             elif arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
                 parse_tuple_format.append('i')
                 parse_tuple_args.append('&%s' % arg_name)
+                print >> fd, '    %s %s;' % (arg[0], arg[1])
             else:
                 parse_tuple_format.append('O')
-                print >> fd, '    PyGObjectPtr *cvt_%s;' % arg_name
                 parse_tuple_args.append('&cvt_%s' % arg_name)
+                print >> fd, '    %s %s = NULL;' % (arg[0], arg[1])
+                print >> fd, '    PyGObjectPtr *cvt_%s = NULL;' % arg_name
 
         if m.return_type:
             print >> fd, '    %s return_value;' % m.return_type

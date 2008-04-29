@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<overrides>
+  <func name="lasso_server_new">
+    <param name="private_key" optional="true"/>
+    <param name="private_key_password" optional="true"/>
+    <param name="certificate" optional="true"/>
+  </func>
+  <func name="lasso_server_add_provider">
+    <param name="public_key" optional="true"/>
+    <param name="ca_cert_chain" optional="true"/>
+  </func>
+</overrides>
