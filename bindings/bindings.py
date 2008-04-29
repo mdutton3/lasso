@@ -131,6 +131,7 @@ class Function:
     rename = None
     args = None
     docstring = None
+    return_owner = True
     
     def __repr__(self):
         return '%s %s %r' % (self.return_type, self.name, self.args)
@@ -152,6 +153,8 @@ class Function:
                     arg[2]['default'] = param.attrib.get('default')
             if func.attrib.get('rename'):
                 self.rename = func.attrib.get('rename')
+            if func.attrib.get('return_owner'):
+                self.return_owner = (func.attrib.get('return_owner') != 'false')
 
 
 def normalise_var(type, name):

@@ -10,7 +10,13 @@
   	rename="getRequestTypeFromSoapMsg"/>
   <!-- LassoProfile -->
   <func name="lasso_profile_get_nameIdentifier"
-  	rename="lasso_profile_get_federation_nameIdentifier"/>
+  	rename="lasso_profile_get_federation_nameIdentifier"
+	return_owner="false" />
+  <func name="lasso_profile_get_identity" return_owner="false" />
+  <func name="lasso_profile_get_session" return_owner="false" />
+  <!-- LassoWsfProfile -->
+  <func name="lasso_wsf_profile_get_identity" return_owner="false" />
+  <func name="lasso_wsf_profile_get_session" return_owner="false" />
   <!-- LassoServer -->
   <func name="lasso_server_new">
     <param name="private_key" optional="true"/>

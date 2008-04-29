@@ -819,6 +819,9 @@ register_constants(PyObject *d)
             print >> fd, '    return_value =',
         print >> fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))
 
+        if not m.return_owner:
+            print >> fd, '    if (return_value) return_value = g_object_ref(return_value);'
+
         if not m.return_type:
             print >> fd, '    Py_INCREF(Py_None);'
             print >> fd, '    return Py_None;'
