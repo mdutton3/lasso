@@ -6,8 +6,106 @@ GQuark lasso_wrapper_key;
 
 PyMODINIT_FUNC init_lasso(void);
 static PyObject* get_pystring_from_xml_node(xmlNode *xmlnode);
+static PyObject* get_dict_from_hashtable_of_strings(GHashTable *value);
+static PyObject* get_dict_from_hashtable_of_objects(GHashTable *value);
+static PyObject* PyGObjectPtr_New(GObject *obj);
 
 /* utility functions */
+
+#if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 14)
+  /* copy of private struct and g_hash_table_get_keys from GLib internals
+   * (as this function is useful but new in 2.14) */
+
+typedef struct _GHashNode  GHashNode;
+
+struct _GHashNode
+{
+  gpointer   key;
+  gpointer   value;
+  GHashNode *next;
+  guint      key_hash;
+};
+
+struct _GHashTable
+{
+  gint             size;
+  gint             nnodes;
+  GHashNode      **nodes;
+  GHashFunc        hash_func;
+  GEqualFunc       key_equal_func;
+  volatile gint    ref_count;
+  GDestroyNotify   key_destroy_func;
+  GDestroyNotify   value_destroy_func;
+};
+
+GList *
+g_hash_table_get_keys (GHashTable *hash_table)
+{
+  GHashNode *node;
+  gint i;
+  GList *retval;
+
+  g_return_val_if_fail (hash_table != NULL, NULL);
+
+  retval = NULL;
+  for (i = 0; i < hash_table->size; i++)
+    for (node = hash_table->nodes[i]; node; node = node->next)
+      retval = g_list_prepend (retval, node->key);
+
+  return retval;
+}
+
+#endif
+
+static PyObject*
+get_dict_from_hashtable_of_strings(GHashTable *value)
+{
+	GList *keys;
+	PyObject *dict;
+	char *item_value;
+	PyObject *item;
+
+	dict = PyDict_New();
+
+	keys = g_hash_table_get_keys(value);
+	for (; keys; keys = g_list_next(keys)) {
+		item_value = g_hash_table_lookup(value, keys->data);
+		if (item_value) {
+			item = PyString_FromString(item_value);
+			PyDict_SetItemString(dict, (char*)keys->data, item); 
+		} else {
+			PyDict_SetItemString(dict, (char*)keys->data, Py_None); 
+		}
+	}
+	g_list_free(keys);
+
+	return PyDictProxy_New(dict);
+}
+
+static PyObject*
+get_dict_from_hashtable_of_objects(GHashTable *value)
+{
+	GList *keys;
+	PyObject *dict;
+	char *item_value;
+	PyObject *item;
+
+	dict = PyDict_New();
+
+	keys = g_hash_table_get_keys(value);
+	for (; keys; keys = g_list_next(keys)) {
+		item_value = g_hash_table_lookup(value, keys->data);
+		if (item_value) {
+			item = PyGObjectPtr_New(G_OBJECT(item_value));
+			PyDict_SetItemString(dict, (char*)keys->data, item); 
+		} else {
+			PyDict_SetItemString(dict, (char*)keys->data, Py_None); 
+		}
+	}
+	g_list_free(keys);
+
+	return PyDictProxy_New(dict);
+}
 
 static PyObject*
 get_pystring_from_xml_node(xmlNode *xmlnode)

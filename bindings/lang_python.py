@@ -30,7 +30,8 @@ class PythonBinding:
         self.binding_data = binding_data
 
     def is_pygobject(self, t):
-        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*',
+        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*',
+                'GList*', 'GHashTable*',
                 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
@@ -60,6 +61,35 @@ def cptrToPy( cptr):
     o = klass.__new__(klass)
     o._cptr = cptr
     return o
+
+class frozendict(dict):
+    \'\'\'Immutable dict\'\'\'
+    # from Python Cookbook:
+    #   http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/414283
+    def _blocked_attribute(obj):
+        raise AttributeError('A frozendict cannot be modified.')
+    _blocked_attribute = property(_blocked_attribute)
+
+    __delitem__ = __setitem__ = clear = _blocked_attribute
+    pop = popitem = setdefault = update = _blocked_attribute
+
+    def __new__(cls, *args):
+        new = dict.__new__(cls)
+        dict.__init__(new, *args)
+        return new
+
+    def __init__(self, *args):
+        pass
+
+    def __hash__(self):
+        try:
+            return self._cached_hash
+        except AttributeError:
+            h = self._cached_hash = hash(tuple(sorted(self.items())))
+            return h
+
+    def __repr__(self):
+        return 'frozendict(%s)' % dict.__repr__(self)
 '''
 
     def generate_exceptions(self, fd):
@@ -211,6 +241,17 @@ import lasso
                         klassname, mname)
                 print >> fd, '        if not l: return l'
                 print >> fd, '        return tuple([cptrToPy(x) for x in l])'
+            elif m[0] == 'GHashTable*':
+                print >> fd, '        d = _lasso.%s_%s_get(self._cptr)' % (
+                        klassname, mname)
+                print >> fd, '        if not d: return d'
+                if options.get('elem_type') != 'char*':
+                    print >> fd, '        d2 = {}'
+                    print >> fd, '        for k, v in d.items():'
+                    print >> fd, '            d2[k] = cptrToPy(v)'
+                    print >> fd, '        return frozendict(d2)'
+                else:
+                    print >> fd, '        return frozendict(d)'
             else:
                 print >> fd, '        return _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
@@ -569,6 +610,22 @@ register_constants(PyObject *d)
             PyTuple_SetItem(return_pyvalue, i, PyGObjectPtr_New(item->data));
             item = g_list_next(item);
         }'''
+            print >> fd, '''\
+        return return_pyvalue;
+    }'''
+        elif vtype in ('GHashTable*',):
+            print >> fd, '''\
+    if (return_value == NULL) {
+        Py_INCREF(Py_None);
+        return Py_None;
+    } else {'''
+            elem_type = options.get('elem_type')
+            if elem_type == 'char*':
+                print >> fd, '''\
+            return_pyvalue = get_dict_from_hashtable_of_strings(return_value);'''
+            else:
+                print >> fd, '''\
+            return_pyvalue = get_dict_from_hashtable_of_objects(return_value);'''
             print >> fd, '''\
         return return_pyvalue;
     }'''
