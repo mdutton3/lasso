@@ -335,10 +335,13 @@ StringDict = dict
                 setter = None
             if m.rename:
                 mname = m.rename
-                mname = '%s%s' % (mname[3].lower(), mname[4:])
+                if mname.startswith('lasso_'):
+                    mname = mname[6:]
+                mname = '%s%s' % (mname[0].lower(), mname[1:])
                 print >> fd, '    def get_%s(self):' % mname
-                print >> fd, '        return _lasso.%s(self._cptr)' % m.rename
                 function_name = m.rename
+                if function_name.startswith('lasso_'):
+                    function_name = function_name[6:]
             else:
                 mname = m.name
                 mname = re.match(r'lasso_.*_get_(\w+)', mname).group(1)
@@ -523,7 +526,8 @@ StringDict = dict
                 pname = m.rename
                 name = m.rename
                 if name.startswith('lasso_'):
-                    pname = utils.format_as_camelcase(name[6:])
+                    name = name[6:]
+                    pname = utils.format_as_camelcase(name)
             else:
                 name = m.name[6:]
                 pname = utils.format_as_camelcase(name)
@@ -841,6 +845,8 @@ register_constants(PyObject *d)
     def generate_function_wrapper(self, m, fd):
         if m.rename:
             name = m.rename
+            if name.startswith('lasso_'):
+                name = name[6:]
         else:
             name = m.name[6:]
         self.wrapper_list.append(name)
