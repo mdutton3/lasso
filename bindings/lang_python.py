@@ -183,6 +183,7 @@ import lasso
                 print >> fd, '         obj._cptr = _lasso.%s(dump)[1]' % m.name[6:]
                 print >> fd, '         if obj._cptr is None:'
                 print >> fd, '             raise "XXX"'
+                print >> fd, '         return obj'
                 print >> fd, ''
             elif m.name == method_prefix + 'new_full':
                 pass
