@@ -1,4 +1,3 @@
-#! /usr/bin/env php
 <?php
 # Lasso - A free implementation of the Liberty Alliance specifications.
 # 
@@ -112,10 +111,7 @@ function test04() {
     try {
         $login->processResponseMsg("");
     }
-    catch (LassoError $error) {
-        if ($error->getCode() != LASSO_PARAM_ERROR_INVALID_VALUE) {
-            throw $error;
-        }
+    catch (LassoProfileInvalidMsgError $error) {
     }
 
     echo "OK.\n";
@@ -193,10 +189,7 @@ function test06() {
         echo "logout.initRequest without having set identity before should fail\n";
         assert(False);
     }
-    catch (LassoError $error) {
-        if ($error->getCode() != LASSO_PROFILE_ERROR_SESSION_NOT_FOUND) {
-            throw $error;
-        }
+    catch (LassoProfileSessionNotFoundError $error) {
     }
 
     echo "OK.\n";

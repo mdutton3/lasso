@@ -165,26 +165,28 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         self.functions_list.append(name)
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % name
-        parse_tuple_format = ''
+        parse_tuple_format = []
         parse_tuple_args = []
         for arg in m.args:
             arg_type, arg_name, arg_options = arg
             if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
                 arg_type = arg_type.replace('const ', '')
-                parse_tuple_format += 's'
+                parse_tuple_format.append('s!')
                 parse_tuple_args.append('&%s_str, &%s_len' % (arg_name, arg_name))
                 print >> self.fd, '    %s %s = NULL;' % ('char*', arg_name)
                 print >> self.fd, '    %s %s_str = NULL;' % ('char*', arg_name)
                 print >> self.fd, '    %s %s_len = 0;' % ('int', arg_name)
             elif arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
-                parse_tuple_format += 'l'
+                parse_tuple_format.append('l')
                 parse_tuple_args.append('&%s' % arg_name)
                 print >> self.fd, '    %s %s;' % ('long', arg_name)
             elif arg_type == 'GList*':
-                print >> sys.stderr, 'E: GList argument in', name
-                print >> self.fd, '    %s %s = NULL;' % (arg_type, arg_name)
+                parse_tuple_format.append('a!')
+                parse_tuple_args.append('&zval_%s' % arg_name)
+                print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', arg_name)
+                print >> self.fd, '    %s %s = NULL;' % ('GList*', arg_name)
             else:
-                parse_tuple_format += 'r'
+                parse_tuple_format.append('r')
                 parse_tuple_args.append('&zval_%s' % arg_name)
                 print >> self.fd, '    %s %s = NULL;' % (arg_type, arg_name)
                 print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', arg_name)
@@ -204,17 +206,26 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "%s"%s) == FAILURE) {
         RETURN_FALSE;
     }
-''' % (parse_tuple_format, parse_tuple_args)
+''' % (''.join(parse_tuple_format), parse_tuple_args)
 
         for f, arg in zip(parse_tuple_format, m.args):
-            if f == 's':
+            if f.startswith('s'):
                 print >> self.fd, '''\
-    if (%(name)s_str && strcmp(%(name)s_str, "") != 0) {
-        %(name)s = estrndup(%(name)s_str, %(name)s_len);
-    } ''' % {'name': arg[1]}
-            elif f == 'r':
+        %(name)s = %(name)s_str;''' % {'name': arg[1]}
+            elif f.startswith('r'):
                 print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%s, PhpGObjectPtr *, &zval_%s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % (arg[1], arg[1])
                 print >> self.fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
+            elif f.startswith('a'):
+                elem_type = arg[2].get('elem_type')
+                if elem_type == 'char*':
+                    print >> self.fd, '    %(name)s = get_list_from_array_of_strings(zval_%(name)s);' % {'name': arg[1]}
+                else:
+                    print >> sys.stderr, 'E: In %(function)s arg %(name)s is of type GList<%(elem)s>' % { 'function': m.name, 'name': arg[1], 'elem': elem_type }
+            elif f == 'l':
+                pass
+            else:
+                raise Exception('%s format inconnu' % f)
+
 
         if m.return_type is not None:
             print >> self.fd, '    return_c_value = ',
@@ -223,6 +234,15 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         else:
             print >> self.fd, '   ',
         print >> self.fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))
+        # Free the converted arguments
+
+        for f, arg in zip(parse_tuple_format, m.args):
+            if f.startswith('a'):
+                elem_type = arg[2].get('elem_type')
+                if elem_type == 'char*':
+                    print >> self.fd, '    if (%(name)s) {' % { 'name': arg[1] }
+                    print >> self.fd, '        free_list(%(name)s,free);' % { 'name': arg[1] }
+                    print >> self.fd, '    }'
 
         self.return_value(m.return_type, {})
 

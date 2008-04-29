@@ -8,6 +8,7 @@
 #include "php_lasso.h"
 
 /* utility functions */
+static void free_glist(GList **list, GFunc free_function);
 
 #if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 14)
   /* copy of private struct and g_hash_table_get_keys from GLib internals
@@ -96,6 +97,18 @@ PHP_FUNCTION(lasso_get_object_typename)
 	RETURN_STRING(self->typename, 1);
 }
 
+/* List handling */
+static void 
+free_glist(GList **list, GFunc free_function) {
+    g_return_if_fail(list);
+    if (*list) {
+        if (free_function) {
+            g_list_foreach(*list, free_function, NULL);
+        }
+        g_list_free(*list);
+    }
+    *list = NULL;
+}
 /* Conversion functions */
 
 static char*
