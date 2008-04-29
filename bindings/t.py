@@ -23,89 +23,68 @@ def parse(header_file):
     in_struct = None
     in_struct_private = False
 
-    content = file(header_file).read().replace('\\\n', ' ')
-    for line in content.splitlines():
+    lines = file(header_file).readlines()
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.endswith('\\\n'):
+            i += 1
+            line = line[:-2] + ' ' + lines[i]
+
         if in_comment:
             if '*/' in line:
                 in_comment = False
-            continue
-
-        if '/*' in line and not '*/' in line:
+        elif '/*' in line and not '*/' in line:
             in_comment = True
-            continue
-
-        if in_enum:
+        elif in_enum:
             if line.startswith('}'):
                 in_enum = False
             else:
                 m = re.match('\s*([a-zA-Z0-9_]+)', line)
                 if m:
                     constants.append(m.group(1))
-                continue
-
-        if line.startswith('#define'):
+        elif line.startswith('#define'):
             m = re.match(r'#define\s+([a-zA-Z0-9_]+)\s+[-\w"]', line)
-            if not m:
-                continue
-            constant = m.group(1)
-            if constant[0] == '_':
-                # ignore private constants
-                continue
-            constants.append(constant)
-            continue
-
-        if line.startswith('typedef enum {'):
+            if m:
+                constant = m.group(1)
+                if constant[0] != '_':
+                    # ignore private constants
+                    constants.append(constant)
+        elif line.startswith('typedef enum {'):
             in_enum = True
-            continue
-
-        if line.startswith('typedef struct'):
+        elif line.startswith('typedef struct'):
             m = re.match('typedef struct ([a-zA-Z0-9_]+)', line)
-            if not m:
-                continue
-            struct_name = m.group(1)
-            if struct_name.endswith('Class') or struct_name.endswith('Private'):
-                continue
-            struct_names[struct_name] = True
-            continue
-
-        if line.startswith('struct _'):
+            if m:
+                struct_name = m.group(1)
+                if not (struct_name.endswith('Class') or struct_name.endswith('Private')):
+                    struct_names[struct_name] = True
+        elif line.startswith('struct _'):
             m = re.match('struct ([a-zA-Z0-9_]+)', line)
             struct_name = m.group(1)
-            if not struct_name in struct_names:
-                continue
-            in_struct = Struct(struct_name)
-            in_struct_private = False
-            continue
-
-        if in_struct:
+            if struct_name in struct_names:
+                in_struct = Struct(struct_name)
+                in_struct_private = False
+        elif in_struct:
             if line.startswith('}'):
                 structs.append(in_struct)
                 in_struct = None
-                continue
-
-            if '/*< public >*/' in line:
+            elif '/*< public >*/' in line:
                 in_struct_private = False
-                continue
-
-            if '/*< private >*/' in line:
+            elif '/*< private >*/' in line:
                 in_struct_private = True
-                continue
+            elif in_struct_private:
+                pass
+            else:
+                member_match = re.match('\s+(\w+)\s+(\*?\w+)', line)
+                if member_match:
+                    member_type = member_match.group(1)
+                    member_name = member_match.group(2)
+                    if member_name == 'parent':
+                        in_struct.parent = member_type
+                    else:
+                        in_struct.members.append((member_type, member_name))
 
-            if in_struct_private:
-                continue
-
-            member_match = re.match('\s+(\w+)\s+(\*?\w+)', line)
-            if member_match:
-                member_type = member_match.group(1)
-                member_name = member_match.group(2)
-                if member_name == 'parent':
-                    in_struct.parent = member_type
-                else:
-                    in_struct.members.append((member_type, member_name))
-                continue
-
-            continue
-
+        i += 1
 
 
 for base, dirnames, filenames in os.walk('../lasso/'):
