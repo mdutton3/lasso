@@ -173,8 +173,8 @@ import lasso
 
 WSF_SUPPORT = WSF_ENABLED
 
-Profile.isIdentityDirty = property(Profile.isIdentityDirty)
-Profile.isSessionDirty = property(Profile.isSessionDirty)
+Profile.isIdentityDirty = property(Profile.hasDirtyIdentity)
+Profile.isSessionDirty = property(Profile.hasDirtySession)
 
 def identity_get_provider_ids(self):
     return self.federations.keys()
@@ -380,7 +380,12 @@ StringDict = dict
                 print >> sys.stderr, 'W:', m.name, 'vs', method_prefix
                 continue
 
-            mname = m.name[len(method_prefix):]
+            if m.rename:
+                mname = m.rename[len(method_prefix):]
+                function_name = m.rename[6:]
+            else:
+                mname = m.name[len(method_prefix):]
+                function_name = m.name[6:]
             py_args = []
             c_args = []
             for o in m.args[1:]:
@@ -421,10 +426,10 @@ StringDict = dict
                 print >> fd, "        '''"
             if m.return_type in (None, 'void'):
                 print >> fd, '        _lasso.%s(self._cptr%s)' % (
-                        m.name[6:], c_args)
+                        function_name, c_args)
             elif m.return_type in ('gint', 'int'):
                 print >> fd, '        rc = _lasso.%s(self._cptr%s)' % (
-                        m.name[6:], c_args)
+                        function_name, c_args)
                 print >> fd, '        if rc == 0:'
                 print >> fd, '            return'
                 print >> fd, '        elif rc > 0:' # recoverable error
@@ -433,10 +438,10 @@ StringDict = dict
                 print >> fd, '            raise Error.raise_on_rc(rc)'
             elif self.is_pygobject(m.return_type):
                 print >> fd, '        return cptrToPy(_lasso.%s(self._cptr%s))' % (
-                        m.name[6:], c_args)
+                        function_name, c_args)
             else:
                 print >> fd, '        return _lasso.%s(self._cptr%s)' % (
-                        m.name[6:], c_args)
+                        function_name, c_args)
             print >> fd, ''
 
         print >> fd, ''

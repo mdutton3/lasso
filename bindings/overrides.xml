@@ -15,6 +15,10 @@
 	return_owner="false" />
   <func name="lasso_profile_get_identity" return_owner="false" />
   <func name="lasso_profile_get_session" return_owner="false" />
+  <func name="lasso_profile_is_identity_dirty"
+  	rename="lasso_profile_has_dirty_identity"/>
+  <func name="lasso_profile_is_session_dirty"
+  	rename="lasso_profile_has_dirty_session"/>
   <!-- LassoWsfProfile -->
   <func name="lasso_wsf_profile_get_identity" return_owner="false" />
   <func name="lasso_wsf_profile_get_session" return_owner="false" />
