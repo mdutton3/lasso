@@ -1,3 +1,0 @@
-etc/php5/conf.d/lasso.ini
-usr/lib/php5/*/*.so
-usr/share/php/lasso.php

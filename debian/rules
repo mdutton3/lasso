@@ -35,11 +35,8 @@ major=`ls src/.libs/lib*.so.* | \
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-tests=no --disable-gtk-doc --disable-perl --disable-csharp --disable-php4
-	# be sure not to call swig:
-	touch python/lasso_wrap.c python/lasso.py
+	CC=gcc-4.3 CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-tests=no --disable-gtk-doc --enable-perl --disable-csharp --disable-php4 --with-php5-config-dir=/etc/php5/conf.d/
 	touch perl/lasso_wrap.c perl/lasso.pm
-	touch java/lasso_wrap.c java/lasso.java
 
 
 build: build-stamp
@@ -50,11 +47,11 @@ build-stamp:  config.status
 	$(MAKE)
 	set -e; \
 	for v in $(OTHERPYVERS); do \
-	  rm -rf python$$v; \
-	  cp -a python python$$v; \
-	  sed "s/$(PYDEF)/$$v/g" python/Makefile > python$$v/Makefile; \
-	  $(MAKE) -C python$$v clean; \
-	  $(MAKE) -C python$$v; \
+	  rm -rf bindings/python$$v; \
+	  cp -a bindings/python bindings/python$$v; \
+	  sed "s/$(PYDEF)/$$v/g" bindings/python/Makefile > bindings/python$$v/Makefile; \
+	  $(MAKE) -C bindings/python$$v clean; \
+	  $(MAKE) -C bindings/python$$v; \
 	done
 
 	touch build-stamp
@@ -74,7 +71,7 @@ ifneq "$(wildcard /usr/share/misc/config.guess)" ""
 endif
 
 	for v in $(OTHERPYVERS); do \
-	  rm -rf python$$v; \
+	  rm -rf bindings/python$$v; \
 	done
 
 	dh_clean 
@@ -90,7 +87,7 @@ install: build
 		GACUTIL="/usr/bin/gacutil -root $(CURDIR)/debian/tmp/usr/lib"
 	set -e; \
 	for v in $(OTHERPYVERS); do \
-	  $(MAKE) -C python$$v install DESTDIR=$(CURDIR)/debian/tmp; \
+	  $(MAKE) -C bindings/python$$v install DESTDIR=$(CURDIR)/debian/tmp; \
 	done
 
 	mkdir $(CURDIR)/debian/tmp/usr/lib/jni/
@@ -109,9 +106,10 @@ binary-arch: build install
 	dh_installdocs
 	dh_installexamples -XCVS
 	dh_installman
-	dh_movefiles
+	dh_install
 	dh_link
 	dh_strip
+	dh_perl
 	dh_pycentral -ppython-lasso
 	dh_python
 	dh_compress
