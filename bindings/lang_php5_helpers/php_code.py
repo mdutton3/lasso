@@ -65,6 +65,7 @@ if (!extension_loaded('lasso')) {
 }
 
 function cptrToPhp ($cptr) {
+    if (is_null($cptr)) return null;
     $typename = lasso_get_object_typename($cptr);
     $class_name = $typename . "NoInit";
     $obj = new $class_name(); 
@@ -131,11 +132,7 @@ function cptrToPhp ($cptr) {
 
             if m.name == method_prefix + 'new_from_dump':
                 print >> self.fd, '    public static function newFromDump($dump) {'
-                print >> self.fd, '        $cptr = %s($dump);' % m.name
-                print >> self.fd, '        if (! is_null($cptr)) {'
-                print >> self.fd, '            return cptrToPhp($cptr);'
-                print >> self.fd, '        }'
-                print >> self.fd, '        return null;'
+                print >> self.fd, '        return cptrToPhp(%s($dump));' % m.name
                 # XXX: Else throw an exception
                 print >> self.fd, '    }'
                 print >> self.fd, ''
@@ -184,11 +181,8 @@ writing a standard accessor for attribute "%s"' % (m2.name, attr_name)
             else:
                 print >> self.fd, '    protected function get_%s() {' % mname
                 if self.is_object(m[0]):
-                    print >> self.fd, '        $cptr = %s_%s_get($this->_cptr);' % (klass.name, mname)
-                    print >> self.fd, '        if (! is_null($cptr)) {'
-                    print >> self.fd, '            return cptrToPhp($cptr);'
-                    print >> self.fd, '        }'
-                    print >> self.fd, '        return null;'
+                    print >> self.fd, '        return cptrToPhp(%s_%s_get($this->_cptr));' % (
+                            klass.name, mname)
                 else:
                     print >> self.fd, '        return %s_%s_get($this->_cptr);' % (klass.name, mname)
                 print >> self.fd, '    }'
