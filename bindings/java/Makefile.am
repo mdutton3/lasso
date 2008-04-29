@@ -13,7 +13,7 @@ libjnilasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version
 libjnilasso_la_LIBADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 nodist_libjnilasso_la_SOURCES = com_entrouvert_lasso_LassoJNI.c
 
-BUILT_SOURCES = com_entrouvert_lasso_LassoJNI.c
+BUILT_SOURCES = com_entrouvert_lasso_LassoJNI.c com_entrouvert_lasso_LassoJNI.h
 
 %.class: %.java
 	javac -d . -cp . $<
