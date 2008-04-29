@@ -215,6 +215,10 @@ registerIdWsf2DstService = registerIdwsf2DstService
 
 if WSF_SUPPORT:
     DiscoDescription_newWithBriefSoapHttpDescription = DiscoDescription.newWithBriefSoapHttpDescription
+    Discovery.buildRequestMsg = Discovery.buildSoapRequestMsg
+    InteractionProfileService.buildRequestMsg = InteractionProfileService.buildSoapRequestMsg
+    InteractionProfileService.buildResponseMsg = InteractionProfileService.buildSoapResponseMsg
+    DataService.buildRequestMsg = DataService.buildSoapRequestMsg
 '''
 
     def generate_constants(self, fd):
