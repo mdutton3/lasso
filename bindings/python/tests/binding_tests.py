@@ -248,6 +248,31 @@ class BindingTestCase(unittest.TestCase):
 
         del login
 
+    def test07(self):
+        '''Check reference counting'''
+        s = lasso.Samlp2AuthnRequest()
+        cptr = s._cptr
+        a = sys.getrefcount(s._cptr)
+        del(s)
+        b = sys.getrefcount(cptr)
+        self.failUnlessEqual(b, a-1)
+
+    def test08(self):
+        '''Test an integer attribute'''
+        authnRequest = lasso.LibAuthnRequest()
+        authnRequest.majorVersion = 314
+        self.failUnlessEqual(authnRequest.majorVersion, 314)
+
+    def test09(self):
+        '''Test dictionary attributes'''
+        identity = lasso.Identity.newFromDump(file(
+                    os.path.join(dataDir, 'sample-identity-dump-1.xml')).read())
+        self.failUnlessEqual(len(identity.federations.keys()), 2)
+        self.failIf(not 'http://idp1.lasso.lan' in identity.federations.keys())
+        self.failUnlessEqual(
+                identity.federations['http://idp1.lasso.lan'].localNameIdentifier.content,
+                'first name id')
+
 
 bindingSuite = unittest.makeSuite(BindingTestCase, 'test')
 
