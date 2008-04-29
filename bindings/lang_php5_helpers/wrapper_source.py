@@ -241,7 +241,6 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             return
 
         function_name = '%s_%s_get' % (klassname, utils.format_as_camelcase(m_name))
-        function_name = '%s_%s_get' % (klassname, utils.format_as_camelcase(m_name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
         self.functions_list.append(function_name)
@@ -286,7 +285,6 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('elem_type'))
             return
 
-        function_name = '%s_%s_set' % (klassname, utils.format_as_camelcase(m_name))
         function_name = '%s_%s_set' % (klassname, utils.format_as_camelcase(m_name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
