@@ -21,9 +21,9 @@ BUILT_SOURCES = com_entrouvert_lasso_LassoJNI.c
 com_entrouvert_lasso_LassoJNI.h: com/entrouvert/lasso/LassoJNI.class
 	javah -d . -jni --classpath=. com.entrouvert.lasso.LassoJNI
 
-com/entrouvert/lasso/LassoJNI.java com/entrouvert/lasso/LassoConstants.java com_entrouvert_lasso_LassoJNI.c: ../lang_java_wrapper_top.c ../lang_java.py
+com/entrouvert/lasso/LassoJNI.java com/entrouvert/lasso/LassoConstants.java com_entrouvert_lasso_LassoJNI.c: $(srcdir)/../lang_java_wrapper_top.c $(srcdir)/../lang_java.py
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l java --src-dir=$(top_srcdir)/lasso/
-	cp GObject.java com/entrouvert/lasso
+	cp $(srcdir)/GObject.java com/entrouvert/lasso
 
 doc/index.html:
 	javadoc -link http://java.sun.com/j2se/1.4.2/docs/api -public -d doc -sourcepath . -subpackages com.entrouvert.lasso	
@@ -38,3 +38,8 @@ clean-local:
 	-rm -f doc/* com_entrouvert_lasso_LassoJNI.c com/entrouvert/lasso/*.java com/entrouvert/lasso/*.class com_entrouvert_lasso_LassoJNI.h 
 
 endif
+
+EXTRA_DIST = \
+	GObject.java \
+	LassoException_top.java
+
