@@ -15,8 +15,12 @@ nodist_lasso_la_SOURCES = _lasso.c
 
 BUILT_SOURCES = _lasso.c
 
-lasso.php _lasso.c:
-	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l php5 --src-dir=$(top_srcdir)/lasso/
+if WSF_ENABLED
+EXTRA_ARGS = --enable-id-wsf
+endif
+
+lasso.php _lasso.c: ../lang_php5.py ../lang_php5_helpers/php_code.py
+	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l php5 --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 
 doc:
 	phpdoc -o HTML:frames:earthli -f lasso.php -t docs

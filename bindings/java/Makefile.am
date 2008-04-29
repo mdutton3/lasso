@@ -9,7 +9,11 @@ CLASSPATH=.:tests
 java_extension_LTLIBRARIES = libjnilasso.la
 java_extensiondir = ${libdir}/java
 
-java_lasso_source_files = $(shell python $(top_srcdir)/bindings/bindings.py -l java-list --src-dir=$(top_srcdir)/lasso/)
+if WSF_ENABLED
+EXTRA_ARGS = --enable-id-wsf
+endif
+
+java_lasso_source_files = $(shell python $(top_srcdir)/bindings/bindings.py -l java-list --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS) )
 
 lasso_jardir=$(prefix)/share/java
 lasso_jar_DATA=lasso.jar
@@ -35,7 +39,7 @@ doc:
 com_entrouvert_lasso_LassoJNI.h: com/entrouvert/lasso/LassoJNI.class  $(java_lasso_source_files:.java=.class)
 	$(JAVAH) $(JAVAH_FLAGS) -classpath . `echo $< | sed 'su/u.ug;su.classuu'`
 
-libjnilasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir)
+libjnilasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir) @JAVA_INCLUDE@
 libjnilasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version
 libjnilasso_la_LIBADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 nodist_libjnilasso_la_SOURCES = com_entrouvert_lasso_LassoJNI.c 
@@ -45,7 +49,7 @@ BUILT_SOURCES = com_entrouvert_lasso_LassoJNI.c com_entrouvert_lasso_LassoJNI.h
 BINDING_OPTION=#--enable-exception-docs
 
 $(java_lasso_source_files)  com_entrouvert_lasso_LassoJNI.c: ../lang_java_wrapper_top.c ../lang_java.py
-	$(PYTHON) $(top_srcdir)/bindings/bindings.py $(BINDING_OPTION) -l java --src-dir=$(top_srcdir)/lasso/
+	$(PYTHON) $(top_srcdir)/bindings/bindings.py $(BINDING_OPTION) -l java --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 	cp $(srcdir)/GObject.java com/entrouvert/lasso
 
 

@@ -81,9 +81,10 @@ class BindingData:
             if not c:
                 continue
             c.methods.append(f)
-            if f.docstring:
+            if f.docstring and f.docstring.parameters:
                 # remove first parameter, which is self/this/etc.
                 f.docstring.parameters = f.docstring.parameters[1:]
+
             self.functions.remove(f)
 
     def look_for_docstrings(self, srcdir, exception_doc):
@@ -177,11 +178,18 @@ class Function:
                 self.return_type = func.attrib.get('return_type')
             if func.attrib.get('skip') == 'true':
                 self.skip = True
+        for param in binding.overrides.findall('arg'):
+            arg_name = param.attrib.get('name')
+            arg_sub = param.attrib.get('substitute')
+            if arg_name and arg_sub:
+                args = [ x for x in self.args if x[1] == arg_name]
+                for arg in args:
+                    arg[1] = arg_sub
 
 
 class DocString:
     orig_docstring = None
-    parameters = None
+    parameters = []
     return_value = None
     description = None
 
@@ -200,7 +208,7 @@ class DocString:
                 self.parameters = []
 
             if lines[0][0] == '@':
-                param_name, param_desc = lines[0][1:].split(':', 2)
+                param_name, param_desc = lines[0][1:].split(':', 1)
                 self.parameters.append([param_name, param_desc])
             else:
                 # continuation of previous description

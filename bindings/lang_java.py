@@ -850,9 +850,13 @@ protected static native void destroy(long cptr);
                     str = re.sub(r'(a +)?#?GList\*?','an array', str)
                     return wrapper.fill(re.sub(r'@\b(\w+)\b',r'\1',str))
                 if doc:
-                    print >> fd, normalize(doc.description, '    /** ')
+                    first = normalize(doc.description, '    /** ')
+                    if first:
+                        print >> fd, first
+                    else:
+                        print >> fd, '    /**\n'
                     print >> fd, '      *'
-                    for name, desc in doc.parameters[1:]:
+                    for name, desc in doc.parameters:
                         print >> fd, normalize(desc, '      * @param %s ' % utils.format_as_camelcase(name))
                     if doc.return_value:
                         print >> fd, normalize(doc.return_value, '      * @return ')

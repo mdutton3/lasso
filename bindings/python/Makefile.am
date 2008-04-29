@@ -24,8 +24,12 @@ endif
 
 BUILT_SOURCES = _lasso.c
 
+if WSF_ENABLED
+EXTRA_ARGS = --enable-id-wsf
+endif
+
 _lasso.c:
-	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l python --src-dir=$(top_srcdir)/lasso/
+	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l python --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 
 clean-local:
 	-rm -f lasso.py lasso.pyc _lasso.c

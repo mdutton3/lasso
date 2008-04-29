@@ -144,6 +144,7 @@ function getRequestTypeFromSoapMsg($mesg) {
                 print >> self.fd, ''
                 print >> self.fd, '    public function __construct(%s) {' % php_args
                 print >> self.fd, '        $this->_cptr = %s(%s);' % (m.name, c_args)
+                print >> self.fd, '        if (is_null($this->_cptr)) { throw new Exception("Constructor for ', klass.name, ' failed "); }'
                 print >> self.fd, '    }'
                 print >> self.fd, ''
 
@@ -422,7 +423,7 @@ class Lasso%sError extends Lasso%sError {}
                 continue
             cat, detail = m.groups()
             cat = cat.title().replace('_', '')
-            detail = detail.title().replace('_', '')
+            detail = (cat + '_' + detail).title().replace('_', '')
             if not cat in done_cats:
                 done_cats.append(cat)
                 for exc_cat in self.binding_data.overrides.findall('exception/category'):
@@ -475,5 +476,6 @@ class LassoError extends Exception {
 
     def generate_footer(self):
         print >> self.fd, '''\
+        lasso_init();
 ?>'''
 

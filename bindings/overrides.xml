@@ -106,6 +106,10 @@
   <func name="lasso_lib_register_name_identifier_request_new_full" return_type="LassoLibRegisterNameIdentifierRequest*"/>
   <!-- LassoServer -->
   <func name="lasso_server_get_provider" return_owner="false" />
+  <!-- IdWsf -->
+  <arg name="abstract" substitute="abstract_"/>
+  <func name="lasso_personal_profile_service_new_full" rename="lasso_personal_profile_server_new_personal_profile_service_full"/>
+  <func name="lasso_authentication_init_request" skip="true"/>
 
   <!-- Exceptions -->
   <exception>
