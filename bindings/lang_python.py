@@ -52,6 +52,12 @@ class PythonBinding:
 import _lasso
 
 _lasso.init()
+
+def cptrToPy(t, cptr):
+    klass = getattr(lasso, t)
+    o = klass.__new__(klass)
+    o._cptr = cptr
+    return o
 '''
 
     def generate_exceptions(self, fd):
@@ -196,16 +202,18 @@ import lasso
             if self.is_pygobject(m[0]):
                 print >> fd, '        t, cptr = _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
-                print >> fd, '        klass = getattr(lasso, t)'
-                print >> fd, '        o = klass.__new__(klass)'
-                print >> fd, '        o._cptr = cptr'
-                print >> fd, '        return o'
+                print >> fd, '        return cptrToPy(t, cptr)'
             elif m[0] == 'GList*' and options.get('elem_type') != 'char*':
-                print >> fd, '        XXX'
+                print >> fd, '        l = _lasso.%s_%s_get(self._cptr)' % (
+                        klassname, mname)
+                print >> fd, '        if not l: return l'
+                print >> fd, '        return tuple([cptrToPy(x[0], x[1]) for x in l])'
             else:
                 print >> fd, '        return _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
             print >> fd, '    def set_%s(self, value):' % mname
+            if m[0] == 'GList*' and options.get('elem_type') != 'char*':
+                print >> fd, '        value = tuple([x._cptr for x in value])'
             print >> fd, '        _lasso.%s_%s_set(self._cptr, value)' % (
                     klassname, mname)
             print >> fd, '    %s = property(get_%s, set_%s)' % (mname, mname, mname)
