@@ -28,7 +28,14 @@ import sys
 import utils
 
 from optparse import OptionParser
-import elementtree.ElementTree as ET
+
+try:
+    from lxml import etree as ET
+except ImportError:
+    try:
+        import cElementTree as ET
+    except ImportError:
+        import elementtree.ElementTree as ET
 
 class BindingData:
     src_dir = os.path.dirname(__file__)
