@@ -3,10 +3,26 @@
 import os
 import re
 
-constants = []
-structs = []
-struct_names = {}
-functions = []
+class Binding:
+    def __init__(self):
+        self.constants = []
+        self.structs = []
+        self.struct_names = {}
+        self.functions = []
+
+    def display_structs(self):
+        for struct in self.structs:
+            print struct
+            for m in struct.members:
+                print '  ', m
+
+    def display_funcs(self):
+        for func in self.functions:
+            print func.return_type, func.name
+            for a in func.args:
+                print '  ', a
+
+
 
 class Struct:
     def __init__(self, name):
@@ -23,13 +39,17 @@ class Function:
     name = None
     args = None
 
+
 def normalise_var(type, name):
     if name[0] == '*':
         type += '*'
         name = name[1:]
     return type, name
 
-def parse(header_file):
+
+def parse_header(header_file):
+    global binding
+
     in_comment = False
     in_enum = False
     in_struct = None
@@ -54,14 +74,14 @@ def parse(header_file):
             else:
                 m = re.match('\s*([a-zA-Z0-9_]+)', line)
                 if m:
-                    constants.append(m.group(1))
+                    binding.constants.append(m.group(1))
         elif line.startswith('#define'):
             m = re.match(r'#define\s+([a-zA-Z0-9_]+)\s+[-\w"]', line)
             if m:
                 constant = m.group(1)
                 if constant[0] != '_':
                     # ignore private constants
-                    constants.append(constant)
+                    binding.constants.append(constant)
         elif line.startswith('typedef enum {'):
             in_enum = True
         elif line.startswith('typedef struct'):
@@ -69,16 +89,16 @@ def parse(header_file):
             if m:
                 struct_name = m.group(1)
                 if not (struct_name.endswith('Class') or struct_name.endswith('Private')):
-                    struct_names[struct_name] = True
+                    binding.struct_names[struct_name] = True
         elif line.startswith('struct _'):
             m = re.match('struct ([a-zA-Z0-9_]+)', line)
             struct_name = m.group(1)
-            if struct_name in struct_names:
+            if struct_name in binding.struct_names:
                 in_struct = Struct(struct_name)
                 in_struct_private = False
         elif in_struct:
             if line.startswith('}'):
-                structs.append(in_struct)
+                binding.structs.append(in_struct)
                 in_struct = None
             elif '/*< public >*/' in line:
                 in_struct_private = False
@@ -103,7 +123,7 @@ def parse(header_file):
             m = re.match(r'LASSO_EXPORT\s+([\w]+\*?)\s+(\*?\w+)\s*\((.*?)\)', line)
             if m:
                 f = Function()
-                functions.append(f)
+                binding.functions.append(f)
                 return_type, function_name, args = m.groups()
                 if function_name is None:
                     print line
@@ -123,35 +143,25 @@ def parse(header_file):
         i += 1
 
 
-for base, dirnames, filenames in os.walk('../lasso/'):
-    if base.endswith('/.svn'):
-        # ignore svn directories
-        continue
-    if not 'Makefile.am' in filenames:
-        # not a source dir
-        continue
-    makefile_am = open(os.path.join(base, 'Makefile.am')).read()
-    filenames = [x for x in filenames if x.endswith('.h') if x in makefile_am]
-    for filename in filenames:
-        if filename == 'lasso_config.h' or 'private' in filename:
+def parse_headers():
+    for base, dirnames, filenames in os.walk('../lasso/'):
+        if base.endswith('/.svn'):
+            # ignore svn directories
             continue
-        parse(os.path.join(base, filename))
+        if not 'Makefile.am' in filenames:
+            # not a source dir
+            continue
+        makefile_am = open(os.path.join(base, 'Makefile.am')).read()
+        filenames = [x for x in filenames if x.endswith('.h') if x in makefile_am]
+        for filename in filenames:
+            if filename == 'lasso_config.h' or 'private' in filename:
+                continue
+            parse_header(os.path.join(base, filename))
 
 
-def display_structs():
-    for struct in structs:
-        print struct
-        for m in struct.members:
-            print '  ', m
-
-
-def display_funcs():
-    for func in functions:
-        print func.return_type, func.name
-        for a in func.args:
-            print '  ', a
+binding = Binding()
+parse_headers()
 
 import pprint
-#pprint.pprint(constants)
-#display_structs()
-#display_funcs()
+binding.display_structs()
+#binding.display_funcs()
