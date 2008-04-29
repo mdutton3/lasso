@@ -532,11 +532,22 @@ if WSF_SUPPORT:
                             subsequent_indent = 4*' ')))
             s.append('\n')
         if docstring.return_value:
-            s.append('\n'.join(textwrap.wrap(
-                            format_inline(docstring.return_value), 70,
-                            initial_indent = '@return: ',
-                            subsequent_indent = 4*' ')))
-            s.append('\n')
+            rv = docstring.return_value
+            exceptions_instead = ['0 on success; or a negative value otherwise.',
+                    '0 on success; a negative value if an error occured.',
+                    '0 on success; another value if an error occured.']
+            if not rv in exceptions_instead:
+                owner_info = ['This xmlnode must be freed by caller.',
+                        'The string must be freed by the caller.',
+                        'It must be freed by the caller.',
+                        'This string must be freed by the caller.']
+                for o_i in owner_info:
+                    rv = rv.replace(o_i, '')
+                s.append('\n'.join(textwrap.wrap(
+                                format_inline(rv), 70,
+                                initial_indent = '@return: ',
+                                subsequent_indent = 4*' ')))
+                s.append('\n')
 
 
         s[-1] = s[-1].rstrip() # remove trailing newline from last line
