@@ -7,10 +7,12 @@ import lang_python
 
 class BindingData:
     def __init__(self):
+        self.headers = []
         self.constants = []
         self.structs = []
         self.struct_dict = {}
         self.functions = []
+        self.enums = []
 
     def display_structs(self):
         for struct in self.structs:
@@ -113,6 +115,8 @@ def parse_header(header_file):
         elif in_enum:
             if line.startswith('}'):
                 in_enum = False
+                enum_name = line[2:].strip().strip(';')
+                binding.enums.append(enum_name)
             else:
                 m = re.match('\s*([a-zA-Z0-9_]+)', line)
                 if m:
@@ -170,7 +174,8 @@ def parse_header(header_file):
                 if function_name[0] == '*':
                     return_type += '*'
                     function_name = function_name[1:]
-                f.return_type = return_type
+                if return_type != 'void':
+                    f.return_type = return_type
                 f.name = function_name
                 f.args = []
                 for arg in [x.strip() for x in args.split(',')]:
@@ -198,6 +203,7 @@ def parse_headers():
         for filename in filenames:
             if filename == 'lasso_config.h' or 'private' in filename:
                 continue
+            binding.headers.append(os.path.join(base, filename)[3:])
             parse_header(os.path.join(base, filename))
 
 

@@ -1,6 +1,8 @@
 PyMODINIT_FUNC
 init_lasso(void)
 {
+	PyObject *m;
+
 	if (PyType_Ready(&PyGObjectPtrType) < 0)
 		return;
 
@@ -10,7 +12,7 @@ init_lasso(void)
 	lasso_wrapper_key = g_quark_from_static_string("PyLasso::wrapper");
 
 	Py_INCREF(&PyGObjectPtrType);
-	PyModule_AddObject(m, "PyGobjectPtr", (PyObject *)&PyGobjectPtrType);
+	PyModule_AddObject(m, "PyGObjectPtr", (PyObject *)&PyGObjectPtrType);
 
 
 }

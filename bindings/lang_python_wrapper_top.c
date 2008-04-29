@@ -28,7 +28,7 @@ PyGObjectPtr_New(GObject *obj)
 		return Py_None;
 	}
 
-	self = (PyGObjectPtr*)g_object_get_qdata(obj, lasso_wrapper_key)
+	self = (PyGObjectPtr*)g_object_get_qdata(obj, lasso_wrapper_key);
 	if (self != NULL) {
 		Py_INCREF(self);
 	} else {
@@ -40,7 +40,7 @@ PyGObjectPtr_New(GObject *obj)
 }
 
 static PyTypeObject PyGObjectPtrType = {
-	PyObject_HEAD_INIT(NULL),
+	PyObject_HEAD_INIT(NULL)
 	0, /* ob_size */
 	"_lasso.PyGObjectPtr", /* tp_name */
 	sizeof(PyGObjectPtr),  /* tp_basicsize */

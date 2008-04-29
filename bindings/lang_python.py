@@ -154,20 +154,88 @@ _lasso.init()
 
     def generate_wrapper(self, fd):
         print >> fd, open('lang_python_wrapper_top.c').read()
+        for h in self.binding_data.headers:
+            print >> fd, '#include <%s>' % h
+        print >> fd, ''
+
+        self.wrapper_list = []
         for m in self.binding_data.functions:
             self.generate_function_wrapper(m, fd)
         for c in self.binding_data.structs:
             for m in c.methods:
                 self.generate_function_wrapper(m, fd)
+        self.generate_wrapper_list(fd)
         print >> fd, open('lang_python_wrapper_bottom.c').read()
 
 
     def generate_function_wrapper(self, m, fd):
         name = m.name[6:]
+        self.wrapper_list.append(name)
         print >> fd, '''static PyObject*
 %s(PyObject *self, PyObject *args)
 {''' % name
-        
+        parse_tuple_format = []
+        parse_tuple_args = []
+        for arg in m.args:
+            arg_type, arg_name = arg
+            print >> fd, '    %s %s;' % (arg[0], arg[1])
+            if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
+                arg_type = arg_type.replace('const ', '')
+                parse_tuple_format.append('s')
+                parse_tuple_args.append('&%s' % arg_name)
+            elif arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
+                parse_tuple_format.append('i')
+                parse_tuple_args.append('&%s' % arg_name)
+            else:
+                parse_tuple_format.append('O')
+                print >> fd, '    PyGObjectPtr *cvt_%s;' % arg_name
+                parse_tuple_args.append('&cvt_%s' % arg_name)
+
+        if m.return_type:
+            print >> fd, '    %s return_value;' % m.return_type
+            print >> fd, '    PyObject* return_pyvalue;'
+        print >> fd, ''
+
+        parse_tuple_args = ', '.join(parse_tuple_args)
+        if parse_tuple_args:
+            parse_tuple_args = ', ' + parse_tuple_args
+
+        print >> fd, '    if (! PyArg_ParseTuple(args, "%s"%s)) return NULL;' % (
+                ''.join(parse_tuple_format), parse_tuple_args)
+
+        for f, arg in zip(parse_tuple_format, m.args):
+            if f == 'O':
+                print >> fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
+
+        if m.return_type:
+            print >> fd, '    return_value =',
+        print >> fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))
+
+        if not m.return_type:
+            print >> fd, '    Py_INCREF(Py_None);'
+            print >> fd, '    return Py_None;'
+        elif m.return_type in ('int', 'gint'):
+            print >> fd, '    return_pyvalue = PyInt_FromLong(return_value);'
+            print >> fd, '    Py_INCREF(return_pyvalue);'
+            print >> fd, '    return return_pyvalue;'
+        elif m.return_type in ('char*', 'gchar*'):
+            print >> fd, '    return_pyvalue = PyString_FromString(return_value);'
+            print >> fd, '    Py_INCREF(return_pyvalue);'
+            print >> fd, '    return return_pyvalue;'
+        else:
+            print >> fd, '    return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));'
+            print >> fd, '    Py_INCREF(return_pyvalue);'
+            print >> fd, '    return return_pyvalue;'
 
         print >> fd, '''}
 '''
+
+    def generate_wrapper_list(self, fd):
+        print >> fd, '''
+static PyMethodDef lasso_methods[] = {'''
+        for m in self.wrapper_list:
+            print >> fd, '    {"%s", %s, METH_VARARGS, NULL},' % (m, m)
+        print >> fd, '    {NULL, NULL, 0, NULL}'
+        print >> fd, '};'
+        print >> fd, ''
+
