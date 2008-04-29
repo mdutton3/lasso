@@ -291,9 +291,11 @@ Session.providerIds = property(session_get_provider_ids)
                         klassname, mname)
             print >> fd, '    def set_%s(self, value):' % mname
             if self.is_pygobject(m[0]):
-                print >> fd, '        value = value._cptr'
+                print >> fd, '        if value is not None:'
+                print >> fd, '            value = value._cptr'
             elif m[0] == 'GList*' and options.get('elem_type') not in ('char*', 'xmlNode*'):
-                print >> fd, '        value = tuple([x._cptr for x in value])'
+                print >> fd, '        if value is not None:'
+                print >> fd, '            value = tuple([x._cptr for x in value])'
             print >> fd, '        _lasso.%s_%s_set(self._cptr, value)' % (
                     klassname, mname)
             print >> fd, '    %s = property(get_%s, set_%s)' % (mname, mname, mname)
@@ -572,7 +574,7 @@ register_constants(PyObject *d)
             elif parse_format == 'O' and arg_type == 'GList*':
                 elem_type = m[2].get('elem_type')
                 print >> fd, '''\
-    if (!PyTuple_Check(cvt_value)) {
+    if (cvt_value != Py_None && !PyTuple_Check(cvt_value)) {
         PyErr_SetString(PyExc_TypeError, "value should be tuple");
         return NULL;
     }
@@ -586,7 +588,11 @@ register_constants(PyObject *d)
     }
     this->%(v)s = NULL;
     /* create new list */
-    l = PyTuple_Size(cvt_value);
+    if (cvt_value == Py_None) {
+        l = 0;
+    } else {
+        l = PyTuple_Size(cvt_value);
+    }
     for (i=0; i<l; i++) {
         PyObject *pystr = PyTuple_GET_ITEM(cvt_value, i);
         this->%(v)s = g_list_append(this->%(v)s, g_strdup(PyString_AsString(pystr)));
@@ -601,7 +607,11 @@ register_constants(PyObject *d)
     }
     this->%(v)s = NULL;
     /* create new list */
-    l = PyTuple_Size(cvt_value);
+    if (cvt_value == Py_None) {
+        l = 0;
+    } else {
+        l = PyTuple_Size(cvt_value);
+    }
     for (i=0; i<l; i++) {
         xmlNode *item_node = get_xml_node_from_pystring(PyTuple_GET_ITEM(cvt_value, i));
         this->%(v)s = g_list_append(this->%(v)s, item_node);
@@ -617,7 +627,11 @@ register_constants(PyObject *d)
     }
     this->%(v)s = NULL;
     /* create new list */
-    l = PyTuple_Size(cvt_value);
+    if (cvt_value == Py_None) {
+        l = 0;
+    } else {
+        l = PyTuple_Size(cvt_value);
+    }
     for (i=0; i<l; i++) {
         /* XXX: should check it is really a PyGObjectPtr */
         PyGObjectPtr *pyobj = (PyGObjectPtr*)PyTuple_GET_ITEM(cvt_value, i);
@@ -625,7 +639,14 @@ register_constants(PyObject *d)
     }''' % {'v': m[1]}
 
             elif parse_format == 'O':
-                print >> fd, '    this->%s = (%s)g_object_ref(cvt_value->obj);' % (m[1], m[0])
+                print >> fd, '    if (this->%s) {' % m[1]
+                print >> fd, '        g_object_unref(this->%s);' % m[1]
+                print >> fd, '    }'
+                print >> fd, '    if ((PyObject*)cvt_value == Py_None) {'
+                print >> fd, '        this->%s = NULL;' % m[1]
+                print >> fd, '    } else {'
+                print >> fd, '        this->%s = (%s)g_object_ref(cvt_value->obj);' % (m[1], m[0])
+                print >> fd, '    }'
 
             print >> fd, '    Py_INCREF(Py_None);'
             print >> fd, '    return Py_None;'
