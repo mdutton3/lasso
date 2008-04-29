@@ -7,6 +7,7 @@ constants = []
 
 def parse(header_file):
     in_comment = False
+    in_enum = False
 
     content = file(header_file).read().replace('\\\n', ' ')
     for line in content.splitlines():
@@ -16,7 +17,17 @@ def parse(header_file):
             continue
 
         if '/*' in line and not '*/' in line:
+            in_comment = True
             continue
+
+        if in_enum:
+            if line.startswith('}'):
+                in_enum = False
+            else:
+                m = re.match('\s*([a-zA-Z0-9_]+)', line)
+                if m:
+                    constants.append(m.group(1))
+                continue
 
         if line.startswith('#define'):
             m = re.match(r'#define\s+([a-zA-Z0-9_]+)\s+[-\w"]', line)
@@ -27,6 +38,13 @@ def parse(header_file):
                 # ignore private constants
                 continue
             constants.append(constant)
+            continue
+
+        if line.startswith('typedef enum {'):
+            in_enum = True
+            continue
+
+
 
 
 for base, dirnames, filenames in os.walk('../lasso/'):
