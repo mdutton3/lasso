@@ -118,7 +118,7 @@
     <param name="new_offering"/>
     <param name="security_mech_id" optional="true"/>
   </func>
-  <func name="lasso_discovery_add_requested_service_type">
+  <func name="lasso_discovery_add_requested_service_type" return_owner="false">
     <param name="service_type"/>
     <param name="option" optional="true"/>
   </func>
@@ -153,6 +153,7 @@
     <param name="soap_msg"/>
     <param name="security_mech_id" optional="true"/>
   </func>
+  <func name="lasso_data_service_add_query_item" return_owner="false"/>
   <!-- Fonctions utilisant des types venant de la partie id-wsf de la librarie -->
   <func name="lasso_server_get_service" skip="true">
   </func>
