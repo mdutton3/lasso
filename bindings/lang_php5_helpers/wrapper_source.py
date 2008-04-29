@@ -239,7 +239,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 elem_type = arg[2].get('elem_type')
                 if elem_type == 'char*':
                     print >> self.fd, '    if (%(name)s) {' % { 'name': arg[1] }
-                    print >> self.fd, '        free_list(%(name)s,free);' % { 'name': arg[1] }
+                    print >> self.fd, '        free_glist(%(name)s,free);' % { 'name': arg[1] }
                     print >> self.fd, '    }'
 
         self.return_value(m.return_type, {})
