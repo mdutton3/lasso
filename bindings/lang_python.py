@@ -207,7 +207,6 @@ Session.providerIds = property(session_get_provider_ids)
 Samlp2AuthnRequest.nameIDPolicy = Samlp2AuthnRequest.nameIdPolicy
 LibAuthnRequest.nameIDPolicy = LibAuthnRequest.nameIdPolicy
 Saml2Subject.nameID = Saml2Subject.nameId
-SamlSubject.nameID = SamlSubject.nameId
 MiscTextNode.text_child = MiscTextNode.textChild
 NodeList = list
 StringList = list
