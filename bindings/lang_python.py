@@ -461,7 +461,7 @@ if WSF_SUPPORT:
                 print >> fd, '        value = _lasso.%s(self._cptr%s)' % (
                         function_name, c_args)
                 print >> fd, '        if value is not None:'
-                print >> fd, '            value = tuple([x._cptr for x in value])'
+                print >> fd, '            value = tuple([cptrToPy(x) for x in value])'
                 print >> fd, '        return value'
             elif self.is_pygobject(m.return_type):
                 print >> fd, '        return cptrToPy(_lasso.%s(self._cptr%s))' % (
