@@ -151,7 +151,8 @@ class Function:
     errors = None
     
     def __repr__(self):
-        return '%s %s %r' % (self.return_type, self.name, self.args)
+        return '<Function return_type:%s name:%s args:%r>' % (
+                self.return_type, self.name, self.args)
 
     def apply_overrides(self):
         for func in binding.overrides.findall('func'):
