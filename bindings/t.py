@@ -144,14 +144,18 @@ def parse_header(header_file):
             else:
                 m = re.match('\s*([a-zA-Z0-9_]+)', line)
                 if m:
-                    binding.constants.append(m.group(1))
+                    binding.constants.append(('i', m.group(1)))
         elif line.startswith('#define'):
             m = re.match(r'#define\s+([a-zA-Z0-9_]+)\s+[-\w"]', line)
             if m:
                 constant = m.group(1)
                 if constant[0] != '_':
                     # ignore private constants
-                    binding.constants.append(constant)
+                    if '"' in line:
+                        constant_type = 's'
+                    else:
+                        constant_type = 'i'
+                    binding.constants.append((constant_type, constant))
         elif line.startswith('typedef enum {'):
             in_enum = True
         elif line.startswith('typedef struct'):

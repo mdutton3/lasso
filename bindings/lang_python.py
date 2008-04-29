@@ -30,6 +30,7 @@ class PythonBinding:
     def generate(self):
         fd = open('python/lasso.py', 'w')
         self.generate_header(fd)
+        self.generate_constants(fd)
         for clss in self.binding_data.structs:
             self.generate_class(clss, fd)
         fd.close()
@@ -46,6 +47,12 @@ import _lasso
 
 _lasso.init()
 '''
+
+    def generate_constants(self, fd):
+        print >> fd, '### Constants (both enums and defines)'
+        for c in self.binding_data.constants:
+            print >> fd, '%s = _lasso.%s' % (c[1][6:], c[1][6:])
+        print >> fd, ''
 
     def generate_class(self, clss, fd):
         klassname = clss.name[5:] # remove Lasso from class name
@@ -196,6 +203,8 @@ _lasso.init()
             print >> fd, '#include <%s>' % h
         print >> fd, ''
 
+        self.generate_constants_wrapper(fd)
+
         self.wrapper_list = []
         for m in self.binding_data.functions:
             self.generate_function_wrapper(m, fd)
@@ -205,6 +214,23 @@ _lasso.init()
                 self.generate_function_wrapper(m, fd)
         self.generate_wrapper_list(fd)
         print >> fd, open('lang_python_wrapper_bottom.c').read()
+
+    def generate_constants_wrapper(self, fd):
+        print >> fd, '''static void
+register_constants(PyObject *d)
+{
+    PyObject *obj;
+'''
+        for c in self.binding_data.constants:
+            if c[0] == 'i':
+                print >> fd, '    obj = PyInt_FromLong(%s);' % c[1]
+            elif c[0] == 's':
+                print >> fd, '    obj = PyString_FromString(%s);' % c[1]
+            print >> fd, '    PyDict_SetItemString(d, "%s", obj);' % c[1][6:]
+            print >> fd, '    Py_DECREF(obj);'
+        print >> fd, '}'
+        print >> fd, ''
+
 
     def generate_member_wrapper(self, c, fd):
         klassname = c.name
