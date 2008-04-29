@@ -98,6 +98,8 @@ class JavaBinding:
                 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
+        if not os.path.exists(lasso_java_path):
+            os.makedirs(lasso_java_path)
         self.generate_Constants()
         self.generate_JNI()
         self.generate_wrapper()
