@@ -390,10 +390,10 @@ lasso_saml20_login_must_authenticate(LassoLogin *login)
 		 * assertions, a session is enough
 		 */
 		matched = (profile->session != NULL);
-                if (matched) {
-                        matched = profile->remote_providerID 
-                                        && lasso_session_get_assertion(profile->session, profile->remote_providerID) != NULL;
-                }
+		if (matched) {
+			matched = profile->remote_providerID 
+				&& lasso_session_get_assertion(profile->session, profile->remote_providerID) != NULL;
+		}
 	}
 	g_list_free(assertions);
 
