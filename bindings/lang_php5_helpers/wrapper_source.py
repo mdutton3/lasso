@@ -49,6 +49,8 @@ class WrapperSource:
 
     def generate_header(self):
         self.functions_list.append('lasso_get_object_typename')
+        self.functions_list.append('lasso_init')
+        self.functions_list.append('lasso_shutdown')
 
         print >> self.fd, '''\
 /* this file has been generated automatically; do not edit */
@@ -94,6 +96,7 @@ PHP_MINIT_FUNCTION(lasso)
 PHP_MSHUTDOWN_FUNCTION(lasso)
 {
     lasso_shutdown();
+    return SUCCESS;
 }
 
 '''
@@ -165,8 +168,9 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         RETVAL_NULL();
     }'''
             if free:
-#                print >> self.fd, '    printf("UNREF %p line %i\\n", return_c_value, __LINE__);'
-                print >> self.fd, '    g_object_unref(return_c_value); // Constructor'
+                print >> self.fd, '    if (return_c_value) {'
+                print >> self.fd, '        g_object_unref(return_c_value); // If constructor ref is off by one'
+                print >> self.fd, '    }'
 
     def generate_function(self, m):
         if m.name in ('lasso_init','lasso_shutdown'):
