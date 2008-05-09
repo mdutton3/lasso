@@ -41,7 +41,14 @@ PhpGObjectPtr_New(GObject *obj)
 
 	return self;
 }
-
+PHP_FUNCTION(lasso_init)
+{
+	RETURN_NULL();
+}
+PHP_FUNCTION(lasso_shutdown)
+{
+	RETURN_NULL();
+}
 PHP_FUNCTION(lasso_get_object_typename)
 {
 	PhpGObjectPtr *self;
