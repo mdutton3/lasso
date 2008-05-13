@@ -317,6 +317,7 @@ lasso_profile_is_saml_query(const gchar *query)
 		"SAMLRequest=", "SAMLResponse=", "SAMLart=", NULL };
 	gint i;
 
+	g_return_val_if_fail(query, FALSE);
 	for (i=0; parameters[i]; i++) {
 		if (strstr(query, parameters[i]))
 			return TRUE;
