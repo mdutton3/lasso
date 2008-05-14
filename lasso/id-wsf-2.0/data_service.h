@@ -59,7 +59,7 @@ struct _LassoIdWsf2DataService {
 	xmlNode *data;
 	gchar *type;
 	gchar *redirect_url;
-	GList *query_items;
+	GList *query_items; /* of strings */
 
 	/*< private >*/
 	LassoIdWsf2DataServicePrivate *private_data;
