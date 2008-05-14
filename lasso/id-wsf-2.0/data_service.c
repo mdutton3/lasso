@@ -196,6 +196,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	LassoIdWsf2DstRefItemData *data_item;
 	xmlNode *node;
 	GList *iter;
+	int i;
 	/* Default is Failed, will be OK or Partial when some items are successfully parsed */
 	char *status_code = LASSO_DST_STATUS_CODE_FAILED;
 
@@ -237,12 +238,13 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 		xpathObj = xmlXPathEvalExpression((xmlChar*)item_result_query->Select, xpathCtx);
 		if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 			/* XXX: assuming there is only one matching node */
-			node = xpathObj->nodesetval->nodeTab[0];
 			data = lasso_idwsf2_dstref_data_new();
 			data_item = LASSO_IDWSF2_DSTREF_ITEM_DATA(data);
-			LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any = g_list_append(
-					LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any,
-					xmlCopyNode(node, 1));
+			for (i = 0; i < xpathObj->nodesetval->nodeNr; i++) {
+				node = xpathObj->nodesetval->nodeTab[i];
+				LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any = g_list_append(
+					LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any, xmlCopyNode(node, 1));
+			}
 		} else if (xpathObj && xpathObj->type == XPATH_STRING) {
 			data = lasso_idwsf2_dstref_data_new();
 			data_item = LASSO_IDWSF2_DSTREF_ITEM_DATA(data);
@@ -460,6 +462,30 @@ lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, co
 
 	/* XXX: there may be more than one xmlnode */
 	return xmlCopyNode(data->any->data, 1);
+}
+
+GList*
+lasso_idwsf2_data_service_get_attribute_strings(LassoIdWsf2DataService *service,
+	const gchar *item_id)
+{
+	GList *nodes = NULL;
+	xmlChar *xml_content = NULL;
+	GList *contents = NULL;
+	GList *iter;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
+
+	nodes = lasso_idwsf2_data_service_get_attribute_nodes(service, item_id);
+	for (iter = nodes; iter; iter = g_list_next(iter)) {
+		xml_content = xmlNodeGetContent(iter->data);
+		contents = g_list_append(contents, g_strdup((gchar*)xml_content));
+		xmlFree(xml_content);
+		xmlFreeNode(iter->data);
+	}
+
+	g_list_free(nodes);
+
+	return contents;
 }
 
 gchar*

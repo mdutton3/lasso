@@ -199,9 +199,11 @@
     <param name="service_type" optional="true"/>
   </func>
   <!-- LassoIdWsf2DataService -->
+  <func name="lasso_idwsf2_data_service_get_attribute_nodes" return_type_qualifier="xmlNode*"/>
   <func name="lasso_idwsf2_data_service_get_attribute_node">
     <param name="item_id" optional="true"/>
   </func>
+  <func name="lasso_idwsf2_data_service_get_attribute_strings" return_type_qualifier="char*"/>
   <func name="lasso_idwsf2_data_service_get_attribute_string">
     <param name="item_id" optional="true"/>
   </func>
