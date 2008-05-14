@@ -89,6 +89,9 @@ LASSO_EXPORT gint lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataSer
 LASSO_EXPORT gint lasso_idwsf2_data_service_process_query_response_msg(
 	LassoIdWsf2DataService *service, const gchar *message);
 
+LASSO_EXPORT GList* lasso_idwsf2_data_service_get_attribute_nodes(
+		LassoIdWsf2DataService *service, const gchar *item_id);
+
 LASSO_EXPORT xmlNode* lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service,
 	const gchar *item_id);
 	

@@ -51,6 +51,8 @@ extern GHashTable *idwsf2_dst_services_by_prefix; /* cf xml/xml.c */
 
 static void lasso_register_idwsf2_xpath_namespaces(xmlXPathContext *xpathCtx);
 
+static GList* duplicate_glist_of_xmlnodes(GList*);
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -366,6 +368,52 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 	}
 
 	return 0;
+}
+
+
+GList*
+lasso_idwsf2_data_service_get_attribute_nodes(LassoIdWsf2DataService *service, const gchar *item_id)
+{
+	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
+	LassoIdWsf2DstRefQueryResponse *response;
+	LassoIdWsf2DstRefAppData *data = NULL;
+	GList *iter;
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DATA_SERVICE(service), NULL);
+
+	g_return_val_if_fail(LASSO_IS_IDWSF2_DSTREF_QUERY_RESPONSE(
+				LASSO_PROFILE(profile)->response), NULL);
+
+	response = LASSO_IDWSF2_DSTREF_QUERY_RESPONSE(LASSO_PROFILE(profile)->response);
+
+	/* If no item_id is given, return the first item */
+	if (item_id == NULL && response->Data != NULL && response->Data->data != NULL) {
+		data = LASSO_IDWSF2_DSTREF_APP_DATA(response->Data->data);
+		if (data->any != NULL && data->any->data != NULL) {
+			return duplicate_glist_of_xmlnodes(data->any);
+		}
+	}
+	if (item_id == NULL) {
+		return NULL;
+	}
+
+	/* Find the item which has the given item_id */
+	for (iter = g_list_first(response->Data); iter != NULL; iter = g_list_next(iter)) {
+		if (! LASSO_IS_IDWSF2_DSTREF_ITEM_DATA(iter->data)) {
+			continue;
+		}
+		if (strcmp(LASSO_IDWSF2_DSTREF_ITEM_DATA(iter->data)->itemIDRef, item_id) == 0) {
+			data = LASSO_IDWSF2_DSTREF_APP_DATA(iter->data);
+			break;
+		}
+	}
+
+	if (data == NULL || data->any == NULL || data->any->data == NULL) {
+		/* Item not found */
+		return NULL;
+	}
+
+	return duplicate_glist_of_xmlnodes(data->any);
 }
 
 xmlNode*
@@ -792,6 +840,18 @@ lasso_register_idwsf2_xpath_namespaces(xmlXPathContext *xpathCtx)
 			(GHFunc)register_xpath_namespace, xpathCtx);
 }
 
+static GList*
+duplicate_glist_of_xmlnodes(GList *list)
+{
+	GList *r = NULL;
+	GList *t;
+
+	for (t = list; t; t = g_list_next(t)) {
+		r = g_list_append(r, xmlCopyNode(t->data, 1));
+	}
+
+	return r;
+}
 
 
 /*****************************************************************************/
