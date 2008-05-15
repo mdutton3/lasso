@@ -24,8 +24,12 @@
 
 #include "saml2_action.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_action
+ * @short_description: &lt;saml2:Action&gt;
+ *
+ * <figure><title>Schema fragment for saml2:Action</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="ActionType">
  *   <simpleContent>
@@ -34,6 +38,8 @@
  *     </extension>
  *   </simpleContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

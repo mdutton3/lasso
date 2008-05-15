@@ -24,8 +24,12 @@
 
 #include "disco_svc_md_association_add.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_svc_md_association_add
+ * @short_description: &lt;disco:SvcMDAssociationAdd&gt;
+ *
+ * <figure><title>Schema fragment for disco:SvcMDAssociationAdd</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SvcMDAssociationAddType">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *   </xs:sequence>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

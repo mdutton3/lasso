@@ -24,8 +24,12 @@
 
 #include "disco_svc_md_delete.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_svc_md_delete
+ * @short_description: &lt;disco:SvcMDDelete&gt;
+ *
+ * <figure><title>Schema fragment for disco:SvcMDDelete</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SvcMDDeleteType">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *   </xs:sequence>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "util_status.h"
 
-/*
- * Schema fragment (liberty-idwsf-utility-v2.0.xsd):
+/**
+ * SECTION:util_status
+ * @short_description: &lt;util:Status&gt;
+ *
+ * <figure><title>Schema fragment for util:Status</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="StatusType">
  *   <xs:annotation>
@@ -40,6 +44,8 @@
  *   <xs:attribute name="ref" type="IDReferenceType" use="optional"/>
  *   <xs:attribute name="comment" type="xs:string" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

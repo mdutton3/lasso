@@ -24,9 +24,10 @@
 
 #include <lasso/xml/soap_envelope.h>
 
-/*
- * Schema fragments ():
- * 
+/**
+ * SECTION:soap_envelope
+ * @short_description: &lt;soap:Envelope&gt;
+ *
  */ 
 
 /*****************************************************************************/

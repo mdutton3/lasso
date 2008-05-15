@@ -24,14 +24,20 @@
 
 #include "subsref_delete_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_delete_response
+ * @short_description: &lt;subsref:DeleteResponse&gt;
+ *
+ * <figure><title>Schema fragment for subsref:DeleteResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="DeleteResponseType">
  *   <xs:complexContent>
  *     <xs:extension base="lu:ResponseType"/>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

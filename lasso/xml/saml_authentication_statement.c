@@ -24,8 +24,12 @@
 
 #include <lasso/xml/saml_authentication_statement.h>
 
-/*
- * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+/**
+ * SECTION:saml_authentication_statement
+ * @short_description: &lt;saml:AuthenticationStatement&gt;
+ *
+ * <figure><title>Schema fragment for saml:AuthenticationStatement</title>
+ * <programlisting><![CDATA[
  * 
  * <element name="AuthenticationStatement" type="saml:AuthenticationStatementType"/>
  * <complexType name="AuthenticationStatementType">
@@ -40,6 +44,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

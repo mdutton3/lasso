@@ -24,8 +24,12 @@
 
 #include "saml2_authn_statement.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_authn_statement
+ * @short_description: &lt;saml2:AuthnStatement&gt;
+ *
+ * <figure><title>Schema fragment for saml2:AuthnStatement</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AuthnStatementType">
  *   <complexContent>
@@ -40,6 +44,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

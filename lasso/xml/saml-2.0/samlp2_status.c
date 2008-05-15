@@ -24,8 +24,12 @@
 
 #include "samlp2_status.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_status
+ * @short_description: &lt;samlp2:Status&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:Status</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="StatusType">
  *   <sequence>
@@ -34,6 +38,8 @@
  *     <element ref="samlp:StatusDetail" minOccurs="0"/>
  *   </sequence>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

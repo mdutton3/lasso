@@ -24,8 +24,12 @@
 
 #include "samlp2_attribute_query.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_attribute_query
+ * @short_description: &lt;samlp2:AttributeQuery&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:AttributeQuery</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AttributeQueryType">
  *   <complexContent>
@@ -36,6 +40,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

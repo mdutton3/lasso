@@ -27,8 +27,12 @@
 
 #include <lasso/xml/samlp_request_abstract.h>
 
-/*
- * Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
+/**
+ * SECTION:samlp_request_abstract
+ * @short_description: &lt;samlp:RequestAbstractType&gt;
+ *
+ * <figure><title>Schema fragment for samlp:RequestAbstractType</title>
+ * <programlisting><![CDATA[
  * 
  * <complexType name="RequestAbstractType" abstract="true">
  *   <sequence>
@@ -47,6 +51,8 @@
  * <simpleType name="IDType">
  *   <restriction base="string"/>
  * </simpleType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

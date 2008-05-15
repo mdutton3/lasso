@@ -24,8 +24,12 @@
 
 #include "ps_remove_from_collection_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_remove_from_collection_request
+ * @short_description: &lt;ps:RemoveFromCollectionRequest&gt;
+ *
+ * <figure><title>Schema fragment for ps:RemoveFromCollectionRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="RemoveFromCollectionRequestType">
  *   <xs:complexContent>
@@ -38,6 +42,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

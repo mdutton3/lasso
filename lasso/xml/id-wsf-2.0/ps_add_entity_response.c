@@ -24,8 +24,12 @@
 
 #include "ps_add_entity_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_add_entity_response
+ * @short_description: &lt;ps:AddEntityResponse&gt;
+ *
+ * <figure><title>Schema fragment for ps:AddEntityResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="AddEntityResponseType">
  *   <xs:complexContent>
@@ -38,6 +42,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,6 +24,11 @@
 
 #include <lasso/xml/lib_authn_response_envelope.h>
 
+/**
+ * SECTION:lib_authn_response_envelope
+ * @short_description: &lt;lib:AuthnResponseEnvelope&gt;
+ *
+ */
 
 
 /*****************************************************************************/

@@ -24,9 +24,12 @@
 
 #include <lasso/xml/lib_idp_list.h>
 
-/*
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
- * 
+/**
+ * SECTION:lib_idp_list
+ * @short_description: &lt;lib:IDPList&gt;
+ *
+ * <figure><title>Schema fragment for lib:IDPList</title>
+ * <programlisting><![CDATA[
  * <xs:element name="IDPList" type="IDPListType"/>
  * <xs:complexType name="IDPListType">
  *   <xs:sequence>
@@ -36,6 +39,8 @@
  * </xs:complexType>
  * 
  * <xs:element name="GetComplete" type="xs:anyURI"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "is_select.h"
 
-/*
- * Schema fragment (liberty-idwsf-interaction-svc-v2.0.xsd):
+/**
+ * SECTION:is_select
+ * @short_description: &lt;is:Select&gt;
+ *
+ * <figure><title>Schema fragment for is:Select</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SelectType">
  *   <xs:complexContent>
@@ -39,6 +43,8 @@
  *             <xs:attribute name="label" type="xs:string" use="optional"/>
  *             <xs:attribute name="value" type="xs:NMTOKEN" use="required"/>
  *           </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

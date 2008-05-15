@@ -24,8 +24,12 @@
 
 #include "dstref_test_item.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_test_item
+ * @short_description: &lt;dstref:TestItem&gt;
+ *
+ * <figure><title>Schema fragment for dstref:TestItem</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="TestItemType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

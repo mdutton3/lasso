@@ -24,8 +24,12 @@
 
 #include <lasso/xml/sa_parameter.h>
 
-/*
- * Schema fragments (liberty-idwsf-authn-svc-v1.0.xsd):
+/**
+ * SECTION:sa_parameter
+ * @short_description: &lt;sa:Parameter&gt;
+ *
+ * <figure><title>Schema fragment for sa:Parameter</title>
+ * <programlisting><![CDATA[
  *
  *  <xs:element name="Parameter" minOccurs="0" maxOccurs="unbounded">
  *  <xs:complexType>
@@ -36,6 +40,8 @@
  *    </xs:simpleContent>
  *  </xs:complexType>
  *  </xs:element>
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

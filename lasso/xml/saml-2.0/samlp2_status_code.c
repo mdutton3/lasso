@@ -24,8 +24,12 @@
 
 #include "samlp2_status_code.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_status_code
+ * @short_description: &lt;samlp2:StatusCode&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:StatusCode</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="StatusCodeType">
  *   <sequence>
@@ -33,6 +37,8 @@
  *   </sequence>
  *   <attribute name="Value" type="anyURI" use="required"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

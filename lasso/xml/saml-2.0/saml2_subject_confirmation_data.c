@@ -24,8 +24,12 @@
 
 #include "saml2_subject_confirmation_data.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_subject_confirmation_data
+ * @short_description: &lt;saml2:SubjectConfirmationData&gt;
+ *
+ * <figure><title>Schema fragment for saml2:SubjectConfirmationData</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="SubjectConfirmationDataType" mixed="true">
  *   <complexContent>
@@ -42,6 +46,8 @@
  *     </restriction>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

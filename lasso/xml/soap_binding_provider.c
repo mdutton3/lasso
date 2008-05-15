@@ -24,8 +24,12 @@
 
 #include <lasso/xml/soap_binding_provider.h>
 
-/*
- * Schema fragments (liberty-idwsf-soap-binding-v1.1.xsd):
+/**
+ * SECTION:soap_binding_provider
+ * @short_description: &lt;soapbinding:ProviderType&gt;
+ *
+ * <figure><title>Schema fragment for soapbinding:ProviderType</title>
+ * <programlisting><![CDATA[
  * <xs:complexType name="ProviderType">
  *   <xs:attribute name="providerID" type="xs:anyURI" use="required"/>
  *   <xs:attribute name="affiliationID" type="xs: nyURI" use="optional"/>
@@ -35,6 +39,8 @@
  * </xs:complexType>
  * <xs:element name="Provider" type="ProviderType"/>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "ps_add_collection_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_add_collection_request
+ * @short_description: &lt;ps:AddCollectionRequest&gt;
+ *
+ * <figure><title>Schema fragment for ps:AddCollectionRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="AddCollectionRequestType">
  *   <xs:complexContent>
@@ -37,6 +41,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

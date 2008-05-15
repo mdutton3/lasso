@@ -24,8 +24,12 @@
 
 #include "dstref_data.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_data
+ * @short_description: &lt;dstref:Data&gt;
+ *
+ * <figure><title>Schema fragment for dstref:Data</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="DataType">
  *   <xs:complexContent>
@@ -34,6 +38,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include <lasso/xml/sa_sasl_response.h>
 
-/*
- * Schema fragments (lib-arch-authn-svc.xsd):
+/**
+ * SECTION:sa_sasl_response
+ * @short_description: &lt;sa:SASLResponse&gt;
+ *
+ * <figure><title>Schema fragment for sa:SASLResponse</title>
+ * <programlisting><![CDATA[
  * 
  * <xs:element name="SASLResponse">
  * <xs:complexType>
@@ -53,6 +57,8 @@
  * </xs:complexType>
  * </xs:element>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

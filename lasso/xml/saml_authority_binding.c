@@ -24,8 +24,12 @@
 
 #include <lasso/xml/saml_authority_binding.h>
 
-/*
- * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+/**
+ * SECTION:saml_authority_binding
+ * @short_description: &lt;saml:AuthorityBinding&gt;
+ *
+ * <figure><title>Schema fragment for saml:AuthorityBinding</title>
+ * <programlisting><![CDATA[
  * 
  * <element name="AuthorityBinding" type="saml:AuthorityBindingType"/>
  * <complexType name="AuthorityBindingType">
@@ -33,6 +37,8 @@
  *   <attribute name="Location" type="anyURI" use="required"/>
  *   <attribute name="Binding" type="anyURI" use="required"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "dstref_delete.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_delete
+ * @short_description: &lt;dstref:Delete&gt;
+ *
+ * <figure><title>Schema fragment for dstref:Delete</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="DeleteType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

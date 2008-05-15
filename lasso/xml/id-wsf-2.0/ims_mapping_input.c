@@ -24,8 +24,12 @@
 
 #include "ims_mapping_input.h"
 
-/*
- * Schema fragment (liberty-idwsf-idmapping-svc-v2.0.xsd):
+/**
+ * SECTION:ims_mapping_input
+ * @short_description: &lt;ims:MappingInput&gt;
+ *
+ * <figure><title>Schema fragment for ims:MappingInput</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="MappingInputType">
  *   <xs:sequence>
@@ -34,6 +38,8 @@
  *   </xs:sequence>
  *   <xs:attribute name="reqID" type="lu:IDType" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

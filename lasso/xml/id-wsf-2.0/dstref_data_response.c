@@ -24,8 +24,12 @@
 
 #include "dstref_data_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_data_response
+ * @short_description: &lt;dstref:DataResponse&gt;
+ *
+ * <figure><title>Schema fragment for dstref:DataResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="DataResponseType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

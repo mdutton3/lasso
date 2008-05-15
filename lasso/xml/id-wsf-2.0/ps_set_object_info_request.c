@@ -24,8 +24,12 @@
 
 #include "ps_set_object_info_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_set_object_info_request
+ * @short_description: &lt;ps:SetObjectInfoRequest&gt;
+ *
+ * <figure><title>Schema fragment for ps:SetObjectInfoRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SetObjectInfoRequestType">
  *   <xs:complexContent>
@@ -37,6 +41,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

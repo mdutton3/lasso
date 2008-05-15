@@ -24,14 +24,20 @@
 
 #include "samlp2_status_detail.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_status_detail
+ * @short_description: &lt;samlp2:StatusDetail&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:StatusDetail</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="StatusDetailType">
  *   <sequence>
  *     <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
  *   </sequence>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

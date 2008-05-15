@@ -24,14 +24,20 @@
 
 #include "ps_item_data.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_item_data
+ * @short_description: &lt;ps:ItemData&gt;
+ *
+ * <figure><title>Schema fragment for ps:ItemData</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ItemDataType">
  *   <xs:sequence>
  *     <xs:element ref="Object"/>
  *   </xs:sequence>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

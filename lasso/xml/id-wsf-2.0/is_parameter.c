@@ -24,13 +24,19 @@
 
 #include "is_parameter.h"
 
-/*
- * Schema fragment (liberty-idwsf-interaction-svc-v2.0.xsd):
+/**
+ * SECTION:is_parameter
+ * @short_description: &lt;is:Parameter&gt;
+ *
+ * <figure><title>Schema fragment for is:Parameter</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ParameterType">
  *   <xs:attribute name="name" type="xs:ID" use="required"/>
  *   <xs:attribute name="value" type="xs:string" use="required"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "saml2_condition_abstract.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_condition_abstract
+ * @short_description: &lt;saml2:ConditionAbstract&gt;
+ *
+ * <figure><title>Schema fragment for saml2:ConditionAbstract</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="ConditionAbstractType" abstract="true"/>
  * <element name="AudienceRestriction" type="saml:AudienceRestrictionType"/>
@@ -38,6 +42,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,10 +24,16 @@
 
 #include "disco_provider_id.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_provider_id
+ * @short_description: &lt;disco:ProviderID&gt;
+ *
+ * <figure><title>Schema fragment for disco:ProviderID</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="ProviderID" type="xs:anyURI"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

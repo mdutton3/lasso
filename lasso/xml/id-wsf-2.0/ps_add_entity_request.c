@@ -24,8 +24,12 @@
 
 #include "ps_add_entity_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_add_entity_request
+ * @short_description: &lt;ps:AddEntityRequest&gt;
+ *
+ * <figure><title>Schema fragment for ps:AddEntityRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="AddEntityRequestType">
  *   <xs:complexContent>
@@ -40,6 +44,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

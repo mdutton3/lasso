@@ -24,8 +24,12 @@
 
 #include "disco_requested_service.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_requested_service
+ * @short_description: &lt;disco:RequestedService&gt;
+ *
+ * <figure><title>Schema fragment for disco:RequestedService</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="RequestedServiceType">
  *   <xs:sequence>
@@ -52,6 +56,8 @@
  *     <xs:attribute name="resultsType" type="xs:string" use="optional" />
  *     
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

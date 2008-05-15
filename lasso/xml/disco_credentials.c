@@ -24,8 +24,12 @@
 
 #include <lasso/xml/disco_credentials.h>
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+/**
+ * SECTION:disco_credentials
+ * @short_description: &lt;disco:Credentials&gt;
+ *
+ * <figure><title>Schema fragment for disco:Credentials</title>
+ * <programlisting><![CDATA[
  * 
  * <xs:element name="Credentials" minOccurs="0">
  *   <xs:complexType>
@@ -34,6 +38,8 @@
  *     </xs:sequence>
  *   </xs:complexType>
  * </xs:element>
+ * ]]></programlisting>
+ * </figure>
  */
 
 

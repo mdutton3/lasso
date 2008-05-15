@@ -24,8 +24,12 @@
 
 #include "subsref_result_query.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_result_query
+ * @short_description: &lt;subsref:ResultQuery&gt;
+ *
+ * <figure><title>Schema fragment for subsref:ResultQuery</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ResultQueryType">
  *   <xs:complexContent>
@@ -37,6 +41,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

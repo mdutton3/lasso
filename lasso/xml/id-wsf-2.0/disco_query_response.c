@@ -24,8 +24,12 @@
 
 #include "disco_query_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_query_response
+ * @short_description: &lt;disco:QueryResponse&gt;
+ *
+ * <figure><title>Schema fragment for disco:QueryResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="QueryResponseType">
  *   <xs:sequence>
@@ -37,6 +41,8 @@
  *     </xs:sequence>
  *     <xs:anyAttribute namespace="##other" processContents="lax"/>
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

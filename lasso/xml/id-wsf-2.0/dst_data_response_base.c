@@ -24,8 +24,12 @@
 
 #include "dst_data_response_base.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-v2.1.xsd):
+/**
+ * SECTION:dst_data_response_base
+ * @short_description: &lt;dst:DataResponseBase&gt;
+ *
+ * <figure><title>Schema fragment for dst:DataResponseBase</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="DataResponseBaseType">
  *   <xs:complexContent>
@@ -34,6 +38,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

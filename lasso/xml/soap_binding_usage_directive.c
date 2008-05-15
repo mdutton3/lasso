@@ -24,8 +24,12 @@
 
 #include <lasso/xml/soap_binding_usage_directive.h>
 
-/*
- * Schema fragments (liberty-idwsf-soap-binding-v1.1.xsd):
+/**
+ * SECTION:soap_binding_usage_directive
+ * @short_description: &lt;soapbinding:UsageDirectiveType&gt;
+ *
+ * <figure><title>Schema fragment for soapbinding:UsageDirectiveType</title>
+ * <programlisting><![CDATA[
  * <xs:complexType name="UsageDirectiveType">
  *     <xs:sequence>
  *         <xs:any namespace="##other" processContents="lax" maxOccurs="unbounded"/>
@@ -37,6 +41,8 @@
  * </xs:complexType>
  * <xs:element name="UsageDirective" type="UsageDirectiveType"/>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

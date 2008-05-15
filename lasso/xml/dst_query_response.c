@@ -24,8 +24,12 @@
 
 #include <lasso/xml/dst_query_response.h>
 
-/*
- * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
+/**
+ * SECTION:dst_query_response
+ * @short_description: &lt;dst:QueryResponse&gt;
+ *
+ * <figure><title>Schema fragment for dst:QueryResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="QueryResponse" type="QueryResponseType"/>
  * <xs:complexType name="QueryResponseType">
@@ -48,6 +52,8 @@
  *     </xs:annotation>
  *   <xs:restriction base="xs:string"/>
  * </xs:simpleType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

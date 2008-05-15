@@ -24,14 +24,20 @@
 
 #include "dstref_create_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_create_response
+ * @short_description: &lt;dstref:CreateResponse&gt;
+ *
+ * <figure><title>Schema fragment for dstref:CreateResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="CreateResponseType">
  *   <xs:complexContent>
  *     <xs:extension base="dstref:DataResponseType"/>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

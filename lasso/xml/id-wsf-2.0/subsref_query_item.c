@@ -24,8 +24,12 @@
 
 #include "subsref_query_item.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_query_item
+ * @short_description: &lt;subsref:QueryItem&gt;
+ *
+ * <figure><title>Schema fragment for subsref:QueryItem</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="QueryItemType">
  *   <xs:complexContent>
@@ -34,6 +38,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

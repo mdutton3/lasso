@@ -24,8 +24,12 @@
 
 #include <lasso/xml/is_interaction_request.h>
 
-/*
- * Schema fragments (liberty-idwsf-interaction-svc-v1.0.xsd):
+/**
+ * SECTION:is_interaction_request
+ * @short_description: &lt;is:InteractionRequest&gt;
+ *
+ * <figure><title>Schema fragment for is:InteractionRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="InteractionRequest" type="InteractionRequestType"/>
  * <xs:complexType name="InteractionRequestType">
@@ -39,6 +43,8 @@
  *   <xs:attribute name="maxInteractTime" type="xs:integer" use="optional"/>
  *   <xs:attribute name="signed" type="xs:token" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

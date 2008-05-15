@@ -24,8 +24,12 @@
 
 #include "dst_delete_item_base.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-v2.1.xsd):
+/**
+ * SECTION:dst_delete_item_base
+ * @short_description: &lt;dst:DeleteItemBase&gt;
+ *
+ * <figure><title>Schema fragment for dst:DeleteItemBase</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="DeleteItemBaseType">
  *   <xs:attributeGroup ref="dst:selectQualif"/>
@@ -33,6 +37,8 @@
  *   <xs:attribute name="id" use="optional" type="xs:ID"/>
  *   <xs:attribute ref="lu:itemID" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

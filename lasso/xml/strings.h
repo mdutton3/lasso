@@ -22,6 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:strings
+ * @short_description: Useful string constants
+ *
+ **/
+
 #ifndef __LASSO_STRINGS_H__
 #define __LASSO_STRINGS_H__
 
@@ -50,9 +56,41 @@
 #define LASSO_LIB_MINOR_VERSION_N	 2
 
 /* NameIDPolicyType */
+
+/**
+ * LASSO_LIB_NAMEID_POLICY_TYPE_NONE:
+ *
+ * <emphasis>None</emphasis> policy for use in #LassoLibAuthnRequest.  It
+ * means an existing federation must be used and an error should be produced if
+ * none existed beforehand.
+ */
 #define LASSO_LIB_NAMEID_POLICY_TYPE_NONE	 "none"
+
+/**
+ * LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME:
+ *
+ * <emphasis>Onetime</emphasis> policy for use in #LassoLibAuthnRequest.  It
+ * means a federation must not be created between identity and service
+ * provider.  A temporary name identifier should be used instead.
+ */
 #define LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME	 "onetime"
+
+/**
+ * LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED:
+ *
+ * <emphasis>Federated</emphasis> policy for use in #LassoLibAuthnRequest.  It
+ * means a federation may be created between identity and service provider (if
+ * it didn't exist before).
+ */
 #define LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED	 "federated"
+
+/**
+ * LASSO_LIB_NAMEID_POLICY_TYPE_ANY:
+ *
+ * <emphasis>Any</emphasis> policy for use in #LassoLibAuthnRequest.  It means
+ * a federation may be created if the principal agrees and it can fall back to
+ * <emphasis>onetime</emphasis> if he does not.
+ */
 #define LASSO_LIB_NAMEID_POLICY_TYPE_ANY	 "any"
 
 /* AuthenticationClassRef */
@@ -104,10 +142,27 @@
 #define LASSO_LIB_STATUS_CODE_UNSUPPORTED_PROFILE          "lib:UnsupportedProfile"
 
 /* ProtocolProfile */
+
+/**
+ * LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART:
+ *
+ * Identifies the Single Sign-On "Artifact" profile; where an artifact is
+ * passed from identity provider to service provider and back to get the
+ * #LassoLibAssertion.
+ */
 #define LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART	\
 	"http://projectliberty.org/profiles/brws-art"
+
+/**
+ * LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST:
+ *
+ * Identifies the Single Sign-On "POST" profile; where the #LassoLibAssertion
+ * is sent directly from the identity provider to the service provider in an
+ * HTML form submission message.
+ */
 #define LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST	\
 	"http://projectliberty.org/profiles/brws-post"
+
 #define LASSO_LIB_PROTOCOL_PROFILE_BRWS_LECP	\
 	"http://projectliberty.org/profiles/lecp"
 #define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_HTTP	\
@@ -130,8 +185,28 @@
 #define LASSO_LIB_PROTOCOL_PROFILE_SLO_IDP_SOAP "http://projectliberty.org/profiles/slo-idp-soap"
 
 /* NameIdentifier formats */
+
+/**
+ * LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED:
+ *
+ * <emphasis>Federated</emphasis> name identifier constant, used in
+ * #LassoNameIdentifier.  It implies the name identifier belongs to
+ * a federation established between SP and IdP.
+ */
 #define LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED "urn:liberty:iff:nameid:federated"
+
+/**
+ * LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME:
+ *
+ * "One-time" name identifier constant, used in #LassoNameIdentifier.
+ */
 #define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME  "urn:liberty:iff:nameid:one-time"
+
+/**
+ * LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED:
+ *
+ * "Encrypted" name identifier constant, used in #LassoNameIdentifier.
+ */
 #define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED "urn:liberty:iff:nameid:encrypted"
 #define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID  "urn:liberty:iff:nameid:entityID"
 

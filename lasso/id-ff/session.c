@@ -22,6 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:session
+ * @short_description: Principal Session
+ *
+ **/
+
 #include <lasso/id-ff/session.h>
 #include <lasso/id-ff/sessionprivate.h>
 

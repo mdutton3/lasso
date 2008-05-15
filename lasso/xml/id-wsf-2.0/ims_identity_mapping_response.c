@@ -24,8 +24,12 @@
 
 #include "ims_identity_mapping_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-idmapping-svc-v2.0.xsd):
+/**
+ * SECTION:ims_identity_mapping_response
+ * @short_description: &lt;ims:IdentityMappingResponse&gt;
+ *
+ * <figure><title>Schema fragment for ims:IdentityMappingResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="IdentityMappingResponseType">
  *   <xs:sequence>
@@ -34,6 +38,8 @@
  *   </xs:sequence>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

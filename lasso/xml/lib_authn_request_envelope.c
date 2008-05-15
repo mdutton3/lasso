@@ -24,9 +24,12 @@
 
 #include <lasso/xml/lib_authn_request_envelope.h>
 
-/*
- * Schema:
+/**
+ * SECTION:lib_authn_request_envelope
+ * @short_description: &lt;lib:AuthnRequestEnvelope&gt;
  *
+ * <figure><title>Schema fragment for lib:AuthnRequestEnvelope</title>
+ * <programlisting><![CDATA[
  * <xs:element name="AuthnRequestEnvelope" type="AuthnRequestEnvelopeType"/>
  * <xs:complexType name="AuthnRequestEnvelopeType">
  *   <xs:complexContent>
@@ -59,6 +62,8 @@
  *     <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
  *   </xs:sequence>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

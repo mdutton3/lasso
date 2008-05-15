@@ -24,8 +24,12 @@
 
 #include "disco_svc_md_association_add_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_svc_md_association_add_response
+ * @short_description: &lt;disco:SvcMDAssociationAddResponse&gt;
+ *
+ * <figure><title>Schema fragment for disco:SvcMDAssociationAddResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SvcMDAssociationAddResponseType">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *   </xs:sequence>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

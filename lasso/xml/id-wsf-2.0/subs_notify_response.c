@@ -24,14 +24,20 @@
 
 #include "subs_notify_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-v1.0.xsd):
+/**
+ * SECTION:subs_notify_response
+ * @short_description: &lt;subs:NotifyResponse&gt;
+ *
+ * <figure><title>Schema fragment for subs:NotifyResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="NotifyResponseType">
  *   <xs:complexContent>
  *     <xs:extension base="lu:ResponseType"/>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

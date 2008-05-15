@@ -24,8 +24,12 @@
 
 #include "dst_result_query_base.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-v2.1.xsd):
+/**
+ * SECTION:dst_result_query_base
+ * @short_description: &lt;dst:ResultQueryBase&gt;
+ *
+ * <figure><title>Schema fragment for dst:ResultQueryBase</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ResultQueryBaseType">
  *   <xs:sequence>
@@ -39,6 +43,8 @@
  *   <xs:attribute name="changedSince" use="optional" type="xs:dateTime"/>
  *   <xs:attribute ref="lu:itemID" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

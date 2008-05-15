@@ -24,8 +24,12 @@
 
 #include "dstref_create_item.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_create_item
+ * @short_description: &lt;dstref:CreateItem&gt;
+ *
+ * <figure><title>Schema fragment for dstref:CreateItem</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="CreateItemType">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *   </xs:sequence>
  *   <xs:attributeGroup ref="dst:CreateItemAttributeGroup"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

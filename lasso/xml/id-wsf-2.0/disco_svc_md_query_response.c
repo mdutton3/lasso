@@ -24,8 +24,12 @@
 
 #include "disco_svc_md_query_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_svc_md_query_response
+ * @short_description: &lt;disco:SvcMDQueryResponse&gt;
+ *
+ * <figure><title>Schema fragment for disco:SvcMDQueryResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SvcMDQueryResponseType">
  *   <xs:sequence>
@@ -34,6 +38,8 @@
  *   </xs:sequence>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

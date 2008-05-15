@@ -22,6 +22,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:node
+ * @short_description: Base class for all Lasso objects
+ *
+ * #LassoNode is the base class for Lasso objects; just a step over GObject as
+ * defined in glib.
+ *
+ */
+
 #include <ctype.h>
 
 #include <libxml/xpath.h>

@@ -24,8 +24,12 @@
 
 #include "saml2_attribute.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_attribute
+ * @short_description: &lt;saml2:Attribute&gt;
+ *
+ * <figure><title>Schema fragment for saml2:Attribute</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AttributeType">
  *   <sequence>
@@ -36,6 +40,8 @@
  *   <attribute name="FriendlyName" type="string" use="optional"/>
  *   <anyAttribute namespace="##other" processContents="lax"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

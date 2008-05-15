@@ -24,8 +24,12 @@
 
 #include "subsref_query.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_query
+ * @short_description: &lt;subsref:Query&gt;
+ *
+ * <figure><title>Schema fragment for subsref:Query</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="QueryType">
  *   <xs:complexContent>
@@ -38,6 +42,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

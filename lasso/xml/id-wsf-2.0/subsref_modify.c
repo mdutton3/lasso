@@ -24,8 +24,12 @@
 
 #include "subsref_modify.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_modify
+ * @short_description: &lt;subsref:Modify&gt;
+ *
+ * <figure><title>Schema fragment for subsref:Modify</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ModifyType">
  *   <xs:complexContent>
@@ -38,6 +42,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

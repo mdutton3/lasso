@@ -24,14 +24,20 @@
 
 #include "samlp2_extensions.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_extensions
+ * @short_description: &lt;samlp2:Extensions&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:Extensions</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="ExtensionsType">
  *   <sequence>
  *     <any namespace="##other" processContents="lax" maxOccurs="unbounded"/>
  *   </sequence>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

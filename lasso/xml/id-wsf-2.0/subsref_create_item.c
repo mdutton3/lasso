@@ -24,8 +24,12 @@
 
 #include "subsref_create_item.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_create_item
+ * @short_description: &lt;subsref:CreateItem&gt;
+ *
+ * <figure><title>Schema fragment for subsref:CreateItem</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="CreateItemType">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *   </xs:sequence>
  *   <xs:attributeGroup ref="dst:CreateItemAttributeGroup"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

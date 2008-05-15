@@ -24,8 +24,12 @@
 
 #include "is_interaction_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-interaction-svc-v2.0.xsd):
+/**
+ * SECTION:is_interaction_request
+ * @short_description: &lt;is:InteractionRequest&gt;
+ *
+ * <figure><title>Schema fragment for is:InteractionRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="InteractionRequestType">
  *   <xs:sequence>
@@ -37,6 +41,8 @@
  *   <xs:attribute name="maxInteractTime" type="xs:integer" use="optional"/>
  *   <xs:attribute name="signed" type="xs:token" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

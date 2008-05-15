@@ -26,8 +26,12 @@
 #include "saml2_assertion.h"
 #include "saml2_encrypted_element.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_response
+ * @short_description: &lt;samlp2:Response&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:Response</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="ResponseType">
  *   <complexContent>
@@ -39,6 +43,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 extern LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);

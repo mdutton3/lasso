@@ -22,6 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:lasso
+ * @short_description: Initialization functions
+ *
+ **/
+
 #include <xmlsec/xmlsec.h>
 #include <xmlsec/crypto.h>
 #include <libxslt/xslt.h>

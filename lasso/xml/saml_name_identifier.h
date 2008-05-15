@@ -49,6 +49,21 @@ extern "C" {
 typedef struct _LassoSamlNameIdentifier LassoSamlNameIdentifier;
 typedef struct _LassoSamlNameIdentifierClass LassoSamlNameIdentifierClass;
 
+/**
+ * LassoSamlNameIdentifier:
+ *
+ * @NameQualifier is the provider ID of the provider that created the name
+ * identifier.
+ *
+ * @Format is a string constant defined by the Liberty
+ * Alliance.  The following constants are defined:
+ * #LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED,
+ * #LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME,
+ * #LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED (when providers transmit name
+ * identifiers) and
+ * #LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID.
+ *
+ */
 struct _LassoSamlNameIdentifier {
 	LassoNode parent;
 	

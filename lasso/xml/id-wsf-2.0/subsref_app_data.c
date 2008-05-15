@@ -24,10 +24,10 @@
 
 #include "subsref_app_data.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_app_data
+ * @short_description: &lt;subsref:AppData&gt;
  *
-
  */
 
 /*****************************************************************************/

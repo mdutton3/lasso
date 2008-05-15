@@ -25,9 +25,12 @@
 #include <lasso/xml/saml_advice.h>
 #include <lasso/xml/saml_assertion.h>
 
-/*
- * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
- * 
+/**
+ * SECTION:saml_advice
+ * @short_description: &lt;saml:Advice&gt;
+ *
+ * <figure><title>Schema fragment for saml:Advice</title>
+ * <programlisting><![CDATA[
  * <element name="Advice" type="saml:AdviceType"/>
  * <complexType name="AdviceType">
  *   <choice minOccurs="0" maxOccurs="unbounded">
@@ -41,6 +44,8 @@
  * <simpleType name="IDReferenceType">
  *   <restriction base="string"/>
  * </simpleType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

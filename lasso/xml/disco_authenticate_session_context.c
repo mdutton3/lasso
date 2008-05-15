@@ -24,14 +24,20 @@
 
 #include <lasso/xml/disco_authenticate_session_context.h>
 
-/*
- * Schema fragments (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+/**
+ * SECTION:disco_authenticate_session_context
+ * @short_description: &lt;disco:DirectiveType&gt;
+ *
+ * <figure><title>Schema fragment for disco:DirectiveType</title>
+ * <programlisting><![CDATA[
  * 
  * <xs: complexType name="DirectiveType">
  *  <xs: attribute name="descriptionIDRefs" type="xs:IDREFS" use="optional"/>
  * </xs: complexType>
  * <xs: element name="AuthenticateSessionContext" type="DirectiveType"/>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

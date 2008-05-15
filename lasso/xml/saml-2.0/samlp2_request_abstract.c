@@ -28,8 +28,12 @@
 
 #include "samlp2_request_abstract.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_request_abstract
+ * @short_description: &lt;samlp2:RequestAbstract&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:RequestAbstract</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="RequestAbstractType" abstract="true">
  *   <sequence>
@@ -43,6 +47,8 @@
  *   <attribute name="Destination" type="anyURI" use="optional"/>
  *   <attribute name="Consent" type="anyURI" use="optional"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

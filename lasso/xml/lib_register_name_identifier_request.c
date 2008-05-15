@@ -25,9 +25,12 @@
 #include <libxml/uri.h>
 #include <lasso/xml/lib_register_name_identifier_request.h>
 
-/*
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
- * 
+/**
+ * SECTION:lib_register_name_identifier_request
+ * @short_description: &lt;lib:RegisterNameIdentifierRequest&gt;
+ *
+ * <figure><title>Schema fragment for lib:RegisterNameIdentifierRequest</title>
+ * <programlisting><![CDATA[
  * <xs:element name="RegisterNameIdentifierRequest" type="RegisterNameIdentifierRequestType"/>
  * <xs:complexType name="RegisterNameIdentifierRequestType">
  *   <xs:complexContent>
@@ -49,13 +52,8 @@
  * 
  * <xs:element name="ProviderID" type="md:entityIDType"/>
  * <xs:element name="RelayState" type="xs:string"/>
- * 
- * From liberty-metadata-v1.0.xsd:
- * <xs:simpleType name="entityIDType">
- *   <xs:restriction base="xs:anyURI">
- *     <xs:maxLength value="1024" id="maxlengthid"/>
- *   </xs:restriction>
- * </xs:simpleType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,14 +24,20 @@
 
 #include "saml2_one_time_use.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_one_time_use
+ * @short_description: &lt;saml2:OneTimeUse&gt;
+ *
+ * <figure><title>Schema fragment for saml2:OneTimeUse</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="OneTimeUseType">
  *   <complexContent>
  *     <extension base="saml:ConditionAbstractType"/>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

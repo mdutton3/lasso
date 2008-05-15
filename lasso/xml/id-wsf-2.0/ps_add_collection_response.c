@@ -24,8 +24,12 @@
 
 #include "ps_add_collection_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_add_collection_response
+ * @short_description: &lt;ps:AddCollectionResponse&gt;
+ *
+ * <figure><title>Schema fragment for ps:AddCollectionResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="AddCollectionResponseType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

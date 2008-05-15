@@ -24,14 +24,20 @@
 
 #include "subsref_modify_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_modify_response
+ * @short_description: &lt;subsref:ModifyResponse&gt;
+ *
+ * <figure><title>Schema fragment for subsref:ModifyResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ModifyResponseType">
  *   <xs:complexContent>
  *     <xs:extension base="subsref:DataResponseType"/>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "sb2_target_identity.h"
 
-/*
- * Schema fragment (liberty-idwsf-soap-binding-v2.0.xsd):
+/**
+ * SECTION:sb2_target_identity
+ * @short_description: &lt;sb2:TargetIdentity&gt;
+ *
+ * <figure><title>Schema fragment for sb2:TargetIdentity</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="TargetIdentityType">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *   </xs:sequence>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include <lasso/xml/soap_binding_ext_service_instance_update.h>
 
-/*
- * Schema fragments (liberty-idwsf-soap-binding-v1.1.xsd - extension avril 2004):
+/**
+ * SECTION:soap_binding_ext_service_instance_update
+ * @short_description: &lt;soapbinding:ServiceInstanceUpdateType&gt;
+ *
+ * <figure><title>Schema fragment for soapbinding:ServiceInstanceUpdateType</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ServiceInstanceUpdateType">
  *   <xs:sequence>
@@ -45,6 +49,8 @@
  *   <xs:attribute ref="S:actor" use="optional"/>
  * </xs:complexType>
  * 
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

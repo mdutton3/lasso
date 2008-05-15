@@ -24,8 +24,12 @@
 
 #include "samlp2_scoping.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_scoping
+ * @short_description: &lt;samlp2:Scoping&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:Scoping</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="ScopingType">
  *   <sequence>
@@ -34,6 +38,8 @@
  *   </sequence>
  *   <attribute name="ProxyCount" type="nonNegativeInteger" use="optional"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

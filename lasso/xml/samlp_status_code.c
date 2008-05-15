@@ -24,8 +24,12 @@
 
 #include <lasso/xml/samlp_status_code.h>
 
-/*
- * Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
+/**
+ * SECTION:samlp_status_code
+ * @short_description: &lt;samlp:StatusCode&gt;
+ *
+ * <figure><title>Schema fragment for samlp:StatusCode</title>
+ * <programlisting><![CDATA[
  * 
  * <element name="StatusCode" type="samlp:StatusCodeType"/>
  * <complexType name="StatusCodeType">
@@ -34,6 +38,8 @@
  *   </sequence>
  *   <attribute name="Value" type="QName" use="required"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "saml2_advice.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_advice
+ * @short_description: &lt;saml2:Advice&gt;
+ *
+ * <figure><title>Schema fragment for saml2:Advice</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AdviceType">
  *   <choice minOccurs="0" maxOccurs="unbounded">
@@ -36,6 +40,8 @@
  *     <any namespace="##other" processContents="lax"/>
  *   </choice>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

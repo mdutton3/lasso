@@ -24,12 +24,16 @@
 
 #include <lasso/xml/lib_logout_response.h>
 
-/*
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
- * 
+/**
+ * SECTION:lib_logout_response
+ * @short_description: &lt;lib:LogoutResponse&gt;
+ *
+ * <figure><title>Schema fragment for lib:LogoutResponse</title>
+ * <programlisting><![CDATA[
  * <xs:element name="LogoutResponse" type="StatusResponseType"/>
+ * ]]></programlisting>
+ * </figure>
  */
-
 
 /*****************************************************************************/
 /* private methods                                                           */

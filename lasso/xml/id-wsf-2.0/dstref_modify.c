@@ -24,8 +24,12 @@
 
 #include "dstref_modify.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_modify
+ * @short_description: &lt;dstref:Modify&gt;
+ *
+ * <figure><title>Schema fragment for dstref:Modify</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ModifyType">
  *   <xs:complexContent>
@@ -37,6 +41,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,10 +24,16 @@
 
 #include "samlp2_terminate.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_terminate
+ * @short_description: &lt;samlp2:Terminate&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:Terminate</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="TerminateType"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

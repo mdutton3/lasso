@@ -25,9 +25,12 @@
 #include <lasso/xml/lib_authentication_statement.h>
 #include <lasso/xml/lib_subject.h>
 
-/*
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+/**
+ * SECTION:lib_authentication_statement
+ * @short_description: &lt;lib:AuthenticationStatement&gt;
  *
+ * <figure><title>Schema fragment for lib:AuthenticationStatement</title>
+ * <programlisting><![CDATA[
  * <xs:element name="AuthenticationStatement" type="AuthenticationStatementType"
  *   substitutionGroup="saml:Statement"/>
  * <xs:complexType name="AuthenticationStatementType">
@@ -41,6 +44,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

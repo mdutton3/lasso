@@ -24,12 +24,18 @@
 
 #include "ps_request_abstract.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_request_abstract
+ * @short_description: &lt;ps:RequestAbstract&gt;
+ *
+ * <figure><title>Schema fragment for ps:RequestAbstract</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="RequestAbstractType" abstract="true">
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

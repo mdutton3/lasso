@@ -24,12 +24,15 @@
 
 #include <lasso/xml/lib_request_authn_context.h>
 
-/*
+/**
+ * SECTION:lib_request_authn_context
+ * @short_description: &lt;lib:RequestAuthnContext&gt;
+ *
  * Information describing which authentication context the requester desires the
  * identity provider to use in authenticating the Principal.
  * 
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
- * 
+ * <figure><title>Schema fragment for lib:RequestAuthnContext</title>
+ * <programlisting><![CDATA[
  * <xs:element name="RequestAuthnContext">
  *   <xs:complexType>
  *     <xs:sequence>
@@ -42,6 +45,8 @@
  *     </xs:sequence>
  *   </xs:complexType>
  * </xs:element>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

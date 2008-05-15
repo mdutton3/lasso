@@ -24,8 +24,12 @@
 
 #include "util_extension.h"
 
-/*
- * Schema fragment (liberty-idwsf-utility-v2.0.xsd):
+/**
+ * SECTION:util_extension
+ * @short_description: &lt;util:extension&gt;
+ *
+ * <figure><title>Schema fragment for util:extension</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="extensionType">
  *   <xs:annotation>
@@ -37,6 +41,8 @@
  *     <xs:any namespace="##other" processContents="lax" maxOccurs="unbounded"/>
  *   </xs:sequence>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

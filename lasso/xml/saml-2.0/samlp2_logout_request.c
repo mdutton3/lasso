@@ -24,8 +24,12 @@
 
 #include "samlp2_logout_request.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_logout_request
+ * @short_description: &lt;samlp2:LogoutRequest&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:LogoutRequest</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="LogoutRequestType">
  *   <complexContent>
@@ -43,6 +47,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

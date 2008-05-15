@@ -24,14 +24,20 @@
 
 #include "disco_options.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_options
+ * @short_description: &lt;disco:Options&gt;
+ *
+ * <figure><title>Schema fragment for disco:Options</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="OptionsType">
  *   <xs:sequence>
  *     <xs:element ref="Option" minOccurs="0" maxOccurs="unbounded"/>
  *   </xs:sequence>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

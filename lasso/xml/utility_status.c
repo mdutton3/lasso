@@ -24,8 +24,12 @@
 
 #include <lasso/xml/utility_status.h>
 
-/*
- * Schema fragment
+/**
+ * SECTION:utility_status
+ * @short_description: &lt;utility:Status&gt;
+ *
+ * <figure><title>Schema fragment for utility:Status</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="Status" type="StatusType">
  *   <xs:annotation>
@@ -43,6 +47,8 @@
  *   <xs:attribute name="ref" type="xs:NCName" use="optional"/>
  *   <xs:attribute name="comment" type="xs:string" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

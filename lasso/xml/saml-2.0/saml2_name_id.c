@@ -24,8 +24,12 @@
 
 #include "saml2_name_id.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_name_id
+ * @short_description: &lt;saml2:NameID&gt;
+ *
+ * <figure><title>Schema fragment for saml2:NameID</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="NameIDType">
  *   <simpleContent>
@@ -36,6 +40,8 @@
  *     </extension>
  *   </simpleContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

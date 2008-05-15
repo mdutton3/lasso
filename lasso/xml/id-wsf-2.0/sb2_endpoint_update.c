@@ -24,8 +24,12 @@
 
 #include "sb2_endpoint_update.h"
 
-/*
- * Schema fragment (liberty-idwsf-soap-binding-v2.0.xsd):
+/**
+ * SECTION:sb2_endpoint_update
+ * @short_description: &lt;sb2:EndpointUpdate&gt;
+ *
+ * <figure><title>Schema fragment for sb2:EndpointUpdate</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="EndpointUpdateType">
  *   <xs:complexContent>
@@ -34,6 +38,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

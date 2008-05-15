@@ -24,10 +24,16 @@
 
 #include "disco_abstract.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_abstract
+ * @short_description: &lt;disco:Abstract&gt;
+ *
+ * <figure><title>Schema fragment for disco:Abstract</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="Abstract" type="xs:string"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

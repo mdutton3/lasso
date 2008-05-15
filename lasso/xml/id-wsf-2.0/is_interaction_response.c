@@ -24,8 +24,12 @@
 
 #include "is_interaction_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-interaction-svc-v2.0.xsd):
+/**
+ * SECTION:is_interaction_response
+ * @short_description: &lt;is:InteractionResponse&gt;
+ *
+ * <figure><title>Schema fragment for is:InteractionResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="InteractionResponseType">
  *   <xs:sequence>
@@ -37,6 +41,8 @@
  *       </xs:choice>
  *     </xs:sequence>
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -25,8 +25,12 @@
 #include "disco_endpoint_context.h"
 #include "sbf_framework.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_endpoint_context
+ * @short_description: &lt;disco:EndpointContext&gt;
+ *
+ * <figure><title>Schema fragment for disco:EndpointContext</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="EndpointContextType">
  *   <xs:sequence>
@@ -37,6 +41,8 @@
  *       maxOccurs="unbounded" />
  *     </xs:sequence>
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

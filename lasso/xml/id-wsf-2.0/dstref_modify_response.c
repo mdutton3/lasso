@@ -24,14 +24,20 @@
 
 #include "dstref_modify_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_modify_response
+ * @short_description: &lt;dstref:ModifyResponse&gt;
+ *
+ * <figure><title>Schema fragment for dstref:ModifyResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ModifyResponseType">
  *   <xs:complexContent>
  *     <xs:extension base="dstref:DataResponseType"/>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

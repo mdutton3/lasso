@@ -24,8 +24,12 @@
 
 #include "disco_security_context.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_security_context
+ * @short_description: &lt;disco:SecurityContext&gt;
+ *
+ * <figure><title>Schema fragment for disco:SecurityContext</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="SecurityContext">
  *   <xs:complexType>
@@ -40,6 +44,8 @@
  *         </xs:sequence>
  *       </xs:complexType>
  *     </xs:element>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

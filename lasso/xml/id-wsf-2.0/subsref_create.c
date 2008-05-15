@@ -24,8 +24,12 @@
 
 #include "subsref_create.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_create
+ * @short_description: &lt;subsref:Create&gt;
+ *
+ * <figure><title>Schema fragment for subsref:Create</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="CreateType">
  *   <xs:complexContent>
@@ -38,6 +42,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

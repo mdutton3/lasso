@@ -24,8 +24,12 @@
 
 #include <lasso/xml/disco_remove_entry.h>
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+/**
+ * SECTION:disco_remove_entry
+ * @short_description: &lt;disco:RemoveEntryType&gt;
+ *
+ * <figure><title>Schema fragment for disco:RemoveEntryType</title>
+ * <programlisting><![CDATA[
  * 
  * <xs:complexType name="RemoveEntryType">
  *   <xs:attribute name="entryID" type="IDReferenceType" use="required"/>
@@ -36,6 +40,8 @@
  * <xs:simpleType name="IDReferenceType">
  *   <xs:restriction base="xs:string"/>
  * </xs:simpleType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

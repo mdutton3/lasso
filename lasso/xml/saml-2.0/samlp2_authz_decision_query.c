@@ -24,8 +24,12 @@
 
 #include "samlp2_authz_decision_query.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_authz_decision_query
+ * @short_description: &lt;samlp2:AuthzDecisionQuery&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:AuthzDecisionQuery</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AuthzDecisionQueryType">
  *   <complexContent>
@@ -38,6 +42,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

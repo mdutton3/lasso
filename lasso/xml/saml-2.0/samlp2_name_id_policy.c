@@ -24,14 +24,20 @@
 
 #include "samlp2_name_id_policy.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_name_id_policy
+ * @short_description: &lt;samlp2:NameIDPolicy&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:NameIDPolicy</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="NameIDPolicyType">
  *   <attribute name="Format" type="anyURI" use="optional"/>
  *   <attribute name="SPNameQualifier" type="string" use="optional"/>
  *   <attribute name="AllowCreate" type="boolean" use="optional"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

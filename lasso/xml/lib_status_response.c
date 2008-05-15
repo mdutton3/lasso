@@ -25,9 +25,12 @@
 #include <lasso/xml/lib_status_response.h>
 #include <libxml/uri.h>
 
-/*
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
- * 
+/**
+ * SECTION:lib_status_response
+ * @short_description: &lt;lib:StatusResponse&gt;
+ *
+ * <figure><title>Schema fragment for lib:StatusResponse</title>
+ * <programlisting><![CDATA[
  * <xs:complexType name="StatusResponseType">
  *   <xs:complexContent>
  *     <xs:extension base="samlp:ResponseAbstractType">
@@ -43,13 +46,8 @@
  * 
  * <xs:element name="ProviderID" type="md:entityIDType"/>
  * <xs:element name="RelayState" type="xs:string"/>
- * 
- * From liberty-metadata-v1.0.xsd:
- * <xs:simpleType name="entityIDType">
- *   <xs:restriction base="xs:anyURI">
- *     <xs:maxLength value="1024" id="maxlengthid"/>
- *   </xs:restriction>
- * </xs:simpleType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "saml2_authn_context.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_authn_context
+ * @short_description: &lt;saml2:AuthnContext&gt;
+ *
+ * <figure><title>Schema fragment for saml2:AuthnContext</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AuthnContextType">
  *   <sequence>
@@ -45,6 +49,8 @@
  *     <element ref="saml:AuthenticatingAuthority" minOccurs="0" maxOccurs="unbounded"/>
  *   </sequence>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

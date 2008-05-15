@@ -24,9 +24,12 @@
 
 #include <lasso/xml/lib_authn_response.h>
 
-/*
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
- * 
+/**
+ * SECTION:lib_authn_response
+ * @short_description: &lt;lib:AuthnResponse&gt;
+ *
+ * <figure><title>Schema fragment for lib:AuthnResponse</title>
+ * <programlisting><![CDATA[
  * <xs:element name="AuthnResponse" type="AuthnResponseType"/>
  * <xs:complexType name="AuthnResponseType">
  *   <xs:complexContent>
@@ -42,14 +45,9 @@
  * </xs:complexType>
  * 
  * <xs:element name="ProviderID" type="md:entityIDType"/>
- * From liberty-metadata-v1.0.xsd:
- * <xs:simpleType name="entityIDType">
- *   <xs:restriction base="xs:anyURI">
- *     <xs:maxLength value="1024" id="maxlengthid"/>
- *   </xs:restriction>
- * </xs:simpleType>
  * <xs:element name="RelayState" type="xs:string"/>
- * 
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

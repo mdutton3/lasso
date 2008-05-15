@@ -24,8 +24,12 @@
 
 #include "saml2_encrypted_element.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_encrypted_element
+ * @short_description: &lt;saml2:EncryptedElement&gt;
+ *
+ * <figure><title>Schema fragment for saml2:EncryptedElement</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="EncryptedElementType">
  *   <sequence>
@@ -33,6 +37,8 @@
  *     <element ref="xenc:EncryptedKey" minOccurs="0" maxOccurs="unbounded"/>
  *   </sequence>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

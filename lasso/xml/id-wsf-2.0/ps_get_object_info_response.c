@@ -24,8 +24,12 @@
 
 #include "ps_get_object_info_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_get_object_info_response
+ * @short_description: &lt;ps:GetObjectInfoResponse&gt;
+ *
+ * <figure><title>Schema fragment for ps:GetObjectInfoResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="GetObjectInfoResponseType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include <lasso/xml/sa_transform.h>
 
-/*
- * Schema fragments (liberty-idwsf-authn-svc-v1.0.xsd):
+/**
+ * SECTION:sa_transform
+ * @short_description: &lt;sa:Transform&gt;
+ *
+ * <figure><title>Schema fragment for sa:Transform</title>
+ * <programlisting><![CDATA[
  * <xs:element name="Transform" maxOccurs="unbounded">
  * <xs:complexType>
  *    <xs:sequence>
@@ -43,6 +47,8 @@
  *    <xs:attribute name="id" type="xs:ID"use="optional"/>
  *  </xs:complexType>
  *  </xs:element>
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

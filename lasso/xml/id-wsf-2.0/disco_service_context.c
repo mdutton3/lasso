@@ -24,8 +24,12 @@
 
 #include "disco_service_context.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_service_context
+ * @short_description: &lt;disco:ServiceContext&gt;
+ *
+ * <figure><title>Schema fragment for disco:ServiceContext</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ServiceContextType">
  *   <xs:sequence>
@@ -35,6 +39,8 @@
  *       <xs:element ref="EndpointContext" maxOccurs="unbounded" />
  *     </xs:sequence>
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

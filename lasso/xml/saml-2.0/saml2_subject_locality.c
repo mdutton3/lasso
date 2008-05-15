@@ -24,13 +24,19 @@
 
 #include "saml2_subject_locality.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_subject_locality
+ * @short_description: &lt;saml2:SubjectLocality&gt;
+ *
+ * <figure><title>Schema fragment for saml2:SubjectLocality</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="SubjectLocalityType">
  *   <attribute name="Address" type="string" use="optional"/>
  *   <attribute name="DNSName" type="string" use="optional"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

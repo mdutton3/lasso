@@ -24,8 +24,12 @@
 
 #include <lasso/xml/dst_data.h>
 
-/*
- * Schema fragments (liberty-idwsf-dst-v1.0.xsd):
+/**
+ * SECTION:dst_data
+ * @short_description: &lt;dst:Data&gt;
+ *
+ * <figure><title>Schema fragment for dst:Data</title>
+ * <programlisting><![CDATA[
  * 
  * <xs:element name="Data" minOccurs="0" maxOccurs="unbounded">
  *   <xs:complexType>
@@ -46,6 +50,8 @@
  *     </xs:annotation>
  *   <xs:restriction base="xs:string"/>
  * </xs:simpleType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

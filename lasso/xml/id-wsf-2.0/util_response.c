@@ -24,8 +24,12 @@
 
 #include "util_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-utility-v2.0.xsd):
+/**
+ * SECTION:util_response
+ * @short_description: &lt;util:Response&gt;
+ *
+ * <figure><title>Schema fragment for util:Response</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ResponseType">
  *   <xs:sequence>
@@ -35,6 +39,8 @@
  *   <xs:attribute ref="itemIDRef" use="optional"/>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

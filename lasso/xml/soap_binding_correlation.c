@@ -24,8 +24,12 @@
 
 #include <lasso/xml/soap_binding_correlation.h>
 
-/*
- * Schema fragments (liberty-idwsf-soap-binding-v1.1.xsd):
+/**
+ * SECTION:soap_binding_correlation
+ * @short_description: &lt;soapbinding:correlationType&gt;
+ *
+ * <figure><title>Schema fragment for soapbinding:correlationType</title>
+ * <programlisting><![CDATA[
  * <xs:complexType name="correlationType">
  *   <xs:attribute name="messageID" type="IDType" use="required"/>
  *   <xs:attribute name="refToMessageID" type="IDType" use="optional"/>
@@ -34,6 +38,8 @@
  *   <xs:attribute ref="S:mustUnderstand" use="optional"/>
  *   <xs:attribute ref="S:actor" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

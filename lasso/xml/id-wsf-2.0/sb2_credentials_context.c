@@ -24,8 +24,12 @@
 
 #include "sb2_credentials_context.h"
 
-/*
- * Schema fragment (liberty-idwsf-soap-binding-v2.0.xsd):
+/**
+ * SECTION:sb2_credentials_context
+ * @short_description: &lt;sb2:CredentialsContext&gt;
+ *
+ * <figure><title>Schema fragment for sb2:CredentialsContext</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="CredentialsContextType">
  *   <xs:sequence>
@@ -34,6 +38,8 @@
  *   </xs:sequence>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

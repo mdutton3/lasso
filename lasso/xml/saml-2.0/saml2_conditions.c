@@ -24,8 +24,12 @@
 
 #include "saml2_conditions.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_conditions
+ * @short_description: &lt;saml2:Conditions&gt;
+ *
+ * <figure><title>Schema fragment for saml2:Conditions</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="ConditionsType">
  *   <choice minOccurs="0" maxOccurs="unbounded">
@@ -37,6 +41,8 @@
  *   <attribute name="NotBefore" type="dateTime" use="optional"/>
  *   <attribute name="NotOnOrAfter" type="dateTime" use="optional"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

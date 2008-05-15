@@ -24,8 +24,12 @@
 
 #include "samlp2_manage_name_id_request.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_manage_name_id_request
+ * @short_description: &lt;samlp2:ManageNameIDRequest&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:ManageNameIDRequest</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="ManageNameIDRequestType">
  *   <complexContent>
@@ -44,6 +48,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

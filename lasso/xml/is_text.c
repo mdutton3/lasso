@@ -24,8 +24,12 @@
 
 #include <lasso/xml/is_text.h>
 
-/*
- * Schema fragments (liberty-idwsf-interaction-svc-v1.0.xsd):
+/**
+ * SECTION:is_text
+ * @short_description: &lt;is:Text&gt;
+ *
+ * <figure><title>Schema fragment for is:Text</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="Text" type="TextType"/>
  * <xs:complexType name="TextType">
@@ -38,6 +42,8 @@
  *   </xs:complexContent>
  * </xs:complexType>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

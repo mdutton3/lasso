@@ -26,8 +26,12 @@
 #include "disco_endpoint_context.h"
 #include "disco_service_context.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_svc_metadata
+ * @short_description: &lt;disco:SvcMetadata&gt;
+ *
+ * <figure><title>Schema fragment for disco:SvcMetadata</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SvcMetadataType">
  *   <xs:sequence>
@@ -37,6 +41,8 @@
  *   </xs:sequence>
  *   <xs:attribute name="svcMDID" type="xs:string" use="optional" />
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

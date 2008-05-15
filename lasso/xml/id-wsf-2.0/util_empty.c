@@ -24,8 +24,12 @@
 
 #include "util_empty.h"
 
-/*
- * Schema fragment (liberty-idwsf-utility-v2.0.xsd):
+/**
+ * SECTION:util_empty
+ * @short_description: &lt;util:Empty&gt;
+ *
+ * <figure><title>Schema fragment for util:Empty</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="EmptyType">
  *   <xs:annotation>
@@ -35,6 +39,8 @@
  *       <xs:restriction base="xs:anyType"/>
  *     </xs:complexContent>
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "saml2_audience_restriction.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_audience_restriction
+ * @short_description: &lt;saml2:AudienceRestriction&gt;
+ *
+ * <figure><title>Schema fragment for saml2:AudienceRestriction</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AudienceRestrictionType">
  *   <complexContent>
@@ -36,6 +40,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,7 +24,12 @@
 
 #include <lasso/xml/samlp_request.h>
 
-/*
+/**
+ * SECTION:samlp_request
+ * @short_description: &lt;samlp:Request&gt;
+ *
+ * <figure><title>Schema fragment for lib:Scoping</title>
+ * <programlisting><![CDATA[
  * <element name="Request" type="samlp:RequestType"/>
  * <complexType name="RequestType">
  *    <complexContent>
@@ -43,6 +48,8 @@
  * </complexType>
  * 
  * <element name="AssertionArtifact" type="string"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

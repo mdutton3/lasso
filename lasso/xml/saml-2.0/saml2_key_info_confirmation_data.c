@@ -24,8 +24,12 @@
 
 #include "saml2_key_info_confirmation_data.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_key_info_confirmation_data
+ * @short_description: &lt;saml2:KeyInfoConfirmationData&gt;
+ *
+ * <figure><title>Schema fragment for saml2:KeyInfoConfirmationData</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="KeyInfoConfirmationDataType" mixed="false">
  *   <complexContent>
@@ -36,6 +40,8 @@
  *     </restriction>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,13 +24,19 @@
 
 #include "sb2_timeout.h"
 
-/*
- * Schema fragment (liberty-idwsf-soap-binding-v2.0.xsd):
+/**
+ * SECTION:sb2_timeout
+ * @short_description: &lt;sb2:Timeout&gt;
+ *
+ * <figure><title>Schema fragment for sb2:Timeout</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="TimeoutType">
  *   <xs:attribute name="maxProcessingTime" type="xs:integer" use="required"/>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

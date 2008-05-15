@@ -24,8 +24,12 @@
 
 #include "ps_query_objects_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_query_objects_request
+ * @short_description: &lt;ps:QueryObjectsRequest&gt;
+ *
+ * <figure><title>Schema fragment for ps:QueryObjectsRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="QueryObjectsRequestType">
  *   <xs:complexContent>
@@ -39,6 +43,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

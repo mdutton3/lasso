@@ -22,6 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:federation
+ * @short_description: Principal federation between two providers
+ *
+ **/
+
 #include <lasso/id-ff/federation.h>
 #include <lasso/id-ff/provider.h>
 

@@ -24,8 +24,12 @@
 
 #include "ps_list_members_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_list_members_request
+ * @short_description: &lt;ps:ListMembersRequest&gt;
+ *
+ * <figure><title>Schema fragment for ps:ListMembersRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ListMembersRequestType">
  *   <xs:complexContent>
@@ -40,6 +44,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

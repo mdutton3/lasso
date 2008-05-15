@@ -24,8 +24,12 @@
 
 #include "ps_resolve_input.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_resolve_input
+ * @short_description: &lt;ps:ResolveInput&gt;
+ *
+ * <figure><title>Schema fragment for ps:ResolveInput</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ResolveInputType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

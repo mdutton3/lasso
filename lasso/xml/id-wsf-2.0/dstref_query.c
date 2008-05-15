@@ -24,8 +24,12 @@
 
 #include "dstref_query.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_query
+ * @short_description: &lt;dstref:Query&gt;
+ *
+ * <figure><title>Schema fragment for dstref:Query</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="QueryType">
  *   <xs:complexContent>
@@ -37,6 +41,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

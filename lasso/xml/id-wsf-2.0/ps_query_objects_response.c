@@ -24,8 +24,12 @@
 
 #include "ps_query_objects_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_query_objects_response
+ * @short_description: &lt;ps:QueryObjectsResponse&gt;
+ *
+ * <figure><title>Schema fragment for ps:QueryObjectsResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="QueryObjectsResponseType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

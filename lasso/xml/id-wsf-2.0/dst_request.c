@@ -24,8 +24,12 @@
 
 #include "dst_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-v2.1.xsd):
+/**
+ * SECTION:dst_request
+ * @short_description: &lt;dst:Request&gt;
+ *
+ * <figure><title>Schema fragment for dst:Request</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="RequestType">
  *   <xs:sequence>
@@ -34,6 +38,8 @@
  *   <xs:attribute ref="lu:itemID" use="optional"/>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

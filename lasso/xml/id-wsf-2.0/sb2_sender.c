@@ -24,14 +24,20 @@
 
 #include "sb2_sender.h"
 
-/*
- * Schema fragment (liberty-idwsf-soap-binding-v2.0.xsd):
+/**
+ * SECTION:sb2_sender
+ * @short_description: &lt;sb2:Sender&gt;
+ *
+ * <figure><title>Schema fragment for sb2:Sender</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SenderType">
  *   <xs:attribute name="providerID" type="xs:anyURI" use="required"/>
  *   <xs:attribute name="affiliationID" type="xs:anyURI" use="optional"/>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

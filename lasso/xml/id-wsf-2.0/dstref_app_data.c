@@ -24,14 +24,20 @@
 
 #include "dstref_app_data.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_app_data
+ * @short_description: &lt;dstref:AppData&gt;
+ *
+ * <figure><title>Schema fragment for dstref:AppData</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="AppDataType">
  *   <xs:simpleContent>
  *     <xs:extension base="xs:string"/>
  *   </xs:simpleContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

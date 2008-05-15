@@ -24,8 +24,12 @@
 
 #include <lasso/xml/dst_query.h>
 
-/*
- * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
+/**
+ * SECTION:dst_query
+ * @short_description: &lt;dst:Query&gt;
+ *
+ * <figure><title>Schema fragment for dst:Query</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="Query" type="QueryType"/>
  * <xs:complexType name="QueryType">
@@ -45,6 +49,8 @@
  *     </xs:annotation>
  *   <xs:restriction base="xs:string"/>
  * </xs:simpleType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "subs_subscription.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-v1.0.xsd):
+/**
+ * SECTION:subs_subscription
+ * @short_description: &lt;subs:Subscription&gt;
+ *
+ * <figure><title>Schema fragment for subs:Subscription</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SubscriptionType">
  *   <xs:sequence>
@@ -48,6 +52,8 @@
  *     </xs:simpleType>
  *   </xs:attribute>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

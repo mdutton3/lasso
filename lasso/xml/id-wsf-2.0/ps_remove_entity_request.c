@@ -24,8 +24,12 @@
 
 #include "ps_remove_entity_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_remove_entity_request
+ * @short_description: &lt;ps:RemoveEntityRequest&gt;
+ *
+ * <figure><title>Schema fragment for ps:RemoveEntityRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="RemoveEntityRequestType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

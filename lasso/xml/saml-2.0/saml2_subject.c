@@ -24,8 +24,12 @@
 
 #include "saml2_subject.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_subject
+ * @short_description: &lt;saml2:Subject&gt;
+ *
+ * <figure><title>Schema fragment for saml2:Subject</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="SubjectType">
  *   <choice>
@@ -40,6 +44,8 @@
  *     <element ref="saml:SubjectConfirmation" maxOccurs="unbounded"/>
  *   </choice>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

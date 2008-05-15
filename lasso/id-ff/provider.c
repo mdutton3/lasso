@@ -22,6 +22,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:provider
+ * @short_description: Service or identity provider
+ *
+ * It holds all the data about a provider.
+ **/
+
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 

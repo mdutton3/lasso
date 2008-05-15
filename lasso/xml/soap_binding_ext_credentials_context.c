@@ -24,8 +24,12 @@
 
 #include <lasso/xml/soap_binding_ext_credentials_context.h>
 
-/*
- * Schema fragments (liberty-idwsf-soap-binding-v1.1.xsd - extension avril 2004):
+/**
+ * SECTION:soap_binding_ext_credentials_context
+ * @short_description: &lt;soapbinding:CredentialsContextType&gt;
+ *
+ * <figure><title>Schema fragment for soapbinding:CredentialsContextType</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="CredentialsContextType">
  *   <xs:sequence>
@@ -38,6 +42,8 @@
  * </xs:complexType>
  * <xs:element name="CredentialsContext" type="CredentialsContextType"/>
  * 
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "subsref_delete_item.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_delete_item
+ * @short_description: &lt;subsref:DeleteItem&gt;
+ *
+ * <figure><title>Schema fragment for subsref:DeleteItem</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="DeleteItemType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

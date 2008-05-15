@@ -24,8 +24,12 @@
 
 #include "disco_svc_md_association_delete.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_svc_md_association_delete
+ * @short_description: &lt;disco:SvcMDAssociationDelete&gt;
+ *
+ * <figure><title>Schema fragment for disco:SvcMDAssociationDelete</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SvcMDAssociationDeleteType">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *   </xs:sequence>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

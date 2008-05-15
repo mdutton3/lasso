@@ -24,8 +24,12 @@
 
 #include "samlp2_authn_request.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_authn_request
+ * @short_description: &lt;samlp2:AuthnRequest&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:AuthnRequest</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AuthnRequestType">
  *   <complexContent>
@@ -47,6 +51,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

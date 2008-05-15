@@ -22,6 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:name_identifier_mapping
+ * @short_description: Liberty Enabled Client and Proxy Profile (ID-FF)
+ *
+ **/
+
 #include <lasso/id-ff/name_identifier_mapping.h>
 
 #include <lasso/id-ff/profileprivate.h>

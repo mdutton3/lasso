@@ -24,8 +24,12 @@
 
 #include "samlp2_assertion_id_request.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_assertion_idrequest
+ * @short_description: &lt;samlp2:AssertionIDRequest&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:AssertionIDRequest</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AssertionIDRequestType">
  *   <complexContent>
@@ -36,6 +40,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

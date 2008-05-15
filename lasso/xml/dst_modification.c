@@ -24,8 +24,12 @@
 
 #include <lasso/xml/dst_modification.h>
 
-/*
- * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
+/**
+ * SECTION:dst_modification
+ * @short_description: &lt;dst:Modification&gt;
+ *
+ * <figure><title>Schema fragment for dst:Modification</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="Modification" maxOccurs="unbounded">
  * <xs:complexType>
@@ -44,6 +48,8 @@
  *     <xs:attribute name="overrideAllowed" type="xs:boolean" default="0"/>
  * </xs:complexType>
  * </xs:element>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

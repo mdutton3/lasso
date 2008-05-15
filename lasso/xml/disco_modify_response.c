@@ -24,8 +24,12 @@
 
 #include <lasso/xml/disco_modify_response.h>
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+/**
+ * SECTION:disco_modify_response
+ * @short_description: &lt;disco:ModifyResponse&gt;
+ *
+ * <figure><title>Schema fragment for disco:ModifyResponse</title>
+ * <programlisting><![CDATA[
  * 
  * <xs:element name="ModifyResponse" type="ModifyResponseType"/>
  * <xs:complexType name="ModifyResponseType">
@@ -50,6 +54,8 @@
  *     </xs:annotation>
  *   <xs:restriction base="xs:string"/>
  * </xs:simpleType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

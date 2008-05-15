@@ -22,6 +22,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:server
+ * @short_description: Representation of the current server
+ *
+ * It holds the data about a provider, other providers it knows, which
+ * certificates to use, etc.
+ **/
+
 #include <xmlsec/base64.h>
 
 #include <lasso/lasso_config.h>

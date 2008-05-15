@@ -24,8 +24,12 @@
 
 #include "ps_test_membership_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_test_membership_request
+ * @short_description: &lt;ps:TestMembershipRequest&gt;
+ *
+ * <figure><title>Schema fragment for ps:TestMembershipRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="TestMembershipRequestType">
  *   <xs:complexContent>
@@ -38,6 +42,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

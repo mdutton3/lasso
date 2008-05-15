@@ -31,6 +31,12 @@
 #include <lasso/id-ff/serverprivate.h>
 #include <lasso/xml/xml_enc.h>
 
+/**
+ * SECTION:name_id_management
+ * @short_description: Name Id Management Profile (SAMLv2)
+ *
+ **/
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/

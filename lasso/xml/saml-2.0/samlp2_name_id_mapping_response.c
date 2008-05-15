@@ -24,8 +24,12 @@
 
 #include "samlp2_name_id_mapping_response.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_name_id_mapping_response
+ * @short_description: &lt;samlp2:NameIDMappingResponse&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:NameIDMappingResponse</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="NameIDMappingResponseType">
  *   <complexContent>
@@ -37,6 +41,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

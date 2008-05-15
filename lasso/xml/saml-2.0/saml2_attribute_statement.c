@@ -24,8 +24,12 @@
 
 #include "saml2_attribute_statement.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_attribute_statement
+ * @short_description: &lt;saml2:AttributeStatement&gt;
+ *
+ * <figure><title>Schema fragment for saml2:AttributeStatement</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AttributeStatementType">
  *   <complexContent>
@@ -37,6 +41,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "saml2_authz_decision_statement.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_authz_decision_statement
+ * @short_description: &lt;saml2:AuthzDecisionStatement&gt;
+ *
+ * <figure><title>Schema fragment for saml2:AuthzDecisionStatement</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="AuthzDecisionStatementType">
  *   <complexContent>
@@ -39,6 +43,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

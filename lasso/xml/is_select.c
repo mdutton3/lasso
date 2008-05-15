@@ -24,8 +24,12 @@
 
 #include <lasso/xml/is_select.h>
 
-/*
- * Schema fragments (liberty-idwsf-interaction-svc-v1.0.xsd):
+/**
+ * SECTION:is_select
+ * @short_description: &lt;is:Select&gt;
+ *
+ * <figure><title>Schema fragment for is:Select</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="Select" type="SelectType"/>
  * <xs:complexType name="SelectType">
@@ -38,6 +42,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "dstref_result_query.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_result_query
+ * @short_description: &lt;dstref:ResultQuery&gt;
+ *
+ * <figure><title>Schema fragment for dstref:ResultQuery</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ResultQueryType">
  *   <xs:complexContent>
@@ -37,6 +41,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

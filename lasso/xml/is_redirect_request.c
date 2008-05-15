@@ -24,14 +24,20 @@
 
 #include <lasso/xml/is_redirect_request.h>
 
-/*
- * Schema fragments (liberty-idwsf-interaction-svc-v1.0.xsd):
+/**
+ * SECTION:is_redirect_request
+ * @short_description: &lt;is:RedirectRequest&gt;
+ *
+ * <figure><title>Schema fragment for is:RedirectRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="RedirectRequest" type="RedirectRequestType"/>
  * <xs:complexType name="RedirectRequestType">
  *    <xs:attribute name="redirectURL" type="xs:anyURI" use="required"/>
  * </xs:complexType>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

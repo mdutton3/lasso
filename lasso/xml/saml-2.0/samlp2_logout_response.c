@@ -24,10 +24,16 @@
 
 #include "samlp2_logout_response.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_logout_response
+ * @short_description: &lt;samlp2:LogoutResponse&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:LogoutResponse</title>
+ * <programlisting><![CDATA[
  *
  * <element name="LogoutResponse" type="samlp:StatusResponseType"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

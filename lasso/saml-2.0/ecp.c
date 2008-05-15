@@ -22,6 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:ecp
+ * @short_description: Enhanced Client or Proxy Profile (SAMLv2)
+ *
+ **/
+
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 

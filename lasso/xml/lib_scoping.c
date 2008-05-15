@@ -24,9 +24,12 @@
 
 #include <lasso/xml/lib_scoping.h>
 
-/*
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
- * 
+/**
+ * SECTION:lib_scoping
+ * @short_description: &lt;lib:Scoping&gt;
+ *
+ * <figure><title>Schema fragment for lib:Scoping</title>
+ * <programlisting><![CDATA[
  * <xs:complexType name="ScopingType">
  *   <xs:sequence>
  *     <xs:element name="ProxyCount" type="xs:nonNegativeInteger" minOccurs="0"/>
@@ -34,6 +37,8 @@
  *   </xs:sequence>
  * </xs:complexType>
  * <xs:element name="Scoping" type="ScopingType"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

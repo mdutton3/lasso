@@ -28,8 +28,12 @@
 
 #include "is_interaction_statement.h"
 
-/*
- * Schema fragment (liberty-idwsf-interaction-svc-v2.0.xsd):
+/**
+ * SECTION:is_interaction_statement
+ * @short_description: &lt;is:InteractionStatement&gt;
+ *
+ * <figure><title>Schema fragment for is:InteractionStatement</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="InteractionStatementType">
  *   <xs:sequence>
@@ -37,6 +41,8 @@
  *     <xs:element ref="ds:Signature"/>
  *   </xs:sequence>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

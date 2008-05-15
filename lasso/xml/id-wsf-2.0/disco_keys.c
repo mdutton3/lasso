@@ -24,8 +24,12 @@
 
 #include "disco_keys.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_keys
+ * @short_description: &lt;disco:Keys&gt;
+ *
+ * <figure><title>Schema fragment for disco:Keys</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="KeysType">
  *   <xs:sequence>
@@ -34,6 +38,8 @@
  *       maxOccurs="unbounded"/>
  *     </xs:sequence>
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

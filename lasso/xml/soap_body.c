@@ -24,8 +24,12 @@
 
 #include <lasso/xml/soap_body.h>
 
-/*
- * Schema fragments (http://www.w3.org/2001/06/soap-envelope):
+/**
+ * SECTION:soap_body
+ * @short_description: &lt;soap:Body&gt;
+ *
+ * <figure><title>Schema fragment for soap:Body</title>
+ * <programlisting><![CDATA[
  * 
  * <xs:element name="Body" type="tns:Body"/>
  *   <xs:complexType name="Body">
@@ -40,6 +44,8 @@
  *      </xs:annotation>
  *   </xs:anyAttribute>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

@@ -24,14 +24,20 @@
 
 #include <lasso/xml/is_parameter.h>
 
-/*
- * Schema fragments (liberty-idwsf-interaction-svc-v1.0.xsd):
+/**
+ * SECTION:is_parameter
+ * @short_description: &lt;is:ParameterType&gt;
+ *
+ * <figure><title>Schema fragment for is:ParameterType</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ParameterType">
  *   <xs:attribute name="name" type="xs:ID" use="required"/>
  *   <xs:attribute name="value" type="xs:string" use="required"/>
  * </xs:complexType>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

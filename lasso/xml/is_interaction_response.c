@@ -24,8 +24,12 @@
 
 #include <lasso/xml/is_interaction_response.h>
 
-/*
- * Schema fragments (liberty-idwsf-interaction-svc-v1.0.xsd):
+/**
+ * SECTION:is_interaction_response
+ * @short_description: &lt;is:InteractionResponse&gt;
+ *
+ * <figure><title>Schema fragment for is:InteractionResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="InteractionResponse" type="InteractionResponseType"/>
  * <xs:complexType name="InteractionResponseType">
@@ -39,6 +43,8 @@
  *   </xs:sequence>
  * </xs:complexType>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

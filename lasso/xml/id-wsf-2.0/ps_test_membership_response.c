@@ -24,8 +24,12 @@
 
 #include "ps_test_membership_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_test_membership_response
+ * @short_description: &lt;ps:TestMembershipResponse&gt;
+ *
+ * <figure><title>Schema fragment for ps:TestMembershipResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="TestMembershipResponseType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

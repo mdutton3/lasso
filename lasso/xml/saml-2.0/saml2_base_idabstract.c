@@ -24,12 +24,18 @@
 
 #include "saml2_base_idabstract.h"
 
-/*
- * Schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_base_idabstract
+ * @short_description: &lt;saml2:BaseIDAbstract&gt;
+ *
+ * <figure><title>Schema fragment for saml2:BaseIDAbstract</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="BaseIDAbstractType" abstract="true">
  *   <attributeGroup ref="saml:IDNameQualifiers"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

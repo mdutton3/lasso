@@ -24,8 +24,12 @@
 
 #include <lasso/xml/disco_service_instance.h>
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+/**
+ * SECTION:disco_service_instance
+ * @short_description: &lt;disco:ServiceInstanceType&gt;
+ *
+ * <figure><title>Schema fragment for disco:ServiceInstanceType</title>
+ * <programlisting><![CDATA[
  * 
  * <xs:complexType name="ServiceInstanceType">
  *   <xs:sequence>
@@ -36,6 +40,8 @@
  * </xs:complexType>
  * 
  * <xs:element name="ServiceType" type="xs:anyURI"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

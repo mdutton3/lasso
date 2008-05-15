@@ -24,8 +24,12 @@
 
 #include "ps_add_known_entity_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_add_known_entity_request
+ * @short_description: &lt;ps:AddKnownEntityRequest&gt;
+ *
+ * <figure><title>Schema fragment for ps:AddKnownEntityRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="AddKnownEntityRequestType">
  *   <xs:complexContent>
@@ -40,6 +44,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,12 +24,17 @@
 
 #include <lasso/xml/saml_condition_abstract.h>
 
-/*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="Condition" type="saml:ConditionAbstractType"/>
-<complexType name="ConditionAbstractType" abstract="true"/>
-*/
+/**
+ * SECTION:saml_condition_abstract
+ * @short_description: &lt;:saml:ConditionAbstract&gt;
+ *
+ * <figure><title>Schema fragment for saml:ConditionAbstract</title>
+ * <programlisting><![CDATA[
+ * <element name="Condition" type="saml:ConditionAbstractType"/>
+ * <complexType name="ConditionAbstractType" abstract="true"/>
+ * ]]></programlisting>
+ * </figure>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

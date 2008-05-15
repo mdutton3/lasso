@@ -24,8 +24,12 @@
 
 #include <lasso/xml/saml_subject.h>
 
-/*
- * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+/**
+ * SECTION:saml_subject
+ * @short_description: &lt;saml:Subject&gt;
+ *
+ * <figure><title>Schema fragment for saml:Subject</title>
+ * <programlisting><![CDATA[
  * 
  * <element name="Subject" type="saml:SubjectType"/>
  * <complexType name="SubjectType">
@@ -37,6 +41,8 @@
  *     <element ref="saml:SubjectConfirmation"/>
  *   </choice>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include <lasso/xml/is_interaction_statement.h>
 
-/*
- * Schema fragments (liberty-idwsf-interaction-svc-v1.0.xsd):
+/**
+ * SECTION:is_interaction_statement
+ * @short_description: &lt;is:InteractionStatementType&gt;
+ *
+ * <figure><title>Schema fragment for is:InteractionStatementType</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="InteractionStatementType">
  *   <xs:sequence>
@@ -34,6 +38,8 @@
  *   </xs:sequence>
  * </xs:complexType>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

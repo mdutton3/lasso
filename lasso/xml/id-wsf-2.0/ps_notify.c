@@ -24,8 +24,12 @@
 
 #include "ps_notify.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_notify
+ * @short_description: &lt;ps:Notify&gt;
+ *
+ * <figure><title>Schema fragment for ps:Notify</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="NotifyType">
  *   <xs:complexContent>
@@ -37,6 +41,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

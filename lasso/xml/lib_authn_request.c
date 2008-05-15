@@ -25,14 +25,23 @@
 #include <lasso/xml/lib_authn_request.h>
 #include <libxml/uri.h>
 
-/*
- * The <AuthnRequest> is defined as an extension of samlp:RequestAbstractType.
+/**
+ * SECTION:lib_authn_request
+ * @short_description: &lt;lib:AuthnRequest&gt;
+ * @see_also: #LassoLogin
+ *
+ * Authentication requests are sent from a service provider to an identity
+ * provider.
+ *
+ * <blockquote>
+ * The lib:AuthnRequest is defined as an extension of samlp:RequestAbstractType.
  * The RequestID attribute in samlp:RequestAbstractType has uniqueness
  * requirements placed on it by [SAMLCore11], which require it to have the
  * properties of a nonce.
- * 
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
- * 
+ * </blockquote>
+ *
+ * <figure><title>Schema fragment for lib:AuthnRequest</title>
+ * <programlisting><![CDATA[
  * <xs:element name="AuthnRequest" type="AuthnRequestType" />
  * <xs:complexType name="AuthnRequestType">
  *   <xs:complexContent>
@@ -57,14 +66,7 @@
  * 
  * <xs:element name="ProviderID" type="md:entityIDType"/>
  * <xs:element name="AffiliationID" type="md:entityIDType"/>
- * 
- * From liberty-metadata-v1.0.xsd:
- * <xs:simpleType name="entityIDType">
- *   <xs:restriction base="xs:anyURI">
- *     <xs:maxLength value="1024" id="maxlengthid"/>
- *   </xs:restriction>
- * </xs:simpleType>
- * 
+ *
  * <xs:element name="NameIDPolicy" type="NameIDPolicyType"/>
  * <xs:simpleType name="NameIDPolicyType">
  *   <xs:restriction base="xs:string">
@@ -77,6 +79,8 @@
  * 
  * <xs:element name="ProtocolProfile" type="xs:anyURI"/>
  * <xs:element name="RelayState" type="xs:string"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 

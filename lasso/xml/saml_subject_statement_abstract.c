@@ -24,8 +24,12 @@
 
 #include <lasso/xml/saml_subject_statement_abstract.h>
 
-/*
- * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+/**
+ * SECTION:saml_subject_statement_abstract
+ * @short_description: &lt;saml:SubjectStatementAbstractType&gt;
+ *
+ * <figure><title>Schema fragment for saml:SubjectStatementAbstractType</title>
+ * <programlisting><![CDATA[
  * 
  * <complexType name="SubjectStatementAbstractType" abstract="true">
  *   <complexContent>
@@ -36,6 +40,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

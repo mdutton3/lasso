@@ -24,8 +24,12 @@
 
 #include <lasso/xml/disco_options.h>
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+/**
+ * SECTION:disco_options
+ * @short_description: &lt;disco:Options&gt;
+ *
+ * <figure><title>Schema fragment for disco:Options</title>
+ * <programlisting><![CDATA[
  * 
  * <xs:element name="Options" type="OptionsType"/>
  * <xs:complexType name="OptionsType">
@@ -33,6 +37,8 @@
  *     <xs:element name="Option" type="xs:anyURI" minOccurs="0" maxOccurs="unbounded"/>
  *   </xs:sequence>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

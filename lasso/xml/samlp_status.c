@@ -24,8 +24,12 @@
 
 #include <lasso/xml/samlp_status.h>
 
-/*
- * Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
+/**
+ * SECTION:samlp_status
+ * @short_description: &lt;samlp:Status&gt;
+ *
+ * <figure><title>Schema fragment for samlp:Status</title>
+ * <programlisting><![CDATA[
  * 
  * <element name="Status" type="samlp:StatusType"/>
  * <complexType name="StatusType">
@@ -37,6 +41,8 @@
  * </complexType>
  * 
  * <element name="StatusMessage" type="string"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

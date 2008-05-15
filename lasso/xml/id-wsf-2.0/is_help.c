@@ -24,14 +24,20 @@
 
 #include "is_help.h"
 
-/*
- * Schema fragment (liberty-idwsf-interaction-svc-v2.0.xsd):
+/**
+ * SECTION:is_help
+ * @short_description: &lt;is:Help&gt;
+ *
+ * <figure><title>Schema fragment for is:Help</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="HelpType">
  *   <xs:attribute name="label" type="xs:string" use="optional"/>
  *   <xs:attribute name="link" type="xs:anyURI" use="optional"/>
  *   <xs:attribute name="moreLink" type="xs:anyURI" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

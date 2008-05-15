@@ -24,8 +24,12 @@
 
 #include "subsref_data_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_data_response
+ * @short_description: &lt;subsref:DataResponse&gt;
+ *
+ * <figure><title>Schema fragment for subsref:DataResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="DataResponseType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

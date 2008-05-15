@@ -24,8 +24,12 @@
 
 #include "subsref_test_item.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_test_item
+ * @short_description: &lt;subsref:TestItem&gt;
+ *
+ * <figure><title>Schema fragment for subsref:TestItem</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="TestItemType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

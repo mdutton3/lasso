@@ -24,8 +24,12 @@
 
 #include "is_item.h"
 
-/*
- * Schema fragment (liberty-idwsf-interaction-svc-v2.0.xsd):
+/**
+ * SECTION:is_item
+ * @short_description: &lt;is:Item&gt;
+ *
+ * <figure><title>Schema fragment for is:Item</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="Item" minOccurs="2" maxOccurs="unbounded">
  *   <xs:complexType>
@@ -36,6 +40,8 @@
  *     <xs:attribute name="value" type="xs:NMTOKEN" use="required"/>
  *   </xs:complexType>
  * </xs:element>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

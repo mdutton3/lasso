@@ -24,12 +24,18 @@
 
 #include "sb2_redirect_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-soap-binding-v2.0.xsd):
+/**
+ * SECTION:sb2_redirect_request
+ * @short_description: &lt;sb2:RedirectRequest&gt;
+ *
+ * <figure><title>Schema fragment for sb2:RedirectRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="RedirectRequestType">
  *   <xs:attribute name="redirectURL" type="xs:anyURI" use="required"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include <lasso/xml/soap_binding_ext_timeout.h>
 
-/*
- * Schema fragments (liberty-idwsf-soap-binding-v1.1.xsd - extension avril 2004):
+/**
+ * SECTION:soap_binding_ext_timeout
+ * @short_description: &lt;soapbinding:TimeoutType&gt;
+ *
+ * <figure><title>Schema fragment for soapbinding:TimeoutType</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="TimeoutType">
  *   <xs:attribute name="maxProcessingTime" type="xs:integer" use="required"/>
@@ -35,6 +39,8 @@
  * </xs:complexType>
  * <xs:element name="Timeout" type="TimeoutType"/>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

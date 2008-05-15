@@ -24,8 +24,12 @@
 
 #include "sbf_framework.h"
 
-/*
- * Schema fragment (liberty-idwsf-soap-binding.xsd):
+/**
+ * SECTION:sbf_framework
+ * @short_description: &lt;sbf:Framework&gt;
+ *
+ * <figure><title>Schema fragment for sbf:Framework</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="FrameworkType">
  *   <xs:sequence>
@@ -34,6 +38,8 @@
  *   <xs:attribute name="version" type="xs:string" use="required"/>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

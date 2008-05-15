@@ -25,9 +25,12 @@
 #include <libxml/uri.h>
 #include <lasso/xml/lib_logout_request.h>
 
-/*
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
- * 
+/**
+ * SECTION:lib_logout_request
+ * @short_description: &lt;lib:LogoutRequest&gt;
+ *
+ * <figure><title>Schema fragment for lib:LogoutRequest</title>
+ * <programlisting><![CDATA[
  * <xs:element name="LogoutRequest" type="LogoutRequestType"/>
  * <xs:complexType name="LogoutRequestType">
  *   <xs:complexContent>
@@ -47,13 +50,8 @@
  * 
  * <xs:element name="ProviderID" type="md:entityIDType"/>
  * <xs:element name="RelayState" type="xs:string"/>
- * 
- * From liberty-metadata-v1.0.xsd:
- * <xs:simpleType name="entityIDType">
- *   <xs:restriction base="xs:anyURI">
- *     <xs:maxLength value="1024" id="maxlengthid"/>
- *   </xs:restriction>
- * </xs:simpleType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

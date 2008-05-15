@@ -24,10 +24,16 @@
 
 #include "samlp2_manage_name_id_response.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_manage_name_id_response
+ * @short_description: &lt;samlp2:ManageNameIDResponse&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:ManageNameIDResponse</title>
+ * <programlisting><![CDATA[
  *
  * <element name="ManageNameIDResponse" type="samlp:StatusResponseType"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

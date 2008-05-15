@@ -24,8 +24,12 @@
 
 #include <lasso/xml/dst_modify_response.h>
 
-/*
- * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
+/**
+ * SECTION:dst_modify_response
+ * @short_description: &lt;dst:ModifyResponse&gt;
+ *
+ * <figure><title>Schema fragment for dst:ModifyResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="ModifyResponse" type="ResponseType"/>
  * <xs:complexType name="ResponseType">
@@ -37,6 +41,8 @@
  *     <xs:attribute name="itemIDRef" type="IDReferenceType"/>
  *     <xs:attribute name="timeStamp" type="xs:dateTime"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

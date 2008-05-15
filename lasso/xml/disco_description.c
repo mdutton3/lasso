@@ -24,8 +24,12 @@
 
 #include <lasso/xml/disco_description.h>
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+/**
+ * SECTION:disco_description
+ * @short_description: &lt;disco:DescriptionType&gt;
+ *
+ * <figure><title>Schema fragment for disco:DescriptionType</title>
+ * <programlisting><![CDATA[
  * 
  * <xs:complexType name="DescriptionType">
  *   <xs:sequence>
@@ -52,6 +56,8 @@
  *     <xs:element name="SoapAction" type="xs:anyURI" minOccurs="0"/>
  *   </xs:sequence>
  * </xs:group>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

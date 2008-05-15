@@ -22,6 +22,45 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:discovery
+ * @short_description: ID-WSF Discovery Service Profile
+ *
+ * The Discovery service usually runs on the principal identity provider and
+ * knowns about resources and services related to the principal.  Attribute
+ * providers can register themselves as offering resources for an user while
+ * other services can ask where to find a given resource.
+ *
+ * The following example is a service provider asking for a "PP" service (an
+ * attribute provider for the "Personal Profile"):
+ *
+ * <informalexample>
+ * <programlisting>
+ * LassoServer *server;  // initialized before
+ * char* session_dump;   // initialized before
+ * 
+ * LassoDiscovery *discovery;    // discovery service
+ * char *soap_answer;            // SOAP answer from disco service
+ * LassoProfileService *service; // instance to perform on requested service
+ * 
+ * discovery = lasso_discovery_new(server);
+ * lasso_wsf_profile_set_session_from_dump(LASSO_WSF_PROFILE(discovery), session_dump);
+ * lasso_discovery_init_query(discovery);
+ * lasso_discovery_add_requested_service(discovery, LASSO_PP_HREF);
+ * lasso_discovery_build_request_msg(discovery);
+ * 
+ * // service must perform SOAP call to LASSO_WSF_PROFILE(discovery)->msg_url
+ * // the SOAP message is LASSO_WSF_PROFILE(discovery)->msg_body.  The answer
+ * // is stored in char* soap_answer;
+ * 
+ * lasso_discovery_process_query_response_msg(discovery, soap_answer);
+ * 
+ * service = lasso_discovery_get_service(discovery);
+ * </programlisting>
+ * </informalexample>
+ *
+ */
+
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 

@@ -24,8 +24,12 @@
 
 #include "ps_response_abstract.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_response_abstract
+ * @short_description: &lt;ps:ResponseAbstract&gt;
+ *
+ * <figure><title>Schema fragment for ps:ResponseAbstract</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ResponseAbstractType" abstract="true">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *   </xs:sequence>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

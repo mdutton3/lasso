@@ -24,8 +24,12 @@
 
 #include <lasso/xml/soap_binding_processing_context.h>
 
-/*
- * Schema fragments (liberty-idwsf-soap-binding-v1.1.xsd):
+/**
+ * SECTION:soap_binding_processing_context
+ * @short_description: &lt;soapbinding:ProcessingContextType&gt;
+ *
+ * <figure><title>Schema fragment for soapbinding:ProcessingContextType</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ProcessingContextType">
  *   <xs:simpleContent>
@@ -38,6 +42,8 @@
  * </xs:complexType>
  * <xs:element name="ProcessingContext" type="ProcessingContextType"/>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "sec_token.h"
 
-/*
- * Schema fragment (liberty-idwsf-security-mechanisms-v2.0.xsd):
+/**
+ * SECTION:sec_token
+ * @short_description: &lt;sec:Token&gt;
+ *
+ * <figure><title>Schema fragment for sec:Token</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="TokenType">
  *   <xs:sequence>
@@ -36,6 +40,8 @@
  *     <xs:attribute name="ref" type="xs:anyURI" use="optional" />
  *     <xs:attribute name="usage" type="xs:anyURI" use="optional" />
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

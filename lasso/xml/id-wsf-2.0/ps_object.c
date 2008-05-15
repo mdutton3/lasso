@@ -24,8 +24,12 @@
 
 #include "ps_object.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_object
+ * @short_description: &lt;ps:Object&gt;
+ *
+ * <figure><title>Schema fragment for ps:Object</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ObjectType">
  *   <xs:sequence>
@@ -40,6 +44,8 @@
  *   <xs:attribute name="CreatedDateTime" type="xs:dateTime" use="optional"/>
  *   <xs:attribute name="ModifiedDateTime" type="xs:dateTime" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

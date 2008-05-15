@@ -24,8 +24,12 @@
 
 #include "is_inquiry_element.h"
 
-/*
- * Schema fragment (liberty-idwsf-interaction-svc-v2.0.xsd):
+/**
+ * SECTION:is_inquiry_element
+ * @short_description: &lt;is:InquiryElement&gt;
+ *
+ * <figure><title>Schema fragment for is:InquiryElement</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="InquiryElementType" abstract="true">
  *   <xs:sequence>
@@ -36,6 +40,8 @@
  *   </xs:sequence>
  *   <xs:attribute name="name" type="xs:ID" use="required"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

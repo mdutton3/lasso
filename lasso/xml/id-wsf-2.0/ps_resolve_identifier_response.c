@@ -24,8 +24,12 @@
 
 #include "ps_resolve_identifier_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_resolve_identifier_response
+ * @short_description: &lt;ps:ResolveIdentifierResponse&gt;
+ *
+ * <figure><title>Schema fragment for ps:ResolveIdentifierResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ResolveIdentifierResponseType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -22,6 +22,37 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:data_service
+ * @short_description: ID-WSF Data Service Profile
+ *
+ * Following up on #LassoDiscovery first example, it created a @service object,
+ * this is a #LassoDataService instance.  This example continues from that step
+ * and retrieves the name of the principal:
+ *  
+ * <informalexample>
+ * <programlisting>
+ * char *soap_answer;            // SOAP answer from data service
+ * xmlNode *principal_name;      // libxml2 xmlNode with the principal name
+ * 
+ * service = lasso_discovery_get_service(discovery);
+ * lasso_data_service_init_query(service, "/pp:PP/pp:InformalName", NULL);
+ * lasso_data_service_build_request_msg(service);
+ * 
+ * // service must perform SOAP call to LASSO_WSF_PROFILE(service)->msg_url
+ * // the SOAP message is LASSO_WSF_PROFILE(service)->msg_body.  The answer
+ * // is stored in char* soap_answer;
+ * 
+ * lasso_data_service_process_query_response_msg(service, soap_answer);
+ * principal_name = lasso_data_service_get_answer(service, "/pp:PP/pp:InformalName");
+ * 
+ * // app should probably then use xmlNodeGetContent libxml2 function to get
+ * // access to node content.
+ * </programlisting>
+ * </informalexample>
+ * 
+ */
+
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 

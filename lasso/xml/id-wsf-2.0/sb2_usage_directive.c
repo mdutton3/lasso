@@ -24,8 +24,12 @@
 
 #include "sb2_usage_directive.h"
 
-/*
- * Schema fragment (liberty-idwsf-soap-binding-v2.0.xsd):
+/**
+ * SECTION:sb2_usage_directive
+ * @short_description: &lt;sb2:UsageDirective&gt;
+ *
+ * <figure><title>Schema fragment for sb2:UsageDirective</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="UsageDirectiveType">
  *   <xs:sequence>
@@ -35,6 +39,8 @@
  *     <xs:attribute name="ref" type="xs:IDREF" use="required"/>
  *     <xs:anyAttribute namespace="##other" processContents="lax"/>
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

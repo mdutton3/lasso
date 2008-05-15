@@ -24,8 +24,12 @@
 
 #include "disco_svc_md_query.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_svc_md_query
+ * @short_description: &lt;disco:SvcMDQuery&gt;
+ *
+ * <figure><title>Schema fragment for disco:SvcMDQuery</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="SvcMDQueryType">
  *   <xs:sequence>
@@ -35,6 +39,8 @@
  *     </xs:sequence>
  *     <xs:anyAttribute namespace="##other" processContents="lax"/>
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "ims_identity_mapping_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-idmapping-svc-v2.0.xsd):
+/**
+ * SECTION:ims_identity_mapping_request
+ * @short_description: &lt;ims:IdentityMappingRequest&gt;
+ *
+ * <figure><title>Schema fragment for ims:IdentityMappingRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="IdentityMappingRequestType">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *   </xs:sequence>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

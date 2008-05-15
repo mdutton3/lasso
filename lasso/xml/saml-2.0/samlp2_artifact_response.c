@@ -24,8 +24,12 @@
 
 #include "samlp2_artifact_response.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_artifact_response
+ * @short_description: &lt;samlp2:ArtifactResponse&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:ArtifactResponse</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="ArtifactResponseType">
  *   <complexContent>
@@ -36,6 +40,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

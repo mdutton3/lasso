@@ -24,8 +24,12 @@
 
 #include "sec_transited_provider_path.h"
 
-/*
- * Schema fragment (liberty-idwsf-security-mechanisms-v2.0.xsd):
+/**
+ * SECTION:sec_transited_provider_path
+ * @short_description: &lt;sec:TransitedProviderPath&gt;
+ *
+ * <figure><title>Schema fragment for sec:TransitedProviderPath</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="TransitedProviderPathType">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *       maxOccurs="unbounded" />
  *     </xs:sequence>
  *   </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

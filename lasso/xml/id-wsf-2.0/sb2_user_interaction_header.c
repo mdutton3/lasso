@@ -24,8 +24,12 @@
 
 #include "sb2_user_interaction_header.h"
 
-/*
- * Schema fragment (liberty-idwsf-soap-binding-v2.0.xsd):
+/**
+ * SECTION:sb2_user_interaction_header
+ * @short_description: &lt;sb2:UserInteractionHeader&gt;
+ *
+ * <figure><title>Schema fragment for sb2:UserInteractionHeader</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="UserInteractionHeaderType">
  *   <xs:sequence>
@@ -39,6 +43,8 @@
  *   <xs:attribute name="maxInteractTime" type="xs:integer" use="optional"/>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

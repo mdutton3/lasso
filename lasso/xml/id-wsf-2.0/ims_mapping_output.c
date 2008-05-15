@@ -24,8 +24,12 @@
 
 #include "ims_mapping_output.h"
 
-/*
- * Schema fragment (liberty-idwsf-idmapping-svc-v2.0.xsd):
+/**
+ * SECTION:ims_mapping_output
+ * @short_description: &lt;ims:MappingOutput&gt;
+ *
+ * <figure><title>Schema fragment for ims:MappingOutput</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="MappingOutputType">
  *   <xs:sequence>
@@ -33,6 +37,8 @@
  *   </xs:sequence>
  *   <xs:attribute name="reqRef" type="lu:IDReferenceType" use="optional"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

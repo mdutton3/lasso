@@ -24,14 +24,20 @@
 
 #include "sb2_consent.h"
 
-/*
- * Schema fragment (liberty-idwsf-soap-binding-v2.0.xsd):
+/**
+ * SECTION:sb2_consent
+ * @short_description: &lt;sb2:Consent&gt;
+ *
+ * <figure><title>Schema fragment for sb2:Consent</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ConsentType">
  *   <xs:attribute name="uri" type="xs:anyURI" use="required"/>
  *   <xs:attribute name="timestamp" type="xs:dateTime" use="optional"/>
  *   <xs:anyAttribute namespace="##other" processContents="lax"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

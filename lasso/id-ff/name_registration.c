@@ -22,6 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:name_registration
+ * @short_description: Name Registration Profile (ID-FF)
+ *
+ **/
+
 #include <lasso/id-ff/name_registration.h>
 #include <lasso/id-ff/profileprivate.h>
 #include <lasso/id-ff/providerprivate.h>

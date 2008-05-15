@@ -24,14 +24,20 @@
 
 #include "dstref_delete_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-dst-ref-v2.1.xsd):
+/**
+ * SECTION:dstref_delete_response
+ * @short_description: &lt;dstref:DeleteResponse&gt;
+ *
+ * <figure><title>Schema fragment for dstref:DeleteResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="DeleteResponseType">
  *   <xs:complexContent>
  *     <xs:extension base="lu:ResponseType"/>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

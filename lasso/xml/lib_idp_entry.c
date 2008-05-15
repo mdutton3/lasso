@@ -24,9 +24,12 @@
 
 #include <lasso/xml/lib_idp_entry.h>
 
-/*
- * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+/**
+ * SECTION:lib_idp_entry
+ * @short_description: &lt;lib:IDPEntry&gt;
  * 
+ * <figure><title>Schema fragment for lib:IDPEntry</title>
+ * <programlisting><![CDATA[
  * <xs:element name="IDPEntry">
  *   <xs:complexType>
  *     <xs:sequence>
@@ -36,6 +39,8 @@
  *     </xs:sequence>
  *   </xs:complexType>
  * </xs:element>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

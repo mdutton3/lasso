@@ -24,8 +24,12 @@
 
 #include "subs_notification.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-v1.0.xsd):
+/**
+ * SECTION:subs_notification
+ * @short_description: &lt;subs:Notification&gt;
+ *
+ * <figure><title>Schema fragment for subs:Notification</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="NotificationType">
  *   <xs:sequence>
@@ -36,6 +40,8 @@
  *   <xs:attribute name="expires" use="optional" type="xs:dateTime"/>
  *   <xs:attribute name="endReason" use="optional" type="xs:anyURI"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

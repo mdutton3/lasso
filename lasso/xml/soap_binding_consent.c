@@ -24,8 +24,12 @@
 
 #include <lasso/xml/soap_binding_consent.h>
 
-/*
- * Schema fragments (liberty-idwsf-soap-binding-v1.1.xsd):
+/**
+ * SECTION:soap_binding_consent
+ * @short_description: &lt;soapbinding:ConsentType&gt;
+ *
+ * <figure><title>Schema fragment for soapbinding:ConsentType</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ConsentType">
  *   <xs:attribute name="uri" type="xs:anyURI" use="required"/>
@@ -36,6 +40,8 @@
  * </xs:complexType>
  * <xs:element name="Consent" type="ConsentType"/>
  *
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

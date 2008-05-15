@@ -22,6 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:lecp
+ * @short_description: Liberty Enabled Client and Proxy Profile (ID-FF)
+ *
+ **/
+
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 

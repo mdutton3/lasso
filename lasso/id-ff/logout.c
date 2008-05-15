@@ -22,6 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:logout
+ * @short_description: Single Logout Profile
+ *
+ */
+
 #include <lasso/xml/lib_authentication_statement.h>
 
 #include <lasso/id-ff/logout.h>

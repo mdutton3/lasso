@@ -24,8 +24,12 @@
 
 #include "sec_token_policy.h"
 
-/*
- * Schema fragment (liberty-idwsf-security-mechanisms-v2.0.xsd):
+/**
+ * SECTION:sec_token_policy
+ * @short_description: &lt;sec:TokenPolicy&gt;
+ *
+ * <figure><title>Schema fragment for sec:TokenPolicy</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="TokenPolicyType">
  *   <xs:sequence>
@@ -37,6 +41,8 @@
  *   <xs:attribute name="wantDSEPR" type="xs:boolean" use="optional" />
  *   <xs:anyAttribute namespace="##other" processContents="lax" />
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -24,8 +24,12 @@
 
 #include "samlp2_requested_authn_context.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_requested_authn_context
+ * @short_description: &lt;samlp2:RequestedAuthnContext&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:RequestedAuthnContext</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="RequestedAuthnContextType">
  *   <choice>
@@ -34,6 +38,8 @@
  *   </choice>
  *   <attribute name="Comparison" type="samlp:AuthnContextComparisonType" use="optional"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

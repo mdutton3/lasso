@@ -24,8 +24,12 @@
 
 #include <lasso/xml/soap_binding_ext_credential.h>
 
-/*
- * Schema fragments (liberty-idwsf-soap-binding-v1.1.xsd - extension avril 2004):
+/**
+ * SECTION:soap_binding_ext_credential
+ * @short_description: &lt;soapbinding:Credential&gt;
+ *
+ * <figure><title>Schema fragment for soapbinding:Credential</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="Credential" minOccurs="0" maxOccurs="unbounded">
  *   <xs:complexType>
@@ -36,6 +40,8 @@
  *   </xs:complexType>
  * </xs:element>
  * 
+ * ]]></programlisting>
+ * </figure>
  */ 
 
 /*****************************************************************************/

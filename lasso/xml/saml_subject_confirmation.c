@@ -24,8 +24,12 @@
 
 #include <lasso/xml/saml_subject_confirmation.h>
 
-/*
- * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+/**
+ * SECTION:saml_subject_confirmation
+ * @short_description: &lt;saml:SubjectConfirmation&gt;
+ *
+ * <figure><title>Schema fragment for saml:SubjectConfirmation</title>
+ * <programlisting><![CDATA[
  * 
  * <element name="SubjectConfirmation" type="saml:SubjectConfirmationType"/>
  * <complexType name="SubjectConfirmationType">
@@ -38,6 +42,8 @@
  * 
  * <element name="SubjectConfirmationData" type="anyType"/>
  * <element name="ConfirmationMethod" type="anyURI"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

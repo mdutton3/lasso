@@ -25,8 +25,12 @@
 #include <lasso/xml/saml_name_identifier.h>
 #include <libxml/uri.h>
 
-/*
- * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+/**
+ * SECTION:saml_name_identifier
+ * @short_description: &lt;saml:NameIdentifier&gt;
+ *
+ * <figure><title>Schema fragment for saml:NameIdentifier</title>
+ * <programlisting><![CDATA[
  * 
  * <element name="NameIdentifier" type="saml:NameIdentifierType"/>
  * <complexType name="NameIdentifierType">
@@ -37,6 +41,8 @@
  *     </extension>
  *   </simpleContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

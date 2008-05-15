@@ -24,8 +24,9 @@
 
 #include <lasso/xml/soap_header.h>
 
-/*
- * Schema fragments (http://www.w3.org/2001/06/soap-envelope):
+/**
+ * SECTION:soap_header
+ * @short_description: &lt;soap:Header&gt;
  * 
  */ 
 

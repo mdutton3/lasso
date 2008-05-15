@@ -22,6 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:defederation
+ * @short_description: Federation Termination Notification Profile (ID-FF)
+ *
+ **/
+
 #include <lasso/id-ff/defederation.h>
 
 #include <lasso/id-ff/providerprivate.h>

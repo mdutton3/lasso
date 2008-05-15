@@ -24,8 +24,12 @@
 
 #include "ps_resolve_identifier_request.h"
 
-/*
- * Schema fragment (liberty-idwsf-people-service-v1.0.xsd):
+/**
+ * SECTION:ps_resolve_identifier_request
+ * @short_description: &lt;ps:ResolveIdentifierRequest&gt;
+ *
+ * <figure><title>Schema fragment for ps:ResolveIdentifierRequest</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="ResolveIdentifierRequestType">
  *   <xs:complexContent>
@@ -36,6 +40,8 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

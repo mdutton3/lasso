@@ -24,8 +24,12 @@
 
 #include "samlp2_subject_query_abstract.h"
 
-/*
- * Schema fragment (saml-schema-protocol-2.0.xsd):
+/**
+ * SECTION:samlp2_subject_query_abstract
+ * @short_description: &lt;samlp2:SubjectQueryAbstract&gt;
+ *
+ * <figure><title>Schema fragment for samlp2:SubjectQueryAbstract</title>
+ * <programlisting><![CDATA[
  *
  * <complexType name="SubjectQueryAbstractType" abstract="true">
  *   <complexContent>
@@ -36,6 +40,8 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

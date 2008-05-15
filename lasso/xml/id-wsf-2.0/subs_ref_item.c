@@ -24,13 +24,19 @@
 
 #include "subs_ref_item.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-v1.0.xsd):
+/**
+ * SECTION:subs_ref_item
+ * @short_description: &lt;subs:RefItem&gt;
+ *
+ * <figure><title>Schema fragment for subs:RefItem</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="RefItemType">
  *   <xs:attribute name="subscriptionID" use="optional" type="lu:IDType"/>
  *   <xs:attribute ref="lu:itemIDRef" use="required"/>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

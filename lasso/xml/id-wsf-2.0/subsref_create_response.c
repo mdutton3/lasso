@@ -24,14 +24,20 @@
 
 #include "subsref_create_response.h"
 
-/*
- * Schema fragment (liberty-idwsf-subs-ref-v1.0.xsd):
+/**
+ * SECTION:subsref_create_response
+ * @short_description: &lt;subsref:CreateResponse&gt;
+ *
+ * <figure><title>Schema fragment for subsref:CreateResponse</title>
+ * <programlisting><![CDATA[
  *
  * <xs:complexType name="CreateResponseType">
  *   <xs:complexContent>
  *     <xs:extension base="subsref:DataResponseType"/>
  *   </xs:complexContent>
  * </xs:complexType>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

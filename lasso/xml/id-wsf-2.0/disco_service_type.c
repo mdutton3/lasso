@@ -24,10 +24,16 @@
 
 #include "disco_service_type.h"
 
-/*
- * Schema fragment (liberty-idwsf-disco-svc-v2.0.xsd):
+/**
+ * SECTION:disco_service_type
+ * @short_description: &lt;disco:Service&gt;
+ *
+ * <figure><title>Schema fragment for disco:Service</title>
+ * <programlisting><![CDATA[
  *
  * <xs:element name="ServiceType" type="xs:anyURI"/>
+ * ]]></programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/
