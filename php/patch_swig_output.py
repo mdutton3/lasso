@@ -230,8 +230,51 @@ wrap = function_pattern.sub(rep, wrap)
 wrap = re.sub(r'zend_register_internal_class_ex(.*)NULL,NULL\)',
     r'zend_register_internal_class_ex\1NULL,NULL TSRMLS_CC)',  wrap)
 
-wrap = re.sub('zend_rsrc_list_get_rsrc_type(.*)lval',
-    r'zend_rsrc_list_get_rsrc_type\1lval TSRMLS_CC', wrap)
+wrap = re.sub('zend_rsrc_list_get_rsrc_type(.*)lval *)',
+    r'zend_rsrc_list_get_rsrc_type\1lval TSRMLS_CC)', wrap)
 
+# Bis for swig 1.3.33
+# (1)
+begin = """
+  }
+  
+  {
+    /* Wrap this return value */
+"""
+end = """
+  }
+"""
+i = wrap.find(begin)
+while i >= 0:
+    j = wrap.find(end, i+len(begin)) + len(end)
+    segment = wrap[i:j]
+    segment = segment.replace(begin, """
+  /* Wrap this return value */
+""")
+    segment = segment.replace(end, """
+  }
+""")
+    wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
+    i = wrap.find(begin, i + len(segment))
+# (2)
+begin = 'swig_type_info *ty = SWIG_TypeDynamicCast('
+end = """
+  }
+"""
+i = wrap.find(begin)
+while i >= 0:
+    j = wrap.find(end, i+len(begin)) + len(end)
+    #print >> sys.stderr, "END:", j, len(end)
+    if j < len(end): # bails out if not found
+        break
+    segment = wrap[i:j]
+    if not 'object_init_ex' in segment:
+    	i = wrap.find(begin, i + len(segment))
+	continue
+    x = segment.find('object_init_ex(return_value,') + len('object_init_ex(return_value,')
+    y = segment.find(')', x)
+    segment = '%s%s%s' % (segment[:x], 'get_node_info_with_swig(ty)->php', segment[y:])
+    wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
+    i = wrap.find(begin, i + len(segment))
 
 print wrap
