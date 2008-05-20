@@ -134,7 +134,7 @@ class IdWsf1TestCase(unittest.TestCase):
 
         # Login from WSC
         sp_identity_dump, sp_session_dump, idp_identity_dump, idp_session_dump = self.login(self.wsc, self.idp)
-        
+
         # Init discovery query
         wsc_disco = lasso.Discovery(self.wsc)
         wsc_disco.setSessionFromDump(sp_session_dump)
