@@ -765,7 +765,7 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 			if (node != NULL) {
 				/* If we must replace the root element, change it in the xmlDoc */
 				if (node == cur_data) {
-					xmlDocSetRootElement(doc, newNode);					
+					xmlDocSetRootElement(doc, newNode);
 					xmlFreeNode(cur_data);
 					cur_data = NULL;
 				} else {

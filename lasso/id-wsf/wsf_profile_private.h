@@ -40,6 +40,12 @@ LassoSoapFault* lasso_wsf_profile_get_fault(LassoWsfProfile *profile);
 
 void lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_key); 
 
+LassoDsKeyInfo* lasso_wsf_profile_get_key_info_node(LassoWsfProfile *profile,
+	const gchar *providerID);
+
+LassoDiscoDescription* lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si,
+	const gchar *security_mech_id);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

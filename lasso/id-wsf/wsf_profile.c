@@ -31,6 +31,8 @@
 #include <xmlsec/crypto.h>
 
 #include <lasso/id-wsf/wsf_profile.h>
+#include <lasso/id-wsf/wsf_profile_private.h>
+
 #include <lasso/xml/disco_modify.h>
 #include <lasso/xml/soap_fault.h>
 #include <lasso/xml/soap_binding_correlation.h>
@@ -41,11 +43,12 @@
 #include <lasso/xml/saml_authentication_statement.h>
 #include <lasso/xml/saml_subject_statement_abstract.h>
 #include <lasso/xml/saml_subject.h>
+#include <lasso/xml/ds_key_info.h>
+#include <lasso/xml/ds_key_value.h>
+#include <lasso/xml/ds_rsa_key_value.h>
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/providerprivate.h>
-
-#include <lasso/id-wsf/wsf_profile_private.h>
 
 struct _LassoWsfProfilePrivate
 {
@@ -71,8 +74,6 @@ static gint lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
 		xmlDoc *doc, xmlNode *envelope_node, LassoSignatureMethod sign_method);
 static int lasso_wsf_profile_ensure_soap_credentials_signature(
 		LassoWsfProfile *profile, xmlDoc *doc, xmlNode *soap_envelope);
-static LassoDiscoDescription* lasso_wsf_profile_get_description_auto(
-		LassoDiscoServiceInstance *si, const gchar *security_mech_id);
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -111,7 +112,7 @@ lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_ke
 		profile->private_data->public_key = g_strdup(public_key);
 }
 
-static LassoDiscoDescription*
+LassoDiscoDescription*
 lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gchar *security_mech_id)
 {
 	GList *iter, *iter2;
@@ -125,7 +126,7 @@ lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gcha
 		description = LASSO_DISCO_DESCRIPTION(iter->data);
 		iter2 = description->SecurityMechID;
 		while (iter2) {
-			if (strcmp(security_mech_id, iter->data) == 0)
+			if (strcmp(security_mech_id, iter2->data) == 0)
 				return description;
 			iter2 = iter2->next;
 		}
@@ -834,6 +835,76 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *pr
 	}
 
 	return envelope;
+}
+
+LassoDsKeyInfo*
+lasso_wsf_profile_get_key_info_node(LassoWsfProfile *profile, const gchar *providerID)
+{
+	LassoDsKeyInfo *key_info = NULL;
+	LassoDsRsaKeyValue *rsa_key_value = NULL;
+	LassoDsKeyValue *key_value = NULL;
+	LassoProvider *provider = NULL;
+	xmlSecKeyInfoCtx *ctx = NULL;
+	xmlSecKey *public_key = NULL;
+	xmlDoc *doc = NULL;
+	xmlNode *key_info_node = NULL;
+	xmlNode *xmlnode = NULL;
+	xmlXPathContext *xpathCtx = NULL;
+	xmlXPathObject *xpathObj = NULL;
+
+	g_return_val_if_fail(providerID != NULL, NULL);
+
+	provider = lasso_server_get_provider(profile->server, providerID);
+	if (provider == NULL) {
+		return NULL;
+	}
+
+	public_key = lasso_provider_get_public_key(provider);
+	if (public_key == NULL) {
+		return NULL;
+	}
+
+	ctx = xmlSecKeyInfoCtxCreate(NULL);
+	xmlSecKeyInfoCtxInitialize(ctx, NULL);
+	ctx->mode = xmlSecKeyInfoModeWrite;
+	ctx->keyReq.keyType = xmlSecKeyDataTypePublic;
+
+	doc = xmlSecCreateTree((xmlChar*)"KeyInfo",
+			(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
+	key_info_node = xmlDocGetRootElement(doc);
+	xmlSecAddChild(key_info_node, (xmlChar*)"KeyValue",
+			(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
+
+	xmlSecKeyInfoNodeWrite(key_info_node, public_key, ctx);
+
+	xpathCtx = xmlXPathNewContext(doc);
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ds",
+			(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
+
+	rsa_key_value = lasso_ds_rsa_key_value_new();
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Modulus", xpathCtx);
+	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		xmlnode = xpathObj->nodesetval->nodeTab[0];
+		rsa_key_value->Modulus = (gchar *) xmlNodeGetContent(xmlnode);
+	}
+	xmlXPathFreeObject(xpathObj);
+
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Exponent", xpathCtx);
+	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		xmlnode = xpathObj->nodesetval->nodeTab[0];
+		rsa_key_value->Exponent = (gchar *) xmlNodeGetContent(xmlnode);
+	}
+	xmlXPathFreeObject(xpathObj);
+
+	key_value = lasso_ds_key_value_new();
+	key_value->RSAKeyValue = rsa_key_value;
+	key_info = lasso_ds_key_info_new();
+	key_info->KeyValue = key_value;
+
+	xmlXPathFreeContext(xpathCtx);
+	xmlFreeDoc(doc);
+
+	return key_info;
 }
 
 /*****************************************************************************/
