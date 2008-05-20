@@ -676,7 +676,6 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 	LassoUtilityStatus *status = NULL;
 	LassoDiscoRemoveEntry *remove_entry = NULL;
 	LassoDiscoInsertEntry *insert_entry = NULL;
-	gboolean failure = FALSE;
 	char *new_entry_ids = NULL;
 	char *t_new_entry_ids = NULL;
 	GList *iter = NULL;
