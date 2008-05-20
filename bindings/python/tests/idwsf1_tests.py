@@ -186,11 +186,45 @@ class DiscoveryModifyTestCase(IdWsf1TestCase):
         idp_disco = lasso.Discovery(self.idp)
         idp_disco.processModifyMsg(wsp_disco.msgBody)
         idp_disco.setIdentityFromDump(idp_identity_dump)
-        idp_disco.identity.addResourceOffering(self.get_resource_offering())
         idp_disco.buildModifyResponseMsg()
         self.failUnless('<disco:Status code="OK"/>' in idp_disco.msgBody)
-        self.failUnless('<disco:ModifyResponse newEntryIDs="' in idp_disco.msgBody)
+        self.failUnless('<disco:ModifyResponse newEntryIDs="1"' in idp_disco.msgBody)
         self.failUnless('<disco:ServiceType>urn:liberty:id-sis-pp:2003-08</disco:ServiceType>' in
+            idp_disco.identity.dump())
+
+        # Process Response
+        wsp_disco.processModifyResponseMsg(idp_disco.msgBody)
+        self.failUnless(wsp_disco.response.newEntryIds == '1')
+
+class DiscoveryRemoveTestCase(IdWsf1TestCase):
+    def test01(self):
+        '''Test a discovery remove'''
+        self.wsp = self.get_wsp_server()
+        self.idp = self.get_idp_server()
+        self.idp = self.add_services(self.idp)
+
+        # Login from WSP
+        sp_identity_dump, sp_session_dump, idp_identity_dump, idp_session_dump = self.login(self.wsp, self.idp)
+
+        # Init discovery modify
+        wsp_disco = lasso.Discovery(self.wsp)
+        wsp_disco.setIdentityFromDump(sp_identity_dump)
+        wsp_disco.setSessionFromDump(sp_session_dump)
+        wsp_disco.initRemove('1')
+        wsp_disco.buildRequestMsg()
+
+        # Process Modify
+        request_type = lasso.getRequestTypeFromSoapMsg(wsp_disco.msgBody)
+        self.failUnless(request_type == lasso.REQUEST_TYPE_DISCO_MODIFY) 
+        idp_disco = lasso.Discovery(self.idp)
+        idp_disco.processModifyMsg(wsp_disco.msgBody)
+        idp_disco.setIdentityFromDump(idp_identity_dump)
+        idp_disco.identity.addResourceOffering(self.get_resource_offering())
+        self.failUnless('<disco:ServiceType>urn:liberty:id-sis-pp:2003-08</disco:ServiceType>' in
+            idp_disco.identity.dump())
+        idp_disco.buildModifyResponseMsg()
+        self.failUnless('<disco:Status code="OK"/>' in idp_disco.msgBody)
+        self.failIf('<disco:ServiceType>urn:liberty:id-sis-pp:2003-08</disco:ServiceType>' in
             idp_disco.identity.dump())
 
         # Process Response
@@ -331,10 +365,12 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
 
 discoveryQuerySuite = unittest.makeSuite(DiscoveryQueryTestCase, 'test')
 discoveryModifySuite = unittest.makeSuite(DiscoveryModifyTestCase, 'test')
+discoveryRemoveSuite = unittest.makeSuite(DiscoveryRemoveTestCase, 'test')
 dataServiceQuerySuite = unittest.makeSuite(DataServiceQueryTestCase, 'test')
 dataServiceModifySuite = unittest.makeSuite(DataServiceModifyTestCase, 'test')
 
-allTests = unittest.TestSuite((discoveryQuerySuite, discoveryModifySuite, dataServiceQuerySuite, dataServiceModifySuite))
+allTests = unittest.TestSuite((discoveryQuerySuite, discoveryModifySuite, discoveryRemoveSuite,
+    dataServiceQuerySuite, dataServiceModifySuite))
 
 if __name__ == '__main__':
     sys.exit(not unittest.TextTestRunner(verbosity = 2).run(allTests).wasSuccessful())
