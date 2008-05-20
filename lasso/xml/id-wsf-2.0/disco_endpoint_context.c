@@ -132,14 +132,11 @@ LassoIdWsf2DiscoEndpointContext*
 lasso_idwsf2_disco_endpoint_context_new_full(const gchar *address)
 {
 	LassoIdWsf2DiscoEndpointContext *context;
-	LassoIdWsf2SbfFramework *sbf_framework;
 
 	context = lasso_idwsf2_disco_endpoint_context_new();
 
 	context->Address = g_list_append(NULL, g_strdup(address));
-	sbf_framework = lasso_idwsf2_sbf_framework_new();
-	sbf_framework->version = g_strdup("2.0");
-	context->Framework = g_list_append(NULL, sbf_framework);
+	context->Framework = g_list_append(NULL, lasso_idwsf2_sbf_framework_new_full("2.0"));
 
 	return context;
 }

@@ -505,12 +505,51 @@ dispose(GObject *object)
 
 	lasso_server_destroy(profile->server);
 	profile->server = NULL;
+
+	if (profile->request) {
+		lasso_node_destroy(profile->request);
+		profile->request = NULL;
+	}
+
+	if (profile->response) {
+		lasso_node_destroy(profile->response);
+		profile->response = NULL;
+	}
+
+	if (profile->nameIdentifier) {
+		lasso_node_destroy(profile->nameIdentifier);
+		profile->nameIdentifier = NULL;
+	}
+
+	if (profile->remote_providerID) {
+		g_free(profile->remote_providerID);
+		profile->remote_providerID = NULL;
+	}
+
+	if (profile->msg_url) {
+		g_free(profile->msg_url);
+		profile->msg_url = NULL;
+	}
+
+	if (profile->msg_body) {
+		g_free(profile->msg_body);
+		profile->msg_body = NULL;
+	}
+
+	if (profile->msg_relayState) {
+		g_free(profile->msg_relayState);
+		profile->msg_relayState = NULL;
+	}
+
 	lasso_identity_destroy(profile->identity);
 	profile->identity = NULL;
+
 	lasso_session_destroy(profile->session);
 	profile->session = NULL;
+
 	g_free(profile->private_data->artifact);
 	profile->private_data->artifact = NULL;
+
 	g_free(profile->private_data->artifact_message);
 	profile->private_data->artifact_message = NULL;
 

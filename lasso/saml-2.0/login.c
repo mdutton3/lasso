@@ -663,20 +663,20 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	svcMD = svcMDs->data;
 
 	if (svcMD == NULL || svcMD->ServiceContext == NULL || svcMD->ServiceContext->data == NULL) {
+		g_list_free(svcMDs);
 		return;
 	}
 
 	/* Build EndpointReference */
 
 	epr = lasso_wsa_endpoint_reference_new();
-	service_context = LASSO_IDWSF2_DISCO_SERVICE_CONTEXT(svcMD->ServiceContext->data);
-	endpoint_context = LASSO_IDWSF2_DISCO_ENDPOINT_CONTEXT(
-			service_context->EndpointContext->data);
+	service_context = svcMD->ServiceContext->data;
+	endpoint_context = service_context->EndpointContext->data;
 
 	epr->Address = lasso_wsa_attributed_uri_new_with_string(
 		(gchar*)endpoint_context->Address->data);
 
-	metadata = LASSO_WSA_METADATA(lasso_wsa_metadata_new());
+	metadata = lasso_wsa_metadata_new();
 
 	/* Abstract */
 	metadata->any = g_list_append(metadata->any,
@@ -691,18 +691,17 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	/* Framework */
 	if (endpoint_context->Framework != NULL) {
 		metadata->any = g_list_append(metadata->any,
-			g_object_ref((GObject*)endpoint_context->Framework->data));
+			g_object_ref(endpoint_context->Framework->data));
 	}
 	
 	/* Identity token */
 	assertion_identity_token = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
 	assertion_identity_token->Subject = g_object_ref(assertion->Subject);
 
-	sec_token = LASSO_IDWSF2_SEC_TOKEN(lasso_idwsf2_sec_token_new());
+	sec_token = lasso_idwsf2_sec_token_new();
 	sec_token->any = LASSO_NODE(assertion_identity_token);
 	
-	security_context = LASSO_IDWSF2_DISCO_SECURITY_CONTEXT(
-		lasso_idwsf2_disco_security_context_new());
+	security_context = lasso_idwsf2_disco_security_context_new();
 	security_context->SecurityMechID = g_list_append(
 		security_context->SecurityMechID, g_strdup(LASSO_SECURITY_MECH_TLS_BEARER));
 	security_context->Token = g_list_append(security_context->Token, sec_token);
@@ -713,21 +712,23 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	epr->Metadata = metadata;
 	
 	/* Add the EPR to the assertion as a SAML attribute */
-	attributeValue = LASSO_SAML2_ATTRIBUTE_VALUE(lasso_saml2_attribute_value_new());
+	attributeValue = lasso_saml2_attribute_value_new();
 	attributeValue->any = g_list_append(attributeValue->any, epr);
 
 	attribute = LASSO_SAML2_ATTRIBUTE(lasso_saml2_attribute_new());
 	attribute->Name = g_strdup(LASSO_SAML2_ATTRIBUTE_NAME_EPR);
 	attribute->NameFormat = g_strdup(LASSO_SAML2_ATTRIBUTE_NAME_FORMAT_URI);
-	attribute->AttributeValue = g_list_append(attribute->AttributeValue,
-			attributeValue);
+	attribute->AttributeValue = g_list_append(attribute->AttributeValue, attributeValue);
 
 	attributeStatement = LASSO_SAML2_ATTRIBUTE_STATEMENT(lasso_saml2_attribute_statement_new());
-	attributeStatement->Attribute = g_list_append(
-			attributeStatement->Attribute, attribute);
+	attributeStatement->Attribute = g_list_append(attributeStatement->Attribute, attribute);
 
 	assertion->AttributeStatement = g_list_append(assertion->AttributeStatement,
 		attributeStatement);
+	
+	/* Free resources */
+	g_list_foreach(svcMDs, (GFunc)lasso_node_destroy, NULL);
+	g_list_free(svcMDs);
 #endif
 }
 
@@ -840,6 +841,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 			provider->private_data->encryption_sym_key_type));
 		if (encrypted_element != NULL) {
 			assertion->Subject->EncryptedID = encrypted_element;
+			g_object_unref(assertion->Subject->NameID);
 			assertion->Subject->NameID = NULL;
 		}
 	}

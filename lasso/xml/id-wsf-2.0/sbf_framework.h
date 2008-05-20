@@ -73,7 +73,7 @@ struct _LassoIdWsf2SbfFrameworkClass {
 LASSO_EXPORT GType lasso_idwsf2_sbf_framework_get_type(void);
 LASSO_EXPORT LassoIdWsf2SbfFramework* lasso_idwsf2_sbf_framework_new(void);
 
-
+LASSO_EXPORT LassoIdWsf2SbfFramework* lasso_idwsf2_sbf_framework_new_full(const char *version);
 
 #ifdef __cplusplus
 }

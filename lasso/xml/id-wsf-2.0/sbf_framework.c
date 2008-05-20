@@ -66,8 +66,7 @@ static void
 instance_init(LassoIdWsf2SbfFramework *node)
 {
 	node->version = NULL;
-	node->attributes = g_hash_table_new_full(
-		g_str_hash, g_str_equal, g_free, g_free);
+	node->attributes = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 }
 
 static void
@@ -117,4 +116,16 @@ LassoIdWsf2SbfFramework*
 lasso_idwsf2_sbf_framework_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_SBF_FRAMEWORK, NULL);
+}
+
+LassoIdWsf2SbfFramework*
+lasso_idwsf2_sbf_framework_new_full(const char *version)
+{
+	LassoIdWsf2SbfFramework* framework;
+
+	framework = g_object_new(LASSO_TYPE_IDWSF2_SBF_FRAMEWORK, NULL);
+
+	framework->version = g_strdup(version);
+
+	return framework;
 }

@@ -95,6 +95,7 @@ lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	gchar *provider_id;
 	LassoIdWsf2DiscoSvcMetadata *metadata;
 	char unique_id[33];
+	char *new_svcMDID;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery), NULL);
 	g_return_val_if_fail(service_type != NULL && service_type[0] != '\0', NULL);
@@ -119,7 +120,10 @@ lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	/* Add the metadata into the server object */
 	lasso_server_add_svc_metadata(LASSO_PROFILE(profile)->server, metadata);
 
-	return g_strdup(metadata->svcMDID);
+	new_svcMDID = g_strdup(metadata->svcMDID);
+	g_object_unref(metadata);
+
+	return new_svcMDID;
 }
 
 gint

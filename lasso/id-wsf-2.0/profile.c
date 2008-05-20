@@ -142,9 +142,8 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	/* Get soap request */
-	envelope = lasso_soap_envelope_new_from_message(message);
-
-	profile->soap_envelope_request = envelope;
+	profile->soap_envelope_request = lasso_soap_envelope_new_from_message(message);
+	envelope = profile->soap_envelope_request;
 
 	if (LASSO_PROFILE(profile)->nameIdentifier != NULL) {
 		lasso_node_destroy(LASSO_PROFILE(profile)->nameIdentifier);
@@ -202,9 +201,8 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 	}
 
 	/* Set soap response */
-	envelope = lasso_idwsf2_profile_build_soap_envelope(NULL,
+	profile->soap_envelope_response = lasso_idwsf2_profile_build_soap_envelope(NULL,
 		LASSO_PROVIDER(LASSO_PROFILE(profile)->server)->ProviderID);
-	profile->soap_envelope_response = envelope;
 
 	return res;
 }

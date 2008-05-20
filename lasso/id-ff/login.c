@@ -2091,15 +2091,19 @@ static void
 dispose(GObject *object)
 {
 	LassoLogin *login = LASSO_LOGIN(object);
+
 	g_free(login->private_data->soap_request_msg);
 	login->private_data->soap_request_msg = NULL;
+
 	if (login->private_data->saml2_assertion)
 		lasso_node_destroy(LASSO_NODE(login->private_data->saml2_assertion));
 	login->private_data->saml2_assertion = NULL;
+
 #ifdef LASSO_WSF_ENABLED
 	if (login->private_data->resourceId)
 		lasso_node_destroy(LASSO_NODE(login->private_data->resourceId));
 	login->private_data->resourceId = NULL;
+
 	if (login->private_data->encryptedResourceId)
 		lasso_node_destroy(LASSO_NODE(login->private_data->encryptedResourceId));
 	login->private_data->encryptedResourceId = NULL;

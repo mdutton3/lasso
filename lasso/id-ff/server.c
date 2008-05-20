@@ -157,7 +157,7 @@ lasso_server_get_svc_metadatas(LassoServer *server)
 {
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
-	return server->private_data->svc_metadatas;
+	return g_list_copy(server->private_data->svc_metadatas);
 }
 
 GList *
@@ -579,6 +579,7 @@ dispose(GObject *object)
 /* 	} */
 
 	if (server->private_data->svc_metadatas != NULL) {
+		g_list_foreach(server->private_data->svc_metadatas, (GFunc)g_object_unref, NULL);
 		g_list_free(server->private_data->svc_metadatas);
 		server->private_data->svc_metadatas = NULL;
 	}
