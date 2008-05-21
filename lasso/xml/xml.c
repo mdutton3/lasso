@@ -259,7 +259,6 @@ void
 lasso_node_destroy(LassoNode *node)
 {
 	if (node == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "lasso_node_destroy of NULL!!!");
 		return;
 	}
 	if (LASSO_IS_NODE(node)) {
