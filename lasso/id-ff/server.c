@@ -152,14 +152,15 @@ lasso_server_add_svc_metadata(LassoServer *server, LassoIdWsf2DiscoSvcMetadata *
 	return 0;
 }
 
-GList *
+const GList *
 lasso_server_get_svc_metadatas(LassoServer *server)
 {
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
-	return g_list_copy(server->private_data->svc_metadatas);
+	return server->private_data->svc_metadatas;
 }
 
+/* XXX: return value must be freed by caller */
 GList *
 lasso_server_get_svc_metadatas_with_id_and_type(LassoServer *server, GList *svcMDIDs,
 	const gchar *service_type)
