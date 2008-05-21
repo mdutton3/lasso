@@ -187,6 +187,7 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 		if (LASSO_IS_SAML2_NAME_ID(decrypted_name_id)) {
 			LASSO_PROFILE(profile)->nameIdentifier = decrypted_name_id;
 		}
+		g_object_unref(encrypted_id);
 		assertion->Subject->EncryptedID = NULL;
 	}
 

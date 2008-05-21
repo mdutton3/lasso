@@ -338,6 +338,7 @@ lasso_saml20_profile_set_session_from_dump_decrypt(
 	if (assertion->Subject != NULL && assertion->Subject->EncryptedID != NULL) {
 		assertion->Subject->NameID = LASSO_SAML2_NAME_ID(
 				assertion->Subject->EncryptedID->original_data);
+		g_object_unref(assertion->Subject->EncryptedID);
 		assertion->Subject->EncryptedID = NULL;
 	}
 }

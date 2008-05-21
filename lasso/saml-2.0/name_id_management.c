@@ -274,8 +274,9 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 				encrypted_id, encryption_private_key));
 			LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID = \
 				LASSO_SAML2_NAME_ID(profile->nameIdentifier);
+			g_object_unref(
+				LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->EncryptedID);
 			LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->EncryptedID = NULL;
-
 		}
 	} else {
 		profile->nameIdentifier = g_object_ref(name_id);

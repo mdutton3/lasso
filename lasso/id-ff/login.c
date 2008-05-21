@@ -715,10 +715,12 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 			if (sssa != NULL && sssa->Subject != NULL) {
 				sssa->Subject->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
 					profile->nameIdentifier);
+				g_object_unref(sssa->Subject->EncryptedNameIdentifier);
 				sssa->Subject->EncryptedNameIdentifier = NULL;
 			} else if (sas != NULL && sas->Subject != NULL) {
 				sas->Subject->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
 					profile->nameIdentifier);
+				g_object_unref(sas->Subject->EncryptedNameIdentifier);
 				sas->Subject->EncryptedNameIdentifier = NULL;
 			}
 		}

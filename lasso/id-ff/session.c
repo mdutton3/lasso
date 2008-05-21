@@ -512,6 +512,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					lasso_wsa_endpoint_reference_new());
 				LASSO_NODE_GET_CLASS(epr)->init_from_xml(LASSO_NODE(epr), t2);
 				lasso_session_add_endpoint_reference(session, epr);
+				g_object_unref(epr);
 				t2 = t2->next;
 			}
 		}

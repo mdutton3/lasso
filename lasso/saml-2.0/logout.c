@@ -294,6 +294,7 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 				encrypted_id, encryption_private_key));
 			LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID = LASSO_SAML2_NAME_ID(
 				profile->nameIdentifier);
+			g_object_unref(LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->EncryptedID);
 			LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->EncryptedID = NULL;
 
 		}
