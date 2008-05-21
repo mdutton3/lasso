@@ -408,7 +408,7 @@ dispose(GObject *object)
 	identity->private_data->dispose_has_run = TRUE;
 
 	if (identity->private_data->svcMDID != NULL) {
-		/* XXX: must fix content */
+		g_list_foreach(identity->private_data->svcMDID, (GFunc)g_free, NULL);
 		g_list_free(identity->private_data->svcMDID);
 		identity->private_data->svcMDID = NULL;
 	}
