@@ -142,6 +142,9 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	/* Get soap request */
+	if (profile->soap_envelope_request) {
+		g_object_unref(profile->soap_envelope_request);
+	}
 	profile->soap_envelope_request = lasso_soap_envelope_new_from_message(message);
 	envelope = profile->soap_envelope_request;
 
@@ -202,6 +205,9 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 	}
 
 	/* Set soap response */
+	if (profile->soap_envelope_response) {
+		g_object_unref(profile->soap_envelope_response);
+	}
 	profile->soap_envelope_response = lasso_idwsf2_profile_build_soap_envelope(NULL,
 		LASSO_PROVIDER(LASSO_PROFILE(profile)->server)->ProviderID);
 

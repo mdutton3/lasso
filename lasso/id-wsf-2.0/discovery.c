@@ -470,7 +470,6 @@ gint
 lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const gchar *message)
 {
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
-
 	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
