@@ -129,12 +129,17 @@ gint
 lasso_server_add_service_from_dump(LassoServer *server, const gchar *dump)
 {
 	LassoNode *node;
+	gint return_code;
 
 	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	node = lasso_node_new_from_dump(dump);
 
-	return lasso_server_add_service(server, node);
+	return_code = lasso_server_add_service(server, node);
+
+	g_object_unref(node);
+
+	return return_code;
 }
 
 #ifdef LASSO_WSF_ENABLED
