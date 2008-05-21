@@ -662,6 +662,7 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	/* FIXME : foreach on the whole list and build on epr for each svcMD */
 	svcMD = svcMDs->data;
 
+	/* Check the metadatas contain the infos needed to build an EPR */
 	if (svcMD == NULL || svcMD->ServiceContext == NULL || svcMD->ServiceContext->data == NULL) {
 		g_list_foreach(svcMDs, (GFunc)lasso_node_destroy, NULL);
 		g_list_free(svcMDs);

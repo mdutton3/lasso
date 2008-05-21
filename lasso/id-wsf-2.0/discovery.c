@@ -85,6 +85,7 @@ lasso_idwsf2_discovery_destroy(LassoIdWsf2Discovery *discovery)
 	lasso_node_destroy(LASSO_NODE(discovery));
 }
 
+/* XXX: return value must be freed by caller */
 gchar*
 lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	const gchar *service_type, const gchar *abstract,
