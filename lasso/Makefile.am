@@ -34,7 +34,7 @@ symbols.sym:
 clean-local:
 	-rm types.c symbols.sym
 
-EXTRA_DIST = extract_types.py extract_symbols.py
+EXTRA_DIST = utils.h extract_types.py extract_symbols.py
 
 if WSF_ENABLED
 WSF_LIB_FILE = $(top_builddir)/lasso/id-wsf/liblasso-id-wsf.la
