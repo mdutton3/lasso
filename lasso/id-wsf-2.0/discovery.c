@@ -523,6 +523,8 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 	svcMD = svcMDs->data;
 
 	if (svcMD == NULL || svcMD->ServiceContext == NULL || svcMD->ServiceContext->data == NULL) {
+		g_list_foreach(svcMDs, (GFunc)lasso_node_destroy, NULL);
+		g_list_free(svcMDs);
 		return NULL;
 	}
 
@@ -581,6 +583,7 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 				provider->private_data->encryption_sym_key_type));
 			if (encrypted_element != NULL) {
 				assertion->Subject->EncryptedID = encrypted_element;
+				g_object_unref(assertion->Subject->NameID);
 				assertion->Subject->NameID = NULL;
 			}
 		}
@@ -598,7 +601,11 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 	}
 
 	epr->Metadata = metadata;
-	
+
+	/* Free resources */
+	g_list_foreach(svcMDs, (GFunc)lasso_node_destroy, NULL);
+	g_list_free(svcMDs);
+
 	return epr;
 }
 
