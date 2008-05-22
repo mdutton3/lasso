@@ -352,6 +352,9 @@ lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump)
 {
 	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
+	if (profile->identity) {
+		g_object_unref(profile->identity);
+	}
 	profile->identity = lasso_identity_new_from_dump(dump);
 	if (profile->identity == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP);
@@ -374,6 +377,9 @@ lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump)
 {
 	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
+	if (profile->session) {
+		g_object_unref(profile->session);
+	}
 	profile->session = lasso_session_new_from_dump(dump);
 	if (profile->session == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BAD_SESSION_DUMP);
