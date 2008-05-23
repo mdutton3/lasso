@@ -934,6 +934,7 @@ lasso/xml/id-wsf-2.0/Makefile
 lasso/xml/ws/Makefile
 perl/Makefile
 php/Makefile
+java/Makefile
 swig/Makefile
 swig/wsf-support.i
 swig/saml-2.0/Makefile
