@@ -11,12 +11,12 @@
     <description>
       Lasso (Liberty Alliance Single Sign On) is a free (GNU GPL) implementation
       of the Liberty Alliance specifications.  Those define protocols for
-      federated identities, single sign-on, etc.  Lasso provides both a C
-      library and bindings for several languages (Python, Java, Perl, PHP for
-      now).
+      federated identities, single sign-on, etc.  Lasso supports ID-FF 1.2,
+      SAML 2.0 and parts of ID-WSF; it provides both a C library and bindings
+      for several languages (Python, Java, Perl, PHP 4 and PHP 5).
     </description>
     <shortdesc>Free Software implementation of Liberty Alliance specifications</shortdesc>
-    <!--<bug-database rdf:resource="http://lasso.entrouvert.org/bugs"/>-->
+    <bug-database rdf:resource="http://lasso.entrouvert.org/issues/"/>
     <mailing-list rdf:resource="http://lasso.entrouvert.org/mailinglists"/>
     <programming-language>C</programming-language>
     <programming-language>Python</programming-language>
