@@ -228,10 +228,10 @@ def rep(match):
 wrap = function_pattern.sub(rep, wrap)
 
 wrap = re.sub(r'zend_register_internal_class_ex(.*)NULL,NULL\)',
-    r'zend_register_internal_class_ex\1NULL,NULL TSRMLS_CC)',  wrap)
+    r'zend_register_internal_class_ex\1NULL,NULL TSRMLS_CC\)',  wrap)
 
-wrap = re.sub('zend_rsrc_list_get_rsrc_type(.*)lval *)',
-    r'zend_rsrc_list_get_rsrc_type\1lval TSRMLS_CC)', wrap)
+wrap = re.sub('zend_rsrc_list_get_rsrc_type(.*)lval *\)',
+    r'zend_rsrc_list_get_rsrc_type\1lval TSRMLS_CC\)', wrap)
 
 # Bis for swig 1.3.33
 # (1)
