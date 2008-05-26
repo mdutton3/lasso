@@ -26,7 +26,7 @@
 #include <lasso_config.h>
 
 #include <check.h>
-#include <lasso.h>
+#include <lasso/lasso.h>
 
 extern Suite* basic_suite();
 extern Suite* login_suite();

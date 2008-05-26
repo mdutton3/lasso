@@ -24,7 +24,7 @@
 #include <sys/time.h>
 #include <time.h>
 
-#include <lasso.h>
+#include <lasso/lasso.h>
 
 char* create_authn_response_msg(char *query);
 
