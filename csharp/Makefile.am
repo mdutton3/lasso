@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)
+INCLUDES = -I$(top_builddir) -I$(top_srcdir)
 
 lib_LTLIBRARIES = liblassosharpglue.la
 
@@ -17,7 +17,7 @@ liblassosharpglue_la_LDFLAGS =	-no-undefined -module -avoid-version
 
 liblassosharpglue_wrap.c: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i \
 		$(top_srcdir)/swig/inheritance.h
-	$(SWIG) -v -csharp -namespace lasso -module lasso \
+	$(SWIG) -I$(top_builddir)/swig -v -csharp -namespace lasso -module lasso \
 		-o liblassosharpglue_wrap.c $(top_srcdir)/swig/Lasso.i
 	cp liblassosharpglue_wrap.c liblassosharpglue_wrap.c.bak
 	sed -e 's/(char \*) "\(.*\)"/strdup("\1")/' \
