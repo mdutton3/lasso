@@ -1,5 +1,6 @@
-INCLUDES = -I$(top_srcdir) \
+INCLUDES = \
 	-I$(top_builddir) \
+	-I$(top_srcdir) \
 	$(SASL_CFLAGS)
 
 pythondir= $(PY_SITE_PACKAGES)

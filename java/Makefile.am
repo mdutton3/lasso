@@ -1,6 +1,5 @@
 # Define java Package directory, the tailing '/' is mandatory.
 JAVA_PATH = com/entrouvert/lasso/
-JDK_INCLUDES = @JDK_INCLUDE@ -I$(top_builddir)
 CLASSPATH = .
 
 javalibdir = $(prefix)/lib/java
@@ -14,13 +13,13 @@ javalib_LTLIBRARIES = libjlasso.la
 endif
 
 jlasso_la_SOURCES =	lasso_wrap.c
-jlasso_la_CFLAGS = -fno-strict-aliasing $(JAVA_INCLUDE) $(LASSO_CORE_CFLAGS) -I$(top_srcdir)
+jlasso_la_CFLAGS = -fno-strict-aliasing $(JAVA_INCLUDE) $(LASSO_CORE_CFLAGS) -I$(top_builddir) -I$(top_srcdir)
 jlasso_la_LIBADD =	$(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 jlasso_la_LDFLAGS =	-no-undefined -avoid-version -module \
                         -Wl,--add-stdcall-alias 
 
 libjlasso_la_SOURCES =	lasso_wrap.c
-libjlasso_la_CFLAGS = -fno-strict-aliasing $(JAVA_INCLUDE) $(LASSO_CORE_CFLAGS) -I$(top_srcdir)
+libjlasso_la_CFLAGS = -fno-strict-aliasing $(JAVA_INCLUDE) $(LASSO_CORE_CFLAGS) -I$(top_builddir) -I$(top_srcdir)
 libjlasso_la_LIBADD =	$(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 libjlasso_la_LDFLAGS =	-no-undefined -avoid-version -module
 
