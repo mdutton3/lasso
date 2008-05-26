@@ -95,7 +95,7 @@ def wrapper_decl(name, jnitype, fd):
      (jnitype,jniname),
 
 def is_collection(type):
-    return type in ('GList*','GHashTable*')
+    return type in ('const GList*','GList*','GHashTable*')
 
 def is_string_type(type):
     return type in ['char*', 'const char*', 'gchar*', 'const gchar*']
@@ -132,7 +132,7 @@ class JavaBinding:
 
     def is_gobject_type(self, t):
         return t not in ['char*', 'const char*', 'gchar*', 'const gchar*',
-                'GList*', 'GHashTable*',
+                'const GList*','GList*', 'GHashTable*',
                 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
@@ -222,7 +222,7 @@ protected static native void destroy(long cptr);
             return 'int'
         elif vtype in ('char*', 'gchar*', 'const char*', 'const gchar*'):
             return 'String'
-        elif vtype in ('GList*','GHashTable*'):
+        elif vtype in ('const GList*','GList*','GHashTable*'):
             return 'Object[]'
         elif vtype == 'xmlNode*':
             return 'String'
@@ -240,7 +240,7 @@ protected static native void destroy(long cptr);
             return 'int'
         elif vtype in ('char*', 'gchar*', 'const char*', 'const gchar*'):
             return 'String'
-        elif vtype in ('GList*','GHashTable*'):
+        elif vtype in ('const GList*','GList*','GHashTable*'):
             return 'Object[]'
         elif vtype == 'xmlNode*':
             return 'String'
@@ -253,7 +253,7 @@ protected static native void destroy(long cptr);
 
     def JNI_member_type(self,member):
         type, name, options = member
-        if type in ('GList*','GHashTable*'):
+        if type in ('const GList*','GList*','GHashTable*'):
             return self.JNI_arg_type(options.get('elem_type'))
         else:
             return self.JNI_arg_type(type)
@@ -284,7 +284,7 @@ protected static native void destroy(long cptr);
             mtype = m[0]
 
             jtype = self.JNI_member_type(m)
-            if mtype == 'GList*':
+            if mtype == 'GList*'or mtype == 'const GList*':
                 name = '%s_get' % prefix
                 print >> fd, '   public static native %s[] %s(GObject obj);' % (jtype,name)
                 name = '%s_set' % prefix
@@ -383,7 +383,7 @@ protected static native void destroy(long cptr);
             return 'jint'
         elif type in ('char*', 'gchar*', 'const char*', 'const gchar*'):
             return 'jstring'
-        elif type in ('GList*','GHashTable*'):
+        elif type in ('const GList*','GList*','GHashTable*'):
             return 'jobjectArray'
         elif type == 'xmlNode*':
             return 'jstring'
@@ -399,7 +399,7 @@ protected static native void destroy(long cptr);
             return '%s = (jint)%s' % (left, right)
         elif is_string_type(type):
             return 'string_to_jstring(env, %s, &%s)' % (right, left)
-        elif type in ('GList*',):
+        elif type in ('const GList*','GList*',):
             elem_type = options.get('elem_type')
             if elem_type == 'char*':
                 return 'get_list_of_strings(env, %s, &%s)' % (right, left)
@@ -426,7 +426,7 @@ protected static native void destroy(long cptr);
             return '%s = (%s)%s;' % (left,type,right)
         elif is_string_type(type):
             return 'jstring_to_string(env, %s, (char**)&%s);' % (right,left)
-        elif type in ('GList*',):
+        elif type in ('const GList*','GList*',):
             elem_type = options.get('elem_type')
             if elem_type == 'char*':
                 return 'set_list_of_strings(env, &%s,%s);' % (left,right)
@@ -524,7 +524,7 @@ protected static native void destroy(long cptr);
             if is_string_type(arg_type):
                 print >> fd, '    if (%s)' % arg_name
                 print >> fd, '        g_free(%s);' % arg_name
-            elif arg_type == 'GList*':
+            elif arg_type == 'GList*' or arg_type == 'const GList*':
                 if arg_options.get('elem_type') == 'char*':
                     print >> fd, '    free_glist(&%s, (GFunc)free);' % arg_name
                 else:
@@ -540,7 +540,7 @@ protected static native void destroy(long cptr);
                     options = with_return_owner({})
                 print >> fd, '    %s;' % self.c_to_java_value('ret','return_value', m.return_type, options)
                 if m.return_owner:
-                    if m.return_type == 'GList*':
+                    if m.return_type == 'GList*' or m.return_type == 'const GList*':
                         print >> fd, '    free_glist(&return_value, NULL);'
                     elif is_string_type(m.return_type) and not is_const_type(m.return_type):
                         print >> fd, '    if (return_value)'
@@ -596,7 +596,7 @@ protected static native void destroy(long cptr);
                 print >> fd, '    }'
             print >> fd, '}'
             # add/remove
-            if mtype in ('GList*', ):
+            if mtype in ('const GList*','GList*', ):
                 # add
                 print >> fd,'/* Adder for %s %s.%s */' % (mtype,klassname,m[1])
                 elem_type = m[2].get('elem_type')
@@ -738,10 +738,10 @@ protected static native void destroy(long cptr);
             print >> fd, 'package %s;' % lasso_package_name
             do_import_util = 0
             for m in c.members:
-                if m[0] in ('GList*','GHashTable*'):
+                if m[0] in ('const GList*','GList*','GHashTable*'):
                     do_import_util = 1
             for m in c.methods:
-                if m.return_type in ('GList*','GHashTable*'):
+                if m.return_type in ('const GList*','GList*','GHashTable*'):
                     do_import_util = 1
             if do_import_util:
                 print >> fd, 'import java.util.*;'
@@ -780,7 +780,7 @@ protected static native void destroy(long cptr);
                 prefix = self.JNI_member_function_prefix(c,m)
                 jname = utils.format_as_camelcase('_'+name)
                 jtype = self.JNI_member_type(m)
-                if type == 'GList*':
+                if type == 'GList*' or type == 'const GList*':
                     print >> fd, '    public void set%s(List list) {' % jname
                     print >> fd, '        %s[] arr = null;' % jtype
                     print >> fd, '        if (list != null) {'
@@ -870,7 +870,7 @@ protected static native void destroy(long cptr);
                             err = error_to_exception(err)[0]
                             print >> fd, normalize(err,'      * @throws ')
                     print >> fd, '    **/'
-                if m.return_type == 'GList*':
+                if m.return_type == 'GList*' or m.return_type == 'const GList*':
                     print >> fd, '    public List %s(%s) {' % (mname,generate_arg_list(self,args[1:]))
                     arglist = generate_arg_list2(args[1:])
                     if arglist:
