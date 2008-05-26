@@ -242,8 +242,14 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 			data_item = LASSO_IDWSF2_DSTREF_ITEM_DATA(data);
 			for (i = 0; i < xpathObj->nodesetval->nodeNr; i++) {
 				node = xpathObj->nodesetval->nodeTab[i];
-				LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any = g_list_append(
-					LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any, xmlCopyNode(node, 1));
+				if (node->type == XML_ATTRIBUTE_NODE) {
+					LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any = g_list_append(
+						LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any,
+						xmlNewText(xmlGetProp(node->parent, node->name)));
+				} else {
+					LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any = g_list_append(
+						LASSO_IDWSF2_DSTREF_APP_DATA(data_item)->any, xmlCopyNode(node, 1));
+				}
 			}
 		} else if (xpathObj && xpathObj->type == XPATH_STRING) {
 			data = lasso_idwsf2_dstref_data_new();
