@@ -36,6 +36,7 @@ extern "C" {
 #include <lasso/xml/soap_envelope.h>
 #include <lasso/xml/soap_binding_provider.h>
 #include <lasso/xml/saml_assertion.h>
+#include <lasso/xml/disco_description.h>
 
 #define LASSO_TYPE_WSF_PROFILE (lasso_wsf_profile_get_type())
 #define LASSO_WSF_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
