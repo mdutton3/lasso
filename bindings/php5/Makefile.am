@@ -1,8 +1,9 @@
 SUBDIRS = examples
 
 if PHP5_ENABLED
-INCLUDES = -I$(top_srcdir) \
+INCLUDES = \
 	-I$(top_builddir) \
+	-I$(top_srcdir) \
 	$(SASL_CFLAGS)
 
 php_extensiondir = ${prefix}@PHP5_UNPREFIXED_EXTENSION_DIR@
