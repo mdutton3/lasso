@@ -793,9 +793,16 @@ register_constants(PyObject *d)
                 parse_tuple_args.append('&%s' % arg_name)
                 print >> fd, '    %s %s = NULL;' % (arg[0], arg[1])
             elif arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
+                if arg_options.get('optional'):
+                    if not '|' in parse_tuple_format:
+                        parse_tuple_format.append('|')
                 parse_tuple_format.append('i')
                 parse_tuple_args.append('&%s' % arg_name)
-                print >> fd, '    %s %s;' % (arg[0], arg[1])
+                if arg_options.get('default'):
+                    defval = arg_options.get('default')[2:]
+                    print >> fd, '    %s %s = %s;' % (arg[0], arg[1], defval)
+                else:
+                    print >> fd, '    %s %s;' % (arg[0], arg[1])
             elif arg_type in ('GList*', 'xmlNode*'):
                 parse_tuple_format.append('O')
                 parse_tuple_args.append('&cvt_%s' % arg_name)
