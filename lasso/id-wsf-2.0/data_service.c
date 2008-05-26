@@ -893,23 +893,20 @@ dispose(GObject *object)
 		return;
 	service->private_data->dispose_has_run = TRUE;
 
-	if (service->type != NULL) {
-		g_free(service->type);
-		service->type = NULL;
-	}
-	if (service->redirect_url != NULL) {
-		g_free(service->redirect_url);
-		service->redirect_url = NULL;
-	}
+	g_free(service->type);
+	service->type = NULL;
+
+	g_free(service->redirect_url);
+	service->redirect_url = NULL;
+
 	if (service->query_items != NULL) {
+		g_list_foreach(service->query_items, (GFunc)g_free, NULL);
 		g_list_free(service->query_items);
 		service->query_items = NULL;
 	}
 
-	if (service->private_data->epr != NULL) {
-		lasso_node_destroy(LASSO_NODE(service->private_data->epr));
-		service->private_data->epr = NULL;
-	}
+	lasso_node_destroy(LASSO_NODE(service->private_data->epr));
+	service->private_data->epr = NULL;
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
@@ -937,6 +934,7 @@ instance_init(LassoIdWsf2DataService *service)
 	service->query_items = NULL;
 	service->private_data = g_new0(LassoIdWsf2DataServicePrivate, 1);
 	service->private_data->epr = NULL;
+	service->private_data->credentials = NULL;
 }
 
 static void
