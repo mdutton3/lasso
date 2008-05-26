@@ -52,6 +52,7 @@
     <param name="svcMDIDs" type="GList*" elem_type="char*"/>
     <param name="service_type"/>
   </func>
+  <func name="lasso_server_get_svc_metadatas" return_type_qualifier="LassoIdWsf2DiscoSvcMetadata*"/>
   <func name="lasso_server_get_service" return_owner="false"/>
   <!-- LassoSession -->
   <func name="lasso_session_get_endpoint_reference" return_owner="false"/>
