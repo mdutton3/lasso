@@ -13,7 +13,8 @@ if(-r '../lasso-src-config') {
   $objects .= $lasso_libs;
 }
 
-my $includes="-I$TOP_SRCDIR/lasso";
+my $includes="-I$TOP_BUILDDIR -I$TOP_SRCDIR";
+print $includes;
 my $version=$ENV{VERSION};
 
 # I'm forced to do this since BASEEXT is defined in a non-overridable method.
