@@ -9,6 +9,12 @@
   <func name="lasso_profile_get_request_type_from_soap_msg"
   	rename="lasso_get_request_type_from_soap_msg"/>
   <func name="lasso_session_get_assertions" return_owner="true"/>
+  <func name="lasso_check_version">
+    <param name="major"/>
+    <param name="minor"/>
+    <param name="subminor"/>
+    <param name="mode" optional="true" default="c:LASSO_CHECK_VERSION_NUMERIC"/>
+  </func>
   <!-- LassoProvider -->
   <func name="lasso_provider_get_metadata_list" return_owner="false"/>
   <!-- LassoProfile -->
