@@ -1,3 +1,3381 @@
+2008-05-27 16:00  fpeters
+
+	* NEWS, lasso.doap: noted about 2.2.0
+
+2008-05-27 15:50  fpeters
+
+	* README: updated copyright info
+
+2008-05-27 15:27  bdauvergne
+
+	* csharp, php5, python: remove obsolete swig binding csharp, php5,
+	  python.
+	  java stays as long as alain coetmeur needs it
+	  php(4) will be superseded by the new bindings/php4 later.
+
+2008-05-27 15:27  bdauvergne
+
+	* docs/reference/Makefile.am: remove ./docs/reference/tmpl during
+	  clean-local target
+
+2008-05-27 15:27  bdauvergne
+
+	* lasso/Makefile.am: add lasso_config.h.in to MAINTAINERCLEANFILES
+
+2008-05-27 15:27  bdauvergne
+
+	* Makefile.am, bindings/Makefile.am, bindings/java/Makefile.am,
+	  bindings/php4/Makefile.am, bindings/php5/Makefile.am,
+	  bindings/php5/examples/Makefile.am,
+	  bindings/php5/tests/Makefile.am, bindings/python/Makefile.am,
+	  bindings/python/tests/Makefile.am, csharp/Makefile.am,
+	  docs/Makefile.am, docs/lasso-book/Makefile.am,
+	  docs/lasso-book/figures/Makefile.am, docs/reference/Makefile.am,
+	  java/Makefile.am, lasso/Makefile.am, lasso/id-ff/Makefile.am,
+	  lasso/id-wsf-2.0/Makefile.am, lasso/id-wsf/Makefile.am,
+	  lasso/saml-2.0/Makefile.am, lasso/xml/Makefile.am,
+	  lasso/xml/id-wsf-2.0/Makefile.am, lasso/xml/saml-2.0/Makefile.am,
+	  lasso/xml/ws/Makefile.am, perl/Makefile.am, php/Makefile.am,
+	  php5/Makefile.am, python/Makefile.am, python/tests/Makefile.am,
+	  swig/Makefile.am, swig/id-wsf-2.0/Makefile.am,
+	  swig/saml-2.0/Makefile.am, swig/ws/Makefile.am,
+	  tests/Makefile.am, tests/data/Makefile.am,
+	  tests/data/ca1-la/Makefile.am, tests/data/idp1-la/Makefile.am,
+	  tests/data/idp5-saml2/Makefile.am,
+	  tests/data/lecp1-la/Makefile.am, tests/data/sp1-la/Makefile.am,
+	  tests/data/sp5-saml2/Makefile.am,
+	  tests/data/sp6-saml2/Makefile.am, tests/metadata/Makefile.am,
+	  win32/Makefile.am, win32/msvc/Makefile.am,
+	  win32/msvc/java/Makefile.am, win32/msvc/php/Makefile.am,
+	  win32/msvc/python/Makefile.am, win32/nsis/Makefile.am: add
+	  Makefile.in to MAINTAINERCLEANFILES in every Makefile.am
+
+2008-05-27 14:01  bdauvergne
+
+	* configure.ac, php/Makefile.am, php/patch_swig_output.py: export
+	  SWIG_VERSION into Makefile.am
+	  handle swig < 1.3.32 and swig >= 1.3.32 with two different
+	  versions of the patch script
+
+2008-05-27 14:01  bdauvergne
+
+	* docs/reference/Makefile.am: add -I$(top_builddir) to CFLAGS in
+	  first position
+
+2008-05-27 14:01  bdauvergne
+
+	* perl/Makefile.am: surround parameter with quotes permitting
+	  filename with spaces
+
+2008-05-27 09:07  bdauvergne
+
+	* bindings/Makefile.am: clean *.pyc files in the bindings
+
+2008-05-26 22:58  bdauvergne
+
+	* perl/Makefile.PL, perl/Makefile.am: Make Makefile.PL use
+	  TOP_SRCDIR and TOP_BUILDDIR variables
+
+2008-05-26 22:58  bdauvergne
+
+	* java/Makefile.am, perl/Makefile.am, php/Makefile.am,
+	  php5/Makefile.am, python/Makefile.am: fix INCLUDES, remove
+	  obsolete JDK_INCLUDES definition
+
+2008-05-26 22:58  bdauvergne
+
+	* csharp/Makefile.am: fix INCLUDES
+
+2008-05-26 22:58  bdauvergne
+
+	* tests/perfs.c, tests/tests.c: #include <lasso.h> => #include
+	  <lasso/lasso.h>
+
+2008-05-26 22:58  bdauvergne
+
+	* tests/Makefile.am: fix INCLUDES
+
+2008-05-26 22:58  bdauvergne
+
+	* bindings/lang_java.py: quick and dirty fix to support return type
+	  «const GList*»
+
+2008-05-26 22:58  bdauvergne
+
+	* bindings/java/Makefile.am, bindings/php4/Makefile.am,
+	  bindings/php5/Makefile.am, bindings/python/Makefile.am: fix
+	  INCLUDES var, put top_builddir first
+
+2008-05-26 22:58  bdauvergne
+
+	* bindings/overrides.xml: add qualifier for the GList returned by
+	  lasso_server_get_svc_metadatas
+
+2008-05-26 22:58  bdauvergne
+
+	* lasso/Makefile.am, lasso/id-ff/Makefile.am,
+	  lasso/id-wsf-2.0/Makefile.am, lasso/id-wsf/Makefile.am,
+	  lasso/saml-2.0/Makefile.am, lasso/xml/Makefile.am,
+	  lasso/xml/id-wsf-2.0/Makefile.am, lasso/xml/saml-2.0/Makefile.am,
+	  lasso/xml/ws/Makefile.am: cleanup include listingm first builddir
+	  then srcdir and no need for $srcdir/lasso
+
+2008-05-26 22:58  bdauvergne
+
+	* lasso/id-wsf/wsf_profile.h: Add disco_declaration.h to imported
+	  headers
+
+2008-05-26 22:58  bdauvergne
+
+	* lasso/id-wsf-2.0/Makefile.am, lasso/id-wsf/Makefile.am: Add
+	  $(top_builddir) to include of id-wsf and id-wsf-2.0 Makefile.am
+	  to work with distcheck.
+
+2008-05-26 16:43  dlaniel
+
+	* lasso/id-wsf-2.0/data_service.c: allow getting xpath attributes
+	  like /node/@attr
+
+2008-05-26 16:41  fpeters
+
+	* bindings/lang_python.py: respect optional args and default values
+	  for integer args
+
+2008-05-26 16:41  fpeters
+
+	* bindings/overrides.xml: last argument to check_version was
+	  optional with the SWIG bindings
+
+2008-05-26 14:28  dlaniel
+
+	* lasso/id-wsf-2.0/data_service.c: don't test NULL value before
+	  calling gfree + proper list freeing
+
+2008-05-26 09:37  bdauvergne
+
+	* php/patch_swig_output.py: Fix escaping of parenthesis inside a
+	  regex
+
+2008-05-26 09:37  bdauvergne
+
+	* java/Makefile.am: add -fno-strict-aliasing to CFLAGS to remove
+	  bad code genereation on amd64 and warnings on all platforms
+
+2008-05-26 09:37  bdauvergne
+
+	* configure.ac: Re-remove java/Makefile from configure.ac outputs
+
+2008-05-23 22:44  bdauvergne
+
+	* configure.ac, java/Makefile.am: re-add swig/java binding to
+	  makefile, make it use the JAVA_INCLUDE path, JDK_INCLUDES does
+	  not exist
+
+2008-05-23 18:16  fpeters
+
+	* lasso.doap: fixing a little bit the doap file
+
+2008-05-23 18:01  fpeters
+
+	* doap.rdf, lasso.doap: removed doap.rdt to lasso.doap to be
+	  compatible with moap
+
+2008-05-23 17:50  fpeters
+
+	* doap.rdf: mentioning bug database and updated description
+
+2008-05-23 17:36  fpeters
+
+	* website/web/index.xml: bitching about free
+
+2008-05-22 14:54  bdauvergne
+
+	* lasso/Makefile.am, lasso/utils.h: add a new headers
+	  <lasso/utils.h> with macros to handle memory like assigning a
+	  gobject field (work flow, is you augment ref of the new value,
+	  decrease the one
+	  from the old, and then assign), assigning strings, releasing
+	  lists of strings, of
+	  gobjects,etc..
+	  the free macros are all called g_release_somehting and they set
+	  the released
+	  variable to NULL.
+	  add a macro to validate GObject parameter types
+	  
+	  This header is intended to concentre every bit of wisdom for
+	  handling pointers
+	  and memory, try to use thoses macros in your code.
+	  They are not intended to work with weak references (references
+	  you do not own),
+	  so always g_object_ref in this case (or use g_assign_gobject that
+	  does it,
+	  when your variable is not needed anymore to g_assign_gobject(var,
+	  NULL));
+
+2008-05-22 08:06  dlaniel
+
+	* lasso/id-wsf-2.0/discovery.c: added some more missing unreference
+
+2008-05-22 07:54  dlaniel
+
+	* lasso/id-ff/profile.c: added some more missing unreference
+
+2008-05-21 23:29  dlaniel
+
+	* lasso/id-wsf-2.0/discovery.c, lasso/id-wsf-2.0/profile.c: added
+	  some more missing unreference
+
+2008-05-21 23:29  dlaniel
+
+	* lasso/id-ff/identity.c: fixed freeing svcMDID list
+
+2008-05-21 22:13  dlaniel
+
+	* lasso/saml-2.0/profile.c: added a missing reference
+
+2008-05-21 17:28  dlaniel
+
+	* lasso/id-ff/login.c, lasso/id-ff/session.c,
+	  lasso/id-wsf-2.0/profile.c, lasso/saml-2.0/logout.c,
+	  lasso/saml-2.0/name_id_management.c, lasso/saml-2.0/profile.c:
+	  added some more missing unreference
+
+2008-05-21 14:20  dlaniel
+
+	* lasso/saml-2.0/login.c, lasso/xml/xml.c: fixed memory management
+	  during node decryption
+
+2008-05-21 12:35  dlaniel
+
+	* lasso/id-ff/server.c: unreference service node after adding it to
+	  the server
+
+2008-05-21 10:10  dlaniel
+
+	* lasso/id-wsf-2.0/discovery.c, lasso/saml-2.0/login.c: some
+	  comments
+
+2008-05-21 10:00  dlaniel
+
+	* lasso/saml-2.0/login.c: free list elements
+
+2008-05-21 10:00  dlaniel
+
+	* lasso/id-wsf-2.0/server.h: make return value const instead of
+	  copying the list
+
+2008-05-21 09:58  dlaniel
+
+	* lasso/id-ff/server.c: make return value const instead of copying
+	  the list
+
+2008-05-21 09:45  dlaniel
+
+	* lasso/id-ff/login.c, lasso/xml/xml.c: removed warning when
+	  calling lasso_node_destroy with NULL argument
+
+2008-05-21 09:22  dlaniel
+
+	* lasso/id-ff/profile.c: useless variables detroyer; they're
+	  already freed by snippets
+
+2008-05-20 20:21  fpeters
+
+	* lasso/id-wsf/discovery.c: removing unused variable
+
+2008-05-20 18:34  dlaniel
+
+	* lasso/id-ff/login.c, lasso/id-ff/profile.c, lasso/id-ff/server.c,
+	  lasso/id-wsf-2.0/discovery.c, lasso/id-wsf-2.0/profile.c,
+	  lasso/saml-2.0/login.c,
+	  lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  lasso/xml/id-wsf-2.0/sbf_framework.c,
+	  lasso/xml/id-wsf-2.0/sbf_framework.h, lasso/xml/soap_envelope.c:
+	  fixed some reference counting and memory management
+
+2008-05-20 13:24  dlaniel
+
+	* lasso/id-wsf-2.0/discovery.c: avoir function calls in parameter
+	  checks
+
+2008-05-20 13:22  dlaniel
+
+	* bindings/python/tests/XmlTestRunner.py,
+	  bindings/python/tests/idwsf1_tests.py,
+	  bindings/python/tests/tests.py: import main test file
+
+2008-05-20 13:14  dlaniel
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/discovery.c,
+	  lasso/id-wsf/discovery.h, lasso/id-wsf/wsf_profile.c,
+	  lasso/id-wsf/wsf_profile_private.h: some cleanups in id-wsf 1.1
+	  code
+
+2008-05-20 12:58  dlaniel
+
+	* bindings/python/tests/idwsf1_tests.py: added a discovery remove
+	  test case
+
+2008-05-20 10:40  dlaniel
+
+	* bindings/python/tests: svn ignore generated Makefile
+
+2008-05-20 10:38  dlaniel
+
+	* bindings/python/tests/idwsf2_tests.py: added id-wsf 2.0 tests for
+	  new bindings
+
+2008-05-20 10:38  dlaniel
+
+	* lasso/id-wsf-2.0/discovery.c: stronger check on empty string
+	  parameters
+
+2008-05-20 09:27  dlaniel
+
+	* bindings/python/tests/idwsf1_tests.py: added some tests for
+	  id-wsf 1.1 with new python bindings
+
+2008-05-19 23:26  bdauvergne
+
+	* php/patch_swig_output.py: add pact for SWIG 1.3.33, need to be
+	  tested agains previous and later versions of SWIG
+
+2008-05-19 16:08  dlaniel
+
+	* bindings/lang_python.py: fixed methods with xmlNode* arguments
+
+2008-05-15 21:17  fpeters
+
+	* docs/reference/lasso.sgml, docs/reference/tmpl/data_service.sgml,
+	  docs/reference/tmpl/defederation.sgml,
+	  docs/reference/tmpl/discovery.sgml, docs/reference/tmpl/ecp.sgml,
+	  docs/reference/tmpl/federation.sgml,
+	  docs/reference/tmpl/identity.sgml,
+	  docs/reference/tmpl/lasso.sgml, docs/reference/tmpl/lecp.sgml,
+	  docs/reference/tmpl/lib_assertion.sgml,
+	  docs/reference/tmpl/lib_authentication_statement.sgml,
+	  docs/reference/tmpl/lib_authn_context.sgml,
+	  docs/reference/tmpl/lib_authn_request.sgml,
+	  docs/reference/tmpl/lib_authn_request_envelope.sgml,
+	  docs/reference/tmpl/lib_authn_response.sgml,
+	  docs/reference/tmpl/lib_authn_response_envelope.sgml,
+	  docs/reference/tmpl/lib_federation_termination_notification.sgml,
+	  docs/reference/tmpl/lib_idp_entries.sgml,
+	  docs/reference/tmpl/lib_idp_entry.sgml,
+	  docs/reference/tmpl/lib_idp_list.sgml,
+	  docs/reference/tmpl/lib_logout_request.sgml,
+	  docs/reference/tmpl/lib_logout_response.sgml,
+	  docs/reference/tmpl/lib_name_identifier_mapping_request.sgml,
+	  docs/reference/tmpl/lib_name_identifier_mapping_response.sgml,
+	  docs/reference/tmpl/lib_register_name_identifier_request.sgml,
+	  docs/reference/tmpl/lib_register_name_identifier_response.sgml,
+	  docs/reference/tmpl/lib_request_authn_context.sgml,
+	  docs/reference/tmpl/lib_scoping.sgml,
+	  docs/reference/tmpl/lib_status_response.sgml,
+	  docs/reference/tmpl/lib_subject.sgml,
+	  docs/reference/tmpl/login.sgml, docs/reference/tmpl/logout.sgml,
+	  docs/reference/tmpl/name_id_management.sgml,
+	  docs/reference/tmpl/name_identifier_mapping.sgml,
+	  docs/reference/tmpl/name_registration.sgml,
+	  docs/reference/tmpl/node.sgml, docs/reference/tmpl/profile.sgml,
+	  docs/reference/tmpl/provider.sgml,
+	  docs/reference/tmpl/saml2_action.sgml,
+	  docs/reference/tmpl/saml2_advice.sgml,
+	  docs/reference/tmpl/saml2_assertion.sgml,
+	  docs/reference/tmpl/saml2_attribute.sgml,
+	  docs/reference/tmpl/saml2_attribute_statement.sgml,
+	  docs/reference/tmpl/saml2_audience_restriction.sgml,
+	  docs/reference/tmpl/saml2_authn_context.sgml,
+	  docs/reference/tmpl/saml2_authn_statement.sgml,
+	  docs/reference/tmpl/saml2_authz_decision_statement.sgml,
+	  docs/reference/tmpl/saml2_base_idabstract.sgml,
+	  docs/reference/tmpl/saml2_condition_abstract.sgml,
+	  docs/reference/tmpl/saml2_conditions.sgml,
+	  docs/reference/tmpl/saml2_encrypted_element.sgml,
+	  docs/reference/tmpl/saml2_evidence.sgml,
+	  docs/reference/tmpl/saml2_key_info_confirmation_data.sgml,
+	  docs/reference/tmpl/saml2_name_id.sgml,
+	  docs/reference/tmpl/saml2_one_time_use.sgml,
+	  docs/reference/tmpl/saml2_proxy_restriction.sgml,
+	  docs/reference/tmpl/saml2_statement_abstract.sgml,
+	  docs/reference/tmpl/saml2_subject.sgml,
+	  docs/reference/tmpl/saml2_subject_confirmation.sgml,
+	  docs/reference/tmpl/saml2_subject_confirmation_data.sgml,
+	  docs/reference/tmpl/saml2_subject_locality.sgml,
+	  docs/reference/tmpl/saml_advice.sgml,
+	  docs/reference/tmpl/saml_assertion.sgml,
+	  docs/reference/tmpl/saml_attribute.sgml,
+	  docs/reference/tmpl/saml_attribute_designator.sgml,
+	  docs/reference/tmpl/saml_attribute_statement.sgml,
+	  docs/reference/tmpl/saml_audience_restriction_condition.sgml,
+	  docs/reference/tmpl/saml_authentication_statement.sgml,
+	  docs/reference/tmpl/saml_authority_binding.sgml,
+	  docs/reference/tmpl/saml_condition_abstract.sgml,
+	  docs/reference/tmpl/saml_conditions.sgml,
+	  docs/reference/tmpl/saml_name_identifier.sgml,
+	  docs/reference/tmpl/saml_statement_abstract.sgml,
+	  docs/reference/tmpl/saml_subject.sgml,
+	  docs/reference/tmpl/saml_subject_confirmation.sgml,
+	  docs/reference/tmpl/saml_subject_locality.sgml,
+	  docs/reference/tmpl/saml_subject_statement.sgml,
+	  docs/reference/tmpl/saml_subject_statement_abstract.sgml,
+	  docs/reference/tmpl/samlp2_artifact_resolve.sgml,
+	  docs/reference/tmpl/samlp2_artifact_response.sgml,
+	  docs/reference/tmpl/samlp2_assertion_idrequest.sgml,
+	  docs/reference/tmpl/samlp2_attribute_query.sgml,
+	  docs/reference/tmpl/samlp2_authn_query.sgml,
+	  docs/reference/tmpl/samlp2_authn_request.sgml,
+	  docs/reference/tmpl/samlp2_authz_decision_query.sgml,
+	  docs/reference/tmpl/samlp2_extensions.sgml,
+	  docs/reference/tmpl/samlp2_idp_entry.sgml,
+	  docs/reference/tmpl/samlp2_idp_list.sgml,
+	  docs/reference/tmpl/samlp2_logout_request.sgml,
+	  docs/reference/tmpl/samlp2_logout_response.sgml,
+	  docs/reference/tmpl/samlp2_manage_name_id_request.sgml,
+	  docs/reference/tmpl/samlp2_manage_name_id_response.sgml,
+	  docs/reference/tmpl/samlp2_name_id_mapping_request.sgml,
+	  docs/reference/tmpl/samlp2_name_id_mapping_response.sgml,
+	  docs/reference/tmpl/samlp2_name_id_policy.sgml,
+	  docs/reference/tmpl/samlp2_request_abstract.sgml,
+	  docs/reference/tmpl/samlp2_requested_authn_context.sgml,
+	  docs/reference/tmpl/samlp2_response.sgml,
+	  docs/reference/tmpl/samlp2_scoping.sgml,
+	  docs/reference/tmpl/samlp2_status.sgml,
+	  docs/reference/tmpl/samlp2_status_code.sgml,
+	  docs/reference/tmpl/samlp2_status_detail.sgml,
+	  docs/reference/tmpl/samlp2_status_response.sgml,
+	  docs/reference/tmpl/samlp2_subject_query_abstract.sgml,
+	  docs/reference/tmpl/samlp2_terminate.sgml,
+	  docs/reference/tmpl/samlp_request.sgml,
+	  docs/reference/tmpl/samlp_request_abstract.sgml,
+	  docs/reference/tmpl/samlp_response.sgml,
+	  docs/reference/tmpl/samlp_response_abstract.sgml,
+	  docs/reference/tmpl/samlp_status.sgml,
+	  docs/reference/tmpl/samlp_status_code.sgml,
+	  docs/reference/tmpl/server.sgml,
+	  docs/reference/tmpl/session.sgml,
+	  docs/reference/tmpl/strings.sgml, lasso/id-ff/defederation.c,
+	  lasso/id-ff/federation.c, lasso/id-ff/identity.c,
+	  lasso/id-ff/lecp.c, lasso/id-ff/login.c, lasso/id-ff/login.h,
+	  lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	  lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	  lasso/id-ff/provider.c, lasso/id-ff/server.c,
+	  lasso/id-ff/session.c, lasso/id-wsf/data_service.c,
+	  lasso/id-wsf/discovery.c, lasso/lasso.c, lasso/saml-2.0/ecp.c,
+	  lasso/saml-2.0/name_id_management.c,
+	  lasso/xml/disco_authenticate_requester.c,
+	  lasso/xml/disco_authenticate_session_context.c,
+	  lasso/xml/disco_authorize_requester.c,
+	  lasso/xml/disco_credentials.c, lasso/xml/disco_description.c,
+	  lasso/xml/disco_encrypt_resource_id.c,
+	  lasso/xml/disco_encrypted_resource_id.c,
+	  lasso/xml/disco_generate_bearer_token.c,
+	  lasso/xml/disco_insert_entry.c, lasso/xml/disco_modify.c,
+	  lasso/xml/disco_modify_response.c, lasso/xml/disco_options.c,
+	  lasso/xml/disco_query.c, lasso/xml/disco_query_response.c,
+	  lasso/xml/disco_remove_entry.c,
+	  lasso/xml/disco_requested_service_type.c,
+	  lasso/xml/disco_resource_id.c,
+	  lasso/xml/disco_resource_offering.c,
+	  lasso/xml/disco_send_single_logout.c,
+	  lasso/xml/disco_service_instance.c, lasso/xml/dst_data.c,
+	  lasso/xml/dst_modification.c, lasso/xml/dst_modify.c,
+	  lasso/xml/dst_modify_response.c, lasso/xml/dst_new_data.c,
+	  lasso/xml/dst_query.c, lasso/xml/dst_query_item.c,
+	  lasso/xml/dst_query_response.c,
+	  lasso/xml/id-wsf-2.0/disco_abstract.c,
+	  lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  lasso/xml/id-wsf-2.0/disco_keys.c,
+	  lasso/xml/id-wsf-2.0/disco_options.c,
+	  lasso/xml/id-wsf-2.0/disco_provider_id.c,
+	  lasso/xml/id-wsf-2.0/disco_query.c,
+	  lasso/xml/id-wsf-2.0/disco_query_response.c,
+	  lasso/xml/id-wsf-2.0/disco_requested_service.c,
+	  lasso/xml/id-wsf-2.0/disco_security_context.c,
+	  lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  lasso/xml/id-wsf-2.0/disco_service_type.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_add.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_delete.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_delete_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_query.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_query_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_delete.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_delete_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_query.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_query_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_register_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_replace.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_replace_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  lasso/xml/id-wsf-2.0/dst_data_response_base.c,
+	  lasso/xml/id-wsf-2.0/dst_delete_item_base.c,
+	  lasso/xml/id-wsf-2.0/dst_delete_response.c,
+	  lasso/xml/id-wsf-2.0/dst_request.c,
+	  lasso/xml/id-wsf-2.0/dst_result_query_base.c,
+	  lasso/xml/id-wsf-2.0/dst_test_item_base.c,
+	  lasso/xml/id-wsf-2.0/dstref_app_data.c,
+	  lasso/xml/id-wsf-2.0/dstref_create.c,
+	  lasso/xml/id-wsf-2.0/dstref_create_item.c,
+	  lasso/xml/id-wsf-2.0/dstref_create_response.c,
+	  lasso/xml/id-wsf-2.0/dstref_data.c,
+	  lasso/xml/id-wsf-2.0/dstref_data_response.c,
+	  lasso/xml/id-wsf-2.0/dstref_delete.c,
+	  lasso/xml/id-wsf-2.0/dstref_delete_item.c,
+	  lasso/xml/id-wsf-2.0/dstref_delete_response.c,
+	  lasso/xml/id-wsf-2.0/dstref_item_data.c,
+	  lasso/xml/id-wsf-2.0/dstref_modify.c,
+	  lasso/xml/id-wsf-2.0/dstref_modify_item.c,
+	  lasso/xml/id-wsf-2.0/dstref_modify_response.c,
+	  lasso/xml/id-wsf-2.0/dstref_query.c,
+	  lasso/xml/id-wsf-2.0/dstref_query_item.c,
+	  lasso/xml/id-wsf-2.0/dstref_query_response.c,
+	  lasso/xml/id-wsf-2.0/dstref_result_query.c,
+	  lasso/xml/id-wsf-2.0/dstref_test_item.c,
+	  lasso/xml/id-wsf-2.0/ims_identity_mapping_request.c,
+	  lasso/xml/id-wsf-2.0/ims_identity_mapping_response.c,
+	  lasso/xml/id-wsf-2.0/ims_mapping_input.c,
+	  lasso/xml/id-wsf-2.0/ims_mapping_output.c,
+	  lasso/xml/id-wsf-2.0/is_help.c,
+	  lasso/xml/id-wsf-2.0/is_inquiry.c,
+	  lasso/xml/id-wsf-2.0/is_inquiry_element.c,
+	  lasso/xml/id-wsf-2.0/is_interaction_request.c,
+	  lasso/xml/id-wsf-2.0/is_interaction_response.c,
+	  lasso/xml/id-wsf-2.0/is_interaction_statement.c,
+	  lasso/xml/id-wsf-2.0/is_item.c,
+	  lasso/xml/id-wsf-2.0/is_parameter.c,
+	  lasso/xml/id-wsf-2.0/is_select.c, lasso/xml/id-wsf-2.0/is_text.c,
+	  lasso/xml/id-wsf-2.0/ps_add_collection_request.c,
+	  lasso/xml/id-wsf-2.0/ps_add_collection_response.c,
+	  lasso/xml/id-wsf-2.0/ps_add_entity_request.c,
+	  lasso/xml/id-wsf-2.0/ps_add_entity_response.c,
+	  lasso/xml/id-wsf-2.0/ps_add_known_entity_request.c,
+	  lasso/xml/id-wsf-2.0/ps_add_known_entity_response.c,
+	  lasso/xml/id-wsf-2.0/ps_add_to_collection_request.c,
+	  lasso/xml/id-wsf-2.0/ps_get_object_info_request.c,
+	  lasso/xml/id-wsf-2.0/ps_get_object_info_response.c,
+	  lasso/xml/id-wsf-2.0/ps_item_data.c,
+	  lasso/xml/id-wsf-2.0/ps_list_members_request.c,
+	  lasso/xml/id-wsf-2.0/ps_list_members_response.c,
+	  lasso/xml/id-wsf-2.0/ps_notification.c,
+	  lasso/xml/id-wsf-2.0/ps_notify.c,
+	  lasso/xml/id-wsf-2.0/ps_object.c,
+	  lasso/xml/id-wsf-2.0/ps_query_objects_request.c,
+	  lasso/xml/id-wsf-2.0/ps_query_objects_response.c,
+	  lasso/xml/id-wsf-2.0/ps_remove_collection_request.c,
+	  lasso/xml/id-wsf-2.0/ps_remove_entity_request.c,
+	  lasso/xml/id-wsf-2.0/ps_remove_from_collection_request.c,
+	  lasso/xml/id-wsf-2.0/ps_request_abstract.c,
+	  lasso/xml/id-wsf-2.0/ps_resolve_identifier_request.c,
+	  lasso/xml/id-wsf-2.0/ps_resolve_identifier_response.c,
+	  lasso/xml/id-wsf-2.0/ps_resolve_input.c,
+	  lasso/xml/id-wsf-2.0/ps_response_abstract.c,
+	  lasso/xml/id-wsf-2.0/ps_set_object_info_request.c,
+	  lasso/xml/id-wsf-2.0/ps_test_membership_request.c,
+	  lasso/xml/id-wsf-2.0/ps_test_membership_response.c,
+	  lasso/xml/id-wsf-2.0/sb2_consent.c,
+	  lasso/xml/id-wsf-2.0/sb2_credentials_context.c,
+	  lasso/xml/id-wsf-2.0/sb2_endpoint_update.c,
+	  lasso/xml/id-wsf-2.0/sb2_redirect_request.c,
+	  lasso/xml/id-wsf-2.0/sb2_sender.c,
+	  lasso/xml/id-wsf-2.0/sb2_target_identity.c,
+	  lasso/xml/id-wsf-2.0/sb2_timeout.c,
+	  lasso/xml/id-wsf-2.0/sb2_usage_directive.c,
+	  lasso/xml/id-wsf-2.0/sb2_user_interaction_header.c,
+	  lasso/xml/id-wsf-2.0/sbf_framework.c,
+	  lasso/xml/id-wsf-2.0/sec_token.c,
+	  lasso/xml/id-wsf-2.0/sec_token_policy.c,
+	  lasso/xml/id-wsf-2.0/sec_transited_provider_path.c,
+	  lasso/xml/id-wsf-2.0/subs_notification.c,
+	  lasso/xml/id-wsf-2.0/subs_notify_response.c,
+	  lasso/xml/id-wsf-2.0/subs_ref_item.c,
+	  lasso/xml/id-wsf-2.0/subs_subscription.c,
+	  lasso/xml/id-wsf-2.0/subsref_app_data.c,
+	  lasso/xml/id-wsf-2.0/subsref_create.c,
+	  lasso/xml/id-wsf-2.0/subsref_create_item.c,
+	  lasso/xml/id-wsf-2.0/subsref_create_response.c,
+	  lasso/xml/id-wsf-2.0/subsref_data.c,
+	  lasso/xml/id-wsf-2.0/subsref_data_response.c,
+	  lasso/xml/id-wsf-2.0/subsref_delete.c,
+	  lasso/xml/id-wsf-2.0/subsref_delete_item.c,
+	  lasso/xml/id-wsf-2.0/subsref_delete_response.c,
+	  lasso/xml/id-wsf-2.0/subsref_item_data.c,
+	  lasso/xml/id-wsf-2.0/subsref_modify.c,
+	  lasso/xml/id-wsf-2.0/subsref_modify_item.c,
+	  lasso/xml/id-wsf-2.0/subsref_modify_response.c,
+	  lasso/xml/id-wsf-2.0/subsref_notification.c,
+	  lasso/xml/id-wsf-2.0/subsref_notify.c,
+	  lasso/xml/id-wsf-2.0/subsref_notify_response.c,
+	  lasso/xml/id-wsf-2.0/subsref_query.c,
+	  lasso/xml/id-wsf-2.0/subsref_query_item.c,
+	  lasso/xml/id-wsf-2.0/subsref_query_response.c,
+	  lasso/xml/id-wsf-2.0/subsref_result_query.c,
+	  lasso/xml/id-wsf-2.0/subsref_subscription.c,
+	  lasso/xml/id-wsf-2.0/subsref_test_item.c,
+	  lasso/xml/id-wsf-2.0/util_empty.c,
+	  lasso/xml/id-wsf-2.0/util_extension.c,
+	  lasso/xml/id-wsf-2.0/util_response.c,
+	  lasso/xml/id-wsf-2.0/util_status.c, lasso/xml/is_help.c,
+	  lasso/xml/is_inquiry.c, lasso/xml/is_inquiry_element.c,
+	  lasso/xml/is_interaction_request.c,
+	  lasso/xml/is_interaction_response.c,
+	  lasso/xml/is_interaction_statement.c, lasso/xml/is_item.c,
+	  lasso/xml/is_parameter.c, lasso/xml/is_redirect_request.c,
+	  lasso/xml/is_select.c, lasso/xml/is_text.c,
+	  lasso/xml/is_user_interaction.c, lasso/xml/lib_assertion.c,
+	  lasso/xml/lib_authentication_statement.c,
+	  lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_request.c,
+	  lasso/xml/lib_authn_request.h,
+	  lasso/xml/lib_authn_request_envelope.c,
+	  lasso/xml/lib_authn_response.c,
+	  lasso/xml/lib_authn_response_envelope.c,
+	  lasso/xml/lib_federation_termination_notification.c,
+	  lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entry.c,
+	  lasso/xml/lib_idp_list.c, lasso/xml/lib_logout_request.c,
+	  lasso/xml/lib_logout_response.c,
+	  lasso/xml/lib_name_identifier_mapping_request.c,
+	  lasso/xml/lib_name_identifier_mapping_response.c,
+	  lasso/xml/lib_register_name_identifier_request.c,
+	  lasso/xml/lib_register_name_identifier_response.c,
+	  lasso/xml/lib_request_authn_context.c, lasso/xml/lib_scoping.c,
+	  lasso/xml/lib_status_response.c, lasso/xml/lib_subject.c,
+	  lasso/xml/sa_credentials.c, lasso/xml/sa_parameter.c,
+	  lasso/xml/sa_password_transforms.c, lasso/xml/sa_sasl_request.c,
+	  lasso/xml/sa_sasl_response.c, lasso/xml/sa_transform.c,
+	  lasso/xml/saml-2.0/saml2_action.c,
+	  lasso/xml/saml-2.0/saml2_advice.c,
+	  lasso/xml/saml-2.0/saml2_assertion.c,
+	  lasso/xml/saml-2.0/saml2_attribute.c,
+	  lasso/xml/saml-2.0/saml2_attribute_statement.c,
+	  lasso/xml/saml-2.0/saml2_audience_restriction.c,
+	  lasso/xml/saml-2.0/saml2_authn_context.c,
+	  lasso/xml/saml-2.0/saml2_authn_statement.c,
+	  lasso/xml/saml-2.0/saml2_authz_decision_statement.c,
+	  lasso/xml/saml-2.0/saml2_base_idabstract.c,
+	  lasso/xml/saml-2.0/saml2_condition_abstract.c,
+	  lasso/xml/saml-2.0/saml2_conditions.c,
+	  lasso/xml/saml-2.0/saml2_encrypted_element.c,
+	  lasso/xml/saml-2.0/saml2_evidence.c,
+	  lasso/xml/saml-2.0/saml2_key_info_confirmation_data.c,
+	  lasso/xml/saml-2.0/saml2_name_id.c,
+	  lasso/xml/saml-2.0/saml2_one_time_use.c,
+	  lasso/xml/saml-2.0/saml2_proxy_restriction.c,
+	  lasso/xml/saml-2.0/saml2_statement_abstract.c,
+	  lasso/xml/saml-2.0/saml2_subject.c,
+	  lasso/xml/saml-2.0/saml2_subject_confirmation.c,
+	  lasso/xml/saml-2.0/saml2_subject_confirmation_data.c,
+	  lasso/xml/saml-2.0/saml2_subject_locality.c,
+	  lasso/xml/saml-2.0/samlp2_artifact_resolve.c,
+	  lasso/xml/saml-2.0/samlp2_artifact_response.c,
+	  lasso/xml/saml-2.0/samlp2_assertion_id_request.c,
+	  lasso/xml/saml-2.0/samlp2_attribute_query.c,
+	  lasso/xml/saml-2.0/samlp2_authn_query.c,
+	  lasso/xml/saml-2.0/samlp2_authn_request.c,
+	  lasso/xml/saml-2.0/samlp2_authz_decision_query.c,
+	  lasso/xml/saml-2.0/samlp2_extensions.c,
+	  lasso/xml/saml-2.0/samlp2_idp_entry.c,
+	  lasso/xml/saml-2.0/samlp2_idp_list.c,
+	  lasso/xml/saml-2.0/samlp2_logout_request.c,
+	  lasso/xml/saml-2.0/samlp2_logout_response.c,
+	  lasso/xml/saml-2.0/samlp2_manage_name_id_request.c,
+	  lasso/xml/saml-2.0/samlp2_manage_name_id_response.c,
+	  lasso/xml/saml-2.0/samlp2_name_id_mapping_request.c,
+	  lasso/xml/saml-2.0/samlp2_name_id_mapping_response.c,
+	  lasso/xml/saml-2.0/samlp2_name_id_policy.c,
+	  lasso/xml/saml-2.0/samlp2_request_abstract.c,
+	  lasso/xml/saml-2.0/samlp2_requested_authn_context.c,
+	  lasso/xml/saml-2.0/samlp2_response.c,
+	  lasso/xml/saml-2.0/samlp2_scoping.c,
+	  lasso/xml/saml-2.0/samlp2_status.c,
+	  lasso/xml/saml-2.0/samlp2_status_code.c,
+	  lasso/xml/saml-2.0/samlp2_status_detail.c,
+	  lasso/xml/saml-2.0/samlp2_status_response.c,
+	  lasso/xml/saml-2.0/samlp2_subject_query_abstract.c,
+	  lasso/xml/saml-2.0/samlp2_terminate.c, lasso/xml/saml_advice.c,
+	  lasso/xml/saml_assertion.c,
+	  lasso/xml/saml_authentication_statement.c,
+	  lasso/xml/saml_authority_binding.c,
+	  lasso/xml/saml_condition_abstract.c, lasso/xml/saml_conditions.c,
+	  lasso/xml/saml_name_identifier.c,
+	  lasso/xml/saml_name_identifier.h,
+	  lasso/xml/saml_statement_abstract.c, lasso/xml/saml_subject.c,
+	  lasso/xml/saml_subject_confirmation.c,
+	  lasso/xml/saml_subject_locality.c,
+	  lasso/xml/saml_subject_statement_abstract.c,
+	  lasso/xml/samlp_request.c, lasso/xml/samlp_request_abstract.c,
+	  lasso/xml/samlp_response.c, lasso/xml/samlp_response_abstract.c,
+	  lasso/xml/samlp_status.c, lasso/xml/samlp_status_code.c,
+	  lasso/xml/soap_binding_consent.c,
+	  lasso/xml/soap_binding_correlation.c,
+	  lasso/xml/soap_binding_ext_credential.c,
+	  lasso/xml/soap_binding_ext_credentials_context.c,
+	  lasso/xml/soap_binding_ext_service_instance_update.c,
+	  lasso/xml/soap_binding_ext_timeout.c,
+	  lasso/xml/soap_binding_processing_context.c,
+	  lasso/xml/soap_binding_provider.c,
+	  lasso/xml/soap_binding_usage_directive.c, lasso/xml/soap_body.c,
+	  lasso/xml/soap_envelope.c, lasso/xml/soap_header.c,
+	  lasso/xml/strings.h, lasso/xml/utility_status.c, lasso/xml/xml.c:
+	  moved gtk-doc inline as is better on so many points; also added
+	  schema
+	  fragments to published doc
+
+2008-05-14 18:16  dlaniel
+
+	* bindings/overrides.xml, lasso/id-wsf-2.0/data_service.c,
+	  lasso/id-wsf-2.0/data_service.h: allows querying a list of items
+	  with ID-WSF 2.0 data service
+
+2008-05-14 16:37  fpeters
+
+	* lasso/id-wsf-2.0/data_service.c, lasso/id-wsf-2.0/data_service.h:
+	  added lasso_idwsf2_data_service_get_attribute_nodes method
+
+2008-05-14 14:18  dlaniel
+
+	* lasso/id-wsf-2.0/data_service.h: fixed get and set queryItems in
+	  bindings
+
+2008-05-13 13:48  bdauvergne
+
+	* lasso/saml-2.0/profile.c: * validate input in
+	  lasso_profile_is_saml_query
+
+2008-05-09 17:12  bdauvergne
+
+	* bindings/lang_php5_helpers/wrapper_source.py: * export dummy
+	  lasso_init/lasso_shutdown for compatibility
+	  * module shutdown must return SUCCESS
+	  * verify if returned object is non-null before decrementing its
+	  refcount
+
+2008-05-09 17:11  bdauvergne
+
+	* bindings/lang_php5_helpers/wrapper_source_top.c: export dummy
+	  lasso_init/lasso_shutdown for compatibility
+
+2008-04-30 12:57  bdauvergne
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/login.c: fix indentation III
+	  the come back
+
+2008-04-30 12:52  bdauvergne
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/login.c: fix indentation bis
+
+2008-04-30 12:36  bdauvergne
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/login.c: fix indentation
+
+2008-04-30 12:24  bdauvergne
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/login.c: *
+	  lasso*login_must_authenticate: (id-ff/login.c,saml-2.0/login.c):
+	  do
+	  not consider profile->session != NULL as a proof of a
+	  previous authentication and search an assertion associated with
+	  profile->remote_providerID. That was causing a bug when a
+	  previous
+	  unsuccesfull request was making profile->session != NULL even if
+	  no
+	  authentication has been made.
+
+2008-04-30 10:14  bdauvergne
+
+	* lasso/errors.c: * add string translation for error
+	  LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS
+
+2008-04-29 21:07  fpeters
+
+	* bindings/bindings.py: look for ElementTree in yet another place
+
+2008-04-29 20:29  fpeters
+
+	* debian/changelog, debian/control, debian/rules: updated with
+	  2.1.98 packaging
+
+2008-04-29 20:06  fpeters
+
+	* configure.ac: properly quote vars
+
+2008-04-29 13:31  fpeters
+
+	* debian/control: added build-dep on php5-dev
+
+2008-04-29 12:24  fpeters
+
+	* Makefile.am, configure.ac: use new bindings
+
+2008-04-29 12:23  fpeters
+
+	* swig/id-wsf-2.0/disco_svc_metadata.i: don't generate "abstract"
+	  member for PHP as it causes a problem with SWIG
+
+2008-04-29 12:10  fpeters
+
+	* bindings/php5/Makefile.am: [project @
+	  fpeters@0d.be-20080426153010-i98np134gtvc03sy]
+	  move php extension dir under $(prefix)
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-26 17:30:10.185000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/php5/Makefile.am: [project @
+	  fpeters@0d.be-20080423153851-70h4ns9mvsncw150]
+	  ship lasso.ini
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-23 17:38:51.027000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/java/tests/LoginTest.java,
+	  bindings/lang_java_wrapper_top.c, bindings/php5/Makefile.am,
+	  bindings/php5/lasso.ini: [project @
+	  fpeters@0d.be-20080423145930-yekpmusph6oob90d]
+	  merge
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-23 16:59:30.377000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/lang_php5_helpers/wrapper_source_top.c,
+	  bindings/overrides.xml, bindings/php5/Makefile.am,
+	  bindings/php5/tests/profile_tests.php,
+	  bindings/python/Makefile.am: [project @
+	  fpeters@0d.be-20080423100400-sbs984j19ik6dxzi]
+	  merge
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-23 12:04:00.477000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/ghashtable.h: [project @
+	  fpeters@0d.be-20080423095917-mmhdqmpa9i00kuly]
+	  remove assert that needs private struct info
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-23 11:59:17.694000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/bindings.py,
+	  bindings/lang_php5_helpers/wrapper_source.py, bindings/php4,
+	  bindings/php4/Makefile.am, bindings/php4/__init__.py,
+	  bindings/php4/_lasso.h, bindings/php4/lang.py,
+	  bindings/php4/lasso_php4_helper.c: [project @
+	  fpeters@0d.be-20080416142729-kpuwdj5m75qe5vnc]
+	  added php4 binding from benjamin but disabled it
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-16 16:27:29.948000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/lang_php5_helpers/wrapper_source_top.c,
+	  bindings/php5/Makefile.am, bindings/php5/tests/binding_tests.php,
+	  bindings/php5/tests/profile_tests.php: [project @
+	  fpeters@0d.be-20080416142356-cl3d6hb3ru62p8xv]
+	  Damien Laniel 2008-04-16 added PHPGObject destructors and fixed
+	  some memory management
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-16 16:23:56.715000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/Makefile.am, bindings/ghashtable.h,
+	  bindings/lang_java_wrapper_top.c,
+	  bindings/lang_php5_helpers/wrapper_source_top.c,
+	  bindings/lang_python_wrapper_top.c: [project @
+	  fpeters@0d.be-20080410163456-r6a9flm66nhyap6m]
+	  Merge from bdauvergne: factorize the backward compatibility code
+	  for
+	  GHashTable, fixed placement of declarations.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-10 18:34:56.595000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/lang_java_wrapper_top.c,
+	  bindings/lang_python_wrapper_top.c: [project @
+	  fpeters@0d.be-20080410140255-456kiwqz53exn9vo]
+	  removed hash table size checks as they requires access to glib
+	  internals
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-10 16:02:55.908000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080408141937-9ge86l4vyec39lsz]
+	  merging damien branch
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-08 16:19:37.055000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/lang_java.py: [project @
+	  fpeters@0d.be-20080408141317-mmjdku5wuegia6o3]
+	  merging benjamin
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-08 16:13:17.010000+02:00
+
+2008-04-29 12:10  fpeters
+
+	* bindings/bindings.py: [project @
+	  fpeters@0d.be-20080407154605-x6j5u3k1t53vzary]
+	  look for alternative ElementTree implementation
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-07 17:46:05.507000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080406145608-13ngws5566q8jkj9]
+	  simplified raise_on_rc
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-06 16:56:08.973000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080406145106-b6ywyx9f53w39y0e]
+	  fixed returned list of gobject
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-06 16:51:06.682000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_python.py, bindings/overrides.xml: [project @
+	  fpeters@0d.be-20080406135913-4sxje4sifk407jna]
+	  support for methods returning GList* of LassoNode*
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-06 15:59:13.889000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/bindings.py, bindings/overrides.xml: [project @
+	  fpeters@0d.be-20080406111623-pf8iq94lrfu2w2un]
+	  extended the skip attribute to accept more values
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-06 13:16:23.574000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080406110838-j0faaj3x9t3ztbhs]
+	  don't output two spaces before =
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-06 13:08:38.325000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080406103050-qfvnslshaslcjrj1]
+	  improving doc strings
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-06 12:30:50.311000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/overrides.xml: [project @
+	  fpeters@0d.be-20080406100353-gauqob9b1238gw9o]
+	  functions that are not owner of their return type
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-06 12:03:53.304000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080405225744-bz39keu5co15n5l6]
+	  backward compat for ID-WSF buildRequestMsg methods
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-06 00:57:44.577000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/overrides.xml, bindings/php5/Makefile.am: [project @
+	  fpeters@0d.be-20080405220112-hv62do6qtb8itkxw]
+	  optional parameters for LassoDiscovery and LassoDataService
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-06 00:01:12.703000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080405204919-zlk32ehqmftfwh0c]
+	  backward compat for registerIdWsf2DstService
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-05 22:49:19.113000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080405204856-apdxhkk5pdhmx0nj]
+	  support for xmlNode* attributes
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-05 22:48:56.805000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/overrides.xml: [project @
+	  fpeters@0d.be-20080405184728-xay3dzjeq41suxav]
+	  added remaining optional parameters that were defined in the swig
+	  bindings
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-05 20:47:28.881000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py, bindings/lang_python.py:
+	  [project @ fpeters@0d.be-20080405184658-1389bbpst9cxhjm6]
+	  support for boolean default values
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-05 20:46:58.982000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080405184638-o2aipd0e2lkd674q]
+	  fixed backward compatibility of DiscoDescription to only be
+	  enabled when WSF support is on
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-05 20:46:38.168000+02:00
+
+2008-04-29 12:09  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080404131647-lb7jty8pp3tjcmny]
+	  added handling of other constructors, and backward compatibility
+	  for lasso.DiscoDescription_newWithBriefSoapHttpDescription
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-04 15:16:47.595000+02:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/overrides.xml: [project @
+	  fpeters@0d.be-20080403104659-tio35cweqbl32auj]
+	  lasso_idwsf2_discovery_metadata_register_self has its last
+	  parameter optional
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-04-03 12:46:59.281000+02:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/php5/tests/Makefile.am: [project @
+	  fpeters@0d.be-20080328175728-1uv5yyo713uhukck]
+	  merging benjamin branch (again)
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-28 18:57:28.327000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/lang_php5_helpers/wrapper_source_top.c,
+	  bindings/php5/Makefile.am, bindings/php5/examples/Makefile.am,
+	  bindings/php5/tests/Makefile.am,
+	  bindings/php5/tests/binding_tests.php,
+	  bindings/php5/tests/binding_tests.sh,
+	  bindings/php5/tests/profile_tests.php,
+	  bindings/php5/tests/profile_tests.sh: [project @
+	  fpeters@0d.be-20080328175710-s4031yloqsdbmvel]
+	  merging benjamin branch
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-28 18:57:10.522000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080326094935-u5wxcw8nd30ckdjw]
+	  casting free functions
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-26 10:49:35.397000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/bindings.py, bindings/java/Makefile.am,
+	  bindings/lang_java.py, bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_python.py, bindings/overrides.xml,
+	  bindings/php5/Makefile.am: [project @
+	  fpeters@0d.be-20080326094754-cw66nuog62q06ekk]
+	  merging benjamin branch
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-26 10:47:54.384000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080326090203-a0ietdsmp8ec9aef]
+	  freeing converted list
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-26 10:02:03.689000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/bindings.py, bindings/lang_python.py,
+	  bindings/overrides.xml: [project @
+	  fpeters@0d.be-20080326084502-krmekmh7mokemn18]
+	  possibility to qualify GList* parameters
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-26 09:45:02.789000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/bindings.py, bindings/lang_python.py,
+	  bindings/overrides.xml: [project @
+	  fpeters@0d.be-20080325181554-raqz9a721r2vjo5t]
+	  return type qualifier to know what is the content of a GList*
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-25 19:15:54.747000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/bindings.py, bindings/java/Makefile.am,
+	  bindings/lang_java.py, bindings/lang_php5_helpers/php_code.py,
+	  bindings/overrides.xml, bindings/php5/Makefile.am,
+	  bindings/python/Makefile.am: [project @
+	  fpeters@0d.be-20080325172346-eitu3onvzps4b30z]
+	  merging benjamin stuff and adding --enable-id-wsf when id-wsf is
+	  asked
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-25 18:23:46.535000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080321174837-2fneubl3xhlol08w]
+	  always raise an exception, to be compatible with previous
+	  behaviour
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-21 18:48:37.002000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/lang_python_wrapper_top.c: [project @
+	  fpeters@0d.be-20080321174813-7pcjuucmw5xw4d4o]
+	  declare functions, and make them static
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-21 18:48:13.524000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080321173628-ufrpdmc23wmhu5ym]
+	  removed compatibility to inexisting attribute
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-21 18:36:28.789000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080314231446-2fess87rf4xe00ar]
+	  more compat
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-15 00:14:46.531000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/Makefile.am, bindings/java/Makefile.am,
+	  bindings/java/TODO, bindings/java/tests/BindingTests.java,
+	  bindings/java/tests/LoginTest.java: [project @
+	  fpeters@0d.be-20080314231256-hjz1wljuqrcbuce3]
+	  merging benjamin branch
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-15 00:12:56.228000+01:00
+
+2008-04-29 12:08  fpeters
+
+	* bindings/java/LassoException_top.java, bindings/java/Makefile.am,
+	  bindings/java/tests/LoginTest.java, bindings/lang_java.py,
+	  bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/lang_python.py, bindings/lang_python_wrapper_top.c,
+	  bindings/php5/Makefile.am, bindings/python/Makefile.am: [project
+	  @ fpeters@0d.be-20080310093300-2iv41ihnuify54po]
+	  merging benjamin branch
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-10 10:33:00.592000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/java/GObject.java, bindings/java/Makefile.am,
+	  bindings/java/tests/BindingTests.java,
+	  bindings/java/tests/LoginTest.java, bindings/lang_java.py,
+	  bindings/lang_java_wrapper_top.c,
+	  bindings/lang_php5_helpers/php_code.py, bindings/overrides.xml,
+	  bindings/php5/Makefile.am, bindings/python/Makefile.am: [project
+	  @ fpeters@0d.be-20080309152828-pw4gd3lcm7rb7dxd]
+	  merging benjamin branch
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-03-09 16:28:28.854000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080229163949-v7zjjcr3sg5w0wfj]
+	  set exception code in raise_on_rc as the same exception can share
+	  two different
+	  codes (in reality this is only the case for UnknownProfileError),
+	  also skip
+	  LogoutErroor/UnknownProfileError instead of duplicating and
+	  overwriting it,
+	  with a long explanation comment.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-29 17:39:49.202000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/java/Makefile.am: [project @
+	  fpeters@0d.be-20080228084331-nnw52qii4xdmz36k]
+	  ship files required for tests/
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-28 09:43:31.229000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/lang_python.py, bindings/overrides.xml: [project @
+	  fpeters@0d.be-20080227102117-mbx90lw49ty9vfq9]
+	  rename lasso_profile_is_identity_dirty to
+	  lasso_profile_has_dirty_identity
+	  (and ditto with s/identity/session/) to provide both correct
+	  documentation
+	  and backward compatibility in Python bindings
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-27 11:21:17.023000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080227101004-a8tjn21ux8m0md7s]
+	  an other rename issue
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-27 11:10:04.420000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080226163902-kby1si1erxqnvzsm]
+	  compatibility with NodeList, StringList and StringDict
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-26 17:39:02.548000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080226163712-tdqz8v7d3rsdoygt]
+	  backward compat for MiscTextNode.text_child
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-26 17:37:12.594000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080225222041-kixxnphv94z7ld23]
+	  fixed function renaming
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-25 23:20:41.510000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080225132449-kd2tppchh4z47sti]
+	  increment refcount of objects returned in tuples
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-25 14:24:49.893000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/java/LassoException_top.java, bindings/java/Makefile.am,
+	  bindings/java/tests/LoginTest.java,
+	  bindings/lang_java_wrapper_top.c, bindings/lang_python.py,
+	  bindings/overrides.xml: [project @
+	  fpeters@0d.be-20080225121334-yi07nl8kefuefhk9]
+	  benjamin branch
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-25 13:13:34.475000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080222101655-1mbomnvhq5d8gxtb]
+	  support for accessor returning GObjects
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-22 11:16:55.631000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/bindings.py: [project @
+	  fpeters@0d.be-20080222101641-d32t8a8wtocet4qq]
+	  more __repr__ like
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-22 11:16:41.648000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080222095228-htuqndnaiiazp2qv]
+	  backward compatibility for Saml2Subject.nameID
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-22 10:52:28.583000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/bindings.py, bindings/java/GObject.java,
+	  bindings/java/Makefile.am, bindings/java/TODO, bindings/java/doc,
+	  bindings/java/tests/BindingTests.java,
+	  bindings/java/tests/LoginTest.java, bindings/lang_java.py,
+	  bindings/lang_java_wrapper_top.c, bindings/overrides.xml:
+	  [project @ fpeters@0d.be-20080222093656-l6a09ccadxdz9qrs]
+	  merging benjamin branch
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-22 10:36:56.421000+01:00
+
+2008-04-29 12:07  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080222093439-0tbhiky3305jroj5]
+	  added backward compatibility for Samlp2AuthnRequest.nameIDPolicy
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-22 10:34:39.153000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/java/Makefile.am: [project @
+	  fpeters@0d.be-20080218085519-h4hpx5u9ezvupvbc]
+	  com_entrouvert_lasso_LassoJNI.h is built
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-18 09:55:19.662000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/Makefile.am: [project @
+	  fpeters@0d.be-20080218085509-t0oktx26t3v393pw]
+	  added missing java files to distributed files
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-18 09:55:09.987000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/java/Makefile.am: [project @
+	  fpeters@0d.be-20080217154439-uws87jdru8j3izkj]
+	  distribute GObject.java and LassoException_top.java, and fixed
+	  distcheck
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-17 16:44:39.322000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/lang_java.py: [project @
+	  fpeters@0d.be-20080217154423-svipbb8mktdbs6gz]
+	  create source directory if necessary
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-17 16:44:23.418000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/bindings.py: [project @
+	  fpeters@0d.be-20080217144029-zleb5lw82iwcqqvj]
+	  space after comma
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-17 15:40:29.819000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20080217143931-r5r87f8m415866z5]
+	  fixed (a little bit hacky, slowly getting back) renamed methods
+	  in python
+	  binding
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-17 15:39:31.583000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/lang_java.pyc: [project @
+	  fpeters@0d.be-20080217115736-u8axfdcztdhvsnj0]
+	  removed pyc file
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-17 12:57:36.849000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/Makefile.am, bindings/bindings.py, bindings/java,
+	  bindings/java/GObject.java,
+	  bindings/java/LassoException_top.java, bindings/java/Makefile.am,
+	  bindings/java/TODO, bindings/java/com,
+	  bindings/java/com/entrouvert, bindings/java/com/entrouvert/lasso,
+	  bindings/java/doc, bindings/java/tests,
+	  bindings/java/tests/BindingTests.java,
+	  bindings/java/tests/LoginTest.java,
+	  bindings/java/tests/Test.java, bindings/lang_java.py,
+	  bindings/lang_java.pyc, bindings/lang_java_wrapper_bottom.c,
+	  bindings/lang_java_wrapper_top.c, bindings/overrides.xml,
+	  bindings/utility-scripts,
+	  bindings/utility-scripts/error-analyzer.pl, bindings/utils.py:
+	  [project @ fpeters@0d.be-20080217115557-8qtcrc1vzb75f75c]
+	  merged Benjamin branch
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-02-17 12:55:57.088000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/lang_php5_helpers/wrapper_source_top.c,
+	  bindings/php5/examples,
+	  bindings/php5/examples/get_attributes_from_assertion.php,
+	  bindings/php5/tests/binding_tests.php, bindings/python/examples,
+	  bindings/python/examples/get_attributes_from_assertion.py:
+	  [project @ fpeters@0d.be-20080118215410-d45drghkhvba7822]
+	  merged Damien branch; and fixed PHP5 binding to use GLib memory
+	  management
+	  functions
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2008-01-18 22:54:10.239000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/bindings.py, bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071122144503-m1ya6db2hzlijhmt]
+	  parse docstrings (such as the parsed form is available to all
+	  languages) and
+	  format them as epydoc in the python binding
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-22 15:45:03.610000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/bindings.py: [project @
+	  fpeters@0d.be-20071122125027-vw48yk2h353ijif8]
+	  Don't bind lasso_*_destroy methods since they are just wrappers
+	  around
+	  g_object_unref which will be called properly from the bindings
+	  object
+	  destructor support. Also added support for a skip attribute to
+	  <func>
+	  in overrides (not used at the moment).
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-22 13:50:27.802000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/php5/Makefile.am: [project @
+	  fpeters@0d.be-20071120204838-b1q3z1nv4phb1t8r]
+	  fixed typo in file to remove
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-20 21:48:38.865000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/php5/Makefile.am, bindings/python/Makefile.am: [project
+	  @ fpeters@0d.be-20071120201438-11ybvaefw3o02p7h]
+	  clean built files
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-20 21:14:38.792000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/python/tests/binding_tests.py,
+	  bindings/python/tests/profiles_tests.py: [project @
+	  fpeters@0d.be-20071120201406-loyt7g5302ztk7er]
+	  get srcdir from env variable (set automatically by automake)
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-20 21:14:06.537000+01:00
+
+2008-04-29 12:06  fpeters
+
+	* bindings/Makefile.am, bindings/php5/Makefile.am,
+	  bindings/python/Makefile.am, bindings/python/tests/Makefile.am:
+	  [project @ fpeters@0d.be-20071120151830-wdnobbexiv300ibb]
+	  fixed some make distcheck issues (still remaining is access to
+	  test data when
+	  srcdir != builddir)
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-20 16:18:30.814000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/lang_php5_helpers/wrapper_source_top.c,
+	  bindings/lang_python_wrapper_top.c, bindings/php5/Makefile.am,
+	  bindings/php5/tests/binding_tests.php,
+	  bindings/php5/tests/profile_tests.php: [project @
+	  fpeters@0d.be-20071115162508-ydcoj2rr8zkfxyvy]
+	  merged Damien branch
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-15 17:25:08.524000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/bindings.py, bindings/lang_python.py,
+	  bindings/overrides.xml: [project @
+	  fpeters@0d.be-20071115161633-6e49xtjy7dgqxm3r]
+	  added special support for functions that return a borrowed
+	  reference to
+	  a GObject*.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-15 17:16:33.298000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_python_wrapper_top.c: [project @
+	  fpeters@0d.be-20071115102943-ai5s97yj5g9chrv3]
+	  added getter for internal GObject* reference count; useful to
+	  debug memory
+	  allocations.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-15 11:29:43.003000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/python/tests/binding_tests.py: [project @
+	  fpeters@0d.be-20071113195326-cd83a1nrlh9l9nbr]
+	  added three more tests of bindings
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-13 20:53:26.406000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/python/Makefile.am, bindings/python/tests,
+	  bindings/python/tests/Makefile.am,
+	  bindings/python/tests/binding_tests.py,
+	  bindings/python/tests/profiles_tests.py: [project @
+	  fpeters@0d.be-20071113192919-3g05qazwjjhivlsh]
+	  ported old test cases to the new binding
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-13 20:29:19.859000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071113192818-6ysl71n3cg4uvy4l]
+	  fixed setting list and object attributes to None
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-13 20:28:18.519000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_python.py, bindings/lang_python_wrapper_top.c:
+	  [project @ fpeters@0d.be-20071113172348-8i4mcve247l8ec0k]
+	  fixed memory managements issues in Python binding
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-13 18:23:48.693000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071113151334-k8v9udlbr5nb2lu7]
+	  backward compatibility for isSessionDirty and isIdentityDirty
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-13 16:13:34.182000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071113141308-1hr4b009pgx606sa]
+	  some backward compatibility with SWIG generated binding
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-13 15:13:08.467000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_python_wrapper_top.c: [project @
+	  fpeters@0d.be-20071113140738-l9xdpgnjvx2ekdvr]
+	  PyDict_SetItemString doesn't steal the reference, so
+	  Py_DECREF(obj); after.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-13 15:07:38.745000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/lang_php5_helpers/wrapper_source_top.c,
+	  bindings/overrides.xml, bindings/php5/tests/binding_tests.php:
+	  [project @ fpeters@0d.be-20071113015838-961yf93m001amgi1]
+	  merging Damien branch
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-13 02:58:38.825000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_python_wrapper_top.c: [project @
+	  fpeters@0d.be-20071112131601-rxpuzaxkhe2qwdw4]
+	  fixed variable type
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-12 14:16:01.913000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_php5_helpers/wrapper_source.py: [project @
+	  fpeters@0d.be-20071111224238-k28pyur1kpm2iiyc]
+	  added some support for overrided function names to PHP5 binding
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-11 23:42:38.123000+01:00
+
+2008-04-29 12:05  fpeters
+
+	* bindings/lang_python.py, bindings/overrides.xml: [project @
+	  fpeters@0d.be-20071111215225-xo2v0iwwjw74rqyp]
+	  override lasso_profile_get_nameIdentifier to be renamed to
+	  lasso_profile_get_federation_nameIdentifier in bindings, so it
+	  doesn't shadow
+	  the LassoProfile::nameIdentifier member.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-11 22:52:25.286000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py: [project @
+	  fpeters@0d.be-20071111213604-1prv8pyvnwr6gdly]
+	  moved is_null check into cptrToPhp function instead of
+	  duplicating it in
+	  callers.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-11 22:36:04.472000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_php5_helpers/wrapper_source.py: [project @
+	  fpeters@0d.be-20071111213455-a7lds8mfily3o9i1]
+	  ISO C90 forbids mixed declarations and code; moved xmlString
+	  return code
+	  into its own code block
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-11 22:34:55.867000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/lang_php5_helpers/wrapper_source_top.c,
+	  bindings/lang_python_wrapper_top.c,
+	  bindings/php5/tests/binding_tests.php,
+	  bindings/php5/tests/profile_tests.php: [project @
+	  fpeters@0d.be-20071106133809-z6qxlw10eooqrkwp]
+	  merged damien branch
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-06 14:38:09.490000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_php5_helpers/wrapper_source.py: [project @
+	  fpeters@0d.be-20071103222826-mjowzcuitfc35jpx]
+	  removed erroneously duplicated lines
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-03 23:28:26.922000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_php5_helpers/wrapper_source.py: [project @
+	  fpeters@0d.be-20071103213505-94itgfwnvinqnhf6]
+	  Added warning message on boolean constants, as they are not yet
+	  supported but
+	  shouldn't cause the build to fail; also fixed a few calls to
+	  format_attribute
+	  that have been removed in favor of code from utils.py
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-03 22:35:05.918000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_python.py, bindings/lang_python_wrapper_top.c:
+	  [project @ fpeters@0d.be-20071103211651-8vperiqd97t0987s]
+	  support for list of xmlNode* (such as LibAuthnRequest/Extension)
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-03 22:16:51.610000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/php5/tests/profile_tests.php: [project @
+	  fpeters@0d.be-20071102093734-mv4amat73ulcri17]
+	  merged Damien branch
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-02 10:37:34.842000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/bindings.py, bindings/lang_python.py,
+	  bindings/lang_python_wrapper_top.c, bindings/overrides.xml:
+	  [project @ fpeters@0d.be-20071101183642-85c94st4sjujh4sr]
+	  added special support required for SAML2_SUPPORT and WSF_SUPPORT
+	  constants
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-01 19:36:42.776000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/bindings.py, bindings/lang_python.py,
+	  bindings/overrides.xml: [project @
+	  fpeters@0d.be-20071101181800-r94oeih0q8hplrxo]
+	  added support for standalone functions in lasso wrapper; and
+	  added renames
+	  for a bunch of them
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-01 19:18:00.896000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_python.py, bindings/lang_python_wrapper_top.c:
+	  [project @ fpeters@0d.be-20071101170655-2qi60xpa42u7g310]
+	  added (get) wrapper for GHashTable members
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-01 18:06:55.994000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_python.py, bindings/lang_python_wrapper_top.c:
+	  [project @ fpeters@0d.be-20071101160226-jj7ou71gblw0uymq]
+	  added support for converting xmlNode* as return type to PyString
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-01 17:02:26.261000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071101155155-avzyxfeum84mhf7k]
+	  don't return a value for methods that do not return a value, and
+	  convert
+	  returned value to object for methods returning objects.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-01 16:51:55.007000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071101154634-m2de3kw7qyl47p39]
+	  raise lasso.Error instead of base Exception on constructor error
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-01 16:46:34.882000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/utils.py: [project @
+	  fpeters@0d.be-20071101154602-vtgnze1fteggdkvj]
+	  always convert identifers from ID to Id
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-01 16:46:02.686000+01:00
+
+2008-04-29 12:04  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071101154109-l4l5rntsmkrukw3k]
+	  raise exception when constructor fails
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-01 16:41:09.647000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/overrides.xml: [project @
+	  fpeters@0d.be-20071101153722-f7053pg8s6x5rpst]
+	  added comments to file, and added optional args definition to
+	  lasso_provider_new
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-11-01 16:37:22.975000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071031161615-6azrhw33s96nngr1]
+	  fixed setters for object members that are LassoNode
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-31 17:16:15.654000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071031161008-c5jqe7topkxoaoe0]
+	  raise TypeError when assigning a Python list to a member
+	  expecting a tuple
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-31 17:10:08.047000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py: [project @
+	  fpeters@0d.be-20071031124903-z1k8ywuk1qgrl5gm]
+	  added lasso extension dynamic loading, aborting if it fails
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-31 13:49:03.384000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/lang_python.py, bindings/utils.py: [project @
+	  fpeters@0d.be-20071031114522-jkrmvbpphcm0rms8]
+	  moved identifier name formatting functions to their own module,
+	  so they are not
+	  duplicated everywhere.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-31 12:45:22.367000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/lang_php5_helpers/php_code.py: [project @
+	  fpeters@0d.be-20071030182501-ylv8gu5he0jqlngd]
+	  output warnings to stderr
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-30 19:25:01.156000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071029175534-xyhm1jidpe624m3t]
+	  API compatibility with SWIG bindings which didn't have accessors
+	  for those
+	  methods and used totally pythonified method name instead, such as
+	  Logout::getNextProviderId; also improved python method naming
+	  converter
+	  function to correctly translate ID to Id.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-29 18:55:34.577000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071029174409-80dztn33kjef8xch]
+	  output warning to stderr
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-29 18:44:09.130000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071028192051-mdp2mgambly3dyxv]
+	  fixed two places which had not been converted to new cptr/type
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-28 20:20:51.103000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/Makefile.am, bindings/bindings.py,
+	  bindings/lang_php5.py, bindings/lang_python.py,
+	  bindings/php5/Makefile.am, bindings/python,
+	  bindings/python/Makefile.am: [project @
+	  fpeters@0d.be-20071028140359-qhawdgrwjhk97y32]
+	  added Makefile.am files; to integrate within lasso build tree
+	  (under a
+	  bindings/ directory), this also requires to add those three lines
+	  to
+	  configure.ac AC_OUTPUT:
+	  bindings/Makefile
+	  bindings/python/Makefile
+	  bindings/php5/Makefile
+	  
+	  also changed generation script to output files in the current
+	  directory
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-28 15:03:59.480000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/lang_php5_helpers/wrapper_source.py: [project @
+	  fpeters@0d.be-20071028134708-gxz10vu031229qi8]
+	  undef some #define from php_config.h that are also defined in
+	  lasso_config.h
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-28 14:47:08.021000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/bindings.py, bindings/lang_php5.py,
+	  bindings/lang_php5_helpers,
+	  bindings/lang_php5_helpers/__init__.py,
+	  bindings/lang_php5_helpers/php_code.py,
+	  bindings/lang_php5_helpers/wrapper_header.py,
+	  bindings/lang_php5_helpers/wrapper_source.py,
+	  bindings/lang_python.py, bindings/php5, bindings/php5/tests,
+	  bindings/php5/tests/profile_tests.php: [project @
+	  fpeters@0d.be-20071028132849-mlc6yfzl0y3enzbn]
+	  merged PHP5 support from Damien
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-28 14:28:49.939000+01:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/bindings.py, bindings/lang_python.py,
+	  bindings/lang_python_wrapper_bottom.c,
+	  bindings/lang_python_wrapper_top.c: [project @
+	  fpeters@0d.be-20071010133236-j76dbt8kh1gojsz2]
+	  build without ID-WSF support by default, adding a --enable-id-wsf
+	  parameter to
+	  enable it. Also some generated C cleaning.
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-10 15:32:36.162000+02:00
+
+2008-04-29 12:03  fpeters
+
+	* bindings/bindings.py, bindings/lang_python.py, bindings/t.py:
+	  [project @ fpeters@0d.be-20071008135840-ujwuza0tqm6cwlzr]
+	  added licence header, help text, command-line options and renamed
+	  script
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-08 15:58:40.683000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py, bindings/t.py: [project @
+	  fpeters@0d.be-20071008113045-hi02eeinwh7a1703]
+	  some support to generate python docstrings (on methods)
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-08 13:30:45.285000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py, bindings/lang_python_wrapper_top.c:
+	  [project @ fpeters@0d.be-20071008100008-wd4uyitms1xfz1wv]
+	  completed support for get/setters of list of objects
+	  
+	  s = lasso.Saml2Assertion()
+	  s2 = lasso.Saml2AuthnStatement()
+	  s2.sessionIndex = 'plop'
+	  s3 = lasso.Saml2AuthnStatement()
+	  s3.sessionIndex = 'plop2'
+	  s.authnStatement = (s2, s3)
+	  print s.authnStatement
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-08 12:00:08.145000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071008094035-jypv3sactdkvkoq7]
+	  setting of list of objects
+	  
+	  s = lasso.Saml2Assertion()
+	  s2 = lasso.Saml2AuthnStatement()
+	  s2.sessionIndex = 'plop'
+	  s3 = lasso.Saml2AuthnStatement()
+	  s3.sessionIndex = 'plop2'
+	  s.authnStatement = (s2, s3)
+	  print s.dump()
+	  
+	  <saml:Assertion
+	  xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" SignType="0"
+	  SignMethod="0" EncryptionActivated="false"
+	  EncryptionSymKeyType="0">
+	  <saml:AuthnStatement SessionIndex="plop"/>
+	  <saml:AuthnStatement SessionIndex="plop2"/>
+	  </saml:Assertion>
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-08 11:40:35.875000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py, bindings/t.py: [project @
+	  fpeters@0d.be-20071008090356-014qg89f2kq667v4]
+	  support for getter/setter of list of strings (and partially done
+	  of objects)
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-08 11:03:56.732000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071006185817-a2qpisu5x6a4zqef]
+	  fixing newFromDump constructors
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-06 20:58:17.081000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py, bindings/overrides.xml, bindings/t.py:
+	  [project @ fpeters@0d.be-20071006183919-bv96kzjkqzho9p5s]
+	  added support for non-None optional args
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-06 20:39:19.031000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071006180132-1t68niy6jyj26k88]
+	  bugfix for string members
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-06 20:01:32.249000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py, bindings/overrides.xml, bindings/t.py:
+	  [project @ fpeters@0d.be-20071006172452-7ed22uoeqm22gled]
+	  support for exceptions, with a complete hierarchy of exceptions;
+	  and emulation
+	  of swig binding behaviour (access to code via [0] and to error
+	  string via [1])
+	  
+	  login = lasso.Login(server)
+	  try:
+	  login.initAuthnRequest('plop', lasso.HTTP_METHOD_REDIRECT)
+	  except lasso.Error, error:
+	  print error
+	  # <lasso.ProviderNotFoundError(-201): ProviderID unknown to
+	  LassoServer.>
+	  print error.code
+	  # -201
+	  print error[0]
+	  # -201
+	  print error[1]
+	  # ProviderID unknown to LassoServer.
+	  sys.exit(1)
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-06 19:24:52.095000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py, bindings/lang_python_wrapper_top.c:
+	  [project @ fpeters@0d.be-20071006155345-ses0l1suzq229qdq]
+	  fixed refcounting
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-06 17:53:45.416000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python_wrapper_top.c: [project @
+	  fpeters@0d.be-20071006151758-pwrstredrf19b2nw]
+	  added repr support for PyGObjectPtr, displaying GObject type name
+	  and reference
+	  count
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-06 17:17:58.258000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071005223906-y27ho960oiiqho19]
+	  fixed getters returning objects (getting the appropriate class
+	  for the given
+	  type) (and a small issue with setter of strings); this is now
+	  working:
+	  
+	  login = lasso.Login(server)
+	  login.initAuthnRequest('https://idp1/metadata',
+	  lasso.HTTP_METHOD_REDIRECT)
+	  login.request.isPassive = False
+	  login.request.nameIDPolicy = 'federated'
+	  login.buildAuthnRequestMsg()
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-06 00:39:06.565000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py, bindings/lang_python_wrapper_bottom.c,
+	  bindings/t.py: [project @
+	  fpeters@0d.be-20071005200614-dahkk1xuq6pbumbo]
+	  wrap constants & enums; is now possible:
+	  
+	  login = lasso.Login(server)
+	  login.initAuthnRequest('https://idp1/metadata',
+	  lasso.HTTP_METHOD_REDIRECT)
+	  login.buildAuthnRequestMsg()
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 22:06:14.800000+02:00
+
+2008-04-29 12:02  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071005194234-7b7e39l1x4afi8wf]
+	  fixed attribute renaming, login.msgUrl now works
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 21:42:34.345000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/lang_python.py, bindings/overrides.xml, bindings/t.py:
+	  [project @ fpeters@0d.be-20071005193755-jzlc2gc56thaxqwe]
+	  added support for optional arguments and fixed method calls with
+	  objects
+	  
+	  now working:
+	  
+	  server = lasso.Server('../../tests/data/sp1-la/metadata.xml')
+	  server.addProvider(2, '../../tests/data/idp1-la/metadata.xml',
+	  '../../tests/data/idp1-la/public-key.pem')
+	  
+	  login = lasso.Login(server)
+	  login.initAuthnRequest('https://idp1/metadata', 4)
+	  login.buildAuthnRequestMsg()
+	  print login.msg_url
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 21:37:55.914000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071005171544-ben23itgbrjebwvk]
+	  member setters
+	  
+	  import lasso
+	  s = lasso.Samlp2AuthnRequest()
+	  s.isPassive = True
+	  print s.dump()
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 19:15:44.095000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/lang_python.py, bindings/t.py: [project @
+	  fpeters@0d.be-20071005162859-0pf7l8zkie7m9sr5]
+	  generate wrapper for get accessors
+	  
+	  import lasso
+	  s = lasso.Samlp2AuthnRequest()
+	  print s.isPassive
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 18:28:59.741000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071005161337-vh1s4saoywr0u2sa]
+	  workaround since assertion must come before advice
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 18:13:37.320000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/lang_python.py, bindings/lang_python_wrapper_bottom.c,
+	  bindings/lang_python_wrapper_top.c, bindings/t.py: [project @
+	  fpeters@0d.be-20071005155511-13lg9tc7usfht3ud]
+	  minimalistic functional module
+	  
+	  $ python -c 'import lasso; print
+	  lasso.Samlp2AuthnRequest().dump()'
+	  <samlp:AuthnRequest
+	  xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+	  SignType="0" SignMethod="0" ForceAuthn="false"
+	  IsPassive="false"/>
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 17:55:11.508000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/lang_python.py, bindings/lang_python_wrapper_bottom.c,
+	  bindings/lang_python_wrapper_top.c: [project @
+	  fpeters@0d.be-20071005125351-543q5fahhrljdmaj]
+	  (work in progress) some infra for python wrapper
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 14:53:51.026000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/lang_python.py: [project @
+	  fpeters@0d.be-20071005114857-u95fr7hqt6ze2qp9]
+	  create constructor for _new functions and class methods for
+	  _new_from_dump
+	  methods
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 13:48:57.345000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/lang_python.py, bindings/t.py: [project @
+	  fpeters@0d.be-20071005100459-r1mm9241ko41pcfv]
+	  python generation (classes, members & methods; missing
+	  constructors and layer
+	  using python C API)
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 12:04:59.172000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071005082424-d4y1kxyjhenlflsj]
+	  ignore get_type functions
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 10:24:24.151000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071005082412-r41uf26575dubg5l]
+	  attach methods to classes
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 10:24:12.840000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071005081049-u0v99a86515z4ay5]
+	  order class hierarchy
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 10:10:49.378000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071005080353-01t90pe4t68sdmtp]
+	  moved binding data to a class
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-05 10:03:53.550000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071004213555-02snw1q22fgkw3jx]
+	  added support for functions
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-04 23:35:55.074000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071004205916-5ur5t75ht9586n4j]
+	  reimplemented to be easier to concatenate lines (necessary for
+	  functions
+	  spanning multiple lines)
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-04 22:59:16.286000+02:00
+
+2008-04-29 12:01  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071004204927-6j2np9wflrp15tt4]
+	  get struct members
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-04 22:49:27.981000+02:00
+
+2008-04-29 12:00  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071004203958-xsegogi4ad0muf0a]
+	  get list of structs
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-04 22:39:58.914000+02:00
+
+2008-04-29 12:00  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071004203206-voc7gqczx2usx3c8]
+	  ignore private headers
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-04 22:32:06.670000+02:00
+
+2008-04-29 12:00  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071004203137-j6p42c5e48qgc5fq]
+	  added support for enums
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-04 22:31:37.240000+02:00
+
+2008-04-29 12:00  fpeters
+
+	* bindings/t.py: [project @
+	  fpeters@0d.be-20071004185258-quqzvq2tgmbt8u1j]
+	  initial work, extracting constants out of source tree
+	  
+	  
+	  Original author: Frederic Peters <fpeters@0d.be>
+	  Date: 2007-10-04 20:52:58.486000+02:00
+
+2008-04-29 12:00  fpeters
+
+	* bindings: This directory will host the upstream sources
+
+2008-04-29 10:45  fpeters
+
+	* debian/changelog, debian/control, debian/copyright,
+	  debian/liblasso-cil.files, debian/liblasso-java.files,
+	  debian/liblasso-java.install, debian/liblasso-perl.install,
+	  debian/liblasso3-dev.files, debian/liblasso3-dev.install,
+	  debian/liblasso3.files, debian/liblasso3.install,
+	  debian/php4-lasso.examples, debian/php4-lasso.files,
+	  debian/php5-lasso.files, debian/php5-lasso.install,
+	  debian/python-lasso.files, debian/python-lasso.install,
+	  debian/rules: updated to current packaging then updated for new
+	  bindings
+
+2008-04-28 11:45  fpeters
+
+	* lasso/xml/xml.c: re-added function; but fixed docstrings
+
+2008-04-28 11:14  fpeters
+
+	* lasso/xml/xml.c: removed duplicated function
+
+2008-04-26 15:29  fpeters
+
+	* configure.ac: add unprefixed extension dir for php5, and fixed it
+	  for php4
+
+2008-04-24 09:02  bdauvergne
+
+	* lasso/id-ff/provider.c: change g_return_val_if_fail(provider,...
+	  from last commit to
+	  g_return_val_if_fail(LASSO_IS_PROVIDER(provider)
+
+2008-04-23 17:10  bdauvergne
+
+	* lasso/id-ff/provider.c, lasso/id-ff/provider.h: * add bad
+	  argument handling in lasso_provider_* functions
+
+2008-04-23 16:57  bdauvergne
+
+	* lasso/id-ff/provider.c: * in lasso_provider_get_key return NULL
+	  if provider is NULL
+
+2008-04-23 15:00  bdauvergne
+
+	* configure.ac: * change /etc -> /etc/php5/conf.d/ in the last
+	  commit
+
+2008-04-23 14:58  bdauvergne
+
+	* configure.ac: * add parameters for php5: --with-php5-include-dir
+	  (default to /usr/share/php) and --with-php5-config-dir (default
+	  to /etc/php5/cond.f/)
+
+2008-04-23 14:28  fpeters
+
+	* swig/Lasso-wsf-disco.i: that part is broken with PHP 4 only
+
+2008-04-23 14:22  fpeters
+
+	* swig/Lasso-wsf-disco.i: that part is broken with PHP 4 only
+
+2008-04-23 11:56  bdauvergne
+
+	* configure.ac, macros/ac_check_rqrd_class.m4,
+	  macros/ac_prog_jar.m4, macros/ac_prog_java.m4,
+	  macros/ac_prog_java_cc.m4, macros/ac_prog_java_works.m4,
+	  macros/ac_prog_javac.m4, macros/ac_prog_javac_works.m4,
+	  macros/ac_prog_javadoc.m4, macros/ac_prog_javah.m4: * search
+	  gzread in zlib1 after trying in libz (win32)
+	  * remove critical exit from java macros
+
+2008-04-21 17:02  bdauvergne
+
+	* lasso/xml/saml-2.0/samlp2_attribute_query.c,
+	  lasso/xml/saml-2.0/samlp2_attribute_query.h: * AttributeQuery
+	  contains multiple Attribute elements not juste one
+
+2008-04-21 15:10  bdauvergne
+
+	* debian/control, debian/php5-lasso.files: * ajout d'un package
+	  debian pour le binding php5
+
+2008-04-18 16:54  bdauvergne
+
+	* lasso/xml/xml.c: * add a finalizer to LassoNode class object
+
+2008-04-10 10:08  bdauvergne
+
+	* tests/integration/README: twill has a debian package now
+
+2008-04-10 09:47  fpeters
+
+	* tests/integration/saml2/test_03_defederation.py: added
+	  defederation tests
+
+2008-04-10 09:39  fpeters
+
+	* tests/integration/saml2/test_02_slo.py: removed saving page
+
+2008-04-09 10:21  dlaniel
+
+	* lasso/id-ff/logout.c: fixes SLO from IdP with Encrypted NameID in
+	  ID-FF
+
+2008-04-06 09:42  fpeters
+
+	* lasso/id-ff/login.c: fallback to onetime usage if no federation
+	  is found
+
+2008-03-28 16:17  bdauvergne
+
+	* configure.ac: add new directory in bindings/php5 to AC_OUTPUT
+	  commented lines
+
+2008-03-28 16:07  bdauvergne
+
+	* lasso/xml/id-wsf-2.0/dstref_modify_item.c,
+	  lasso/xml/id-wsf-2.0/dstref_modify_item.h,
+	  lasso/xml/id-wsf-2.0/subs_notification.h,
+	  lasso/xml/id-wsf-2.0/subsref_query_response.h: const is useless,
+	  and LassoIdWsf2UtilTestResult does not exist, breaking the
+	  bindings
+
+2008-03-28 16:06  bdauvergne
+
+	* lasso/id-wsf-2.0/data_service.c, lasso/id-wsf-2.0/data_service.h:
+	  const gboolean as argument is useless and it disturbs the
+	  bindings
+
+2008-03-21 17:47  fpeters
+
+	* tests/integration/saml2/test_01_sso.py: added sso with ispassive
+	  check
+
+2008-03-21 17:32  fpeters
+
+	* lasso/id-wsf/personal_profile_service.c: fixed missing rename of
+	  LASSO_TYPE_PROFILE_SERVICE to LASSO_TYPE_DATA_SERVICE
+
+2008-03-20 19:13  fpeters
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/data_service.h: fixed
+	  data service macros to refer to data service, not to profile
+	  service; and
+	  added some parameter checking in init_modify
+
+2008-03-18 17:36  bdauvergne
+
+	* lasso/id-wsf/data_service.c: * fix typo in the last commit :)
+
+2008-03-18 17:31  bdauvergne
+
+	* lasso/id-wsf/data_service.c: * id-wsd/data_service.c:
+	  (lasso_data_service_process_modify_response_msg)
+	  return an error code if return value from
+	  lasso_node_new_from_dump is
+	  NULL or invalid.
+
+2008-03-14 14:40  bdauvergne
+
+	* configure.ac: * configure.ac: remove generation of php5/Makefile,
+	  it does nothing. add
+	  detection of pre-4.1.3 gcj versions. add
+	  bindings/python/tests/Makefile
+	  in commented AC_OUTPUT code.
+
+2008-03-12 13:23  bdauvergne
+
+	* docs/reference/tmpl/login.sgml,
+	  docs/reference/tmpl/name_identifier_mapping.sgml,
+	  docs/reference/tmpl/profile.sgml,
+	  docs/reference/tmpl/saml_subject.sgml,
+	  docs/reference/tmpl/samlp2_assertion_idrequest.sgml: * change in
+	  the sgml documentation files.
+
+2008-03-11 14:06  bdauvergne
+
+	* lasso/saml-2.0/login.c: * fix ticket #1 and #3.
+
+2008-03-10 17:47  bdauvergne
+
+	* configure.ac: * configure.ac: re-add JDK_INCLUDE substs (can be
+	  removed when we will move
+	  to the new bindings)
+
+2008-03-10 17:32  bdauvergne
+
+	* configure.ac, macros/ac_check_class.m4,
+	  macros/ac_check_classpath.m4, macros/ac_check_java_home.m4,
+	  macros/ac_check_junit.m4, macros/ac_check_rqrd_class.m4,
+	  macros/ac_java_options.m4, macros/ac_prog_jar.m4,
+	  macros/ac_prog_java.m4, macros/ac_prog_java_cc.m4,
+	  macros/ac_prog_java_works.m4, macros/ac_prog_javac.m4,
+	  macros/ac_prog_javac_works.m4, macros/ac_prog_javadoc.m4,
+	  macros/ac_prog_javah.m4, macros/ac_try_compile_java.m4,
+	  macros/ac_try_run_javac.m4, macros/check.m4,
+	  macros/dps_java_check_class.m4, macros/dps_libgcj_jar.m4,
+	  macros/dps_xtra_classpath.m4: * configure.ac,macros/ac_*.m4: add
+	  new m4 macros to detect more JAVA related
+	  things like junit.jar path to put into the CLASSPATH or
+	  desactivate
+	  compilation of java bindings test.
+
+2008-03-06 15:08  bdauvergne
+
+	* configure.ac: * configure.ac: remove line for making bindings
+	  makefiles.
+
+2008-03-05 17:59  bdauvergne
+
+	* configure.ac: * configure.ac: fix typo, forgot 'sed'.
+
+2008-03-05 17:11  bdauvergne
+
+	* configure.ac: * configure.ac: add the same option for javac than
+	  for gcjh (for target and
+	  source java language version).
+
+2008-03-05 17:09  bdauvergne
+
+	* configure.ac: * configure.ac: change handling of java options.
+	  Try to find JAVA_HOME from the
+	  link in /usr/bin. Propose more options for java, javac and javah.
+	  Set good
+	  options for gcj (-ftarget=1.4 -fsource=1.4 mainly to be retro
+	  compatible
+	  with old VMs).
+
+2008-03-05 17:08  bdauvergne
+
+	* lasso/saml-2.0/login.c: * login.c:
+	  (lasso_login_saml20_validate_request) fix typo.
+
+2008-03-04 13:10  bdauvergne
+
+	* lasso/saml-2.0/login.c: * lasso/saml-2.0/login.c:
+	  (lasso_login_validate_request) If consent is
+	  not obtained set status code at AUTHN_FAILED (no other status
+	  code seems ok).
+
+2008-03-04 11:41  bdauvergne
+
+	* lasso/saml-2.0/login.c: * lasso/saml-2.0/login.c:
+	  lasso_login_saml20_validate_request
+	  should define response->status_code no matter what happens,
+	  especially when
+	  consent is not obtained (lasso_login_saml20_process_federation
+	  return an
+	  error code in this case but it's a normal event in the SSO
+	  workflow so
+	  status code is 'Success'). If not buildArtifactMsg fails when
+	  looking for
+	  the response status code.
+
+2008-03-03 17:59  bdauvergne
+
+	* lasso/saml-2.0/name_id_management.c: *
+	  lasso_name_id_management_process_requet: verify that request_msg
+	  is not null.
+
+2008-03-03 16:26  fpeters
+
+	* lasso/saml-2.0/name_id_management.c: only get session when remote
+	  provider id is not provided
+
+2008-02-29 17:19  bdauvergne
+
+	* lasso/saml-2.0/name_id_management.c: * fix syntax error
+	  introduced in r3494 :) Bad benjamin commit before compiling.
+
+2008-02-29 17:15  bdauvergne
+
+	* lasso/id-ff/logout.c: * id-ff/logout.c:
+	  (lasso_logout_init_request) free remote_provider_id before
+	  setting it. free profile->request
+	  before setting it if LASSO_IS_NODE(request), not just
+	  LASSO_IS_LIB_LOGOUT_REQUEST(request). Fix memory leaks.
+
+2008-02-29 17:13  bdauvergne
+
+	* lasso/saml-2.0/name_id_management.c: * name_id_management.c:
+	  (lasso_name_id_management_init_request)get the
+	  first providerId when remote_provider_id is NULL, free old
+	  remote_provider_id
+	  string when non null and unref old name_identifier when non null.
+	  Fix
+	  memory leaks and lacking usual feature of init_request functions.
+
+2008-02-29 14:17  dlaniel
+
+	* lasso/extract_types.py: fixed the prototype of get_type functions
+	  to avoid warnings on windows
+
+2008-02-28 18:01  dlaniel
+
+	* configure.ac: fixed php version checks
+
+2008-02-26 16:37  fpeters
+
+	* lasso/xml/misc_text_node.h: misc text node attributes are not
+	  private
+
+2008-02-25 22:20  fpeters
+
+	* tests/integration/saml2/__init__.py: initialize twill before
+	  servers, and pass over crashed servers on cleanup
+
+2008-02-25 13:01  fpeters
+
+	* lasso/saml-2.0/login.c: keep NameIdPolicy/Format in
+	  login->nameIDPolicy, as in ID-FF 1.2; use it not to
+	  look for federations when transient is requested.
+
+2008-02-25 10:42  fpeters
+
+	* tests/integration/saml2/test_01_sso.py: removed debugging visit
+	  to idp
+
+2008-02-25 10:41  fpeters
+
+	* tests/integration/saml2/test_01_sso.py: removed debugging saving
+
+2008-02-25 09:55  fpeters
+
+	* tests/integration, tests/integration/README,
+	  tests/integration/private-key.pem,
+	  tests/integration/public-key.pem, tests/integration/saml2,
+	  tests/integration/saml2/__init__.py,
+	  tests/integration/saml2/config.py.example,
+	  tests/integration/saml2/test_00_config.py,
+	  tests/integration/saml2/test_01_sso.py,
+	  tests/integration/saml2/test_02_slo.py: added integration tests
+	  to repository
+
+2008-02-21 10:21  bdauvergne
+
+	* lasso/id-ff/server.c: * reflect in the documentation of
+	  lasso_server_new the fact that metadata is optional
+
+2008-02-20 14:01  bdauvergne
+
+	* lasso/extract_symbols.py, lasso/extract_types.py: * Add
+	  lasso_ds_* API to the general build of lasso (was enable only
+	  with id-wsf before)
+
+2008-02-18 17:29  bdauvergne
+
+	* lasso/xml/lib_idp_entries.h, lasso/xml/strings.h: * Suppression
+	  de #define doublons.
+	  * Ajout d'un commentaire déclaratif /* of LassoXXX */ à une
+	  déclaration
+	  d'un membre de structure de type GList*.
+
+2008-02-18 13:11  fpeters
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/login.c: proper casting
+
+2008-02-18 13:03  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/session.c,
+	  lasso/saml-2.0/login.c: fixed assertion refcounting in
+	  lasso_login_build_assertion, changed
+	  lasso_session_add_assertion to refcount the assertion it gets
+
+2008-02-17 15:41  fpeters
+
+	* java/Makefile.am: added missing Saml2AttributeValue.java to
+	  distributed files
+
+2008-02-17 13:50  fpeters
+
+	* java/Makefile.am: removed obsolete file from Makefile.am
+
+2008-02-17 13:50  fpeters
+
+	* configure.ac: fixed gcj version regex
+
+2008-02-01 11:20  fpeters
+
+	* lasso/id-wsf-2.0/data_service.c, lasso/id-wsf/data_service.c:
+	  register all known prefixes to xpath context
+
+2008-01-23 12:37  fpeters
+
+	* lasso/xml/saml-2.0/saml2_assertion.c,
+	  lasso/xml/saml-2.0/samlp2_request_abstract.c,
+	  lasso/xml/saml-2.0/samlp2_status_response.c: warns when signing
+	  saml2 elements would fail because private key is missing
+
+2008-01-23 12:20  fpeters
+
+	* lasso/saml-2.0/login.c: rewording (hopefully without adding bug)
+
+2008-01-23 12:19  fpeters
+
+	* lasso/saml-2.0/login.c: removed unnecessary double call to
+	  export_to_soap
+
+2008-01-23 12:17  fpeters
+
+	* lasso/id-ff/provider.c, lasso/saml-2.0/provider.c: proper casts
+	  of xmlChar*
+
+2008-01-17 16:07  dlaniel
+
+	* website/web/download/index.xml: updated download links for
+	  Windows installers
+
+2008-01-15 16:43  dlaniel
+
+	* python/tests/binding_tests.py: each value of an
+	  multi-valued-attribute go in a different AttributeValue node
+
+2008-01-15 13:04  fpeters
+
+	* swig/saml-2.0/saml2_attribute_value.i: removed broken php rename
+
+2008-01-15 12:46  fpeters
+
+	* lasso/id-ff/login.c: removed unused variable
+
+2008-01-14 18:04  dlaniel
+
+	* lasso/saml-2.0/login.c: loop on attributeStatement and childs
+	  lists
+
+2008-01-14 17:13  dlaniel
+
+	* lasso/saml-2.0/login.c, lasso/xml/strings.h, swig/Lasso-saml2.i:
+	  fixed mixing epr assertion attribute with other custom attributes
+
+2008-01-14 11:20  dlaniel
+
+	* python/tests/binding_tests.py, swig/saml-2.0/Makefile.am,
+	  swig/saml-2.0/inheritance.h, swig/saml-2.0/main.h,
+	  swig/saml-2.0/saml2_attribute.i,
+	  swig/saml-2.0/saml2_attribute_value.i: added swig binding for
+	  Saml2AttributeValue + tests
+
+2007-12-27 17:01  fpeters
+
+	* swig/saml-2.0/samlp2_assertion_id_request.i: added missing
+	  underscore in lasso_samlp2_assertion_idrequest_new
+
+2007-12-27 16:59  fpeters
+
+	* swig/saml-2.0/Makefile.am, swig/saml-2.0/main.h,
+	  swig/saml-2.0/samlp2_assertion_id_request.i,
+	  swig/saml-2.0/samlp2_assertion_idrequest.i: renamed
+	  samlp2_assertion_idrequest.i to /samlp2_assertion_id_request.i
+
+2007-12-27 16:14  fpeters
+
+	* lasso/saml-2.0/Makefile.am, lasso/saml-2.0/assertion_query.c,
+	  lasso/saml-2.0/assertion_query.h: added preliminary support for
+	  the Assertion Query and Request profile.
+
+2007-12-27 15:18  fpeters
+
+	* lasso/xml/saml-2.0/Makefile.am,
+	  lasso/xml/saml-2.0/samlp2_assertion_id_request.c,
+	  lasso/xml/saml-2.0/samlp2_assertion_id_request.h,
+	  lasso/xml/saml-2.0/samlp2_assertion_idrequest.c,
+	  lasso/xml/saml-2.0/samlp2_assertion_idrequest.h: renamed files
+	  according to their contents
+
+2007-12-27 15:17  fpeters
+
+	* lasso/xml/saml-2.0/samlp2_assertion_idrequest.c,
+	  lasso/xml/saml-2.0/samlp2_assertion_idrequest.h: renamed
+	  samlp2:AssertionIDRequest with an underscore between id and
+	  request.
+
+2007-12-06 11:25  dlaniel
+
+	* lasso/saml-2.0/login.c: handle name identifier formats : email
+	  and unspecified
+
+2007-12-06 11:24  dlaniel
+
+	* lasso/xml/strings.h, swig/Lasso-saml2.i: added all missing name
+	  identifier formats
+
+2007-12-05 13:50  dlaniel
+
+	* lasso/xml/saml_subject.h: break ABI less than before
+
+2007-12-05 10:48  dlaniel
+
+	* lasso/id-ff/login.c, lasso/id-ff/provider.c,
+	  lasso/saml-2.0/provider.c, lasso/xml/saml_subject.c,
+	  lasso/xml/saml_subject.h: added support for encrypting name
+	  identifiers with id-ff 1.2
+
+2007-12-03 18:36  fpeters
+
+	* lasso/id-ff/login.c: store ProtocolProfile even when it is
+	  Redirect
+
+2007-12-03 15:27  fpeters
+
+	* lasso/saml-2.0/login.c: support for HTTP-Redirect binding being
+	  explicitely specified
+
+2007-11-27 23:17  fpeters
+
+	* lasso/id-ff/login.h, lasso/saml-2.0/login.c,
+	  lasso/saml-2.0/provider.c, swig/Lasso.i: added support for
+	  sending SAMLv2 AuthnResponse over HTTP-Redirect (which
+	  shouldn't be used because the assertion within makes for a very
+	  big message)
+
+2007-11-27 22:57  fpeters
+
+	* lasso/id-ff/defederation.c: include serverprivate.h since
+	  lasso_server_get_first_providerID is used.
+
+2007-11-22 15:40  fpeters
+
+	* lasso/id-ff/logout.c: format list in docstring with paragraphs,
+	  as this form is known by the new
+	  binding generator
+
+2007-11-22 14:47  fpeters
+
+	* lasso/id-ff/provider.c: fixed parameter name that differed
+	  between docstring and function
+
+2007-11-22 14:46  fpeters
+
+	* lasso/id-ff/name_identifier_mapping.h: fixed parameter names that
+	  different between header and source file
+
+2007-11-22 14:46  fpeters
+
+	* lasso/id-ff/name_identifier_mapping.c: fixed comments pointing to
+	  the wrong function
+
+2007-11-22 12:42  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/logout.c,
+	  lasso/id-wsf-2.0/discovery.c, lasso/id-wsf/authentication.c,
+	  lasso/id-wsf/discovery.c: removed direct usage of g_object_unref
+	  from lasso_*_destroy methods
+
+2007-11-22 12:30  fpeters
+
+	* lasso/id-ff/profile.c: formatting fix in docstring
+
+2007-11-22 12:29  fpeters
+
+	* lasso/id-ff/logout.c: don't shout a critical error when there is
+	  no session and logout
+	  get_next_providerId is called.
+
+2007-11-13 19:52  fpeters
+
+	* tests/data/Makefile.am, tests/data/sample-identity-dump-1.xml:
+	  added sample identity dump
+
+2007-11-13 19:04  fpeters
+
+	* lasso/xml/samlp_request_abstract.c: fixed wrong type for
+	  SamlpRequest->RespondWith (list of strings, was declared
+	  as list of nodes)
+
+2007-11-13 16:13  dlaniel
+
+	* lasso/xml/samlp_response.h: removed the * from the GList item
+	  type as other GList items are commented with no *
+
+2007-11-13 16:12  dlaniel
+
+	* lasso/id-ff/identity.h, lasso/id-ff/server.h,
+	  lasso/id-ff/session.h: added item types for GHashTable
+
+2007-11-12 10:49  dlaniel
+
+	* lasso/id-ff/defederation.c: allow a NULL first parameter in
+	  init_notification
+
+2007-11-11 20:11  fpeters
+
+	* php/tests/binding_tests.php, php/tests/perfs.php: fixed copyright
+	  comment header
+
+2007-11-06 11:09  dlaniel
+
+	* tests/data/sp1-la/metadata.xml: added OrganisationName in the
+	  metadatas of the first test
+
+2007-11-05 10:55  dlaniel
+
+	* python/tests/idwsf1_tests.py: removed a useless tab
+
+2007-11-03 21:23  fpeters
+
+	* lasso/xml/dst_data.h, lasso/xml/dst_modify.h,
+	  lasso/xml/dst_modify_response.h, lasso/xml/dst_new_data.h,
+	  lasso/xml/dst_query.h, lasso/xml/dst_query_response.h,
+	  lasso/xml/id-wsf-2.0/dstref_app_data.h,
+	  lasso/xml/id-wsf-2.0/subsref_app_data.h,
+	  lasso/xml/lib_authn_request.h,
+	  lasso/xml/lib_authn_request_envelope.h,
+	  lasso/xml/lib_authn_response.h,
+	  lasso/xml/lib_authn_response_envelope.h,
+	  lasso/xml/lib_federation_termination_notification.h,
+	  lasso/xml/lib_logout_request.h,
+	  lasso/xml/lib_name_identifier_mapping_request.h,
+	  lasso/xml/lib_name_identifier_mapping_response.h,
+	  lasso/xml/lib_register_name_identifier_request.h,
+	  lasso/xml/lib_status_response.h,
+	  lasso/xml/saml-2.0/saml2_encrypted_element.h: annotate GList* of
+	  xmlNode*
+
+2007-11-03 21:23  fpeters
+
+	* tools/generate_idwsf2_classes.py: changed GList* of xmlNode*
+	  annotation, to include the *
+
+2007-10-30 18:15  fpeters
+
+	* lasso/xml/lib_request_authn_context.h,
+	  lasso/xml/samlp_request_abstract.h: updated annotations to use
+	  '/* of strings */' instead of '/* of char* */' as it
+	  is more readable
+
+2007-10-30 18:09  fpeters
+
+	* lasso/xml/lib_request_authn_context.h: added annotation about
+	  GList items type
+
+2007-10-19 08:54  fpeters
+
+	* lasso/saml-2.0/profile.c: error checking when processing artifact
+	  response.
+
+2007-10-11 07:28  dlaniel
+
+	* lasso/id-wsf/data_service.c: fixed modifyng root node
+
+2007-10-11 07:27  dlaniel
+
+	* python/tests/idwsf1_tests.py: added an idwsf1 test
+
+2007-10-11 07:25  dlaniel
+
+	* swig/Lasso-wsf2.i: fixed a syntax error
+
+2007-10-10 20:45  dlaniel
+
+	* swig/Lasso-wsf.i, swig/Lasso-wsf2.i, swig/Lasso.i: fixed memory
+	  management
+
+2007-10-10 16:05  dlaniel
+
+	* swig/Lasso.i: fixed a memory error
+
+2007-10-10 09:38  dlaniel
+
+	* python/tests/idwsf2_tests.py: fixed error code
+
+2007-10-10 09:37  dlaniel
+
+	* swig/Lasso.i: added missing error codes in swig bindings
+
+2007-10-10 09:31  dlaniel
+
+	* python/tests/tests.py: run idwsf tests only if lasso has idwsf
+	  support
+
+2007-10-10 09:20  dlaniel
+
+	* python/tests/idwsf2_tests.py: fix error code
+
+2007-10-10 09:17  dlaniel
+
+	* lasso/id-wsf/data_service.c: removed an usused variable
+
+2007-10-04 21:31  fpeters
+
+	* lasso/xml/saml_name_identifier.h: cosmetic issue, set parameter
+	  name in function declaration
+
+2007-10-04 16:17  dlaniel
+
+	* lasso/id-wsf-2.0/data_service.c: changed the way status code is
+	  handled to make code simpler
+
+2007-10-04 11:02  fpeters
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/data_service.h,
+	  swig/Lasso-wsf.i: added lasso_data_service_get_resource_offering
+	  method to get
+	  LassoDiscoResourceOffering of a DataService
+
+2007-10-03 19:13  fpeters
+
+	* lasso/id-wsf/data_service.c: returns SOAP fault with approriate
+	  value when need_redirect_user is called
+	  inbetween dataservice modify stuff.
+
+2007-09-21 17:02  fpeters
+
+	* lasso/errors.c, lasso/id-wsf/data_service.c,
+	  lasso/xml/id-wsf-2.0/dstref_modify.c,
+	  lasso/xml/id-wsf-2.0/dstref_modify_response.c,
+	  lasso/xml/id-wsf-2.0/dstref_query.c,
+	  lasso/xml/id-wsf-2.0/dstref_query_response.c: indentation fixes
+
+2007-09-21 17:01  fpeters
+
+	* tools/generate_idwsf2_classes.py: fixed indentation in generation
+	  script
+
+2007-09-21 16:56  dlaniel
+
+	* lasso/id-wsf/data_service.c: fixed tabs
+
+2007-09-21 16:49  dlaniel
+
+	* python/tests/idwsf1_tests.py: removed whitespaces
+
+2007-09-21 16:41  dlaniel
+
+	* python/tests/idwsf1_tests.py: added checks on soap messages type
+
+2007-09-21 16:37  dlaniel
+
+	* lasso/id-wsf/data_service.c: fixed id-wsf 1 data service modify
+
+2007-09-21 16:36  dlaniel
+
+	* python/tests/idwsf1_tests.py: split the discovery query test and
+	  added data service query and data service modify tests
+
+2007-09-21 16:10  dlaniel
+
+	* lasso/id-wsf/data_service.c: fixed service_type in
+	  lasso_data_service_process_modify_msg
+
+2007-09-21 15:13  dlaniel
+
+	* lasso/id-wsf/data_service.c: fixed service_type in
+	  lasso_data_service_process_modify_msg
+
+2007-09-21 15:12  dlaniel
+
+	* lasso/id-wsf-2.0/data_service.c, lasso/id-wsf/data_service.c,
+	  lasso/xml/dst_modify.c, lasso/xml/dst_query.c: some error checks
+	  and some coding style
+
+2007-09-20 17:32  fpeters
+
+	* swig/Lasso-wsf.i: added missing session accessor
+
+2007-09-20 16:22  dlaniel
+
+	* lasso/id-wsf/data_service.c, swig/Lasso-wsf.i: reordered methods
+	  so it's easier to read
+
+2007-09-20 16:15  dlaniel
+
+	* lasso/id-wsf/data_service.c: fixed data_service_init_modify
+	  method
+
+2007-09-20 16:00  dlaniel
+
+	* swig/Lasso-wsf.i: reordered methods so it's easier to read
+
+2007-09-20 15:54  dlaniel
+
+	* swig/Lasso-wsf.i: fixed personal profile constructor in bindings
+
+2007-09-20 09:59  fpeters
+
+	* autogen.sh: added knowledge about automake-1.10
+
+2007-09-19 09:30  dlaniel
+
+	* python/tests/idwsf1_tests.py: added a unit test for id-wsf 1
+
+2007-09-18 17:54  dlaniel
+
+	* lasso/id-wsf/data_service.c: check if (Encrypted)ResourceID is
+	  null
+
+2007-09-18 17:08  dlaniel
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/discovery.c,
+	  lasso/id-wsf/personal_profile_service.c,
+	  lasso/id-wsf/personal_profile_service.h: fixed setting of
+	  resource offering datas into a data service
+
+2007-09-18 16:08  dlaniel
+
+	* lasso/id-wsf/wsf_profile.c: check soap enveloppe to prevent
+	  segfaults
+
+2007-09-18 13:05  dlaniel
+
+	* python/tests/profiles_tests.py: removed useless line
+
+2007-09-18 12:55  dlaniel
+
+	* swig/Lasso-wsf.i: lasso_discovery_add_resource_offering doesn't
+	  exist, remove it completely from the binding this time
+
+2007-09-18 10:06  dlaniel
+
+	* swig/Lasso-wsf.i: added missing method
+
+2007-09-12 15:33  fpeters
+
+	* lasso/id-wsf-2.0/data_service.c, lasso/id-wsf/data_service.c:
+	  adds support for text as answer to dst queries (instead of
+	  forcing answers to
+	  be full nodes)
+
+2007-08-28 14:50  dlaniel
+
+	* win32/nsis/jlasso-lite.nsi.in, win32/nsis/lasso-full.nsi.in,
+	  win32/nsis/lasso-lite.nsi.in: fixed dll files path for installer
+
+2007-08-28 13:33  dlaniel
+
+	* win32/msvc/java/java.dsp, win32/msvc/lasso.dsp.in,
+	  win32/msvc/lasso.dsw, win32/msvc/php/php.dsp,
+	  win32/msvc/python/python.dsp: set svn property to use
+	  Windows-style line endings for Windows files
+
+2007-08-28 12:57  dlaniel
+
+	* win32/msvc/java/java.dsp, win32/msvc/php/php.dsp,
+	  win32/msvc/python/python.dsp: restored windows-style line endings
+	  in visual studio configuration files so they can be loaded
+
+2007-08-28 12:56  dlaniel
+
+	* win32/msvc/lasso.dsp.in: updated visual studio main configuration
+	  file for new lasso version
+
+2007-08-28 12:29  dlaniel
+
+	* win32/nsis/jlasso-lite.nsi.in: fixed missing character for macro
+
+2007-08-28 10:44  dlaniel
+
+	* website/web/download/index.xml: updated links to version 2.1.1
+	  for windows
+
+2007-08-27 14:44  fpeters
+
+	* website/web/download/index.xml: RPMs for 2.1.1 are now available
+
+2007-08-21 12:06  fpeters
+
+	* website/web/download/index.xml, website/web/index.xml,
+	  website/web/news/10-release-2.1.1.xml: updated website with 2.1.1
+
+2007-08-21 11:21  fpeters
+
+	* ChangeLog, NEWS, configure.ac, doap.rdf: bumped to 2.1.1
+
 2007-08-21  fpeters
 
 	* trunk/swig/saml-2.0/saml2_advice.i,
