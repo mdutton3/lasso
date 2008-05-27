@@ -1,3 +1,4 @@
+MAINTAINERCLEANFILES = Makefile.in
 EXTRA_DIST = \
 	metadata_01.xml \
 	metadata_02.xml \

@@ -1,3 +1,4 @@
+MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = examples
 
 if PHP5_ENABLED

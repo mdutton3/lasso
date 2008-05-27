@@ -1,3 +1,4 @@
+MAINTAINERCLEANFILES = Makefile.in
 EXTRA_DIST = \
 	lasso-sections.txt \
 	lasso.sgml \

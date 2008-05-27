@@ -200,7 +200,7 @@ JAVA_CRUFT = $(JAVA_PATH)lasso.class lasso_wrap.o lasso.jar $(JAVA_PATH)lasso.ja
 EXTRA_DIST = $(SWIG_OUTPUTS) $(SWIG_WSF_OUTPUTS)
 
 CLEANFILES = $(JAVA_CRUFT)
-MAINTAINERCLEANFILES = $(SWIG_OUTPUTS) $(SWIG_WSF_OUTPUTS)
+MAINTAINERCLEANFILES = Makefile.in $(SWIG_OUTPUTS) $(SWIG_WSF_OUTPUTS)
 
 SWIG_I_FILES=$(shell find $(top_srcdir)/swig/ -name '*.[ih]')
 lasso_wrap.c lasso.java: $(SWIG_I_FILES)

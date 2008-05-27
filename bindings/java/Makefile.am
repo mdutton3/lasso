@@ -1,3 +1,4 @@
+MAINTAINERCLEANFILES = Makefile.in
 if JAVA_ENABLED
 INCLUDES = \
 	-I$(top_builddir) \

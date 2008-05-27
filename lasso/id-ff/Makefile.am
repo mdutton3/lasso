@@ -1,3 +1,4 @@
+MAINTAINERCLEANFILES = Makefile.in
 liblassoincludedir = $(includedir)/lasso/id-ff
 
 INCLUDES = \

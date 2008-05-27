@@ -1,3 +1,4 @@
+MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = xml id-ff id-wsf saml-2.0 id-wsf-2.0
 
 liblassoincludedir = $(includedir)/lasso

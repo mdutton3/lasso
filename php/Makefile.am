@@ -18,7 +18,7 @@ lasso_wrap.c php_lasso.h lasso.php: $(SWIG_I_FILES)
 test-php: lasso.la lasso.php
 	$(PHP4) -d extension_dir=.libs $(srcdir)/lasso.php
 
-MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
+MAINTAINERCLEANFILES = Makefile.in $(SWIG_OUTPUTS)
 EXTRA_DIST = patch_swig_output.py $(SWIG_OUTPUTS)
 
 clean-local:

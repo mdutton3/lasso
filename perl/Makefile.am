@@ -51,7 +51,7 @@ SWIG_OUTPUTS = lasso_wrap.c lasso.pm
 EXTRA_DIST = $(SWIG_OUTPUTS) Makefile.PL
 
 # Maintainer clean the swig generated files, because he/she maintains them.
-MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
+MAINTAINERCLEANFILES = Makefile.in $(SWIG_OUTPUTS)
 
 clean-local:
 	rm -rf blib $(PERL_MAKEFILE) $(PERL_MAKEFILE).old build-perl-stamp $(PERL_CRUFT)

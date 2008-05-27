@@ -18,6 +18,15 @@ SUBDIRS		= lasso \
 
 EXTRA_DIST	= COPYING lasso.pc.in lasso-src-config.in
 
+MAINTAINERCLEANFILES = \
+    Makefile.in \
+    config.guess \
+    config.sub \
+    configure \
+    install-sh \
+    missing
+ 
+
 pkgconfig_DATA	= lasso.pc
 pkgconfigdir	= $(libdir)/pkgconfig
 

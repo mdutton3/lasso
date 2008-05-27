@@ -1,3 +1,4 @@
+MAINTAINERCLEANFILES = Makefile.in
 liblassoincludedir = $(includedir)/lasso/saml-2.0
 
 INCLUDES = \

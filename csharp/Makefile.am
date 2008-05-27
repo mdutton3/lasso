@@ -126,5 +126,5 @@ endif
 EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk \
 		$(SWIG_FILES) $(SWIG_WSF_FILES)
 
-MAINTAINERCLEANFILES = $(SWIG_FILES) $(SWIG_WSF_FILES)
+MAINTAINERCLEANFILES = Makefile.in $(SWIG_FILES) $(SWIG_WSF_FILES)
 

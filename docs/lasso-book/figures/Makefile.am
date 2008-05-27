@@ -1,3 +1,4 @@
+MAINTAINERCLEANFILES = Makefile.in
 figuresdir = $(datadir)/doc/lasso/figures
 
 FIGURES_PNG_FILES = \

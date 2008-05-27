@@ -1,3 +1,4 @@
+MAINTAINERCLEANFILES = Makefile.in
 liblassoincludedir = $(includedir)/lasso/xml/id-wsf-2.0
 
 INCLUDES = \

@@ -1,3 +1,4 @@
+MAINTAINERCLEANFILES = Makefile.in
 if WITH_TESTS
 
 TESTS = tests

@@ -42,4 +42,4 @@ clean-local:
 EXTRA_DIST = $(SWIG_OUTPUTS)
 
 # Maintainer clean the swig generated files, because he/she maintains them.
-MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
+MAINTAINERCLEANFILES = Makefile.in $(SWIG_OUTPUTS)
