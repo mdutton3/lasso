@@ -79,6 +79,7 @@ templates: scan
 # CFLAGS and LDFLAGS for compiling scan program.
 GTKDOC_CFLAGS = 		\
 	$(LASSO_CFLAGS) 	\
+	-I$(top_builddir)       \
 	-I$(top_srcdir)
 
 GTKDOC_LIBS = 	\
