@@ -1,6 +1,14 @@
 NEWS
 ====
 
+2.2.0 - May 27th 2008
+---------------------
+
+Added support for encrypted NameIdentifier in ID-FF 1.2, fixed various minor
+issues with ID-WSF support and several bugs and memory management issues; also
+replaced bindings for Java, PHP 5 and Python with new ones, created by a custom
+code generator.
+
 2.1.1 - August 21st 2007
 ------------------------
 
