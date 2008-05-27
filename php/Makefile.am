@@ -13,7 +13,7 @@ lasso_wrap.c php_lasso.h lasso.php: $(SWIG_I_FILES)
 	$(SWIG) -I$(top_builddir)/swig -v -php4 -module lasso -o lasso_wrap.c $(top_srcdir)/swig/Lasso.i
 	cp lasso_wrap.c lasso_wrap.c.bak
 	test x"$(SWIG)" = xecho || \
-		$(PYTHON) $(srcdir)/patch_swig_output.py < lasso_wrap.c.bak > lasso_wrap.c
+		$(PYTHON) $(srcdir)/patch_swig_output.py $(SWIG_VERSION) < lasso_wrap.c.bak > lasso_wrap.c
 
 test-php: lasso.la lasso.php
 	$(PHP4) -d extension_dir=.libs $(srcdir)/lasso.php

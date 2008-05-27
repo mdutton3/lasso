@@ -145,136 +145,141 @@ import re
 import sys
 
 wrap = sys.stdin.read()
-
+swig_version = sys.argv[1]
+major, minor, release = re.match('(.*)\.(.*)\.(.*)', swig_version).groups()
+major = int(major)
+minor = int(minor)
+release = int(release)
+if major < 1 or (major == 1 and (minor < 3 or (minor == 3 and release < 32))):
 # (1)
-begin = """
+    begin = """
   }
   
   /* Wrap this return value */
 """
-end = """
+    end = """
     *return_value=*obj;
   }
 """
-i = wrap.find(begin)
-while i >= 0:
-    j = wrap.find(end, i) + len(end)
-    segment = wrap[i:j]
-    segment = segment.replace(begin, """
+    i = wrap.find(begin)
+    while i >= 0:
+        j = wrap.find(end, i) + len(end)
+        segment = wrap[i:j]
+        segment = segment.replace(begin, """
   /* Wrap this return value */
 """)
-    segment = segment.replace(end, """
+        segment = segment.replace(end, """
     *return_value=*obj;
   }}
 """)
-    wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
-    i = wrap.find(begin, i + len(segment))
+        wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
+        i = wrap.find(begin, i + len(segment))
 
 # (2)
-begin = 'swig_type_info *ty = SWIG_TypeDynamicCast('
-end = """
+    begin = 'swig_type_info *ty = SWIG_TypeDynamicCast('
+    end = """
     *return_value=*obj;
   }}
 """
-i = wrap.find(begin)
-while i >= 0:
-    j = wrap.find(end, i) + len(end)
-    #print >> sys.stderr, "END:", j, len(end)
-    if j < len(end): # bails out if not found
-        break
-    segment = wrap[i:j]
-    x = segment.find('object_init_ex(obj,') + len('object_init_ex(obj,')
-    y = segment.find(')', x)
-    segment = '%s%s%s' % (segment[:x], 'get_node_info_with_swig(ty)->php', segment[y:])
-    wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
-    i = wrap.find(begin, i + len(segment))
+    i = wrap.find(begin)
+    while i >= 0:
+        j = wrap.find(end, i) + len(end)
+        #print >> sys.stderr, "END:", j, len(end)
+        if j < len(end): # bails out if not found
+            break
+        segment = wrap[i:j]
+        x = segment.find('object_init_ex(obj,') + len('object_init_ex(obj,')
+        y = segment.find(')', x)
+        segment = '%s%s%s' % (segment[:x], 'get_node_info_with_swig(ty)->php', segment[y:])
+        wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
+        i = wrap.find(begin, i + len(segment))
 
 # (3)
-wrap = wrap.replace('if(zend_get_parameters_array_ex(arg_count-argbase,args)!=SUCCESS)',
-                    'if(zend_get_parameters_array_ex(arg_count,args)!=SUCCESS)')
+    wrap = wrap.replace('if(zend_get_parameters_array_ex(arg_count-argbase,args)!=SUCCESS)',
+                        'if(zend_get_parameters_array_ex(arg_count,args)!=SUCCESS)')
 
 
-function_pattern = re.compile('ZEND_NAMED_FUNCTION(.*?)\n}', re.DOTALL)
-argcount_less_pattern = re.compile('if\(arg_count<(\d) \|\| arg_count>(\d)')
-argcount_more_pattern = re.compile('if\(arg_count > (\d)\)')
+    function_pattern = re.compile('ZEND_NAMED_FUNCTION(.*?)\n}', re.DOTALL)
+    argcount_less_pattern = re.compile('if\(arg_count<(\d) \|\| arg_count>(\d)')
+    argcount_more_pattern = re.compile('if\(arg_count > (\d)\)')
 
 
-def rep2(match):
-    arg1 = int(match.group(1)) - 1
-    arg2 = int(match.group(2)) - 1
-    return 'if(arg_count<%s || arg_count>%s' % (arg1, arg2)
+    def rep2(match):
+        arg1 = int(match.group(1)) - 1
+        arg2 = int(match.group(2)) - 1
+        return 'if(arg_count<%s || arg_count>%s' % (arg1, arg2)
 
-def rep3(match):
-    arg1 = int(match.group(1)) - 1
-    return 'if(arg_count > %s)' % arg1
+    def rep3(match):
+        arg1 = int(match.group(1)) - 1
+        return 'if(arg_count > %s)' % arg1
 
-def rep(match):
-    m = match.group(0)
-    if not 'This function uses a this_ptr' in m:
-        return m
-    if not 'arg_count<' in m:
-        return m
-    lines = match.group(0).splitlines()
-    s = []
-    for l in lines:
-        if l.startswith('if(arg_count<'):
-            l = argcount_less_pattern.sub(rep2, l)
-        elif l.startswith('  if(arg_count >'):
-            l = argcount_more_pattern.sub(rep3, l)
-        s.append(l)
+    def rep(match):
+        m = match.group(0)
+        if not 'This function uses a this_ptr' in m:
+            return m
+        if not 'arg_count<' in m:
+            return m
+        lines = match.group(0).splitlines()
+        s = []
+        for l in lines:
+            if l.startswith('if(arg_count<'):
+                l = argcount_less_pattern.sub(rep2, l)
+            elif l.startswith('  if(arg_count >'):
+                l = argcount_more_pattern.sub(rep3, l)
+            s.append(l)
 
-    return ''.join(s)
+        return ''.join(s)
 
-wrap = function_pattern.sub(rep, wrap)
+    wrap = function_pattern.sub(rep, wrap)
 
-wrap = re.sub(r'zend_register_internal_class_ex(.*)NULL,NULL\)',
-    r'zend_register_internal_class_ex\1NULL,NULL TSRMLS_CC\)',  wrap)
+    wrap = re.sub(r'zend_register_internal_class_ex(.*)NULL,NULL\)',
+        r'zend_register_internal_class_ex\1NULL,NULL TSRMLS_CC)',  wrap)
 
-wrap = re.sub('zend_rsrc_list_get_rsrc_type(.*)lval *\)',
-    r'zend_rsrc_list_get_rsrc_type\1lval TSRMLS_CC\)', wrap)
-
+    wrap = re.sub('zend_rsrc_list_get_rsrc_type(.*)lval *\)',
+        r'zend_rsrc_list_get_rsrc_type\1lval TSRMLS_CC)', wrap)
+else:
 # Bis for swig 1.3.33
 # (1)
-begin = """
+    begin = """
   }
   
   {
     /* Wrap this return value */
 """
-end = """
+    end = """
   }
 """
-i = wrap.find(begin)
-while i >= 0:
-    j = wrap.find(end, i+len(begin)) + len(end)
-    segment = wrap[i:j]
-    segment = segment.replace(begin, """
+    i = wrap.find(begin)
+    while i >= 0:
+        j = wrap.find(end, i+len(begin)) + len(end)
+        segment = wrap[i:j]
+        segment = segment.replace(begin, """
   /* Wrap this return value */
 """)
-    segment = segment.replace(end, """
+        segment = segment.replace(end, """
   }
 """)
-    wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
-    i = wrap.find(begin, i + len(segment))
+        wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
+        i = wrap.find(begin, i + len(segment))
 # (2)
-begin = 'swig_type_info *ty = SWIG_TypeDynamicCast('
-end = """
+    begin = 'swig_type_info *ty = SWIG_TypeDynamicCast('
+    end = """
   }
 """
-i = wrap.find(begin)
-while i >= 0:
-    j = wrap.find(end, i+len(begin)) + len(end)
-    #print >> sys.stderr, "END:", j, len(end)
-    if j < len(end): # bails out if not found
-        break
-    segment = wrap[i:j]
-    if not 'object_init_ex' in segment:
-    	i = wrap.find(begin, i + len(segment))
-	continue
-    x = segment.find('object_init_ex(return_value,') + len('object_init_ex(return_value,')
-    y = segment.find(')', x)
-    segment = '%s%s%s' % (segment[:x], 'get_node_info_with_swig(ty)->php', segment[y:])
-    wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
-    i = wrap.find(begin, i + len(segment))
+    i = wrap.find(begin)
+    while i >= 0:
+        j = wrap.find(end, i+len(begin)) + len(end)
+        if j < len(end): # bails out if not found
+            i = wrap.find(begin, i + len(segment))
+            break
+        segment = wrap[i:j]
+        if not 'object_init_ex' in segment:
+        	i = wrap.find(begin, i + len(segment))
+    	        continue
+        x = segment.find('object_init_ex(return_value,') + len('object_init_ex(return_value,')
+        y = segment.find(')', x)
+        segment = '%s%s%s' % (segment[:x], 'get_node_info_with_swig(ty)->php', segment[y:])
+        wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
+        i = wrap.find(begin, i + len(segment))
 
 print wrap
