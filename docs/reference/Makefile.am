@@ -149,6 +149,7 @@ clean-local: clean-sources
 	-rm -f $(SCANOBJ_FILES) index.sgml lasso-index.sgml
 	-rm -rf  $(SCANOBJ_FILES) *.o *~ *.bak *.stamp
 	-rm -f lasso.types
+	-rm -rf tmpl
 
 clean-sources:
 	-rm -rf code
