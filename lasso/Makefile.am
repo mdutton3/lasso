@@ -1,4 +1,3 @@
-MAINTAINERCLEANFILES = Makefile.in
 SUBDIRS = xml id-ff id-wsf saml-2.0 id-wsf-2.0
 
 liblassoincludedir = $(includedir)/lasso
@@ -31,6 +30,10 @@ types.c:
 
 symbols.sym:
 	$(PYTHON) $(srcdir)/extract_symbols.py $(srcdir) $(SYMBOLS_ARGS) > symbols.sym
+
+MAINTAINERCLEANFILES = \
+	Makefile.in \
+	lasso_config.h.in
 
 clean-local:
 	-rm types.c symbols.sym
