@@ -59,7 +59,7 @@ struct _LassoWsfProfilePrivate
 	GList *credentials;
 };
 
-gint lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
+static gint lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		xmlDoc *doc, xmlSecKey *public_key);
 static gboolean lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile);
 static gboolean lasso_wsf_profile_has_x509_authentication(LassoWsfProfile *profile);
