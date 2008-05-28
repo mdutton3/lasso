@@ -799,7 +799,11 @@ register_constants(PyObject *d)
                 parse_tuple_format.append('i')
                 parse_tuple_args.append('&%s' % arg_name)
                 if arg_options.get('default'):
-                    defval = arg_options.get('default')[2:]
+                    defval = arg_options.get('default')
+                    if defval.startswith('b:'):
+                        defval = defval[2:].upper()
+                    else:
+                        defval = defval[2:]
                     print >> fd, '    %s %s = %s;' % (arg[0], arg[1], defval)
                 else:
                     print >> fd, '    %s %s;' % (arg[0], arg[1])
