@@ -13,6 +13,7 @@
    <li><a href="writing-a-java-sp.html">Writing a Liberty service provider in Java</a></li>
    <li><a href="book.html">Building Liberty Services with Lasso</a> (work
    stopped for the time being)</li>
+   <li><a href="new-bindings">New Bindings in 2.2.0</a></li>
   </ul>
 
   <ul>
