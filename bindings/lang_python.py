@@ -32,7 +32,7 @@ class PythonBinding:
 
     def is_pygobject(self, t):
         return t not in ['char*', 'const char*', 'gchar*', 'const gchar*',
-                'GList*', 'GHashTable*',
+                'const GList*', 'GList*', 'GHashTable*',
                 'int', 'gint', 'gboolean', 'const gboolean', 'xmlNode*'] + self.binding_data.enums
 
     def generate(self):
