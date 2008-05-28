@@ -736,7 +736,7 @@ register_constants(PyObject *d)
             print >> fd, '    } else {'
             print >> fd, '        return_pyvalue = noneRef();'
             print >> fd, '    }'
-        elif vtype in ('GList*',):
+        elif vtype in ('const GList*', 'GList*',):
             elem_type = options.get('elem_type')
             if elem_type == 'char*':
                 print >> fd, '    return_pyvalue = get_list_of_strings(return_value);'
