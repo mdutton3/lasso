@@ -1,3 +1,32 @@
+lasso (2.1.98-4.1) unstable; urgency=high
+
+  * NMU.
+  * Don't build-depend on gcj and gcj-4.3 on alpha, arm, hppa (same as for
+    java-gcj-compat). Closes: #477870.
+  * Adjust list of architectures for liblasso-java. Closes: #479737.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 25 May 2008 11:28:09 +0200
+
+lasso (2.1.98-4) unstable; urgency=low
+
+  * debian/rules: create control from control.in, so liblasso-java is not
+    built on architectures lacking gcj.
+
+ -- Frederic Peters <fpeters@debian.org>  Sun, 04 May 2008 12:17:10 +0200
+
+lasso (2.1.98-3) unstable; urgency=low
+
+  * debian/liblasso-perl.install: really fix building with Perl 5.10.
+
+ -- Frederic Peters <fpeters@debian.org>  Sat, 03 May 2008 12:30:41 +0200
+
+lasso (2.1.98-2) unstable; urgency=low
+
+  * debian/liblasso-perl.install: use wildcard for minor version number; so it
+    still works with Perl 5.10.  (closes: #479065)
+
+ -- Frederic Peters <fpeters@debian.org>  Fri, 02 May 2008 16:30:09 +0200
+
 lasso (2.1.98-1) unstable; urgency=low
 
   * New upstream release (RC).

@@ -12,6 +12,18 @@
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
+DEB_TARGET_ARCH     := $(shell dpkg-architecture -qDEB_HOST_ARCH)
+
+with_java := yes
+no_java_archs := alpha arm hppa hurd-i386
+ifneq ($(DEB_TARGET_ARCH),i386)
+ ifneq ($(DEB_TARGET_ARCH),amd64)
+  ifeq ($(DEB_TARGET_ARCH), $(findstring $(DEB_TARGET_ARCH),$(no_java_archs)))
+   with_java := disabled for architecture $(DEB_TARGET_ARCH)
+  endif
+ endif
+endif
+
 PYDEF		:= $(shell pyversions -vd)
 PYVERS		:= $(shell pyversions -vr debian/control)
 OTHERPYVERS	:= $(filter-out $(PYDEF), $(PYVERS))
@@ -32,10 +44,29 @@ version=`ls src/.libs/lib*.so.* | \
 major=`ls src/.libs/lib*.so.* | \
  awk '{if (match($$0,/\.so\.[0-9]+$$/)) print substr($$0,RSTART+4)}'`
 
+CONFIGURE_ARGS := \
+	--prefix=/usr \
+	--mandir=\$${prefix}/share/man \
+	--infodir=\$${prefix}/share/info \
+	--enable-tests=no \
+	--disable-gtk-doc \
+	--enable-perl \
+	--disable-csharp \
+	--disable-php4 \
+	--with-php5-config-dir=/etc/php5/conf.d/
+
+
+ifeq ($(with_java),yes)
+  CONFIGURE_ARGS += --enable-java
+else
+  CONFIGURE_ARGS += --disable-java
+endif
+
+
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	CC=gcc-4.3 CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-tests=no --disable-gtk-doc --enable-perl --disable-csharp --disable-php4 --with-php5-config-dir=/etc/php5/conf.d/
+	CC=gcc-4.3 CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) $(CONFIGURE_ARGS)
 	touch perl/lasso_wrap.c perl/lasso.pm
 
 
@@ -60,6 +91,13 @@ clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
+
+ifeq ($(with_java),yes)
+	sed -e 's/^#JAVA#//' < debian/control.in > debian/control
+else
+	sed -e 's/^#JAVA#.*//' < debian/control.in > debian/control
+endif
+
 
 	[ ! -f Makefile ] || $(MAKE) distclean
 ifneq "$(wildcard /usr/share/misc/config.sub)" ""
