@@ -8,7 +8,9 @@
   <func name="lasso_profile_is_saml_query" rename="isSamlQuery"/>
   <func name="lasso_profile_get_request_type_from_soap_msg"
   	rename="lasso_get_request_type_from_soap_msg"/>
-  <func name="lasso_session_get_assertions" return_owner="true"/>
+  <func name="lasso_session_get_assertions" return_owner="true">
+    <param name="provider_id" optional="true"/>
+  </func>
   <func name="lasso_check_version">
     <param name="major"/>
     <param name="minor"/>
