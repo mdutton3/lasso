@@ -1461,6 +1461,11 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 	} else {
 		char *url, *query;
 
+		/* don't include signature stuff in XML when exporting to a
+		 * query string */
+		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
+			LASSO_SIGNATURE_TYPE_NONE;
+
 		url = profile->msg_url;
 		query = lasso_node_export_to_query(profile->response,
 				profile->server->signature_method,

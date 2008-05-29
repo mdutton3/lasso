@@ -178,6 +178,12 @@ lasso_name_id_management_build_request_msg(LassoNameIdManagement *name_id_manage
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		char *url, *query;
+
+		/* don't include signature stuff in XML when exporting to a
+		 * query string */
+		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_type =
+			LASSO_SIGNATURE_TYPE_NONE;
+
 		url = lasso_provider_get_metadata_one(remote_provider,
 				"ManageNameIDService HTTP-Redirect");
 		if (url == NULL) {
@@ -476,6 +482,11 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 	}
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
+		/* don't include signature stuff in XML when exporting to a
+		 * query string */
+		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
+			LASSO_SIGNATURE_TYPE_NONE;
+
 		/* get the provider */
 		provider = g_hash_table_lookup(profile->server->providers,
 				profile->remote_providerID);
