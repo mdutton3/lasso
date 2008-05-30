@@ -26,30 +26,89 @@
 #define __LASSO_UTILS_H__
 
 /* Assignment and list appending */
-#define g_assign_string(dest,src) { void *t = g_strdup(src); if (dest) g_free(dest); dest = t; }
-#define g_assign_new_string(dest,src) { if (dest) g_free(dest); dest = src; }
-#define g_assign_gobject(dest,src) {
-	if (src) g_object_ref(src); if (dest) g_object_unref(dest); dest = (void*)(src);
-}
-#define g_assign_new_gobject(dest,src) { if (dest) g_object_unref(dest); dest = (void*)(src); }
-#define g_list_add_gobject(dest, src) { dest = g_list_append(dest, g_object_ref(src)); }
-#define g_list_add_new_gobject(dest, src) { dest = g_list_append(dest, src); }
-#define g_list_add(dest, src) { dest = g_list_append(dest, src); }
-#define g_list_add_fast(dest, src) { dest = g_list_prepend(dest, src); }
+#define g_assign_string(dest,src) \
+	{ \
+		void *t = g_strdup(src);\
+		if (dest) g_free(dest); \
+		dest = t; \
+	}
+#define g_assign_new_string(dest,src) \
+	{ \
+		if (dest) g_free(dest); \
+		dest = src; \
+	}
+#define g_assign_gobject(dest,src) \
+	{ \
+		if (src) \
+			g_object_ref(src); \
+		if (dest) \
+			g_object_unref(dest); \
+		dest = (void*)(src); \
+	}
+#define g_assign_new_gobject(dest,src) \
+	{ \
+		if (dest) \
+			g_object_unref(dest); \
+		dest = (void*)(src); \
+	}
+#define g_list_add_gobject(dest, src) \
+	{ \
+		dest = g_list_append(dest, g_object_ref(src)); \
+	}
+#define g_list_add_new_gobject(dest, src) \
+	{ \
+		dest = g_list_append(dest, src); \
+	}
+#define g_list_add(dest, src) \
+	{ \
+		dest = g_list_append(dest, src); \
+	}
 
 /* Freeing */
-#define g_release(dest) { if (dest) { g_free(dest); dest = NULL; } }
-#define g_release_gobject(dest) { if (dest) { g_object_unref(dest); dest = NULL; } }
-#define g_release_list_of_strings(dest) {
-	if (dest) { g_list_foreach(dest, (GFunc)g_free); g_list_free(dest); dest = NULL; }
-}
-#define g_release_list_of_gobjects(dest) { if (dest) {
-	g_list_foreach(dest, (GFunc)g_object_unref); g_list_free(dest); dest = NULL; }
-}
-#define g_release_list(dest) { if (dest) { g_list_free(dest); dest = NULL; } }
-#define g_unlink_and_release_node(node) {
-	if (node) { xmlUnlinkNode(node); xmlFreeNode(node); node = NULL; }
-}
+#define g_release(dest) \
+	{ \
+		if (dest) { \
+			g_free(dest); dest = NULL; \
+		} \
+	}
+#define g_release_gobject(dest) \
+	{ \
+		if (dest) { \
+			g_object_unref(dest); \
+			dest = NULL; \
+		} \
+	}
+#define g_release_list_of_strings(dest) \
+	{ \
+		if (dest) { \
+			g_list_foreach(dest, (GFunc)g_free); \
+			g_list_free(dest); \
+			dest = NULL; \
+		} \
+	}
+#define g_release_list_of_gobjects(dest) \
+	{ \
+		if (dest) { \
+			g_list_foreach(dest, (GFunc)g_object_unref); \
+			g_list_free(dest); \
+			dest = NULL; \
+		} \
+	}
+#define g_release_list(dest) \
+	{ \
+		if (dest) { \
+			g_list_free(dest); \
+			dest = NULL; \
+		} \
+	}
+#define g_unlink_and_release_node(node) \
+	{ \
+		if (node) { \
+			xmlUnlinkNode(node); \
+			xmlFreeNode(node); \
+			node = NULL; \
+		} \
+	}
 
 /* Bad param handling */
 #define g_return_val_if_invalid_param(kind, name, val) \
