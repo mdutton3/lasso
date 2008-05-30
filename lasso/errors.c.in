@@ -26,7 +26,17 @@
 #include <lasso/errors.h>
 #include <lasso/xml/xml.h>
 
+/* WARNING!!!: This is a generated file do not modify it, add new error message
+ * a comments inside errors.h */
 
+/**
+ * lasso_strerror:
+ * @error_code: a gint error code returned by a lasso function
+ *
+ * Convert an error code from a lasso fuction to a human readable string.
+ *
+ * Returns: a static string.
+ */
 const char*
 lasso_strerror(int error_code)
 {

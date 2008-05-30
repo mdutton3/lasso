@@ -17,7 +17,7 @@ lasso.rc.lo: $(top_srcdir)/win32/lasso.rc
 lib_LTLIBRARIES = liblasso.la
 
 liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h
-BUILT_SOURCES = types.c symbols.sym
+BUILT_SOURCES = types.c errors.c symbols.sym
 
 liblasso_la_SOURCES = lasso.c errors.c
 
@@ -36,7 +36,7 @@ MAINTAINERCLEANFILES = \
 	lasso_config.h.in
 
 clean-local:
-	-rm types.c symbols.sym
+	-rm types.c symbols.sym errors.c
 
 EXTRA_DIST = utils.h extract_types.py extract_symbols.py
 
@@ -80,6 +80,9 @@ liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@  \
 endif
 
 errors.c: errors.h
-	perl build-strerror.pl >errors.c
+	python build_strerror.py >$(srcdir)/.errors.c.new 
+	if ! cmp -s $(srcdir)/errors.c $(srcdir)/.errors.c.new; then \
+	mv -f $(srcdir)/.errors.c.new $(srcdir)/errors.c; else \
+	rm $(srcdir)/.errors.c.new; fi
 
-.PHONY: types.c symbols.sym errors.c
+.PHONY: types.c symbols.sym
