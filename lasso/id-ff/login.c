@@ -1553,7 +1553,8 @@ lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
 	/* no RequestID attribute or it would be used in response assertion */
 	g_free(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID);
 	LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID = NULL;
-	LASSO_LIB_AUTHN_REQUEST(profile->request)->NameIDPolicy = LASSO_LIB_NAMEID_POLICY_TYPE_ANY;
+	LASSO_LIB_AUTHN_REQUEST(profile->request)->NameIDPolicy = g_strdup(
+			LASSO_LIB_NAMEID_POLICY_TYPE_ANY);
 
 	return 0;
 }
