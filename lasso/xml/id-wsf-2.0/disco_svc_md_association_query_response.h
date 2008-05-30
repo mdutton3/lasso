@@ -77,9 +77,8 @@ struct _LassoIdWsf2DiscoSvcMDAssociationQueryResponseClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_association_query_response_get_type(void);
-LASSO_EXPORT LassoIdWsf2DiscoSvcMDAssociationQueryResponse* lasso_idwsf2_disco_svc_md_association_query_response_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2DiscoSvcMDAssociationQueryResponse*
+	lasso_idwsf2_disco_svc_md_association_query_response_new(void);
 
 #ifdef __cplusplus
 }
