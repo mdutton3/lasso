@@ -69,15 +69,13 @@ struct _LassoIdWsf2PsAddKnownEntityResponse {
 	/* XXX */ void *QueryString;
 };
 
-
 struct _LassoIdWsf2PsAddKnownEntityResponseClass {
 	LassoIdWsf2PsResponseAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_add_known_entity_response_get_type(void);
-LASSO_EXPORT LassoIdWsf2PsAddKnownEntityResponse* lasso_idwsf2_ps_add_known_entity_response_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2PsAddKnownEntityResponse*
+	lasso_idwsf2_ps_add_known_entity_response_new(void);
 
 #ifdef __cplusplus
 }

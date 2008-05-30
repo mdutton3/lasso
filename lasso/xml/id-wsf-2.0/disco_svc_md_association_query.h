@@ -69,15 +69,13 @@ struct _LassoIdWsf2DiscoSvcMDAssociationQuery {
 	GHashTable *attributes;
 };
 
-
 struct _LassoIdWsf2DiscoSvcMDAssociationQueryClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_association_query_get_type(void);
-LASSO_EXPORT LassoIdWsf2DiscoSvcMDAssociationQuery* lasso_idwsf2_disco_svc_md_association_query_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2DiscoSvcMDAssociationQuery*
+	lasso_idwsf2_disco_svc_md_association_query_new(void);
 
 #ifdef __cplusplus
 }

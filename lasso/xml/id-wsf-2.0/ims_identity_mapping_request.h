@@ -69,15 +69,13 @@ struct _LassoIdWsf2ImsIdentityMappingRequest {
 	GHashTable *attributes;
 };
 
-
 struct _LassoIdWsf2ImsIdentityMappingRequestClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ims_identity_mapping_request_get_type(void);
-LASSO_EXPORT LassoIdWsf2ImsIdentityMappingRequest* lasso_idwsf2_ims_identity_mapping_request_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2ImsIdentityMappingRequest*
+	lasso_idwsf2_ims_identity_mapping_request_new(void);
 
 #ifdef __cplusplus
 }

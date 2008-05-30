@@ -32,7 +32,8 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include "ps_request_abstract.h"
 
-#define LASSO_TYPE_IDWSF2_PS_REMOVE_ENTITY_REQUEST (lasso_idwsf2_ps_remove_entity_request_get_type())
+#define LASSO_TYPE_IDWSF2_PS_REMOVE_ENTITY_REQUEST \
+	(lasso_idwsf2_ps_remove_entity_request_get_type())
 #define LASSO_IDWSF2_PS_REMOVE_ENTITY_REQUEST(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
 		LASSO_TYPE_IDWSF2_PS_REMOVE_ENTITY_REQUEST, \
@@ -65,15 +66,12 @@ struct _LassoIdWsf2PsRemoveEntityRequest {
 	GList *TargetObjectID;
 };
 
-
 struct _LassoIdWsf2PsRemoveEntityRequestClass {
 	LassoIdWsf2PsRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_remove_entity_request_get_type(void);
 LASSO_EXPORT LassoIdWsf2PsRemoveEntityRequest* lasso_idwsf2_ps_remove_entity_request_new(void);
-
-
 
 #ifdef __cplusplus
 }

@@ -69,15 +69,13 @@ struct _LassoIdWsf2DiscoSvcMDAssociationDelete {
 	GHashTable *attributes;
 };
 
-
 struct _LassoIdWsf2DiscoSvcMDAssociationDeleteClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_association_delete_get_type(void);
-LASSO_EXPORT LassoIdWsf2DiscoSvcMDAssociationDelete* lasso_idwsf2_disco_svc_md_association_delete_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2DiscoSvcMDAssociationDelete*
+	lasso_idwsf2_disco_svc_md_association_delete_new(void);
 
 #ifdef __cplusplus
 }

@@ -65,15 +65,13 @@ struct _LassoIdWsf2SecTransitedProviderPath {
 	GList *TransitedProvider;
 };
 
-
 struct _LassoIdWsf2SecTransitedProviderPathClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_sec_transited_provider_path_get_type(void);
-LASSO_EXPORT LassoIdWsf2SecTransitedProviderPath* lasso_idwsf2_sec_transited_provider_path_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2SecTransitedProviderPath*
+	lasso_idwsf2_sec_transited_provider_path_new(void);
 
 #ifdef __cplusplus
 }

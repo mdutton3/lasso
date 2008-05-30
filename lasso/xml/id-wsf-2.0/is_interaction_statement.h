@@ -31,7 +31,8 @@ extern "C" {
 
 #include <lasso/xml/xml.h>
 
-#define LASSO_TYPE_IDWSF2_IS_INTERACTION_STATEMENT (lasso_idwsf2_is_interaction_statement_get_type())
+#define LASSO_TYPE_IDWSF2_IS_INTERACTION_STATEMENT \
+	(lasso_idwsf2_is_interaction_statement_get_type())
 #define LASSO_IDWSF2_IS_INTERACTION_STATEMENT(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
 		LASSO_TYPE_IDWSF2_IS_INTERACTION_STATEMENT, \
@@ -71,15 +72,12 @@ struct _LassoIdWsf2IsInteractionStatement {
 
 };
 
-
 struct _LassoIdWsf2IsInteractionStatementClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_is_interaction_statement_get_type(void);
 LASSO_EXPORT LassoIdWsf2IsInteractionStatement* lasso_idwsf2_is_interaction_statement_new(void);
-
-
 
 #ifdef __cplusplus
 }

@@ -32,7 +32,8 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include "ps_response_abstract.h"
 
-#define LASSO_TYPE_IDWSF2_PS_LIST_MEMBERS_RESPONSE (lasso_idwsf2_ps_list_members_response_get_type())
+#define LASSO_TYPE_IDWSF2_PS_LIST_MEMBERS_RESPONSE \
+	(lasso_idwsf2_ps_list_members_response_get_type())
 #define LASSO_IDWSF2_PS_LIST_MEMBERS_RESPONSE(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
 		LASSO_TYPE_IDWSF2_PS_LIST_MEMBERS_RESPONSE, \
@@ -65,15 +66,12 @@ struct _LassoIdWsf2PsListMembersResponse {
 	GList *Object;
 };
 
-
 struct _LassoIdWsf2PsListMembersResponseClass {
 	LassoIdWsf2PsResponseAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_list_members_response_get_type(void);
 LASSO_EXPORT LassoIdWsf2PsListMembersResponse* lasso_idwsf2_ps_list_members_response_new(void);
-
-
 
 #ifdef __cplusplus
 }

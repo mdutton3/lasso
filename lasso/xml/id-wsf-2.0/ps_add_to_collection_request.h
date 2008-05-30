@@ -69,15 +69,13 @@ struct _LassoIdWsf2PsAddToCollectionRequest {
 	/* XXX */ void *Subscription;
 };
 
-
 struct _LassoIdWsf2PsAddToCollectionRequestClass {
 	LassoIdWsf2PsRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_add_to_collection_request_get_type(void);
-LASSO_EXPORT LassoIdWsf2PsAddToCollectionRequest* lasso_idwsf2_ps_add_to_collection_request_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2PsAddToCollectionRequest*
+	lasso_idwsf2_ps_add_to_collection_request_new(void);
 
 #ifdef __cplusplus
 }

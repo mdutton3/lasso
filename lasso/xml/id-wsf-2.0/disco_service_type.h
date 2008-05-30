@@ -72,8 +72,8 @@ struct _LassoIdWsf2DiscoServiceTypeClass {
 LASSO_EXPORT GType lasso_idwsf2_disco_service_type_get_type(void);
 LASSO_EXPORT LassoIdWsf2DiscoServiceType* lasso_idwsf2_disco_service_type_new(void);
 
-LASSO_EXPORT LassoIdWsf2DiscoServiceType* lasso_idwsf2_disco_service_type_new_with_string(const char *content);
-
+LASSO_EXPORT LassoIdWsf2DiscoServiceType*
+	lasso_idwsf2_disco_service_type_new_with_string(const char *content);
 
 #ifdef __cplusplus
 }

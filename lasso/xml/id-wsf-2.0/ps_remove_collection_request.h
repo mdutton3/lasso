@@ -68,15 +68,13 @@ struct _LassoIdWsf2PsRemoveCollectionRequest {
 	GList *TargetObjectID;
 };
 
-
 struct _LassoIdWsf2PsRemoveCollectionRequestClass {
 	LassoIdWsf2PsRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_remove_collection_request_get_type(void);
-LASSO_EXPORT LassoIdWsf2PsRemoveCollectionRequest* lasso_idwsf2_ps_remove_collection_request_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2PsRemoveCollectionRequest*
+	lasso_idwsf2_ps_remove_collection_request_new(void);
 
 #ifdef __cplusplus
 }

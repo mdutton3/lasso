@@ -68,15 +68,13 @@ struct _LassoIdWsf2DiscoSvcMDDeleteResponse {
 	GHashTable *attributes;
 };
 
-
 struct _LassoIdWsf2DiscoSvcMDDeleteResponseClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_disco_svc_md_delete_response_get_type(void);
-LASSO_EXPORT LassoIdWsf2DiscoSvcMDDeleteResponse* lasso_idwsf2_disco_svc_md_delete_response_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2DiscoSvcMDDeleteResponse*
+	lasso_idwsf2_disco_svc_md_delete_response_new(void);
 
 #ifdef __cplusplus
 }

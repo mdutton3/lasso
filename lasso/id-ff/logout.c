@@ -381,7 +381,8 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 				assertion->AuthenticationStatement);
 		if (subject_statement && subject_statement->Subject) {
 			nameIdentifier = subject_statement->Subject->NameIdentifier;
-			encryptedNameIdentifier = subject_statement->Subject->EncryptedNameIdentifier;
+			encryptedNameIdentifier =
+				subject_statement->Subject->EncryptedNameIdentifier;
 		}
 	}
 

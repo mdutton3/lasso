@@ -71,15 +71,13 @@ struct _LassoIdWsf2Sb2UserInteractionHeader {
 	GHashTable *attributes;
 };
 
-
 struct _LassoIdWsf2Sb2UserInteractionHeaderClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_sb2_user_interaction_header_get_type(void);
-LASSO_EXPORT LassoIdWsf2Sb2UserInteractionHeader* lasso_idwsf2_sb2_user_interaction_header_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2Sb2UserInteractionHeader*
+	lasso_idwsf2_sb2_user_interaction_header_new(void);
 
 #ifdef __cplusplus
 }

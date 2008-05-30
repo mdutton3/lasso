@@ -68,15 +68,13 @@ struct _LassoIdWsf2PsResolveIdentifierResponse {
 	GList *ResolveOutput;
 };
 
-
 struct _LassoIdWsf2PsResolveIdentifierResponseClass {
 	LassoIdWsf2PsResponseAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_resolve_identifier_response_get_type(void);
-LASSO_EXPORT LassoIdWsf2PsResolveIdentifierResponse* lasso_idwsf2_ps_resolve_identifier_response_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2PsResolveIdentifierResponse*
+	lasso_idwsf2_ps_resolve_identifier_response_new(void);
 
 #ifdef __cplusplus
 }

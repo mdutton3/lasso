@@ -33,7 +33,8 @@ extern "C" {
 #include "subs_subscription.h"
 #include "ps_request_abstract.h"
 
-#define LASSO_TYPE_IDWSF2_PS_QUERY_OBJECTS_REQUEST (lasso_idwsf2_ps_query_objects_request_get_type())
+#define LASSO_TYPE_IDWSF2_PS_QUERY_OBJECTS_REQUEST \
+	(lasso_idwsf2_ps_query_objects_request_get_type())
 #define LASSO_IDWSF2_PS_QUERY_OBJECTS_REQUEST(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
 		LASSO_TYPE_IDWSF2_PS_QUERY_OBJECTS_REQUEST, \
@@ -70,15 +71,12 @@ struct _LassoIdWsf2PsQueryObjectsRequest {
 	int Offset;
 };
 
-
 struct _LassoIdWsf2PsQueryObjectsRequestClass {
 	LassoIdWsf2PsRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_query_objects_request_get_type(void);
 LASSO_EXPORT LassoIdWsf2PsQueryObjectsRequest* lasso_idwsf2_ps_query_objects_request_new(void);
-
-
 
 #ifdef __cplusplus
 }

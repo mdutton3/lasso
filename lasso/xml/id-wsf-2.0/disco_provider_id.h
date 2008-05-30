@@ -72,8 +72,8 @@ struct _LassoIdWsf2DiscoProviderIDClass {
 LASSO_EXPORT GType lasso_idwsf2_disco_provider_id_get_type(void);
 LASSO_EXPORT LassoIdWsf2DiscoProviderID* lasso_idwsf2_disco_provider_id_new(void);
 
-LASSO_EXPORT LassoIdWsf2DiscoProviderID* lasso_idwsf2_disco_provider_id_new_with_string(const char *content);
-
+LASSO_EXPORT LassoIdWsf2DiscoProviderID*
+	lasso_idwsf2_disco_provider_id_new_with_string(const char *content);
 
 #ifdef __cplusplus
 }

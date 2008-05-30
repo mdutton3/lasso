@@ -64,7 +64,6 @@ struct _LassoIdWsf2DiscoAbstract {
 	char *content;
 };
 
-
 struct _LassoIdWsf2DiscoAbstractClass {
 	LassoNodeClass parent;
 };
@@ -72,8 +71,8 @@ struct _LassoIdWsf2DiscoAbstractClass {
 LASSO_EXPORT GType lasso_idwsf2_disco_abstract_get_type(void);
 LASSO_EXPORT LassoIdWsf2DiscoAbstract* lasso_idwsf2_disco_abstract_new(void);
 
-LASSO_EXPORT LassoIdWsf2DiscoAbstract* lasso_idwsf2_disco_abstract_new_with_string(const char *content);
-
+LASSO_EXPORT LassoIdWsf2DiscoAbstract*
+	lasso_idwsf2_disco_abstract_new_with_string(const char *content);
 
 #ifdef __cplusplus
 }

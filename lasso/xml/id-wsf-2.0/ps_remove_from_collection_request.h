@@ -71,15 +71,13 @@ struct _LassoIdWsf2PsRemoveFromCollectionRequest {
 	/* XXX */ void *Subscription;
 };
 
-
 struct _LassoIdWsf2PsRemoveFromCollectionRequestClass {
 	LassoIdWsf2PsRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_remove_from_collection_request_get_type(void);
-LASSO_EXPORT LassoIdWsf2PsRemoveFromCollectionRequest* lasso_idwsf2_ps_remove_from_collection_request_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2PsRemoveFromCollectionRequest*
+	lasso_idwsf2_ps_remove_from_collection_request_new(void);
 
 #ifdef __cplusplus
 }

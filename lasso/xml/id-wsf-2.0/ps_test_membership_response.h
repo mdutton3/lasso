@@ -66,15 +66,13 @@ struct _LassoIdWsf2PsTestMembershipResponse {
 	/* XXX */ void *Result;
 };
 
-
 struct _LassoIdWsf2PsTestMembershipResponseClass {
 	LassoIdWsf2PsResponseAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_test_membership_response_get_type(void);
-LASSO_EXPORT LassoIdWsf2PsTestMembershipResponse* lasso_idwsf2_ps_test_membership_response_new(void);
-
-
+LASSO_EXPORT LassoIdWsf2PsTestMembershipResponse*
+	lasso_idwsf2_ps_test_membership_response_new(void);
 
 #ifdef __cplusplus
 }
