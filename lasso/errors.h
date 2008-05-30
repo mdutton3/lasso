@@ -145,13 +145,10 @@
 /* WSF Profile */
 #define LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION     -1100
 #define LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY        -1101
-<<<<<<< HEAD:lasso/errors.h
-=======
 #define LASSO_WSF_PROFILE_ERROR_MISSING_ASSERTION_ID    -1102 /* AssertionID attribute is missing */
 #define LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT	-1103
 #define LASSO_WSF_PROFILE_ERROR_SOAP_FAULT		 1104
 #define LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM 1105
->>>>>>> ba6d13d... * Move error message inside comments in lasso/errors.h:lasso/errors.h
 
 /* ID-WSF 2 Discovery */
 #define LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED              -1200 /* Service metadata registration failed */
