@@ -800,7 +800,7 @@ lasso_login_accept_sso(LassoLogin *login)
 	}
 
 	/* create federation, only if nameidentifier format is Federated */
-	if (strcmp(ni->Format, LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED) == 0) {
+	if (ni->Format && strcmp(ni->Format, LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED) == 0) {
 		federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
 		if (ni != NULL && idp_ni != NULL) {
 			federation->local_nameIdentifier = g_object_ref(ni);
