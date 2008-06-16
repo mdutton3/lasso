@@ -1276,6 +1276,11 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 		g_free(login->private_data->soap_request_msg);
 		login->private_data->soap_request_msg = NULL;
 
+		/* lasso_profile_set_session_from_dump has not been called */
+		if (profile->session == NULL) {
+			ret = LASSO_PROFILE_ERROR_SESSION_NOT_FOUND;
+		}
+
 		/* change status code into RequestDenied if signature is
 		 * invalid or not found or if an error occurs during
 		 * verification */
@@ -1284,7 +1289,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 					LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
 		}
 
-		if (profile->session && ret == 0) {
+		if (ret == 0) {
 			/* get assertion in session and add it in response */
 			LassoSamlAssertion *assertion;
 			LassoSamlpStatus *status;
