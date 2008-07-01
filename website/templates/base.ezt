@@ -41,7 +41,7 @@
         <a href="/buildbox">Subversion Status</a></li>
       <li[is section "links"] id="current"[end]>
         <a href="/links">Related Links</a></li>
-      <li><a href="http://labs.libre-entreprise.org/tracker/?atid=206&amp;group_id=31&amp;func=browse">Bug
+      <li><a href="http://bugzilla.entrouvert.org/buglist.cgi?product=Lasso">Bug
        reports</a></li>
         </ul>
 </div>
