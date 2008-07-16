@@ -69,11 +69,7 @@ sgml: templates
 # don't rebuild templates if tmpl is not in srcdir
 templates: scan
 	@echo '*** Building TMPL ***'
-	if test $(top_builddir) != $(top_srcdir); then \
-		cp -R $(srcdir)/tmpl/ . ; \
-		chmod +w tmpl/ ; \
-		chmod +w tmpl/*.sgml ; \
-	else \
+	if test $(top_builddir) = $(top_srcdir); then \
 		(cd build && gtkdoc-mktmpl --module=lasso --output-dir=../tmpl/) ; \
 	fi
 
