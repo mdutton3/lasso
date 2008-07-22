@@ -1,6 +1,12 @@
 NEWS
 ====
 
+2.2.1 - July 22nd 2008
+----------------------
+
+Fixed problems with signed SAML 2.0 URL strings and checks against existing
+assertions to tell if authentication was required.
+
 2.2.0 - May 28th 2008
 ---------------------
 

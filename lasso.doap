@@ -40,6 +40,12 @@
     </repository>
     <release>
       <Version>
+        <created>2009-07-22</created>
+        <revision>2.2.1</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
         <created>2009-05-28</created>
         <revision>2.2.0</revision>
       </Version>

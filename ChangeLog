@@ -1,3 +1,174 @@
+2008-07-22 12:09  fpeters
+
+	* lasso/id-ff/profile.c: fixed order of freeing calls
+	  (stolen from ec76ae4f7e40e99443ad421a85ec4d3fb7359bf3)
+
+2008-07-22 12:07  fpeters
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/login.c: fixed
+	  ..._must_authenticate to look for any assertion, not just one
+	  from the
+	  requester provider.
+
+2008-07-16 09:53  fpeters
+
+	* docs/reference/Makefile.am: don't copy gtk-doc tmpl/ files that
+	  do not longer exists
+	  (fixes make distcheck)
+
+2008-07-01 12:18  bdauvergne
+
+	* website/templates/base.ezt: change bug report link
+
+2008-06-29 19:11  bdauvergne
+
+	* lasso/Makefile.am: add build_strerror.py to EXTRA_DIST
+
+2008-06-16 16:54  dlaniel
+
+	* lasso/id-ff/login.c: set an accurate error code on IdP if session
+	  wasn't reloaded
+
+2008-06-05 15:46  fpeters
+
+	* lasso/id-ff/login.c: check NameIdentifier for existence before
+	  strcmp'ing it
+
+2008-05-30 13:03  bdauvergne
+
+	* lasso/Makefile.am, lasso/build-strerror.pl,
+	  lasso/build_strerror.py, lasso/errors.c, lasso/errors.c.in:
+	  remove perl script for generating lasso_strerror, replace with a
+	  python script, do not replace errors.c if generation give the
+	  same file as before, add warning to errors.c about
+	  autogeneration, add documentation on lasso_strerror to
+	  errors.c.in
+
+2008-05-30 12:41  bdauvergne
+
+	* lasso/utils.h: reformat utils.h
+
+2008-05-30 12:27  dlaniel
+
+	* lasso/id-ff/logout.c, lasso/xml/id-wsf-2.0/disco_abstract.h,
+	  lasso/xml/id-wsf-2.0/disco_provider_id.h,
+	  lasso/xml/id-wsf-2.0/disco_service_type.h,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_add.h,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_delete.h,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_query.h,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_delete_response.h,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_register_response.h,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_replace_response.h,
+	  lasso/xml/id-wsf-2.0/ims_identity_mapping_request.h,
+	  lasso/xml/id-wsf-2.0/ims_identity_mapping_response.h,
+	  lasso/xml/id-wsf-2.0/is_interaction_statement.h,
+	  lasso/xml/id-wsf-2.0/ps_add_known_entity_response.h,
+	  lasso/xml/id-wsf-2.0/ps_add_to_collection_request.h,
+	  lasso/xml/id-wsf-2.0/ps_list_members_response.h,
+	  lasso/xml/id-wsf-2.0/ps_query_objects_request.h,
+	  lasso/xml/id-wsf-2.0/ps_remove_collection_request.h,
+	  lasso/xml/id-wsf-2.0/ps_remove_entity_request.h,
+	  lasso/xml/id-wsf-2.0/ps_remove_from_collection_request.h,
+	  lasso/xml/id-wsf-2.0/ps_resolve_identifier_request.h,
+	  lasso/xml/id-wsf-2.0/ps_resolve_identifier_response.h,
+	  lasso/xml/id-wsf-2.0/ps_test_membership_response.h,
+	  lasso/xml/id-wsf-2.0/sb2_user_interaction_header.h,
+	  lasso/xml/id-wsf-2.0/sec_transited_provider_path.h: fixed too
+	  long lines and remove some blank lines
+
+2008-05-30 12:08  dlaniel
+
+	* lasso/id-wsf/data_service.c, lasso/utils.h,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.h,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_delete_response.h,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_query_response.h:
+	  fixed too long lines and remove some blank lines
+
+2008-05-30 11:57  dlaniel
+
+	* lasso/errors.h: fixed tab/space mix
+
+2008-05-30 11:55  bdauvergne
+
+	* lasso/errors.h: remove merge markers
+
+2008-05-30 11:17  bdauvergne
+
+	* lasso/Makefile.am, lasso/build-strerror.pl, lasso/errors.c,
+	  lasso/errors.c.in, lasso/errors.h: * Move error message inside
+	  comments in lasso/errors.h
+	  * Add a script to autogenerate lasso/errors.c from errors.h
+	  * Update errors.c
+	  * Add a target to Makefile.am to create errors.c
+
+2008-05-30 10:31  fpeters
+
+	* lasso/id-ff/login.c: NameIdPolicy must be allocated
+
+2008-05-29 14:14  fpeters
+
+	* lasso/saml-2.0/login.c, lasso/saml-2.0/logout.c,
+	  lasso/saml-2.0/name_id_management.c: forbit query strings to be
+	  xml signed
+
+2008-05-29 11:08  fpeters
+
+	* bindings/overrides.xml: provider_id is optional in
+	  lasso_session_get_assertions
+
+2008-05-29 10:29  fpeters
+
+	* debian/control.in: debian/control is now generated
+
+2008-05-29 10:26  fpeters
+
+	* debian/changelog, debian/control, debian/rules: updated debian
+	  packaging
+
+2008-05-28 11:35  fpeters
+
+	* website/web/download/index.xml,
+	  website/web/news/11-release-2.2.0.xml: 2.2.0
+
+2008-05-28 10:53  fpeters
+
+	* website/web/documentation/index.xml,
+	  website/web/documentation/new-bindings.xml: notes about new
+	  bindings
+
+2008-05-28 10:35  fpeters
+
+	* NEWS, lasso.doap: updated release date
+
+2008-05-28 10:32  bdauvergne
+
+	* lasso/id-wsf/wsf_profile.c: add forgottent static modifier
+
+2008-05-28 10:25  dlaniel
+
+	* bindings/lang_python.py: fixed functions returning const GList *
+
+2008-05-28 09:33  bdauvergne
+
+	* bindings/lang_python.py: recognize const GList*
+
+2008-05-28 09:33  bdauvergne
+
+	* bindings/overrides.xml: return of lasso_server_get_svc_metadatas
+	  so return_owner = False
+
+2008-05-28 08:53  fpeters
+
+	* bindings/lang_python.py: boolean in C are uppercase
+
+2008-05-27 16:58  fpeters
+
+	* configure.ac: 2.0.0
+
+2008-05-27 16:01  fpeters
+
+	* ChangeLog: updated changelog to 2.2.0
+
 2008-05-27 16:00  fpeters
 
 	* NEWS, lasso.doap: noted about 2.2.0
