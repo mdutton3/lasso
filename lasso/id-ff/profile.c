@@ -164,9 +164,9 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		message(G_LOG_LEVEL_WARNING, "Unknown node name : %s", name);
 	}
 
-	xmlFreeDoc(doc);
-	xmlXPathFreeContext(xpathCtx);
 	xmlXPathFreeObject(xpathObj);
+	xmlXPathFreeContext(xpathCtx);
+	xmlFreeDoc(doc);
 
 	return type;
 }
