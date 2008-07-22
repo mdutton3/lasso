@@ -1684,14 +1684,10 @@ lasso_login_must_authenticate(LassoLogin *login)
 
 	} else {
 		/* if nothing specific was asked; don't look for any
-		 * assertions, a session is enough
+		 * particular assertions, one is enough
 		 */
-		matched = (profile->session != NULL);
-		if (matched) {
-			matched = profile->remote_providerID 
-				&& lasso_session_get_assertion(profile->session, 
-					profile->remote_providerID) != NULL;
-		}
+		matched = (profile->session != NULL && \
+				g_hash_table_size(profile->session->assertions) > 0);
 	}
 	g_list_free(assertions);
 
