@@ -11,7 +11,7 @@
 	  Lasso is licensed under the GNU GPL and the latest release
 	  is available here as a gzipped tarball:
 	  <a
-	  href="http://labs.libre-entreprise.org/frs/download.php/662/lasso-2.2.0.tar.gz">lasso-2.2.0.tar.gz</a>
+	  href="http://labs.libre-entreprise.org/frs/download.php/673/lasso-2.2.1.tar.gz">lasso-2.2.1.tar.gz</a>
 	</p>
 
 
@@ -60,7 +60,7 @@ deb http://deb.entrouvert.org etch main
 
 	<p>
 	  There are RPM packages built on Fedora Core 6; <strong>they will soon
-	  be updated for 2.2.0 and a newer Fedora</strong>
+	  be updated for 2.2.1 and a newer Fedora</strong>
 	</p>
 
 	<ul>
