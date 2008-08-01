@@ -191,6 +191,12 @@ lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gcha
 	return NULL;
 }
 
+/*
+ * lasso_wsf_profile_get_fault:
+ * @profile: a #LassoWsfProfile
+ *
+ * Get the current fault present in profile private datas
+ */
 LassoSoapFault*
 lasso_wsf_profile_get_fault(LassoWsfProfile *profile)
 {
