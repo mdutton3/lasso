@@ -48,7 +48,7 @@ typedef struct _LassoWsseSecurityClass LassoWsseSecurityClass;
 struct _LassoWsseSecurity {
 	LassoNode parent;
 
-	GList *any; /* of LassoNode */
+	GList *any; /* of xmlNode */
 };
 
 struct _LassoWsseSecurityClass {
