@@ -37,6 +37,7 @@ extern "C" {
 #include <lasso/xml/soap_binding_provider.h>
 #include <lasso/xml/saml_assertion.h>
 #include <lasso/xml/disco_description.h>
+#include <lasso/xml/disco_resource_offering.h>
 
 #define LASSO_TYPE_WSF_PROFILE (lasso_wsf_profile_get_type())
 #define LASSO_WSF_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -118,6 +119,10 @@ LASSO_EXPORT gboolean lasso_wsf_profile_principal_is_online(LassoWsfProfile *pro
 
 LASSO_EXPORT gint lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential);
 
+LASSO_EXPORT gint lasso_wsf_profile_set_description_from_offering( 
+		LassoWsfProfile *profile, 
+		LassoDiscoResourceOffering *offering, 
+		const char *security_mech_id);
 LASSO_EXPORT void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
 		LassoDiscoDescription *description);
 LASSO_EXPORT void lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile,

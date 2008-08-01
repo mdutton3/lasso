@@ -34,7 +34,7 @@
 
 #include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/id-wsf/wsf_profile_private.h>
-
+#include <lasso/id-wsf/discovery.h>
 #include <lasso/xml/disco_modify.h>
 #include <lasso/xml/soap_fault.h>
 #include <lasso/xml/soap_binding_correlation.h>
@@ -218,6 +218,47 @@ lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
 		return TRUE;
 
 	return FALSE;
+}
+
+/**
+ * lasso_wsf_profile_set_description_from_offering_with_sec_mech:
+ * @profile: a #LassoWsfProfile
+ * @offering: a #LassoDiscoResourceOffering containing descriptions
+ * @security_mech_id: an URL representing the wished security mechanism, if NULL take the first descriptions
+ *
+ * Setup the LassoWsfProfile for a given security mechanism.
+ *
+ * Returns: 0 if a corresponding description was found,
+ * LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION if no description with the
+ * given security mechanism was found.
+ */
+gint
+lasso_wsf_profile_set_description_from_offering(
+	LassoWsfProfile *profile,
+	LassoDiscoResourceOffering *offering,
+	const gchar *security_mech_id)
+{
+	LassoDiscoDescription *description = NULL;
+
+	g_return_val_if_invalid_param(WSF_PROFILE, profile,
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_invalid_param(DISCO_RESOURCE_OFFERING, offering,
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	if (security_mech_id == NULL) {
+		if (offering->ServiceInstance &&
+		    offering->ServiceInstance->Description) {
+			description = LASSO_DISCO_DESCRIPTION(
+					offering->ServiceInstance->Description->data);
+		}
+	} else {
+		description = lasso_discovery_get_description_auto(
+				offering, security_mech_id);
+	}
+	if (description == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION;
+	}
+	lasso_wsf_profile_set_description(profile, description);
+	return 0;
 }
 
 void
