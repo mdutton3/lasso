@@ -1419,7 +1419,31 @@ lasso_discovery_new(LassoServer *server)
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	discovery = g_object_new(LASSO_TYPE_DISCOVERY, NULL);
-	LASSO_WSF_PROFILE(discovery)->server = g_object_ref(server);
+	lasso_wsf_profile_init(&discovery->parent, server, NULL);
+
+	return discovery;
+}
+
+
+/**
+ * lasso_discovery_new_full:
+ * @server: the #LassoServer
+ * @offering: the 
+ *
+ * Creates a new #LassoDiscovery.
+ *
+ * Return value: a newly created #LassoDiscovery object; or NULL if an error
+ *      occured.
+ **/
+LassoDiscovery*
+lasso_discovery_new_full(LassoServer *server, LassoDiscoResourceOffering *offering)
+{
+	LassoDiscovery *discovery = NULL;
+
+	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+
+	discovery = g_object_new(LASSO_TYPE_DISCOVERY, NULL);
+	lasso_wsf_profile_init(&discovery->parent, server, offering);
 
 	return discovery;
 }
