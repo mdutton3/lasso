@@ -94,7 +94,16 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
-
+/**
+ * lasso_wsf_profile_move_credentials:
+ * @src: a #LassoWsfProfile containing the credentials
+ * @dest: the #LassoWsfProfile where to add the credentials
+ *
+ * Move all credentials #xmlNode from src to dest. After this function
+ * the #LassoWsfProfile src does not contain any credential.
+ *
+ * Returns: 0.
+ */ 
 gint
 lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
 {
