@@ -1260,6 +1260,9 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
 	return 0;
 }
 
+/** TODO:
+ * 	Completely review security mechanisms
+ */
 gint
 lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 {
