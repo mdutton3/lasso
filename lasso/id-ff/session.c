@@ -43,9 +43,10 @@
 #include <lasso/xml/id-wsf-2.0/sec_token.h>
 #endif
 
-#include <xmlsec/xmltree.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <xmlsec/xmltree.h>
+#include <xmlsec/base64.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -482,7 +483,7 @@ xmlNode_to_base64(xmlNode *node) {
 	xmlOutputBufferPtr buf = NULL;
 	xmlCharEncodingHandlerPtr handler = NULL;
 	xmlChar *buffer = NULL;
-	char *ret = NULL;
+	xmlChar *ret = NULL;
 	
 	handler = xmlFindCharEncodingHandler("utf-8");
 	if (! handler)
@@ -494,7 +495,7 @@ xmlNode_to_base64(xmlNode *node) {
 	xmlOutputBufferFlush(buf);
 	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
 
-	ret = (char*)xmlSecBase64Encode(buffer, strlen((char*)buffer), 0);
+	ret = xmlSecBase64Encode(buffer, strlen((char*)buffer), 0);
 
 exit:
 	if (buf)
@@ -591,12 +592,12 @@ base64_to_xmlNode(xmlChar *buffer) {
 	xmlNode *ret = NULL;
 	int l1,l2;
 
-	l1 = 4*strlen(buffer)+2;
+	l1 = 4*strlen((char*)buffer)+2;
 	decoded = g_malloc(l1);
 	l2 = xmlSecBase64Decode(buffer, decoded, l1);
 	if (l2 < 0)
 		goto exit;
-	doc = xmlParseMemory(decoded, l2);
+	doc = xmlParseMemory((char*)decoded, l2);
 	if (doc == NULL)
 		goto exit;
 	ret = xmlDocGetRootElement(doc);
