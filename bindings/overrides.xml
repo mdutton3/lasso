@@ -155,7 +155,6 @@
   </func>
   <func name="lasso_discovery_get_description_auto" return_owner="false"/>
   <!-- LassoDataService -->
-  <func name="lasso_data_service_new_full" rename="lasso_data_service_new_full_data_service"/>
   <func name="lasso_data_service_init_query">
     <param name="select" optional="true"/>
     <param name="item_id" optional="true"/>
