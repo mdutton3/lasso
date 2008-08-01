@@ -78,7 +78,7 @@ static struct XmlSnippet schema_snippets[] = {
  * Get the current fault present in profile private datas
  */
 LassoSoapFault*
-lasso_wsf_profile_get_fault(LassoWsfProfile *profile)
+lasso_wsf_profile_get_fault(const LassoWsfProfile *profile)
 {
 	return profile->private_data->fault;
 }
@@ -98,7 +98,7 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 	LassoSoapHeader *header;
 	LassoWsseSecurity *wsse_security;
 	LassoSession *session;
-	LassoDiscoDescription *description;
+	const LassoDiscoDescription *description;
 	GList *credentialRefs;
 	gint ret = 0;
 
@@ -243,7 +243,7 @@ lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential)
  * otherwise.
  */
 LassoDiscoDescription*
-lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gchar *security_mech_id)
+lasso_wsf_profile_get_description_auto(const LassoDiscoServiceInstance *si, const gchar *security_mech_id)
 {
 	GList *iter, *iter2;
 	LassoDiscoDescription *description;
@@ -281,7 +281,7 @@ lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gcha
 gint
 lasso_wsf_profile_set_description_from_offering(
 	LassoWsfProfile *profile,
-	LassoDiscoResourceOffering *offering,
+	const LassoDiscoResourceOffering *offering,
 	const gchar *security_mech_id)
 {
 	LassoDiscoDescription *description = NULL;
@@ -386,7 +386,7 @@ lasso_wsf_profile_set_description(LassoWsfProfile *profile, LassoDiscoDescriptio
  * Return value: a #LassoDiscoDescriptio or NULL if none is present.
  */
 LassoDiscoDescription *
-lasso_wsf_profile_get_description(LassoWsfProfile *profile)
+lasso_wsf_profile_get_description(const LassoWsfProfile *profile)
 {
 	return profile->private_data->description;
 }
@@ -499,7 +499,7 @@ lasso_wsf_profile_set_principal_offline(LassoWsfProfile *profile)
  *      object is internally allocated and must not be freed by the caller.
  **/
 LassoIdentity*
-lasso_wsf_profile_get_identity(LassoWsfProfile *profile)
+lasso_wsf_profile_get_identity(const LassoWsfProfile *profile)
 {
 	if (profile->identity && g_hash_table_size(profile->identity->federations))
 		return profile->identity;
@@ -517,7 +517,7 @@ lasso_wsf_profile_get_identity(LassoWsfProfile *profile)
  *      object is internally allocated and must not be freed by the caller.
  **/
 LassoSession*
-lasso_wsf_profile_get_session(LassoWsfProfile *profile)
+lasso_wsf_profile_get_session(const LassoWsfProfile *profile)
 {
 	if (profile->session == NULL)
 		return NULL;
@@ -538,7 +538,7 @@ lasso_wsf_profile_get_session(LassoWsfProfile *profile)
  * Return value: %TRUE if identity has changed
  **/
 gboolean
-lasso_wsf_profile_is_identity_dirty(LassoWsfProfile *profile)
+lasso_wsf_profile_is_identity_dirty(const LassoWsfProfile *profile)
 {
 	return (profile->identity && profile->identity->is_dirty);
 }
@@ -553,7 +553,7 @@ lasso_wsf_profile_is_identity_dirty(LassoWsfProfile *profile)
  * Return value: %TRUE if session has changed
  **/
 gboolean
-lasso_wsf_profile_is_session_dirty(LassoWsfProfile *profile)
+lasso_wsf_profile_is_session_dirty(const LassoWsfProfile *profile)
 {
 	return (profile->session && profile->session->is_dirty);
 }

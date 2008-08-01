@@ -84,10 +84,10 @@ LASSO_EXPORT GType lasso_wsf_profile_get_type(void);
 
 G_GNUC_DEPRECATED LASSO_EXPORT gint lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest);
 
-LASSO_EXPORT LassoIdentity* lasso_wsf_profile_get_identity(LassoWsfProfile *profile);
-LASSO_EXPORT LassoSession* lasso_wsf_profile_get_session(LassoWsfProfile *profile);
-LASSO_EXPORT gboolean lasso_wsf_profile_is_identity_dirty(LassoWsfProfile *profile);
-LASSO_EXPORT gboolean lasso_wsf_profile_is_session_dirty(LassoWsfProfile *profile);
+LASSO_EXPORT LassoIdentity* lasso_wsf_profile_get_identity(const LassoWsfProfile *profile);
+LASSO_EXPORT LassoSession* lasso_wsf_profile_get_session(const LassoWsfProfile *profile);
+LASSO_EXPORT gboolean lasso_wsf_profile_is_identity_dirty(const LassoWsfProfile *profile);
+LASSO_EXPORT gboolean lasso_wsf_profile_is_session_dirty(const LassoWsfProfile *profile);
 LASSO_EXPORT gint lasso_wsf_profile_set_identity_from_dump(LassoWsfProfile *profile,
 	const gchar *dump);
 LASSO_EXPORT gint lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile,
@@ -122,13 +122,13 @@ G_GNUC_DEPRECATED LASSO_EXPORT gint lasso_wsf_profile_add_credential(LassoWsfPro
 
 LASSO_EXPORT gint lasso_wsf_profile_set_description_from_offering( 
 		LassoWsfProfile *profile, 
-		LassoDiscoResourceOffering *offering, 
+		const LassoDiscoResourceOffering *offering, 
 		const char *security_mech_id);
 
 LASSO_EXPORT void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
 		LassoDiscoDescription *description);
 
-LASSO_EXPORT LassoDiscoDescription *lasso_wsf_profile_get_description(LassoWsfProfile *profile);
+LASSO_EXPORT LassoDiscoDescription *lasso_wsf_profile_get_description(const LassoWsfProfile *profile);
 
 LASSO_EXPORT LassoDiscoResourceOffering *lasso_wsf_profile_get_resource_offering(LassoWsfProfile *profile);
 
