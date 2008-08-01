@@ -111,6 +111,7 @@
 	}
 
 /* Bad param handling */
-#define g_return_val_if_invalid_param(kind, name, val) g_return_val_if_fail(LASSO_IS_##kind(name), val)
+#define g_return_val_if_invalid_param(kind, name, val) \
+		g_return_val_if_fail(LASSO_IS_##kind(name), val)
 
 #endif /* __LASSO_UTILS_H__ */
