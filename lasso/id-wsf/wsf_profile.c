@@ -52,15 +52,6 @@
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/providerprivate.h>
 
-struct _LassoWsfProfilePrivate
-{
-	gboolean dispose_has_run;
-	LassoDiscoDescription *description;
-	LassoSoapFault *fault;
-	gchar *public_key;
-	GList *credentials;
-};
-
 static gint lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		xmlDoc *doc, xmlSecKey *public_key);
 static gboolean lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile);

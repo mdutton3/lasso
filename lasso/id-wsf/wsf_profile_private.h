@@ -32,6 +32,15 @@ extern "C" {
 
 #include <lasso/xml/soap_fault.h>
 
+struct _LassoWsfProfilePrivate
+{
+	gboolean dispose_has_run;
+	LassoDiscoDescription *description;
+	LassoSoapFault *fault;
+	gchar *public_key;
+	GList *credentials;
+};
+
 void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
 				       LassoDiscoDescription *description);
 void lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
