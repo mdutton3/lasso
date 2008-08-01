@@ -74,7 +74,7 @@ class_init(LassoSecResourceAccessStatementClass *klass)
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "ResourceAccessStatement");
-	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
+	lasso_node_class_set_ns(nclass, LASSO_SEC_HREF, LASSO_SEC_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
