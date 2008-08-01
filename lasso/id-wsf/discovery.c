@@ -242,6 +242,18 @@ lasso_discovery_init_request(LassoDiscovery *discovery,
 	return 0;
 }
 
+/**
+ * lasso_discovery_add_insert_entry:
+ * @discovery: a #LassoDiscovery object
+ * @serviceInstance: an optional #LassoDiscoServiceInstance object
+ * @resourceID: the new #LassoDiscoResourceID used to create the #LassoDiscoResrouceOffering
+ *
+ * Add an InsertEntry containing a DiscoResourceOffering for this resrouceId,
+ * initialize the DiscoResourceOffering using serviceInstance.
+ *
+ * Return value: the newly created #LassoDiscoInsertEntry or NULL if some
+ * preconditions failed.
+ */
 LassoDiscoInsertEntry*
 lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
 				 LassoDiscoServiceInstance *serviceInstance,
@@ -260,17 +272,26 @@ lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
 	/* ResourceOffering elements being inserted MUST NOT contain entryID attributes. */
 	serviceInstance = serviceInstance ? g_object_ref(serviceInstance) : serviceInstance;
 	resourceOffering = lasso_disco_resource_offering_new(serviceInstance);
-
-	resourceId = resourceId ? g_object_ref(resourceId) : resourceId;
-	resourceOffering->ResourceID = resourceId;
+	g_assign_gobject(resourceOffering->ResourceID, resourceId);
 
 	insertEntry = lasso_disco_insert_entry_new(resourceOffering);
 
-	modify->InsertEntry = g_list_append(modify->InsertEntry, insertEntry);
+	g_list_add(modify->InsertEntry, insertEntry);
 
 	return insertEntry;
 }
 
+/**
+ * lasso_discovery_add_remove_entry:
+ * @discovery: a #LassoDiscovery object
+ * @entryID: the idenitfier of a ResourceOffering to remove.
+ *
+ * Add a RemoveEntry to the current Modify message for a Discovery service,
+ * to remove the resource offering identified by entryID (returned in the 
+ * response to a Modify/InsertEntry message).
+ *
+ * Return value: 0
+ */
 gint
 lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 				 const gchar    *entryID)
@@ -666,7 +687,8 @@ gint
 lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 {
 	/* FIXME: Check all error cases, set the right status code,
-		and don't return without building a response */
+		and don't return without building a response, and
+		ensure atomicity, everythin fails or everythig succeed. */
 
 	LassoWsfProfile *profile = NULL;
 	LassoDiscoModify *request = NULL;
