@@ -49,7 +49,7 @@ struct _LassoSoapBody {
 	LassoNode parent;
 
 	GList *any;
-	gchar *id;
+	gchar *Id;
 	/* TODO : supports of any attributes */
 };
 

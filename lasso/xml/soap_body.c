@@ -23,6 +23,7 @@
  */
 
 #include <lasso/xml/soap_body.h>
+#include <lasso/xml/private.h>
 
 /**
  * SECTION:soap_body
@@ -54,7 +55,6 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSoapBody, any) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBody, id) },
 	{ NULL, 0, 0}
 };
 
@@ -62,22 +62,44 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
+static xmlNode* get_xmlNode(LassoNode *node, gboolean lasso_dump);
+
 static void
 instance_init(LassoSoapBody *node)
 {
 	node->any = NULL;
-	node->id = NULL;
+	node->Id = NULL;
 }
+
+static LassoNodeClass *parent_class = NULL;
 
 static void
 class_init(LassoSoapBodyClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(nclass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
+    nclass->get_xmlNode = get_xmlNode;
 	lasso_node_class_set_nodename(nclass, "Body");
 	lasso_node_class_set_ns(nclass, LASSO_SOAP_ENV_HREF, LASSO_SOAP_ENV_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+}
+
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump) {
+    xmlNodePtr ret;
+
+    /* Fix namespace of Id */
+    ret = parent_class->get_xmlNode(node, lasso_dump);
+    
+    {
+        xmlNsPtr ns;
+        ns = xmlNewNs(ret, (xmlChar*)LASSO_WSUTIL1_HREF, (xmlChar*)LASSO_WSUTIL1_PREFIX);
+        xmlNewNsProp(ret, ns, (xmlChar*)"Id", (xmlChar*)LASSO_SOAP_BODY(node)->Id);
+    }
+
+    return ret;
 }
 
 GType
