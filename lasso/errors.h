@@ -92,9 +92,18 @@
 #define LASSO_PROFILE_ERROR_MISSING_RESPONSE          -421 /* Missing response */
 #define LASSO_PROFILE_ERROR_MISSING_STATUS_CODE       -422 /* Missing status code */
 #define LASSO_PROFILE_ERROR_MISSING_ARTIFACT          -423 /* Missing SAML artifact */
+<<<<<<< HEAD:lasso/errors.h
 #define LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING  424 /* Missing ressource offering */
 #define LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION 425 /* Missing service description */
 #define LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE       426 /* Missing service type */
+=======
+#define LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING      424 /* Missing ressource offering */
+#define LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION    425 /* Missing service description */
+#define LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE           426 /* Missing service type */
+>>>>>>> * Move error message inside comments in lasso/errors.h
+* Add a script to autogenerate lasso/errors.c from errors.h
+* Update errors.c
+* Add a target to Makefile.am to create errors.c:lasso/errors.h
 #define LASSO_PROFILE_ERROR_MISSING_ASSERTION         -427 /* Missing assertion */
 #define LASSO_PROFILE_ERROR_MISSING_SUBJECT           -428 /* Missing subject */
 #define LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER   -429 /* Missing name identifier */
@@ -113,6 +122,7 @@
 #define LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT      -504
 
 /* Single Sign-On */
+<<<<<<< HEAD:lasso/errors.h
 #define LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND         601 /* Federation not found on login */
 #define LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED         602
 #define LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY        -603 /* Invalid NameIDPolicy in lib:AuthnRequest */
@@ -123,16 +133,49 @@
 #define LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL            608 /* Unknown principal */
 #define LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT          609 /* No default endpoint */
 #define LASSO_LOGIN_ERROR_ASSERTION_REPLAY             610 /* Assertion replay */
+=======
+#define LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND		 601 /* Federation not found on login */
+#define LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED		 602
+#define LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY		-603 /* Invalid NameIDPolicy in lib:AuthnRequest */
+#define LASSO_LOGIN_ERROR_REQUEST_DENIED		 604 /* Request denied */
+#define LASSO_LOGIN_ERROR_INVALID_SIGNATURE		 605
+#define LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST	 606
+#define LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS             607 /* Status code is not success */
+#define LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL              608 /* Unknown principal */
+#define LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT		 609 /* No default endpoint */
+#define LASSO_LOGIN_ERROR_ASSERTION_REPLAY		 610 /* Assertion replay */
+>>>>>>> * Move error message inside comments in lasso/errors.h
+* Add a script to autogenerate lasso/errors.c from errors.h
+* Update errors.c
+* Add a target to Makefile.am to create errors.c:lasso/errors.h
 
 /* Federation Termination Notification */
+<<<<<<< HEAD:lasso/errors.h
 #define LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER -700 /* Name identifier not found in request */
+=======
+#define LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER  -700 /* Name identifier not found in request */
+>>>>>>> * Move error message inside comments in lasso/errors.h
+* Add a script to autogenerate lasso/errors.c from errors.h
+* Update errors.c
+* Add a target to Makefile.am to create errors.c:lasso/errors.h
 
 /* Soap */
+<<<<<<< HEAD:lasso/errors.h
 #define LASSO_SOAP_FAULT_REDIRECT_REQUEST              800 /* Redirect request from Attribute Provider */
 #define LASSO_SOAP_ERROR_MISSING_ENVELOPE             -801 /* Missing SOAP envelope */
 #define LASSO_SOAP_ERROR_MISSING_HEADER               -802 /* Missing SOAP header */
 #define LASSO_SOAP_ERROR_MISSING_BODY                 -803 /* Missing SOAP body */
 #define LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL    -804 /* Missing SOAP fault detail */
+=======
+#define LASSO_SOAP_FAULT_REDIRECT_REQUEST                800 /* Redirect request from Attribute Provider */
+#define LASSO_SOAP_ERROR_MISSING_ENVELOPE               -801 /* Missing SOAP envelope */
+#define LASSO_SOAP_ERROR_MISSING_HEADER                 -802 /* Missing SOAP header */
+#define LASSO_SOAP_ERROR_MISSING_BODY                   -803 /* Missing SOAP body */
+#define LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL      -804 /* Missing SOAP fault detail */
+>>>>>>> * Move error message inside comments in lasso/errors.h
+* Add a script to autogenerate lasso/errors.c from errors.h
+* Update errors.c
+* Add a target to Makefile.am to create errors.c:lasso/errors.h
 
 /* Name Identifier Mapping */
 #define LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE -900 /* Target name space not found */
@@ -143,18 +186,39 @@
 #define LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST    -1000
 
 /* WSF Profile */
+<<<<<<< HEAD:lasso/errors.h
 #define LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION  -1100
 #define LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY     -1101
 #define LASSO_WSF_PROFILE_ERROR_MISSING_ASSERTION_ID -1102 /* AssertionID attribute is missing */
 #define LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT     -1103
 #define LASSO_WSF_PROFILE_ERROR_SOAP_FAULT            1104
+=======
+#define LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION     -1100
+#define LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY        -1101
+#define LASSO_WSF_PROFILE_ERROR_MISSING_ASSERTION_ID    -1102 /* AssertionID attribute is missing */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT	-1103
+#define LASSO_WSF_PROFILE_ERROR_SOAP_FAULT		 1104
+>>>>>>> * Move error message inside comments in lasso/errors.h
+* Add a script to autogenerate lasso/errors.c from errors.h
+* Update errors.c
+* Add a target to Makefile.am to create errors.c:lasso/errors.h
 #define LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM 1105
 
 /* ID-WSF 2 Discovery */
+<<<<<<< HEAD:lasso/errors.h
 #define LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED        -1200 /* Service metadata registration failed */
 #define LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED -1201 /* Service metadata association failed */
 #define LASSO_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE           -1202 /* Missing requested service */
 #define LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE  -1203 /* Failed to build Endpoint Reference */
+=======
+#define LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED              -1200 /* Service metadata registration failed */
+#define LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED       -1201 /* Service metadata association failed */
+#define LASSO_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE                 -1202 /* Missing requested service */
+#define LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE        -1203 /* Failed to build Endpoint Reference */
+>>>>>>> * Move error message inside comments in lasso/errors.h
+* Add a script to autogenerate lasso/errors.c from errors.h
+* Update errors.c
+* Add a target to Makefile.am to create errors.c:lasso/errors.h
 
 /* ID-WSF 2 Data Service */
 #define LASSO_DST_ERROR_MISSING_SERVICE_DATA      -1300 /* Missing service data */
