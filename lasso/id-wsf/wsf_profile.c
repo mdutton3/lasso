@@ -224,9 +224,8 @@ lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile)
 	iter = profile->private_data->description->SecurityMechID;
 	while (iter) {
 		security_mech_id = iter->data;
-		if (strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0 ||
-				strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 ||
-				strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0) {
+		if (lasso_security_mech_id_is_saml_authentication(
+				security_mech_id)) {
 			return TRUE;
 		}
 		iter = g_list_next(iter);
@@ -235,6 +234,38 @@ lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile)
 	return FALSE;
 }
 
+/**
+ * lasso_security_mech_is_saml_authentication:
+ * @security_mech_id: the URI of an authentication mechanism
+ *
+ * Returns: %TRUE if @security_mech_id is one of
+ * urn:liberty:security:2003-08:NULL:SAML,
+ * urn:liberty:security:2003-08:TLS:SAML or
+ * urn:liberty:security:2003-08:ClientTLS:SAML. 
+ */
+gboolean
+lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
+{
+	if (!security_mech_id)
+		return FALSE;
+
+	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0 ||
+			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 ||
+			strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0)
+		return TRUE;
+
+	return FALSE;
+}
+
+/**
+ * lasso_wsf_profile_has_x509_authentication:
+ * @profile: a #LassoWsfProfile
+ *
+ * Checks if the current description supports any security mechanism using
+ * X509 authentication.
+ *
+ * Returns: %TRUE if X509 is supported by the current service description.
+ */
 static gboolean
 lasso_wsf_profile_has_x509_authentication(LassoWsfProfile *profile)
 {
@@ -258,17 +289,26 @@ lasso_wsf_profile_has_x509_authentication(LassoWsfProfile *profile)
 	return FALSE;
 }
 
+/** 
+ * lasso_security_mech_is_x509_authentication:
+ * @security_mech_id: the URI of an authentication mechanism
+ *
+ * Returns: %TRUE if @security_mech_id is one of
+ * urn:liberty:security:2003-08:NULL:X509,
+ * urn:liberty:security:2003-08:TLS:X509 or
+ * urn:liberty:security:2003-08:ClientTLS:X509. 
+ */
 gboolean
-lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
+lasso_security_mech_id_is_x509_authentication(const char *security_mech_id)
 {
-	if (!security_mech_id)
-		return FALSE;
-
-	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0)
+	if (strcmp(security_mech_id, 
+			LASSO_SECURITY_MECH_CLIENT_TLS_X509) == 0 ||
+			strcmp(security_mech_id, 
+					LASSO_SECURITY_MECH_TLS_X509) == 0 ||
+			strcmp(security_mech_id, 
+					LASSO_SECURITY_MECH_X509) == 0) {
 		return TRUE;
-
+	}
 	return FALSE;
 }
 
