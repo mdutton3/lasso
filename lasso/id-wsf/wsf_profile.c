@@ -1391,7 +1391,18 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
 	profile->soap_envelope_request = envelope;
 	profile->request = LASSO_NODE(envelope->Body->any->data);
-	correlation = LASSO_SOAP_BINDING_CORRELATION(envelope->Header->Other->data);
+	/* Get the correlation header */
+        {
+		GList *iter = envelope->Header->Other;
+		while (iter && ! LASSO_IS_SOAP_BINDING_CORRELATION(iter->data)) {
+			iter = iter->next;
+		}
+		if (iter) {
+			correlation = LASSO_SOAP_BINDING_CORRELATION(iter->data);
+		} else {
+			return LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION;
+		}
+	}
 	messageId = correlation->messageID;
 
 	/* Set soap response */
