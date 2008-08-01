@@ -151,7 +151,8 @@ void
 lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_key)
 {
 	if (public_key) {
-		g_assign_string(profile->private_data->public_key, public_key);
+		g_assign_string(profile->private_data->public_key, 
+				public_key);
 	}
 }
 
