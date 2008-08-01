@@ -119,7 +119,7 @@ LASSO_EXPORT LassoWsfProfile* lasso_discovery_get_service(LassoDiscovery *discov
 LASSO_EXPORT GList* lasso_discovery_get_services(LassoDiscovery *discovery);
 
 LASSO_EXPORT LassoDiscoDescription* lasso_discovery_get_description_auto(
-		LassoDiscoResourceOffering *offering, const gchar *security_mech);
+		const LassoDiscoResourceOffering *offering, const gchar *security_mech);
 
 typedef LassoWsfProfile *(*LassoWsfProfileConstructor)(LassoServer *server,
 		LassoDiscoResourceOffering *offering);
