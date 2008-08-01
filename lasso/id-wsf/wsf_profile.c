@@ -408,9 +408,10 @@ lasso_wsf_profile_get_resource_offering(LassoWsfProfile *profile)
 
 /**
  * lasso_wsf_profile_set_resource_offering:
- * @profile:
- * @offering:
+ * @profile: a #LassoWsfProfile
+ * @offering: a #LassoDiscoResourceOffering
  *
+ * Set the Resssource Offering to setup this ID-WSF profile.
  *
  */
 void
