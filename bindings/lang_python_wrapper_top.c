@@ -15,9 +15,9 @@ static void set_hashtable_of_pygobject(GHashTable *a_hash, PyObject *dict);
 static void set_list_of_strings(GList **a_list, PyObject *seq);
 static void set_list_of_xml_nodes(GList **a_list, PyObject *seq);
 static void set_list_of_pygobject(GList **a_list, PyObject *seq);
-static PyObject *get_list_of_strings(GList *a_list);
-static PyObject *get_list_of_xml_nodes(GList *a_list);
-static PyObject *get_list_of_pygobject(GList *a_list);
+static PyObject *get_list_of_strings(const GList *a_list);
+static PyObject *get_list_of_xml_nodes(const GList *a_list);
+static PyObject *get_list_of_pygobject(const GList *a_list);
 static gboolean valid_seq(PyObject *seq);
 static void free_list(GList **a_list, GFunc free_help);
 
@@ -259,7 +259,7 @@ get_xml_node_from_pystring(PyObject *string) {
 }
 /** Return a tuple containing the string contained in a_list */
 static PyObject *
-get_list_of_strings(GList *a_list) {
+get_list_of_strings(const GList *a_list) {
 	PyObject *a_tuple = NULL;
 	int i = 0;
 
@@ -293,7 +293,7 @@ failure:
 }
 
 static PyObject *
-get_list_of_xml_nodes(GList *a_list) {
+get_list_of_xml_nodes(const GList *a_list) {
 	PyObject *a_tuple = NULL;
 	int i = 0;
 
@@ -329,7 +329,7 @@ failure:
 }
 
 static PyObject *
-get_list_of_pygobject(GList *a_list) {
+get_list_of_pygobject(const GList *a_list) {
 	PyObject *a_tuple = NULL;
 	int i = 0;
 
