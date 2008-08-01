@@ -143,12 +143,13 @@
 #define LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST    -1000
 
 /* WSF Profile */
-#define LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION  -1100
-#define LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY     -1101
+#define LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION  -1100 /* Correlation SOAP Header is missing */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY     -1101 /* Security SOAP Header is missing */
 #define LASSO_WSF_PROFILE_ERROR_MISSING_ASSERTION_ID -1102 /* AssertionID attribute is missing */
-#define LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT     -1103
-#define LASSO_WSF_PROFILE_ERROR_SOAP_FAULT            1104
-#define LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM 1105
+#define LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT     -1103 /* Cannot find an WSP endpoint for the ID-WSF service */
+#define LASSO_WSF_PROFILE_ERROR_SOAP_FAULT            1104 /* SOAP ID-WSF binding returned a SOAP fault */
+#define LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM 1105 /* The specified security mechanism is not supported by lasso ID-WSF library */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION     -1106 /* No ID-WSF web Service description could be found for the current security mechanism */
 
 /* ID-WSF 2 Discovery */
 #define LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED        -1200 /* Service metadata registration failed */
