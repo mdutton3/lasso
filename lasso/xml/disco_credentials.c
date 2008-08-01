@@ -48,7 +48,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoCredentials, any) },
+	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDiscoCredentials, any) },
 	{ NULL, 0, 0}
 };
 

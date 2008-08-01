@@ -49,7 +49,7 @@ typedef struct _LassoDiscoCredentialsClass LassoDiscoCredentialsClass;
 struct _LassoDiscoCredentials {
 	LassoNode parent;
 
-	GList *any;
+	GList *any; /* of xmlNode */
 };
 
 struct _LassoDiscoCredentialsClass {
