@@ -167,7 +167,7 @@ lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_ke
  * Returns: a #LassoDiscoDescription that supports security_mech_id, NULL
  * otherwise.
  */
-static LassoDiscoDescription*
+LassoDiscoDescription*
 lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gchar *security_mech_id)
 {
 	GList *iter, *iter2;

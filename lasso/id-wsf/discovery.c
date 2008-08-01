@@ -116,7 +116,6 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	LassoSamlSubjectConfirmation *subject_confirmation = NULL;
 	LassoDsKeyInfo *key_info = NULL;
 	GList *iter = NULL;
-	LassoSamlSubjectConfirmation *subject_confirmation;
 	LassoProvider *our_provider = 
 		LASSO_PROVIDER(LASSO_WSF_PROFILE(discovery)->server);
 
@@ -139,8 +138,8 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	subject = LASSO_SAML_SUBJECT(lasso_saml_subject_new());
 
 	/* NameIdentifier */
-	identifier = lasso_saml_name_identifier_new();
-	identifier->NameQualifier = g_strdup(
+	name_identifier = lasso_saml_name_identifier_new();
+	name_identifier->NameQualifier = g_strdup(
 		our_provider->ProviderID);
 	header = LASSO_WSF_PROFILE(discovery)->soap_envelope_request->Header;
 	iter = header->Other;
