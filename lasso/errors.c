@@ -255,10 +255,9 @@ lasso_strerror(int error_code)
 			return "Missing endpoint reference";
 		case LASSO_DST_ERROR_QUERY_PARTIALLY_FAILED:
 			return "Query partially failed : some items were correctly processed";
-		case LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND:
-			return "Federation not found on login";
 		case LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID:
 			return "ProviderID not found";
+
 		default:
 			return "Unknown LASSO_ERROR, you should regenerate errors.c";
 	}
