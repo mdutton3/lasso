@@ -29,6 +29,7 @@
  **/
 
 #include <config.h>
+#include "../utils.h"
 #include <lasso/id-ff/identity.h>
 
 #ifdef LASSO_WSF_ENABLED
@@ -40,9 +41,12 @@
 
 struct _LassoIdentityPrivate
 {
-	GList *resource_offerings;
 	gboolean dispose_has_run;
-	GList *svcMDID;
+#ifdef LASSO_WSF_ENABLED
+	guint last_entry_id;
+	GHashTable *resource_offerings_map; /* of LassoDiscoResourceOffering */
+	GList *svcMDID; /* of char* */
+#endif
 };
 
 /*****************************************************************************/
@@ -132,35 +136,34 @@ lasso_identity_destroy(LassoIdentity *identity)
 }
 
 #ifdef LASSO_WSF_ENABLED
+/**
+ * lasso_identity_add_resource_offering:
+ * @identity: a #LassoIdentity object
+ * @offering: a #LassoDiscoResourceOffering object to add
+ *
+ * Add a new offering to the identity object to be retrieved later by
+ * lasso_identity_get_offerings() or lasso_identity_get_resource_offering().
+ * It also allocate an entryId identifier for the offering, look into
+ * offering->entryID to get it after this call.
+ *
+ * Return value: Always 0, there should not be any error (if memory is not exhausted).
+ */
 gint
 lasso_identity_add_resource_offering(LassoIdentity *identity,
 		LassoDiscoResourceOffering *offering)
 {
-	/* XXX: add proper entry id to offering */
-	int entry_id = 1;
 	char entry_id_s[20];
-	GList *iter;
-	LassoDiscoResourceOffering *t;
 
 	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(offering),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	g_snprintf(entry_id_s, 18, "%d", entry_id);
-	iter = identity->private_data->resource_offerings;
-	while (iter) {
-		t = iter->data;
-		iter = g_list_next(iter);
-		if (strcmp(t->entryID, entry_id_s) == 0) {
-			entry_id++;
-			g_snprintf(entry_id_s, 18, "%d", entry_id);
-			iter = identity->private_data->resource_offerings; /* rewind */
-		}
-	}
-
-	offering->entryID = g_strdup(entry_id_s);
-	identity->private_data->resource_offerings = g_list_append(
-			identity->private_data->resource_offerings, g_object_ref(offering));
+	do {
+		g_snprintf(entry_id_s, 18, "%d", identity->private_data->last_entry_id);
+		identity->private_data->last_entry_id++;
+	} while (g_hash_table_lookup(identity->private_data->resource_offerings_map, entry_id_s));
+	g_assign_string(offering->entryID, entry_id_s);
+	g_hash_table_insert(identity->private_data->resource_offerings_map, g_strdup(offering->entryID), g_object_ref(offering));
 	identity->is_dirty = TRUE;
 
 	return 0;
@@ -178,69 +181,80 @@ lasso_identity_add_resource_offering(LassoIdentity *identity,
 gboolean
 lasso_identity_remove_resource_offering(LassoIdentity *identity, const char *entryID)
 {
-	GList *iter;
-	LassoDiscoResourceOffering *t;
-
 	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), FALSE);
 	g_return_val_if_fail(entryID != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	iter = identity->private_data->resource_offerings;
-	while (iter) {
-		t = iter->data;
-		iter = g_list_next(iter);
-		if (strcmp(t->entryID, entryID) == 0) {
-			identity->private_data->resource_offerings = g_list_remove(
-					identity->private_data->resource_offerings, t);
-			lasso_node_destroy(LASSO_NODE(t));
-			identity->is_dirty = TRUE;
-			return TRUE;
-		}
+	if (g_hash_table_remove(identity->private_data->resource_offerings_map, entryID)) {
+		identity->is_dirty = TRUE;
+		return TRUE;
+	} else {
+		return FALSE;
 	}
-	return FALSE;
 }
 
 
+/* Context type for the callback add_matching_resource_offering_to_list */
+struct HelperStruct {
+	GList *list;
+	const char *service_type;
+};
+
+/*
+ * Helper function for lasso_identity_get_offerings, match them with a service
+ * type string */
+static
+void add_matching_resource_offering_to_list(char *name, LassoDiscoResourceOffering *offering,
+	struct HelperStruct *ctx) 
+{
+	if (ctx->service_type == NULL ||
+		( offering->ServiceInstance != NULL && 
+		offering->ServiceInstance->ServiceType != NULL &&
+		strcmp(offering->ServiceInstance->ServiceType, ctx->service_type) == 0)) {
+		g_list_add(ctx->list, offering);
+	}
+}
+
+/**
+ * lasso_identity_get_offerings:
+ * @identity: a #LassoIdentity
+ * @service_type: a char* string representing the type of service we are looking for
+ *
+ * Returns a list of #LassoDiscoResourceOffering associated to this service type.
+ *
+ * Return value: a newly allocated list of #LassoDiscoResourceOffering
+ */
 GList*
 lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type)
 {
-	GList *iter;
-	LassoDiscoResourceOffering *t;
-	GList *result = NULL;
+	struct HelperStruct ctx = { NULL, service_type };
 
 	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
 
-	iter = identity->private_data->resource_offerings;
-	while (iter) {
-		t = iter->data;
-		iter = g_list_next(iter);
-		if (service_type == NULL || (t->ServiceInstance && strcmp(
-					t->ServiceInstance->ServiceType, service_type) == 0)) {
-			result = g_list_append(result, g_object_ref(t));
-		}
-	}
+	g_hash_table_foreach(identity->private_data->resource_offerings_map, 
+		(GHFunc)add_matching_resource_offering_to_list, &ctx);
 
-	return result;
+	return ctx.list;
 }
 
+/**
+ * lasso_identity_resource_offering:
+ * @identity: a #LassoIdentity
+ * @entryID: the entryID of the researched #LassoDiscoResourceOffering
+ *
+ * Lookup a #LassoDiscoResourceOffering corresponding to entryID, entryID is
+ * usually allocated by lasso_identity_add_resource_offering() inside
+ * offering->entryID.
+ *
+ * Return value: a #LassoDiscoResourceOffering, your must ref it if you intend
+ * to keep it around.
+ */
 LassoDiscoResourceOffering*
 lasso_identity_get_resource_offering(LassoIdentity *identity, const char *entryID)
 {
-	GList *iter;
-	LassoDiscoResourceOffering *t;
-
 	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
 	g_return_val_if_fail(entryID != NULL, NULL);
 
-	iter = identity->private_data->resource_offerings;
-	while (iter) {
-		t = iter->data;
-		iter = g_list_next(iter);
-		if (strcmp(t->entryID, entryID) == 0) {
-			return t;
-		}
-	}
-
-	return NULL;
+	return g_hash_table_lookup(identity->private_data->resource_offerings_map, entryID);
 }
 
 gint
@@ -281,12 +295,6 @@ add_childnode_from_hashtable(gchar *key, LassoNode *value, xmlNode *xmlnode)
 
 #ifdef LASSO_WSF_ENABLED
 static void
-add_childnode_from_list(LassoNode *value, xmlNode *xmlnode)
-{
-	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
-}
-
-static void
 add_text_childnode_from_list(gchar *value, xmlNode *xmlnode)
 {
 	xmlNewTextChild(xmlnode, NULL, (xmlChar*)"SvcMDID", (xmlChar*)value);
@@ -312,8 +320,10 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 				(GHFunc)add_childnode_from_hashtable, xmlnode);
 #ifdef LASSO_WSF_ENABLED
 	/* Resource Offerings */
-	g_list_foreach(identity->private_data->resource_offerings,
-			(GFunc)add_childnode_from_list, xmlnode);
+	//g_list_foreach(identity->private_data->resource_offerings,
+	//		(GFunc)add_childnode_from_list, xmlnode);
+	g_hash_table_foreach(identity->private_data->resource_offerings_map, 
+			(GHFunc)add_childnode_from_hashtable, xmlnode);
 
 	/* Service Metadatas IDs (svcMDID) */
 	if (identity->private_data->svcMDID != NULL) {
@@ -358,8 +368,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		if (strcmp((char*)t->name, "ResourceOffering") == 0) {
 			LassoDiscoResourceOffering *offering;
 			offering = LASSO_DISCO_RESOURCE_OFFERING(lasso_node_new_from_xmlNode(t));
-			identity->private_data->resource_offerings = g_list_append(
-					identity->private_data->resource_offerings, offering);
+			g_hash_table_insert(identity->private_data->resource_offerings_map,
+				g_strdup(offering->entryID),
+				g_object_ref(offering));
 		}
 
 		/* Service Metadatas IDs (SvcMDID) */
@@ -396,27 +407,23 @@ dispose(GObject *object)
 {
 	LassoIdentity *identity = LASSO_IDENTITY(object);
 
-	/* FIXME (ID-WSF 1) : Probably necessary, must be tested */
-/* 	if (identity->private_data->resource_offerings != NULL) { */
-/* 		g_list_free(identity->private_data->resource_offerings); */
-/* 		identity->private_data->resource_offerings = NULL; */
-/* 	}	 */
 
-	if (identity->private_data->dispose_has_run == TRUE) {
-		return;
+	if (identity->private_data->dispose_has_run == FALSE) {
+		identity->private_data->dispose_has_run = TRUE;
+#ifdef LASSO_WSF_ENABLED
+		if (identity->private_data->svcMDID != NULL) {
+			g_list_foreach(identity->private_data->svcMDID, (GFunc)g_free, NULL);
+			g_list_free(identity->private_data->svcMDID);
+			identity->private_data->svcMDID = NULL;
+		}
+		g_hash_table_destroy(identity->private_data->resource_offerings_map);
+#endif
+
+		g_hash_table_destroy(identity->federations);
+		identity->federations = NULL;
+
+		G_OBJECT_CLASS(parent_class)->dispose(object);
 	}
-	identity->private_data->dispose_has_run = TRUE;
-
-	if (identity->private_data->svcMDID != NULL) {
-		g_list_foreach(identity->private_data->svcMDID, (GFunc)g_free, NULL);
-		g_list_free(identity->private_data->svcMDID);
-		identity->private_data->svcMDID = NULL;
-	}
-
-	g_hash_table_destroy(identity->federations);
-	identity->federations = NULL;
-
-	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
 static void
@@ -436,9 +443,13 @@ static void
 instance_init(LassoIdentity *identity)
 {
 	identity->private_data = g_new0(LassoIdentityPrivate, 1);
-	identity->private_data->resource_offerings = NULL;
 	identity->private_data->dispose_has_run = FALSE;
+#ifdef LASSO_WSF_ENABLED
 	identity->private_data->svcMDID = NULL;
+	identity->private_data->last_entry_id = 0;
+	identity->private_data->resource_offerings_map = g_hash_table_new_full(g_str_hash, 
+			g_str_equal, (GDestroyNotify)g_free, (GDestroyNotify)g_object_unref);
+#endif
 	identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,
 			(GDestroyNotify)lasso_federation_destroy);
