@@ -52,6 +52,18 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
+static gint
+lasso_session_add_assertion_simple(LassoSession *session, const char *providerID, LassoNode *assertion)
+{
+	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	g_hash_table_insert(session->assertions, g_strdup(providerID), g_object_ref(assertion));
+
+    return 0;
+}
+
 /**
  * lasso_session_add_assertion:
  * @session: a #LassoSession
@@ -68,28 +80,27 @@ lasso_session_add_assertion(LassoSession *session, const char *providerID, Lasso
 {
 	gint ret = 0;
 
-	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
-	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	ret = lasso_session_add_assertion_simple(session, providerID, assertion);
+	if (ret != 0) {
+		return ret;
+	}
 
-	g_hash_table_insert(session->assertions, g_strdup(providerID), g_object_ref(assertion));
-
-    /* ID-WSF specific need */
-    if (LASSO_IS_SAML_ASSERTION(assertion)) {
-        LassoSamlAssertion *saml_assertion = LASSO_SAML_ASSERTION(assertion);
-        if (saml_assertion->Advice) {
-            LassoSamlAdvice *advice = saml_assertion->Advice;
-            GList *iter;
-            for (iter = advice->any; iter; iter = iter->next) {
-                xmlNode *node = (xmlNodePtr)iter->data;
-                if (xmlSecCheckNodeName(node, (xmlChar*)"Assertion", (xmlChar*)LASSO_SAML_ASSERTION_HREF)) {
-                    xmlChar *id = xmlGetProp(node, (xmlChar*)"AssertionID");
-                    ret = lasso_session_add_assertion_with_id(session, (char*)id, node);
-                    xmlFree(id);
-                }
-            }
-        }
-    }
+	/* ID-WSF specific need */
+	if (LASSO_IS_SAML_ASSERTION(assertion)) {
+		LassoSamlAssertion *saml_assertion = LASSO_SAML_ASSERTION(assertion);
+		if (saml_assertion->Advice) {
+			LassoSamlAdvice *advice = saml_assertion->Advice;
+			GList *iter;
+			for (iter = advice->any; iter; iter = iter->next) {
+				xmlNode *node = (xmlNodePtr)iter->data;
+				if (xmlSecCheckNodeName(node, (xmlChar*)"Assertion", (xmlChar*)LASSO_SAML_ASSERTION_HREF)) {
+					xmlChar *id = xmlGetProp(node, (xmlChar*)"AssertionID");
+					ret = lasso_session_add_assertion_with_id(session, (char*)id, node);
+					xmlFree(id);
+				}
+			}
+		}
+	}
 
 	session->is_dirty = TRUE;
 
@@ -639,7 +650,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				if ((value = xmlGetProp(t, (xmlChar*)"RemoteProviderID"))) {
 
 					assertion = lasso_node_new_from_xmlNode(n);
-					lasso_session_add_assertion(session, (char*)value, assertion);
+					lasso_session_add_assertion_simple(session, (char*)value, assertion);
 					xmlFree(value);
 				}
             } else if ((value = xmlGetProp(t, (xmlChar*)"ID"))) {
