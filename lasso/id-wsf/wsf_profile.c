@@ -187,7 +187,6 @@ lasso_wsf_profile_build_soap_envelope_internal(const char *refToMessageId, const
 	messageId = lasso_build_unique_id(32);
 	timestamp = lasso_get_current_time();
 	correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
-	correlation->id = lasso_build_unique_id(32);
 	if (refToMessageId != NULL)
 		correlation->refToMessageID = g_strdup(refToMessageId);
 	header->Other = g_list_append(header->Other, correlation);
