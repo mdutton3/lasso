@@ -71,6 +71,7 @@
 			g_free(dest); dest = NULL; \
 		} \
 	}
+
 #define g_release_gobject(dest) \
 	{ \
 		if (dest) { \
@@ -78,6 +79,7 @@
 			dest = NULL; \
 		} \
 	}
+
 #define g_release_list_of_strings(dest) \
 	{ \
 		if (dest) { \
@@ -86,6 +88,7 @@
 			dest = NULL; \
 		} \
 	}
+
 #define g_release_list_of_gobjects(dest) \
 	{ \
 		if (dest) { \
@@ -94,6 +97,7 @@
 			dest = NULL; \
 		} \
 	}
+
 #define g_release_list(dest) \
 	{ \
 		if (dest) { \
@@ -101,6 +105,7 @@
 			dest = NULL; \
 		} \
 	}
+
 #define g_unlink_and_release_node(node) \
 	{ \
 		if (node) { \
@@ -110,8 +115,45 @@
 		} \
 	}
 
+#define g_release_node(node) \
+	{ \
+		if (node) { \
+			xmlFreeNode(node); \
+			node = NULL; \
+		} \
+	}
+
+#define g_release_doc(doc) \
+	{ \
+		if (doc) { \
+			xmlFreeDoc(doc); \
+			doc = NULL; \
+		} \
+	}
+#define g_release_xmlchar(dest) \
+	{ \
+		if (dest) { \
+			xmlFree(dest); dest = NULL; \
+		} \
+	}
+
 /* Bad param handling */
 #define g_return_val_if_invalid_param(kind, name, val) \
 	g_return_val_if_fail(LASSO_IS_##kind(name), val)
+
+#define g_bad_param(kind, name) \
+	g_return_val_if_invalid_param(kind, name, \
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+#define g_null_param(name) \
+	g_return_val_if_fail(name != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+#define goto_exit_if_fail(condition, rc_value) \
+	{\
+		if (! (condition) ) {\
+			rc = (rc_value); \
+			goto exit; \
+		} \
+	}
 
 #endif /* __LASSO_UTILS_H__ */
