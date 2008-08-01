@@ -280,7 +280,7 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 					          AttributeStatement */
 
 					advice = LASSO_SAML_ADVICE(lasso_saml_advice_new());
-					advice->Assertion = LASSO_NODE(credential);
+					// advice->Assertion = LASSO_NODE(credential);
 					assertion->Advice = advice;
 				}
 				description->CredentialRef = g_list_append(

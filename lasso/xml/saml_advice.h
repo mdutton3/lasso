@@ -50,9 +50,10 @@ struct _LassoSamlAdvice {
 
 	/*< public >*/
 	/* <element ref="saml:AssertionIDReference"/> */
-	GList *AssertionIDReference;
+	// GList *AssertionIDReference;
 	/* <element ref="saml:Assertion"/> */
-	LassoNode *Assertion; /* actually LassoSamlAssertion* but it recurses */
+	// LassoNode *Assertion; /* actually LassoSamlAssertion* but it recurses */
+	GList *any; /* of xmlNode */
 };
 
 struct _LassoSamlAdviceClass {

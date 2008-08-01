@@ -43,6 +43,8 @@
 #include <lasso/xml/id-wsf-2.0/sec_token.h>
 #endif
 
+#include <xmlsec/xmltree.h>
+
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -69,6 +71,23 @@ lasso_session_add_assertion(LassoSession *session, const char *providerID, Lasso
 	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	g_hash_table_insert(session->assertions, g_strdup(providerID), g_object_ref(assertion));
+
+    /* ID-WSF specific need */
+    if (LASSO_IS_SAML_ASSERTION(assertion)) {
+        LassoSamlAssertion *saml_assertion = LASSO_SAML_ASSERTION(assertion);
+        if (saml_assertion->Advice) {
+            LassoSamlAdvice *advice = saml_assertion->Advice;
+            GList *iter;
+            for (iter = advice->any; iter; iter = iter->next) {
+                xmlNode *node = (xmlNodePtr)iter->data;
+                if (xmlSecCheckNodeName(node, (xmlChar*)"Assertion", (xmlChar*)LASSO_SAML_ASSERTION_HREF)) {
+                    xmlChar *id = xmlGetProp(node, (xmlChar*)"AssertionID");
+                    ret = lasso_session_add_assertion_with_id(session, (char*)id, node);
+                    xmlFree(id);
+                }
+            }
+        }
+    }
 
 	session->is_dirty = TRUE;
 
