@@ -53,6 +53,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "EncryptedKey", SNIPPET_NODE,
 	  G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedKey) },
 #endif
+    { "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, any) },
 	{ NULL, 0, 0}
 };
 
@@ -63,6 +64,7 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoDiscoEncryptedResourceID *node)
 {
+    node->any = NULL;
 #if 0
 	node->EncryptedData = NULL;
 	node->EncryptedKey = NULL;
