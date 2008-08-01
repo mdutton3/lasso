@@ -643,6 +643,7 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	xmlCharEncodingHandler *handler;
 	xmlDoc *doc = NULL;
 	xmlNode *envelope_node = NULL;
+	char *sec_mech_id = NULL;
 
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request),
@@ -653,7 +654,20 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	envelope_node = lasso_node_get_xmlNode(LASSO_NODE(envelope), FALSE);
 	xmlDocSetRootElement(doc, envelope_node);
 	/* Sign request if necessary */
-	// lasso_wsf_profile_sign_request(profile, doc)
+	sec_mech_id = profile->private_data->security_mech_id;
+	if (lasso_security_mech_id_is_saml_authentication(sec_mech_id)) {
+		const xmlChar* ids[2] = {
+			(xmlChar*) "id",
+			NULL 
+		};
+		/* Add a signature to soap:Header/wsse:Security on:
+		 * soap:Header/sb:Correlation
+		 * soap:Header/sb:Provider
+		 * éventuellement soap:Header/sb:UserInteraction
+		 * soap:Body
+		 */
+		xmlSecAddIDs(doc, envelope_node, ids);
+	}
 	/* Dump soap request */
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
