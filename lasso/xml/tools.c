@@ -722,13 +722,7 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	xmlSecDSigCtx *dsig_ctx;
 	xmlAttr *id_attr = NULL;
 
-	sign_tmpl = NULL;
-	for (sign_tmpl = xmlnode->children; sign_tmpl; sign_tmpl = sign_tmpl->next) {
-		if (strcmp((char*)sign_tmpl->name, "Signature") == 0)
-			break;
-	}
 	sign_tmpl = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
-
 	if (sign_tmpl == NULL)
 		return LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND;
 
