@@ -50,6 +50,10 @@
 #include <lasso/xml/ds_key_info.h>
 #include <lasso/xml/ds_key_value.h>
 #include <lasso/xml/ds_rsa_key_value.h>
+#include <lasso/xml/soap_fault.h>
+#include <lasso/xml/soap_detail.h>
+#include <lasso/xml/is_redirect_request.h>
+
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/providerprivate.h>
@@ -813,9 +817,9 @@ exit:
 gint
 lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gchar *message)
 {
-	xmlDoc *doc;
-	xmlNode *root;
-	LassoSoapEnvelope *envelope;
+	xmlDoc *doc = NULL;
+	xmlNode *root = NULL;
+	LassoSoapEnvelope *envelope = NULL;
 	gint rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), 
@@ -842,9 +846,25 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 		rc = LASSO_PROFILE_ERROR_MISSING_RESPONSE;
 	}
 	/* XXX: Validate MessageID */
-	/* Signal soap fault specifically */
+	/* Signal soap fault specifically,
+	 * find soap redirects. */
 	if (LASSO_IS_SOAP_FAULT(profile->response)) {
-		rc = LASSO_WSF_PROFILE_ERROR_SOAP_FAULT;
+		LassoSoapFault *fault = LASSO_SOAP_FAULT(profile->response);
+		if (LASSO_IS_SOAP_DETAIL(fault->Detail)) {
+		    LassoSoapDetail *detail = LASSO_SOAP_DETAIL(fault->Detail);
+		    GList *iter = detail->any;
+		    for (; iter; iter = g_list_next(iter)) {
+			if (LASSO_IS_IS_REDIRECT_REQUEST(iter->data)) {
+			    LassoIsRedirectRequest *redirect = LASSO_IS_REDIRECT_REQUEST(iter->data);
+			    g_assign_string(profile->msg_url, redirect->redirectURL);
+			    rc = LASSO_SOAP_FAULT_REDIRECT_REQUEST;
+			}
+		    }
+
+		}
+		if (rc == 0) {
+			rc = LASSO_WSF_PROFILE_ERROR_SOAP_FAULT;
+		}
 	}
 exit:
 	if (envelope) {
