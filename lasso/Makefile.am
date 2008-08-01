@@ -15,10 +15,10 @@ lasso.rc.lo: $(top_srcdir)/win32/lasso.rc
 
 lib_LTLIBRARIES = liblasso.la
 
-liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h soap_binding.h
+liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h
 BUILT_SOURCES = types.c errors.c symbols.sym
 
-liblasso_la_SOURCES = lasso.c errors.c soap_binding.c
+liblasso_la_SOURCES = lasso.c errors.c
 
 if WSF_ENABLED
 SYMBOLS_ARGS = -wsf
