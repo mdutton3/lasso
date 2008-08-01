@@ -97,31 +97,39 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 	LassoSoapEnvelope *soap;
 	LassoSoapHeader *header;
 	LassoWsseSecurity *wsse_security;
-	LassoSamlAssertion *assertion;
 	LassoSession *session;
 	LassoDiscoDescription *description;
 	GList *credentialRefs;
+	gint ret = 0;
 
 	wsse_security = lasso_wsse_security_new();
 	session = profile->session;
 	description = lasso_wsf_profile_get_description(profile);
 	/* Lookup in the session the credential ref from the description and
-         * add them to the SOAP header wsse:Security. */
+	 * add them to the SOAP header wsse:Security. */
 	/* FIXME: should we really add every credentials to the message ? */
+	if (description == NULL) {
+		ret = LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION;
+		goto exit;
+	}
 	credentialRefs = description->CredentialRef;
 	while (credentialRefs) {
 		char *ref = (char*)credentialRefs->data;
-		assertion = LASSO_SAML_ASSERTION(
-			lasso_session_get_assertion_by_id(session, ref));
-		if (LASSO_IS_SAML_ASSERTION(assertion)) {
-			g_list_add_gobject(wsse_security->any, assertion);
+		xmlNode *assertion = lasso_session_get_assertion_by_id(session, ref);
+		if (assertion) {
+			g_list_add(wsse_security->any, assertion);
 		}
 		credentialRefs = g_list_next(credentialRefs);
 	}
 	soap = profile->soap_envelope_request;
 	header = soap->Header;
 	g_list_add_gobject(header->Other, wsse_security);
-	return 0;
+	wsse_security = NULL;
+exit:
+	if (wsse_security) {
+		g_release_gobject(wsse_security);
+	}
+	return ret;
 }
 
 /** 

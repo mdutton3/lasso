@@ -929,11 +929,8 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 }
 
 const char*
-get_assertion_id(LassoNode *node) {
-	if (LASSO_IS_SAML_ASSERTION(node)) {
-		return LASSO_SAML_ASSERTION(node)->AssertionID;
-	}
-	return NULL;
+get_assertion_id(xmlNode *node) {
+	return (char*)xmlGetProp(node, (xmlChar*)"AssertionID");
 }
 
 /**
@@ -972,13 +969,15 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 	if (response->Credentials) {
 		GList *assertions = response->Credentials->any;
 		for (; assertions; assertions = g_list_next(assertions)) {
-			if (LASSO_IS_SAML_ASSERTION(assertions->data) == FALSE) {
+			xmlNode *assertion = (xmlNode*)assertions->data;
+			if (! (assertion->type == XML_ELEMENT_NODE &&
+				strcmp((char*)assertion->name, "Assertion") == 0)) {
 				continue;
 			}
 			if (profile->session) {
 				lasso_session_add_assertion_with_id(profile->session,
-						get_assertion_id(assertions->data),
-						assertions->data);
+						get_assertion_id(assertion),
+						assertion);
 			} else {
 				rc = LASSO_PROFILE_ERROR_SESSION_NOT_FOUND;
 				goto exit;

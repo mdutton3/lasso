@@ -50,11 +50,11 @@ gint lasso_session_add_assertion(LassoSession *session,
 gint lasso_session_add_status(LassoSession *session,
 		const char *providerID, LassoNode *status);
 gint lasso_session_add_assertion_with_id(LassoSession *session, 
-		const char *assertionID, LassoNode *assertion);
+		const char *assertionID, xmlNode *assertion);
 
 LassoNode* lasso_session_get_assertion(
 		LassoSession *session, const gchar *providerID);
-LassoNode* lasso_session_get_assertion_by_id(
+xmlNode* lasso_session_get_assertion_by_id(
 		LassoSession *session, const gchar *assertionID);
 LassoNode* lasso_session_get_status(
 		LassoSession *session, const gchar *providerID);
