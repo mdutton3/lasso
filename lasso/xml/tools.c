@@ -179,6 +179,37 @@ lasso_get_pem_file_type(const char *pem_file)
 }
 
 /**
+ * lasso_get_public_key_from_pem_file:
+ * @file: the name of a file containing a public key
+ *
+ * Load a public key from a file in the PEM format.
+ *
+ * Returns: a #xmlSecKey if one is found, NULL otherwise.
+ */
+xmlSecKeyPtr lasso_get_public_key_from_pem_file(const char *file) {
+	LassoPemFileType file_type;
+	xmlSecKeyPtr pub_key = NULL;
+
+        file_type = lasso_get_pem_file_type(file);
+        switch (file_type) {
+                case LASSO_PEM_FILE_TYPE_UNKNOWN:
+			message(G_LOG_LEVEL_WARNING, "PEM file type unknown: %s", file);
+                        break; /* with a warning ? */
+                case LASSO_PEM_FILE_TYPE_CERT:
+                        pub_key = lasso_get_public_key_from_pem_cert_file(file);
+                        break;
+                case LASSO_PEM_FILE_TYPE_PUB_KEY:
+                        pub_key = xmlSecCryptoAppKeyLoad(file,
+                                        xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+                        break;
+                case LASSO_PEM_FILE_TYPE_PRIVATE_KEY:
+			pub_key = lasso_load_private_key_file(file);
+		
+                        break; /* with a warning ? */
+        }
+	return pub_key;
+}
+/**
  * lasso_get_public_key_from_pem_cert_file:
  * @pem_cert_file: an X509 pem certificate file
  * 
@@ -224,6 +255,21 @@ lasso_get_public_key_from_pem_cert_file(const char *pem_cert_file)
 	X509_free(pem_cert);
 
 	return key;
+}
+
+/**
+ * lasso_get_public_key_from_private_key_file:
+ * @private_key_file: the name of a file containing a private key in PEM format
+ *
+ * Load a public key from a private key.
+ *
+ * Returns: a new $xmlSecKey containing the private key
+ */
+xmlSecKeyPtr
+lasso_get_public_key_from_private_key_file(const char *private_key_file)
+{
+	return XmlSecCryptoAppKeyLoad(private_key_file, 
+			xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 }
 
 /**
