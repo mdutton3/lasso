@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 if PYTHON_ENABLED
-TESTS = profiles_tests.py binding_tests.py
+TESTS = profiles_tests.py binding_tests.py idwsf1_tests.py idwsf2_tests.py
 endif
 
 EXTRA_DIST = profiles_tests.py binding_tests.py

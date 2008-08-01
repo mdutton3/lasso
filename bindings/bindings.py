@@ -102,6 +102,7 @@ class BindingData:
             arg_type = f.args[0][0]
             if arg_type[-1] == '*':
                 arg_type = arg_type[:-1]
+	    arg_type = arg_type.replace('const ','')
             c = self.struct_dict.get(arg_type)
             if not c:
                 continue
