@@ -75,7 +75,7 @@ class_init(LassoSoapDetailClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "Detail");
+	lasso_node_class_set_nodename(nclass, "detail");
 	lasso_node_class_set_ns(nclass, LASSO_SOAP_ENV_HREF, LASSO_SOAP_ENV_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
