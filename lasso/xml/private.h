@@ -103,7 +103,7 @@ char* lasso_build_unique_id(unsigned int size);
 char* lasso_get_current_time(void);
 LassoPemFileType lasso_get_pem_file_type(const char *file);
 
-xmlSecKeyPtr lasso_get_publick_key_from_pem_file(const char *file);
+xmlSecKeyPtr lasso_get_public_key_from_pem_file(const char *file);
 xmlSecKeyPtr lasso_load_private_key_file(const char *file);
 xmlSecKeyPtr lasso_get_public_key_from_pem_cert_file(const char *file);
 xmlSecKeysMngr* lasso_load_certs_from_pem_certs_chain_file (const char *file);
