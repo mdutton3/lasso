@@ -119,8 +119,15 @@ LASSO_EXPORT LassoWsfProfile* lasso_discovery_get_service(LassoDiscovery *discov
 LASSO_EXPORT GList* lasso_discovery_get_services(LassoDiscovery *discovery);
 
 LASSO_EXPORT LassoDiscoDescription* lasso_discovery_get_description_auto(
-		LassoDiscoResourceOffering *offering, const gchar *security_mech_id);
+		LassoDiscoResourceOffering *offering, const gchar *security_mech);
 
+typedef LassoWsfProfile *(*LassoWsfProfileConstructor)(LassoServer *server,
+		LassoDiscoResourceOffering *offering);
+
+LASSO_EXPORT void lasso_discovery_register_constructor_for_service_type(gchar const *service_type,
+		LassoWsfProfileConstructor constructor);
+LASSO_EXPORT void lasso_discovery_unregister_constructor_for_service_type(gchar const *service_type,
+		LassoWsfProfileConstructor constructor);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

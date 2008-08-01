@@ -93,6 +93,12 @@ struct _LassoDiscoveryPrivate
 /* static methods/functions */
 /*****************************************************************************/
 
+static gchar* lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *providerId);
+static LassoWsfProfile *lasso_discovery_build_wsf_profile(LassoDiscovery *discovery, LassoDiscoResourceOffering *offering);
+static LassoWsfProfileConstructor lookup_registry(gchar const *service_type);
+static void remove_registry(gchar const *service_type);
+static void set_registry(gchar const *service_type, LassoWsfProfileConstructor constructor);
+
 static gchar*
 lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *providerId)
 {
@@ -1076,16 +1082,52 @@ lasso_discovery_get_services(LassoDiscovery *discovery)
 }
 
 /**
- * lasso_discovery_destroy:
- * @discovery: a LassoDiscovery
- * 
- * Destroys LassoDiscovery objects created with lasso_discovery_new() or
- * lasso_discovery_new_from_dump().
- **/
+ * lasso_discovery_register_constructor_for_service_type:
+ * @service_type: the URI of the service type
+ * @constructor: a constructor function for the profile handling this service type
+ *
+ * This function permits to subclass of #LassoWsfProfile to register a
+ * constructor for the service type they supports.
+ */
 void
-lasso_discovery_destroy(LassoDiscovery *discovery)
+lasso_discovery_get_register_constructor_for_service_type(gchar *service_type,
+		LassoWsfProfileConstructor constructor)
 {
-	lasso_node_destroy(LASSO_NODE(discovery));
+	LassoWsfProfileConstructor old_constructor;
+	
+	g_return_if_fail(service_type);
+	g_return_if_fail(constructor);
+	old_constructor = lookup_registry(service_type);
+	if (old_constructor) {
+		message(G_LOG_LEVEL_WARNING, "Service type already registered: %s", service_type);
+		return;
+	}
+	set_registry(service_type, constructor);
+}
+
+/**
+ * lasso_discovery_unregister_constructor_for_service_type:
+ * @service_type: the URI of the service type
+ * @constructor: a constructor function for the profile handling this service type
+ *
+ * This function permits to subclass of #LassoWsfProfile to unregister a
+ * constructor for the service type they previously registered using
+ * lasso_discovery_register_constructor_for_service_type().
+ */
+void
+lasso_discovery_unregister_constructor_for_service_type(
+		gchar const *service_type,
+		LassoWsfProfileConstructor constructor) {
+	LassoWsfProfileConstructor old_constructor;
+	
+	g_return_if_fail(service_type);
+	g_return_if_fail(constructor);
+	old_constructor = lookup_registry(service_type);
+	if (old_constructor != constructor) {
+		message(G_LOG_LEVEL_WARNING, "Mismatch of constructors when unregistering service type: %s", service_type);
+		return;
+	}
+	remove_registry(service_type);
 }
 
 /*****************************************************************************/
@@ -1093,6 +1135,67 @@ lasso_discovery_destroy(LassoDiscovery *discovery)
 /*****************************************************************************/
 
 static LassoNodeClass *parent_class = NULL;
+static GHashTable *registry = NULL;
+
+static GHashTable *
+get_constructors_registry()
+{
+	if (registry==NULL) {
+		registry = g_hash_table_new_full(g_str_hash, g_direct_equal,
+				g_free, NULL);
+	}
+	return registry;
+}
+
+static LassoWsfProfileConstructor 
+lookup_registry(gchar const *service_type) {
+	gpointer *t;
+
+	g_return_val_if_fail(service_type, NULL);
+	t = g_hash_table_lookup(get_constructors_registry(), service_type);
+	return (LassoWsfProfileConstructor)t;
+}
+
+static void
+remove_registry(gchar const *service_type)
+{
+	g_return_if_fail(service_type);
+	g_hash_table_remove(get_constructors_registry(), service_type);
+}
+
+static void
+set_registry(gchar const *service_type, LassoWsfProfileConstructor constructor)
+{
+	g_return_if_fail(service_type);
+	g_return_if_fail(constructor);
+	g_hash_table_insert(get_constructors_registry(),
+			g_strdup(service_type), constructor);
+}
+
+static LassoWsfProfile *
+lasso_discovery_build_wsf_profile(LassoDiscovery *discovery, LassoDiscoResourceOffering *offering)
+{
+	LassoWsfProfile *a_wsf_profile = NULL;
+	LassoWsfProfileConstructor a_constructor;
+	LassoServer *server;
+	gchar *service_type = NULL;
+
+	g_return_val_if_fail(offering, NULL);
+	g_return_val_if_fail(offering->ServiceInstance, NULL);
+	g_return_val_if_fail(offering->ServiceInstance->ServiceType, NULL);
+	
+	service_type = offering->ServiceInstance->ServiceType;
+	a_constructor = lookup_registry(service_type);
+	server = discovery->parent.server;
+	if (a_constructor) {
+		a_wsf_profile = a_constructor(server,
+				offering);
+	} else {
+		message(G_LOG_LEVEL_WARNING, "No constructor registered for service type: %s", service_type);
+		a_wsf_profile = LASSO_WSF_PROFILE(lasso_data_service_new_full(server, offering));
+	}
+	return a_wsf_profile;
+}
 
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
