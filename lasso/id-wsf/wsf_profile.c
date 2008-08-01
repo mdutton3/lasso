@@ -93,6 +93,7 @@ lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
 	}
 
 	g_list_free(src->private_data->credentials);
+	src->private_data->credentials = NULL;
 
 	return 0;
 }
