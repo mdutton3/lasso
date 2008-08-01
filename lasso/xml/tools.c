@@ -47,6 +47,7 @@
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
 
 LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
+static xmlSecKeyPtr lasso_get_public_key_from_private_key_file(const char *private_key_file);
 
 /**
  * lasso_build_random_sequence:
@@ -203,7 +204,7 @@ xmlSecKeyPtr lasso_get_public_key_from_pem_file(const char *file) {
                                         xmlSecKeyDataFormatPem, NULL, NULL, NULL);
                         break;
                 case LASSO_PEM_FILE_TYPE_PRIVATE_KEY:
-			pub_key = lasso_load_private_key_file(file);
+			pub_key = lasso_get_public_key_from_private_key_file(file);
 		
                         break; /* with a warning ? */
         }
@@ -265,7 +266,7 @@ lasso_get_public_key_from_pem_cert_file(const char *pem_cert_file)
  *
  * Returns: a new $xmlSecKey containing the private key
  */
-xmlSecKeyPtr
+static xmlSecKeyPtr
 lasso_get_public_key_from_private_key_file(const char *private_key_file)
 {
 	return xmlSecCryptoAppKeyLoad(private_key_file, 

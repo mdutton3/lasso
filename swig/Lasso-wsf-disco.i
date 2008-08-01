@@ -31,6 +31,7 @@
 #include <lasso/xml/disco_encrypt_resource_id.h>
 #include <lasso/xml/disco_send_single_logout.h>
 #include <lasso/xml/disco_generate_bearer_token.h>
+#include <lasso/xml/disco_description.h>
 %}
 
 /* WSF prefix & href */

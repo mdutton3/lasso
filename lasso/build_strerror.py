@@ -6,7 +6,9 @@ import re
 import sys
 import os
 
-hlines = file('errors.h','r').readlines()
+srcdir = sys.argv[1]
+
+hlines = file('%s/errors.h' % srcdir,'r').readlines()
 messages = dict()
 
 for line in hlines:
@@ -18,7 +20,7 @@ for line in hlines:
 		if m:
 			messages[m.group(1)] = m.group(1)
 
-clines = file('errors.c.in','r').readlines()
+clines = file('%s/errors.c.in' % srcdir,'r').readlines()
 for line in clines:
 	if '@ERROR_CASES@' in line:
 		for k in messages:

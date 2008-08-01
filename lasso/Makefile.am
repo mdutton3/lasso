@@ -13,13 +13,12 @@ LTRCCOMPILE = $(LIBTOOL) --tag=RC --mode=compile $(RC) \
 lasso.rc.lo: $(top_srcdir)/win32/lasso.rc
 	$(LTRCCOMPILE) -i $< -o $@
 
-
 lib_LTLIBRARIES = liblasso.la
 
-liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h soap_binding.h
+liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h
 BUILT_SOURCES = types.c errors.c symbols.sym
 
-liblasso_la_SOURCES = lasso.c errors.c soap_binding.c
+liblasso_la_SOURCES = lasso.c errors.c
 
 if WSF_ENABLED
 SYMBOLS_ARGS = -wsf
@@ -80,7 +79,7 @@ liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@  \
 endif
 
 errors.c: errors.h
-	python build_strerror.py >$(srcdir)/.errors.c.new 
+	python $(srcdir)/build_strerror.py $(srcdir) >$(srcdir)/.errors.c.new 
 	if ! cmp -s $(srcdir)/errors.c $(srcdir)/.errors.c.new; then \
 	mv -f $(srcdir)/.errors.c.new $(srcdir)/errors.c; else \
 	rm $(srcdir)/.errors.c.new; fi

@@ -26,11 +26,16 @@
  * lasso_security_mech_is_saml_authentication:
  * @security_mech_id: the URI of an authentication mechanism
  *
- * Returns: %TRUE if @security_mech_id is one of
+ * Return value: %TRUE if @security_mech_id is one of
  * urn:liberty:security:2003-08:NULL:SAML,
  * urn:liberty:security:2003-08:TLS:SAML or
  * urn:liberty:security:2003-08:ClientTLS:SAML, FALSE otherwise. 
  */
+
+#include <glib.h>
+#include <lasso/xml/strings.h>
+#include <string.h>
+
 gboolean
 lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
 {
@@ -49,7 +54,7 @@ lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
  * lasso_security_mech_is_x509_authentication:
  * @security_mech_id: the URI of an authentication mechanism
  *
- * Returns: %TRUE if @security_mech_id is one of
+ * Return value: %TRUE if @security_mech_id is one of
  * urn:liberty:security:2003-08:NULL:X509,
  * urn:liberty:security:2003-08:TLS:X509 or
  * urn:liberty:security:2003-08:ClientTLS:X509, FALSE otherwise. 
@@ -72,7 +77,7 @@ lasso_security_mech_id_is_x509_authentication(const char *security_mech_id)
  * lasso_security_mech_is_null_authentication:
  * @security_mech_id: the URI of an authentication mechanism
  *
- * Returns: %TRUE if @security_mech_id is one of
+ * Return value: %TRUE if @security_mech_id is one of
  * urn:liberty:security:2003-08:NULL:NULL,
  * urn:liberty:security:2003-08:TLS:NULL or
  * urn:liberty:security:2003-08:ClientTLS:NULL, FALSE otherwise.
@@ -81,9 +86,9 @@ gboolean
 lasso_security_mech_id_is_null_authentication(const char *security_mech_id)
 {
 	if (strcmp(security_mech_id, 
-			LASSO_SECURITY_MECH_CLIENT_TLS_NULL) == 0 ||
+			LASSO_SECURITY_MECH_CLIENT_TLS) == 0 ||
 			strcmp(security_mech_id, 
-					LASSO_SECURITY_MECH_TLS_NULL) == 0 ||
+					LASSO_SECURITY_MECH_TLS) == 0 ||
 			strcmp(security_mech_id, 
 					LASSO_SECURITY_MECH_NULL) == 0) {
 		return TRUE;

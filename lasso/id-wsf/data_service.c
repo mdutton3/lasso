@@ -921,8 +921,6 @@ lasso_register_idwsf_xpath_namespaces(xmlXPathContext *xpathCtx)
 }
 
 
-
-
 /*****************************************************************************/
 /* overrided parent class methods */
 /*****************************************************************************/

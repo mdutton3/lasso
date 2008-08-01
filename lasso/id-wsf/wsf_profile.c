@@ -35,6 +35,7 @@
 #include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/id-wsf/wsf_profile_private.h>
 #include <lasso/id-wsf/discovery.h>
+#include <lasso/id-wsf/utils.h>
 #include <lasso/xml/disco_modify.h>
 #include <lasso/xml/soap_fault.h>
 #include <lasso/xml/soap_binding_correlation.h>
@@ -51,6 +52,7 @@
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/providerprivate.h>
+#include <lasso/id-ff/sessionprivate.h>
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -85,7 +87,7 @@ lasso_wsf_profile_get_fault(LassoWsfProfile *profile)
  * lasso_wsf_profile_comply_with_saml_authentication:
  * @profile: a #LassoWsfProfile
  *
- * Returns: 0 if an assertion was found and a signature corresponding to the
+ * Return value: 0 if an assertion was found and a signature corresponding to the
  * key given as a subject confirmation in the assertion is generated, an error
  * code otherwise.
  */
@@ -128,7 +130,7 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
  *
  * UNCOMPLETE.
  *
- * Returns: 0 if complyiing with the current security mechanism was
+ * Return value: 0 if complyiing with the current security mechanism was
  * successfull.
  */
 static gint
@@ -198,7 +200,7 @@ lasso_wsf_profile_build_soap_envelope_internal(const char *refToMessageId, const
  *
  * OBSOLETE: Do nothin.
  *
- * Returns: 0.
+ * Return value: 0.
  */ 
 gint
 lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
@@ -213,7 +215,7 @@ lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
  *
  * OBSOLETE: Do nothing.
  *
- * Returns: 0.
+ * Return value: 0.
  */
 gint
 lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential)
@@ -229,7 +231,7 @@ lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential)
  * Traverse the service instance descriptions and find one which supports the
  * given security mechanism.
  *
- * Returns: a #LassoDiscoDescription that supports security_mech_id, NULL
+ * Return value: a #LassoDiscoDescription that supports security_mech_id, NULL
  * otherwise.
  */
 LassoDiscoDescription*
@@ -264,7 +266,7 @@ lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gcha
  *
  * Setup the LassoWsfProfile for a given security mechanism.
  *
- * Returns: 0 if a corresponding description was found,
+ * Return value: 0 if a corresponding description was found,
  * LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION if no description with the
  * given security mechanism was found.
  */
@@ -298,7 +300,7 @@ lasso_wsf_profile_set_description_from_offering(
 }
 
 /**
- * lasso_wsf_profile_set_security_mechanism:
+ * lasso_wsf_profile_set_security_mech_id:
  * @profile: the #LassoWsfProfile object
  * @securit_mech_id: a char* string representing the chosen security mech id.
  *
@@ -314,30 +316,37 @@ lasso_wsf_profile_set_description_from_offering(
  * LASSO_SECURITY_MECH_CLIENT_TLS or "urn:liberty:security:2003-08:ClientTLS:null"
  * LASSO_SECURITY_MECH_CLIENT_TLS_SAML or "urn:liberty:security:2003-08:ClientTLS:SAML"
  *
- * Returns: 0 if the security mechanism is supported by this #LassoWsfProfile
+ * Return value: 0 if the security mechanism is supported by this #LassoWsfProfile
  * object, an error code otherwise.
  */
 gint
-lasso_wsf_profile_set_security_mechanism(LassoWsfProfile *profile,
-	char *security_mech_id)
+lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
+	const char *security_mech_id)
 {
 	g_return_val_if_invalid_param(WSF_PROFILE, profile,
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	if (lasso_security_is_saml_authentication(security_mech_id)
-	    || lasso_security_is_null_authentication(security_mech_id)) {
+	if (lasso_security_mech_id_is_saml_authentication(security_mech_id)
+			|| lasso_security_mech_id_is_null_authentication(security_mech_id)) {
 		g_assign_string(profile->private_data->security_mech_id, security_mech_id);
+		if (profile->private_data->offering) {
+			lasso_wsf_profile_set_description_from_offering(
+				profile,
+				profile->private_data->offering,
+				security_mech_id);
+		}
+		return 0;
 	}
 	return LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM;
 }
 
 /**
- * lasso_wsf_profile_get_security_mechanism:
+ * lasso_wsf_profile_get_security_mech_id:
  * @profile: the #LassoWsfProfile object
  *
- * Returns: the current security mechanism id for this object.
+ * Return value: the current security mechanism id for this object.
  */
 const char *
-lasso_wsf_profile_get_security_mechanism(LassoWsfProfile *profile)
+lasso_wsf_profile_get_security_mech_id(LassoWsfProfile *profile)
 {
 	g_return_val_if_invalid_param(WSF_PROFILE, profile,
 		NULL);
@@ -367,12 +376,27 @@ lasso_wsf_profile_set_description(LassoWsfProfile *profile, LassoDiscoDescriptio
  * locate the endpoint and the security mechanism to use for the next ID-WSF
  * request.
  *
- * Returns: a #LassoDiscoDescriptio or NULL if none is present.
+ * Return value: a #LassoDiscoDescriptio or NULL if none is present.
  */
 LassoDiscoDescription *
 lasso_wsf_profile_get_description(LassoWsfProfile *profile)
 {
 	return profile->private_data->description;
+}
+
+/**
+ * lasso_wsf_profile_get_resource_offering:
+ * @profile: the #LassoWsfProfile object
+ *
+ * Returns the ResourceOffering setupt with this profile object.
+ *
+ * Return value: a #LassoDiscoResourceOffering if one was setup during
+ * construction, NULL otherwise.
+ */
+LassoDiscoResourceOffering *
+lasso_wsf_profile_get_resource_offering(LassoWsfProfile *profile)
+{
+	return profile->private_data->offering;
 }
 
 /**
@@ -385,7 +409,7 @@ lasso_wsf_profile_get_description(LassoWsfProfile *profile)
  * Build the a #LassoSoapEnvelope as a template for a future SOAP message
  * containing the headers recommended by the ID-WSF 1.0 specification.
  *
- * Returns: a new #LassoSoapEnvelope if construction was successfull.
+ * Return value: a new #LassoSoapEnvelope if construction was successfull.
  */
 LassoSoapEnvelope*
 lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *providerId)
@@ -400,7 +424,7 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *pr
  *
  * OBSOLETE: do nothing.
  *
- * Returns: FALSE.
+ * Return value: FALSE.
  **/
 gboolean
 lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile)
@@ -568,7 +592,7 @@ lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile, const gchar  *
  * the body of the request to request. The reference to request is not stolen i.e
  * the ref count of request is increased by one after this call.
  *
- * Retun: 0 if initialization was successfull.
+ * Return value: 0 if initialization was successfull.
  */
 gint
 lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request)
@@ -582,7 +606,7 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
 	if (profile->server) {
 		providerID = profile->server->parent.ProviderID;
 	}
-	envelope = lasso_wsf_profile_build_soap_envelope_internal(NULL,providerID);
+	envelope = lasso_wsf_profile_build_soap_envelope_internal(NULL, providerID);
 	profile->soap_envelope_request = envelope;
 	envelope->Body->any = g_list_append(envelope->Body->any, request);
 	profile->request = request;
@@ -597,24 +621,16 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
  * and eventually sign with the local public depending on the security
  * mechanism requested.
  *
- * Returns: 0 if construction is successfull.
+ * Return value: 0 if construction is successfull.
  */
 gint
 lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 {
 	LassoSoapEnvelope *envelope;
-	LassoSoapHeader *header;
-	LassoWsseSecurity *security = NULL;
-	int ret;
-	GList *iter = NULL;
-	xmlNode *security_xmlNode, *credential;
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
 	xmlDoc *doc = NULL;
 	xmlNode *envelope_node = NULL;
-	xmlXPathContext *xpathCtx = NULL;
-	xmlXPathObject *xpathObj = NULL;
-			
 
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request),
@@ -646,14 +662,12 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
  * Create the char* string containing XML document for the SOAP ID-WSF
  * response.
  *
- * Returns: 0 if construction is successfull.
+ * Return value: 0 if construction is successfull.
  */
 int
 lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 {
 	LassoSoapEnvelope *envelope;
-	LassoSoapHeader *header;
-	LassoWsseSecurity *security;
 	xmlNode *soap_envelope;
 	xmlDoc *doc;
 	xmlOutputBuffer *buf;
@@ -684,10 +698,8 @@ gint
 lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar *message,
 					   const gchar *service_type, const gchar *security_mech_id)
 {
-	LassoDiscoServiceInstance *si = NULL;
 	LassoSoapBindingCorrelation *correlation = NULL;
 	LassoSoapEnvelope *envelope = NULL;
-	LassoSoapFault *fault = NULL;
 	gchar *messageId;
 	int res = 0;
 	xmlDoc *doc;
@@ -745,12 +757,11 @@ exit:
  * Parse a SOAP response from an ID-WSF 1.0 service, 
  * eventually signal a SOAP fault.
  *
- * Returns: 0 if the processing of this message was successful.
+ * Return value: 0 if the processing of this message was successful.
  */
 gint
 lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gchar *message)
 {
-	LassoSoapEnvelope *envelope;
 	xmlDoc *doc;
 	xmlNode *root;
 	LassoNode *node;
@@ -776,9 +787,9 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 		ret = critical_error(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
 		goto exit;
 	}
-	profile->response = LASSO_NODE(envelope->Body->any->data);
+	profile->response = LASSO_NODE(profile->soap_envelope_response->Body->any->data);
 	/* Signal soap fault specifically */
-	if (LASSO_IS_SOAP_FAULT(envelope->Body->any->data)) {
+	if (LASSO_IS_SOAP_FAULT(profile->response)) {
 		return LASSO_WSF_PROFILE_ERROR_SOAP_FAULT;
 	}
 exit:
@@ -796,7 +807,7 @@ exit:
  *
  * OBSOLETE: do nothing.
  *
- * Returns: NULL
+ * Return value: NULL
  */
 LassoSoapBindingProvider *lasso_wsf_profile_set_provider_soap_request(LassoWsfProfile *profile,
 	const char *providerId)
@@ -910,7 +921,7 @@ lasso_wsf_profile_init(LassoWsfProfile *profile,
 	/* FIXME: is a NULL server authorized ? */
 	g_assign_gobject(profile->server, server);
 	/* FIXME: is a NULL oferring authorized ? */
-	g_assign_gobject(offering, profile->private_data->offering);
+	g_assign_gobject(profile->private_data->offering, offering);
 
 	return 0;
 }

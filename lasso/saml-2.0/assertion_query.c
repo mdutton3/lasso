@@ -523,7 +523,7 @@ dispose(GObject *object)
 static void
 finalize(GObject *object)
 {  
-	LassoAssertionQuery *profile = LASSO_ASSERTION_QUERY(profile);
+	LassoAssertionQuery *profile = LASSO_ASSERTION_QUERY(object);
 	g_free(profile->private_data);
 	profile->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);

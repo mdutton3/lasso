@@ -1573,6 +1573,9 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "IdWsf2Sec";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSA_HREF) == 0)
 		prefix = "WsAddr";
+	else if (strcmp((char*)xmlnode->ns->href, "urn:dgme:msp:ed:2007-01") == 0)
+		/* FIXME: new namespaces should be possible to add from another library than lasso */
+		prefix = "MspEd";
 	else {
 		/* ID-WSF 2 Profile */
 		tmp = lasso_get_prefix_for_idwsf2_dst_service_href((char*)xmlnode->ns->href);

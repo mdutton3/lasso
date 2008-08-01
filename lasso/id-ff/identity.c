@@ -28,7 +28,7 @@
  *
  **/
 
-#include <lasso/lasso_config.h>
+#include <config.h>
 #include <lasso/id-ff/identity.h>
 
 #ifdef LASSO_WSF_ENABLED

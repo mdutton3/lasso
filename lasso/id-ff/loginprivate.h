@@ -30,7 +30,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 
-#include <lasso/lasso_config.h>
+#include <config.h>
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
 
 #ifdef LASSO_WSF_ENABLED

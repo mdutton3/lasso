@@ -72,16 +72,19 @@
 #include <lasso/xml/saml_attribute.h>
 #include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/disco_modify.h>
+#include <lasso/xml/saml_assertion.h>
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/provider.h>
 #include <lasso/id-ff/providerprivate.h>
+#include <lasso/id-ff/sessionprivate.h>
 
 #include <lasso/id-wsf/discovery.h>
 #include <lasso/id-wsf/identity.h>
 #include <lasso/id-wsf/data_service.h>
 #include <lasso/id-wsf/personal_profile_service.h>
 #include <lasso/id-wsf/wsf_profile_private.h>
+#include <lasso/id-wsf/utils.h>
 
 struct _LassoDiscoveryPrivate
 {
@@ -340,7 +343,6 @@ lasso_discovery_init_modify(LassoDiscovery *discovery,
 			    LassoDiscoDescription *description)
 {
 	LassoWsfProfile *profile = NULL;
-	LassoSoapEnvelope *envelope = NULL;
 	LassoDiscoModify *modify = NULL;
 	gint res = 0;
 
@@ -941,6 +943,14 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 	return res;
 }
 
+const char*
+get_assertion_id(LassoNode *node) {
+	if (LASSO_IS_SAML_ASSERTION(node)) {
+		return LASSO_SAML_ASSERTION(node)->AssertionID;
+	}
+	return NULL;
+}
+
 /**
  * lasso_discovery_process_query_response_msg:
  * @discovery: a #LassoDiscovery
@@ -957,10 +967,7 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 {
 	LassoWsfProfile *profile = NULL;
 	LassoDiscoQueryResponse *response;
-	xmlXPathContext *xpathCtx = NULL;
-	xmlXPathObject *xpathObj;
-	LassoDiscoCredentials *credentials;
-	int rc = 0, i;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), 
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -972,7 +979,8 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 	if (rc) 
 		goto exit;
 	response = LASSO_DISCO_QUERY_RESPONSE(profile->response);
-	if (strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_OK) != 0) {
+	if (strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_OK) != 0 &&
+			strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_DISCO_OK) != 0) {
 		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 	/** Process the credentials, add them to the session */
@@ -983,7 +991,8 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 				continue;
 			}
 			if (profile->session) {
-				lasso_session_add_assertion(profile->session,
+				lasso_session_add_assertion_with_id(profile->session,
+						get_assertion_id(assertions->data),
 						assertions->data);
 			} else {
 				rc = LASSO_PROFILE_ERROR_SESSION_NOT_FOUND;
@@ -1047,8 +1056,7 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 			return NULL; /* resource not found */
 		}
 	}
-	service = lasso_discovery_build_wsf_profile(discovery,
-			offering);
+	service = lasso_discovery_build_wsf_profile(discovery, offering);
 
 	return service;
 }
@@ -1090,8 +1098,7 @@ lasso_discovery_get_services(LassoDiscovery *discovery)
 		if (offering->ServiceInstance == NULL) {
 			continue;
 		}
-		service = lasso_discovery_build_wsf_profile(discovery,
-				offering);
+		service = lasso_discovery_build_wsf_profile(discovery, offering);
 		services = g_list_append(services, service);
 	}
 
@@ -1107,7 +1114,7 @@ lasso_discovery_get_services(LassoDiscovery *discovery)
  * constructor for the service type they supports.
  */
 void
-lasso_discovery_get_register_constructor_for_service_type(gchar *service_type,
+lasso_discovery_register_constructor_for_service_type(const gchar *service_type,
 		LassoWsfProfileConstructor constructor)
 {
 	LassoWsfProfileConstructor old_constructor;
@@ -1156,7 +1163,7 @@ lasso_discovery_unregister_constructor_for_service_type(
  * service provider. Fills the Modulus and Exponent composant of the RsaKeyValue.
  * It does not handle DSAKeyValue.
  *
- * Returns: a new #LassoDsKeyIfno or NULL if no provider or no public key were found.
+ * Return value: a new #LassoDsKeyIfno or NULL if no provider or no public key were found.
  */
 static LassoDsKeyInfo*
 lasso_discovery_build_key_info_node(LassoDiscovery *discovery, const gchar *providerID)
@@ -1241,9 +1248,8 @@ static GHashTable *registry = NULL;
 static GHashTable *
 get_constructors_registry()
 {
-	if (registry==NULL) {
-		registry = g_hash_table_new_full(g_str_hash, g_direct_equal,
-				g_free, NULL);
+	if (registry == NULL) {
+		registry = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
 	}
 	return registry;
 }
@@ -1273,6 +1279,20 @@ set_registry(gchar const *service_type, LassoWsfProfileConstructor constructor)
 			g_strdup(service_type), constructor);
 }
 
+static void
+move_ass(gchar *key, LassoSamlAssertion *ass, GHashTable *dest)
+{
+	g_hash_table_insert(dest, g_strdup(key), g_object_ref(ass));
+}
+
+void
+lasso_wsf_profile_move_assertions(LassoWsfProfile *src, LassoWsfProfile *dest)
+{
+	dest->session = lasso_session_new();
+	g_hash_table_foreach(src->session->private_data->assertions_by_id, (GHFunc)move_ass,
+		dest->session->private_data->assertions_by_id);
+}
+
 static LassoWsfProfile *
 lasso_discovery_build_wsf_profile(LassoDiscovery *discovery, LassoDiscoResourceOffering *offering)
 {
@@ -1287,14 +1307,18 @@ lasso_discovery_build_wsf_profile(LassoDiscovery *discovery, LassoDiscoResourceO
 	
 	service_type = offering->ServiceInstance->ServiceType;
 	a_constructor = lookup_registry(service_type);
-	server = discovery->parent.server;
+	server = LASSO_WSF_PROFILE(discovery)->server;
+
 	if (a_constructor) {
-		a_wsf_profile = a_constructor(server,
-				offering);
+		a_wsf_profile = a_constructor(server, offering);
 	} else {
 		message(G_LOG_LEVEL_WARNING, "No constructor registered for service type: %s", service_type);
 		a_wsf_profile = LASSO_WSF_PROFILE(lasso_data_service_new_full(server, offering));
 	}
+
+	lasso_wsf_profile_move_assertions(LASSO_WSF_PROFILE(discovery), a_wsf_profile);
+
+	//a_wsf_profile = LASSO_WSF_PROFILE(lasso_dgme_msped_service_new_full(server, offering));
 	return a_wsf_profile;
 }
 

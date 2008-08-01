@@ -59,7 +59,7 @@
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *assertion)
+lasso_session_add_assertion(LassoSession *session, const char *providerID, LassoNode *assertion)
 {
 	gint ret = 0;
 	gchar *id = NULL;
@@ -68,8 +68,7 @@ lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	g_hash_table_insert(session->assertions, g_strdup(providerID),
-			g_object_ref(assertion));
+	g_hash_table_insert(session->assertions, g_strdup(providerID), g_object_ref(assertion));
 
 	if (LASSO_IS_SAML_ASSERTION(assertion)) {
 		id = LASSO_SAML_ASSERTION(assertion)->AssertionID;
@@ -96,11 +95,13 @@ lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *
  * Returns: 0 if the assertion was added to the dictionnary.
  */
 gint
-lasso_session_add_assertion_with_id(LassoSession *session, char *assertionID, LassoNode *assertion)
+lasso_session_add_assertion_with_id(LassoSession *session, const char *assertionID,
+	LassoNode *assertion)
 {
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(assertionID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
 	g_hash_table_insert(session->private_data->assertions_by_id, 
 			g_strdup(assertionID),
 			g_object_ref(assertion));
@@ -121,7 +122,7 @@ lasso_session_add_assertion_with_id(LassoSession *session, char *assertionID, La
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_session_add_status(LassoSession *session, char *providerID, LassoNode *status)
+lasso_session_add_status(LassoSession *session, const char *providerID, LassoNode *status)
 {
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -147,7 +148,7 @@ lasso_session_add_status(LassoSession *session, char *providerID, LassoNode *sta
  *      the caller.
  **/
 LassoNode*
-lasso_session_get_assertion(LassoSession *session, gchar *providerID)
+lasso_session_get_assertion(LassoSession *session, const gchar *providerID)
 {
 	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
 
@@ -166,7 +167,7 @@ lasso_session_get_assertion(LassoSession *session, gchar *providerID)
  *      the caller.
  */
 LassoNode*
-lasso_session_get_assertion_by_id(LassoSession *session, gchar *assertionID)
+lasso_session_get_assertion_by_id(LassoSession *session, const gchar *assertionID)
 {
 	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
 
@@ -221,7 +222,7 @@ lasso_session_get_assertions(LassoSession *session, const char *provider_id)
  *      is internally allocated and must not be freed by the caller.
  **/
 LassoNode*
-lasso_session_get_status(LassoSession *session, gchar *providerID)
+lasso_session_get_status(LassoSession *session, const gchar *providerID)
 {
 	if (session == NULL) {
 		return NULL;
@@ -330,7 +331,7 @@ lasso_session_is_empty(LassoSession *session)
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_session_remove_assertion(LassoSession *session, gchar *providerID)
+lasso_session_remove_assertion(LassoSession *session, const gchar *providerID)
 {
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -353,7 +354,7 @@ lasso_session_remove_assertion(LassoSession *session, gchar *providerID)
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_session_remove_status(LassoSession *session, gchar *providerID)
+lasso_session_remove_status(LassoSession *session, const gchar *providerID)
 {
 	g_return_val_if_fail(session != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);

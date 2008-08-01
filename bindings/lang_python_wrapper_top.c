@@ -1,7 +1,7 @@
 #include <Python.h>
 #include <structmember.h>
 #include <lasso/lasso.h>
-#include <lasso_config.h>
+#include <config.h>
 #include "../ghashtable.h"
 
 GQuark lasso_wrapper_key;

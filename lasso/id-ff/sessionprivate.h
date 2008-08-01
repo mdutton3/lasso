@@ -46,21 +46,21 @@ struct _LassoSessionPrivate
 };
 
 gint lasso_session_add_assertion(LassoSession *session,
-		char *providerID, LassoNode *assertion);
+		const char *providerID, LassoNode *assertion);
 gint lasso_session_add_status(LassoSession *session,
-		char *providerID, LassoNode *status);
+		const char *providerID, LassoNode *status);
 gint lasso_session_add_assertion_with_id(LassoSession *session, 
-		char *assertionID, LassoNode *assertion);
+		const char *assertionID, LassoNode *assertion);
 
 LassoNode* lasso_session_get_assertion(
-		LassoSession *session, gchar *providerID);
+		LassoSession *session, const gchar *providerID);
 LassoNode* lasso_session_get_assertion_by_id(
-		LassoSession *session, gchar *assertionID);
+		LassoSession *session, const gchar *assertionID);
 LassoNode* lasso_session_get_status(
-		LassoSession *session, gchar *providerID);
+		LassoSession *session, const gchar *providerID);
 
-gint lasso_session_remove_status(LassoSession *session, gchar *providerID);
-gint lasso_session_remove_assertion(LassoSession *session, gchar *providerID);
+gint lasso_session_remove_status(LassoSession *session, const gchar *providerID);
+gint lasso_session_remove_assertion(LassoSession *session, const gchar *providerID);
 
 void lasso_session_init_provider_ids(LassoSession *session);
 

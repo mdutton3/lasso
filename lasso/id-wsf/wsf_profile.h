@@ -72,7 +72,7 @@ struct _LassoWsfProfile {
 	/*< private >*/
 	LassoIdentity *identity;
 	LassoSession  *session;
-	
+
 	LassoWsfProfilePrivate *private_data;
 };
 
@@ -130,9 +130,11 @@ LASSO_EXPORT void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
 
 LASSO_EXPORT LassoDiscoDescription *lasso_wsf_profile_get_description(LassoWsfProfile *profile);
 
-LASSO_EXPORT gint lasso_wsf_profile_set_security_mechanism(LassoWsfProfile *profile, char *security_mech_id);
+LASSO_EXPORT LassoDiscoResourceOffering *lasso_wsf_profile_get_resource_offering(LassoWsfProfile *profile);
 
-LASSO_EXPORT const char *lasso_wsf_profile_get_security_mechanism(LassoWsfProfile *profile);
+LASSO_EXPORT gint lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile, const char *security_mech_id);
+
+LASSO_EXPORT const char *lasso_wsf_profile_get_security_mech_id(LassoWsfProfile *profile);
 
 G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile,
 							 const char *status);
@@ -140,6 +142,9 @@ G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_status(Lasso
 G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_online(LassoWsfProfile *profile);
 
 G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_offline(LassoWsfProfile *profile);
+
+LASSO_EXPORT gint lasso_wsf_profile_init(LassoWsfProfile *profile, LassoServer *server, 
+	LassoDiscoResourceOffering *offering);
 
 #ifdef __cplusplus
 }

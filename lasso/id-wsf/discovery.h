@@ -128,6 +128,7 @@ LASSO_EXPORT void lasso_discovery_register_constructor_for_service_type(gchar co
 		LassoWsfProfileConstructor constructor);
 LASSO_EXPORT void lasso_discovery_unregister_constructor_for_service_type(gchar const *service_type,
 		LassoWsfProfileConstructor constructor);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

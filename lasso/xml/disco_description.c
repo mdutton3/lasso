@@ -23,6 +23,7 @@
  */
 
 #include <lasso/xml/disco_description.h>
+#include <lasso/id-wsf/utils.h>
 #include <lasso/utils.h>
 
 /**
@@ -279,9 +280,8 @@ lasso_disco_description_has_x509_authentication(LassoDiscoDescription *descripti
 	iter = description->SecurityMechID;
 	while (iter) {
 		security_mech_id = iter->data;
-		if (strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_X509) == 0 ||
-				strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_X509) == 0 ||
-				strcmp(security_mech_id, LASSO_SECURITY_MECH_X509) == 0) {
+		if (lasso_security_mech_id_is_x509_authentication(
+				security_mech_id)) {
 			return TRUE;
 		}
 		iter = g_list_next(iter);

@@ -23,7 +23,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <lasso_config.h>
+#include <config.h>
 
 #include <check.h>
 #include <lasso/lasso.h>

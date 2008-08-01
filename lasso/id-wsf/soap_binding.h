@@ -33,9 +33,9 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-LASSO_EXPORT LassoSoapBindingProvider* lasso_soap_binding_get_provider(LassoSoapEnvelope *envelope);
+LassoSoapBindingProvider* lasso_soap_binding_get_provider(LassoSoapEnvelope *envelope);
 
-LASSO_EXPORT LassoSoapBindingCorrelation* lasso_soap_binding_get_correlation(LassoSoapEnvelope *evelope);
+LassoSoapBindingCorrelation* lasso_soap_binding_get_correlation(LassoSoapEnvelope *evelope);
 
 #ifdef __cplusplus
 }

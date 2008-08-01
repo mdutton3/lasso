@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/lasso_config.h>
+#include <config.h>
 
 struct _LassoEcpPrivate
 {

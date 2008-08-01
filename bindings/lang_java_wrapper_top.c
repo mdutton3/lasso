@@ -1,5 +1,5 @@
 #include <lasso/lasso.h>
-#include <lasso_config.h>
+#include <config.h>
 #include <jni.h>
 #include "com_entrouvert_lasso_LassoJNI.h"
 #include <string.h>
