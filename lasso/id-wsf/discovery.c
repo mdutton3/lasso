@@ -479,7 +479,7 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 {
 	LassoWsfProfile *profile = NULL;
 	LassoDiscoQuery *query = NULL;
-	const LassoDiscoResourceOffering *offering = NULL;
+	LassoDiscoResourceOffering *offering = NULL;
 	const LassoDiscoDescription *description = NULL;
 	gint ret = 0;
 
