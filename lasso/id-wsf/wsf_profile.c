@@ -478,18 +478,40 @@ exit:
 	return ret;
 }
 
+/**
+ * lasso_wsf_profile_add_credential_signature:
+ * @profile: a #LassoWsfProfile
+ * @doc: an #xmlDoc containging the credential node
+ * @credential: an #xmlNode representing the credentials
+ * @sign_method: the signature method to use in signing the credentials, can be
+ *  LASSO_SIGNATURE_METHOD_RSA_SHA1 or LASSO_SIGNATURE_METHOD_DSA_SHA1.
+ *
+ * Add an XMLSEC signature to a credential node.
+ *
+ * Returns: 0 if the signature was added, 
+ *  %LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND if not signature template is
+ *  present in the credential node, %LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED if
+ *  we cannot load our private key, %LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED if
+ *  we cannot load our certificate and %LASSO_DS_ERROR_SIGNATURE_FAILED if the
+ *  signing failed.
+ */
 static gint
 lasso_wsf_profile_add_credential_signature(LassoWsfProfile *profile,
-		xmlDoc *doc, xmlNode *credential, LassoSignatureMethod sign_method)
+		xmlDoc *doc, xmlNode *credential, 
+		LassoSignatureMethod sign_method)
 {
-	xmlNode *signature = NULL, *sign_tmpl, *reference, *key_info;
-	char *uri;
-	
+	xmlNode *signature = NULL, *sign_tmpl = NULL, 
+		*reference = NULL, *key_info = NULL;
+	char *uri = NULL;
 	xmlAttr *id_attr;
+	xmlSecDSigCtx *dsigCtx = NULL;
+	gint ret = 0;
+	gchar *assertionID = NULL;
+	gboolean with_x509 = FALSE;
 
-	xmlSecDSigCtx *dsigCtx;
-
-	/* Add signature template */
+	with_x509 = profile->server->certificate != NULL && 
+			profile->server->certificate[0] != 0;
+	/* 1. Add signature template */
 	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
 		signature = xmlSecTmplSignatureCreate(NULL,
 				xmlSecTransformExclC14NId,
@@ -499,170 +521,95 @@ lasso_wsf_profile_add_credential_signature(LassoWsfProfile *profile,
 				xmlSecTransformExclC14NId,
 				xmlSecTransformDsaSha1Id, NULL);
 	}
-
-	xmlAddChild(credential, signature);
-
-	/* Credential reference */
-	uri = g_strdup_printf("#%s", xmlGetProp(credential, (xmlChar *) "AssertionID"));
-	reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
-						    NULL, (xmlChar*)uri, NULL);
+	if (signature == NULL) {
+		ret = LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
+		goto exit;
+	} else {
+		if (xmlAddChild(credential, signature) !=
+				signature) {
+			ret = LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
+			goto exit;
+		}
+	}
+	/* 2. Find and create reference */
+	id_attr = xmlHasProp(credential, (xmlChar *)"AssertionID");
+	if (id_attr == NULL) {
+		ret = LASSO_WSF_PROFILE_ERROR_MISSING_ASSERTION_ID;
+		goto exit;
+	}
+	assertionID = xmlGetProp(credential, (xmlChar *) "AssertionID");
+	uri = g_strdup_printf("#%s", assertionID);
+	reference = xmlSecTmplSignatureAddReference(signature, 
+			xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
+	g_release_string(uri);
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
-	id_attr = xmlHasProp(credential, (xmlChar *)"AssertionID");
-	xmlAddID(NULL, doc, xmlGetProp(credential, (xmlChar *) "AssertionID"), id_attr);
+	xmlAddID(NULL, doc, assertionID, id_attr);
+	xmlFree(assertionID);
 
-	/* FIXME: X509 authentication needs X509 signature type */
-	if (profile->server->certificate != NULL && profile->server->certificate[0] != 0) {
+	/* 3. Add X509 info if server possess a certificate. XXX: Why ? */
+	if (with_x509) 
+	{
 		key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
 		xmlSecTmplKeyInfoAddX509Data(key_info);
 	}
 
-	/* Sign SOAP message */
-	sign_tmpl = xmlSecFindNode(credential, xmlSecNodeSignature, xmlSecDSigNs);
-	if (sign_tmpl == NULL)
-		return LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND;
-
+	/* 4. Create signature context and load a key in it */
 	dsigCtx = xmlSecDSigCtxCreate(NULL);
 	dsigCtx->signKey = xmlSecCryptoAppKeyLoad(profile->server->private_key,
 		xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 	if (dsigCtx->signKey == NULL) {
-		xmlSecDSigCtxDestroy(dsigCtx);
-		return LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
+		ret = LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
+		goto exit;
 	}
-	if (profile->server->certificate != NULL && profile->server->certificate[0] != 0) {
-		if (xmlSecCryptoAppKeyCertLoad(dsigCtx->signKey, profile->server->certificate,
+	/* 5. Complete the key with a certificate as needed, but don't break
+	 * on it. */
+	if (with_x509) {
+		/* Dont stop if we cannot load the certificate, just
+                 * remove the KeyInfo node */ 
+		if (xmlSecCryptoAppKeyCertLoad(dsigCtx->signKey, 
+				profile->server->certificate,
 					xmlSecKeyDataFormatPem) < 0) {
-			xmlSecDSigCtxDestroy(dsigCtx);
-			return LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
+			message(G_LOG_LEVEL_WARNING, "Could not load the certificate %s", profile->server->certificate);
+			ret = LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
+			g_unlink_and_release_node(key_info);
 		}
 	}
 
-	if (xmlSecDSigCtxSign(dsigCtx, sign_tmpl) < 0) {
+	/* 6. Sign */
+	if (xmlSecDSigCtxSign(dsigCtx, signature) < 0) {
+		ret = LASSO_DS_ERROR_SIGNATURE_FAILED;
+		goto exit;
+	}
+	signature = NULL; // Steal the reference
+exit:
+	/* Destroy the signature when error exit */
+	g_unlink_and_release_node(signature);
+	/* Clean dsigCtx */
+	if (dsigCtx)
 		xmlSecDSigCtxDestroy(dsigCtx);
-		return LASSO_DS_ERROR_SIGNATURE_FAILED;
-	}
-	xmlSecDSigCtxDestroy(dsigCtx);
-
-	return 0;
-}
-
-static xmlSecKey*
-lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNode *credential)
-{
-	xmlNode *authentication_statement, *subject, *subject_confirmation, *key_info;
-	xmlSecKeyPtr public_key;
-	xmlSecKeyInfoCtx *ctx;
-
-	/* get AuthenticationStatement element */
-	authentication_statement = credential->children;
-	while (authentication_statement) {
-		if (authentication_statement->type == XML_ELEMENT_NODE &&
-				strcmp((char*)authentication_statement->name,
-					"AuthenticationStatement") == 0)
-			break;
-		authentication_statement = authentication_statement->next;
-	}
-	if (authentication_statement == NULL) {
-		return NULL;
-	}
-
-	/* get Subject element */
-	subject = authentication_statement->children;
-	while (subject) {
-		if (subject->type == XML_ELEMENT_NODE &&
-				strcmp((char*)subject->name, "Subject") == 0)
-			break;
-		subject = subject->next;
-	}
-	if (subject == NULL) {
-		return NULL;
-	}
-
-	/* get SubjectConfirmation */
-	subject_confirmation = subject->children;
-	while (subject_confirmation) {
-		if (subject_confirmation->type == XML_ELEMENT_NODE &&
-		    strcmp((char*)subject_confirmation->name, "SubjectConfirmation") == 0)
-			break;
-		subject_confirmation = subject_confirmation->next;
-	}
-	if (subject_confirmation == NULL) {
-		return NULL;
-	}
-
-	/* get KeyInfo */
-	key_info = subject_confirmation->children;
-	while (key_info) {
-		if (key_info->type == XML_ELEMENT_NODE &&
-				strcmp((char*)key_info->name, "KeyInfo") == 0)
-			break;
-		key_info = key_info->next;
-	}
-	if (!key_info)
-		return NULL;
-
-	ctx = xmlSecKeyInfoCtxCreate(NULL);
-	xmlSecKeyInfoCtxInitialize(ctx, NULL);
-
-	ctx->mode = xmlSecKeyInfoModeRead;
-	ctx->keyReq.keyType = xmlSecKeyDataTypePublic;
-
-	public_key = xmlSecKeyCreate();
-
-	/* FIXME: get xml sec key from key_info instead of a rebuilt local node */
-	/* xmlSecKeyInfoNodeRead(key_info, public_key, ctx); */
-
-	{
-		xmlDoc *doc;
-		xmlChar *modulus_value, *exponent_value;
-		xmlNode *rsa_key_value, *xmlnode, *modulus, *exponent;
-
-		xmlnode = key_info->children;
-		while (xmlnode) {
-			if (strcmp((char*)xmlnode->name, "KeyValue") == 0) {
-				break;
-			}
-			xmlnode = xmlnode->next;
-		}
-		rsa_key_value = xmlnode->children;
-		while (rsa_key_value) {
-			if (strcmp((char*)rsa_key_value->name, "RsaKeyValue") == 0) {
-				break;
-			}
-			rsa_key_value = rsa_key_value->next;
-		}
-		xmlnode = rsa_key_value->children;
-		while (xmlnode) {
-			if (strcmp((char*)xmlnode->name, "Modulus") == 0) {
-				modulus_value = xmlNodeGetContent(xmlnode);
-			} else if (strcmp((char*)xmlnode->name, "Exponent") == 0) {
-				exponent_value = xmlNodeGetContent(xmlnode);
-			}
-			xmlnode = xmlnode->next;
-		}
-		
-		doc = xmlSecCreateTree((xmlChar*)"KeyInfo",
-				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
-		key_info = xmlDocGetRootElement(doc);
-
-		xmlnode = xmlSecAddChild(key_info, (xmlChar*)"KeyValue",
-				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
-		xmlnode = xmlSecAddChild(xmlnode, (xmlChar*)"RSAKeyValue",
-				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
-		modulus = xmlSecAddChild(xmlnode, (xmlChar*)"Modulus",
-				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
-		xmlNodeSetContent(modulus, modulus_value);
-		
-		exponent = xmlSecAddChild(xmlnode, (xmlChar*)"Exponent",
-				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
-		xmlNodeSetContent(exponent, exponent_value);
-	}
 	
-	xmlSecKeyInfoNodeRead(key_info, public_key, ctx);
-
-	return public_key;
+	return ret;
 }
 
+/**
+ * lasso_wsf_profile_verify_saml_authentication:
+ * @profile: a #LassoWsfProfile pointer
+ * @doc: an #xmlDoc pointer
+ *
+ * Verify the the signature on the assertion given in the wsse:Security header with
+ * respect to the provider set as Issuer of this Assertion.
+ *
+ * Returns: 0 if saml authentication is valid,
+ *  %LASSO_PROFILE_ERROR_MISSING_ISSUER if credential contains no Issuer
+ *  attribute, %LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the Issuer provider is
+ *  unknown from #LassoServer, %LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED if we
+ *  cannot load the given CA chcert chain,
+ *  %LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED if we cannot the public key of the
+ *  provider, %LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED if the signature
+ *  verification failed, and %LASSO_DS_ERROR_INVALID_SIGNATURE if the signature
+ *  is invalid.
+ */
 static gint
 lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *doc)
 {
