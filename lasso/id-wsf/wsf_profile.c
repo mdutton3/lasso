@@ -1166,7 +1166,7 @@ lasso_wsf_profile_add_saml_signature(LassoWsfProfile *wsf_profile, xmlDoc *doc) 
 	header = xmlSecSoap11GetHeader(envelope);
 	provider = xmlSecFindNode(header, (xmlChar*) "Provider", (xmlChar*) LASSO_SOAP_BINDING_HREF);
 	correlation = xmlSecFindNode(header, (xmlChar*) "Correlation", (xmlChar*) LASSO_SOAP_BINDING_HREF);
-	provider = xmlSecFindNode(header, (xmlChar*) "UserInteraction", (xmlChar*) LASSO_SOAP_BINDING_HREF);
+	provider = xmlSecFindNode(header, (xmlChar*) "UserInteraction", (xmlChar*) LASSO_IS_HREF);
 	body = xmlSecSoap11GetBody(envelope);
 	xmlSecAddIDs(doc, envelope, ids);
 	goto_exit_if_fail(header != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
