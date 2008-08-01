@@ -259,7 +259,7 @@ lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gcha
 }
 
 /**
- * lasso_wsf_profile_set_description_from_offering_with_sec_mech:
+ * lasso_wsf_profile_set_description_from_offering:
  * @profile: a #LassoWsfProfile
  * @offering: a #LassoDiscoResourceOffering containing descriptions
  * @security_mech_id: an URL representing the wished security mechanism, if NULL take the first descriptions
@@ -329,12 +329,11 @@ lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
 			|| lasso_security_mech_id_is_null_authentication(security_mech_id)) {
 		g_assign_string(profile->private_data->security_mech_id, security_mech_id);
 		if (profile->private_data->offering) {
-			lasso_wsf_profile_set_description_from_offering(
+			return lasso_wsf_profile_set_description_from_offering(
 				profile,
 				profile->private_data->offering,
 				security_mech_id);
 		}
-		return 0;
 	}
 	return LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM;
 }
@@ -397,6 +396,19 @@ LassoDiscoResourceOffering *
 lasso_wsf_profile_get_resource_offering(LassoWsfProfile *profile)
 {
 	return profile->private_data->offering;
+}
+
+/**
+ * lasso_wsf_profile_set_resource_offering:
+ * @profile:
+ * @offering:
+ *
+ *
+ */
+void
+lasso_wsf_profile_set_resource_offering(LassoWsfProfile *profile, LassoDiscoResourceOffering *offering)
+{
+	g_assign_gobject(profile->private_data->offering, offering);
 }
 
 /**
