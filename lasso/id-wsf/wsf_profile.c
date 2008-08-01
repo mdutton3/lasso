@@ -1548,10 +1548,6 @@ instance_init(LassoWsfProfile *profile)
 	profile->msg_body = NULL;
 	
 	profile->private_data = g_new0(LassoWsfProfilePrivate, 1);
-	profile->private_data->dispose_has_run = FALSE;
-	profile->private_data->description = NULL;
-	profile->private_data->fault = NULL;
-	profile->private_data->credentials = NULL;
 }
 
 static void
