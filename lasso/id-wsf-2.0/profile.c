@@ -60,7 +60,7 @@ lasso_idwsf2_profile_build_soap_envelope(const char *refToMessageId, const char 
 
 	/* Body */
 	body = lasso_soap_body_new();
-	body->id = lasso_build_unique_id(32);
+	body->Id = lasso_build_unique_id(32);
 	envelope = lasso_soap_envelope_new(body);
 
 	/* Header */
