@@ -223,3 +223,69 @@ lasso_disco_description_copy(LassoDiscoDescription *description)
 
 	return newDescription;
 }
+
+/**
+ * lasso_disco_description_has_saml_authentication:
+ * @profile: a #LassoDiscoDescription
+ *
+ * Checks if the given description supports any security mechanism using
+ * SAML authentication.
+ *
+ * Returns: %TRUE if SAML is supported by the service description, FALSE if it
+ * is not supported of if description is not a valid #LassoDiscoDescription.
+ */
+gboolean
+lasso_disco_description_has_saml_authentication(LassoDiscoDescription *description)
+{
+	GList *iter;
+	gchar *security_mech_id;
+
+	g_return_val_if_invalid_param(DISCO_DESCRIPTION, description,
+			FALSE);
+
+	iter = description->SecurityMechID;
+	while (iter) {
+		security_mech_id = iter->data;
+		if (lasso_security_mech_id_is_saml_authentication(
+				security_mech_id)) {
+			return TRUE;
+		}
+		iter = g_list_next(iter);
+	}
+
+	return FALSE;
+}
+
+/**
+ * lasso_disco_description_has_x509_authentication:
+ * @profile: a #LassoDiscoDescription
+ *
+ * Checks if the given description supports any security mechanism using
+ * X509 authentication.
+ *
+ * Returns: %TRUE if X509 is supported by the service description, FALSE if it
+ * is not supported of if description is not a valid #LassoDiscoDescription.
+ */
+gboolean
+lasso_disco_description_has_x509_authentication(LassoDiscoDescription *description)
+{
+	GList *iter;
+	gchar *security_mech_id;
+
+	g_return_val_if_invalid_param(DISCO_DESCRIPTION, description,
+			FALSE);
+
+	iter = description->SecurityMechID;
+	while (iter) {
+		security_mech_id = iter->data;
+		if (strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_X509) == 0 ||
+				strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_X509) == 0 ||
+				strcmp(security_mech_id, LASSO_SECURITY_MECH_X509) == 0) {
+			return TRUE;
+		}
+		iter = g_list_next(iter);
+	}
+
+	return FALSE;
+}
+

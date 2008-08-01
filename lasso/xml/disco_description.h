@@ -94,6 +94,12 @@ LASSO_EXPORT LassoDiscoDescription* lasso_disco_description_new_with_BriefSoapHt
 	const gchar *endpoint,
 	const gchar *soapAction);
 
+LASSO_EXPORT gboolean lasso_disco_description_has_saml_authentication(
+	LassoDiscoDescription *description);
+
+LASSO_EXPORT gboolean lasso_disco_description_has_x509_authentication(
+	LassoDiscoDescription *description);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
