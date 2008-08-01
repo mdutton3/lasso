@@ -156,7 +156,18 @@ lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_ke
 	}
 }
 
-LassoDiscoDescription*
+/*
+ * lasso_wsf_profile_get_description_autos:
+ * @si: a #LassoDiscoServiceInstance
+ * @security_mech_id: the URI of a liberty security mechanism
+ *
+ * Traverse the service instance descriptions and find one which supports the
+ * given security mechanism.
+ *
+ * Returns: a #LassoDiscoDescription that supports security_mech_id, NULL
+ * otherwise.
+ */
+static LassoDiscoDescription*
 lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gchar *security_mech_id)
 {
 	GList *iter, *iter2;
