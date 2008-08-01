@@ -601,10 +601,11 @@ base64_to_xmlNode(xmlChar *buffer) {
 	if (doc == NULL)
 		goto exit;
 	ret = xmlDocGetRootElement(doc);
+    if (ret) {
+        ret = xmlCopyNode(ret, 1);
+    }
 exit:
 	g_release(decoded);
-	if (ret)
-		xmlUnlinkNode(ret);
 	g_release_doc(doc);
 
 	return ret;
@@ -628,34 +629,34 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 
 		if (strcmp((char*)t->name, "Assertion") == 0) {
+            xmlChar* value;
 			n = t->children;
 			while (n && n->type != XML_ELEMENT_NODE) n = n->next;
 			
 			if (n) {
 				LassoNode *assertion;
-				xmlChar* value;
 				
 				if ((value = xmlGetProp(t, (xmlChar*)"RemoteProviderID"))) {
 
 					assertion = lasso_node_new_from_xmlNode(n);
 					lasso_session_add_assertion(session, (char*)value, assertion);
 					xmlFree(value);
-				} else if ((value = xmlGetProp(t, (xmlChar*)"ID"))) {
-					xmlChar *content;
-					xmlNode *assertion;
-
-					content = xmlNodeGetContent(n);
-					if (content) {
-						assertion = base64_to_xmlNode(content);
-						if (assertion) {
-							lasso_session_add_assertion_with_id(session, 
-								(char*)value, assertion);
-							xmlFreeNode(assertion);
-						}
-						xmlFree(content);
-					}
-					xmlFree(value);
 				}
+            } else if ((value = xmlGetProp(t, (xmlChar*)"ID"))) {
+                xmlChar *content;
+                xmlNode *assertion;
+
+                content = xmlNodeGetContent(t);
+                if (content) {
+                    assertion = base64_to_xmlNode(content);
+                    if (assertion) {
+                        lasso_session_add_assertion_with_id(session, 
+                                (char*)value, assertion);
+                        xmlFreeNode(assertion);
+                    }
+                    xmlFree(content);
+                }
+                xmlFree(value);
 			}
 		}
 		if (strcmp((char*)t->name, "Status") == 0) {
