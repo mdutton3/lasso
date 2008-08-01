@@ -19,7 +19,8 @@ WSF_C_FILES = \
 	interaction_profile_service.c \
 	personal_profile_service.c \
 	data_service.c \
-	wsf_profile.c	
+	wsf_profile.c \
+	utils.c	
 
 WSF_H_FILES = \
 	authentication.h \
@@ -28,7 +29,8 @@ WSF_H_FILES = \
 	interaction_profile_service.h \
 	personal_profile_service.h \
 	data_service.h \
-	wsf_profile.h
+	wsf_profile.h \
+	utils.h
 endif
 
 liblasso_id_wsf_la_SOURCES = $(WSF_C_FILES)
