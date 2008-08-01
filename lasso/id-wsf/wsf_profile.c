@@ -646,6 +646,17 @@ exit:
 	return res;
 }
 
+/**
+ * lasso_wsf_profile_add_soap_signature:
+ * @profile: a #LassoWsfProfile pointer
+ * @doc: a #xmlDoc pointer for the containing document
+ * @envelope_node: a #xmlNode pointer for a SOAP envelope
+ * @sign_method: signature type, RSA or DSA
+ * 
+ * Add a signature to the wsse:Security header of the SOAP message
+ *
+ * Returns: 0 if the message was well formed and the signing is ok,
+ */
 static gint
 lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
 		xmlDoc *doc, xmlNode *envelope_node, LassoSignatureMethod sign_method)
@@ -653,89 +664,77 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
 	xmlNode *signature = NULL, *sign_tmpl, *reference, *key_info, *t;
 	xmlNode *header = NULL, *provider = NULL, *correlation = NULL, *security = NULL;
 	xmlNode *body = NULL;
-	xmlSecDSigCtx *dsigCtx;
-	xmlChar *id;
-	char *uri;
-	xmlAttr *id_attr;
+	xmlSecDSigCtx *dsigCtx = NULL;
+	xmlChar *id = NULL;
+	char *uri = NULL;
+	xmlAttr *id_attr = NULL;
 
-	/* Get Correlation, Provider, Security, Body elements */
-	t = envelope_node->children;
-	while (t) {
-		if (strcmp((char *) t->name, "Header") == 0) {
-			header = t;
-		} else if (strcmp((char *) t->name, "Body") == 0) {
-			body = t;
-		}
-		t = t->next;
-	}
+	/* 1. Find needed XML nodes */
+	header = xmlSecFindChild(envelope_node, (xmlChar*)"Header", (xmlChar*)LASSO_SOAP_ENV_HREF);
+	body = xmlSecFindChild(envelope_node, (xmlChar*)"Body", (xmlChar*)LASSO_SOAP_ENV_HREF);
 	if (header == NULL)
 		return LASSO_SOAP_ERROR_MISSING_HEADER;
 
 	if (body == NULL)
 		return LASSO_SOAP_ERROR_MISSING_BODY;
 
-	t = header->children;
-	while (t) {
-		if (strcmp((char *) t->name, "Correlation") == 0) {
-			correlation = t;
-		} else if (strcmp((char *) t->name, "Provider") == 0) {
-			provider = t;
-		} else if (strcmp((char *) t->name, "Security") == 0) {
-			security = t;
-		}
-		t = t->next;
-	}
+	correlation = xmlSecFindChild(header, (xmlChar*)"Correlation", (xmlChar*)LASSO_SOAP_BINDING_HREF);
+	provider = xmlSecFindChild(header, (xmlChar*)"Provider", (xmlChar*)LASSO_SOAP_BINDING_HREF);
+	security = xmlSecFindChild(header, (xmlChar*)"Provider", (xmlChar*)LASSO_WSSE_HREF);
 	if (correlation == NULL)
 		return LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION;
 	if (security == NULL)
 		return LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY;
 
-	/* Add signature template */
-	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
-		signature = xmlSecTmplSignatureCreate(NULL,
-				xmlSecTransformExclC14NId,
-				xmlSecTransformRsaSha1Id, NULL);
-	} else {
-		signature = xmlSecTmplSignatureCreate(NULL,
-				xmlSecTransformExclC14NId,
-				xmlSecTransformDsaSha1Id, NULL);
+	/* 2. Add signature template to the security header */
+	switch (sign_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+			signature = xmlSecTmplSignatureCreate(NULL,
+					xmlSecTransformExclC14NId,
+					xmlSecTransformRsaSha1Id, NULL);
+			break;
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			signature = xmlSecTmplSignatureCreate(NULL,
+					xmlSecTransformExclC14NId,
+					xmlSecTransformDsaSha1Id, NULL);
+			break;
+		default:
+			return LASSO_DS_ERROR_INVALID_SIGALG;
 	}
-	
 	xmlAddChild(security, signature);
 
-	/* Correlation reference */
+	/* 3. Add Correlation reference */
 	id = xmlGetProp(correlation, (xmlChar *) "id");
 	uri = g_strdup_printf("#%s", id);
 	reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
 						    NULL, (xmlChar *)uri, NULL);
 	xmlFree(uri);
-	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
 	id_attr = xmlHasProp(correlation, (xmlChar *)"id");
 	xmlAddID(NULL, doc, (xmlChar *)id, id_attr);
 	xmlFree(id);
 
-	/* Body reference */
+	/* 4. Add Body reference */
 	id = xmlGetProp(body, (xmlChar *) "id");
 	uri = g_strdup_printf("#%s", id);
 	reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
 						    NULL, (xmlChar *)uri, NULL);
 	g_free(uri);
-	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
 	id_attr = xmlHasProp(body, (xmlChar *)"id");
 	xmlAddID(NULL, doc, (xmlChar *)id, id_attr);
 	xmlFree(id);
 
-	/* Provider reference */
+	/* 5. Add Provider reference */
 	if (provider) {
-		uri = g_strdup_printf("#%s", xmlGetProp(provider, (xmlChar *) "id"));
+		id = xmlGetProp(provider, (xmlChar *) "id");
+		uri = g_strdup_printf("#%s", id);
 		reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
 							    NULL, (xmlChar*)uri, NULL);
-		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
 		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
 		id_attr = xmlHasProp(provider, (xmlChar *)"id");
-		xmlAddID(NULL, doc, xmlGetProp(provider, (xmlChar *) "id"), id_attr);
+		xmlAddID(NULL, doc, id, id_attr);
+		xmlFree(id);
 	}
 
 	/* FIXME: X509 authentication needs X509 signature type */
