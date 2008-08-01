@@ -81,7 +81,7 @@
 #define g_release_list_of_strings(dest) \
 	{ \
 		if (dest) { \
-			g_list_foreach(dest, (GFunc)g_free); \
+			g_list_foreach(dest, (GFunc)g_free, NULL); \
 			g_list_free(dest); \
 			dest = NULL; \
 		} \
@@ -89,7 +89,7 @@
 #define g_release_list_of_gobjects(dest) \
 	{ \
 		if (dest) { \
-			g_list_foreach(dest, (GFunc)g_object_unref); \
+			g_list_foreach(dest, (GFunc)g_object_unref, NULL); \
 			g_list_free(dest); \
 			dest = NULL; \
 		} \
