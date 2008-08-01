@@ -392,36 +392,34 @@ static gint
 lasso_wsf_profile_verify_credential_signature(
 		LassoWsfProfile *profile, xmlDoc *doc, xmlNode *credential)
 {
-	LassoProvider *lasso_provider;
-
+	LassoProvider *lasso_provider = NULL;
 	xmlSecKeysMngr *keys_mngr = NULL;
-	xmlNode *x509data = NULL, *node;
+	xmlNode *x509data = NULL, *node = NULL;
+	xmlChar *id = NULL;
+	xmlAttr *id_attr = NULL;
+	xmlSecDSigCtx *dsigCtx = NULL;
+	xmlChar *issuer = NULL;
+	gint ret = 0;
 
-	xmlChar *id;
-	xmlAttr *id_attr;
-
-	xmlSecDSigCtx *dsigCtx;
-
-	xmlChar *issuer;
-
-	/* Retrieve provider id of credential signer . Issuer could be the right place */
+	/* 1. Retrieve provider id of credential signer, Issuer could be the right place */
 	issuer = xmlGetProp(credential, (xmlChar*)"Issuer");
 	if (issuer == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_ISSUER;
 	}
 
+	/* 2. Retrieve the provider object for this provider ID */
 	lasso_provider = lasso_server_get_provider(profile->server, (char*)issuer);
 	if (lasso_provider == NULL) {
 		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 	}
 
-	/* Set credential reference */
+	/* 3. Add ID to the global ID attribute hash */
 	id_attr = xmlHasProp(credential, (xmlChar *)"AssertionID");
 	id = xmlGetProp(credential, (xmlChar *) "AssertionID");
 	xmlAddID(NULL, doc, id, id_attr);
 	xmlFree(id);
 
-	/* Case of X509 signature type */
+	/* 4.1 Case of X509 signature type with a known provider */
 	x509data = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeX509Data, xmlSecDSigNs);
 	if (x509data != NULL && lasso_provider != NULL && lasso_provider->ca_cert_chain != NULL) {
 		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
@@ -435,41 +433,49 @@ lasso_wsf_profile_verify_credential_signature(
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
 
-	/* Case of simple public key signature type */
+	/* 4.2 Case of simple public key signature type */
 	if (keys_mngr == NULL) {
-		if (lasso_provider != NULL) {
-			dsigCtx->signKey = xmlSecKeyDuplicate(
-					lasso_provider_get_public_key(lasso_provider));
-		} else if (profile->private_data->public_key) {
-			/* TODO */
-		}
+		dsigCtx->signKey = NULL;
+		if (profile->private_data->public_key) {
+			dsigCtx->signKey = lasso_get_public_key_from_pem_file(
+					profile->private_data->public_key);
+		} else if (lasso_provider != NULL) {
+			xmlSecKey *pkey;
+			pkey = lasso_provider_get_public_key(lasso_provider);
+			if (pkey) {
+				dsigCtx->signKey = xmlSecKeyDuplicate(pkey);
+			}
+		} 
 		if (dsigCtx->signKey == NULL) {
-			xmlSecDSigCtxDestroy(dsigCtx);
-			return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+			ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+			goto exit;
 		}
 	}
 
 	node = xmlSecFindNode(credential, xmlSecNodeSignature, xmlSecDSigNs);
+	/* 5. Verify */
 	if (xmlSecDSigCtxVerify(dsigCtx, node) < 0) {
-		xmlSecDSigCtxDestroy(dsigCtx);
-		if (keys_mngr)
-			xmlSecKeysMngrDestroy(keys_mngr);
-		return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
+		ret = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
+		goto exit;
 	}
-
+	/* 6. OK ? */
+	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
+		ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
+		goto exit;
+	}
+	/* Remove node only if everything worked */
+	if (node) {
+		xmlUnlinkNode(node);
+		xmlFreeNode(node);
+	}
+exit:
+	/* Clean */
 	if (keys_mngr)
 		xmlSecKeysMngrDestroy(keys_mngr);
-
-	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
+	if (dsigCtx)
 		xmlSecDSigCtxDestroy(dsigCtx);
-		return LASSO_DS_ERROR_INVALID_SIGNATURE;
-	}
 
-	/* Remove uneeded signature node */
-	xmlUnlinkNode(node);
-	xmlFreeNode(node);
-
-	return 0;
+	return ret;
 }
 
 static gint
