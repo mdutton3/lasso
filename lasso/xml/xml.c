@@ -2404,12 +2404,25 @@ sameNs(xmlNs *ns1, xmlNs *ns2)
 }
 
 static void
+xmlPropUseNsDef(xmlNs *ns, xmlNode *node)
+{
+    xmlAttr *attr;
+
+    for (attr = node->properties; attr; attr = attr->next) {
+        if (sameNs(ns, attr->ns)) {
+            attr->ns = ns;
+        }
+    }
+}
+
+static void
 xmlUseNsDef(xmlNs *ns, xmlNode *node)
 {
 	xmlNode *t;
 	xmlNs *ns2;
 	xmlNs *ns3 = NULL;
 
+    xmlPropUseNsDef(ns, node);
 	if (sameNs(ns, node->ns)) {
 		node->ns = ns;
 	}
