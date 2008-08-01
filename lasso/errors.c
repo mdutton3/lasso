@@ -171,6 +171,8 @@ lasso_strerror(int error_code)
 			return "Missing SOAP envelope";
 		case LASSO_PROFILE_ERROR_MISSING_REQUEST:
 			return "Missing request";
+		case LASSO_WSF_PROFILE_ERROR_MISSING_RESOURCE_ID:
+			return "The necessary ResourceID or EncryptedResourceID for calling an ID-WSF service is missing.";
 		case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
 			return "ProviderID unknown to LassoServer.";
 		case LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL:
@@ -257,9 +259,10 @@ lasso_strerror(int error_code)
 			return "Missing endpoint reference";
 		case LASSO_DST_ERROR_QUERY_PARTIALLY_FAILED:
 			return "Query partially failed : some items were correctly processed";
+		case LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND:
+			return "Federation not found on login";
 		case LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID:
 			return "ProviderID not found";
-
 		default:
 			return "Unknown LASSO_ERROR, you should regenerate errors.c";
 	}
