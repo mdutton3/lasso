@@ -52,12 +52,11 @@ EXTRA_DIST = $(SWIG_OUTPUTS) Makefile.PL
 
 # Maintainer clean the swig generated files, because he/she maintains them.
 MAINTAINERCLEANFILES = Makefile.in $(SWIG_OUTPUTS)
+CLEANFILES = lasso.pm lasso_wrap.c
 
 clean-local:
 	rm -rf blib $(PERL_MAKEFILE) $(PERL_MAKEFILE).old build-perl-stamp $(PERL_CRUFT)
 	-test -L Makefile.PL && rm Makefile.PL
-	-test -L lasso.pm && rm lasso.pm
-	-test -L lasso_wrap.c && rm lasso_wrap.c
 
 
 # perl module installation disabled since broken wrt to make distcheck
