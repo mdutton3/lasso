@@ -53,6 +53,7 @@
  * 
  */
 
+#include "../utils.h"
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
@@ -639,7 +640,7 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 	/* init Modify */
 	modification = lasso_dst_modification_new(select);
 	newData = lasso_dst_new_data_new();
-	newData->any = g_list_append(newData->any, xmlData);
+	newData->any = g_list_append(newData->any, xmlCopyNode(xmlData, 1));
 	modification->NewData = newData;
 
 	modify = lasso_dst_modify_new(modification);
@@ -725,6 +726,7 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
 	int res = 0;
+	GList *node_to_free = NULL;
 
 	profile = LASSO_WSF_PROFILE(service);
 	request = LASSO_DST_MODIFY(profile->request);
@@ -765,11 +767,14 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 			if (node != NULL) {
 				/* If we must replace the root element, change it in the xmlDoc */
 				if (node == cur_data) {
-					xmlDocSetRootElement(doc, newNode);
-					xmlFreeNode(cur_data);
+					xmlDocSetRootElement(doc, xmlCopyNode(newNode,1));
+					g_list_add(node_to_free, node);
 					cur_data = NULL;
 				} else {
-					xmlReplaceNode(node, newNode);
+					xmlReplaceNode(node, xmlCopyNode(newNode,1));
+					// Node is a free node now but is still reference by the xpath nodeset
+					// we must wait for the deallocation of the nodeset to free it.
+					g_list_add(node_to_free, node);
 				}
 			}
 		} else {
@@ -781,12 +786,15 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 
 	if (res == 0 && doc->children != NULL) {
 		/* Save new service resource data */
-		xmlFreeNode(service->resource_data);
-		service->resource_data = xmlCopyNode(doc->children, 1);
+		xmlNode *root = xmlDocGetRootElement(doc);
+		// No need to free old value since it was reused inside the doc
+		service->resource_data = xmlCopyNode(root,1);
 	}
 
 	xmlXPathFreeContext(xpathCtx);
+	g_list_foreach(node_to_free, (GFunc)xmlFreeNode, NULL);
 	xmlFreeDoc(doc);
+	g_release_list(node_to_free);
 
 	return lasso_wsf_profile_build_soap_response_msg(profile);
 }
