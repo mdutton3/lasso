@@ -1330,8 +1330,8 @@ gint
 lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar *message,
 					   const gchar *service_type, const gchar *security_mech_id)
 {
-	LassoDiscoServiceInstance *si;
-	LassoSoapBindingCorrelation *correlation;
+	LassoDiscoServiceInstance *si = NULL;
+	LassoSoapBindingCorrelation *correlation = NULL;
 	LassoSoapEnvelope *envelope = NULL;
 	LassoSoapFault *fault = NULL;
 	gchar *messageId;
@@ -1391,6 +1391,7 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
 	profile->soap_envelope_request = envelope;
 	profile->request = LASSO_NODE(envelope->Body->any->data);
+
 	/* Get the correlation header */
         {
 		GList *iter = envelope->Header->Other;
@@ -1399,9 +1400,10 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 		}
 		if (iter) {
 			correlation = LASSO_SOAP_BINDING_CORRELATION(iter->data);
-		} else {
-			return LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION;
-		}
+		} 
+	}
+	if (correlation == NULL || correlation->messageID == NULL) {
+		return LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION;
 	}
 	messageId = correlation->messageID;
 
