@@ -30,6 +30,8 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
+#include <lasso/utils.h>
+
 #include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/id-wsf/wsf_profile_private.h>
 
@@ -109,8 +111,9 @@ lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential)
 void
 lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_key)
 {
-	if (public_key)
-		profile->private_data->public_key = g_strdup(public_key);
+	if (public_key) {
+		g_assign_string(profile->private_data->public_key, public_key);
+	}
 }
 
 LassoDiscoDescription*
