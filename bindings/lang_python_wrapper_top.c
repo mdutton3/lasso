@@ -266,7 +266,8 @@ get_list_of_strings(const GList *a_list) {
 	if (! a_list) {
 		return noneRef();
 	}
-	a_tuple = PyTuple_New(g_list_length(a_list));
+    /* Cast because g_list_length does not take const but is a const function */
+	a_tuple = PyTuple_New(g_list_length((GList*)a_list));
 	if (! a_tuple)
 		goto failure;
 	while (a_list) {
@@ -300,7 +301,8 @@ get_list_of_xml_nodes(const GList *a_list) {
 	if (! a_list) {
 		return noneRef();
 	}
-	a_tuple = PyTuple_New(g_list_length(a_list));
+    /* Cast because g_list_length does not take const but is a const function */
+	a_tuple = PyTuple_New(g_list_length((GList*)a_list));
 	if (! a_tuple)
 		goto failure;
 	while (a_list) {
@@ -336,7 +338,8 @@ get_list_of_pygobject(const GList *a_list) {
 	if (! a_list) {
 		return noneRef();
 	}
-	a_tuple = PyTuple_New(g_list_length(a_list));
+    /* Cast because g_list_length does not take const but is a const function */
+	a_tuple = PyTuple_New(g_list_length((GList*)a_list));
 	if (! a_tuple)
 		goto failure;
 	while (a_list) {
@@ -384,6 +387,12 @@ PyGObjectPtr_dealloc(PyGObjectPtr *self)
 	self->ob_type->tp_free((PyObject*)self);
 }
 
+static int
+startswith(const char *string, const char *prefix)
+{
+    return strncmp(string, prefix, strlen(prefix)) == 0; 
+}
+
 static PyObject*
 PyGObjectPtr_New(GObject *obj)
 {
@@ -397,10 +406,20 @@ PyGObjectPtr_New(GObject *obj)
 	if (self != NULL) {
 		Py_INCREF(self);
 	} else {
+        const char *typename;
+
 		self = (PyGObjectPtr*)PyObject_NEW(PyGObjectPtr, &PyGObjectPtrType);
 		g_object_set_qdata_full(obj, lasso_wrapper_key, self, NULL);
 		self->obj = g_object_ref(obj);
-		self->typename = PyString_FromString(G_OBJECT_TYPE_NAME(obj)+5);
+        typename = G_OBJECT_TYPE_NAME(obj);
+        /* XXX: Fixme !!!!! */
+        if (startswith(typename, "LassoDgme")) {
+    		self->typename = PyString_FromString(typename+9);
+        } else if (startswith(typename, "Lasso")) {
+    		self->typename = PyString_FromString(typename+5);
+        } else {
+            self->typename = PyString_FromString(typename);
+        }
 	}
 	return (PyObject*)self;
 }
