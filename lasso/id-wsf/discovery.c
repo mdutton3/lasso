@@ -110,10 +110,11 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	LassoSamlSubjectConfirmation *subject_confirmation = NULL;
 	LassoDsKeyInfo *key_info = NULL;
 	GList *iter = NULL;
+	LassoSamlSubjectConfirmation *subject_confirmation;
+	LassoProvider *our_provider = 
+		LASSO_PROVIDER(LASSO_WSF_PROFILE(discovery)->server);
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
-
-	profile = LASSO_WSF_PROFILE(discovery);
 
 	/* Init assertion informations */
 	assertion = lasso_saml_assertion_new();
@@ -121,7 +122,8 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	assertion->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;
 	assertion->MinorVersion = LASSO_SAML_MINOR_VERSION_N;
 	assertion->IssueInstant = lasso_get_current_time();
-	assertion->Issuer = g_strdup(LASSO_PROVIDER(profile->server)->ProviderID);
+	assertion->Issuer =
+		g_strdup(our_provider->ProviderID);
 
 	/* Add AuthenticationStatement */
 	authentication_statement = LASSO_SAML_AUTHENTICATION_STATEMENT(
@@ -131,11 +133,13 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	subject = LASSO_SAML_SUBJECT(lasso_saml_subject_new());
 
 	/* NameIdentifier */
-	name_identifier = lasso_saml_name_identifier_new();
-	name_identifier->NameQualifier = g_strdup(LASSO_PROVIDER(profile->server)->ProviderID);
-	header = profile->soap_envelope_request->Header;
-	for (iter = header->Other; iter != NULL; iter = iter->next) {
-		if (LASSO_IS_SOAP_BINDING_PROVIDER(iter->data)) {
+	identifier = lasso_saml_name_identifier_new();
+	identifier->NameQualifier = g_strdup(
+		our_provider->ProviderID);
+	header = LASSO_WSF_PROFILE(discovery)->soap_envelope_request->Header;
+	iter = header->Other;
+	while (iter) {
+		if (LASSO_IS_SOAP_BINDING_PROVIDER(iter->data) == TRUE) {
 			provider = LASSO_SOAP_BINDING_PROVIDER(iter->data);
 			break;
 		}
