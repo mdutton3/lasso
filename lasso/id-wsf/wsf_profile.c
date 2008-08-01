@@ -616,47 +616,34 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *d
 	xmlXPathContext *xpathCtx = NULL;
 	xmlXPathObject *xpathObj;
 	xmlNode *credential;
-	xmlSecKey *public_key;
-	int res;
+	int node_i;
+	int res = 0;
 
+	/* 1. Find assertions, there must be at least one!! */
 	xpathCtx = xmlXPathNewContext(doc);
-
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"wsse", (xmlChar*)LASSO_WSSE_HREF);
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"saml", (xmlChar*)LASSO_SAML_ASSERTION_HREF);
-
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//wsse:Security/saml:Assertion", xpathCtx);
-
-	/* FIXME: Need to consider more every credentials. */
 	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
+		res = LASSO_PROFILE_ERROR_MISSING_ASSERTION;
+		goto exit;
+	}
+	/* 2. Validate every assertion */
+	for (node_i = 0; node_i < xpathObj->nodesetval->nodeNr; ++node_i) {
+		credential = xpathObj->nodesetval->nodeTab[node_i];
+		res = lasso_wsf_profile_verify_credential_signature(profile, doc, credential);
+		if (res < 0)
+			goto exit;
+	}
+	/* 3. Validate X509 authent */
+	res = lasso_wsf_profile_verify_x509_authentication(profile, doc, NULL);
+exit:
+	if (xpathCtx)
 		xmlXPathFreeContext(xpathCtx);
+	if (xpathObj)
 		xmlXPathFreeObject(xpathObj);
-		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
-	}
-	
 
-	credential = xpathObj->nodesetval->nodeTab[0];
-
-	res = lasso_wsf_profile_verify_credential_signature(profile, doc, credential);
-	if (res < 0) {
-		xmlXPathFreeContext(xpathCtx);
-		xmlXPathFreeObject(xpathObj);
-		return res;
-	}
-	
-	public_key = lasso_wsf_profile_get_public_key_from_credential(profile, credential);
-	xmlXPathFreeContext(xpathCtx);
-	xmlXPathFreeObject(xpathObj);
-	
-	if (public_key == NULL) {
-		return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-	}
-
-	res = lasso_wsf_profile_verify_x509_authentication(profile, doc, public_key);
-	xmlSecKeyDestroy(public_key);
-	if (res != 0)
-		return res;
-
-	return 0;
+	return res;
 }
 
 static gint
