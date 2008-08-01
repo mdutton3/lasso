@@ -113,12 +113,12 @@ lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
 	iter = src->private_data->credentials;
 	while (iter) {
 		credential = (xmlNode *) iter->data;
+		iter->data = NULL;
 		lasso_wsf_profile_add_credential(dest, credential);
 		iter = iter->next;
 	}
 
-	g_list_free(src->private_data->credentials);
-	src->private_data->credentials = NULL;
+	g_release_list(src->private_data->credentials);
 
 	return 0;
 }
