@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_DATA_SERVICE_H__
+#ifndef __LASSO_IDSWF_UTILS_H__
 #define __LASSO_IDSWF_UTILS_H__
 
 LASSO_EXPORT gboolean lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id);
