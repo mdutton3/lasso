@@ -123,6 +123,16 @@ lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
 	return 0;
 }
 
+/** 
+ * lasso_wsf_profile_add_credential:
+ * @profile: a #LassoWsfProfile
+ * @credential: an #xmlNode containing credential informations
+ *
+ * Add credential for use in a future ID-WSF request to the underlying
+ * service.
+ *
+ * Returns: 0.
+ */
 gint
 lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential)
 {
