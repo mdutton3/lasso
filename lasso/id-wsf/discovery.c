@@ -337,31 +337,16 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 	return rst;
 }
 
+/** lasso_discovery_init_modify:
+ *
+ * Do not use, it is DEPRECATED !
+ */
 gint
 lasso_discovery_init_modify(LassoDiscovery *discovery,
 			    LassoDiscoResourceOffering *resourceOffering,
 			    LassoDiscoDescription *description)
 {
-	LassoWsfProfile *profile = NULL;
-	LassoDiscoModify *modify = NULL;
-	gint res = 0;
-
-	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	profile = LASSO_WSF_PROFILE(discovery);
-
-	modify = lasso_disco_modify_new();
-
-	res = lasso_wsf_profile_init_soap_request(profile, LASSO_NODE(modify));
-	if (res == 0) {
-		res = lasso_discovery_init_request(discovery, resourceOffering, 
-				description);
-	}
-	return res;
+	return 0;
 }
 
 static LassoDiscoResourceOffering*

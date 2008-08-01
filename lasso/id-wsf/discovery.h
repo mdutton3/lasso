@@ -95,7 +95,7 @@ LASSO_EXPORT gint lasso_discovery_build_response_msg(LassoDiscovery *discovery);
 
 LASSO_EXPORT gint lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery);
 
-LASSO_EXPORT gint lasso_discovery_init_modify(LassoDiscovery *discovery,
+G_GNUC_DEPRECATED LASSO_EXPORT gint lasso_discovery_init_modify(LassoDiscovery *discovery,
 	LassoDiscoResourceOffering *resourceOffering, LassoDiscoDescription *description);
 
 LASSO_EXPORT gint lasso_discovery_init_query(LassoDiscovery *discovery,
