@@ -141,6 +141,13 @@ lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential)
 	return 0;
 }
 
+/**
+ * lasso_wsf_profile_set_public_key:
+ * @profile: a #LassoWsfProfile
+ * @public_key: a string containg an encoded public key.
+ *
+ * Setup a public key to validate credentials on received requests.
+ */
 void
 lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_key)
 {
