@@ -203,6 +203,16 @@ lasso_wsf_profile_get_fault(LassoWsfProfile *profile)
 	return profile->private_data->fault;
 }
 
+/**
+ * lasso_wsf_profile_has_saml_authentication:
+ * @profile: a #LassoWsfProfile
+ *
+ * Checks if the current description supports any security mechanism using
+ * SAML authentication.
+ *
+ * Returns: %TRUE if SAML assertion is supported by the current service
+ * description as a means of authentication.
+ */
 static gboolean
 lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile)
 {
