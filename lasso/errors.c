@@ -263,6 +263,8 @@ lasso_strerror(int error_code)
 			return "Federation not found on login";
 		case LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID:
 			return "ProviderID not found";
+		case LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF:
+			return "WS-Security SAML Token secmech needs a CredentialRef";
 		default:
 			return "Unknown LASSO_ERROR, you should regenerate errors.c";
 	}

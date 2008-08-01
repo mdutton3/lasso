@@ -151,6 +151,7 @@
 #define LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM 1105 /* The specified security mechanism is not supported by lasso ID-WSF library */
 #define LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION     -1106 /* No ID-WSF web Service description could be found for the current security mechanism */
 #define LASSO_WSF_PROFILE_ERROR_MISSING_RESOURCE_ID  -1107 /* The necessary ResourceID or EncryptedResourceID for calling an ID-WSF service is missing. */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF -1108 /* WS-Security SAML Token secmech needs a CredentialRef */
 
 /* ID-WSF 2 Discovery */
 #define LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED        -1200 /* Service metadata registration failed */
