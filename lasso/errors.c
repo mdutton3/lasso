@@ -69,6 +69,8 @@ lasso_strerror(int error_code)
 			return "Invalid HTTP method";
 		case LASSO_PROFILE_ERROR_INVALID_POST_MSG:
 			return "Invalid POST message";
+		case LASSO_DST_ERROR_MISSING_SERVICE_DATA:
+			return "Missing service data";
 		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE:
 			return "Target name space not found";
 		case LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS:
@@ -80,15 +82,15 @@ lasso_strerror(int error_code)
 		case LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND:
 			return "Identity not found";
 		case LASSO_WSF_PROFILE_ERROR_SOAP_FAULT:
-			return "LASSO_WSF_PROFILE_ERROR_SOAP_FAULT";
+			return "SOAP ID-WSF binding returned a SOAP fault";
 		case LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND:
 			return "Federation not found";
 		case LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL:
 			return "Unable to find Profile URL in metadata";
 		case LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND:
 			return "Name identifier not found";
-		case LASSO_DST_ERROR_MISSING_SERVICE_DATA:
-			return "Missing service data";
+		case LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION:
+			return "No ID-WSF web Service description could be found for the current security mechanism";
 		case LASSO_PROFILE_ERROR_INVALID_ARTIFACT:
 			return "Invalid artifact";
 		case LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST:
@@ -98,7 +100,7 @@ lasso_strerror(int error_code)
 		case LASSO_DS_ERROR_CONTEXT_CREATION_FAILED:
 			return "Failed to create signature context.";
 		case LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION:
-			return "LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION";
+			return "Correlation SOAP Header is missing";
 		case LASSO_SERVER_ERROR_INVALID_XML:
 			return "LASSO_SERVER_ERROR_INVALID_XML";
 		case LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE:
@@ -114,9 +116,9 @@ lasso_strerror(int error_code)
 		case LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST:
 			return "LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST";
 		case LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM:
-			return "LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM";
+			return "The specified security mechanism is not supported by lasso ID-WSF library";
 		case LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY:
-			return "LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY";
+			return "Security SOAP Header is missing";
 		case LASSO_XML_ERROR_MISSING_NAMESPACE:
 			return "LASSO_XML_ERROR_MISSING_NAMESPACE";
 		case LASSO_DS_ERROR_INVALID_SIGNATURE:
@@ -190,7 +192,7 @@ lasso_strerror(int error_code)
 		case LASSO_XML_ERROR_INVALID_FILE:
 			return "Invalid XML file";
 		case LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT:
-			return "LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT";
+			return "Cannot find an WSP endpoint for the ID-WSF service";
 		case LASSO_XML_ERROR_NODE_NOT_FOUND:
 			return "Unable to get child of element.";
 		case LASSO_ERROR_UNIMPLEMENTED:
