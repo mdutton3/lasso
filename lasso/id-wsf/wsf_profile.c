@@ -1206,6 +1206,8 @@ lasso_wsf_profile_add_saml_signature(LassoWsfProfile *wsf_profile, xmlDoc *doc) 
 	goto_exit_if_fail(security != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
 	assertion = xmlSecFindNode(security, (xmlChar*) "Assertion", (xmlChar*) LASSO_SAML_ASSERTION_HREF);
 	goto_exit_if_fail(assertion != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
+    assertion_id = xmlGetProp(assertion, (xmlChar*)"AssertionID");
+    goto_exit_if_fail(assertion_id != NULL, LASSO_XML_ERROR_ATTR_NOT_FOUND);
 
 	/* Create the signature template */
 	rc = add_signature_template(wsf_profile->server, doc, security, &signature);
