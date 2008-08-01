@@ -1630,8 +1630,10 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		typename = g_strdup("LassoIdWsf2UtilStatus");
 	} else if (strcmp(prefix, "WsSec1") == 0 && strcmp(node_name, "Security") == 0) {
 		typename = g_strdup("LassoWsSec1SecurityHeader");
-	} else if (strcmp(prefix, "Soap") == 0 && strcmp(node_name, "detail") == 0) {
+	} else if (strcmp(prefix, "Soap") == 0 && strcmp(node_name, "detail") == 0) { /* FIXME */
 		typename = g_strdup("LassoSoapDetail");
+	} else if (strcmp(prefix, "DgmeMspEd") == 0 && strcmp(node_name, "file") == 0) { /* FIXME */
+		typename = g_strdup("LassoDgmeMspEdFile");
 	} else {
 		typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
 	}
