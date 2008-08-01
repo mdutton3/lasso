@@ -336,6 +336,10 @@ lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
 {
 	g_return_val_if_invalid_param(WSF_PROFILE, profile,
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	if (security_mech_id == NULL) {
+		security_mech_id = LASSO_SECURITY_MECH_NULL;
+	}
 	if (lasso_security_mech_id_is_saml_authentication(security_mech_id)
 			|| lasso_security_mech_id_is_null_authentication(security_mech_id)) {
 		g_assign_string(profile->private_data->security_mech_id, security_mech_id);
@@ -632,8 +636,8 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
 	}
 	envelope = lasso_wsf_profile_build_soap_envelope_internal(NULL, providerID);
 	profile->soap_envelope_request = envelope;
-	envelope->Body->any = g_list_append(envelope->Body->any, request);
-	profile->request = request;
+	g_list_add_gobject(envelope->Body->any, request);
+	g_assign_gobject(profile->request, request);
 	return lasso_wsf_profile_comply_with_security_mechanism(profile);
 }
 
