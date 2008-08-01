@@ -268,7 +268,7 @@ lasso_get_public_key_from_pem_cert_file(const char *pem_cert_file)
 xmlSecKeyPtr
 lasso_get_public_key_from_private_key_file(const char *private_key_file)
 {
-	return XmlSecCryptoAppKeyLoad(private_key_file, 
+	return xmlSecCryptoAppKeyLoad(private_key_file, 
 			xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 }
 
