@@ -29,8 +29,9 @@
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
+#include <xmlsec/soap.h>
 
-#include <lasso/utils.h>
+#include "../utils.h"
 
 #include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/id-wsf/wsf_profile_private.h>
@@ -57,6 +58,8 @@
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
+
+static gint lasso_wsf_profile_add_saml_signature(LassoWsfProfile *wsf_profile, xmlDoc *doc);
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Server", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, server) },
@@ -292,7 +295,7 @@ lasso_wsf_profile_set_description_from_offering(
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	if (security_mech_id == NULL) {
 		if (offering->ServiceInstance &&
-		    offering->ServiceInstance->Description) {
+			offering->ServiceInstance->Description) {
 			description = LASSO_DISCO_DESCRIPTION(
 					offering->ServiceInstance->Description->data);
 		}
@@ -653,6 +656,7 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	xmlDoc *doc = NULL;
 	xmlNode *envelope_node = NULL;
 	char *sec_mech_id = NULL;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request),
@@ -665,17 +669,16 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	/* Sign request if necessary */
 	sec_mech_id = profile->private_data->security_mech_id;
 	if (lasso_security_mech_id_is_saml_authentication(sec_mech_id)) {
-		const xmlChar* ids[2] = {
-			(xmlChar*) "id",
-			NULL 
-		};
 		/* Add a signature to soap:Header/wsse:Security on:
 		 * soap:Header/sb:Correlation
 		 * soap:Header/sb:Provider
 		 * éventuellement soap:Header/sb:UserInteraction
 		 * soap:Body
 		 */
-		xmlSecAddIDs(doc, envelope_node, ids);
+		rc = lasso_wsf_profile_add_saml_signature(profile, doc);
+		if (rc != 0) {
+			goto exit;
+		}
 	}
 	/* Dump soap request */
 	handler = xmlFindCharEncodingHandler("utf-8");
@@ -685,9 +688,9 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	profile->msg_body = g_strdup(
 		(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
-	xmlFreeDoc(doc);
-
-	return 0;
+exit:
+	g_release_doc(doc);
+	return rc;
 }
 
 /** 
@@ -731,7 +734,7 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 
 gint
 lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar *message,
-					   const gchar *service_type, const gchar *security_mech_id)
+	const gchar *service_type, const gchar *security_mech_id)
 {
 	LassoSoapBindingCorrelation *correlation = NULL;
 	LassoSoapEnvelope *envelope = NULL;
@@ -998,4 +1001,241 @@ lasso_wsf_profile_new_full(LassoServer *server, LassoDiscoResourceOffering *offe
 		g_release_gobject(profile);
 	}
 	return profile;
+}
+
+/** Create a new XmlSig template without any reference and return the create
+ * Signature node. If node is not null add Signature as a last child to it.
+ */
+static gint
+add_signature_template(LassoServer *server, xmlDoc *doc, xmlNode *node, xmlNode **signature_ptr) {
+	xmlNode *signature;
+	gint rc = 0;
+
+	switch (server->signature_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+			signature = xmlSecTmplSignatureCreate(doc,
+				xmlSecTransformExclC14NId,
+				xmlSecTransformRsaSha1Id,
+				NULL);
+			break;
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			signature = xmlSecTmplSignatureCreate(doc,
+				xmlSecTransformExclC14NId,
+				xmlSecTransformDsaSha1Id,
+				NULL);
+			break;
+		default:
+			rc = LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
+			goto exit;
+	
+	}
+	
+	/* Last steps... */
+	if (signature_ptr) {
+		*signature_ptr = signature;
+	}
+	if (node) {
+		xmlAddChild(node, signature);
+	}
+exit:
+	return rc;
+}
+
+static gint
+add_reference_to_non_enveloping_id(xmlNode *signature, xmlChar *id)
+{
+	gint rc = 0;
+	char *uri;
+	xmlNode *reference;
+
+	goto_exit_if_fail(signature != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	goto_exit_if_fail(id != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	uri = g_strdup_printf("#%s", id);
+	reference = xmlSecTmplSignatureAddReference(signature,
+			xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
+	/* add exclusive C14N transform */
+	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
+exit:
+	g_release(uri);
+	return rc;
+}
+
+static gint
+create_signature_context(LassoServer *server, xmlSecDSigCtx **ctx_ptr) {
+	xmlSecDSigCtx *dsig_ctx;
+	gint rc = 0;
+
+	g_bad_param(SERVER, server);
+	g_null_param(ctx_ptr);
+
+	/* Allocate an initialize the object */
+	dsig_ctx = xmlSecDSigCtxCreate(NULL);
+	/* Load the private key for the server object */
+	/* XXX: handle other formats */
+	/* XXX: handle password protected keys */
+	/* XXX: handle pkcs12 all-in-one files */
+	dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(server->private_key,
+			xmlSecKeyDataFormatPem,
+			NULL, NULL, NULL);
+	goto_exit_if_fail(dsig_ctx->signKey == NULL, LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED);
+	/* Load the certificate chain if needed */
+	if (server->certificate) {
+		gint ret = xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, 
+			server->certificate, 
+			xmlSecKeyDataFormatPem);
+		goto_exit_if_fail(ret >= 0, LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED);
+	}
+	/* Transfer the reference */
+	*ctx_ptr = dsig_ctx;
+	dsig_ctx = NULL;
+exit:
+	if (dsig_ctx) {
+		xmlSecDSigCtxDestroy(dsig_ctx);
+	}
+	return rc;
+	
+}
+
+static xmlChar *
+make_id_ref(xmlChar *id) {
+	char *res;
+	
+	res = g_strdup_printf("#%s", (char*)id);
+	return (xmlChar*)res;
+}
+
+static void
+add_key_info_security_token_reference(xmlDocPtr doc, xmlNode *signature, xmlChar *assertion_id) {
+	xmlNsPtr nsPtr;
+	xmlChar *value;
+	xmlNode *key_info, *security_token_reference, *reference;
+
+	/* Add key info */
+	key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
+	/* Free children */
+	xmlFreeNodeList(key_info->children);
+	key_info->children = NULL;
+	/* Create sec:SecurityTokenReferenceNode */
+	security_token_reference = xmlSecAddChild(key_info, (xmlChar*) "SecurityTokenReference", (xmlChar*)LASSO_WSSE1_HREF);
+	nsPtr = xmlSearchNsByHref(doc, security_token_reference, (xmlChar*) LASSO_SEC_HREF);
+	if (nsPtr == NULL) {
+		nsPtr = xmlNewNs(security_token_reference, (xmlChar*) LASSO_SEC_HREF, (xmlChar*) LASSO_SEC_PREFIX);
+	}
+	value = (xmlChar*) g_strdup_printf("%s:MessageAuthentication", nsPtr->prefix);
+	xmlSetProp(security_token_reference, (xmlChar*) "Usage", value);
+	g_release(value);
+	/* Create Reference */
+	reference = xmlSecAddChild(security_token_reference, (xmlChar*) "Reference", (xmlChar*) LASSO_WSSE1_HREF);
+	value = make_id_ref(assertion_id);
+	xmlSetProp(reference, (xmlChar*) "URI", value);
+	g_release(value);
+}
+/**
+ * lasso_wsf_profile_add_saml_signature:
+ * @wsf_profile: a #LassoWsfProfile
+ * @doc: the #xmlDoc document that contains the SOAP message to sign
+ *
+ * This function add the signature to comply with specification of the ID-WSF
+ * SAML security mechanism.  In order to do that we must sign the headers
+ * Provider, Correlation and eventually is:Interaction and also the Body of the
+ * SOAP message.
+ *
+ * Return value: 0 if signature creation succeeded, an error code otherwise.
+ */
+static gint
+lasso_wsf_profile_add_saml_signature(LassoWsfProfile *wsf_profile, xmlDoc *doc) {
+	xmlNode *envelope, *header, *body, *provider, *correlation, *interaction, *security;
+	xmlNode *assertion;
+	xmlNode* signature;
+	xmlChar *provider_id, *correlation_id, *interaction_id, *body_id, *assertion_id;
+	xmlSecDSigCtx *dsig_ctx;
+	const xmlChar* ids[] = {
+		(xmlChar*) "id",
+		(xmlChar*) "Id",
+		NULL 
+	};
+	gint rc = 0, sec_ret;
+	
+
+	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(wsf_profile), 
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(doc != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	/* Lookup all referenced node and their Ids */
+	envelope = xmlDocGetRootElement(doc);
+	header = xmlSecSoap11GetHeader(envelope);
+	provider = xmlSecFindNode(header, (xmlChar*) "Provider", (xmlChar*) LASSO_SOAP_BINDING_HREF);
+	correlation = xmlSecFindNode(header, (xmlChar*) "Correlation", (xmlChar*) LASSO_SOAP_BINDING_HREF);
+	provider = xmlSecFindNode(header, (xmlChar*) "UserInteraction", (xmlChar*) LASSO_SOAP_BINDING_HREF);
+	body = xmlSecSoap11GetBody(envelope);
+	xmlSecAddIDs(doc, envelope, ids);
+	goto_exit_if_fail(header != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
+	goto_exit_if_fail(provider != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
+	goto_exit_if_fail(correlation != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
+	goto_exit_if_fail(body != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
+
+	provider_id = xmlGetProp(provider, (xmlChar*) "id");
+	correlation_id = xmlGetProp(correlation, (xmlChar*) "id");
+	if (interaction != NULL) {
+		interaction_id = xmlGetProp(interaction, (xmlChar*) "id");
+	}
+	body_id = xmlGetProp(body, (xmlChar*) "Id");
+	goto_exit_if_fail(provider_id != NULL, LASSO_XML_ERROR_ATTR_NOT_FOUND);
+	goto_exit_if_fail(correlation_id != NULL, LASSO_XML_ERROR_ATTR_NOT_FOUND);
+	goto_exit_if_fail(body_id != NULL, LASSO_XML_ERROR_ATTR_NOT_FOUND);
+	goto_exit_if_fail(interaction == NULL || interaction_id != NULL, LASSO_XML_ERROR_ATTR_NOT_FOUND);
+
+	/* Lookup the assertion Id for the KeyInfo node generation */
+	security = xmlSecFindNode(header, (xmlChar*) "Security", (xmlChar*) LASSO_WSSE1_HREF);
+	goto_exit_if_fail(security != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
+	assertion = xmlSecFindNode(security, (xmlChar*) "Assertion", (xmlChar*) LASSO_SAML_ASSERTION_HREF);
+	goto_exit_if_fail(assertion != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
+
+	/* Create the signature template */
+
+	rc = add_signature_template(wsf_profile->server, doc, security, &signature);
+	if (rc != 0) {
+		goto exit;
+	}
+	rc = add_reference_to_non_enveloping_id(signature, provider_id);
+	if (rc != 0) {
+		goto exit;
+	}
+	rc = add_reference_to_non_enveloping_id(signature, correlation_id);
+	if (rc != 0) {
+		goto exit;
+	}
+	rc = add_reference_to_non_enveloping_id(signature, body_id);
+	if (rc != 0) {
+		goto exit;
+	}
+	if (interaction_id) {
+		rc = add_reference_to_non_enveloping_id(signature, interaction_id);
+		if (rc != 0) {
+			goto exit;
+		}
+	}
+	/* Create signature context */
+	xmlSetTreeDoc(envelope, doc);
+	rc = create_signature_context(wsf_profile->server, &dsig_ctx);
+	if (rc != 0)
+		goto exit;
+	/* Sign ! */
+	sec_ret = xmlSecDSigCtxSign(dsig_ctx, signature);
+	if (sec_ret < 0) {
+		rc = LASSO_DS_ERROR_SIGNATURE_FAILED;
+		goto exit;
+	}
+	add_key_info_security_token_reference(doc, signature, assertion_id);
+	
+exit:
+	if (dsig_ctx) {
+		xmlSecDSigCtxDestroy(dsig_ctx);
+	}
+	g_release_xmlchar(provider_id);
+	g_release_xmlchar(correlation_id);
+	g_release_xmlchar(interaction_id);
+	g_release_xmlchar(body_id);
+	g_release_xmlchar(assertion_id);
+	return rc;
 }
