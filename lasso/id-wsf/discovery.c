@@ -1263,20 +1263,6 @@ set_registry(gchar const *service_type, LassoWsfProfileConstructor constructor)
 			g_strdup(service_type), constructor);
 }
 
-static void
-move_ass(gchar *key, LassoSamlAssertion *ass, GHashTable *dest)
-{
-	g_hash_table_insert(dest, g_strdup(key), g_object_ref(ass));
-}
-
-void
-lasso_wsf_profile_move_assertions(LassoWsfProfile *src, LassoWsfProfile *dest)
-{
-	dest->session = lasso_session_new();
-	g_hash_table_foreach(src->session->private_data->assertions_by_id, (GHFunc)move_ass,
-		dest->session->private_data->assertions_by_id);
-}
-
 static LassoWsfProfile *
 lasso_discovery_build_wsf_profile(LassoDiscovery *discovery, LassoDiscoResourceOffering *offering)
 {
@@ -1299,10 +1285,8 @@ lasso_discovery_build_wsf_profile(LassoDiscovery *discovery, LassoDiscoResourceO
 		message(G_LOG_LEVEL_WARNING, "No constructor registered for service type: %s", service_type);
 		a_wsf_profile = LASSO_WSF_PROFILE(lasso_data_service_new_full(server, offering));
 	}
+	a_wsf_profile->session = g_object_ref(discovery->parent.session);
 
-	lasso_wsf_profile_move_assertions(LASSO_WSF_PROFILE(discovery), a_wsf_profile);
-
-	//a_wsf_profile = LASSO_WSF_PROFILE(lasso_dgme_msped_service_new_full(server, offering));
 	return a_wsf_profile;
 }
 
