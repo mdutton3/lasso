@@ -430,14 +430,8 @@ lasso_discovery_get_resource_offering_auto(LassoDiscovery *discovery, const gcha
 	}
 
 end:
-
 	g_list_free(assertions);
-
-	if (resource_offering) {
-		return g_object_ref(resource_offering);
-	}
-
-	return NULL;
+	return resource_offering;
 }
 
 /**
@@ -448,7 +442,7 @@ end:
  * Return value: internally allocated, don't free
  **/
 LassoDiscoDescription*
-lasso_discovery_get_description_auto(LassoDiscoResourceOffering *offering,
+lasso_discovery_get_description_auto(const LassoDiscoResourceOffering *offering,
 	const gchar *security_mech_id)
 {
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(offering), NULL);
@@ -459,6 +453,67 @@ lasso_discovery_get_description_auto(LassoDiscoResourceOffering *offering,
 	}
 
 	return lasso_wsf_profile_get_description_auto(offering->ServiceInstance, security_mech_id);
+}
+
+#define assign_resource_id(from,to) \
+	if ((from)->ResourceID) {\
+		g_assign_gobject((to)->ResourceID, (from)->ResourceID); \
+	} else if ((from)->EncryptedResourceID) {\
+		g_assign_gobject((to)->EncryptedResourceID, (from)->EncryptedResourceID); \
+	} else { \
+		ret = LASSO_WSF_PROFILE_ERROR_MISSING_RESOURCE_ID;\
+	}
+
+	
+
+/**
+ * lasso_discovery_init_query
+ * @discovery: a #LassoDiscovery
+ *
+ * Initializes a disco:Query message.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech_id)
+{
+	LassoWsfProfile *profile = NULL;
+	LassoDiscoQuery *query = NULL;
+	const LassoDiscoResourceOffering *offering = NULL;
+	const LassoDiscoDescription *description = NULL;
+	gint ret = 0;
+
+	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	profile = LASSO_WSF_PROFILE(discovery);
+
+	query = lasso_disco_query_new();
+	lasso_wsf_profile_init_soap_request(profile, LASSO_NODE(query));
+
+	/* FIXME: we should not get it automatically,
+	 * we should get it from on one hand, and setup the discovery proxy
+	 * object with get getted resource offering.  get discovery service
+	 * resource id from principal assertion */
+	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
+	if (! LASSO_IS_DISCO_RESOURCE_OFFERING(offering)) {
+		return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
+	}
+	lasso_wsf_profile_set_resource_offering(&discovery->parent, offering);
+	ret = lasso_wsf_profile_set_security_mech_id(&discovery->parent, security_mech_id);
+	if (ret)
+		goto exit;
+	assign_resource_id(offering, query);
+	g_assign_gobject(profile->request, LASSO_NODE(query));
+
+	description = lasso_wsf_profile_get_description(&discovery->parent);
+	if (description->Endpoint != NULL) {
+		g_assign_string(profile->msg_url, description->Endpoint);
+	} else {
+		ret = LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT;
+	}
+exit:
+	g_release_gobject(query);
+	return ret;
 }
 
 /**
@@ -479,6 +534,7 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 	LassoDiscoModify *modify = NULL;
 	LassoDiscoResourceOffering *offering = NULL;
 	LassoDiscoDescription *description = NULL;
+	gint ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(new_offering),
@@ -505,7 +561,7 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 	lasso_wsf_profile_set_description(profile, description);
 
 	/* TODO: EncryptedResourceID support */
-	modify->ResourceID = g_object_ref(offering->ResourceID);
+	assign_resource_id(offering, modify);
 	lasso_node_destroy(LASSO_NODE(offering));
 
 	modify->InsertEntry = g_list_append(modify->InsertEntry,
@@ -516,7 +572,7 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 		profile->msg_url = g_strdup(description->Endpoint);
 	} /* TODO: else, description->WsdlURI, get endpoint automatically */
 
-	return 0;
+	return ret;
 }
 
 
@@ -536,6 +592,7 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
 	LassoDiscoModify *modify = NULL;
 	LassoDiscoResourceOffering *offering = NULL;
 	LassoDiscoDescription *description = NULL;
+	gint ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -568,62 +625,8 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
 		profile->msg_url = g_strdup(description->Endpoint);
 	} /* TODO: else, description->WsdlURI, get endpoint automatically */
 
-	return 0;
+	return ret;
 }
-
-/**
- * lasso_discovery_init_query
- * @discovery: a #LassoDiscovery
- *
- * Initializes a disco:Query message.
- *
- * Return value: 0 on success; or a negative value otherwise.
- **/
-gint
-lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech_id)
-{
-	LassoWsfProfile *profile = NULL;
-	LassoDiscoQuery *query = NULL;
-	LassoDiscoResourceOffering *offering = NULL;
-	LassoDiscoDescription *description = NULL;
-
-	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	profile = LASSO_WSF_PROFILE(discovery);
-
-	query = lasso_disco_query_new();
-	lasso_wsf_profile_init_soap_request(profile, LASSO_NODE(query));
-
-	/* get discovery service resource id from principal assertion */
-	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
-	if (! LASSO_IS_DISCO_RESOURCE_OFFERING(offering)) {
-		return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
-	}
-
-	if (security_mech_id == NULL) {
-		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
-	} else {
-		description = lasso_discovery_get_description_auto(offering, security_mech_id);
-	}
-	if (! LASSO_IS_DISCO_DESCRIPTION(description)) {
-		return LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION;
-	}
-
-	lasso_wsf_profile_set_description(profile, description);
-
-	/* TODO: EncryptedResourceID support */
-	query->ResourceID = g_object_ref(offering->ResourceID);
-	lasso_node_destroy(LASSO_NODE(offering));
-
-	profile->request = LASSO_NODE(query);
-
-	if (description->Endpoint != NULL) {
-		profile->msg_url = g_strdup(description->Endpoint);
-	} /* TODO: else, description->WsdlURI, get endpoint automatically */
-
-	return 0;
-}
-
 
 /**
  * lasso_discovery_process_modify_msg:
