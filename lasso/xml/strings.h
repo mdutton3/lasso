@@ -223,11 +223,11 @@
 /*****************************************************************************/
 
 /* Liberty Security Mechanisms */
-#define LASSO_SECURITY_MECH_NULL   "urn:liberty:security:2003-08:NULL:NULL"
+#define LASSO_SECURITY_MECH_NULL   "urn:liberty:security:2003-08:null:null"
 
-#define LASSO_SECURITY_MECH_X509   "urn:liberty:security:2003-08:NULL:X509"
-#define LASSO_SECURITY_MECH_SAML   "urn:liberty:security:2003-08:NULL:SAML"
-#define LASSO_SECURITY_MECH_BEARER "urn:liberty:security:2004-04:NULL:Bearer"
+#define LASSO_SECURITY_MECH_X509   "urn:liberty:security:2003-08:null:X509"
+#define LASSO_SECURITY_MECH_SAML   "urn:liberty:security:2003-08:null:SAML"
+#define LASSO_SECURITY_MECH_BEARER "urn:liberty:security:2004-04:null:Bearer"
 
 #define LASSO_SECURITY_MECH_TLS        "urn:liberty:security:2003-08:TLS:null"
 #define LASSO_SECURITY_MECH_TLS_X509   "urn:liberty:security:2003-08:TLS:X509"
@@ -238,7 +238,6 @@
 #define LASSO_SECURITY_MECH_CLIENT_TLS_X509   "urn:liberty:security:2003-08:ClientTLS:X509"
 #define LASSO_SECURITY_MECH_CLIENT_TLS_SAML   "urn:liberty:security:2003-08:ClientTLS:SAML"
 #define LASSO_SECURITY_MECH_CLIENT_TLS_BEARER "urn:liberty:security:2004-04:ClientTLS:Bearer"
-
 
 /* liberty wsf prefix & href */
 #define LASSO_DISCO_HREF          "urn:liberty:disco:2003-08"
