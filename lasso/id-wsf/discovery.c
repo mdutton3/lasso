@@ -458,7 +458,7 @@ lasso_discovery_get_description_auto(const LassoDiscoResourceOffering *offering,
 	} else if ((from)->EncryptedResourceID) {\
 		g_assign_gobject((to)->EncryptedResourceID, (from)->EncryptedResourceID); \
 	} else { \
-		ret = LASSO_WSF_PROFILE_ERROR_MISSING_RESOURCE_ID;\
+		rc = LASSO_WSF_PROFILE_ERROR_MISSING_RESOURCE_ID;\
 	}
 
 	
@@ -478,38 +478,36 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 	LassoDiscoQuery *query = NULL;
 	LassoDiscoResourceOffering *offering = NULL;
 	const LassoDiscoDescription *description = NULL;
-	gint ret = 0;
+	gint rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_WSF_PROFILE(discovery);
 
 	query = lasso_disco_query_new();
-	/* Create SOAP envelope and set profile->request */
-	lasso_wsf_profile_init_soap_request(profile, LASSO_NODE(query));
-
 	/* FIXME: we should not get it automatically,
 	 * we should get it from on one hand, and setup the discovery proxy
 	 * object with get getted resource offering.  get discovery service
 	 * resource id from principal assertion */
 	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
-	if (! LASSO_IS_DISCO_RESOURCE_OFFERING(offering)) {
-		return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
-	}
+    goto_exit_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(offering), LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING);
 	lasso_wsf_profile_set_resource_offering(&discovery->parent, offering);
-	ret = lasso_wsf_profile_set_security_mech_id(&discovery->parent, security_mech_id);
-	if (ret)
+	rc = lasso_wsf_profile_set_security_mech_id(&discovery->parent, security_mech_id);
+	if (rc)
 		goto exit;
+	/* Create SOAP envelope and set profile->request */
+	lasso_wsf_profile_init_soap_request(profile, LASSO_NODE(query));
 	assign_resource_id(offering, query);
+
 	description = lasso_wsf_profile_get_description(&discovery->parent);
 	if (description->Endpoint != NULL) {
 		g_assign_string(profile->msg_url, description->Endpoint);
 	} else {
-		ret = LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT;
+		rc = LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT;
 	}
 exit:
 	g_release_gobject(query);
-	return ret;
+	return rc;
 }
 
 /**
@@ -530,7 +528,7 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 	LassoDiscoModify *modify = NULL;
 	LassoDiscoResourceOffering *offering = NULL;
 	LassoDiscoDescription *description = NULL;
-	gint ret = 0;
+	gint rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(new_offering),
@@ -545,6 +543,7 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 	if (! LASSO_IS_DISCO_RESOURCE_OFFERING(offering)) {
 		return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
 	}
+	lasso_wsf_profile_set_resource_offering(&discovery->parent, offering);
 	if (security_mech_id) {
 		description = lasso_discovery_get_description_auto(offering, security_mech_id);
 	} else if (offering->ServiceInstance && offering->ServiceInstance->Description) {
@@ -554,7 +553,6 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 		return LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION;
 	}
 	lasso_wsf_profile_set_description(profile, description);
-	/* TODO: EncryptedResourceID support */
 	assign_resource_id(offering, modify);
 	lasso_node_destroy(LASSO_NODE(offering));
 	g_list_add(modify->InsertEntry, lasso_disco_insert_entry_new(new_offering));
@@ -562,7 +560,7 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 		profile->msg_url = g_strdup(description->Endpoint);
 	} /* TODO: else, description->WsdlURI, get endpoint automatically */
 
-	return ret;
+	return rc;
 }
 
 
@@ -582,7 +580,7 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
 	LassoDiscoModify *modify = NULL;
 	LassoDiscoResourceOffering *offering = NULL;
 	LassoDiscoDescription *description = NULL;
-	gint ret = 0;
+	gint rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -596,6 +594,7 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
 	if (! LASSO_IS_DISCO_RESOURCE_OFFERING(offering)) {
 		return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
 	}
+	lasso_wsf_profile_set_resource_offering(&discovery->parent, offering);
 
 	description = lasso_discovery_get_description_auto(offering, LASSO_SECURITY_MECH_NULL);
 	if (! LASSO_IS_DISCO_DESCRIPTION(description)) {
@@ -610,7 +609,7 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
 		profile->msg_url = g_strdup(description->Endpoint);
 	} /* TODO: else, description->WsdlURI, get endpoint automatically */
 
-	return ret;
+	return rc;
 }
 
 /**
