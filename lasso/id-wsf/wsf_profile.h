@@ -82,9 +82,7 @@ struct _LassoWsfProfileClass {
 
 LASSO_EXPORT GType lasso_wsf_profile_get_type(void);
 
-LASSO_EXPORT gboolean lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id);
-
-LASSO_EXPORT gint lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest);
+G_GNUC_DEPRECATED LASSO_EXPORT gint lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest);
 
 LASSO_EXPORT LassoIdentity* lasso_wsf_profile_get_identity(LassoWsfProfile *profile);
 LASSO_EXPORT LassoSession* lasso_wsf_profile_get_session(LassoWsfProfile *profile);
@@ -95,7 +93,7 @@ LASSO_EXPORT gint lasso_wsf_profile_set_identity_from_dump(LassoWsfProfile *prof
 LASSO_EXPORT gint lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile,
 	const gchar *dump);
 
-LASSO_EXPORT LassoSoapEnvelope* lasso_wsf_profile_build_soap_envelope(const char *refToMessageId,
+G_GNUC_DEPRECATED LASSO_EXPORT LassoSoapEnvelope* lasso_wsf_profile_build_soap_envelope(const char *refToMessageId,
 	const char *providerId);
 
 LASSO_EXPORT gint lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile);
@@ -111,27 +109,37 @@ LASSO_EXPORT gint lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *pr
 LASSO_EXPORT gint lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile,
 	const gchar *message);
 
-LASSO_EXPORT LassoSoapBindingProvider* lasso_wsf_profile_set_provider_soap_request(
+G_GNUC_DEPRECATED LASSO_EXPORT LassoSoapBindingProvider* lasso_wsf_profile_set_provider_soap_request(
 	LassoWsfProfile *profile, const char *providerId);
 
 LASSO_EXPORT LassoWsfProfile* lasso_wsf_profile_new(LassoServer *server);
 
-LASSO_EXPORT gboolean lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile);
+LASSO_EXPORT LassoWsfProfile* lasso_wsf_profile_new_full(LassoServer *server, LassoDiscoResourceOffering *offering);
 
-LASSO_EXPORT gint lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential);
+G_GNUC_DEPRECATED LASSO_EXPORT gboolean lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile);
+
+G_GNUC_DEPRECATED LASSO_EXPORT gint lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential);
 
 LASSO_EXPORT gint lasso_wsf_profile_set_description_from_offering( 
 		LassoWsfProfile *profile, 
 		LassoDiscoResourceOffering *offering, 
 		const char *security_mech_id);
+
 LASSO_EXPORT void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
 		LassoDiscoDescription *description);
-LASSO_EXPORT void lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile,
+
+LASSO_EXPORT LassoDiscoDescription *lasso_wsf_profile_get_description(LassoWsfProfile *profile);
+
+LASSO_EXPORT gint lasso_wsf_profile_set_security_mechanism(LassoWsfProfile *profile, char *security_mech_id);
+
+LASSO_EXPORT const char *lasso_wsf_profile_get_security_mechanism(LassoWsfProfile *profile);
+
+G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile,
 							 const char *status);
 
-LASSO_EXPORT void lasso_wsf_profile_set_principal_online(LassoWsfProfile *profile);
+G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_online(LassoWsfProfile *profile);
 
-LASSO_EXPORT void lasso_wsf_profile_set_principal_offline(LassoWsfProfile *profile);
+G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_offline(LassoWsfProfile *profile);
 
 #ifdef __cplusplus
 }

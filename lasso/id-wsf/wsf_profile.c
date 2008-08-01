@@ -52,22 +52,6 @@
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/providerprivate.h>
 
-static gint lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
-		xmlDoc *doc, xmlSecKey *public_key);
-static gboolean lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile);
-static gboolean lasso_wsf_profile_has_x509_authentication(LassoWsfProfile *profile);
-static gint lasso_wsf_profile_verify_credential_signature(
-		LassoWsfProfile *profile, xmlDoc *doc, xmlNode *credential);
-static gint lasso_wsf_profile_add_credential_signature(LassoWsfProfile *profile,
-		xmlDoc *doc, xmlNode *credential, LassoSignatureMethod sign_method);
-static xmlSecKey* lasso_wsf_profile_get_public_key_from_credential(
-		LassoWsfProfile *profile, xmlNode *credential);
-static gint lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *doc);
-static gint lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
-		xmlDoc *doc, xmlNode *envelope_node, LassoSignatureMethod sign_method);
-static int lasso_wsf_profile_ensure_soap_credentials_signature(
-		LassoWsfProfile *profile, xmlDoc *doc, xmlNode *soap_envelope);
-
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
@@ -85,32 +69,140 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
+/*
+ * lasso_wsf_profile_get_fault:
+ * @profile: a #LassoWsfProfile
+ *
+ * Get the current fault present in profile private datas
+ */
+LassoSoapFault*
+lasso_wsf_profile_get_fault(LassoWsfProfile *profile)
+{
+	return profile->private_data->fault;
+}
+
+/**
+ * lasso_wsf_profile_comply_with_saml_authentication:
+ * @profile: a #LassoWsfProfile
+ *
+ * Returns: 0 if an assertion was found and a signature corresponding to the
+ * key given as a subject confirmation in the assertion is generated, an error
+ * code otherwise.
+ */
+static gint
+lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
+{
+	LassoSoapEnvelope *soap;
+	LassoSoapHeader *header;
+	LassoWsseSecurity *wsse_security;
+	LassoSamlAssertion *assertion;
+	LassoSession *session;
+	LassoDiscoDescription *description;
+	GList *credentialRefs;
+
+	wsse_security = lasso_wsse_security_new();
+	session = profile->session;
+	description = lasso_wsf_profile_get_description(profile);
+	/* Lookup in the session the credential ref from the description and
+         * add them to the SOAP header wsse:Security. */
+	/* FIXME: should we really add every credentials to the message ? */
+	credentialRefs = description->CredentialRef;
+	while (credentialRefs) {
+		char *ref = (char*)credentialRefs->data;
+		assertion = LASSO_SAML_ASSERTION(
+			lasso_session_get_assertion_by_id(session, ref));
+		if (LASSO_IS_SAML_ASSERTION(assertion)) {
+			g_list_add_gobject(wsse_security->any, assertion);
+		}
+		credentialRefs = g_list_next(credentialRefs);
+	}
+	soap = profile->soap_envelope_request;
+	header = soap->Header;
+	g_list_add_gobject(header->Other, wsse_security);
+	return 0;
+}
+
+/** 
+ * lasso_wsf_profile_comply_with_security_mechanism:
+ * @profile: a #LassoWsfProfile
+ *
+ * UNCOMPLETE.
+ *
+ * Returns: 0 if complyiing with the current security mechanism was
+ * successfull.
+ */
+static gint
+lasso_wsf_profile_comply_with_security_mechanism(LassoWsfProfile *profile)
+{
+	char *sec_mech_id;
+
+	g_return_val_if_invalid_param(WSF_PROFILE, profile, 
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	
+	sec_mech_id = profile->private_data->security_mech_id;
+	if (lasso_security_mech_id_is_saml_authentication(sec_mech_id)) {
+		return lasso_wsf_profile_comply_with_saml_authentication(profile);
+	}
+	if (sec_mech_id == NULL 
+		|| lasso_security_mech_id_is_null_authentication(sec_mech_id)) {
+		return 0;
+	}
+	return LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM;
+}
+
+static LassoSoapEnvelope*
+lasso_wsf_profile_build_soap_envelope_internal(const char *refToMessageId, const char *providerId)
+{
+	LassoSoapEnvelope *envelope;
+	LassoSoapHeader *header;
+	LassoSoapBody *body;
+	LassoSoapBindingCorrelation *correlation;
+	gchar *messageId, *timestamp;
+
+	/* Body */
+	body = lasso_soap_body_new();
+	body->id = lasso_build_unique_id(32);
+	envelope = lasso_soap_envelope_new(body);
+
+	/* Header */
+	header = lasso_soap_header_new();
+	envelope->Header = header;
+
+	/* Correlation */
+	messageId = lasso_build_unique_id(32);
+	timestamp = lasso_get_current_time();
+	correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
+	correlation->id = lasso_build_unique_id(32);
+	if (refToMessageId != NULL)
+		correlation->refToMessageID = g_strdup(refToMessageId);
+	header->Other = g_list_append(header->Other, correlation);
+
+	/* Provider */
+	if (providerId) {
+		LassoSoapBindingProvider *provider = lasso_soap_binding_provider_new(providerId);
+		provider->id = lasso_build_unique_id(32);
+		header->Other = g_list_append(header->Other, provider);
+	}
+
+	return envelope;
+}
+
+/*****************************************************************************/
+/* public methods                                                            */
+/*****************************************************************************/
+
 /**
  * lasso_wsf_profile_move_credentials:
  * @src: a #LassoWsfProfile containing the credentials
  * @dest: the #LassoWsfProfile where to add the credentials
  *
- * Move all credentials #xmlNode from src to dest. After this function
- * the #LassoWsfProfile src does not contain any credential.
+ * OBSOLETE: Do nothin.
  *
  * Returns: 0.
  */ 
 gint
 lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
 {
-	xmlNode *credential;
-	GList *iter;
-
-	iter = src->private_data->credentials;
-	while (iter) {
-		credential = (xmlNode *) iter->data;
-		iter->data = NULL;
-		lasso_wsf_profile_add_credential(dest, credential);
-		iter = iter->next;
-	}
-
-	g_release_list(src->private_data->credentials);
-
 	return 0;
 }
 
@@ -119,32 +211,14 @@ lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
  * @profile: a #LassoWsfProfile
  * @credential: an #xmlNode containing credential informations
  *
- * Add credential for use in a future ID-WSF request to the underlying
- * service.
+ * OBSOLETE: Do nothing.
  *
  * Returns: 0.
  */
 gint
 lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential)
 {
-	g_list_add_fast(profile->private_data->credentials, credential);
 	return 0;
-}
-
-/**
- * lasso_wsf_profile_set_public_key:
- * @profile: a #LassoWsfProfile
- * @public_key: a string containg an encoded public key.
- *
- * Setup a public key to validate credentials on received requests.
- */
-void
-lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_key)
-{
-	if (public_key) {
-		g_assign_string(profile->private_data->public_key, 
-				public_key);
-	}
 }
 
 /*
@@ -180,128 +254,6 @@ lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gcha
 	}
 
 	return NULL;
-}
-
-/*
- * lasso_wsf_profile_get_fault:
- * @profile: a #LassoWsfProfile
- *
- * Get the current fault present in profile private datas
- */
-LassoSoapFault*
-lasso_wsf_profile_get_fault(LassoWsfProfile *profile)
-{
-	return profile->private_data->fault;
-}
-
-/**
- * lasso_wsf_profile_has_saml_authentication:
- * @profile: a #LassoWsfProfile
- *
- * Checks if the current description supports any security mechanism using
- * SAML authentication.
- *
- * Returns: %TRUE if SAML assertion is supported by the current service
- * description as a means of authentication.
- */
-static gboolean
-lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile)
-{
-	GList *iter;
-	gchar *security_mech_id;
-
-	if (profile->private_data->description == NULL)
-		return FALSE;
-
-	iter = profile->private_data->description->SecurityMechID;
-	while (iter) {
-		security_mech_id = iter->data;
-		if (lasso_security_mech_id_is_saml_authentication(
-				security_mech_id)) {
-			return TRUE;
-		}
-		iter = g_list_next(iter);
-	}
-
-	return FALSE;
-}
-
-/**
- * lasso_security_mech_is_saml_authentication:
- * @security_mech_id: the URI of an authentication mechanism
- *
- * Returns: %TRUE if @security_mech_id is one of
- * urn:liberty:security:2003-08:NULL:SAML,
- * urn:liberty:security:2003-08:TLS:SAML or
- * urn:liberty:security:2003-08:ClientTLS:SAML. 
- */
-gboolean
-lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
-{
-	if (!security_mech_id)
-		return FALSE;
-
-	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0)
-		return TRUE;
-
-	return FALSE;
-}
-
-/**
- * lasso_wsf_profile_has_x509_authentication:
- * @profile: a #LassoWsfProfile
- *
- * Checks if the current description supports any security mechanism using
- * X509 authentication.
- *
- * Returns: %TRUE if X509 is supported by the current service description.
- */
-static gboolean
-lasso_wsf_profile_has_x509_authentication(LassoWsfProfile *profile)
-{
-	GList *iter;
-	gchar *security_mech_id;
-
-	if (profile->private_data->description == NULL)
-		return FALSE;
-
-	iter = profile->private_data->description->SecurityMechID;
-	while (iter) {
-		security_mech_id = iter->data;
-		if (strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_X509) == 0 ||
-				strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_X509) == 0 ||
-				strcmp(security_mech_id, LASSO_SECURITY_MECH_X509) == 0) {
-			return TRUE;
-		}
-		iter = g_list_next(iter);
-	}
-
-	return FALSE;
-}
-
-/** 
- * lasso_security_mech_is_x509_authentication:
- * @security_mech_id: the URI of an authentication mechanism
- *
- * Returns: %TRUE if @security_mech_id is one of
- * urn:liberty:security:2003-08:NULL:X509,
- * urn:liberty:security:2003-08:TLS:X509 or
- * urn:liberty:security:2003-08:ClientTLS:X509. 
- */
-gboolean
-lasso_security_mech_id_is_x509_authentication(const char *security_mech_id)
-{
-	if (strcmp(security_mech_id, 
-			LASSO_SECURITY_MECH_CLIENT_TLS_X509) == 0 ||
-			strcmp(security_mech_id, 
-					LASSO_SECURITY_MECH_TLS_X509) == 0 ||
-			strcmp(security_mech_id, 
-					LASSO_SECURITY_MECH_X509) == 0) {
-		return TRUE;
-	}
-	return FALSE;
 }
 
 /**
@@ -345,716 +297,114 @@ lasso_wsf_profile_set_description_from_offering(
 	return 0;
 }
 
+/**
+ * lasso_wsf_profile_set_security_mechanism:
+ * @profile: the #LassoWsfProfile object
+ * @securit_mech_id: a char* string representing the chosen security mech id.
+ *
+ * Set the security mechanism to use. Currently only SAML and NULL mechanism
+ * are supported for authentication. Transposrt is not handled by lasso so all
+ * are supported.
+ *
+ * List of supported mechanism ids:
+ * LASSO_SECURITY_MECH_NULL or "urn:liberty:security:2003-08:null:null"
+ * LASSO_SECURITY_MECH_SAML or "urn:liberty:security:2003-08:null:SAML"
+ * LASSO_SECURITY_MECH_TLS or "urn:liberty:security:2003-08:TLS:null"
+ * LASSO_SECURITY_MECH_TLS_SAML or "urn:liberty:security:2003-08:TLS:SAML"
+ * LASSO_SECURITY_MECH_CLIENT_TLS or "urn:liberty:security:2003-08:ClientTLS:null"
+ * LASSO_SECURITY_MECH_CLIENT_TLS_SAML or "urn:liberty:security:2003-08:ClientTLS:SAML"
+ *
+ * Returns: 0 if the security mechanism is supported by this #LassoWsfProfile
+ * object, an error code otherwise.
+ */
+gint
+lasso_wsf_profile_set_security_mechanism(LassoWsfProfile *profile,
+	char *security_mech_id)
+{
+	g_return_val_if_invalid_param(WSF_PROFILE, profile,
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	if (lasso_security_is_saml_authentication(security_mech_id)
+	    || lasso_security_is_null_authentication(security_mech_id)) {
+		g_assign_string(profile->private_data->security_mech_id, security_mech_id);
+	}
+	return LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM;
+}
+
+/**
+ * lasso_wsf_profile_get_security_mechanism:
+ * @profile: the #LassoWsfProfile object
+ *
+ * Returns: the current security mechanism id for this object.
+ */
+const char *
+lasso_wsf_profile_get_security_mechanism(LassoWsfProfile *profile)
+{
+	g_return_val_if_invalid_param(WSF_PROFILE, profile,
+		NULL);
+
+	return profile->private_data->security_mech_id;
+}
+
+/**
+ * lasso_wsf_profile_set_description:
+ * @profile: the #LassoWsfProfile
+ * @description: a #LassoDiscoDescription
+ *
+ * Set the currently registered #LassoDiscoDescription, that permits to locate
+ * the endpoint and the security mechanism to use for the next ID-WSF request.
+ */
 void
 lasso_wsf_profile_set_description(LassoWsfProfile *profile, LassoDiscoDescription *description)
 {
 	g_assign_gobject(profile->private_data->description, description);
 }
 
-const LassoDiscoDescription *
+/** 
+ * lasso_wsf_profile_get_description:
+ * @profile: a #LassoWsfProfile 
+ *
+ * Returns the currently registered #LassoDiscoDescription, that permits to
+ * locate the endpoint and the security mechanism to use for the next ID-WSF
+ * request.
+ *
+ * Returns: a #LassoDiscoDescriptio or NULL if none is present.
+ */
+LassoDiscoDescription *
 lasso_wsf_profile_get_description(LassoWsfProfile *profile)
 {
 	return profile->private_data->description;
 }
 
 /**
- * lasso_wsf_profile_verify_credential_signature:
- * @profile: a #LassoWsfProfile
- * @doc: an #xmlDoc containing the credential node
- * @credential: an #xmlNode representing the credential
+ * lasso_wsf_profile_build_soap_envelope:
+ * @refToMessageId: a char* string and the eventual MessageId of a SOAP request
+ * we are responding to.
+ * @providerId: a char* string and the eventual providerID of a web service
+ * provider we intend to send this soap message to.
  *
- * Verify that the credentials have really been by the provider present in
- * their Issuer property. To do this it lookup the provider public key in the
- * metadtatas loaded in the setupt #LassoServer object.  If the credential is
- * signed using a X509 certificate, verify this certificate using the CA
- * chain list of this provider.
+ * Build the a #LassoSoapEnvelope as a template for a future SOAP message
+ * containing the headers recommended by the ID-WSF 1.0 specification.
  *
- * Returns: 0 if credentials are valid,
- *  %LASSO_PROFILE_ERROR_MISSING_ISSUER if credential contains no Issuer
- *  attribute, %LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the Issuer provider is
- *  unknown from #LassoServer, %LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED if we
- *  cannot load the given CA chcert chain,
- *  %LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED if we cannot the public key of the
- *  provider, %LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED if the signature
- *  verification failed, and %LASSO_DS_ERROR_INVALID_SIGNATURE if the signature
- *  is invalid.
+ * Returns: a new #LassoSoapEnvelope if construction was successfull.
  */
-static gint
-lasso_wsf_profile_verify_credential_signature(
-		LassoWsfProfile *profile, xmlDoc *doc, xmlNode *credential)
-{
-	LassoProvider *lasso_provider = NULL;
-	xmlSecKeysMngr *keys_mngr = NULL;
-	xmlNode *x509data = NULL, *node = NULL;
-	xmlChar *id = NULL;
-	xmlAttr *id_attr = NULL;
-	xmlSecDSigCtx *dsigCtx = NULL;
-	xmlChar *issuer = NULL;
-	gint ret = 0;
-
-	/* 1. Retrieve provider id of credential signer, Issuer could be the right place */
-	issuer = xmlGetProp(credential, (xmlChar*)"Issuer");
-	if (issuer == NULL) {
-		return LASSO_PROFILE_ERROR_MISSING_ISSUER;
-	}
-
-	/* 2. Retrieve the provider object for this provider ID */
-	lasso_provider = lasso_server_get_provider(profile->server, (char*)issuer);
-	if (lasso_provider == NULL) {
-		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
-	}
-
-	/* 3. Add ID to the global ID attribute hash */
-	id_attr = xmlHasProp(credential, (xmlChar *)"AssertionID");
-	id = xmlGetProp(credential, (xmlChar *) "AssertionID");
-	xmlAddID(NULL, doc, id, id_attr);
-	xmlFree(id);
-
-	/* 4.1 Case of X509 signature type with a known provider */
-	x509data = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeX509Data, xmlSecDSigNs);
-	if (x509data != NULL && lasso_provider != NULL && lasso_provider->ca_cert_chain != NULL) {
-		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
-				lasso_provider->ca_cert_chain);
-		if (keys_mngr == NULL) {
-			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
-		}
-	} else if (x509data != NULL) {
-		return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
-	}
-
-	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
-
-	/* 4.2 Case of simple public key signature type */
-	if (keys_mngr == NULL) {
-		dsigCtx->signKey = NULL;
-		if (profile->private_data->public_key) {
-			dsigCtx->signKey = lasso_get_public_key_from_pem_file(
-					profile->private_data->public_key);
-		} else if (lasso_provider != NULL) {
-			xmlSecKey *pkey;
-			pkey = lasso_provider_get_public_key(lasso_provider);
-			if (pkey) {
-				dsigCtx->signKey = xmlSecKeyDuplicate(pkey);
-			}
-		} 
-		if (dsigCtx->signKey == NULL) {
-			ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-			goto exit;
-		}
-	}
-
-	node = xmlSecFindNode(credential, xmlSecNodeSignature, xmlSecDSigNs);
-	/* 5. Verify */
-	if (xmlSecDSigCtxVerify(dsigCtx, node) < 0) {
-		ret = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
-		goto exit;
-	}
-	/* 6. OK ? */
-	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
-		ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
-		goto exit;
-	}
-	/* Remove node only if everything worked */
-	if (node) {
-		xmlUnlinkNode(node);
-		xmlFreeNode(node);
-	}
-exit:
-	/* Clean */
-	if (keys_mngr)
-		xmlSecKeysMngrDestroy(keys_mngr);
-	if (dsigCtx)
-		xmlSecDSigCtxDestroy(dsigCtx);
-
-	return ret;
-}
-
-/**
- * lasso_wsf_profile_add_credential_signature:
- * @profile: a #LassoWsfProfile
- * @doc: an #xmlDoc containging the credential node
- * @credential: an #xmlNode representing the credentials
- * @sign_method: the signature method to use in signing the credentials, can be
- *  LASSO_SIGNATURE_METHOD_RSA_SHA1 or LASSO_SIGNATURE_METHOD_DSA_SHA1.
- *
- * Add an XMLSEC signature to a credential node.
- *
- * Returns: 0 if the signature was added, 
- *  %LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND if not signature template is
- *  present in the credential node, %LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED if
- *  we cannot load our private key, %LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED if
- *  we cannot load our certificate and %LASSO_DS_ERROR_SIGNATURE_FAILED if the
- *  signing failed.
- */
-static gint
-lasso_wsf_profile_add_credential_signature(LassoWsfProfile *profile,
-		xmlDoc *doc, xmlNode *credential, 
-		LassoSignatureMethod sign_method)
-{
-	xmlNode *signature = NULL, *sign_tmpl = NULL, 
-		*reference = NULL, *key_info = NULL;
-	char *uri = NULL;
-	xmlAttr *id_attr;
-	xmlSecDSigCtx *dsigCtx = NULL;
-	gint ret = 0;
-	gchar *assertionID = NULL;
-	gboolean with_x509 = FALSE;
-
-	with_x509 = profile->server->certificate != NULL && 
-			profile->server->certificate[0] != 0;
-	/* 1. Add signature template */
-	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
-		signature = xmlSecTmplSignatureCreate(NULL,
-				xmlSecTransformExclC14NId,
-				xmlSecTransformRsaSha1Id, NULL);
-	} else {
-		signature = xmlSecTmplSignatureCreate(NULL,
-				xmlSecTransformExclC14NId,
-				xmlSecTransformDsaSha1Id, NULL);
-	}
-	if (signature == NULL) {
-		ret = LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
-		goto exit;
-	} else {
-		if (xmlAddChild(credential, signature) !=
-				signature) {
-			ret = LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
-			goto exit;
-		}
-	}
-	/* 2. Find and create reference */
-	id_attr = xmlHasProp(credential, (xmlChar *)"AssertionID");
-	if (id_attr == NULL) {
-		ret = LASSO_WSF_PROFILE_ERROR_MISSING_ASSERTION_ID;
-		goto exit;
-	}
-	assertionID = xmlGetProp(credential, (xmlChar *) "AssertionID");
-	uri = g_strdup_printf("#%s", assertionID);
-	reference = xmlSecTmplSignatureAddReference(signature, 
-			xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
-	g_release_string(uri);
-	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
-	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
-	xmlAddID(NULL, doc, assertionID, id_attr);
-	xmlFree(assertionID);
-
-	/* 3. Add X509 info if server possess a certificate. XXX: Why ? */
-	if (with_x509) 
-	{
-		key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
-		xmlSecTmplKeyInfoAddX509Data(key_info);
-	}
-
-	/* 4. Create signature context and load a key in it */
-	dsigCtx = xmlSecDSigCtxCreate(NULL);
-	dsigCtx->signKey = xmlSecCryptoAppKeyLoad(profile->server->private_key,
-		xmlSecKeyDataFormatPem, NULL, NULL, NULL);
-	if (dsigCtx->signKey == NULL) {
-		ret = LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
-		goto exit;
-	}
-	/* 5. Complete the key with a certificate as needed, but don't break
-	 * on it. */
-	if (with_x509) {
-		/* Dont stop if we cannot load the certificate, just
-                 * remove the KeyInfo node */ 
-		if (xmlSecCryptoAppKeyCertLoad(dsigCtx->signKey, 
-				profile->server->certificate,
-					xmlSecKeyDataFormatPem) < 0) {
-			message(G_LOG_LEVEL_WARNING, "Could not load the certificate %s", profile->server->certificate);
-			ret = LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
-			g_unlink_and_release_node(key_info);
-		}
-	}
-
-	/* 6. Sign */
-	if (xmlSecDSigCtxSign(dsigCtx, signature) < 0) {
-		ret = LASSO_DS_ERROR_SIGNATURE_FAILED;
-		goto exit;
-	}
-	signature = NULL; // Steal the reference
-exit:
-	/* Destroy the signature when error exit */
-	g_unlink_and_release_node(signature);
-	/* Clean dsigCtx */
-	if (dsigCtx)
-		xmlSecDSigCtxDestroy(dsigCtx);
-	
-	return ret;
-}
-
-/**
- * lasso_wsf_profile_verify_saml_authentication:
- * @profile: a #LassoWsfProfile pointer
- * @doc: an #xmlDoc pointer
- *
- * Verify the the signature on the assertion given in the wsse:Security header with
- * respect to the provider set as Issuer of this Assertion.
- *
- * Returns: 0 if saml authentication is valid,
- *  %LASSO_PROFILE_ERROR_MISSING_ISSUER if credential contains no Issuer
- *  attribute, %LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the Issuer provider is
- *  unknown from #LassoServer, %LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED if we
- *  cannot load the given CA chcert chain,
- *  %LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED if we cannot the public key of the
- *  provider, %LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED if the signature
- *  verification failed, and %LASSO_DS_ERROR_INVALID_SIGNATURE if the signature
- *  is invalid.
- */
-static gint
-lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *doc)
-{
-	xmlXPathContext *xpathCtx = NULL;
-	xmlXPathObject *xpathObj;
-	xmlNode *credential;
-	int node_i;
-	int res = 0;
-
-	/* 1. Find assertions, there must be at least one!! */
-	xpathCtx = xmlXPathNewContext(doc);
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"wsse", (xmlChar*)LASSO_WSSE_HREF);
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"saml", (xmlChar*)LASSO_SAML_ASSERTION_HREF);
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//wsse:Security/saml:Assertion", xpathCtx);
-	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
-		res = LASSO_PROFILE_ERROR_MISSING_ASSERTION;
-		goto exit;
-	}
-	/* 2. Validate every assertion */
-	for (node_i = 0; node_i < xpathObj->nodesetval->nodeNr; ++node_i) {
-		credential = xpathObj->nodesetval->nodeTab[node_i];
-		res = lasso_wsf_profile_verify_credential_signature(profile, doc, credential);
-		if (res < 0)
-			goto exit;
-	}
-	/* 3. Validate X509 authent */
-	res = lasso_wsf_profile_verify_x509_authentication(profile, doc, NULL);
-exit:
-	if (xpathCtx)
-		xmlXPathFreeContext(xpathCtx);
-	if (xpathObj)
-		xmlXPathFreeObject(xpathObj);
-
-	return res;
-}
-
-/**
- * lasso_wsf_profile_add_soap_signature:
- * @profile: a #LassoWsfProfile pointer
- * @doc: a #xmlDoc pointer for the containing document
- * @envelope_node: a #xmlNode pointer for a SOAP envelope
- * @sign_method: signature type, RSA or DSA
- * 
- * Add a signature to the wsse:Security header of the SOAP message
- *
- * Returns: 0 if the message was well formed and the signing is ok,
- */
-static gint
-lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
-		xmlDoc *doc, xmlNode *envelope_node, LassoSignatureMethod sign_method)
-{
-	xmlNode *signature = NULL, *sign_tmpl, *reference, *key_info, *t;
-	xmlNode *header = NULL, *provider = NULL, *correlation = NULL, *security = NULL;
-	xmlNode *body = NULL;
-	xmlSecDSigCtx *dsigCtx = NULL;
-	xmlChar *id = NULL;
-	char *uri = NULL;
-	xmlAttr *id_attr = NULL;
-
-	/* 1. Find needed XML nodes */
-	header = xmlSecFindChild(envelope_node, (xmlChar*)"Header", (xmlChar*)LASSO_SOAP_ENV_HREF);
-	body = xmlSecFindChild(envelope_node, (xmlChar*)"Body", (xmlChar*)LASSO_SOAP_ENV_HREF);
-	if (header == NULL)
-		return LASSO_SOAP_ERROR_MISSING_HEADER;
-
-	if (body == NULL)
-		return LASSO_SOAP_ERROR_MISSING_BODY;
-
-	correlation = xmlSecFindChild(header, (xmlChar*)"Correlation", (xmlChar*)LASSO_SOAP_BINDING_HREF);
-	provider = xmlSecFindChild(header, (xmlChar*)"Provider", (xmlChar*)LASSO_SOAP_BINDING_HREF);
-	security = xmlSecFindChild(header, (xmlChar*)"Provider", (xmlChar*)LASSO_WSSE_HREF);
-	if (correlation == NULL)
-		return LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION;
-	if (security == NULL)
-		return LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY;
-
-	/* 2. Add signature template to the security header */
-	switch (sign_method) {
-		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
-			signature = xmlSecTmplSignatureCreate(NULL,
-					xmlSecTransformExclC14NId,
-					xmlSecTransformRsaSha1Id, NULL);
-			break;
-		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
-			signature = xmlSecTmplSignatureCreate(NULL,
-					xmlSecTransformExclC14NId,
-					xmlSecTransformDsaSha1Id, NULL);
-			break;
-		default:
-			return LASSO_DS_ERROR_INVALID_SIGALG;
-	}
-	xmlAddChild(security, signature);
-
-	/* 3. Add Correlation reference */
-	id = xmlGetProp(correlation, (xmlChar *) "id");
-	uri = g_strdup_printf("#%s", id);
-	reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
-						    NULL, (xmlChar *)uri, NULL);
-	xmlFree(uri);
-	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
-	id_attr = xmlHasProp(correlation, (xmlChar *)"id");
-	xmlAddID(NULL, doc, (xmlChar *)id, id_attr);
-	xmlFree(id);
-
-	/* 4. Add Body reference */
-	id = xmlGetProp(body, (xmlChar *) "id");
-	uri = g_strdup_printf("#%s", id);
-	reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
-						    NULL, (xmlChar *)uri, NULL);
-	g_free(uri);
-	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
-	id_attr = xmlHasProp(body, (xmlChar *)"id");
-	xmlAddID(NULL, doc, (xmlChar *)id, id_attr);
-	xmlFree(id);
-
-	/* 5. Add Provider reference */
-	if (provider) {
-		id = xmlGetProp(provider, (xmlChar *) "id");
-		uri = g_strdup_printf("#%s", id);
-		reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
-							    NULL, (xmlChar*)uri, NULL);
-		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
-		id_attr = xmlHasProp(provider, (xmlChar *)"id");
-		xmlAddID(NULL, doc, id, id_attr);
-		xmlFree(id);
-	}
-
-	/* FIXME: X509 authentication needs X509 signature type */
-	if (profile->server->certificate != NULL && profile->server->certificate[0] != 0) {
-		key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
-		xmlSecTmplKeyInfoAddX509Data(key_info);
-	}
-
-	/* Sign SOAP message */
-	sign_tmpl = signature;
-
-	dsigCtx = xmlSecDSigCtxCreate(NULL);
-	dsigCtx->signKey = xmlSecCryptoAppKeyLoad(profile->server->private_key,
-		xmlSecKeyDataFormatPem, NULL, NULL, NULL);
-	if (dsigCtx->signKey == NULL) {
-		xmlSecDSigCtxDestroy(dsigCtx);
-		return LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
-	}
-	if (profile->server->certificate != NULL && profile->server->certificate[0] != 0) {
-		if (xmlSecCryptoAppKeyCertLoad(dsigCtx->signKey, profile->server->certificate,
-					xmlSecKeyDataFormatPem) < 0) {
-			xmlSecDSigCtxDestroy(dsigCtx);
-			return LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
-		}
-	}
-	if (xmlSecDSigCtxSign(dsigCtx, sign_tmpl) < 0) {
-		xmlSecDSigCtxDestroy(dsigCtx);
-		return LASSO_DS_ERROR_SIGNATURE_FAILED;
-	}
-	xmlSecDSigCtxDestroy(dsigCtx);
-
-	return 0;
-}
-
-gint
-lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
-					     xmlDoc *doc, xmlSecKey *public_key)
-{
-	LassoProvider *lasso_provider = NULL;
-
-	xmlNode *provider = NULL, *correlation = NULL, *body = NULL;
-	xmlNode *x509data = NULL, *node;
-	xmlChar *id;
-	xmlAttr *id_attr;
-
-	xmlSecKeysMngr *keys_mngr = NULL;
-	xmlSecDSigCtx *dsigCtx;
-
-	xmlXPathContext *xpathCtx = NULL;
-	xmlXPathObject *xpathObj;
-
-	xpathCtx = xmlXPathNewContext(doc);
-
-	/* Correlation */
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"sb", (xmlChar*)LASSO_SOAP_BINDING_HREF);
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//sb:Correlation", xpathCtx);
-	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		correlation = xpathObj->nodesetval->nodeTab[0];
-	}
-	if (correlation == NULL) {
-		xmlXPathFreeObject(xpathObj);
-		xmlXPathFreeContext(xpathCtx);
-		return LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION;
-	}
-
-	id_attr = xmlHasProp(correlation, (xmlChar *)"id");
-	id = xmlGetProp(correlation, (xmlChar *) "id");
-	xmlAddID(NULL, doc, id, id_attr);
-	xmlFree(id);
-
-	xmlXPathFreeObject(xpathObj);
-	xpathObj = NULL;
-
-	/* Body */
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body", xpathCtx);
-	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		body = xpathObj->nodesetval->nodeTab[0];
-	}
-	if (body == NULL) {
-		xmlXPathFreeObject(xpathObj);
-		xmlXPathFreeContext(xpathCtx);
-		return LASSO_SOAP_ERROR_MISSING_BODY;
-	}
-
-	id_attr = xmlHasProp(body, (xmlChar *)"id");
-	id = xmlGetProp(body, (xmlChar *) "id");
-	xmlAddID(NULL, doc, id, id_attr);
-	xmlFree(id);
-
-	xmlXPathFreeObject(xpathObj);
-	xpathObj = NULL;
-
-	/* Provider */
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"sb", (xmlChar*)LASSO_SOAP_BINDING_HREF);
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//sb:Provider", xpathCtx);
-	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		provider = xpathObj->nodesetval->nodeTab[0];
-	}
-	if (provider) {
-		char *providerID;
-		id_attr = xmlHasProp(provider, (xmlChar *)"id");
-		id = xmlGetProp(provider, (xmlChar *) "id");
-		xmlAddID(NULL, doc, id, id_attr);
-		xmlFree(id);
-
-		providerID = (char *) xmlGetProp(provider, (xmlChar *) "providerID");
-		lasso_provider = lasso_server_get_provider(profile->server, providerID);
-		xmlFree(providerID);
-	}
-
-	xmlXPathFreeObject(xpathObj);
-	xpathObj = NULL;
-
-	/* Verify signature */
-	node = NULL;
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ds", (xmlChar*)LASSO_DS_HREF);
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Signature", xpathCtx);
-	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		node = xpathObj->nodesetval->nodeTab[0];
-	}
-	if (node == NULL) {
-		xmlXPathFreeContext(xpathCtx);
-		xmlXPathFreeObject(xpathObj);
-		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
-	}
-
-	/* Case of X509 signature type */
-	x509data = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeX509Data, xmlSecDSigNs);
-	if (x509data != NULL && lasso_provider != NULL && lasso_provider->ca_cert_chain != NULL) {
-		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
-				lasso_provider->ca_cert_chain);
-		if (keys_mngr == NULL) {
-			xmlXPathFreeObject(xpathObj);
-			xmlXPathFreeContext(xpathCtx);
-			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
-		}
-	} else if (x509data != NULL) {
-		xmlXPathFreeObject(xpathObj);
-		xmlXPathFreeContext(xpathCtx);
-		return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
-	}
-
-	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
-
-	/* Case of simple public key signature type */
-	if (keys_mngr == NULL) {
-		if (lasso_provider != NULL) {
-			dsigCtx->signKey = xmlSecKeyDuplicate(
-					lasso_provider_get_public_key(lasso_provider));
-		} else if (public_key) {
-			dsigCtx->signKey = xmlSecKeyDuplicate(public_key);
-		}
-		if (dsigCtx->signKey == NULL) {
-			xmlSecDSigCtxDestroy(dsigCtx);
-			xmlXPathFreeObject(xpathObj);
-			xmlXPathFreeContext(xpathCtx);
-			return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-		}
-	}
-
-	if (xmlSecDSigCtxVerify(dsigCtx, node) < 0) {
-		xmlSecDSigCtxDestroy(dsigCtx);
-		if (keys_mngr)
-			xmlSecKeysMngrDestroy(keys_mngr);
-		xmlXPathFreeObject(xpathObj);
-		xmlXPathFreeContext(xpathCtx);
-		return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
-	}
-
-	xmlXPathFreeObject(xpathObj);
-	xmlXPathFreeContext(xpathCtx);
-
-	if (keys_mngr)
-		xmlSecKeysMngrDestroy(keys_mngr);
-
-	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
-		xmlSecDSigCtxDestroy(dsigCtx);
-		return LASSO_DS_ERROR_INVALID_SIGNATURE;
-	}
-
-	return 0;
-}
-
 LassoSoapEnvelope*
 lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *providerId)
 {
-	LassoSoapEnvelope *envelope;
-	LassoSoapHeader *header;
-	LassoSoapBody *body;
-	LassoSoapBindingCorrelation *correlation;
-	gchar *messageId, *timestamp;
-
-	/* Body */
-	body = lasso_soap_body_new();
-	body->id = lasso_build_unique_id(32);
-	envelope = lasso_soap_envelope_new(body);
-
-	/* Header */
-	header = lasso_soap_header_new();
-	envelope->Header = header;
-
-	/* Correlation */
-	messageId = lasso_build_unique_id(32);
-	timestamp = lasso_get_current_time();
-	correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
-	correlation->id = lasso_build_unique_id(32);
-	if (refToMessageId != NULL)
-		correlation->refToMessageID = g_strdup(refToMessageId);
-	header->Other = g_list_append(header->Other, correlation);
-
-	/* Provider */
-	if (providerId) {
-		LassoSoapBindingProvider *provider = lasso_soap_binding_provider_new(providerId);
-		provider->id = lasso_build_unique_id(32);
-		header->Other = g_list_append(header->Other, provider);
-	}
-
-	return envelope;
+	return lasso_wsf_profile_build_soap_envelope_internal(refToMessageId, providerId);
 }
 
-LassoDsKeyInfo*
-lasso_wsf_profile_get_key_info_node(LassoWsfProfile *profile, const gchar *providerID)
-{
-	LassoDsKeyInfo *key_info = NULL;
-	LassoDsRsaKeyValue *rsa_key_value = NULL;
-	LassoDsKeyValue *key_value = NULL;
-	LassoProvider *provider = NULL;
-	xmlSecKeyInfoCtx *ctx = NULL;
-	xmlSecKey *public_key = NULL;
-	xmlDoc *doc = NULL;
-	xmlNode *key_info_node = NULL;
-	xmlNode *xmlnode = NULL;
-	xmlXPathContext *xpathCtx = NULL;
-	xmlXPathObject *xpathObj = NULL;
-
-	g_return_val_if_fail(providerID != NULL, NULL);
-
-	provider = lasso_server_get_provider(profile->server, providerID);
-	if (provider == NULL) {
-		return NULL;
-	}
-
-	public_key = lasso_provider_get_public_key(provider);
-	if (public_key == NULL) {
-		return NULL;
-	}
-
-	ctx = xmlSecKeyInfoCtxCreate(NULL);
-	xmlSecKeyInfoCtxInitialize(ctx, NULL);
-	ctx->mode = xmlSecKeyInfoModeWrite;
-	ctx->keyReq.keyType = xmlSecKeyDataTypePublic;
-
-	doc = xmlSecCreateTree((xmlChar*)"KeyInfo",
-			(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
-	key_info_node = xmlDocGetRootElement(doc);
-	xmlSecAddChild(key_info_node, (xmlChar*)"KeyValue",
-			(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
-
-	xmlSecKeyInfoNodeWrite(key_info_node, public_key, ctx);
-
-	xpathCtx = xmlXPathNewContext(doc);
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ds",
-			(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
-
-	rsa_key_value = lasso_ds_rsa_key_value_new();
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Modulus", xpathCtx);
-	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		xmlnode = xpathObj->nodesetval->nodeTab[0];
-		rsa_key_value->Modulus = (gchar *) xmlNodeGetContent(xmlnode);
-	}
-	xmlXPathFreeObject(xpathObj);
-
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Exponent", xpathCtx);
-	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		xmlnode = xpathObj->nodesetval->nodeTab[0];
-		rsa_key_value->Exponent = (gchar *) xmlNodeGetContent(xmlnode);
-	}
-	xmlXPathFreeObject(xpathObj);
-
-	key_value = lasso_ds_key_value_new();
-	key_value->RSAKeyValue = rsa_key_value;
-	key_info = lasso_ds_key_info_new();
-	key_info->KeyValue = key_value;
-
-	xmlXPathFreeContext(xpathCtx);
-	xmlFreeDoc(doc);
-
-	return key_info;
-}
-
-/*****************************************************************************/
-/* public methods                                                            */
-/*****************************************************************************/
 
 /**
  * lasso_wsf_profile_is_principal_online():
  * @profile: a #LassoWsfProfile
  *
- * Check if the principal is set to be online.
+ * OBSOLETE: do nothing.
  *
+ * Returns: FALSE.
  **/
 gboolean
 lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile)
 {
-	LassoSoapHeader *header;
-	LassoSoapBindingProcessingContext *processing_context = NULL;
-	GList *iter;
-
-	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request), FALSE);
-
-	header = profile->soap_envelope_request->Header;
-	iter = header->Other;
-	while (iter) {
-		if (LASSO_IS_SOAP_BINDING_PROCESSING_CONTEXT(iter->data) == TRUE) {
-			processing_context = iter->data;
-			break;
-		}
-		iter = g_list_next(iter);
-	}
-	if (!processing_context)
-		return FALSE;
-	if (!processing_context->content)
-		return FALSE;
-
-	if (strcmp(processing_context->content,
-		   LASSO_SOAP_BINDING_PROCESS_CONTEXT_PRINCIPAL_ONLINE) == 0)
-		return TRUE;
-
 	return FALSE;
 }
 
@@ -1063,49 +413,24 @@ lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile)
  * @profile: a #LassoWsfProfile
  * @status : a char* representing status of principal.
  *
- * Set the status of the principal.
+ * OBSOLETE: do nothing.
  *
  **/
 void
 lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile, const char *status)
 {
-	LassoSoapHeader *header;
-	LassoSoapBindingProcessingContext *processing_context = NULL;
-	GList *iter;
-
-	g_return_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request));
-
-	header = profile->soap_envelope_request->Header;
-	iter = header->Other;
-	while (iter) {
-		if (LASSO_IS_SOAP_BINDING_PROCESSING_CONTEXT(iter->data)) {
-			processing_context = iter->data;
-			break;
-		}
-		iter = g_list_next(iter);
-	}
-	if (!processing_context) {
-		processing_context = LASSO_SOAP_BINDING_PROCESSING_CONTEXT(
-			lasso_soap_binding_processing_context_new());
-		header->Other = g_list_append(header->Other, processing_context);
-	}
-	if (processing_context->content)
-		g_free(processing_context->content);
-	processing_context->content = g_strdup(status);		
 }
 
 /**
  * lasso_wsf_profile_set_principal_online():
  * @profile: a #LassoWsfProfile
  *
- * Set the principal status as offline.
+ * OBSOLETE: do nothing.
  *
  **/
 void
 lasso_wsf_profile_set_principal_online(LassoWsfProfile *profile)
 {
-	lasso_wsf_profile_set_principal_status(
-		profile, LASSO_SOAP_BINDING_PROCESS_CONTEXT_PRINCIPAL_ONLINE);
 }
 
 /**
@@ -1118,8 +443,6 @@ lasso_wsf_profile_set_principal_online(LassoWsfProfile *profile)
 void
 lasso_wsf_profile_set_principal_offline(LassoWsfProfile *profile)
 {
-	lasso_wsf_profile_set_principal_status(
-		profile, LASSO_SOAP_BINDING_PROCESS_CONTEXT_PRINCIPAL_OFFLINE);
 }
 
 /**
@@ -1236,23 +559,45 @@ lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile, const gchar  *
 	return 0;
 }
 
-
-
+/**
+ * lasso_wsf_profile_init_soap_request:
+ * @profile: a #LassoWsfProfile to initialize for a SOAP request 
+ * @request: a #LassoNode object containing the body for the SOAP request, can be NULL.
+ *
+ * Build the SOAP envelope for a request to and ID-WSF 1.0 web service and set
+ * the body of the request to request. The reference to request is not stolen i.e
+ * the ref count of request is increased by one after this call.
+ *
+ * Retun: 0 if initialization was successfull.
+ */
 gint
 lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request)
 {
 	LassoSoapEnvelope *envelope;
+	char *providerID = NULL;
 
-	envelope = lasso_wsf_profile_build_soap_envelope(NULL,
-		LASSO_PROVIDER(profile->server)->ProviderID);
-	LASSO_WSF_PROFILE(profile)->soap_envelope_request = envelope;
+	g_return_val_if_invalid_param(WSF_PROFILE, profile,
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	if (profile->server) {
+		providerID = profile->server->parent.ProviderID;
+	}
+	envelope = lasso_wsf_profile_build_soap_envelope_internal(NULL,providerID);
+	profile->soap_envelope_request = envelope;
 	envelope->Body->any = g_list_append(envelope->Body->any, request);
-
-	return 0;
+	profile->request = request;
+	return lasso_wsf_profile_comply_with_security_mechanism(profile);
 }
 
-/** TODO:
- * 	Completely review security mechanisms
+/** 
+ * lasso_wsf_profile_build_soap_request_msg:
+ * @profile: the #LassoWsfProfile object
+ *
+ * Create the char* string containing XML document for the SOAP ID-WSF request
+ * and eventually sign with the local public depending on the security
+ * mechanism requested.
+ *
+ * Returns: 0 if construction is successfull.
  */
 gint
 lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
@@ -1276,73 +621,11 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 		LASSO_SOAP_ERROR_MISSING_ENVELOPE);
 
 	envelope = profile->soap_envelope_request;
-
-	/* FIXME: find a better way to add needed security element */
-	if (lasso_wsf_profile_has_saml_authentication(profile) == TRUE ||
-			lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
-		security = lasso_wsse_security_new();
-		header = envelope->Header;
-		header->Other = g_list_append(header->Other, security);
-	}
-
-	/* Apply wsf authentication */
 	doc = xmlNewDoc((xmlChar*)"1.0");
 	envelope_node = lasso_node_get_xmlNode(LASSO_NODE(envelope), FALSE);
 	xmlDocSetRootElement(doc, envelope_node);
-
-	if (lasso_wsf_profile_has_saml_authentication(profile) == TRUE) {
-		if (profile->private_data->credentials) {
-			xpathCtx = xmlXPathNewContext(doc);
-			
-			xmlXPathRegisterNs(xpathCtx, (xmlChar*)"wsse", (xmlChar*)LASSO_WSSE_HREF);
-			xpathObj = xmlXPathEvalExpression((xmlChar*)"//wsse:Security", xpathCtx);
-
-			if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-				security_xmlNode = xpathObj->nodesetval->nodeTab[0];
-				iter = profile->private_data->credentials;
-				
-				/* FIXME: not sure it's the proper way to avoid ns error */
-				xmlNewNs(envelope_node,
-						(xmlChar*)LASSO_SAML_ASSERTION_HREF,
-						(xmlChar*)LASSO_SAML_ASSERTION_PREFIX);
-				xmlNewNs(envelope_node,
-						(xmlChar*)LASSO_DS_HREF,
-						(xmlChar*)LASSO_DS_PREFIX);
-				
-				while (iter) {
-					credential = (xmlNode *) iter->data;
-					credential = xmlAddChild(security_xmlNode, credential);
-					iter = iter->next;
-				}
-				/* xml doc has xml node credentials, so remove profile
-				   credential list */
-				g_list_free(profile->private_data->credentials);
-			}
-
-			xmlXPathFreeContext(xpathCtx);
-			xmlXPathFreeObject(xpathObj);
-			xpathCtx = NULL;
-			xpathObj = NULL;
-		}
-
-		/* FIXME: do we need to sign if SAML authentication or X509 authentication ? */
-		ret = lasso_wsf_profile_add_soap_signature(profile, doc, envelope_node,
-							   LASSO_SIGNATURE_METHOD_RSA_SHA1);
-		if (ret != 0) {
-			xmlFreeDoc(doc);
-			return ret;
-		}
-	}
-
-	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
-		ret = lasso_wsf_profile_add_soap_signature(profile, doc, envelope_node,
-							   LASSO_SIGNATURE_METHOD_RSA_SHA1);
-		if (ret != 0) {
-			xmlFreeDoc(doc);
-			return ret;
-		}
-	}
-
+	/* Sign request if necessary */
+	// lasso_wsf_profile_sign_request(profile, doc)
 	/* Dump soap request */
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
@@ -1356,77 +639,34 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	return 0;
 }
 
-static int
-lasso_wsf_profile_ensure_soap_credentials_signature(LassoWsfProfile *profile,
-		xmlDoc *doc, xmlNode *soap_envelope)
-{
-	xmlXPathContext *xpathCtx = NULL;
-	xmlXPathObject *xpathObj;
-	int i;
-
-	xpathCtx = xmlXPathNewContext(doc);
-
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"wsse", (xmlChar*)LASSO_WSSE_HREF);
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"saml", (xmlChar*)LASSO_SAML_ASSERTION_HREF);
-
-	/* FIXME: should find credential from //wsse:Security/saml:Assertion instead.*/
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//saml:Assertion", xpathCtx);
-	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		for (i = 0; i < xpathObj->nodesetval->nodeNr; i++) {
-			lasso_wsf_profile_add_credential_signature(profile, doc,
-				xpathObj->nodesetval->nodeTab[i], LASSO_SIGNATURE_METHOD_RSA_SHA1);
-		}
-	}
-
-	xmlXPathFreeContext(xpathCtx);
-	xmlXPathFreeObject(xpathObj);
-
-	return 0;
-}
-
+/** 
+ * lasso_wsf_profile_build_soap_response_msg:
+ * @profile: the #LassoWsfProfile object
+ *
+ * Create the char* string containing XML document for the SOAP ID-WSF
+ * response.
+ *
+ * Returns: 0 if construction is successfull.
+ */
 int
 lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 {
 	LassoSoapEnvelope *envelope;
 	LassoSoapHeader *header;
 	LassoWsseSecurity *security;
-
 	xmlNode *soap_envelope;
-
 	xmlDoc *doc;
-
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
 
-	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_invalid_param(WSF_PROFILE, profile, 
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	/* FIXME: find a better way to add needed security element */
 	envelope = profile->soap_envelope_response;
-	if (lasso_wsf_profile_has_saml_authentication(profile) == TRUE ||
-			lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
-		security = lasso_wsse_security_new();
-		header = envelope->Header;
-		header->Other = g_list_append(header->Other, security);
-	}
-
-	/* Apply wsf authentication */
 	doc = xmlNewDoc((xmlChar*)"1.0");
 	soap_envelope = lasso_node_get_xmlNode(LASSO_NODE(envelope), TRUE);
 	xmlDocSetRootElement(doc, soap_envelope);
-
-	/* SAML authentication, if credentials in response, verify they are signed */
-	lasso_wsf_profile_ensure_soap_credentials_signature(profile, doc, soap_envelope);
-
-	/* X509 authentication */
-	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
-		int res = lasso_wsf_profile_add_soap_signature(profile, doc, soap_envelope,
-							       LASSO_SIGNATURE_METHOD_RSA_SHA1);
-		if (res != 0) {
-			xmlFreeDoc(doc);
-			return res;
-		}
-	}
-
+	/* FIXME: does we need signature ? */
 	/* Dump soap response */
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
@@ -1451,55 +691,12 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	gchar *messageId;
 	int res = 0;
 	xmlDoc *doc;
+	GList *iter = NULL;
 
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	si = lasso_server_get_service(profile->server, (char *) service_type);
-
-	if (security_mech_id == NULL) {
-		if (si) {
-			profile->private_data->description = LASSO_DISCO_DESCRIPTION(
-				si->Description->data);
-		} else {
-			profile->private_data->description = NULL;
-		}
-	} else {
-		if (si == NULL) {
-			return LASSO_PROFILE_ERROR_MISSING_SERVICE_INSTANCE;
-		} else {
-			lasso_wsf_profile_get_description_auto(si, security_mech_id);	
-		}
-	}
-
 	doc = lasso_xml_parse_memory(message, strlen(message));
-
-	/* Verify authentication mecanisms */
-	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
-		res = lasso_wsf_profile_verify_x509_authentication(profile, doc, NULL);
-	} else if (lasso_wsf_profile_has_saml_authentication(profile) == TRUE) {
-		res = lasso_wsf_profile_verify_saml_authentication(profile, doc);
-	}
-
-	/* FIXME: Return a soap fault if authentication verification failed ? */
-	if (res > 0) {
-		fault = lasso_soap_fault_new();
-		fault->faultstring = g_strdup("Invalid signature");
-	} else if (res < 0) {
-		xmlFreeDoc(doc);
-		return res;
-	}
-
-	/* FIXME: Remove Signature element if exists, it seg fault when a call to
-			  lasso_node_new_from_xmlNode() */
-	{
-		xmlNode *xmlnode = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeSignature,
-			xmlSecDSigNs);
-		if (xmlnode) {
-			xmlUnlinkNode(xmlnode);
-			xmlFreeNode(xmlnode);
-		}
-	}
 
 	/* Get soap request and his message id */
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
@@ -1507,34 +704,35 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	profile->request = LASSO_NODE(envelope->Body->any->data);
 
 	/* Get the correlation header */
-        {
-		GList *iter = envelope->Header->Other;
-		while (iter && ! LASSO_IS_SOAP_BINDING_CORRELATION(iter->data)) {
-			iter = iter->next;
-		}
-		if (iter) {
-			correlation = LASSO_SOAP_BINDING_CORRELATION(iter->data);
-		} 
+	iter = envelope->Header->Other;
+	while (iter && ! LASSO_IS_SOAP_BINDING_CORRELATION(iter->data)) {
+		iter = iter->next;
 	}
+	if (iter) {
+		correlation = LASSO_SOAP_BINDING_CORRELATION(iter->data);
+	} 
 	if (correlation == NULL || correlation->messageID == NULL) {
 		return LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION;
 	}
 	messageId = correlation->messageID;
 
-	/* Set soap response */
-	envelope = lasso_wsf_profile_build_soap_envelope(messageId,
-		LASSO_PROVIDER(profile->server)->ProviderID);
-	LASSO_WSF_PROFILE(profile)->soap_envelope_response = envelope;
-
-	/* If fault built at this level (X509 authentication error ?),
-	   then save it in soap response */
-	if (fault) {
-		envelope->Body->any = g_list_append(envelope->Body->any, fault);
-		/* FIXME: Need to store it in private data's profile ? */
-		profile->private_data->fault = fault;
+	/* Comply with security mechanism */
+	if (security_mech_id == NULL 
+	    || lasso_security_mech_id_is_null_authentication(security_mech_id)) {
+		res = 0;
+	} else {
+		/** FIXME: add security mechanisms */
+		res = LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM;
+		goto exit;
 	}
 
-	xmlFreeDoc(doc);
+	/* Set soap response */
+	envelope = lasso_wsf_profile_build_soap_envelope_internal(messageId,
+		LASSO_PROVIDER(profile->server)->ProviderID);
+	LASSO_WSF_PROFILE(profile)->soap_envelope_response = envelope;
+exit:
+	if (doc)
+		xmlFreeDoc(doc);
 
 	return res;
 }
@@ -1593,21 +791,17 @@ exit:
 	return ret;
 }
 
+/**
+ * lasso_wsf_profile_set_provider_soap_request:
+ *
+ * OBSOLETE: do nothing.
+ *
+ * Returns: NULL
+ */
 LassoSoapBindingProvider *lasso_wsf_profile_set_provider_soap_request(LassoWsfProfile *profile,
 	const char *providerId)
 {
-	LassoSoapBindingProvider *provider;
-	LassoSoapHeader *header;
-
-	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), NULL);
-	g_return_val_if_fail(providerId != NULL, NULL);
-	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request), NULL);
-
-	header = profile->soap_envelope_request->Header;
-	provider = lasso_soap_binding_provider_new(providerId);
-	header->Other = g_list_append(header->Other, provider);
-
-	return provider;
+	return NULL;
 }
 
 /*****************************************************************************/
@@ -1694,14 +888,68 @@ lasso_wsf_profile_get_type()
 	return this_type;
 }
 
+/** 
+ * lasso_wsf_profile_init:
+ * @profile: the #LassoWsfProfile to initialize
+ * @server: a #LassoServer object to resolve provider IDs.
+ * @offering: a #LassoDiscoResourceOffering for the 
+ * targetted web service.
+ *
+ * Initialize a #LassoWsfProfile in order to handle or send
+ * request to, an ID-WSF web service.
+ *
+ * Return: 0 if initialization was successfull.
+ */
+gint
+lasso_wsf_profile_init(LassoWsfProfile *profile, 
+		LassoServer *server, 
+		LassoDiscoResourceOffering *offering)
+{
+	g_return_val_if_invalid_param(WSF_PROFILE, profile, 
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	/* FIXME: is a NULL server authorized ? */
+	g_assign_gobject(profile->server, server);
+	/* FIXME: is a NULL oferring authorized ? */
+	g_assign_gobject(offering, profile->private_data->offering);
+
+	return 0;
+}
+
+
+/**
+ * lasso_wsf_profile_new:
+ * @server: a #LassoServer object to lookup remote provider informations
+ *
+ * Create a new #WsfProfile with the given #LassoServer object.
+ *
+ * Return: a new #LassoWsfProfile if creation and initialization were
+ * successfull, NULL otherwise.
+ */
 LassoWsfProfile*
 lasso_wsf_profile_new(LassoServer *server)
 {
+	return lasso_wsf_profile_new_full(server, NULL);
+}
+
+/**
+ * lasso_wsf_profile_new_full:
+ * @server: a #LassoServer object to lookup remote provider informations.
+ * @offering: a #LassoDiscoResourceOffering for the requested service.
+ *
+ * Create a new #WsfProfile with the given #LassoServer object and the given
+ * #LassoDiscoResourceOffering.
+ *
+ * Return: a new #LassoWsfProfile if creation and initialization were
+ * successfull, NULL otherwise.
+ */
+LassoWsfProfile*
+lasso_wsf_profile_new_full(LassoServer *server, LassoDiscoResourceOffering *offering)
+{
 	LassoWsfProfile *profile = NULL;
 
-	g_return_val_if_fail(server != NULL, NULL);
-
 	profile = g_object_new(LASSO_TYPE_WSF_PROFILE, NULL);
-
+	if (lasso_wsf_profile_init(profile, server, offering)) {
+		g_release_gobject(profile);
+	}
 	return profile;
 }

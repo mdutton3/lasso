@@ -35,22 +35,13 @@ extern "C" {
 struct _LassoWsfProfilePrivate
 {
 	gboolean dispose_has_run;
+	char *security_mech_id;
+	LassoDiscoResourceOffering *offering;
 	LassoDiscoDescription *description;
 	LassoSoapFault *fault;
-	gchar *public_key;
-	GList *credentials;
 };
 
-void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
-				       LassoDiscoDescription *description);
-void lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
-					    const gchar *security_mech_id);
 LassoSoapFault* lasso_wsf_profile_get_fault(LassoWsfProfile *profile);
-
-void lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_key); 
-
-LassoDsKeyInfo* lasso_wsf_profile_get_key_info_node(LassoWsfProfile *profile,
-	const gchar *providerID);
 
 LassoDiscoDescription* lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si,
 	const gchar *security_mech_id);

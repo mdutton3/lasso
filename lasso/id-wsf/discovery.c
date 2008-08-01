@@ -66,6 +66,7 @@
 
 #include <xmlsec/xmltree.h>
 
+#include <lasso/utils.h>
 #include <lasso/xml/soap_binding_correlation.h>
 #include <lasso/xml/saml_assertion.h>
 #include <lasso/xml/saml_attribute.h>
@@ -98,7 +99,9 @@ static LassoWsfProfile *lasso_discovery_build_wsf_profile(LassoDiscovery *discov
 static LassoWsfProfileConstructor lookup_registry(gchar const *service_type);
 static void remove_registry(gchar const *service_type);
 static void set_registry(gchar const *service_type, LassoWsfProfileConstructor constructor);
+static LassoDsKeyInfo* lasso_discovery_build_key_info_node(LassoDiscovery *discovery, const gchar *providerID);
 
+/* Needs REVIEW */
 static gchar*
 lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *providerId)
 {
@@ -164,11 +167,10 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 			g_strdup(LASSO_SAML_CONFIRMATION_METHOD_HOLDER_OF_KEY));
 
 	/* Add public key value in credential */
-	key_info = lasso_wsf_profile_get_key_info_node(profile, provider->providerID);
+	key_info = lasso_discovery_build_key_info_node(discovery, provider->providerID);
 	if (key_info != NULL) {
 		subject_confirmation->KeyInfo = key_info;
 	}
-
 	subject->SubjectConfirmation = subject_confirmation;
 
 	/* Add the subject in the authentication statement */
@@ -340,6 +342,7 @@ lasso_discovery_init_modify(LassoDiscovery *discovery,
 	LassoWsfProfile *profile = NULL;
 	LassoSoapEnvelope *envelope = NULL;
 	LassoDiscoModify *modify = NULL;
+	gint res = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering),
@@ -350,13 +353,13 @@ lasso_discovery_init_modify(LassoDiscovery *discovery,
 	profile = LASSO_WSF_PROFILE(discovery);
 
 	modify = lasso_disco_modify_new();
-	profile->request = LASSO_NODE(modify);
 
-	envelope = lasso_wsf_profile_build_soap_envelope(NULL, NULL);
-	envelope->Body->any = g_list_append(envelope->Body->any, modify);
-	profile->soap_envelope_request = envelope;
-
-	return lasso_discovery_init_request(discovery, resourceOffering, description);
+	res = lasso_wsf_profile_init_soap_request(profile, LASSO_NODE(modify));
+	if (res == 0) {
+		res = lasso_discovery_init_request(discovery, resourceOffering, 
+				description);
+	}
+	return res;
 }
 
 static LassoDiscoResourceOffering*
@@ -1046,8 +1049,6 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 	}
 	service = lasso_discovery_build_wsf_profile(discovery,
 			offering);
-	lasso_wsf_profile_move_credentials(LASSO_WSF_PROFILE(discovery),
-					   LASSO_WSF_PROFILE(service));
 
 	return service;
 }
@@ -1144,6 +1145,90 @@ lasso_discovery_unregister_constructor_for_service_type(
 		return;
 	}
 	remove_registry(service_type);
+}
+
+/**
+ * lasso_discovery_build_key_info_node:
+ * @discovery: a #LassoDiscovery object
+ * @providerID: the provider ID of the provider whose public key is requested.
+ *
+ * Construct a #LassoDsKeyInfo containing the public key of the targeted web
+ * service provider. Fills the Modulus and Exponent composant of the RsaKeyValue.
+ * It does not handle DSAKeyValue.
+ *
+ * Returns: a new #LassoDsKeyIfno or NULL if no provider or no public key were found.
+ */
+static LassoDsKeyInfo*
+lasso_discovery_build_key_info_node(LassoDiscovery *discovery, const gchar *providerID)
+{
+	LassoWsfProfile *profile;
+	LassoDsKeyInfo *key_info = NULL;
+	LassoDsRsaKeyValue *rsa_key_value = NULL;
+	LassoDsKeyValue *key_value = NULL;
+	LassoProvider *provider = NULL;
+	xmlSecKeyInfoCtx *ctx = NULL;
+	xmlSecKey *public_key = NULL;
+	xmlDoc *doc = NULL;
+	xmlNode *key_info_node = NULL;
+	xmlNode *xmlnode = NULL;
+	xmlXPathContext *xpathCtx = NULL;
+	xmlXPathObject *xpathObj = NULL;
+
+	g_return_val_if_invalid_param(DISCOVERY, discovery, NULL);
+	g_return_val_if_fail(providerID != NULL, NULL);
+
+	profile = &discovery->parent;
+	provider = lasso_server_get_provider(profile->server, providerID);
+	if (provider == NULL) {
+		return NULL;
+	}
+
+	public_key = lasso_provider_get_public_key(provider);
+	if (public_key == NULL) {
+		return NULL;
+	}
+
+	ctx = xmlSecKeyInfoCtxCreate(NULL);
+	xmlSecKeyInfoCtxInitialize(ctx, NULL);
+	ctx->mode = xmlSecKeyInfoModeWrite;
+	ctx->keyReq.keyType = xmlSecKeyDataTypePublic;
+
+	doc = xmlSecCreateTree((xmlChar*)"KeyInfo",
+			(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
+	key_info_node = xmlDocGetRootElement(doc);
+	xmlSecAddChild(key_info_node, (xmlChar*)"KeyValue",
+			(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
+
+	xmlSecKeyInfoNodeWrite(key_info_node, public_key, ctx);
+
+	xpathCtx = xmlXPathNewContext(doc);
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ds",
+			(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
+
+	rsa_key_value = lasso_ds_rsa_key_value_new();
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Modulus", xpathCtx);
+	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		xmlnode = xpathObj->nodesetval->nodeTab[0];
+		rsa_key_value->Modulus = (gchar *) xmlNodeGetContent(xmlnode);
+	}
+	xmlXPathFreeObject(xpathObj);
+
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Exponent", xpathCtx);
+	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		xmlnode = xpathObj->nodesetval->nodeTab[0];
+		rsa_key_value->Exponent = (gchar *) xmlNodeGetContent(xmlnode);
+	}
+	xmlXPathFreeObject(xpathObj);
+
+	key_value = lasso_ds_key_value_new();
+	key_value->RSAKeyValue = rsa_key_value;
+	key_info = lasso_ds_key_info_new();
+	key_info->KeyValue = key_value;
+
+	xmlXPathFreeContext(xpathCtx);
+	xmlFreeDoc(doc);
+
+	return key_info;
 }
 
 /*****************************************************************************/
