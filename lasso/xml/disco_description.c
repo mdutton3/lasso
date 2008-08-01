@@ -23,6 +23,7 @@
  */
 
 #include <lasso/xml/disco_description.h>
+#include <lasso/utils.h>
 
 /**
  * SECTION:disco_description
