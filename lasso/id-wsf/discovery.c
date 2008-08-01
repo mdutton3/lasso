@@ -944,6 +944,8 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
  * @message: the disco:QueryResponse message
  *
  * Processes a disco:QueryResponse message.
+ * Extract credentials from the response and put them in the session,
+ * for later use by a request from a #LassoWsfProfile.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -952,27 +954,42 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 {
 	LassoWsfProfile *profile = NULL;
 	LassoDiscoQueryResponse *response;
-	int rc;
+	xmlXPathContext *xpathCtx = NULL;
+	xmlXPathObject *xpathObj;
+	LassoDiscoCredentials *credentials;
+	int rc = 0, i;
 
-	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), 
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, 
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_WSF_PROFILE(discovery);
-
 	rc = lasso_wsf_profile_process_soap_response_msg(profile, message);
-	if (rc) {
-		return rc;
-	}
-
+	if (rc) 
+		goto exit;
 	response = LASSO_DISCO_QUERY_RESPONSE(profile->response);
-
 	if (strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_OK) != 0) {
 		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
-
-	/* XXX: anything else to do ? */
-
-	return 0;
+	/** Process the credentials, add them to the session */
+	if (response->Credentials) {
+		GList *assertions = response->Credentials->any;
+		for (; assertions; assertions = g_list_next(assertions)) {
+			if (LASSO_IS_SAML_ASSERTION(assertions->data) == FALSE) {
+				continue;
+			}
+			if (profile->session) {
+				lasso_session_add_assertion(profile->session,
+						assertions->data);
+			} else {
+				rc = LASSO_PROFILE_ERROR_SESSION_NOT_FOUND;
+				goto exit;
+			}
+		}	
+	}
+exit:
+	return rc;
 }
 
 

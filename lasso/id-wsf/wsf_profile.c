@@ -1548,80 +1548,58 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	return res;
 }
 
+/** 
+ * lasso_wsf_profile_process_soap_response_msg:
+ * @profile: a #LassoWsfProfile object
+ * @message: the textual representaition of a SOAP message
+ *
+ * Parse a SOAP response from an ID-WSF 1.0 service, 
+ * eventually signal a SOAP fault.
+ *
+ * Returns: 0 if the processing of this message was successful.
+ */
 gint
 lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gchar *message)
 {
 	LassoSoapEnvelope *envelope;
-	xmlNode *credential;
-	int res = 0;
-
-	xmlXPathContext *xpathCtx = NULL;
-	xmlXPathObject *xpathObj;
-
 	xmlDoc *doc;
+	xmlNode *root;
+	LassoNode *node;
+	gint ret = 0;
 
-	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), 
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, 
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	doc = lasso_xml_parse_memory(message, strlen(message));
-
-	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
-		xmlNode *xmlnode;
-		int res;
-
-		res = lasso_wsf_profile_verify_x509_authentication(profile, doc, NULL);
-		if (res != 0) {
-			xmlFreeDoc(doc);
-			return res;
-		}
-
-		/* FIXME: Remove Signature element if exists, it seg fault when a call to
-		   lasso_node_new_from_xmlNode() */
-		xmlnode = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeSignature,
-					 xmlSecDSigNs);
-		if (xmlnode) {
-			xmlUnlinkNode(xmlnode);
-			xmlFreeNode(xmlnode);
-		}
+	if (doc == NULL) {
+		ret = critical_error(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
+		goto exit;
 	}
-
-	if (res != 0) {
+	root = xmlDocGetRootElement(doc);
+	/* Parse the message */
+	node = lasso_node_new_from_xmlNode(root);
+	if (LASSO_IS_SOAP_ENVELOPE(node)) {
+		profile->soap_envelope_response = LASSO_SOAP_ENVELOPE(node);
+		node = NULL;
+	} else {
+		ret = critical_error(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
+		goto exit;
+	}
+	profile->response = LASSO_NODE(envelope->Body->any->data);
+	/* Signal soap fault specifically */
+	if (LASSO_IS_SOAP_FAULT(envelope->Body->any->data)) {
+		return LASSO_WSF_PROFILE_ERROR_SOAP_FAULT;
+	}
+exit:
+	if (node) {
+		g_object_unref(node);
+	}
+	if (doc) {
 		xmlFreeDoc(doc);
-		return res;
 	}
-
-	/* If credentials are found, save and remove them from message */
-	{
-		int i;
-
-		xpathCtx = xmlXPathNewContext(doc);
-		xmlXPathRegisterNs(xpathCtx, (xmlChar*)"saml", (xmlChar*)LASSO_SAML_ASSERTION_HREF);
-		xpathObj = xmlXPathEvalExpression((xmlChar*)"//saml:Assertion", xpathCtx);
-		if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-			for (i = 0; i < xpathObj->nodesetval->nodeNr; i++) {
-				credential = xpathObj->nodesetval->nodeTab[i];
-				xmlUnlinkNode(credential);
-				lasso_wsf_profile_add_credential(profile, credential);
-			}
-		}
-		xmlXPathFreeContext(xpathCtx);
-		xmlXPathFreeObject(xpathObj);
-	}
-	
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
-	xmlFreeDoc(doc);
-
-	profile->soap_envelope_response = envelope;
-
-	if (envelope == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
-	}
-
-	/* Soap Fault message */
-	if (LASSO_IS_SOAP_FAULT(envelope->Body->any->data) == FALSE)
-		profile->response = LASSO_NODE(envelope->Body->any->data);
-
-	return 0;
+	return ret;
 }
 
 LassoSoapBindingProvider *lasso_wsf_profile_set_provider_soap_request(LassoWsfProfile *profile,
