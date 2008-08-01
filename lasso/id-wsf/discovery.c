@@ -917,6 +917,8 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 	/* build response */
 	response = lasso_disco_query_response_new(
 			lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
+	/* Keep refcount coherency */
+	g_list_foreach(offerings, (GFunc)g_object_ref, NULL);
 	response->ResourceOffering = offerings;
 	profile->response = LASSO_NODE(response);
 	envelope = profile->soap_envelope_response;
