@@ -982,7 +982,7 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
  * Return value: a newly created #LassoDataService object; or NULL if an
  *     error occured.
  **/
-LassoDataService*
+LassoWsfProfile*
 lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 {
 	LassoWsfProfile *profile = NULL;

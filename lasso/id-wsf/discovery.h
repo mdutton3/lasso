@@ -113,7 +113,7 @@ LASSO_EXPORT gint lasso_discovery_process_query_msg(LassoDiscovery *discovery,
 LASSO_EXPORT gint lasso_discovery_process_query_response_msg(LassoDiscovery *discovery,
 	const gchar *message);
 
-LASSO_EXPORT LassoDataService* lasso_discovery_get_service(LassoDiscovery *discovery,
+LASSO_EXPORT LassoWsfProfile* lasso_discovery_get_service(LassoDiscovery *discovery,
 	const char *service_type);
 
 LASSO_EXPORT GList* lasso_discovery_get_services(LassoDiscovery *discovery);
