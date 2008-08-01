@@ -122,6 +122,7 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	LassoSamlSubjectConfirmation *subject_confirmation = NULL;
 	LassoDsKeyInfo *key_info = NULL;
 	GList *iter = NULL;
+	LassoSamlSubjectConfirmation *subject_confirmation;
 	LassoProvider *our_provider = 
 		LASSO_PROVIDER(LASSO_WSF_PROFILE(discovery)->server);
 
