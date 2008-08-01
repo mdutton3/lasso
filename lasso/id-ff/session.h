@@ -30,7 +30,6 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/lasso_config.h>
-
 #include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_SESSION (lasso_session_get_type())

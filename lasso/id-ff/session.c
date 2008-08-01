@@ -30,6 +30,8 @@
 
 #include <lasso/id-ff/session.h>
 #include <lasso/id-ff/sessionprivate.h>
+#include <lasso/xml/saml_assertion.h>
+#include <lasso/xml/saml-2.0/saml2_assertion.h>
 
 #ifdef LASSO_WSF_ENABLED
 #include <lasso/id-wsf-2.0/session.h>
@@ -40,13 +42,6 @@
 #include <lasso/xml/id-wsf-2.0/sec_token.h>
 #endif
 
-struct _LassoSessionPrivate
-{
-	gboolean dispose_has_run;
-	GList *providerIDs;
-	GHashTable *status; /* hold temporary response status for sso-art */
-	GHashTable *eprs;
-};
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -58,18 +53,56 @@ struct _LassoSessionPrivate
  * @providerID: the provider ID
  * @assertion: the assertion
  *
- * Adds @assertion to the principal session.
+ * Adds @assertion to the principal session. This function also
+ * add the assertion to the index by assertionID.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *assertion)
 {
+	gint ret = 0;
+	gchar *id = NULL;
+
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	g_hash_table_insert(session->assertions, g_strdup(providerID),
+			g_object_ref(assertion));
+
+	if (LASSO_IS_SAML_ASSERTION(assertion)) {
+		id = LASSO_SAML_ASSERTION(assertion)->AssertionID;
+	}
+	if (LASSO_IS_SAML2_ASSERTION(assertion)) {
+		id = LASSO_SAML2_ASSERTION(assertion)->ID;
+	}
+	lasso_session_add_assertion_with_id(session, id, assertion);
+
+	session->is_dirty = TRUE;
+
+	return ret;
+}
+
+/**
+ * lasso_session_add_assertion_with_id:
+ * @session: a #LassoSession
+ * @assertionID: the provider ID
+ * @assertion: the assertion
+ *
+ * Adds an assertion to the dictionnary of assertion indexed by their id,
+ * do not store a reference by the Issuer like #lasso_session_add_assertion.
+ *
+ * Returns: 0 if the assertion was added to the dictionnary.
+ */
+gint
+lasso_session_add_assertion_with_id(LassoSession *session, char *assertionID, LassoNode *assertion)
+{
+	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(assertionID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_hash_table_insert(session->private_data->assertions_by_id, 
+			g_strdup(assertionID),
 			g_object_ref(assertion));
 
 	session->is_dirty = TRUE;
@@ -119,6 +152,25 @@ lasso_session_get_assertion(LassoSession *session, gchar *providerID)
 	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
 
 	return g_hash_table_lookup(session->assertions, providerID);
+}
+
+/**
+ * lasso_session_get_assertion_by_id:
+ * @session: a #LassoSession
+ * @assertionID: the assertionID of the requested assertion
+ *
+ * Gets the assertion for the given @assertionID.
+ *
+ * Return value: the assertion or NULL if it didn't exist.  This
+ *      #LassoSamlAssertion is internally allocated and must not be freed by
+ *      the caller.
+ */
+LassoNode*
+lasso_session_get_assertion_by_id(LassoSession *session, gchar *assertionID)
+{
+	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
+
+	return g_hash_table_lookup(session->private_data->assertions_by_id, assertionID);
 }
 
 static void
@@ -580,6 +632,10 @@ instance_init(LassoSession *session)
 	session->private_data->status = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,
 			(GDestroyNotify)lasso_node_destroy);
+	session->private_data->assertions_by_id = 
+			g_hash_table_new_full(g_str_hash, g_str_equal,
+					(GDestroyNotify)g_free,
+					(GDestroyNotify)g_object_unref);
 #ifdef LASSO_WSF_ENABLED
 	session->private_data->eprs = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,

@@ -32,14 +32,30 @@ extern "C" {
 #include <lasso/xml/lib_assertion.h>
 #include <lasso/xml/samlp_status.h>
 #include <lasso/id-ff/session.h>
+#include <lasso/xml/xml.h> 
+
+struct _LassoSessionPrivate
+{
+	gboolean dispose_has_run;
+	GList *providerIDs;
+	GHashTable *status; /* hold temporary response status for sso-art */
+	GHashTable *assertions_by_id;
+#ifdef LASSO_WSF_ENABLED
+	GHashTable *eprs;
+#endif
+};
 
 gint lasso_session_add_assertion(LassoSession *session,
 		char *providerID, LassoNode *assertion);
 gint lasso_session_add_status(LassoSession *session,
 		char *providerID, LassoNode *status);
+gint lasso_session_add_assertion_with_id(LassoSession *session, 
+		char *assertionID, LassoNode *assertion);
 
 LassoNode* lasso_session_get_assertion(
 		LassoSession *session, gchar *providerID);
+LassoNode* lasso_session_get_assertion_by_id(
+		LassoSession *session, gchar *assertionID);
 LassoNode* lasso_session_get_status(
 		LassoSession *session, gchar *providerID);
 
