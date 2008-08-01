@@ -2400,7 +2400,8 @@ sameNs(xmlNs *ns1, xmlNs *ns2)
 	 */
 	return (ns1 == NULL && ns2 == NULL) || (
 			ns1 && ns2 && ns1->prefix && ns2->prefix &&
-			strcmp((char*)ns1->prefix, (char*)ns2->prefix) == 0);
+			strcmp((char*)ns1->prefix, (char*)ns2->prefix) == 0 &&
+            strcmp((char*)ns1->href, (char*)ns2->href) == 0);
 }
 
 static void
