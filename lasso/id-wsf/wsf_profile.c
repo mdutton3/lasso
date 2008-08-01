@@ -136,8 +136,7 @@ lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
 gint
 lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential)
 {
-	profile->private_data->credentials = g_list_append(profile->private_data->credentials,
-							   credential);
+	g_list_add_fast(profile->private_data->credentials, credential);
 	return 0;
 }
 
@@ -173,8 +172,8 @@ lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gcha
 	GList *iter, *iter2;
 	LassoDiscoDescription *description;
 
-	if (security_mech_id == NULL)
-		return NULL;
+	g_return_val_if_fail(si, NULL);
+	g_return_val_if_fail(security_mech_id, NULL);
 
 	iter = si->Description;
 	while (iter) {
