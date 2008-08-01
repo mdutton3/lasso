@@ -985,7 +985,7 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 	LassoDiscoQueryResponse *response;
 	GList *iter;
 	LassoDiscoResourceOffering *offering = NULL;
-	LassoDataService *service;
+	LassoWsfProfile *service;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
 
@@ -1018,16 +1018,9 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 			return NULL; /* resource not found */
 		}
 	}
-
-	if (strcmp(offering->ServiceInstance->ServiceType, LASSO_PP_HREF) == 0) {
-		service = LASSO_DATA_SERVICE(lasso_personal_profile_service_new_full(
-					profile->server, offering));
-	} else {
-		service = lasso_data_service_new_full(profile->server,
-				offering);
-	}
-
-	lasso_wsf_profile_move_credentials(profile,
+	service = lasso_discovery_build_wsf_profile(discovery,
+			offering);
+	lasso_wsf_profile_move_credentials(LASSO_WSF_PROFILE(discovery),
 					   LASSO_WSF_PROFILE(service));
 
 	return service;
@@ -1050,7 +1043,7 @@ lasso_discovery_get_services(LassoDiscovery *discovery)
 	LassoDiscoQueryResponse *response;
 	GList *iter;
 	LassoDiscoResourceOffering *offering;
-	LassoDataService *service;
+	LassoWsfProfile *service;
 	GList *services;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
@@ -1070,13 +1063,8 @@ lasso_discovery_get_services(LassoDiscovery *discovery)
 		if (offering->ServiceInstance == NULL) {
 			continue;
 		}
-		if (strcmp(offering->ServiceInstance->ServiceType, LASSO_PP_HREF) == 0) {
-			service = LASSO_DATA_SERVICE(lasso_personal_profile_service_new_full(
-				profile->server, offering));
-		} else {
-			service = lasso_data_service_new_full(
-				profile->server, offering);
-		}
+		service = lasso_discovery_build_wsf_profile(discovery,
+				offering);
 		services = g_list_append(services, service);
 	}
 
