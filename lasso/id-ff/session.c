@@ -44,7 +44,8 @@
 #endif
 
 #include <xmlsec/xmltree.h>
-
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -476,15 +477,47 @@ add_assertion_childnode(gchar *key, LassoLibAssertion *value, struct DumpContext
 	xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
+xmlChar *
+xmlNode_to_base64(xmlNode *node) {
+	xmlOutputBufferPtr buf = NULL;
+	xmlCharEncodingHandlerPtr handler = NULL;
+	xmlChar *buffer = NULL;
+	char *ret = NULL;
+	
+	handler = xmlFindCharEncodingHandler("utf-8");
+	if (! handler)
+		goto exit;
+	buf = xmlAllocOutputBuffer(handler);
+	if (! buf)
+		goto exit;
+	xmlNodeDumpOutput(buf, NULL, node, 0, 0, "utf-8");
+	xmlOutputBufferFlush(buf);
+	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
+
+	ret = (char*)xmlSecBase64Encode(buffer, strlen((char*)buffer), 0);
+
+exit:
+	if (buf)
+		xmlOutputBufferClose(buf);
+
+	return ret;
+}
+
 static void
 add_assertion_by_id(gchar *key, xmlNode *value, struct DumpContext *context)
 {
 	xmlNode *t, *xmlnode;
+	xmlChar *content;
 
 	xmlnode = context->parent;
 	t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"Assertion", NULL);
 	xmlSetProp(t, (xmlChar*)"ID", (xmlChar*)key);
-	xmlAddChild(t, xmlCopyNode(value, 1));
+	content = xmlNode_to_base64(value);
+	if (content) {
+		// xmlAddChild(t, xmlCopyNode(value, 1));
+		xmlNodeSetContent(t, content);
+		xmlFree(content);
+	}
 }
 
 static void
@@ -551,6 +584,31 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	return xmlnode;
 }
 
+xmlNode*
+base64_to_xmlNode(xmlChar *buffer) {
+	xmlChar *decoded = NULL;
+	xmlDoc *doc = NULL;
+	xmlNode *ret = NULL;
+	int l1,l2;
+
+	l1 = 4*strlen(buffer)+2;
+	decoded = g_malloc(l1);
+	l2 = xmlSecBase64Decode(buffer, decoded, l1);
+	if (l2 < 0)
+		goto exit;
+	doc = xmlParseMemory(decoded, l2);
+	if (doc == NULL)
+		goto exit;
+	ret = xmlDocGetRootElement(doc);
+exit:
+	g_release(decoded);
+	if (ret)
+		xmlUnlinkNode(ret);
+	g_release_doc(doc);
+
+	return ret;
+}
+
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
@@ -582,7 +640,19 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					lasso_session_add_assertion(session, (char*)value, assertion);
 					xmlFree(value);
 				} else if ((value = xmlGetProp(t, (xmlChar*)"ID"))) {
-					lasso_session_add_assertion_with_id(session, (char*)value, n);
+					xmlChar *content;
+					xmlNode *assertion;
+
+					content = xmlNodeGetContent(n);
+					if (content) {
+						assertion = base64_to_xmlNode(content);
+						if (assertion) {
+							lasso_session_add_assertion_with_id(session, 
+								(char*)value, assertion);
+							xmlFreeNode(assertion);
+						}
+						xmlFree(content);
+					}
 					xmlFree(value);
 				}
 			}
