@@ -1601,6 +1601,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "Utility";
 	else if (strcmp(prefix, "Sa") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
 		prefix = "Utility";
+    else if (strcmp(prefix, "DgmeMspEd") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
+        prefix = "Utility";
 
 	xsitype = xmlGetNsProp(xmlnode, (xmlChar*)"type", (xmlChar*)LASSO_XSI_HREF);
 	if (xsitype) {
