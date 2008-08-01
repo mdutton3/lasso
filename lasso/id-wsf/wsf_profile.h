@@ -38,6 +38,7 @@ extern "C" {
 #include <lasso/xml/saml_assertion.h>
 #include <lasso/xml/disco_description.h>
 #include <lasso/xml/disco_resource_offering.h>
+#include <lasso/xml/disco_description.h>
 
 #define LASSO_TYPE_WSF_PROFILE (lasso_wsf_profile_get_type())
 #define LASSO_WSF_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
