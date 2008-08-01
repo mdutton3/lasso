@@ -360,6 +360,34 @@ lasso_wsf_profile_set_description(LassoWsfProfile *profile, LassoDiscoDescriptio
 	g_assign_gobject(profile->private_data->description, description);
 }
 
+const LassoDiscoDescription *
+lasso_wsf_profile_get_description(LassoWsfProfile *profile)
+{
+	return profile->private_data->description;
+}
+
+/**
+ * lasso_wsf_profile_verify_credential_signature:
+ * @profile: a #LassoWsfProfile
+ * @doc: an #xmlDoc containing the credential node
+ * @credential: an #xmlNode representing the credential
+ *
+ * Verify that the credentials have really been by the provider present in
+ * their Issuer property. To do this it lookup the provider public key in the
+ * metadtatas loaded in the setupt #LassoServer object.  If the credential is
+ * signed using a X509 certificate, verify this certificate using the CA
+ * chain list of this provider.
+ *
+ * Returns: 0 if credentials are valid,
+ *  %LASSO_PROFILE_ERROR_MISSING_ISSUER if credential contains no Issuer
+ *  attribute, %LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the Issuer provider is
+ *  unknown from #LassoServer, %LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED if we
+ *  cannot load the given CA chcert chain,
+ *  %LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED if we cannot the public key of the
+ *  provider, %LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED if the signature
+ *  verification failed, and %LASSO_DS_ERROR_INVALID_SIGNATURE if the signature
+ *  is invalid.
+ */
 static gint
 lasso_wsf_profile_verify_credential_signature(
 		LassoWsfProfile *profile, xmlDoc *doc, xmlNode *credential)
