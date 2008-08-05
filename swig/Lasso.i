@@ -2042,19 +2042,12 @@ typedef struct {
 %extend LassoSamlAdvice {
 	/* Attributes */
 
-#ifndef SWIG_PHP_RENAMES
-	%rename(assertion) Assertion;
-#endif
-	%newobject Assertion_get;
-	LassoSamlAssertion *Assertion;
-
-	%newobject assertionIdReference_get;
-	LassoStringList *assertionIdReference;
+	%newobject any_get;
+	LassoStringList *any;
 
 	/* Constructor, Destructor & Static Methods */
 
 	LassoSamlAdvice();
-
 	~LassoSamlAdvice();
 
 	/* Methods inherited from LassoNode */
@@ -2066,17 +2059,11 @@ typedef struct {
 %{
 
 /* Attributes implementations */
-/* Assertion */
-#define LassoSamlAdvice_get_Assertion(self) get_node((self)->Assertion)
-#define LassoSamlAdvice_Assertion_get(self) get_node((self)->Assertion)
-#define LassoSamlAdvice_set_Assertion(self, value) set_node((gpointer *) &(self)->Assertion, (value))
-#define LassoSamlAdvice_Assertion_set(self, value) set_node((gpointer *) &(self)->Assertion, (value))
-
-/* assertionIdReference */
-#define LassoSamlAdvice_get_assertionIdReference(self) get_string_list((self)->AssertionIDReference)
-#define LassoSamlAdvice_assertionIdReference_get(self) get_string_list((self)->AssertionIDReference)
-#define LassoSamlAdvice_set_assertionIdReference(self, value) set_string_list(&(self)->AssertionIDReference, (value))
-#define LassoSamlAdvice_assertionIdReference_set(self, value) set_string_list(&(self)->AssertionIDReference, (value))
+/* any */
+#define LassoSamlAdvice_get_any(self) get_xml_list((self)->any)
+#define LassoSamlAdvice_any_get(self) get_xml_list((self)->any)
+#define LassoSamlAdvice_set_any(self, value) set_xml_list(&(self)->any, (value))
+#define LassoSamlAdvice_any_set(self, value) set_xml_list(&(self)->any, (value))
 
 /* Constructors, destructors & static methods implementations */
 
