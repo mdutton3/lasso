@@ -678,7 +678,7 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 		if (rc != 0) {
 			goto exit;
 		}
-	} else if (lasso_security_mech_is_null_authentication(sec_mech_id) == FALSE) {
+	} else if (lasso_security_mech_id_is_null_authentication(sec_mech_id) == FALSE) {
 		rc = LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM;
 		goto exit;
 	}
