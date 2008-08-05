@@ -191,23 +191,23 @@ xmlSecKeyPtr lasso_get_public_key_from_pem_file(const char *file) {
 	LassoPemFileType file_type;
 	xmlSecKeyPtr pub_key = NULL;
 
-        file_type = lasso_get_pem_file_type(file);
-        switch (file_type) {
-                case LASSO_PEM_FILE_TYPE_UNKNOWN:
+	file_type = lasso_get_pem_file_type(file);
+	switch (file_type) {
+		case LASSO_PEM_FILE_TYPE_UNKNOWN:
 			message(G_LOG_LEVEL_WARNING, "PEM file type unknown: %s", file);
-                        break; /* with a warning ? */
-                case LASSO_PEM_FILE_TYPE_CERT:
-                        pub_key = lasso_get_public_key_from_pem_cert_file(file);
-                        break;
-                case LASSO_PEM_FILE_TYPE_PUB_KEY:
-                        pub_key = xmlSecCryptoAppKeyLoad(file,
-                                        xmlSecKeyDataFormatPem, NULL, NULL, NULL);
-                        break;
-                case LASSO_PEM_FILE_TYPE_PRIVATE_KEY:
+			break; /* with a warning ? */
+		case LASSO_PEM_FILE_TYPE_CERT:
+			pub_key = lasso_get_public_key_from_pem_cert_file(file);
+			break;
+		case LASSO_PEM_FILE_TYPE_PUB_KEY:
+			pub_key = xmlSecCryptoAppKeyLoad(file,
+					xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+			break;
+		case LASSO_PEM_FILE_TYPE_PRIVATE_KEY:
 			pub_key = lasso_get_public_key_from_private_key_file(file);
-		
-                        break; /* with a warning ? */
-        }
+
+			break; /* with a warning ? */
+	}
 	return pub_key;
 }
 /**

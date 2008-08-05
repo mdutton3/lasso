@@ -25,8 +25,10 @@
 #include <lasso/soap_binding.h>
 
 #define find_node_type_in_list(iter, check) \
- { while (iter && ! check(iter->data)) \
-     iter = iter->next; }
+	{ 
+		while (iter && ! check(iter->data)) \
+			iter = iter->next;\
+	}
 
 /** 
  * lasso_soap_binding_get_provider:
@@ -34,7 +36,8 @@
  *
  * Look up the sb:Provider header in the SOAP message envelope.
  *
- * @return NULL if no Provider element is present in the header of the SOAP envelope. If found it returns a reference you do not own. 
+ * Return value: NULL if no Provider element is present in the header of the SOAP envelope. If 
+ * found it returns a reference you do not own. 
  */
 LassoSoapBindingProvider*
 lasso_soap_binding_get_provider(LassoSoapEnvelope *envelope) {

@@ -177,7 +177,7 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 			issuer = LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID;
 			responseConsumerURL = \
 				lasso_saml20_login_get_assertion_consumer_service_url(
-				       login, LASSO_PROVIDER(profile->server));
+						login, LASSO_PROVIDER(profile->server));
 			profile->msg_url = NULL;
 			profile->msg_body = lasso_node_export_to_paos_request(profile->request,
 							issuer, responseConsumerURL,
@@ -678,14 +678,14 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 
 	/* Abstract */
 	metadata->any = g_list_append(metadata->any,
- 		lasso_idwsf2_disco_abstract_new_with_string(svcMD->Abstract));
- 	/* ProviderID */
+			lasso_idwsf2_disco_abstract_new_with_string(svcMD->Abstract));
+	/* ProviderID */
 	metadata->any = g_list_append(metadata->any,
- 		lasso_idwsf2_disco_provider_id_new_with_string(svcMD->ProviderID));
- 	/* ServiceType */
+			lasso_idwsf2_disco_provider_id_new_with_string(svcMD->ProviderID));
+	/* ServiceType */
 	metadata->any = g_list_append(metadata->any,
- 		lasso_idwsf2_disco_service_type_new_with_string(
- 			(char*)service_context->ServiceType->data));
+			lasso_idwsf2_disco_service_type_new_with_string(
+				(char*)service_context->ServiceType->data));
 	/* Framework */
 	if (endpoint_context->Framework != NULL) {
 		metadata->any = g_list_append(metadata->any,

@@ -116,7 +116,7 @@ gint
 lasso_idwsf2_profile_build_request_msg(LassoIdWsf2Profile *profile)
 {
 	g_return_val_if_fail(LASSO_IS_IDWSF2_PROFILE(profile),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	LASSO_PROFILE(profile)->msg_body = lasso_node_export_to_xml(
 			LASSO_NODE(profile->soap_envelope_request));

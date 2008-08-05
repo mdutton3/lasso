@@ -49,7 +49,7 @@
 #include <xmlsec/base64.h>
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* public methods	                                                     */
 /*****************************************************************************/
 
 static gint
@@ -468,7 +468,7 @@ lasso_session_get_assertion_identity_token(LassoSession *session, const gchar *s
 #endif
 
 /*****************************************************************************/
-/* private methods                                                           */
+/* private methods	                                                     */
 /*****************************************************************************/
 
 static LassoNodeClass *parent_class = NULL;
@@ -612,9 +612,9 @@ base64_to_xmlNode(xmlChar *buffer) {
 	if (doc == NULL)
 		goto exit;
 	ret = xmlDocGetRootElement(doc);
-    if (ret) {
-        ret = xmlCopyNode(ret, 1);
-    }
+	if (ret) {
+	ret = xmlCopyNode(ret, 1);
+	}
 exit:
 	lasso_release(decoded);
 	lasso_release_doc(doc);
@@ -640,40 +640,40 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 
 		if (strcmp((char*)t->name, "Assertion") == 0) {
-            xmlChar* value;
+			xmlChar* value;
 			n = t->children;
 			while (n && n->type != XML_ELEMENT_NODE) n = n->next;
-			
+
 			if (n) {
 				LassoNode *assertion;
-				
+
 				if ((value = xmlGetProp(t, (xmlChar*)"RemoteProviderID"))) {
 
 					assertion = lasso_node_new_from_xmlNode(n);
 					lasso_session_add_assertion_simple(session, (char*)value, assertion);
 					xmlFree(value);
 				}
-            } else if ((value = xmlGetProp(t, (xmlChar*)"ID"))) {
-                xmlChar *content;
-                xmlNode *assertion;
+			} else if ((value = xmlGetProp(t, (xmlChar*)"ID"))) {
+				xmlChar *content;
+				xmlNode *assertion;
 
-                content = xmlNodeGetContent(t);
-                if (content) {
-                    assertion = base64_to_xmlNode(content);
-                    if (assertion) {
-                        lasso_session_add_assertion_with_id(session, 
-                                (char*)value, assertion);
-                        xmlFreeNode(assertion);
-                    }
-                    xmlFree(content);
-                }
-                xmlFree(value);
+				content = xmlNodeGetContent(t);
+				if (content) {
+					assertion = base64_to_xmlNode(content);
+					if (assertion) {
+						lasso_session_add_assertion_with_id(session, 
+								(char*)value, assertion);
+						xmlFreeNode(assertion);
+					}
+					xmlFree(content);
+				}
+				xmlFree(value);
 			}
 		}
 		if (strcmp((char*)t->name, "Status") == 0) {
 			n = t->children;
 			while (n && n->type != XML_ELEMENT_NODE) n = n->next;
-			
+
 			if (n) {
 				LassoNode *status;
 				status = lasso_node_new_from_xmlNode(n);
@@ -694,7 +694,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					continue;
 				}
 				epr = LASSO_WSA_ENDPOINT_REFERENCE(
-					lasso_wsa_endpoint_reference_new());
+						lasso_wsa_endpoint_reference_new());
 				LASSO_NODE_GET_CLASS(epr)->init_from_xml(LASSO_NODE(epr), t2);
 				lasso_session_add_endpoint_reference(session, epr);
 				g_object_unref(epr);
@@ -712,7 +712,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 
 /*****************************************************************************/
-/* overridden parent class methods                                           */
+/* overridden parent class methods	                                     */
 /*****************************************************************************/
 
 static void
@@ -756,7 +756,7 @@ finalize(GObject *object)
 }
 
 /*****************************************************************************/
-/* instance and class init functions                                         */
+/* instance and class init functions	                                 */
 /*****************************************************************************/
 
 static void

@@ -187,8 +187,8 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 		while (iter) {
 			LassoSamlAssertion *credential = LASSO_SAML_ASSERTION(iter->data);
 			if (strcmp(credentialRef, credential->AssertionID) == 0) {
-				//lasso_wsf_profile_add_saml_authentication(
-				//	LASSO_WSF_PROFILE(service), credential);
+				/* lasso_wsf_profile_add_saml_authentication(
+					LASSO_WSF_PROFILE(service), credential); */
 				iter = iter->next;
 			}
 		}
@@ -271,7 +271,7 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 	}
 	
 	xmlnode = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeSignature,
-					  xmlSecDSigNs);
+			xmlSecDSigNs);
 	if (xmlnode) {
 		xmlUnlinkNode(xmlnode);
 		xmlFreeNode(xmlnode);
@@ -667,7 +667,7 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 	if (offering->ResourceID) {
 		modify->ResourceID = offering->ResourceID;
 	} else if (offering->EncryptedResourceID) {
-	        modify->EncryptedResourceID = offering->EncryptedResourceID;
+		modify->EncryptedResourceID = offering->EncryptedResourceID;
 	} else {
 		/* XXX: no resource id, implied:resource, etc. */
 		return LASSO_ERROR_UNIMPLEMENTED;
@@ -772,8 +772,8 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 					cur_data = NULL;
 				} else {
 					xmlReplaceNode(node, xmlCopyNode(newNode,1));
-					// Node is a free node now but is still reference by the xpath nodeset
-					// we must wait for the deallocation of the nodeset to free it.
+					/* Node is a free node now but is still reference by the xpath nodeset
+					   we must wait for the deallocation of the nodeset to free it. */
 					lasso_list_add(node_to_free, node);
 				}
 			}

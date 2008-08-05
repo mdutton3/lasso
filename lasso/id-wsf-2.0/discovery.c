@@ -543,18 +543,18 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 
 	/* Abstract */
 	metadata->any = g_list_append(metadata->any,
- 		lasso_idwsf2_disco_abstract_new_with_string(svcMD->Abstract));
- 	/* ProviderID */
+			lasso_idwsf2_disco_abstract_new_with_string(svcMD->Abstract));
+	/* ProviderID */
 	metadata->any = g_list_append(metadata->any,
- 		lasso_idwsf2_disco_provider_id_new_with_string(svcMD->ProviderID));
- 	/* ServiceType */
+			lasso_idwsf2_disco_provider_id_new_with_string(svcMD->ProviderID));
+	/* ServiceType */
 	metadata->any = g_list_append(metadata->any,
- 		lasso_idwsf2_disco_service_type_new_with_string(
- 			(char*)service_context->ServiceType->data));
+			lasso_idwsf2_disco_service_type_new_with_string(
+				(char*)service_context->ServiceType->data));
 	/* Framework */
 	if (endpoint_context->Framework != NULL) {
 		metadata->any = g_list_append(metadata->any,
-			g_object_ref((GObject*)endpoint_context->Framework->data));
+				g_object_ref((GObject*)endpoint_context->Framework->data));
 	}
 	
 	/* Identity token */	
@@ -759,7 +759,7 @@ lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const gchar 
 }
 
 /*****************************************************************************/
-/* private methods                                                           */
+/* private methods	                                                   */
 /*****************************************************************************/
 
 static LassoNodeClass *parent_class = NULL;
@@ -856,7 +856,7 @@ lasso_idwsf2_discovery_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_PROFILE,
-						   "LassoIdWsf2Discovery", &this_info, 0);
+				"LassoIdWsf2Discovery", &this_info, 0);
 	}
 	return this_type;
 }

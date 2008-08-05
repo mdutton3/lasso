@@ -60,7 +60,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoModify, ResourceID) },
 	{ "EncryptedResourceID", SNIPPET_NODE, \
-	  G_STRUCT_OFFSET(LassoDiscoModify, EncryptedResourceID) },
+		G_STRUCT_OFFSET(LassoDiscoModify, EncryptedResourceID) },
 	{ "InsertEntry", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoModify, InsertEntry) },
 	{ "RemoveEntry", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoModify, RemoveEntry) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoModify, id) },
@@ -111,7 +111,7 @@ lasso_disco_modify_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-						   "LassoDiscoModify", &this_info, 0);
+				"LassoDiscoModify", &this_info, 0);
 	}
 	return this_type;
 }

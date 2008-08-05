@@ -54,9 +54,9 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInteractionResponse, Status) },
 	{ "InteractionStatement", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoIsInteractionResponse,
-								      InteractionStatement) },
+			InteractionStatement) },
 	{ "Parameter", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoIsInteractionResponse,
-							   Parameter) },
+			Parameter) },
 	{ NULL, 0, 0}
 };
 

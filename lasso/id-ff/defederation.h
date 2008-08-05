@@ -59,7 +59,6 @@ struct _LassoDefederationClass {
 LASSO_EXPORT GType lasso_defederation_get_type(void);
 
 LASSO_EXPORT LassoDefederation *lasso_defederation_new(LassoServer *server);
- 
 
 LASSO_EXPORT gint lasso_defederation_build_notification_msg(LassoDefederation *defederation);
 
@@ -70,7 +69,7 @@ LASSO_EXPORT gint lasso_defederation_init_notification(LassoDefederation *defede
 
 LASSO_EXPORT gint lasso_defederation_process_notification_msg(
 		LassoDefederation *defederation, gchar *notification_msg);
- 
+
 LASSO_EXPORT gint lasso_defederation_validate_notification(LassoDefederation *defederation);
 
 

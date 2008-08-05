@@ -171,7 +171,7 @@ lasso_name_id_management_build_request_msg(LassoNameIdManagement *name_id_manage
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		profile->msg_url = lasso_provider_get_metadata_one(remote_provider,
 				"ManageNameIDService SOAP");
-	 	/* XXX set private key so message is signed */
+		/* XXX set private key so message is signed */
 		profile->msg_body = lasso_node_export_to_soap(profile->request);
 		return 0;
 	}

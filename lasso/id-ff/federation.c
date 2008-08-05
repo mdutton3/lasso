@@ -75,9 +75,9 @@ lasso_federation_build_name_identifier(const gchar *nameQualifier,
  **/
 void
 lasso_federation_build_local_name_identifier(LassoFederation *federation,
-					    const gchar     *nameQualifier,
-					    const gchar     *format,
-					    const gchar     *content)
+		const gchar     *nameQualifier,
+		const gchar     *format,
+		const gchar     *content)
 {
 	federation->local_nameIdentifier = lasso_federation_build_name_identifier(
 			nameQualifier, format, content);

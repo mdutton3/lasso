@@ -54,14 +54,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "InteractionService", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoIsUserInteraction, InteractionService) },
+		G_STRUCT_OFFSET(LassoIsUserInteraction, InteractionService) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsUserInteraction, id) },
 	{ "interact", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsUserInteraction, interact) },
 	{ "language", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsUserInteraction, language) },
 	{ "redirect", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN,
-	  G_STRUCT_OFFSET(LassoIsUserInteraction, redirect) },
-	{ "maxInteractTime", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
-	  G_STRUCT_OFFSET(LassoIsUserInteraction, maxInteractTime) },
+		G_STRUCT_OFFSET(LassoIsUserInteraction, redirect) },
+	{ "maxInteractTime", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoIsUserInteraction, maxInteractTime) },
 	{ NULL, 0, 0}
 };
 

@@ -124,7 +124,7 @@ typedef enum {
  * Provider protocol conformance.
  **/
 typedef enum {
-        LASSO_PROTOCOL_NONE = -1,
+	LASSO_PROTOCOL_NONE = -1,
 	LASSO_PROTOCOL_LIBERTY_1_0,
 	LASSO_PROTOCOL_LIBERTY_1_1,
 	LASSO_PROTOCOL_LIBERTY_1_2,

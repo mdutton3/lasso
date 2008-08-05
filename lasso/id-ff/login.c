@@ -857,12 +857,12 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 		if (ss->Subject != NULL && ss->Subject->SubjectConfirmation != NULL) {
 			if (assertion->MajorVersion == 1 && assertion->MinorVersion == 0) {
 				ss->Subject->SubjectConfirmation->ConfirmationMethod =
-				    g_list_append(NULL,
-				        g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01));
+					g_list_append(NULL,
+					g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01));
 			} else {
 				ss->Subject->SubjectConfirmation->ConfirmationMethod =
-				    g_list_append(NULL,
-				        g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT));
+					g_list_append(NULL,
+						g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT));
 			}
 		}
 	}
@@ -1923,12 +1923,12 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
  **/
 int
 lasso_login_set_encryptedResourceId(LassoLogin *login,
-				    LassoDiscoEncryptedResourceID *encryptedResourceId)
+		LassoDiscoEncryptedResourceID *encryptedResourceId)
 {
 #ifdef LASSO_WSF_ENABLED
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_ENCRYPTED_RESOURCE_ID(encryptedResourceId),
-			     LASSO_PARAM_ERROR_INVALID_VALUE);
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	login->private_data->encryptedResourceId = g_object_ref(encryptedResourceId);
 #endif

@@ -66,9 +66,9 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "AttributeName", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSamlAttribute, attributeName) },
+		G_STRUCT_OFFSET(LassoSamlAttribute, attributeName) },
 	{ "AttributeNameSpace", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSamlAttribute, attributeNameSpace) },
+		G_STRUCT_OFFSET(LassoSamlAttribute, attributeNameSpace) },
 	{ "AttributeValue", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoSamlAttribute, AttributeValue) },
 	{ NULL, 0, 0}

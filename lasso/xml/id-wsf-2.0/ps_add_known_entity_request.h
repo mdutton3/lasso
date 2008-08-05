@@ -80,7 +80,8 @@ struct _LassoIdWsf2PsAddKnownEntityRequestClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_add_known_entity_request_get_type(void);
-LASSO_EXPORT LassoIdWsf2PsAddKnownEntityRequest* lasso_idwsf2_ps_add_known_entity_request_new(void);
+LASSO_EXPORT LassoIdWsf2PsAddKnownEntityRequest* lasso_idwsf2_ps_add_known_entity_request_new(
+	void);
 
 
 

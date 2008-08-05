@@ -57,17 +57,17 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ResourceID", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, ResourceID) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, ResourceID) },
 	{ "EncryptedResourceID", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, EncryptedResourceID) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, EncryptedResourceID) },
 	{ "ServiceInstance", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, ServiceInstance) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, ServiceInstance) },
 	{ "Options", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, Options) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, Options) },
 	{ "Abstract", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, Abstract) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, Abstract) },
 	{ "entryID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, entryID) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, entryID) },
 	{ NULL, 0, 0}
 };
 

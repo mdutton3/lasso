@@ -42,7 +42,7 @@ extern "C" {
 #define LASSO_IS_DST_MODIFY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DST_MODIFY))
 #define LASSO_IS_DST_MODIFY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DST_MODIFY))
 #define LASSO_DST_MODIFY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
- LASSO_TYPE_DST_MODIFY, LassoDstModifyClass)) 
+			LASSO_TYPE_DST_MODIFY, LassoDstModifyClass)) 
 
 typedef struct _LassoDstModify LassoDstModify;
 typedef struct _LassoDstModifyClass LassoDstModifyClass;

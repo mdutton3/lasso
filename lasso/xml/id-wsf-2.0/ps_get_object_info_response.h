@@ -73,7 +73,8 @@ struct _LassoIdWsf2PsGetObjectInfoResponseClass {
 };
 
 LASSO_EXPORT GType lasso_idwsf2_ps_get_object_info_response_get_type(void);
-LASSO_EXPORT LassoIdWsf2PsGetObjectInfoResponse* lasso_idwsf2_ps_get_object_info_response_new(void);
+LASSO_EXPORT LassoIdWsf2PsGetObjectInfoResponse* lasso_idwsf2_ps_get_object_info_response_new(
+	void);
 
 
 

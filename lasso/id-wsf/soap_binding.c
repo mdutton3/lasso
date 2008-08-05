@@ -25,8 +25,10 @@
 #include <lasso/id-wsf/soap_binding.h>
 
 #define find_node_type_in_list(iter, check) \
- { while (iter && ! check(iter->data)) \
-     iter = iter->next; }
+	{\
+		while (iter && ! check(iter->data)) \
+			iter = iter->next;\
+	}
 
 /** 
  * lasso_soap_binding_get_provider:

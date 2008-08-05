@@ -49,12 +49,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "providerID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSoapBindingProvider, providerID) },
+		G_STRUCT_OFFSET(LassoSoapBindingProvider, providerID) },
 	{ "affiliationID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSoapBindingProvider, affiliationID) },
+		G_STRUCT_OFFSET(LassoSoapBindingProvider, affiliationID) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingProvider, id) },
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSoapBindingProvider, mustUnderstand) },
+		G_STRUCT_OFFSET(LassoSoapBindingProvider, mustUnderstand) },
 	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingProvider, actor) },
 	{ NULL, 0, 0}
 };

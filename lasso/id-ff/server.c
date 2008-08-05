@@ -699,9 +699,9 @@ lasso_server_get_type()
  **/
 LassoServer*
 lasso_server_new(const gchar *metadata,
-		 const gchar *private_key,
-		 const gchar *private_key_password,
-		 const gchar *certificate)
+		const gchar *private_key,
+		const gchar *private_key_password,
+		const gchar *certificate)
 {
 	LassoServer *server;
 

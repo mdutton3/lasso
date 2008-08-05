@@ -38,11 +38,11 @@ extern "C" {
 #define LASSO_DST_MODIFICATION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
 			LASSO_TYPE_DST_MODIFICATION, LassoDstModificationClass))
 #define LASSO_IS_DST_MODIFICATION(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-       LASSO_TYPE_DST_MODIFICATION))
+	   LASSO_TYPE_DST_MODIFICATION))
 #define LASSO_IS_DST_MODIFICATION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-       LASSO_TYPE_DST_MODIFICATION))
+	   LASSO_TYPE_DST_MODIFICATION))
 #define LASSO_DST_MODIFICATION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-       LASSO_TYPE_DST_MODIFICATION, LassoDstModificationClass)) 
+	   LASSO_TYPE_DST_MODIFICATION, LassoDstModificationClass)) 
 
 typedef struct _LassoDstModification LassoDstModification;
 typedef struct _LassoDstModificationClass LassoDstModificationClass;

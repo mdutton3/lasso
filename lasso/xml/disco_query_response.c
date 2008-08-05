@@ -56,13 +56,13 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Status", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoQueryResponse, Status) },
+		G_STRUCT_OFFSET(LassoDiscoQueryResponse, Status) },
 	{ "ResourceOffering", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoDiscoQueryResponse, ResourceOffering) },
+		G_STRUCT_OFFSET(LassoDiscoQueryResponse, ResourceOffering) },
 	{ "Credentials", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoQueryResponse, Credentials) },
+		G_STRUCT_OFFSET(LassoDiscoQueryResponse, Credentials) },
 	{ "id", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoDiscoQueryResponse, id) },
+		G_STRUCT_OFFSET(LassoDiscoQueryResponse, id) },
 	{ NULL, 0, 0}
 };
 

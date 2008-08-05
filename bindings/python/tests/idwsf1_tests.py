@@ -187,7 +187,7 @@ class DiscoveryModifyTestCase(IdWsf1TestCase):
         idp_disco.processModifyMsg(wsp_disco.msgBody)
         idp_disco.setIdentityFromDump(idp_identity_dump)
         idp_disco.buildModifyResponseMsg()
-	offerings = idp_disco.identity.getOfferings()
+        offerings = idp_disco.identity.getOfferings()
         self.failUnless('<disco:Status code="OK"/>' in idp_disco.msgBody)
         self.failUnless('<disco:ModifyResponse newEntryIDs="%s"' % offerings[0].entryId in idp_disco.msgBody)
         self.failUnless('<disco:ServiceType>urn:liberty:id-sis-pp:2003-08</disco:ServiceType>' in
@@ -220,7 +220,7 @@ class DiscoveryRemoveTestCase(IdWsf1TestCase):
         idp_disco = lasso.Discovery(self.idp)
         idp_disco.processModifyMsg(wsp_disco.msgBody)
         idp_disco.setIdentityFromDump(idp_identity_dump)
-	offering = self.get_resource_offering()
+        offering = self.get_resource_offering()
         idp_disco.getIdentity().addResourceOffering(offering)
         self.failUnless('<disco:ServiceType>urn:liberty:id-sis-pp:2003-08</disco:ServiceType>' in
             idp_disco.identity.dump())

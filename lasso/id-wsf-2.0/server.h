@@ -34,12 +34,13 @@ extern "C" {
 #include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
 
 LASSO_EXPORT gint lasso_server_add_svc_metadata(LassoServer *server,
-        LassoIdWsf2DiscoSvcMetadata *metadata);
-        
-LASSO_EXPORT const GList OFTYPE(LassoIdWsf2DiscoSvcMetadata) *lasso_server_get_svc_metadatas(LassoServer *server);
+	LassoIdWsf2DiscoSvcMetadata *metadata);
+	
+LASSO_EXPORT const GList OFTYPE(LassoIdWsf2DiscoSvcMetadata) *lasso_server_get_svc_metadatas(
+	LassoServer *server);
 
 LASSO_EXPORT GList *lasso_server_get_svc_metadatas_with_id_and_type(LassoServer *server,
-        GList *svcMDIDs, const gchar *service_type);
+	GList *svcMDIDs, const gchar *service_type);
 
 #ifdef __cplusplus
 }

@@ -92,7 +92,7 @@ LASSO_EXPORT gint lasso_name_registration_process_response_msg(
 
 LASSO_EXPORT gint lasso_name_registration_validate_request(
 		LassoNameRegistration *name_registration);
- 
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -38,11 +38,11 @@ extern "C" {
 #define LASSO_DST_MODIFY_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
 			LASSO_TYPE_DST_MODIFY_RESPONSE, LassoDstModifyResponseClass))
 #define LASSO_IS_DST_MODIFY_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-       LASSO_TYPE_DST_MODIFY_RESPONSE))
+	   LASSO_TYPE_DST_MODIFY_RESPONSE))
 #define LASSO_IS_DST_MODIFY_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-       LASSO_TYPE_DST_MODIFY_RESPONSE))
+	   LASSO_TYPE_DST_MODIFY_RESPONSE))
 #define LASSO_DST_MODIFY_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-       LASSO_TYPE_DST_MODIFY_RESPONSE, LassoDstModifyResponseClass)) 
+	   LASSO_TYPE_DST_MODIFY_RESPONSE, LassoDstModifyResponseClass)) 
 
 typedef struct _LassoDstModifyResponse LassoDstModifyResponse;
 typedef struct _LassoDstModifyResponseClass LassoDstModifyResponseClass;

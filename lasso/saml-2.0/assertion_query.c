@@ -176,7 +176,7 @@ lasso_assertion_query_build_request_msg(LassoAssertionQuery *assertion_query)
 			profile->msg_url = lasso_provider_get_metadata_one(remote_provider,
 					"AttributeService SOAP");
 		}
-	 	/* XXX set private key so message is signed */
+		/* XXX set private key so message is signed */
 		profile->msg_body = lasso_node_export_to_soap(profile->request);
 		return 0;
 	}

@@ -42,7 +42,7 @@ extern "C" {
 #define LASSO_IS_DST_QUERY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DST_QUERY))
 #define LASSO_IS_DST_QUERY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DST_QUERY))
 #define LASSO_DST_QUERY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
- LASSO_TYPE_DST_QUERY, LassoDstQueryClass)) 
+			LASSO_TYPE_DST_QUERY, LassoDstQueryClass)) 
 
 typedef struct _LassoDstQuery LassoDstQuery;
 typedef struct _LassoDstQueryClass LassoDstQueryClass;

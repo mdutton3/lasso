@@ -34,13 +34,13 @@ extern "C" {
 #include <lasso/xml/ws/wsa_endpoint_reference.h>
 
 LASSO_EXPORT gint lasso_session_add_endpoint_reference(LassoSession *session,
-        LassoWsAddrEndpointReference *epr);
+	LassoWsAddrEndpointReference *epr);
 
 LASSO_EXPORT LassoWsAddrEndpointReference* lasso_session_get_endpoint_reference(
-        LassoSession *session, const gchar *service_type);
+	LassoSession *session, const gchar *service_type);
 
 LASSO_EXPORT LassoSaml2Assertion* lasso_session_get_assertion_identity_token(
-        LassoSession *session, const gchar *service_type);
+	LassoSession *session, const gchar *service_type);
 
 #ifdef __cplusplus
 }

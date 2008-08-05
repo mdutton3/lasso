@@ -46,7 +46,8 @@ LassoSoapFault* lasso_wsf_profile_get_fault(const LassoWsfProfile *profile);
 LassoDiscoDescription* lasso_wsf_profile_get_description_auto(const LassoDiscoServiceInstance *si,
 	const gchar *security_mech_id);
 
-void lasso_wsf_profile_set_resource_offering(LassoWsfProfile *profile, LassoDiscoResourceOffering *offering);
+void lasso_wsf_profile_set_resource_offering(LassoWsfProfile *profile,
+	LassoDiscoResourceOffering *offering);
 
 #ifdef __cplusplus
 }

@@ -60,7 +60,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstQuery, ResourceID) },
 	{ "EncryptedResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstQuery,
-							       EncryptedResourceID) },
+			EncryptedResourceID) },
 	{ "QueryItem", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstQuery, QueryItem) },
 	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoDstQuery, Extension) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, id) },
@@ -106,7 +106,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc) {
-	        return rc;
+		return rc;
 	}
 
 	query->hrefServiceType = g_strdup((char*)xmlnode->ns->href);

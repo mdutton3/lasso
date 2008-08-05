@@ -53,7 +53,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingProcessingContext, id) },
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSoapBindingProcessingContext, mustUnderstand) },
+		G_STRUCT_OFFSET(LassoSoapBindingProcessingContext, mustUnderstand) },
 	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingProcessingContext, actor) },
 	{ "", SNIPPET_TEXT_CHILD, G_STRUCT_OFFSET(LassoSoapBindingProcessingContext, content) },
 	{ NULL, 0, 0}

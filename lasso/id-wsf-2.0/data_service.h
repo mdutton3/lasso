@@ -38,15 +38,15 @@ extern "C" {
 
 #define LASSO_TYPE_IDWSF2_DATA_SERVICE (lasso_idwsf2_data_service_get_type())
 #define LASSO_IDWSF2_DATA_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-       LASSO_TYPE_IDWSF2_DATA_SERVICE, LassoIdWsf2DataService))
+	   LASSO_TYPE_IDWSF2_DATA_SERVICE, LassoIdWsf2DataService))
 #define LASSO_IDWSF2_DATA_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-       LASSO_TYPE_IDWSF2_DATA_SERVICE, LassoIdWsf2DataServiceClass))
+	   LASSO_TYPE_IDWSF2_DATA_SERVICE, LassoIdWsf2DataServiceClass))
 #define LASSO_IS_IDWSF2_DATA_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-       LASSO_TYPE_IDWSF2_DATA_SERVICE))
+	   LASSO_TYPE_IDWSF2_DATA_SERVICE))
 #define LASSO_IS_IDWSF2_DATA_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-       LASSO_TYPE_IDWSF2_DATA_SERVICE))
+	   LASSO_TYPE_IDWSF2_DATA_SERVICE))
 #define LASSO_IDWSF2_DATA_SERVICE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-       LASSO_TYPE_IDWSF2_DATA_SERVICE, LassoIdWsf2DataServiceClass)) 
+	   LASSO_TYPE_IDWSF2_DATA_SERVICE, LassoIdWsf2DataServiceClass)) 
 
 typedef struct _LassoIdWsf2DataService LassoIdWsf2DataService;
 typedef struct _LassoIdWsf2DataServiceClass LassoIdWsf2DataServiceClass;

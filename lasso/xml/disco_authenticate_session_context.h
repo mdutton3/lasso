@@ -48,7 +48,8 @@ extern "C" {
 	 LASSO_TYPE_DISCO_AUTHENTICATE_SESSION_CONTEXT, LassoDiscoAuthenticateSessionContextClass)) 
 
 typedef struct _LassoDiscoAuthenticateSessionContext LassoDiscoAuthenticateSessionContext;
-typedef struct _LassoDiscoAuthenticateSessionContextClass LassoDiscoAuthenticateSessionContextClass;
+typedef struct _LassoDiscoAuthenticateSessionContextClass
+	LassoDiscoAuthenticateSessionContextClass;
 
 struct _LassoDiscoAuthenticateSessionContext {
 	LassoNode parent;

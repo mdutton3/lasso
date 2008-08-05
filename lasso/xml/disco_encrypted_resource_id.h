@@ -55,7 +55,7 @@ struct _LassoDiscoEncryptedResourceID {
 	LassoXencEncryptedData *EncryptedData;
 	LassoXencEncryptedKey  *EncryptedKey;
 #endif
-    GList *any; /* of xmlNode */
+	GList *any; /* of xmlNode */
 };
 
 struct _LassoDiscoEncryptedResourceIDClass {

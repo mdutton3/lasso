@@ -274,8 +274,8 @@ else:
             break
         segment = wrap[i:j]
         if not 'object_init_ex' in segment:
-        	i = wrap.find(begin, i + len(segment))
-    	        continue
+            i = wrap.find(begin, i + len(segment))
+            continue
         x = segment.find('object_init_ex(return_value,') + len('object_init_ex(return_value,')
         y = segment.find(')', x)
         segment = '%s%s%s' % (segment[:x], 'get_node_info_with_swig(ty)->php', segment[y:])

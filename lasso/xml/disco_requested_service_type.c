@@ -51,9 +51,9 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ServiceType", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoRequestedServiceType, ServiceType) },
+		G_STRUCT_OFFSET(LassoDiscoRequestedServiceType, ServiceType) },
 	{ "Options", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoRequestedServiceType, Options) },
+		G_STRUCT_OFFSET(LassoDiscoRequestedServiceType, Options) },
 	{ NULL, 0, 0}
 };
 

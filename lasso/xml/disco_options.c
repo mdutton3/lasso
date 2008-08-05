@@ -90,7 +90,7 @@ lasso_disco_options_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-						   "LassoDiscoOptions", &this_info, 0);
+				"LassoDiscoOptions", &this_info, 0);
 	}
 	return this_type;
 }

@@ -49,10 +49,10 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "maxProcessingTime", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER, \
-	  G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, maxProcessingTime) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, maxProcessingTime) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, id) },
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, mustUnderstand) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, mustUnderstand) },
 	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, actor) },
 	{ NULL, 0, 0}
 };

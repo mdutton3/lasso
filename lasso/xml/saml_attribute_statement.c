@@ -89,8 +89,8 @@ lasso_saml_attribute_statement_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,
-						   "LassoSamlAttributeStatement",
-						   &this_info, 0);
+				"LassoSamlAttributeStatement",
+				&this_info, 0);
 	}
 	return this_type;
 }

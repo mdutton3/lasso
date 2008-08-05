@@ -43,28 +43,28 @@
  */
 
 /*****************************************************************************/
-/* private methods                                                           */
+/* private methods	                                                   */
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
 #if 0
 	{ "EncryptedData", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedData) },
+		G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedData) },
 	{ "EncryptedKey", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedKey) },
+		G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedKey) },
 #endif
-    { "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, any) },
+	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, any) },
 	{ NULL, 0, 0}
 };
 
 /*****************************************************************************/
-/* instance and class init functions                                         */
+/* instance and class init functions	                                 */
 /*****************************************************************************/
 
 static void
 instance_init(LassoDiscoEncryptedResourceID *node)
 {
-    node->any = NULL;
+	node->any = NULL;
 #if 0
 	node->EncryptedData = NULL;
 	node->EncryptedKey = NULL;
@@ -101,8 +101,8 @@ lasso_disco_encrypted_resource_id_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-						   "LassoDiscoEncryptedResourceID",
-						   &this_info, 0);
+				"LassoDiscoEncryptedResourceID",
+				&this_info, 0);
 	}
 	return this_type;
 }

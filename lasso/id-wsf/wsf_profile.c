@@ -69,8 +69,10 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Server", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, server) },
 	{ "Request", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, request) },
 	{ "Response", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, response) },
-	{ "SOAP-Request", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, soap_envelope_request) },
-	{ "SOAP-Response", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, soap_envelope_response) },
+	{ "SOAP-Request", SNIPPET_NODE_IN_CHILD, 
+		G_STRUCT_OFFSET(LassoWsfProfile, soap_envelope_request) },
+	{ "SOAP-Response", SNIPPET_NODE_IN_CHILD, 
+		G_STRUCT_OFFSET(LassoWsfProfile, soap_envelope_response) },
 	{ "MsgUrl", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsfProfile, msg_url) },
 	{ "MsgBody", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsfProfile, msg_body) },
 	{ "Identity", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, identity) },
@@ -247,7 +249,8 @@ lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential)
  * otherwise.
  */
 LassoDiscoDescription*
-lasso_wsf_profile_get_description_auto(const LassoDiscoServiceInstance *si, const gchar *security_mech_id)
+lasso_wsf_profile_get_description_auto(const LassoDiscoServiceInstance *si,
+	const gchar *security_mech_id)
 {
 	GList *iter, *iter2;
 	LassoDiscoDescription *description;
@@ -274,7 +277,8 @@ lasso_wsf_profile_get_description_auto(const LassoDiscoServiceInstance *si, cons
  * lasso_wsf_profile_set_description_from_offering:
  * @profile: a #LassoWsfProfile
  * @offering: a #LassoDiscoResourceOffering containing descriptions
- * @security_mech_id: an URL representing the wished security mechanism, if NULL take the first descriptions
+ * @security_mech_id: an URL representing the wished security mechanism, 
+ * if NULL take the first descriptions
  *
  * Setup the LassoWsfProfile for a given security mechanism.
  *
@@ -423,7 +427,8 @@ lasso_wsf_profile_get_resource_offering(LassoWsfProfile *profile)
  *
  */
 void
-lasso_wsf_profile_set_resource_offering(LassoWsfProfile *profile, LassoDiscoResourceOffering *offering)
+lasso_wsf_profile_set_resource_offering(LassoWsfProfile *profile, 
+	LassoDiscoResourceOffering *offering)
 {
 	lasso_assign_gobject(profile->private_data->offering, offering);
 }
@@ -776,7 +781,8 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	if (iter) {
 		correlation = LASSO_SOAP_BINDING_CORRELATION(iter->data);
 	} 
-	goto_exit_if_fail (correlation != NULL && correlation->messageID != NULL, LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION);
+	goto_exit_if_fail (correlation != NULL && correlation->messageID != NULL,
+		LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION);
 	messageId = correlation->messageID;
 	/* Comply with security mechanism */
 	if (security_mech_id == NULL 
@@ -1149,16 +1155,19 @@ add_key_info_security_token_reference(xmlDocPtr doc, xmlNode *signature, xmlChar
 	xmlFreeNodeList(key_info->children);
 	key_info->children = NULL;
 	/* Create sec:SecurityTokenReferenceNode */
-	security_token_reference = xmlSecAddChild(key_info, (xmlChar*) "SecurityTokenReference", (xmlChar*)LASSO_WSSE1_HREF);
+	security_token_reference = xmlSecAddChild(key_info, (xmlChar*) "SecurityTokenReference",
+		(xmlChar*)LASSO_WSSE1_HREF);
 	nsPtr = xmlSearchNsByHref(doc, security_token_reference, (xmlChar*) LASSO_SEC_HREF);
 	if (nsPtr == NULL) {
-		nsPtr = xmlNewNs(security_token_reference, (xmlChar*) LASSO_SEC_HREF, (xmlChar*) LASSO_SEC_PREFIX);
+		nsPtr = xmlNewNs(security_token_reference, (xmlChar*) LASSO_SEC_HREF,
+			(xmlChar*) LASSO_SEC_PREFIX);
 	}
 	value = (xmlChar*) g_strdup_printf("%s:MessageAuthentication", nsPtr->prefix);
 	xmlSetProp(security_token_reference, (xmlChar*) "Usage", value);
 	lasso_release(value);
 	/* Create Reference */
-	reference = xmlSecAddChild(security_token_reference, (xmlChar*) "Reference", (xmlChar*) LASSO_WSSE1_HREF);
+	reference = xmlSecAddChild(security_token_reference, (xmlChar*) "Reference",
+		(xmlChar*) LASSO_WSSE1_HREF);
 	value = make_id_ref(assertion_id);
 	xmlSetProp(reference, (xmlChar*) "URI", value);
 	lasso_release(value);
@@ -1197,9 +1206,13 @@ lasso_wsf_profile_add_saml_signature(LassoWsfProfile *wsf_profile, xmlDoc *doc) 
 	/* Lookup all referenced node and their Ids */
 	envelope = xmlDocGetRootElement(doc);
 	header = xmlSecSoap11GetHeader(envelope);
-	provider = xmlSecFindNode(header, (xmlChar*) "Provider", (xmlChar*) LASSO_SOAP_BINDING_HREF);
-	correlation = xmlSecFindNode(header, (xmlChar*) "Correlation", (xmlChar*) LASSO_SOAP_BINDING_HREF);
-	interaction = xmlSecFindNode(header, (xmlChar*) "UserInteraction", (xmlChar*) LASSO_IS_HREF);
+	
+	provider = xmlSecFindNode(header, (xmlChar*) "Provider",
+		(xmlChar*) LASSO_SOAP_BINDING_HREF);
+	correlation = xmlSecFindNode(header, (xmlChar*) "Correlation",
+		(xmlChar*) LASSO_SOAP_BINDING_HREF);
+	interaction = xmlSecFindNode(header, (xmlChar*) "UserInteraction",
+		(xmlChar*) LASSO_IS_HREF);
 	body = xmlSecSoap11GetBody(envelope);
 	xmlSecAddIDs(doc, envelope, ids);
 	goto_exit_if_fail(header != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
@@ -1216,7 +1229,8 @@ lasso_wsf_profile_add_saml_signature(LassoWsfProfile *wsf_profile, xmlDoc *doc) 
 	goto_exit_if_fail(provider_id != NULL, LASSO_XML_ERROR_ATTR_NOT_FOUND);
 	goto_exit_if_fail(correlation_id != NULL, LASSO_XML_ERROR_ATTR_NOT_FOUND);
 	goto_exit_if_fail(body_id != NULL, LASSO_XML_ERROR_ATTR_NOT_FOUND);
-	goto_exit_if_fail(interaction == NULL || interaction_id != NULL, LASSO_XML_ERROR_ATTR_NOT_FOUND);
+	goto_exit_if_fail(interaction == NULL || interaction_id != NULL,
+		LASSO_XML_ERROR_ATTR_NOT_FOUND);
 
 	/* Lookup the assertion Id for the KeyInfo node generation */
 	security = xmlSecFindNode(header, (xmlChar*) "Security", (xmlChar*) LASSO_WSSE1_HREF);

@@ -1,7 +1,8 @@
 MAINTAINERCLEANFILES = Makefile.in
+TESTS = #
 
 if PYTHON_ENABLED
-TESTS = profiles_tests.py binding_tests.py
+TESTS += profiles_tests.py binding_tests.py
 endif
 
 if WSF_ENABLED

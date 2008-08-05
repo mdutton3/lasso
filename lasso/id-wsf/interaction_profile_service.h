@@ -36,15 +36,15 @@ extern "C" {
 
 #define LASSO_TYPE_INTERACTION_PROFILE_SERVICE (lasso_interaction_profile_service_get_type())
 #define LASSO_INTERACTION_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-       LASSO_TYPE_INTERACTION_PROFILE_SERVICE, LassoInteractionProfileService))
+	   LASSO_TYPE_INTERACTION_PROFILE_SERVICE, LassoInteractionProfileService))
 #define LASSO_INTERACTION_PROFILE_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-       LASSO_TYPE_INTERACTION_PROFILE_SERVICE, LassoInteractionProfileServiceClass))
+	   LASSO_TYPE_INTERACTION_PROFILE_SERVICE, LassoInteractionProfileServiceClass))
 #define LASSO_IS_INTERACTION_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-       LASSO_TYPE_INTERACTION_PROFILE_SERVICE))
+	   LASSO_TYPE_INTERACTION_PROFILE_SERVICE))
 #define LASSO_IS_INTERACTION_PROFILE_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-       LASSO_TYPE_INTERACTION_PROFILE_SERVICE))
+	   LASSO_TYPE_INTERACTION_PROFILE_SERVICE))
 #define LASSO_INTERACTION_PROFILE_SERVICE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-       LASSO_TYPE_INTERACTION_PROFILE_SERVICE, LassoInteractionProfileServiceClass)) 
+	   LASSO_TYPE_INTERACTION_PROFILE_SERVICE, LassoInteractionProfileServiceClass)) 
 
 typedef struct _LassoInteractionProfileService LassoInteractionProfileService;
 typedef struct _LassoInteractionProfileServiceClass LassoInteractionProfileServiceClass;

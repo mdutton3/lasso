@@ -106,7 +106,7 @@ def is_const_type(type):
 class Binding:
     def __init__(self, binding_data):
         self.binding_data = binding_data
-	self.src_dir = os.path.dirname(__file__)
+        self.src_dir = os.path.dirname(__file__)
 
     def print_list_of_files(self):
         l = ['GObject.java','LassoConstants.java','LassoJNI.java','LassoException.java', 'LassoUndefinedException.java', 'LassoUnimplementedException.java']
@@ -168,13 +168,13 @@ public abstract interface LassoConstants {
         # Declaration
         for c in self.binding_data.constants:
             print >> fd, 'static final ',
-	    if c[0] == 'i':
-	       print >> fd, 'int ',
-	    elif c[0] == 's':
-	       print >> fd, 'String ',
+            if c[0] == 'i':
+               print >> fd, 'int ',
+            elif c[0] == 's':
+               print >> fd, 'String ',
             elif c[0] == 'b':
                print >> fd, 'boolean ',
-	    print >> fd, '%s = LassoJNI.%s_get();' % (c[1][6:], c[1])
+            print >> fd, '%s = LassoJNI.%s_get();' % (c[1][6:], c[1])
 
     def generate_Constants_footer(self, fd):
         print >> fd, '}'
@@ -235,9 +235,9 @@ protected static native void destroy(long cptr);
             return 'GObject'
 
     def JNI_return_type(self, vtype):
-	if vtype:
-		m = re.match(r'(?:const\s*)?(.*)',vtype)
-		vtype = m.group(1)
+        if vtype:
+            m = re.match(r'(?:const\s*)?(.*)',vtype)
+            vtype = m.group(1)
         if vtype == 'gboolean':
             return 'boolean'
         elif vtype in ['int','gint'] + self.binding_data.enums:

@@ -66,7 +66,7 @@ LASSO_EXPORT LassoNameIdManagement *lasso_name_id_management_new(LassoServer *se
 LASSO_EXPORT LassoNameIdManagement *lasso_name_id_management_new_from_dump(
 		LassoServer *server, const char *dump);
 LASSO_EXPORT char* lasso_name_id_management_dump(LassoNameIdManagement *name_id_management);
- 
+
 LASSO_EXPORT void lasso_name_id_management_destroy(LassoNameIdManagement *name_id_management);
 
 LASSO_EXPORT gint lasso_name_id_management_init_request(

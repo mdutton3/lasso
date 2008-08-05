@@ -46,7 +46,7 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "descriptionIDRefs",SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoDiscoGenerateBearerToken, descriptionIDRefs) },
+		G_STRUCT_OFFSET(LassoDiscoGenerateBearerToken, descriptionIDRefs) },
 	{ NULL, 0, 0}
 };
 

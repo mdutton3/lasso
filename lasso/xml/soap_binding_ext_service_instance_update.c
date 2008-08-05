@@ -59,16 +59,16 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "SecurityMechID", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, SecurityMechID) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, SecurityMechID) },
 	{ "Credential", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, Credential) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, Credential) },
 	{ "Endpoint", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, Endpoint) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, Endpoint) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, id) },
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, mustUnderstand) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, mustUnderstand) },
 	{ "actor", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, actor) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, actor) },
 	{ NULL, 0, 0}
 };
 

@@ -29,7 +29,7 @@ class WrapperSource:
         self.binding_data = binding_data
         self.fd = fd
         self.functions_list = []
-	self.src_dir = os.path.dirname(__file__)
+        self.src_dir = os.path.dirname(__file__)
 
     def is_object(self, t):
         return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*',

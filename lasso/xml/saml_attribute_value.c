@@ -80,8 +80,8 @@ lasso_saml_attribute_value_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-						   "LassoSamlAttributeValue",
-						   &this_info, 0);
+				"LassoSamlAttributeValue",
+				&this_info, 0);
 	}
 	return this_type;
 }

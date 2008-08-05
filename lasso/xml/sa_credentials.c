@@ -120,12 +120,12 @@ lasso_sa_credentials_new_from_message(const gchar *message)
 
 gint
 lasso_sa_credentials_add_assertion(LassoSaCredentials *credentials,
-				   LassoSamlAssertion *assertion)
+		LassoSamlAssertion *assertion)
 {
 	g_return_val_if_fail(LASSO_IS_SA_CREDENTIALS(credentials),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_SAML_ASSERTION(assertion),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	g_object_ref(assertion);
 	credentials->any = g_list_append(credentials->any, assertion);

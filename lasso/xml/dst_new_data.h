@@ -38,9 +38,9 @@ extern "C" {
 			LASSO_TYPE_DST_NEW_DATA, LassoDstNewDataClass))
 #define LASSO_IS_DST_NEW_DATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DST_NEW_DATA))
 #define LASSO_IS_DST_NEW_DATA_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-       LASSO_TYPE_DST_NEW_DATA))
+	   LASSO_TYPE_DST_NEW_DATA))
 #define LASSO_DST_NEW_DATA_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-       LASSO_TYPE_DST_NEW_DATA, LassoDstNewDataClass)) 
+	   LASSO_TYPE_DST_NEW_DATA, LassoDstNewDataClass)) 
 
 typedef struct _LassoDstNewData LassoDstNewData;
 typedef struct _LassoDstNewDataClass LassoDstNewDataClass;

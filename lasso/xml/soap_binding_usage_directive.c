@@ -51,12 +51,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, other) },
+		G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, other) },
 	{ "ref", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, ref) },
+		G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, ref) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, id) },
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, mustUnderstand) },
+		G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, mustUnderstand) },
 	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, actor) },
 	{ NULL, 0, 0}
 };

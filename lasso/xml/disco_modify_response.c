@@ -66,7 +66,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoModifyResponse, Status) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoModifyResponse, id) },
 	{ "newEntryIDs", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoDiscoModifyResponse, newEntryIDs) },
+		G_STRUCT_OFFSET(LassoDiscoModifyResponse, newEntryIDs) },
 	{ NULL, 0, 0}
 };
 
@@ -141,8 +141,8 @@ lasso_disco_modify_response_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-						   "LassoDiscoModifyResponse",
-						   &this_info, 0);
+				"LassoDiscoModifyResponse",
+				&this_info, 0);
 	}
 	return this_type;
 }

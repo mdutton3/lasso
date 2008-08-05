@@ -49,19 +49,19 @@
  */
 
 /*****************************************************************************/
-/* private methods                                                           */
+/* private methods	                                                   */
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
 /*	{ "AssertionIDReference", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoSamlAdvice, AssertionIDReference) },
 	{ "Assertion", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAdvice, Assertion) }, */
-    { "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoSamlAdvice, any) },
+	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoSamlAdvice, any) },
 	{ NULL, 0, 0}
 };
 
 /*****************************************************************************/
-/* instance and class init functions                                         */
+/* instance and class init functions	                                 */
 /*****************************************************************************/
 
 static void
@@ -69,7 +69,7 @@ instance_init(LassoSamlAdvice *node)
 {
 /*	node->AssertionIDReference = NULL;
 	node->Assertion = NULL; */
-    node->any = NULL;
+	node->any = NULL;
 }
 
 static void

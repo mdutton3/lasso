@@ -59,17 +59,17 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Data", SNIPPET_LIST_CONTENT,
-	  G_STRUCT_OFFSET(LassoSaSASLRequest, Data) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, Data) },
 	{ "RequestAuthnContext", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoSaSASLRequest, RequestAuthnContext) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, RequestAuthnContext) },
 	{ "mechanism", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSASLRequest, mechanism) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, mechanism) },
 	{ "authzID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSASLRequest, authzID) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, authzID) },
 	{ "advisoryAuthnID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSASLRequest, advisoryAuthnID) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, advisoryAuthnID) },
 	{ "id", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSASLRequest, id) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, id) },
 	{ NULL, 0, 0}
 };
 

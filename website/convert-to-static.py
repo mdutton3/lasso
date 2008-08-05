@@ -260,8 +260,8 @@ for base, dirs, files in os.walk('web'):
             continue
 
         if ext not in ('.html', '.xml') or filename.startswith('doap.') or 'api-reference' in src_file:
-	    if os.path.exists(dst_file):
-	        os.unlink(dst_file)
+            if os.path.exists(dst_file):
+                os.unlink(dst_file)
             os.link(src_file, dst_file)
             continue
 

@@ -40,15 +40,15 @@ extern "C" {
 
 #define LASSO_TYPE_PERSONAL_PROFILE_SERVICE (lasso_personal_profile_service_get_type())
 #define LASSO_PERSONAL_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-       LASSO_TYPE_PERSONAL_PROFILE_SERVICE, LassoPersonalProfileService))
+	   LASSO_TYPE_PERSONAL_PROFILE_SERVICE, LassoPersonalProfileService))
 #define LASSO_PERSONAL_PROFILE_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-       LASSO_TYPE_PERSONAL_PROFILE_SERVICE, LassoPersonalProfileServiceClass))
+	   LASSO_TYPE_PERSONAL_PROFILE_SERVICE, LassoPersonalProfileServiceClass))
 #define LASSO_IS_PERSONAL_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-       LASSO_TYPE_PERSONAL_PROFILE_SERVICE))
+	   LASSO_TYPE_PERSONAL_PROFILE_SERVICE))
 #define LASSO_IS_PERSONAL_PROFILE_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-       LASSO_TYPE_PERSONAL_PROFILE_SERVICE))
+	   LASSO_TYPE_PERSONAL_PROFILE_SERVICE))
 #define LASSO_PERSONAL_PROFILE_SERVICE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-       LASSO_TYPE_PERSONAL_PROFILE_SERVICE, LassoPersonalProfileServiceClass)) 
+	   LASSO_TYPE_PERSONAL_PROFILE_SERVICE, LassoPersonalProfileServiceClass)) 
 
 typedef struct _LassoPersonalProfileService LassoPersonalProfileService;
 typedef struct _LassoPersonalProfileServiceClass LassoPersonalProfileServiceClass;

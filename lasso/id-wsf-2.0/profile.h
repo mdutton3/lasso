@@ -34,15 +34,15 @@ extern "C" {
 
 #define LASSO_TYPE_IDWSF2_PROFILE (lasso_idwsf2_profile_get_type())
 #define LASSO_IDWSF2_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-       LASSO_TYPE_IDWSF2_PROFILE, LassoIdWsf2Profile))
+	   LASSO_TYPE_IDWSF2_PROFILE, LassoIdWsf2Profile))
 #define LASSO_IDWSF2_PROFILE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-       LASSO_TYPE_IDWSF2_PROFILE, LassoIdWsf2ProfileClass))
+	   LASSO_TYPE_IDWSF2_PROFILE, LassoIdWsf2ProfileClass))
 #define LASSO_IS_IDWSF2_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-       LASSO_TYPE_IDWSF2_PROFILE))
+	   LASSO_TYPE_IDWSF2_PROFILE))
 #define LASSO_IS_IDWSF2_PROFILE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-       LASSO_TYPE_IDWSF2_PROFILE))
+	   LASSO_TYPE_IDWSF2_PROFILE))
 #define LASSO_IDWSF2_PROFILE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-       LASSO_TYPE_IDWSF2_PROFILE, LassoIdWsf2ProfileClass)) 
+	   LASSO_TYPE_IDWSF2_PROFILE, LassoIdWsf2ProfileClass)) 
 
 
 typedef struct _LassoIdWsf2Profile LassoIdWsf2Profile;

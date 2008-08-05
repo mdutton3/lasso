@@ -68,12 +68,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "SecurityMechID", SNIPPET_LIST_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoDescription, SecurityMechID) },
+		G_STRUCT_OFFSET(LassoDiscoDescription, SecurityMechID) },
 	{ "CredentialRef", SNIPPET_LIST_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoDescription, CredentialRef) },
+		G_STRUCT_OFFSET(LassoDiscoDescription, CredentialRef) },
 	{ "WsdlURI", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, WsdlURI) },
 	{ "ServiceNameRef", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoDescription, ServiceNameRef) },
+		G_STRUCT_OFFSET(LassoDiscoDescription, ServiceNameRef) },
 	{ "Endpoint", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, Endpoint) },
 	{ "SoapAction", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, SoapAction) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoDescription, id) },
@@ -129,7 +129,7 @@ lasso_disco_description_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-						   "LassoDiscoDescription", &this_info, 0);
+				"LassoDiscoDescription", &this_info, 0);
 	}
 	return this_type;
 }
@@ -146,8 +146,8 @@ lasso_disco_description_new()
 
 LassoDiscoDescription*
 lasso_disco_description_new_with_WsdlRef(const gchar *securityMechID,
-					 const gchar *wsdlURI,
-					 const gchar *serviceNameRef)
+		const gchar *wsdlURI,
+		const gchar *serviceNameRef)
 {
 	LassoDiscoDescription *description;
 
@@ -158,7 +158,7 @@ lasso_disco_description_new_with_WsdlRef(const gchar *securityMechID,
 	description = g_object_new(LASSO_TYPE_DISCO_DESCRIPTION, NULL);
 
 	description->SecurityMechID = g_list_append(description->SecurityMechID,
-						    g_strdup(securityMechID));
+			g_strdup(securityMechID));
 	description->WsdlURI = g_strdup(wsdlURI);
 	description->ServiceNameRef = g_strdup(serviceNameRef);
 
@@ -167,8 +167,8 @@ lasso_disco_description_new_with_WsdlRef(const gchar *securityMechID,
 
 LassoDiscoDescription*
 lasso_disco_description_new_with_BriefSoapHttpDescription(const gchar *securityMechID,
-							  const gchar *endpoint,
-							  const gchar *soapAction)
+		const gchar *endpoint,
+		const gchar *soapAction)
 {
 	LassoDiscoDescription *description;
 
@@ -178,7 +178,7 @@ lasso_disco_description_new_with_BriefSoapHttpDescription(const gchar *securityM
 	description = g_object_new(LASSO_TYPE_DISCO_DESCRIPTION, NULL);
 
 	description->SecurityMechID = g_list_append(description->SecurityMechID,
-						    g_strdup(securityMechID));
+			g_strdup(securityMechID));
 	description->Endpoint = g_strdup(endpoint);
 	if (soapAction != NULL) {
 		description->SoapAction = g_strdup(soapAction);
@@ -198,14 +198,14 @@ lasso_disco_description_copy(LassoDiscoDescription *description)
 	securityMechIds = description->SecurityMechID;
 	while (securityMechIds) {
 		newDescription->SecurityMechID = g_list_append(newDescription->SecurityMechID,
-							       g_strdup(securityMechIds->data));
+				g_strdup(securityMechIds->data));
 		securityMechIds = securityMechIds->next;
 	}
 
 	credentialRefs = description->CredentialRef;
 	while (credentialRefs) {
 		newDescription->CredentialRef = g_list_append(newDescription->CredentialRef,
-							      g_strdup(credentialRefs->data));
+				g_strdup(credentialRefs->data));
 		credentialRefs = credentialRefs->next;
 	}
 

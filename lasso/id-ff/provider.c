@@ -83,7 +83,7 @@ lasso_provider_get_assertion_consumer_service_url(LassoProvider *provider, const
 	char *sid = (char*)service_id;
 	char *name;
 
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	if (sid == NULL)
 		sid = provider->private_data->default_assertion_consumer;
 
@@ -116,7 +116,7 @@ lasso_provider_get_metadata_one(LassoProvider *provider, const char *name)
 	GList *l;
 	GHashTable *descriptor;
 
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	descriptor = provider->private_data->SPDescriptor; /* default to SP */
 	if (provider->role == LASSO_PROVIDER_ROLE_IDP)
 		descriptor = provider->private_data->IDPDescriptor;
@@ -147,7 +147,7 @@ lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
 {
 	GHashTable *descriptor;
 
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	descriptor = provider->private_data->SPDescriptor; /* default to SP */
 	if (provider->role == LASSO_PROVIDER_ROLE_IDP)
 		descriptor = provider->private_data->IDPDescriptor;
@@ -177,7 +177,7 @@ lasso_provider_get_first_http_method(LassoProvider *provider,
 	GList *t1, *t2 = NULL;
 	gboolean found;
 
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_HTTP_METHOD_NONE);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_HTTP_METHOD_NONE);
 	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
 		return lasso_saml20_provider_get_first_http_method(
 				provider, remote_provider, protocol_type);
@@ -245,7 +245,7 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
 	LassoProviderRole initiating_role;
 	char *protocol_profile;
 
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE); // Be conservative
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE); /* Be conservative */
 	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
 		return lasso_saml20_provider_accept_http_method(
 				provider, remote_provider, protocol_type,
@@ -300,7 +300,7 @@ lasso_provider_has_protocol_profile(LassoProvider *provider,
 {
 	GList *supported;
 	
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE); // Be conservative
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE); /* Be conservative */
 	supported = lasso_provider_get_metadata_list(
 			provider, protocol_md_nodename[protocol_type]);
 	
@@ -323,7 +323,7 @@ lasso_provider_get_base64_succinct_id(LassoProvider *provider)
 {
 	char *succinct_id, *base64_succinct_id;
 
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	succinct_id = lasso_sha1(provider->ProviderID);
 	base64_succinct_id = (char*)xmlSecBase64Encode((xmlChar*)succinct_id, 20, 0);
 	xmlFree(succinct_id);
@@ -343,7 +343,7 @@ lasso_provider_get_base64_succinct_id(LassoProvider *provider)
 xmlNode*
 lasso_provider_get_organization(LassoProvider *provider)
 {
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	if (provider->private_data->organization) {
 		return xmlCopyNode(provider->private_data->organization, 1);
 	} else {
@@ -353,7 +353,7 @@ lasso_provider_get_organization(LassoProvider *provider)
 
 
 /*****************************************************************************/
-/* private methods                                                           */
+/* private methods	                                                     */
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
@@ -369,7 +369,7 @@ static LassoNodeClass *parent_class = NULL;
 xmlSecKey*
 lasso_provider_get_public_key(LassoProvider *provider)
 {
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	return provider->private_data->public_key;
 }
 
@@ -420,6 +420,7 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 		elements = g_hash_table_lookup(descriptor, name);
 		value = xmlNodeGetContent(t);
 		elements = g_list_append(elements, g_strdup((char*)value));
+		// Do not mix g_free strings with xmlFree strings
 		xmlFree(value);
 		g_hash_table_insert(descriptor, name, elements);
 		t = t->next;
@@ -500,7 +501,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 }
 
 /*****************************************************************************/
-/* overridden parent class methods                                           */
+/* overridden parent class methods	                                     */
 /*****************************************************************************/
 
 static void
@@ -566,12 +567,12 @@ dispose(GObject *object)
 	}
 
 	if (provider->private_data->encryption_public_key_str) {
-	 	g_free(provider->private_data->encryption_public_key_str);
-	 	provider->private_data->encryption_public_key_str = NULL;
+		g_free(provider->private_data->encryption_public_key_str);
+		provider->private_data->encryption_public_key_str = NULL;
 	}
 
 	if (provider->private_data->encryption_public_key) {
-	 	xmlSecKeyDestroy(provider->private_data->encryption_public_key);
+		xmlSecKeyDestroy(provider->private_data->encryption_public_key);
 		provider->private_data->encryption_public_key = NULL;
 	}
 
@@ -671,7 +672,7 @@ lasso_provider_get_type()
 LassoProtocolConformance
 lasso_provider_get_protocol_conformance(LassoProvider *provider)
 {
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_PROTOCOL_NONE);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_PROTOCOL_NONE);
 	return provider->private_data->conformance;
 }
 
@@ -686,7 +687,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	const char *xpath_sp = "/md:EntityDescriptor/md:SPDescriptor";
 	const char *xpath_organization = "/md:EntityDescriptor/md:Organization";
 
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	doc = xmlParseFile(metadata);
 	if (doc == NULL)
 		return FALSE;
@@ -843,7 +844,7 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 	};
 	int i;
 
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
 		public_key = provider->public_key;
 		key_descriptor = provider->private_data->signing_key_descriptor;
@@ -983,7 +984,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	xmlXPathContext *xpathCtx = NULL;
 	xmlXPathObject *xpathObj = NULL;
 
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	msg = (char*)message;
 	if (message == NULL)
@@ -1132,7 +1133,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 void
 lasso_provider_set_encryption_mode(LassoProvider *provider, LassoEncryptionMode encryption_mode)
 {
-        g_return_if_fail(LASSO_IS_PROVIDER(provider));
+	g_return_if_fail(LASSO_IS_PROVIDER(provider));
 	provider->private_data->encryption_mode = encryption_mode;
 }
 
@@ -1147,6 +1148,6 @@ void
 lasso_provider_set_encryption_sym_key_type(LassoProvider *provider,
 		LassoEncryptionSymKeyType encryption_sym_key_type)
 {
-        g_return_if_fail(LASSO_IS_PROVIDER(provider));
+	g_return_if_fail(LASSO_IS_PROVIDER(provider));
 	provider->private_data->encryption_sym_key_type = encryption_sym_key_type;
 }

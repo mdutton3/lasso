@@ -50,11 +50,11 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ServiceType", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoServiceInstance, ServiceType) },
+		G_STRUCT_OFFSET(LassoDiscoServiceInstance, ServiceType) },
 	{ "ProviderID",  SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoServiceInstance, ProviderID) },
+		G_STRUCT_OFFSET(LassoDiscoServiceInstance, ProviderID) },
 	{ "Description", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoDiscoServiceInstance, Description) },
+		G_STRUCT_OFFSET(LassoDiscoServiceInstance, Description) },
 	{ NULL, 0, 0}
 };
 
@@ -107,8 +107,8 @@ lasso_disco_service_instance_get_type()
 
 LassoDiscoServiceInstance*
 lasso_disco_service_instance_new(const gchar *serviceType,
-				 const gchar *providerID,
-				 LassoDiscoDescription *description)
+		const gchar *providerID,
+		LassoDiscoDescription *description)
 {
 	LassoDiscoServiceInstance *service_instance;
 
@@ -124,7 +124,7 @@ lasso_disco_service_instance_new(const gchar *serviceType,
 	service_instance->ProviderID = g_strdup(providerID);
 
 	service_instance->Description = g_list_append(service_instance->Description,
-						      description);
+			description);
 
 	return service_instance;
 }

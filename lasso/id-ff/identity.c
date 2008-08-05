@@ -163,7 +163,8 @@ lasso_identity_add_resource_offering(LassoIdentity *identity,
 		identity->private_data->last_entry_id++;
 	} while (g_hash_table_lookup(identity->private_data->resource_offerings_map, entry_id_s));
 	lasso_assign_string(offering->entryID, entry_id_s);
-	g_hash_table_insert(identity->private_data->resource_offerings_map, g_strdup(offering->entryID), g_object_ref(offering));
+	g_hash_table_insert(identity->private_data->resource_offerings_map,
+		g_strdup(offering->entryID), g_object_ref(offering));
 	identity->is_dirty = TRUE;
 
 	return 0;
@@ -320,8 +321,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 				(GHFunc)add_childnode_from_hashtable, xmlnode);
 #ifdef LASSO_WSF_ENABLED
 	/* Resource Offerings */
-	//g_list_foreach(identity->private_data->resource_offerings,
-	//		(GFunc)add_childnode_from_list, xmlnode);
 	g_hash_table_foreach(identity->private_data->resource_offerings_map, 
 			(GHFunc)add_childnode_from_hashtable, xmlnode);
 

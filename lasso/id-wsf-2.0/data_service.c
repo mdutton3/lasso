@@ -380,7 +380,8 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 
 
 GList*
-lasso_idwsf2_data_service_get_attribute_nodes(LassoIdWsf2DataService *service, const gchar *item_id)
+lasso_idwsf2_data_service_get_attribute_nodes(LassoIdWsf2DataService *service,
+	const gchar *item_id)
 {
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoIdWsf2DstRefQueryResponse *response;

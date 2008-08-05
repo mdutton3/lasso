@@ -68,16 +68,16 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSaSASLResponse, Status) },
 	{ "PasswordTransforms", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoSaSASLResponse, PasswordTransforms) },
+		G_STRUCT_OFFSET(LassoSaSASLResponse, PasswordTransforms) },
 	{ "Data", SNIPPET_LIST_CONTENT,
-	  G_STRUCT_OFFSET(LassoSaSASLResponse, Data) },
+		G_STRUCT_OFFSET(LassoSaSASLResponse, Data) },
 	{ "ResourceOffering", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoSaSASLResponse, ResourceOffering) },
+		G_STRUCT_OFFSET(LassoSaSASLResponse, ResourceOffering) },
 	{ "Credentials", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSaSASLResponse, Credentials) },
 	{ "serverMechanism", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSASLResponse, serverMechanism) },
+		G_STRUCT_OFFSET(LassoSaSASLResponse, serverMechanism) },
 	{ "id", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSASLResponse, id) },
+		G_STRUCT_OFFSET(LassoSaSASLResponse, id) },
 	{ NULL, 0, 0}
 };
 
@@ -190,12 +190,12 @@ lasso_sa_sasl_response_new_from_message(const gchar *message)
 
 gint
 lasso_sa_sasl_response_add_credentials(LassoSaSASLResponse *response,
-				       LassoSaCredentials *credentials)
+		LassoSaCredentials *credentials)
 {
 	g_return_val_if_fail(LASSO_IS_SA_SASL_RESPONSE(response),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_SA_CREDENTIALS(credentials),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	g_object_ref(credentials);
 	response->Credentials = g_list_append(response->Credentials, credentials);
@@ -205,12 +205,12 @@ lasso_sa_sasl_response_add_credentials(LassoSaSASLResponse *response,
 
 gint
 lasso_sa_sasl_response_add_resource_offering(LassoSaSASLResponse *response,
-					     LassoDiscoResourceOffering *resourceOffering)
+		LassoDiscoResourceOffering *resourceOffering)
 {
 	g_return_val_if_fail(LASSO_IS_SA_SASL_RESPONSE(response),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	g_object_ref(resourceOffering);
 	response->ResourceOffering = g_list_append(response->ResourceOffering, resourceOffering);
