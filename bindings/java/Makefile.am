@@ -67,7 +67,10 @@ EXTRA_DIST = \
 	GObject.java \
 	LassoException_top.java \
 	tests/BindingTests.java \
-	tests/LoginTest.java
+	tests/LoginTest.java \
+	lang.py \
+	wrapper_bottom.c \
+	wrapper_top.c 
 
 
 # Some of the following classes are built only if junit is available
