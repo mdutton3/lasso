@@ -153,4 +153,6 @@
 #define lasso_warn_deprecated() \
 	g_warning("Function %s is deprecated !!!", G_STRFUNC)
 
+#define OFTYPE(x) 
+
 #endif /* __LASSO_UTILS_H__ */
