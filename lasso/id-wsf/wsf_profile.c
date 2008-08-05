@@ -210,7 +210,7 @@ lasso_wsf_profile_build_soap_envelope_internal(const char *refToMessageId, const
  * @src: a #LassoWsfProfile containing the credentials
  * @dest: the #LassoWsfProfile where to add the credentials
  *
- * OBSOLETE: Do nothin.
+ * @Deprecated: Since 2.2.1
  *
  * Return value: 0.
  */ 
@@ -225,7 +225,7 @@ lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
  * @profile: a #LassoWsfProfile
  * @credential: an #xmlNode containing credential informations
  *
- * OBSOLETE: Do nothing.
+ * @Deprecated: Since 2.2.1
  *
  * Return value: 0.
  */
@@ -451,7 +451,7 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *pr
  * lasso_wsf_profile_is_principal_online():
  * @profile: a #LassoWsfProfile
  *
- * OBSOLETE: do nothing.
+ * @Deprecated: Since 2.2.1
  *
  * Return value: FALSE.
  **/
@@ -466,7 +466,7 @@ lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile)
  * @profile: a #LassoWsfProfile
  * @status : a char* representing status of principal.
  *
- * OBSOLETE: do nothing.
+ * @Deprecated: Since 2.2.1
  *
  **/
 void
@@ -478,7 +478,7 @@ lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile, const char *sta
  * lasso_wsf_profile_set_principal_online():
  * @profile: a #LassoWsfProfile
  *
- * OBSOLETE: do nothing.
+ * @Deprecated: Since 2.2.1
  *
  **/
 void
@@ -876,7 +876,7 @@ exit:
 /**
  * lasso_wsf_profile_set_provider_soap_request:
  *
- * OBSOLETE: do nothing.
+ * @Deprecated: Since 2.2.1
  *
  * Return value: NULL
  */
