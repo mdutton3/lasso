@@ -72,13 +72,18 @@
 		} \
 	}
 
-#define lasso_release_gobject(dest) \
+#define lasso_release_full(dest, free_function) \
 	{ \
 		if (dest) { \
-			g_object_unref(dest); \
-			dest = NULL; \
+			free_function(dest); dest = NULL; \
 		} \
 	}
+
+#define lasso_release_gobject(dest) \
+	lasso_release_full(dest, g_object_unref)
+
+#define lasso_release_string(dest) \
+	lasso_release_full(dest, g_list_free)
 
 #define lasso_release_list_of_strings(dest) \
 	{ \
@@ -98,14 +103,6 @@
 		} \
 	}
 
-#define lasso_release_list(dest) \
-	{ \
-		if (dest) { \
-			g_list_free(dest); \
-			dest = NULL; \
-		} \
-	}
-
 #define lasso_unlink_and_release_node(node) \
 	{ \
 		if (node) { \
@@ -116,26 +113,13 @@
 	}
 
 #define lasso_release_node(node) \
-	{ \
-		if (node) { \
-			xmlFreeNode(node); \
-			node = NULL; \
-		} \
-	}
+	lasso_release_full(node, xmlFreeNode)
 
 #define lasso_release_doc(doc) \
-	{ \
-		if (doc) { \
-			xmlFreeDoc(doc); \
-			doc = NULL; \
-		} \
-	}
+	lasso_release_full(doc, xmlFreeDoc)
+
 #define lasso_release_xmlchar(dest) \
-	{ \
-		if (dest) { \
-			xmlFree(dest); dest = NULL; \
-		} \
-	}
+	lasso_release_full(dest, xmlFree) 
 
 /* Bad param handling */
 #define lasso_return_val_if_invalid_param(kind, name, val) \
