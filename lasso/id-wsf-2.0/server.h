@@ -25,6 +25,8 @@
 #ifndef __LASSO_IDWSF2_SERVER_H__
 #define __LASSO_IDWSF2_SERVER_H__
 
+#include <lasso/utils.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */ 
@@ -34,7 +36,7 @@ extern "C" {
 LASSO_EXPORT gint lasso_server_add_svc_metadata(LassoServer *server,
         LassoIdWsf2DiscoSvcMetadata *metadata);
         
-LASSO_EXPORT const GList *lasso_server_get_svc_metadatas(LassoServer *server);
+LASSO_EXPORT const GList OFTYPE(LassoIdWsf2DiscoSvcMetadata) *lasso_server_get_svc_metadatas(LassoServer *server);
 
 LASSO_EXPORT GList *lasso_server_get_svc_metadatas_with_id_and_type(LassoServer *server,
         GList *svcMDIDs, const gchar *service_type);
