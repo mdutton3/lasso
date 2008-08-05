@@ -23,17 +23,21 @@ import os
 import sys
 import re
 import textwrap
-
 import utils
 
-class PythonBinding:
+class Binding:
     def __init__(self, binding_data):
         self.binding_data = binding_data
 
     def is_pygobject(self, t):
-        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*',
-                'const GList*', 'GList*', 'GHashTable*',
-                'int', 'gint', 'gboolean', 'const gboolean', 'xmlNode*'] + self.binding_data.enums
+        if t:
+            m = re.match(r'(?:const\s*)?(.*)',t) # Remove const modifier
+            t = m.group(1) 
+            return t not in ['char*', 'gchar*',
+                'GList*', 'GHashTable*',
+                'int', 'gint', 'gboolean', 'xmlNode*'] + self.binding_data.enums
+        else:
+            return False
 
     def generate(self):
         fd = open('lasso.py', 'w')
@@ -576,8 +580,7 @@ if WSF_SUPPORT:
 
 
     def generate_wrapper(self, fd):
-        print >> fd, open(os.path.join(self.binding_data.src_dir, 
-                    'lang_python_wrapper_top.c')).read()
+        print >> fd, open('wrapper_top.c').read()
         for h in self.binding_data.headers:
             print >> fd, '#include <%s>' % h
         print >> fd, ''
@@ -592,8 +595,7 @@ if WSF_SUPPORT:
             for m in c.methods:
                 self.generate_function_wrapper(m, fd)
         self.generate_wrapper_list(fd)
-        print >> fd, open(os.path.join(self.binding_data.src_dir,
-                    'lang_python_wrapper_bottom.c')).read()
+        print >> fd, open('wrapper_bottom.c').read()
 
     def generate_constants_wrapper(self, fd):
         print >> fd, '''static void

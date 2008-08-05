@@ -387,15 +387,22 @@ def parse_header(header_file):
                 i += 1
                 line = line[:-1] + lines[i].lstrip()
 
-            m = re.match(r'LASSO_EXPORT\s+((?:const |)[\w]+\*?)\s+(\*?\w+)\s*\((.*?)\)', line)
-            if m and not m.group(2).endswith('_get_type'):
+            m = re.match(r'LASSO_EXPORT\s+((?:const |)[\w]+\s*\*?)\s+(OFTYPE\(.*?\)\s+)?(\*?\w+)\s*\((.*?)\)', line)
+            if m and not m.group(3).endswith('_get_type'):
+                return_type, oftype, function_name, args = m.groups()
+                return_type = return_type.strip()
                 f = Function()
-                return_type, function_name, args = m.groups()
                 if function_name[0] == '*':
                     return_type += '*'
                     function_name = function_name[1:]
                 if return_type != 'void':
                     f.return_type = return_type
+                if return_type.startswith('const'):
+                    f.return_owner = False
+                if oftype:
+                        oftype_parse = re.match(r'OFTYPE\((.*)\)', oftype)
+                        if oftype_parse:
+                                f.return_type_qualifier = oftype_parse.group(1)
                 if function_name.endswith('_destroy'):
                     # skip the _destroy functions, they are just wrapper over
                     # g_object_unref
@@ -467,9 +474,9 @@ def main():
     binding.attach_methods()
 
     if options.language == 'python':
-        import lang_python
+        from python import lang
 
-        python_binding = lang_python.PythonBinding(binding)
+        python_binding = lang.Binding(binding)
         python_binding.generate()
     elif options.language == 'php4':
         from php4 import lang
@@ -477,20 +484,20 @@ def main():
         php4_binding = lang.Binding(binding)
         php4_binding.generate()
     elif options.language == 'php5':
-        import lang_php5
+        from php5 import lang
 
-        php5_binding = lang_php5.Php5Binding(binding)
+        php5_binding = lang.Binding(binding)
         php5_binding.generate()
     elif options.language == 'java':
-        import lang_java
+        from java import lang
 
-	java_binding = lang_java.JavaBinding(binding)
-	java_binding.generate();
+        java_binding = lang.Binding(binding)
+        java_binding.generate();
     elif options.language == 'java-list':
-        import lang_java
+        from java import lang
 
-	java_binding = lang_java.JavaBinding(binding)
-	java_binding.print_list_of_files();
+        java_binding = lang.Binding(binding)
+        java_binding.print_list_of_files();
         
 
 if __name__ == '__main__':
