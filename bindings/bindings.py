@@ -40,6 +40,8 @@ except ImportError:
         except ImportError:
             import xml.etree.ElementTree as ET
 
+sys.path.append(os.path.dirname(__file__))
+
 class BindingData:
     src_dir = os.path.dirname(__file__)
 

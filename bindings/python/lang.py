@@ -28,6 +28,7 @@ import utils
 class Binding:
     def __init__(self, binding_data):
         self.binding_data = binding_data
+        self.src_dir = os.path.dirname(__file__)
 
     def is_pygobject(self, t):
         if t:
@@ -580,7 +581,7 @@ if WSF_SUPPORT:
 
 
     def generate_wrapper(self, fd):
-        print >> fd, open('wrapper_top.c').read()
+        print >> fd, open(os.path.join(self.src_dir,'wrapper_top.c')).read()
         for h in self.binding_data.headers:
             print >> fd, '#include <%s>' % h
         print >> fd, ''
@@ -595,7 +596,7 @@ if WSF_SUPPORT:
             for m in c.methods:
                 self.generate_function_wrapper(m, fd)
         self.generate_wrapper_list(fd)
-        print >> fd, open('wrapper_bottom.c').read()
+        print >> fd, open(os.path.join(self.src_dir,'wrapper_bottom.c')).read()
 
     def generate_constants_wrapper(self, fd):
         print >> fd, '''static void
