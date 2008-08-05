@@ -1,3 +1,5 @@
+#include <glib.h>
+#include <glib-object.h>
 #include <lasso/lasso.h>
 #include <config.h>
 #include <jni.h>
@@ -18,41 +20,41 @@ typedef int (*Converter)(JNIEnv *env, void *from, jobject *to);
 typedef int *(*OutConverter)(JNIEnv *env, jobject from, gpointer *to);
 
 /* Static declarations */
-static int gpointer_equal(gpointer p1, gpointer p2);
-static int new_object_with_gobject(JNIEnv *env, GObject *obj, char *clsName, jobject *jobj);
-static int jstring_to_local_string(JNIEnv *env, jstring jstr, const char **str);
-static void release_local_string(JNIEnv *env, jstring str, const char *utf_str);
-static int get_jlong_field(JNIEnv *env, jobject obj, char *field, jlong *dest);
-static jclass get_jclass_by_name(JNIEnv *env, char *name);
-static int get_array_element(JNIEnv *env, jobjectArray arr, jsize i, jobject *dest);
-static int set_array_element(JNIEnv *env, jobjectArray arr, jsize i, jobject value);
-static int get_array_size(JNIEnv *env, jobjectArray arr, jsize *dest);
-static int create_object_array(JNIEnv *env, char *clsName, jsize size, jobjectArray *jarr);
-static jobject get_shadow_object(JNIEnv *env, GObject *obj);
-static void set_shadow_object(JNIEnv *env, GObject *obj, jobject shadow_object);
-static void exception(JNIEnv *env, char *message);
-static int string_to_jstring(JNIEnv *env, const char* str, jstring *jstr);
-static int string_to_jstring_and_free(JNIEnv *env, char* str, jstring *jstr);
-static int jstring_to_string(JNIEnv *env, jstring jstr, char **str);
-static int xml_node_to_jstring(JNIEnv *env, xmlNode *xmlnode, jstring *jstr);
-static int jstring_to_xml_node(JNIEnv *env, jstring jstr, xmlNode **xmlnode);
-static int gobject_to_jobject_aux(JNIEnv *env, GObject *obj, gboolean doRef, jobject *job);
-static int gobject_to_jobject(JNIEnv *env, GObject *obj, jobject *jobj);
-static int gobject_to_jobject_and_ref(JNIEnv *env, GObject *obj, jobject *jobj);
+G_GNUC_UNUSED static int gpointer_equal(gpointer p1, gpointer p2);
+G_GNUC_UNUSED static int new_object_with_gobject(JNIEnv *env, GObject *obj, char *clsName, jobject *jobj);
+G_GNUC_UNUSED static int jstring_to_local_string(JNIEnv *env, jstring jstr, const char **str);
+G_GNUC_UNUSED static void release_local_string(JNIEnv *env, jstring str, const char *utf_str);
+G_GNUC_UNUSED static int get_jlong_field(JNIEnv *env, jobject obj, char *field, jlong *dest);
+G_GNUC_UNUSED static jclass get_jclass_by_name(JNIEnv *env, char *name);
+G_GNUC_UNUSED static int get_array_element(JNIEnv *env, jobjectArray arr, jsize i, jobject *dest);
+G_GNUC_UNUSED static int set_array_element(JNIEnv *env, jobjectArray arr, jsize i, jobject value);
+G_GNUC_UNUSED static int get_array_size(JNIEnv *env, jobjectArray arr, jsize *dest);
+G_GNUC_UNUSED static int create_object_array(JNIEnv *env, char *clsName, jsize size, jobjectArray *jarr);
+G_GNUC_UNUSED static jobject get_shadow_object(JNIEnv *env, GObject *obj);
+G_GNUC_UNUSED static void set_shadow_object(JNIEnv *env, GObject *obj, jobject shadow_object);
+G_GNUC_UNUSED static void exception(JNIEnv *env, char *message);
+G_GNUC_UNUSED static int string_to_jstring(JNIEnv *env, const char* str, jstring *jstr);
+G_GNUC_UNUSED static int string_to_jstring_and_free(JNIEnv *env, char* str, jstring *jstr);
+G_GNUC_UNUSED static int jstring_to_string(JNIEnv *env, jstring jstr, char **str);
+G_GNUC_UNUSED static int xml_node_to_jstring(JNIEnv *env, xmlNode *xmlnode, jstring *jstr);
+G_GNUC_UNUSED static int jstring_to_xml_node(JNIEnv *env, jstring jstr, xmlNode **xmlnode);
+G_GNUC_UNUSED static int gobject_to_jobject_aux(JNIEnv *env, GObject *obj, gboolean doRef, jobject *job);
+G_GNUC_UNUSED static int gobject_to_jobject(JNIEnv *env, GObject *obj, jobject *jobj);
+G_GNUC_UNUSED static int gobject_to_jobject_and_ref(JNIEnv *env, GObject *obj, jobject *jobj);
 
-static int jobject_to_gobject(JNIEnv *env, jobject obj, GObject **gobj);
-static int jobject_to_gobject_for_list(JNIEnv *env, jobject obj, GObject **gobj);
-static void free_glist(GList **list, GFunc free_function);
-static int get_list(JNIEnv *env, char *clsName, GList *list, Converter convert, jobjectArray *jarr);
-static int set_list(JNIEnv *env, GList **list, jobjectArray jarr, GFunc free_function, OutConverter convert);
-static int remove_from_list(JNIEnv *env,GList **list,jobject obj,GFunc free_function,GCompareFunc compare,OutConverter convert);
-static int add_to_list(JNIEnv* env, GList** list, jobject obj, OutConverter convert);
-static int get_hash(JNIEnv *env, char *clsName, GHashTable *hashtable, Converter convert, jobjectArray *jarr);
-static int set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr);
-static int set_hash_of_strings(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr);
-static int remove_from_hash(JNIEnv *env, GHashTable *hashtable, jstring jkey);
-static int add_to_hash(JNIEnv *env, GHashTable *hashtable, jstring jkey, jobject jvalue, OutConverter convert, GFunc free_function);
-static int get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Converter convert, jobject *jvalue);
+G_GNUC_UNUSED static int jobject_to_gobject(JNIEnv *env, jobject obj, GObject **gobj);
+G_GNUC_UNUSED static int jobject_to_gobject_for_list(JNIEnv *env, jobject obj, GObject **gobj);
+G_GNUC_UNUSED static void free_glist(GList **list, GFunc free_function);
+G_GNUC_UNUSED static int get_list(JNIEnv *env, char *clsName, GList *list, Converter convert, jobjectArray *jarr);
+G_GNUC_UNUSED static int set_list(JNIEnv *env, GList **list, jobjectArray jarr, GFunc free_function, OutConverter convert);
+G_GNUC_UNUSED static int remove_from_list(JNIEnv *env,GList **list,jobject obj,GFunc free_function,GCompareFunc compare,OutConverter convert);
+G_GNUC_UNUSED static int add_to_list(JNIEnv* env, GList** list, jobject obj, OutConverter convert);
+G_GNUC_UNUSED static int get_hash(JNIEnv *env, char *clsName, GHashTable *hashtable, Converter convert, jobjectArray *jarr);
+G_GNUC_UNUSED static int set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr);
+G_GNUC_UNUSED static int set_hash_of_strings(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr);
+G_GNUC_UNUSED static int remove_from_hash(JNIEnv *env, GHashTable *hashtable, jstring jkey);
+G_GNUC_UNUSED static int add_to_hash(JNIEnv *env, GHashTable *hashtable, jstring jkey, jobject jvalue, OutConverter convert, GFunc free_function);
+G_GNUC_UNUSED static int get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Converter convert, jobject *jvalue);
 #define get_list_of_strings(env,list,jarr) get_list(env,"java/lang/String",list,(Converter)string_to_jstring,jarr)
 #define get_list_of_xml_nodes(env,list,jarr) get_list(env,"java/lang/String",list,(Converter)xml_node_to_jstring,jarr)
 #define get_list_of_objects(env,list,jarr) get_list(env,"java/lang/Object",list,(Converter)gobject_to_jobject_and_ref,jarr)
@@ -75,7 +77,7 @@ static int get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Co
 #define add_to_hash_of_objects(env,hash,key,obj) add_to_hash(env,hash,key,obj,(OutConverter)jobject_to_gobject_for_list,(GFunc)g_object_unref)
 //#define get_hash_of_strings_by_name(end,hash,key) get_hash_by_name(end,hash,key,(Converter)string_to_jstring)
 //#define get_hash_of_objects_by_name(end,hash,key) get_hash_by_name(end,hash,key,(Converter)gobject_to_jobject_and_ref)
-static void throw_by_name(JNIEnv *env, const char *name, const char *msg);
+G_GNUC_UNUSED static void throw_by_name(JNIEnv *env, const char *name, const char *msg);
 
 
 static int
@@ -288,11 +290,11 @@ xml_node_to_jstring(JNIEnv *env, xmlNode *xmlnode, jstring *jstr) {
         xmlOutputBufferFlush(buf);
         xmlChar *str;
         if (buf->conv == NULL) {
-            str = (char*)buf->buffer->content;
+            str = buf->buffer->content;
         } else {
             str = buf->conv->content;
         }
-        ret = string_to_jstring(env, str, jstr);
+        ret = string_to_jstring(env, (char*)str, jstr);
         xmlOutputBufferClose(buf);
         return ret;
     } else {
@@ -619,7 +621,6 @@ static int
 set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr)
 {
     jsize l, i;
-    gpointer *array;
 
     g_error_if_fail (env && hashtable);
     if (jarr) {
@@ -640,7 +641,7 @@ set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr)
     }
     /** Remove old values, if hashtable is well initialized 
      * it should unref objects automatically. */
-    g_hashtable_remove_all(hashtable);
+    g_hash_table_remove_all(hashtable);
     /** Insert new values */
     if (jarr) {
         for (i = 0; i < l; i += 2) {
@@ -655,7 +656,7 @@ set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr)
             if (! jobject_to_gobject(env, jvalue, &value)) {
                 if (key)
                     g_free(key);
-                g_hashtable_remove_all(hashtable);
+                g_hash_table_remove_all(hashtable);
                 return 0;
             }
             /* Can use insert because hash table is empty */
@@ -704,7 +705,7 @@ set_hash_of_strings(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr) {
                 exception(env, "key is null");
                 return 0;
             }
-            if (! jstring_to_string(env, jvalue, &value), 0) {
+            if (! jstring_to_string(env, jvalue, &value)) {
                 if (key)
                     g_free(key);
                 g_hash_table_remove_all(hashtable);
