@@ -156,4 +156,8 @@
 		} \
 	}
 
+/* Warn of a call to a deprecated function */
+#define lasso_warn_deprecated() \
+	g_warning("Function %s is deprecated !!!", G_STRFUNC)
+
 #endif /* __LASSO_UTILS_H__ */
