@@ -27,7 +27,8 @@ if WSF_ENABLED
 EXTRA_ARGS = --enable-id-wsf
 endif
 
-lasso.php _lasso.c: ../lang_php5.py ../lang_php5_helpers/php_code.py ../lang_php5_helpers/wrapper_source.py ../lang_php5_helpers/wrapper_source_top.c ../overrides.xml
+
+lasso.php _lasso.c: lang.py wrapper_source.py wrapper_header.py wrapper_source_top.c php_code.py ../overrides.xml
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l php5 --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 
 doc:
@@ -40,4 +41,4 @@ clean-local:
 
 endif
 
-EXTRA_DIST = lasso.ini
+EXTRA_DIST = lasso.ini lang.py php_code.py wrapper_header.py wrapper_source.py __init__.py wrapper_source_top.c
