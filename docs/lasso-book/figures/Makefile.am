@@ -25,7 +25,7 @@ CLEANFILES = $(FIGURES_PNG_FILES) $(GENERATED_FIGURES_SVG_FILES)
 
 %.svg:
 	$(XSLTPROC) --stringparam stepno `echo $@ | sed -e 's/[^0-9]//g'` \
-		$(srcdir)/step.xsl $(srcdir)/$< > $@
+		$(srcdir)/step.xsl $< > $@
 
 %.png: %.svg
 	$(INKSCAPE) -d 150 --export-png=$@ $<
