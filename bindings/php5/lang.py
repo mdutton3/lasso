@@ -20,12 +20,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import os
+from wrapper_source import WrapperSource
+from wrapper_header import WrapperHeader
+from php_code import PhpCode
 
-from lang_php5_helpers.wrapper_source import WrapperSource
-from lang_php5_helpers.wrapper_header import WrapperHeader
-from lang_php5_helpers.php_code import PhpCode
-
-class Php5Binding:
+class Binding:
     def __init__(self, binding_data):
         self.binding_data = binding_data
 

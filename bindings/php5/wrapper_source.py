@@ -29,6 +29,7 @@ class WrapperSource:
         self.binding_data = binding_data
         self.fd = fd
         self.functions_list = []
+	self.src_dir = os.path.dirname(__file__)
 
     def is_object(self, t):
         return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*',
@@ -56,8 +57,7 @@ class WrapperSource:
 /* this file has been generated automatically; do not edit */
 '''
 
-        print >> self.fd, open(os.path.join(self.binding_data.src_dir,
-            'lang_php5_helpers/wrapper_source_top.c')).read()
+        print >> self.fd, open(os.path.join(self.src_dir,'wrapper_source_top.c')).read()
 
         for h in self.binding_data.headers:
             print >> self.fd, '#include <%s>' % h
