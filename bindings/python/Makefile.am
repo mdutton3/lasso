@@ -26,6 +26,8 @@ endif
 
 BUILT_SOURCES = _lasso.c
 
+EXTRA_DIST=lang.py wrapper_bottom.c wrapper_top.c __init__.py
+
 if WSF_ENABLED
 EXTRA_ARGS = --enable-id-wsf
 endif
