@@ -48,6 +48,7 @@
 #include <lasso/xml/xml.h>
 #include <lasso/xml/xml_enc.h>
 #include <lasso/xml/saml_name_identifier.h>
+#include "../utils.h"
 
 
 static char* lasso_node_build_query(LassoNode *node);
