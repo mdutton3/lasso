@@ -787,7 +787,7 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 	if (res == 0 && doc->children != NULL) {
 		/* Save new service resource data */
 		xmlNode *root = xmlDocGetRootElement(doc);
-		// No need to free old value since it was reused inside the doc
+		xmlFreeNode(service->resource_data);
 		service->resource_data = xmlCopyNode(root,1);
 	}
 
