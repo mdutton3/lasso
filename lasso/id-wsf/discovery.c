@@ -189,54 +189,6 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 }
 
 /**
- * lasso_discovery_init_request:
- * @discovery: a LassoDiscovery
- * @request: a LassoNode containing the request
- * @security_mech_id: the URN of the chosen ID-WSF SOAP binding security mechanism
- * 
- * Return value: 0 on success and a negative value if an error occurs.
- **/
-G_GNUC_UNUSED static gint
-lasso_discovery_init_request(LassoDiscovery *discovery, LassoNode *request, const char* security_mech_id)
-{
-//	LassoWsfProfile *profile = LASSO_WSF_PROFILE(discovery);
-//
-//	/* verify that description is present in resourceOffering->ServiceInstance->Description */
-//	if (g_list_find(resourceOffering->ServiceInstance->Description, description) == NULL) {
-//		message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PARAM_ERROR_INVALID_VALUE));
-//	}
-//
-//	/* get ResourceID/EncryptedResourceID in description */
-//	/* ResourceID and EncryptedResourceID are owned by resourceOffering,
-//	 so increment reference count */
-//	if (resourceOffering->ResourceID != NULL) {
-//		g_object_ref(resourceOffering->ResourceID);
-//		if (LASSO_IS_DISCO_MODIFY(profile->request)) {
-//			LASSO_DISCO_MODIFY(profile->request)->ResourceID =
-//				resourceOffering->ResourceID;
-//		} else if (LASSO_IS_DISCO_QUERY(profile->request)) {
-//			LASSO_DISCO_QUERY(profile->request)->ResourceID =
-//				resourceOffering->ResourceID;
-//		}
-//	} else if (resourceOffering->EncryptedResourceID != NULL) {
-//		g_object_ref(resourceOffering->EncryptedResourceID);
-//		if (LASSO_IS_DISCO_MODIFY(profile->request)) {
-//			LASSO_DISCO_MODIFY(profile->request)->EncryptedResourceID =
-//				resourceOffering->EncryptedResourceID;
-//		} else if (LASSO_IS_DISCO_QUERY(profile->request)) {
-//			LASSO_DISCO_QUERY(profile->request)->EncryptedResourceID =
-//				resourceOffering->EncryptedResourceID;
-//		}
-//	}
-//
-//	if (description->Endpoint != NULL) {
-//		profile->msg_url = g_strdup(description->Endpoint);
-//	} /* TODO: else, description->WsdlURI, get endpoint automatically */
-
-	return 0;
-}
-
-/**
  * lasso_discovery_add_insert_entry:
  * @discovery: a #LassoDiscovery object
  * @serviceInstance: an optional #LassoDiscoServiceInstance object
