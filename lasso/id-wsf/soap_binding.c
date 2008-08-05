@@ -30,11 +30,12 @@
 
 /** 
  * lasso_soap_binding_get_provider:
- * @envelope a LassoSoapEnvelope
+ * @envelope: a #LassoSoapEnvelope
  *
  * Look up the sb:Provider header in the SOAP message envelope.
  *
- * @return NULL if no Provider element is present in the header of the SOAP envelope. If found it returns a reference you do not own. 
+ * Return value: NULL if no Provider element is present in the header of the SOAP
+ * envelope. If found it returns a reference you do not own. 
  */
 LassoSoapBindingProvider*
 lasso_soap_binding_get_provider(LassoSoapEnvelope *envelope) {
@@ -52,11 +53,11 @@ lasso_soap_binding_get_provider(LassoSoapEnvelope *envelope) {
 
 /** 
  * lasso_soap_binding_get_correlation:
- * @envelope a LassoSoapEnvelope
+ * @envelope: a #LassoSoapEnvelope
  *
  * Look up the sb:Correlation header in the SOAP message envelope.
  *
- * Returns: NULL if no Correlation element is present in the header of the
+ * Return value: NULL if no Correlation element is present in the header of the
  * SOAP envelope. If found it returns a reference you do not own. 
  */
 LassoSoapBindingCorrelation*
