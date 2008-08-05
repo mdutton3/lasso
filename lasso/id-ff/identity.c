@@ -210,7 +210,7 @@ void add_matching_resource_offering_to_list(char *name, LassoDiscoResourceOfferi
 		( offering->ServiceInstance != NULL && 
 		offering->ServiceInstance->ServiceType != NULL &&
 		strcmp(offering->ServiceInstance->ServiceType, ctx->service_type) == 0)) {
-		g_list_add(ctx->list, offering);
+		lasso_list_add(ctx->list, offering);
 	}
 }
 

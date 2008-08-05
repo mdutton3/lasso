@@ -768,13 +768,13 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 				/* If we must replace the root element, change it in the xmlDoc */
 				if (node == cur_data) {
 					xmlDocSetRootElement(doc, xmlCopyNode(newNode,1));
-					g_list_add(node_to_free, node);
+					lasso_list_add(node_to_free, node);
 					cur_data = NULL;
 				} else {
 					xmlReplaceNode(node, xmlCopyNode(newNode,1));
 					// Node is a free node now but is still reference by the xpath nodeset
 					// we must wait for the deallocation of the nodeset to free it.
-					g_list_add(node_to_free, node);
+					lasso_list_add(node_to_free, node);
 				}
 			}
 		} else {

@@ -51,15 +51,15 @@
 			g_object_unref(dest); \
 		dest = (void*)(src); \
 	}
-#define g_list_add_gobject(dest, src) \
+#define lasso_list_add_gobject(dest, src) \
 	{ \
 		dest = g_list_append(dest, g_object_ref(src)); \
 	}
-#define g_list_add_new_gobject(dest, src) \
+#define lasso_list_add_new_gobject(dest, src) \
 	{ \
 		dest = g_list_append(dest, src); \
 	}
-#define g_list_add(dest, src) \
+#define lasso_list_add(dest, src) \
 	{ \
 		dest = g_list_append(dest, src); \
 	}

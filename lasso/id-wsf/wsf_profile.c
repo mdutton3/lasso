@@ -122,13 +122,13 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 		char *ref = (char*)credentialRefs->data;
 		xmlNode *assertion = lasso_session_get_assertion_by_id(session, ref);
 		if (assertion) {
-			g_list_add(wsse_security->any, assertion);
+			lasso_list_add(wsse_security->any, assertion);
 		}
 		credentialRefs = g_list_next(credentialRefs);
 	}
 	soap = profile->soap_envelope_request;
 	header = soap->Header;
-	g_list_add_gobject(header->Other, wsse_security);
+	lasso_list_add_gobject(header->Other, wsse_security);
 	wsse_security = NULL;
 exit:
 	if (wsse_security) {
@@ -637,7 +637,7 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
 	}
 	envelope = lasso_wsf_profile_build_soap_envelope_internal(NULL, providerID);
 	profile->soap_envelope_request = envelope;
-	g_list_add_gobject(envelope->Body->any, request);
+	lasso_list_add_gobject(envelope->Body->any, request);
 	lasso_assign_gobject(profile->request, request);
 	return lasso_wsf_profile_comply_with_security_mechanism(profile);
 }
