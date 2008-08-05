@@ -794,7 +794,7 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 	xmlXPathFreeContext(xpathCtx);
 	g_list_foreach(node_to_free, (GFunc)xmlFreeNode, NULL);
 	xmlFreeDoc(doc);
-	g_release_list(node_to_free);
+	lasso_release_list(node_to_free);
 
 	return lasso_wsf_profile_build_soap_response_msg(profile);
 }

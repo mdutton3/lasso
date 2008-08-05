@@ -162,7 +162,7 @@ lasso_identity_add_resource_offering(LassoIdentity *identity,
 		g_snprintf(entry_id_s, 18, "%d", identity->private_data->last_entry_id);
 		identity->private_data->last_entry_id++;
 	} while (g_hash_table_lookup(identity->private_data->resource_offerings_map, entry_id_s));
-	g_assign_string(offering->entryID, entry_id_s);
+	lasso_assign_string(offering->entryID, entry_id_s);
 	g_hash_table_insert(identity->private_data->resource_offerings_map, g_strdup(offering->entryID), g_object_ref(offering));
 	identity->is_dirty = TRUE;
 

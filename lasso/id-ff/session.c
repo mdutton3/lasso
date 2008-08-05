@@ -616,8 +616,8 @@ base64_to_xmlNode(xmlChar *buffer) {
         ret = xmlCopyNode(ret, 1);
     }
 exit:
-	g_release(decoded);
-	g_release_doc(doc);
+	lasso_release(decoded);
+	lasso_release_doc(doc);
 
 	return ret;
 }

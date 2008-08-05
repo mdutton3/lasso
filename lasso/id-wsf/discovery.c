@@ -266,7 +266,7 @@ lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
 	/* ResourceOffering elements being inserted MUST NOT contain entryID attributes. */
 	serviceInstance = serviceInstance ? g_object_ref(serviceInstance) : serviceInstance;
 	resourceOffering = lasso_disco_resource_offering_new(serviceInstance);
-	g_assign_gobject(resourceOffering->ResourceID, resourceId);
+	lasso_assign_gobject(resourceOffering->ResourceID, resourceId);
 
 	insertEntry = lasso_disco_insert_entry_new(resourceOffering);
 
@@ -455,9 +455,9 @@ lasso_discovery_get_description_auto(const LassoDiscoResourceOffering *offering,
 
 #define assign_resource_id(from,to) \
 	if ((from)->ResourceID) {\
-		g_assign_gobject((to)->ResourceID, (from)->ResourceID); \
+		lasso_assign_gobject((to)->ResourceID, (from)->ResourceID); \
 	} else if ((from)->EncryptedResourceID) {\
-		g_assign_gobject((to)->EncryptedResourceID, (from)->EncryptedResourceID); \
+		lasso_assign_gobject((to)->EncryptedResourceID, (from)->EncryptedResourceID); \
 	} else { \
 		rc = LASSO_WSF_PROFILE_ERROR_MISSING_RESOURCE_ID;\
 	}
@@ -502,12 +502,12 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 
 	description = lasso_wsf_profile_get_description(&discovery->parent);
 	if (description->Endpoint != NULL) {
-		g_assign_string(profile->msg_url, description->Endpoint);
+		lasso_assign_string(profile->msg_url, description->Endpoint);
 	} else {
 		rc = LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT;
 	}
 exit:
-	g_release_gobject(query);
+	lasso_release_gobject(query);
 	return rc;
 }
 
@@ -1291,7 +1291,7 @@ lasso_discovery_build_wsf_profile(LassoDiscovery *discovery, LassoDiscoResourceO
 		message(G_LOG_LEVEL_WARNING, "No constructor registered for service type: %s", service_type);
 		a_wsf_profile = LASSO_WSF_PROFILE(lasso_data_service_new_full(server, offering));
 	}
-	g_assign_gobject(a_wsf_profile->session, discovery->parent.session);
+	lasso_assign_gobject(a_wsf_profile->session, discovery->parent.session);
 
 	return a_wsf_profile;
 }

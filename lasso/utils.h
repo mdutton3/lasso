@@ -26,18 +26,18 @@
 #define __LASSO_UTILS_H__
 
 /* Assignment and list appending */
-#define g_assign_string(dest,src) \
+#define lasso_assign_string(dest,src) \
 	{ \
 		void *t = g_strdup(src);\
 		if (dest) g_free(dest); \
 		dest = t; \
 	}
-#define g_assign_new_string(dest,src) \
+#define lasso_assign_new_string(dest,src) \
 	{ \
 		if (dest) g_free(dest); \
 		dest = src; \
 	}
-#define g_assign_gobject(dest,src) \
+#define lasso_assign_gobject(dest,src) \
 	{ \
 		if (src) \
 			g_object_ref(src); \
@@ -45,7 +45,7 @@
 			g_object_unref(dest); \
 		dest = (void*)(src); \
 	}
-#define g_assign_new_gobject(dest,src) \
+#define lasso_assign_new_gobject(dest,src) \
 	{ \
 		if (dest) \
 			g_object_unref(dest); \
@@ -65,14 +65,14 @@
 	}
 
 /* Freeing */
-#define g_release(dest) \
+#define lasso_release(dest) \
 	{ \
 		if (dest) { \
 			g_free(dest); dest = NULL; \
 		} \
 	}
 
-#define g_release_gobject(dest) \
+#define lasso_release_gobject(dest) \
 	{ \
 		if (dest) { \
 			g_object_unref(dest); \
@@ -80,7 +80,7 @@
 		} \
 	}
 
-#define g_release_list_of_strings(dest) \
+#define lasso_release_list_of_strings(dest) \
 	{ \
 		if (dest) { \
 			g_list_foreach(dest, (GFunc)g_free, NULL); \
@@ -89,7 +89,7 @@
 		} \
 	}
 
-#define g_release_list_of_gobjects(dest) \
+#define lasso_release_list_of_gobjects(dest) \
 	{ \
 		if (dest) { \
 			g_list_foreach(dest, (GFunc)g_object_unref, NULL); \
@@ -98,7 +98,7 @@
 		} \
 	}
 
-#define g_release_list(dest) \
+#define lasso_release_list(dest) \
 	{ \
 		if (dest) { \
 			g_list_free(dest); \
@@ -115,7 +115,7 @@
 		} \
 	}
 
-#define g_release_node(node) \
+#define lasso_release_node(node) \
 	{ \
 		if (node) { \
 			xmlFreeNode(node); \
@@ -123,14 +123,14 @@
 		} \
 	}
 
-#define g_release_doc(doc) \
+#define lasso_release_doc(doc) \
 	{ \
 		if (doc) { \
 			xmlFreeDoc(doc); \
 			doc = NULL; \
 		} \
 	}
-#define g_release_xmlchar(dest) \
+#define lasso_release_xmlchar(dest) \
 	{ \
 		if (dest) { \
 			xmlFree(dest); dest = NULL; \

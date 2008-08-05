@@ -132,7 +132,7 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 	wsse_security = NULL;
 exit:
 	if (wsse_security) {
-		g_release_gobject(wsse_security);
+		lasso_release_gobject(wsse_security);
 	}
 	return rc;
 }
@@ -343,7 +343,7 @@ lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
 	}
 	if (lasso_security_mech_id_is_saml_authentication(security_mech_id)
 			|| lasso_security_mech_id_is_null_authentication(security_mech_id)) {
-		g_assign_string(profile->private_data->security_mech_id, security_mech_id);
+		lasso_assign_string(profile->private_data->security_mech_id, security_mech_id);
 		if (profile->private_data->offering) {
 			return lasso_wsf_profile_set_description_from_offering(
 				profile,
@@ -380,7 +380,7 @@ lasso_wsf_profile_get_security_mech_id(LassoWsfProfile *profile)
 void
 lasso_wsf_profile_set_description(LassoWsfProfile *profile, LassoDiscoDescription *description)
 {
-	g_assign_gobject(profile->private_data->description, description);
+	lasso_assign_gobject(profile->private_data->description, description);
 }
 
 /** 
@@ -425,7 +425,7 @@ lasso_wsf_profile_get_resource_offering(LassoWsfProfile *profile)
 void
 lasso_wsf_profile_set_resource_offering(LassoWsfProfile *profile, LassoDiscoResourceOffering *offering)
 {
-	g_assign_gobject(profile->private_data->offering, offering);
+	lasso_assign_gobject(profile->private_data->offering, offering);
 }
 
 /**
@@ -638,7 +638,7 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
 	envelope = lasso_wsf_profile_build_soap_envelope_internal(NULL, providerID);
 	profile->soap_envelope_request = envelope;
 	g_list_add_gobject(envelope->Body->any, request);
-	g_assign_gobject(profile->request, request);
+	lasso_assign_gobject(profile->request, request);
 	return lasso_wsf_profile_comply_with_security_mechanism(profile);
 }
 
@@ -694,7 +694,7 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 		(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
 exit:
-	g_release_doc(doc);
+	lasso_release_doc(doc);
 	return rc;
 }
 
@@ -756,7 +756,7 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	/* Get soap request and his message id */
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
 	if (LASSO_IS_SOAP_ENVELOPE(envelope)) {
-		g_assign_gobject(profile->soap_envelope_request, LASSO_SOAP_ENVELOPE(envelope));
+		lasso_assign_gobject(profile->soap_envelope_request, LASSO_SOAP_ENVELOPE(envelope));
 	} else {
 		goto_exit_if_fail(FALSE, LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
 	}
@@ -790,13 +790,13 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	}
 
 	/* Set soap response */
-	g_release_gobject(envelope);
+	lasso_release_gobject(envelope);
 	envelope = lasso_wsf_profile_build_soap_envelope_internal(messageId,
 		LASSO_PROVIDER(profile->server)->ProviderID);
-	g_assign_gobject(LASSO_WSF_PROFILE(profile)->soap_envelope_response, envelope);
+	lasso_assign_gobject(LASSO_WSF_PROFILE(profile)->soap_envelope_response, envelope);
 exit:
 	if (envelope)
-		g_release_gobject(envelope);
+		lasso_release_gobject(envelope);
 	if (doc)
 		xmlFreeDoc(doc);
 
@@ -832,14 +832,14 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 	/* Parse the message */
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(root));
 	if (LASSO_IS_SOAP_ENVELOPE(envelope)) {
-		g_assign_gobject(profile->soap_envelope_response, LASSO_SOAP_ENVELOPE(envelope));
+		lasso_assign_gobject(profile->soap_envelope_response, LASSO_SOAP_ENVELOPE(envelope));
 	} else {
 		goto_exit_if_fail(FALSE, LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
 	}
 	goto_exit_if_fail(envelope != NULL, LASSO_SOAP_ERROR_MISSING_ENVELOPE);
 	goto_exit_if_fail(envelope->Body != NULL, LASSO_SOAP_ERROR_MISSING_BODY);
 	if (envelope->Body->any) {
-		g_assign_gobject(profile->response, LASSO_NODE(envelope->Body->any->data));
+		lasso_assign_gobject(profile->response, LASSO_NODE(envelope->Body->any->data));
 	} else {
 		profile->response = NULL;
 		rc = LASSO_PROFILE_ERROR_MISSING_RESPONSE;
@@ -867,7 +867,7 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 	}
 exit:
 	if (envelope) {
-		g_release_gobject(envelope);
+		lasso_release_gobject(envelope);
 	}
 	if (doc) {
 		xmlFreeDoc(doc);
@@ -992,9 +992,9 @@ lasso_wsf_profile_init(LassoWsfProfile *profile,
 	g_return_val_if_invalid_param(WSF_PROFILE, profile, 
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	/* FIXME: is a NULL server authorized ? */
-	g_assign_gobject(profile->server, server);
+	lasso_assign_gobject(profile->server, server);
 	/* FIXME: is a NULL oferring authorized ? */
-	g_assign_gobject(profile->private_data->offering, offering);
+	lasso_assign_gobject(profile->private_data->offering, offering);
 
 	return 0;
 }
@@ -1033,7 +1033,7 @@ lasso_wsf_profile_new_full(LassoServer *server, LassoDiscoResourceOffering *offe
 
 	profile = g_object_new(LASSO_TYPE_WSF_PROFILE, NULL);
 	if (lasso_wsf_profile_init(profile, server, offering)) {
-		g_release_gobject(profile);
+		lasso_release_gobject(profile);
 	}
 	return profile;
 }
@@ -1091,7 +1091,7 @@ add_reference_to_non_enveloping_id(xmlNode *signature, xmlChar *id)
 	/* add exclusive C14N transform */
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
 exit:
-	g_release(uri);
+	lasso_release(uri);
 	return rc;
 }
 
@@ -1158,12 +1158,12 @@ add_key_info_security_token_reference(xmlDocPtr doc, xmlNode *signature, xmlChar
 	}
 	value = (xmlChar*) g_strdup_printf("%s:MessageAuthentication", nsPtr->prefix);
 	xmlSetProp(security_token_reference, (xmlChar*) "Usage", value);
-	g_release(value);
+	lasso_release(value);
 	/* Create Reference */
 	reference = xmlSecAddChild(security_token_reference, (xmlChar*) "Reference", (xmlChar*) LASSO_WSSE1_HREF);
 	value = make_id_ref(assertion_id);
 	xmlSetProp(reference, (xmlChar*) "URI", value);
-	g_release(value);
+	lasso_release(value);
 }
 /**
  * lasso_wsf_profile_add_saml_signature:
@@ -1268,10 +1268,10 @@ exit:
 	if (dsig_ctx) {
 		xmlSecDSigCtxDestroy(dsig_ctx);
 	}
-	g_release_xmlchar(provider_id);
-	g_release_xmlchar(correlation_id);
-	g_release_xmlchar(interaction_id);
-	g_release_xmlchar(body_id);
-	g_release_xmlchar(assertion_id);
+	lasso_release_xmlchar(provider_id);
+	lasso_release_xmlchar(correlation_id);
+	lasso_release_xmlchar(interaction_id);
+	lasso_release_xmlchar(body_id);
+	lasso_release_xmlchar(assertion_id);
 	return rc;
 }
