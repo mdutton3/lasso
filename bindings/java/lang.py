@@ -568,7 +568,7 @@ protected static native void destroy(long cptr);
             print >> fd, '    if (gobj) {'
             print >> fd, '         %s;' % self.c_to_java_value ('ret','gobj->%s' % m[1], mtype, m[2])
             print >> fd, '    } else {'
-            print >> fd, '         (*env)->ThrowNew(env, "java/lang/NullPointerException", "no gobject correspond to the given object");'
+            print >> fd, '         throw_by_name(env, "java/lang/NullPointerException", "no gobject correspond to the given object");'
             print >> fd, '    }'
             print >> fd, '    return ret;'
             print >> fd, '}'
@@ -582,7 +582,7 @@ protected static native void destroy(long cptr);
                 print >> fd, '    printf("%s_set %%p %%p\\n", gobj, value);' % prefix
             print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
             print >> fd, '    if (!gobj) {'
-            print >> fd, '        (*env)->ThrowNew(env, "java/lang/NullPointerException", "no gobject correspond to the given object");'
+            print >> fd, '        throw_by_name(env, "java/lang/NullPointerException", "no gobject correspond to the given object");'
             print >> fd, '    }'
             if not self.is_int_type(mtype) and not is_collection(mtype):
                 print >> fd, '    if (gobj->%s) {' % m[1]

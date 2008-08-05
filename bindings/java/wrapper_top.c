@@ -41,7 +41,7 @@ static int gobject_to_jobject(JNIEnv *env, GObject *obj, jobject *jobj);
 static int gobject_to_jobject_and_ref(JNIEnv *env, GObject *obj, jobject *jobj);
 
 static int jobject_to_gobject(JNIEnv *env, jobject obj, GObject **gobj);
-static int jobject_to_gobject_for_list(JNIEnv *env, jobject *obj, GObject **gobj);
+static int jobject_to_gobject_for_list(JNIEnv *env, jobject obj, GObject **gobj);
 static void free_glist(GList **list, GFunc free_function);
 static int get_list(JNIEnv *env, char *clsName, GList *list, Converter convert, jobjectArray *jarr);
 static int set_list(JNIEnv *env, GList **list, jobjectArray jarr, GFunc free_function, OutConverter convert);
@@ -75,6 +75,7 @@ static int get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Co
 #define add_to_hash_of_objects(env,hash,key,obj) add_to_hash(env,hash,key,obj,(OutConverter)jobject_to_gobject_for_list,(GFunc)g_object_unref)
 //#define get_hash_of_strings_by_name(end,hash,key) get_hash_by_name(end,hash,key,(Converter)string_to_jstring)
 //#define get_hash_of_objects_by_name(end,hash,key) get_hash_by_name(end,hash,key,(Converter)gobject_to_jobject_and_ref)
+static void throw_by_name(JNIEnv *env, const char *name, const char *msg);
 
 
 static int
@@ -219,7 +220,7 @@ static void
 exception(JNIEnv *env, char *message) {
     jclass cls = (*env)->FindClass(env, "java/lang/RuntimeException");
     if (cls != NULL) {
-        (*env)->ThrowNew(env, "java/lang/RuntimeException", message);
+        throw_by_name(env, "java/lang/RuntimeException", message);
     }
     (*env)->DeleteLocalRef(env, cls);
 }
@@ -432,7 +433,7 @@ jobject_to_gobject(JNIEnv *env, jobject obj, GObject **gobj) {
 /** Get the gobject encapsulated by the java object obj and increase its ref count. The only
  * use for this function is composed with set_list_of_objects or set_hash_of_object. */
 static int
-jobject_to_gobject_for_list(JNIEnv *env, jobject *obj, GObject **gobj) {
+jobject_to_gobject_for_list(JNIEnv *env, jobject obj, GObject **gobj) {
     g_return_val_if_fail(jobject_to_gobject(env, obj, gobj), 0);
     if (*gobj) {
         g_object_ref(*gobj);
@@ -765,6 +766,18 @@ get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Converter con
     release_local_string(env, jkey, key);
     return convert(env, value, jvalue);
 }
+static void
+throw_by_name(JNIEnv *env, const char *name, const char *msg)
+{
+    jclass cls = (*env)->FindClass(env, name);
+    /* if cls is NULL, an exception has already been thrown */
+    if (cls != NULL) {
+        (*env)->ThrowNew(env, cls, msg);
+    }
+    /* free the local ref */
+    (*env)->DeleteLocalRef(env, cls);
+}
+
 
 /* JNI Functions */
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoJNI_init2(JNIEnv *env, jclass cls) {
