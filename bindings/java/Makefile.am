@@ -50,7 +50,7 @@ BUILT_SOURCES = com_entrouvert_lasso_LassoJNI.c com_entrouvert_lasso_LassoJNI.h
 
 BINDING_OPTION=#--enable-exception-docs
 
-$(java_lasso_source_files)  com_entrouvert_lasso_LassoJNI.c: ../lang_java_wrapper_top.c ../lang_java.py ../bindings.py
+$(java_lasso_source_files)  com_entrouvert_lasso_LassoJNI.c: wrapper_top.c wrapper_bottom.c lang.py ../bindings.py
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py $(BINDING_OPTION) -l java --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 	cp $(srcdir)/GObject.java com/entrouvert/lasso
 

@@ -103,9 +103,10 @@ def is_string_type(type):
 def is_const_type(type):
     return type in ['const char*', 'const gchar*']
 
-class JavaBinding:
+class Binding:
     def __init__(self, binding_data):
         self.binding_data = binding_data
+	self.src_dir = os.path.dirname(__file__)
 
     def print_list_of_files(self):
         l = ['GObject.java','LassoConstants.java','LassoJNI.java','LassoException.java', 'LassoUndefinedException.java', 'LassoUnimplementedException.java']
@@ -234,11 +235,14 @@ protected static native void destroy(long cptr);
             return 'GObject'
 
     def JNI_return_type(self, vtype):
+	if vtype:
+		m = re.match(r'(?:const\s*)?(.*)',vtype)
+		vtype = m.group(1)
         if vtype == 'gboolean':
             return 'boolean'
         elif vtype in ['int','gint'] + self.binding_data.enums:
             return 'int'
-        elif vtype in ('char*', 'gchar*', 'const char*', 'const gchar*'):
+        elif vtype in ('char*', 'gchar*'):
             return 'String'
         elif vtype in ('const GList*','GList*','GHashTable*'):
             return 'Object[]'
@@ -339,13 +343,11 @@ protected static native void destroy(long cptr);
         for c in self.binding_data.structs:
             for m in c.methods:
                 self.generate_wrapper_function(m, fd)
-        print >> fd, open(os.path.join(self.binding_data.src_dir,
-                    'lang_java_wrapper_bottom.c')).read()
+        print >> fd, open(os.path.join(self.src_dir,'wrapper_bottom.c')).read()
         fd.close()
 
     def generate_wrapper_header(self, fd):
-        print >> fd, open(os.path.join(self.binding_data.src_dir, 
-                    'lang_java_wrapper_top.c')).read()
+        print >> fd, open(os.path.join(self.src_dir,'wrapper_top.c')).read()
         print >> fd, ''
         for h in self.binding_data.headers:
             print >> fd, '#include <%s>' % h
@@ -668,8 +670,7 @@ protected static native void destroy(long cptr);
 
     def generate_exception_classes(self):
         efd = open(lasso_java_path + 'LassoException.java', 'w')
-        print >> efd, open(os.path.join(self.binding_data.src_dir, 
-                    'java/LassoException_top.java')).read()
+        print >> efd, open(os.path.join(self.src_dir,'LassoException_top.java')).read()
         # Generate the function to get class name by error code
         supers = []
         for c in self.binding_data.constants:
