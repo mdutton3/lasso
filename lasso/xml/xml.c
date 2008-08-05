@@ -570,10 +570,11 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	xmlNodePtr key_info_node2 = NULL;
 	xmlSecEncCtxPtr enc_ctx = NULL;
 	xmlSecTransformId xmlsec_encryption_sym_key_type;
+	LassoSaml2EncryptedElement *ret = NULL;
 
 	if (encryption_public_key == NULL || !xmlSecKeyIsValid(encryption_public_key)) {
 		message(G_LOG_LEVEL_WARNING, "Invalid encryption key");
-		return NULL;
+		goto exit;
 	}
 
 	/* Create a new EncryptedElement */
@@ -603,15 +604,15 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 
 	/* Create encryption template for a specific symetric key type */
 	encrypted_element->EncryptedData = xmlSecTmplEncDataCreate(doc,
-		xmlsec_encryption_sym_key_type,	NULL, xmlSecTypeEncElement, NULL, NULL);
+			xmlsec_encryption_sym_key_type,	NULL, xmlSecTypeEncElement, NULL, NULL);
 	if (encrypted_element->EncryptedData == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to create encryption template");
-		return NULL;
+		goto exit;
 	}
 
 	if (xmlSecTmplEncDataEnsureCipherValue(encrypted_element->EncryptedData) == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to add CipherValue node");
-		return NULL;
+		goto exit;
 	}
 
 	/* create and initialize keys manager, we use a simple list based
@@ -621,13 +622,13 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	key_manager = xmlSecKeysMngrCreate();
 	if (key_manager == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to create keys manager");
-		return NULL;
+		goto exit;
 	}
 
 	if (xmlSecCryptoAppDefaultKeysMngrInit(key_manager) < 0) {
 		message(G_LOG_LEVEL_WARNING, "Failed to initialize keys manager");
 		xmlSecKeysMngrDestroy(key_manager);
-		return NULL;
+		goto exit;
 	}
 
 	/* add key to keys manager, from now on keys manager is responsible
@@ -635,89 +636,85 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	 */
 	if (xmlSecCryptoAppDefaultKeysMngrAdoptKey(key_manager, encryption_public_key) < 0) {
 		xmlSecKeysMngrDestroy(key_manager);
-		return NULL;
+		goto exit;
 	}
 
 	/* add <dsig:KeyInfo/> */
 	key_info_node = xmlSecTmplEncDataEnsureKeyInfo(encrypted_element->EncryptedData, NULL);
 	if (key_info_node == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to add key info");
-		return NULL;
+		goto exit;
 	}
 
 	/* add <enc:EncryptedKey/> to store the encrypted session key */
 	encrypted_key_node = xmlSecTmplKeyInfoAddEncryptedKey(key_info_node,
-		xmlSecTransformRsaPkcs1Id, NULL, NULL, NULL);
+			xmlSecTransformRsaPkcs1Id, NULL, NULL, NULL);
 	if (encrypted_key_node == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to add encrypted key");
-		return NULL;
+		goto exit;
 	}
 
 	/* we want to put encrypted key in the <enc:CipherValue/> node */
 	if (xmlSecTmplEncDataEnsureCipherValue(encrypted_key_node) == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to add CipherValue node");
-		return NULL;
+		goto exit;
 	}
 
 	/* add <dsig:KeyInfo/> and <dsig:KeyName/> nodes to <enc:EncryptedKey/> */
 	key_info_node2 = xmlSecTmplEncDataEnsureKeyInfo(encrypted_key_node, NULL);
 	if (key_info_node2 == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to add key info");
-		return NULL;
+		goto exit;
 	}
-
-	/* set key name so we can lookup key when needed */
-/* 	if (xmlSecTmplKeyInfoAddKeyName(key_info_node2, "this is the key name") == NULL) { */
-/* 		message(G_LOG_LEVEL_WARNING, "Failed to add key name"); */
-/* 		return NULL; */
-/* 	} */
 
 	/* create encryption context */
 	enc_ctx = (xmlSecEncCtxPtr)xmlSecEncCtxCreate(key_manager);
 	if (enc_ctx == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to create encryption context");
-		return NULL;
+		goto exit;
 	}
 
 	/* generate a symetric key */
 	switch (encryption_sym_key_type) {
 		case LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_256:
 			enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataAesId, 256,
-				xmlSecKeyDataTypeSession);
+					xmlSecKeyDataTypeSession);
 			break;
 		case LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES:
 			enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataDesId, 192,
-				xmlSecKeyDataTypeSession);
+					xmlSecKeyDataTypeSession);
 			break;
 		case LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128:
 		default:
 			enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataAesId, 128,
-				xmlSecKeyDataTypeSession);
+					xmlSecKeyDataTypeSession);
 			break;
 	}
 
 	if (enc_ctx->encKey == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to generate session des key");
-		return NULL;
+		goto exit;
 	}
 
 	/* encrypt the data */
 	if (xmlSecEncCtxXmlEncrypt(enc_ctx, encrypted_element->EncryptedData, orig_node) < 0) {
 		message(G_LOG_LEVEL_WARNING, "Encryption failed");
-		return NULL;
+		goto exit;
 	}
 
 	encrypted_element->EncryptedKey = g_list_append(encrypted_element->EncryptedKey,
 			xmlCopyNode(encrypted_key_node, 1));
-	
-	/* cleanup */
-	xmlSecEncCtxDestroy(enc_ctx);
 
-/* 	if (doc != NULL) { */
-/* 		xmlFreeDoc(doc); */
-/* 	} */
+	/* Transfer reference to return value*/
+	ret = encrypted_element;
+	encrypted_element = NULL;
 
-	return encrypted_element;
+exit: 
+	lasso_release_gobject(encrypted_element);
+	lasso_release_encrypt_context(enc_ctx);
+	lasso_release_doc(doc);
+
+	return ret;
 }
 
 

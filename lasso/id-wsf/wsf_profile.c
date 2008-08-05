@@ -674,16 +674,13 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	/* Sign request if necessary */
 	sec_mech_id = profile->private_data->security_mech_id;
 	if (lasso_security_mech_id_is_saml_authentication(sec_mech_id)) {
-		/* Add a signature to soap:Header/wsse:Security on:
-		 * soap:Header/sb:Correlation
-		 * soap:Header/sb:Provider
-		 * éventuellement soap:Header/sb:UserInteraction
-		 * soap:Body
-		 */
 		rc = lasso_wsf_profile_add_saml_signature(profile, doc);
 		if (rc != 0) {
 			goto exit;
 		}
+	} else if (lasso_security_mech_is_null_authentication(sec_mech_id) == FALSE) {
+		rc = LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM;
+		goto exit;
 	}
 	/* Dump soap request */
 	handler = xmlFindCharEncodingHandler("utf-8");
@@ -692,8 +689,9 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	xmlOutputBufferFlush(buf);
 	profile->msg_body = g_strdup(
 		(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
-	xmlOutputBufferClose(buf);
 exit:
+	if (buf)
+		xmlOutputBufferClose(buf);
 	lasso_release_doc(doc);
 	return rc;
 }
