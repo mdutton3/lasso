@@ -234,62 +234,7 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 
 		assertion->AttributeStatement = attributeStatement;
 
-		/* Add optional credential */
-		listDescriptions = newServiceInstance->Description;
-		while (listDescriptions) {
-			description = LASSO_DISCO_DESCRIPTION(listDescriptions->data);
-			listSecurityMechIds = description->SecurityMechID;
-			found = FALSE;
-			while (listSecurityMechIds) {
-				securityMechId = listSecurityMechIds->data;
-				if (g_str_equal(securityMechId,
-						LASSO_SECURITY_MECH_SAML)==TRUE || \
-				    g_str_equal(securityMechId,
-						LASSO_SECURITY_MECH_TLS_SAML) == TRUE || \
-				    g_str_equal(securityMechId,
-						LASSO_SECURITY_MECH_CLIENT_TLS_SAML)==TRUE) {
-					found  = TRUE;
-					break;
-			  }
-			  
-			  listSecurityMechIds = listSecurityMechIds->next;
-			}
-			if (found == TRUE) {
-				/* FIXME: Add required attributes for assertion */
-				if (LASSO_IS_SAML_ASSERTION(credential) == FALSE) {
-					profile = LASSO_PROFILE(login);
-
-					credential = lasso_saml_assertion_new();
-					credential->AssertionID = lasso_build_unique_id(32);
-					credential->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;
-					credential->MinorVersion = LASSO_SAML_MINOR_VERSION_N;
-					credential->IssueInstant = lasso_get_current_time();
-					credential->Issuer = g_strdup(
-						LASSO_PROVIDER(profile->server)->ProviderID);
-					
-					conditions = lasso_saml_conditions_new();
-					credential->Conditions = conditions;
-					audience_restriction_condition = \
-						lasso_saml_audience_restriction_condition_new_full(
-						       LASSO_PROVIDER(profile->server)->ProviderID);
-					conditions->AudienceRestrictionCondition = \
-					    g_list_append(conditions->AudienceRestrictionCondition,
-							  audience_restriction_condition);
-
-					/* FIXME: Missing AuthenticationStatement and
-					          AttributeStatement */
-
-					advice = LASSO_SAML_ADVICE(lasso_saml_advice_new());
-					// advice->Assertion = LASSO_NODE(credential);
-					assertion->Advice = advice;
-				}
-				description->CredentialRef = g_list_append(
-					description->CredentialRef,
-					g_strdup(credential->AssertionID));
-			}
-
-			listDescriptions = listDescriptions->next;
-		}
+		/* FIXME: Add Credentials and CredentialRef */
 	}
 #endif
 }
