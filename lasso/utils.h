@@ -121,6 +121,15 @@
 #define lasso_release_xmlchar(dest) \
 	lasso_release_full(dest, xmlFree) 
 
+#define lasso_release_encrypt_context(dest) \
+	lasso_release_full(dest, xmlSecEncCtxDestroy)
+
+#define lasso_release_signature_context(dest) \
+	lasso_release_full(dest, xmlSecDSigCtxDestroy)
+
+#define lasso_release_key_manager(dest) \
+	lasso_release_full(dest, xmlSecKeysMngrDestroy)
+
 /* Bad param handling */
 #define lasso_return_val_if_invalid_param(kind, name, val) \
 	g_return_val_if_fail(LASSO_IS_##kind(name), val)
