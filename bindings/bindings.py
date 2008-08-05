@@ -366,6 +366,7 @@ def parse_header(header_file):
             elif in_struct_private:
                 pass
             else:
+                # TODO: Add parsing of OFTYPE
                 member_match = re.match('\s+(\w+)\s+(\*?\w+)', line)
                 if member_match:
                     member_type = member_match.group(1)
@@ -414,6 +415,7 @@ def parse_header(header_file):
                         if arg == 'void' or arg == '':
                             continue
                         m = re.match(r'((const\s+)?\w+\*?)\s+(\*?\w+)', arg)
+                        # TODO: Add parsing of OFTYPE
                         if m:
                             f.args.append(list(normalise_var(m.group(1), m.group(3))) + [{}])
                         else:
