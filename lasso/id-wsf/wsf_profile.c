@@ -151,7 +151,7 @@ lasso_wsf_profile_comply_with_security_mechanism(LassoWsfProfile *profile)
 {
 	char *sec_mech_id;
 
-	g_return_val_if_invalid_param(WSF_PROFILE, profile, 
+	lasso_return_val_if_invalid_param(WSF_PROFILE, profile, 
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	
 	sec_mech_id = profile->private_data->security_mech_id;
@@ -290,9 +290,9 @@ lasso_wsf_profile_set_description_from_offering(
 {
 	LassoDiscoDescription *description = NULL;
 
-	g_return_val_if_invalid_param(WSF_PROFILE, profile,
+	lasso_return_val_if_invalid_param(WSF_PROFILE, profile,
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_invalid_param(DISCO_RESOURCE_OFFERING, offering,
+	lasso_return_val_if_invalid_param(DISCO_RESOURCE_OFFERING, offering,
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	if (security_mech_id == NULL) {
 		if (offering->ServiceInstance &&
@@ -335,7 +335,7 @@ gint
 lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
 	const char *security_mech_id)
 {
-	g_return_val_if_invalid_param(WSF_PROFILE, profile,
+	lasso_return_val_if_invalid_param(WSF_PROFILE, profile,
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (security_mech_id == NULL) {
@@ -363,7 +363,7 @@ lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
 const char *
 lasso_wsf_profile_get_security_mech_id(LassoWsfProfile *profile)
 {
-	g_return_val_if_invalid_param(WSF_PROFILE, profile,
+	lasso_return_val_if_invalid_param(WSF_PROFILE, profile,
 		NULL);
 
 	return profile->private_data->security_mech_id;
@@ -629,7 +629,7 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
 	LassoSoapEnvelope *envelope;
 	char *providerID = NULL;
 
-	g_return_val_if_invalid_param(WSF_PROFILE, profile,
+	lasso_return_val_if_invalid_param(WSF_PROFILE, profile,
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (profile->server) {
@@ -716,7 +716,7 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
 
-	g_return_val_if_invalid_param(WSF_PROFILE, profile, 
+	lasso_return_val_if_invalid_param(WSF_PROFILE, profile, 
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	envelope = profile->soap_envelope_response;
@@ -989,7 +989,7 @@ lasso_wsf_profile_init(LassoWsfProfile *profile,
 		LassoServer *server, 
 		LassoDiscoResourceOffering *offering)
 {
-	g_return_val_if_invalid_param(WSF_PROFILE, profile, 
+	lasso_return_val_if_invalid_param(WSF_PROFILE, profile, 
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	/* FIXME: is a NULL server authorized ? */
 	lasso_assign_gobject(profile->server, server);
@@ -1100,8 +1100,8 @@ create_signature_context(LassoServer *server, xmlSecDSigCtx **ctx_ptr) {
 	xmlSecDSigCtx *dsig_ctx = NULL;
 	gint rc = 0;
 
-	g_bad_param(SERVER, server);
-	g_null_param(ctx_ptr);
+	lasso_bad_param(SERVER, server);
+	lasso_null_param(ctx_ptr);
 
 	/* Allocate an initialize the object */
 	dsig_ctx = xmlSecDSigCtxCreate(NULL);

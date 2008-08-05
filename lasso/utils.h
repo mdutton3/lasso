@@ -138,14 +138,14 @@
 	}
 
 /* Bad param handling */
-#define g_return_val_if_invalid_param(kind, name, val) \
-		g_return_val_if_fail(LASSO_IS_##kind(name), val)
+#define lasso_return_val_if_invalid_param(kind, name, val) \
+	g_return_val_if_fail(LASSO_IS_##kind(name), val)
 
-#define g_bad_param(kind, name) \
-	g_return_val_if_invalid_param(kind, name, \
+#define lasso_bad_param(kind, name) \
+	lasso_return_val_if_invalid_param(kind, name, \
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-#define g_null_param(name) \
+#define lasso_null_param(name) \
 	g_return_val_if_fail(name != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 #define goto_exit_if_fail(condition, rc_value) \

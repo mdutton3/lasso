@@ -1171,7 +1171,7 @@ lasso_discovery_build_key_info_node(LassoDiscovery *discovery, const gchar *prov
 	xmlXPathContext *xpathCtx = NULL;
 	xmlXPathObject *xpathObj = NULL;
 
-	g_return_val_if_invalid_param(DISCOVERY, discovery, NULL);
+	lasso_return_val_if_invalid_param(DISCOVERY, discovery, NULL);
 	g_return_val_if_fail(providerID != NULL, NULL);
 
 	profile = &discovery->parent;

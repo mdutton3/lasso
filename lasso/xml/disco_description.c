@@ -242,7 +242,7 @@ lasso_disco_description_has_saml_authentication(LassoDiscoDescription *descripti
 	GList *iter;
 	gchar *security_mech_id;
 
-	g_return_val_if_invalid_param(DISCO_DESCRIPTION, description,
+	lasso_return_val_if_invalid_param(DISCO_DESCRIPTION, description,
 			FALSE);
 
 	iter = description->SecurityMechID;
@@ -274,7 +274,7 @@ lasso_disco_description_has_x509_authentication(LassoDiscoDescription *descripti
 	GList *iter;
 	gchar *security_mech_id;
 
-	g_return_val_if_invalid_param(DISCO_DESCRIPTION, description,
+	lasso_return_val_if_invalid_param(DISCO_DESCRIPTION, description,
 			FALSE);
 
 	iter = description->SecurityMechID;
