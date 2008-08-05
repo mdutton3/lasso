@@ -202,15 +202,6 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 	LassoSamlAttribute *attribute;
 	LassoSamlAttributeValue *attributeValue;
 
-	LassoSamlConditions *conditions;
-	LassoSamlAudienceRestrictionCondition *audience_restriction_condition;
-	LassoSamlAssertion *credential = NULL;
-	LassoSamlAdvice *advice;
-	GList *listDescriptions, *listSecurityMechIds;
-	LassoDiscoDescription *description;
-	gchar *securityMechId;
-	gboolean found;
-
 	serviceInstance = lasso_server_get_service(profile->server, LASSO_DISCO_HREF);
 	if (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance) && 
 			login->private_data->resourceId) {
@@ -234,7 +225,7 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 
 		assertion->AttributeStatement = attributeStatement;
 
-		/* FIXME: Add Credentials and CredentialRef */
+		/* FIXME: Add CredentialsRef and saml:Advice Assertions */
 	}
 #endif
 }
