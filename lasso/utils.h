@@ -106,7 +106,7 @@
 		} \
 	}
 
-#define g_unlink_and_release_node(node) \
+#define lasso_unlink_and_release_node(node) \
 	{ \
 		if (node) { \
 			xmlUnlinkNode(node); \
