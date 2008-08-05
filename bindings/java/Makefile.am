@@ -69,6 +69,7 @@ EXTRA_DIST = \
 	tests/BindingTests.java \
 	tests/LoginTest.java \
 	lang.py \
+	__init__.py \
 	wrapper_bottom.c \
 	wrapper_top.c 
 
