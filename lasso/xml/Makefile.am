@@ -74,6 +74,7 @@ WSF_C_FILES = \
 	soap_fault.c \
 	soap_envelope.c \
 	soap_header.c \
+	soap_binding.c \
 	utility_status.c \
 	wsse_security.c
 
@@ -139,6 +140,7 @@ WSF_H_FILES = \
 	soap_fault.h \
 	soap_envelope.h \
 	soap_header.h \
+	soap_binding.c \
 	utility_status.h \
 	wsse_security.h
 endif

@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/id-wsf/soap_binding.h>
+#include <lasso/xml/soap_binding.h>
 
 #define find_node_type_in_list(iter, check) \
 	{\

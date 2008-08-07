@@ -9,8 +9,7 @@ INCLUDES = \
 
 lasso_private_h_sources = \
 	data_service_private.h \
-	wsf_profile_private.h \
-	soap_binding.h
+	wsf_profile_private.h
 
 if WSF_ENABLED
 noinst_LTLIBRARIES = liblasso-id-wsf.la
@@ -21,8 +20,7 @@ WSF_C_FILES = \
 	personal_profile_service.c \
 	data_service.c \
 	wsf_profile.c \
-	utils.c	\
-	soap_binding.c
+	utils.c
 
 WSF_H_FILES = \
 	authentication.h \
