@@ -859,7 +859,7 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 		    for (; iter; iter = g_list_next(iter)) {
 			if (LASSO_IS_IS_REDIRECT_REQUEST(iter->data)) {
 			    LassoIsRedirectRequest *redirect = LASSO_IS_REDIRECT_REQUEST(iter->data);
-			    g_assign_string(profile->msg_url, redirect->redirectURL);
+			    lasso_assign_string(profile->msg_url, redirect->redirectURL);
 			    rc = LASSO_SOAP_FAULT_REDIRECT_REQUEST;
 			}
 		    }
