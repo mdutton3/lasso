@@ -43,6 +43,9 @@
 #define LASSO_LASSO_HREF   "http://www.entrouvert.org/namespaces/lasso/0.0"
 #define LASSO_LASSO_PREFIX "lasso"
 
+/* prefix & href */
+#define LASSO_PYTHON_HREF "http://www.entrouvert.org/namespaces/python/0.0"
+
 /*****************************************************************************/
 /* Liberty Alliance ID-FF                                                    */
 /*****************************************************************************/

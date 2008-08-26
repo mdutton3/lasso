@@ -35,12 +35,15 @@ extern "C" {
 typedef struct _LassoRegistry LassoRegistry;
 
 struct _LassoRegistry {
-		GHashTable *hash_map;
+		GHashTable *functional_mapping;
+		GHashTable *direct_mapping;
 };
 
 LassoRegistry *lasso_registry_new();
-gint lasso_registry_add_mapping(LassoRegistry *registry, const char *from_namespace,
+gint lasso_registry_add_direct_mapping(LassoRegistry *registry, const char *from_namespace,
 		const char *from_name, const char *to_namespace, const char *to_name);
+gint lasso_registry_add_functional_mapping(LassoRegistry *registry, const char *from_namespace,
+		const char *to_namespace, LassoRegistryTranslationFunction translation_function);
 const char* lasso_registry_get_mapping(LassoRegistry *registry, const char *from_namespace,
 		const char *from_name, const char *to_namespace);
 

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include <check.h>
 
 #include <lasso/lasso.h>
+#include <lasso/xml/strings.h>
 
 
 START_TEST(test01_server_load_dump_empty_string)
@@ -77,18 +78,45 @@ END_TEST
 
 #include <lasso/registry.h>
 
-START_TEST(test06_registry)
+START_TEST(test06_registry_direct_mapping)
 {
 	const char *name;
 	gint r;
 
-	r = lasso_registry_default_add_mapping("http://lasso.entrouvert.org/ns/test",
-				"test", LASSO_GOBJECT_NAMESPACE,
+	r = lasso_registry_default_add_direct_mapping(LASSO_LIB_HREF,
+				"test", LASSO_LASSO_HREF,
 				"LassoTestClass");
-	fail_unless(r == 0, "lasso_registry_default_add_mapping should return 0 for new mappings");
-	name = lasso_registry_default_get_mapping("http://lasso.entrouvert.org/ns/test", "test", LASSO_GOBJECT_NAMESPACE);
+	fail_unless(r == 0, "lasso_registry_default_add_direct_mapping should return 0 for new mappings");
+	name = lasso_registry_default_get_mapping(LASSO_LIB_HREF, "test", LASSO_LASSO_HREF);
 	fail_unless(name != NULL, "lasso_registry_default_get_mapping should return the recent mapping");
 	fail_unless(strcmp(name, "LassoTestClass") == 0, "lasso_registry_default_get_mapping should return LassoTestClass");
+}
+END_TEST
+
+const char *trad(const char *from_namespace, const char *from_name, const char* to_namespace)
+{
+	if (strcmp(from_namespace, LASSO_LIB_HREF) == 0 &&
+			strcmp(to_namespace, LASSO_LASSO_HREF) == 0)
+	{
+		char *temp = g_strconcat("Lasso", from_name, NULL);
+		const char *ret = g_intern_string(temp);
+		g_free(temp);
+		return ret;
+	}
+	return NULL;
+}
+
+
+START_TEST(test07_registry_functional_mapping)
+{
+	const char *name;
+	gint r;
+
+	r = lasso_registry_default_add_functional_mapping(LASSO_LIB_HREF, LASSO_LASSO_HREF, trad);
+	fail_unless(r == 0, "lasso_registry_default_add_functional mapping should return 0 for new mapping");
+	name = lasso_registry_default_get_mapping(LASSO_LIB_HREF, "Assertion", LASSO_LASSO_HREF);
+	fail_unless(name != NULL, "lasso_registry_default_get_mapping should return the recent mapping");
+	fail_unless(strcmp(name, "LassoAssertion") == 0, "lasso_registry_default_get_mapping should return LassoAssertion");
 }
 END_TEST
 
@@ -102,19 +130,22 @@ basic_suite()
 	TCase *tc_server_load_dump_random_xml = tcase_create("Create server from random XML");
 	TCase *tc_identity_load_dump_null = tcase_create("Create identity from NULL");
 	TCase *tc_identity_load_dump_empty = tcase_create("Create identity from empty string");
-	TCase *tc_registry = tcase_create("Test QName registry functionnality");
+	TCase *tc_registry_direct_mapping = tcase_create("Test QName registry with direct mapping");
+	TCase *tc_registry_functional_mapping = tcase_create("Test QName registry with functional mapping");
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
 	suite_add_tcase(s, tc_server_load_dump_random_xml);
 	suite_add_tcase(s, tc_identity_load_dump_null);
 	suite_add_tcase(s, tc_identity_load_dump_empty);
-	suite_add_tcase(s, tc_registry);
+	suite_add_tcase(s, tc_registry_direct_mapping);
+	suite_add_tcase(s, tc_registry_functional_mapping);
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
 	tcase_add_test(tc_server_load_dump_random_xml, test03_server_load_dump_random_xml);
 	tcase_add_test(tc_identity_load_dump_null, test04_identity_load_dump_null);
 	tcase_add_test(tc_identity_load_dump_empty, test05_identity_load_dump_empty);
-	tcase_add_test(tc_registry, test06_registry);
+	tcase_add_test(tc_registry_direct_mapping, test06_registry_direct_mapping);
+	tcase_add_test(tc_registry_functional_mapping, test07_registry_functional_mapping);
 	return s;
 }
 

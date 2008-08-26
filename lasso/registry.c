@@ -30,26 +30,39 @@
  * SECTION:registry
  * @short_description: Class to store a mapping of QName to other QName.
  *
- * This object implement a function of (namespace, name, namespace) -> namespace.
- * For the moment there is no need to enumerate all (namespace, name) pair given
- * a base pair (i.e. a function (namespace, name) -> [(namespace,name)].
+ * This object implement a function of (namespace, name, namespace) -> namespace.  For the moment
+ * there is no need to enumerate all (namespace, name) pair given a base pair (i.e. a function
+ * (namespace, name) -> [(namespace,name)].
+ *
+ * We support two kind of mapping; you can give a direct mapping between two QName, or you can give
+ * a function that will manage mapping between one namespace and another one.
  *
  * A QName is a name qualified by a namespace.
  *
- * For internal use inside lasso we define the following namespace:
- * http://lasso.entrouvert.org/ns/GObject,
- * http://lasso.entrouvert.org/ns/python.
+ * For internal use inside lasso we define the following namespaces:
+ * LASSO_LASSO_HREF http://www.entrouvert.org/namespaces/lasso/0.0
+ * LASSO_PYTHON_HREF http://lasso.entrouvert.org/namespaces/python/0.0
+ *
+ * For functionnal mappings the mapping function must return const char* strings created using
+ * g_intern_string() or using g_type_name().
  */
 
-typedef struct _LassoRegistryRecord LassoRegistryRecord;
+typedef struct _LassoRegistryDirectMappingRecord LassoRegistryDirectMappingRecord;
 
-struct _LassoRegistryRecord {
+struct _LassoRegistryDirectMappingRecord {
 	GQuark from_namespace;
 	GQuark from_name;
 	GQuark to_namespace;
 	GQuark to_name;
 };
 
+typedef struct _LassoRegistryFunctionalMappingRecord LassoRegistryFunctionalMappingRecord;
+
+struct _LassoRegistryFunctionalMappingRecord {
+	GQuark from_namespace;
+	GQuark to_namespace;
+	LassoRegistryTranslationFunction translation_function;
+};
 
 static LassoRegistry *lasso_registry_get_default() {
 	static LassoRegistry *default_registry = NULL;
@@ -60,15 +73,15 @@ static LassoRegistry *lasso_registry_get_default() {
 }
 
 /**
- * lasso_registry_record_equal:
+ * lasso_registry_direct_mapping_equal:
  * @record1: left record
  * @record2: right record
  *
- * Tests if two #LassoRegistryRecord are equal.
+ * Tests if two #LassoRegistryDirectMappingRecord are equal.
  *
  * Return value: TRUE if all field of record1 are equal to record2.
  */
-gboolean lasso_registry_record_equal(LassoRegistryRecord *record1, LassoRegistryRecord *record2)
+gboolean lasso_registry_direct_mapping_equal(LassoRegistryDirectMappingRecord *record1, LassoRegistryDirectMappingRecord *record2)
 {
 	return record1->from_namespace == record2->from_namespace
 		&& record1->from_name == record2->from_name
@@ -76,21 +89,48 @@ gboolean lasso_registry_record_equal(LassoRegistryRecord *record1, LassoRegistry
 }
 
 /**
- * lasso_registry_record_hash:
- * @record: a #LassoRegistryRecord structure
+ * lasso_registry_functional_mapping_equal:
+ * @record1: left record
+ * @record2: right record
  *
- * Return a hash value obtained from the three first fields of a
- * #LassoRecordRegistry structure.
+ * Tests if two #LassoRegistryFunctionalMappingRecord are equal, i.e.  if they are functional
+ * mapping between the same namespace.
+ *
+ * Return value: TRUE if record1 is equal to record2
+ */
+gboolean lasso_registry_functional_mapping_equal(LassoRegistryFunctionalMappingRecord *record1, LassoRegistryFunctionalMappingRecord *record2)
+{
+	return record1->from_namespace == record2->from_namespace &&
+		record1->to_namespace == record2->to_namespace;
+}
+
+/**
+ * lasso_registry_direct_mapping_hash:
+ * @record: a #LassoRegistryDirectMappingRecord structure
+ *
+ * Return a hash value obtained from the three first fields of a #LassoRecordRegistry structure.
  *
  * Return value: an integer hash for the record.
  */
-guint lasso_registry_record_hash(LassoRegistryRecord *record)
+guint lasso_registry_direct_mapping_hash(LassoRegistryDirectMappingRecord *record)
 {
 	return g_direct_hash((void*)(record->from_namespace
 		^ record->from_name
 		^ record->to_namespace));
 }
 
+/**
+ * lasso_registry_functional_mapping_hash:
+ * @record: a #LassoRegistryFunctionalMappingRecord structure
+ *
+ * Return a hash value obtained from the source and destination namespace of the mapping.
+ *
+ * Return value: an integer hash for the record.
+ */
+guint lasso_registry_functional_mapping_hash(LassoRegistryFunctionalMappingRecord *record)
+{
+	return g_direct_hash((void*)(record->from_namespace ^ record->to_namespace));
+}
 
 /**
  * lasso_registry_new:
@@ -103,70 +143,152 @@ LassoRegistry *lasso_registry_new()
 {
 	LassoRegistry *ret = g_new0(LassoRegistry, 1);
 
-	ret->hash_map = g_hash_table_new((GHashFunc) lasso_registry_record_hash, (GEqualFunc) lasso_registry_record_equal);
+	ret->direct_mapping = g_hash_table_new(
+			(GHashFunc) lasso_registry_direct_mapping_hash,
+			(GEqualFunc) lasso_registry_direct_mapping_equal);
+
+	ret->functional_mapping = g_hash_table_new(
+			(GHashFunc) lasso_registry_functional_mapping_hash,
+			(GEqualFunc) lasso_registry_functional_mapping_equal);
 
 	return ret;
+}
+
+static LassoRegistryTranslationFunction lasso_registry_get_translation_function(GHashTable *functional_mappings, GQuark from_ns_quark, GQuark to_ns_quark)
+{
+		LassoRegistryFunctionalMappingRecord functional_mapping, *functional_mapping_found;
+		functional_mapping.from_namespace = from_ns_quark;
+		functional_mapping.to_namespace = to_ns_quark;
+		functional_mapping_found = g_hash_table_lookup(functional_mappings, &functional_mapping);
+
+		if (functional_mapping_found) {
+			return functional_mapping_found->translation_function;
+		}
+		return NULL;
+}
+
+static const char *lasso_registry_get_functional_mapping(GHashTable *functional_mappings,
+		GQuark from_ns_namespace, const char *from_name, GQuark to_ns_namespace)
+{
+	LassoRegistryTranslationFunction translation_function;
+
+	translation_function = lasso_registry_get_translation_function(functional_mappings, from_ns_namespace, to_ns_namespace);
+	if (translation_function) {
+		return translation_function(g_quark_to_string(from_ns_namespace), from_name, g_quark_to_string(to_ns_namespace));
+	}
+	return NULL;
+}
+
+static const char *lasso_registry_get_direct_mapping(GHashTable *direct_mappings,
+		GQuark from_ns_quark, const char *from_name, GQuark to_ns_quark)
+{
+	GQuark from_name_quark = g_quark_try_string(from_name);
+	LassoRegistryDirectMappingRecord record, *found;
+
+	g_return_val_if_fail(from_name_quark != 0, NULL);
+
+	record.from_namespace = from_ns_quark;
+	record.from_name = from_name_quark;
+	record.to_namespace = to_ns_quark;
+
+	found = g_hash_table_lookup(direct_mappings, &record);
+
+	if (found) {
+		return g_quark_to_string(found->to_name);
+	}
+	return NULL;
 }
 
 /**
  * lasso_regsitry_get_mapping:
  *
  * Retrieve the mapping of a QName into another namespace, i.e. to another
- * QName.
+ * QName. It first tries the functional mapping, then tries with the direct mapping.
  *
  * Return value: a constant string of NULL if no mapping exist.
  */
 const char* lasso_registry_get_mapping(LassoRegistry *registry, const char *from_namespace,
 		const char *from_name, const char *to_namespace)
 {
-	LassoRegistryRecord record;
-	LassoRegistryRecord *found;
+	GQuark from_ns_quark, to_ns_quark;
+	const char *ret = NULL;
 
-	record.from_namespace = g_quark_from_string(from_namespace);
-	record.from_name = g_quark_from_string(from_name);
-	record.to_namespace = g_quark_from_string(to_namespace);
+	from_ns_quark = g_quark_try_string(from_namespace);
+	to_ns_quark = g_quark_try_string(from_name);
 
-	found = g_hash_table_lookup(registry->hash_map, &record);
-
-	if (found) {
-		return g_quark_to_string(found->to_name);
-	} else {
-		return NULL;
+	g_return_val_if_fail(from_ns_quark != 0 && to_ns_quark != 0, NULL);
+	ret = lasso_registry_get_functional_mapping(registry->functional_mapping, from_ns_quark, from_name, to_ns_quark);
+	if (ret == NULL) {
+		ret = lasso_registry_get_direct_mapping(registry->direct_mapping, from_ns_quark, from_name, to_ns_quark);
 	}
+
+	return ret;
 }
 
 /**
- * lasso_registry_add_mapping:
+ * lasso_registry_add_direct_mapping:
  *
  * Add a new mapping from a QName to a QName.
  *
  * Return value: 0 if successfull, -1 if it already exists, -2 if arguments
  * are invalid.
  */
-gint lasso_registry_add_mapping(LassoRegistry *registry, const char *from_namespace,
+gint lasso_registry_add_direct_mapping(LassoRegistry *registry, const char *from_namespace,
 		const char *from_name, const char *to_namespace, const char *to_name)
 {
-	LassoRegistryRecord *a_record;
+	LassoRegistryDirectMappingRecord *a_record;
 
 	g_return_val_if_fail(registry && from_namespace && from_name && to_namespace && to_name, -2);
 
-	if (! lasso_registry_get_mapping(registry, from_namespace, from_name, to_namespace)) {
-		a_record = g_new0(LassoRegistryRecord, 1);
-		a_record->from_namespace = g_quark_from_string(from_namespace);
-		a_record->from_name = g_quark_from_string(from_name);
-		a_record->to_namespace = g_quark_from_string(to_namespace);
-		a_record->to_name = g_quark_from_string(to_name);
-		g_hash_table_insert(registry->hash_map, a_record, a_record);
-		return 0;
+	if (lasso_registry_get_mapping(registry, from_namespace, from_name, to_namespace)) {
+		return -1;
 	}
-	return -1;
+	a_record = g_new0(LassoRegistryDirectMappingRecord, 1);
+	a_record->from_namespace = g_quark_from_string(from_namespace);
+	a_record->from_name = g_quark_from_string(from_name);
+	a_record->to_namespace = g_quark_from_string(to_namespace);
+	a_record->to_name = g_quark_from_string(to_name);
+	g_hash_table_insert(registry->direct_mapping, a_record, a_record);
+	return 0;
 }
 
+/**
+ * lasso_registry_add_functional_mapping:
+ * @registry: a #LassoRegistry
+ * @from_namespace: URI of the source namespace
+ * @to_namespace: URI of the destination namespace
+ * @translation_function: a function mapping string to string from the first namespace to the second one
+ *
+ * Register a new mapping from from_namesapce to to_namespace using the
+ * translation_function. This functions is not forced to return a value for
+ * any string, it can return NULL.
+ *
+ * Return value: 0 if successfull, -1 otherwise.
+ */
+gint lasso_registry_add_functional_mapping(LassoRegistry *registry, const char *from_namespace,
+		const char *to_namespace, LassoRegistryTranslationFunction translation_function)
+{
+	LassoRegistryFunctionalMappingRecord *a_record;
+	GQuark to_ns_quark, from_ns_quark;
 
+	g_return_val_if_fail(registry != NULL && from_namespace != NULL && to_namespace != NULL, -2);
+	from_ns_quark = g_quark_from_string(from_namespace);
+	to_ns_quark = g_quark_from_string(to_namespace);
+	if (lasso_registry_get_translation_function(registry->functional_mapping, from_ns_quark, to_ns_quark)) {
+		return -1;
+	}
+	a_record = g_new0(LassoRegistryFunctionalMappingRecord, 1);
+	a_record->from_namespace = from_ns_quark;
+	a_record->to_namespace = to_ns_quark;
+	a_record->translation_function = translation_function;
 
+	g_hash_table_insert(registry->functional_mapping, a_record, a_record);
+
+	return 0;
+}
 
 /**
- * lasso_registry_default_add_mapping:
+ * lasso_registry_default_add_direct_mapping:
  * @from_namespace: the namespace of the mapped QName
  * @from_name: the name of the mapped QName
  * @to_namespace: the namepsace of the mapped to QName
@@ -177,12 +299,33 @@ gint lasso_registry_add_mapping(LassoRegistry *registry, const char *from_namesp
  * Return value: 0 if successfull, -1 if it already exists, -2 if arguments
  * are invalid.
  */
-gint lasso_registry_default_add_mapping(const char *from_namespace,
+gint lasso_registry_default_add_direct_mapping(const char *from_namespace,
 		const char *from_name, const char *to_namespace, const char *to_name)
 {
 	LassoRegistry *default_registry = lasso_registry_get_default();
 
-	return lasso_registry_add_mapping(default_registry, from_namespace, from_name, to_namespace, to_name);
+	return lasso_registry_add_direct_mapping(default_registry, from_namespace, from_name, to_namespace, to_name);
+}
+
+/**
+ * lasso_registry_default_add_functional_mapping:
+ *
+ * @from_namespace: URI of the source namespace
+ * @to_namespace: URI of the destination namespace
+ * @translation_function: a function mapping string to string from the first namespace to the second one
+ *
+ * Register a new mapping from from_namesapce to to_namespace using the translation_function into
+ * the default mapping. This functions is not forced to return a value for any string, it can return
+ * NULL.
+ *
+ * Return value: 0 if successfull, -1 otherwise.
+ */
+gint lasso_registry_default_add_functional_mapping(const char *from_namespace,
+		const char *to_namespace, LassoRegistryTranslationFunction translation_function)
+{
+	LassoRegistry *default_registry = lasso_registry_get_default();
+
+	return lasso_registry_add_functional_mapping(default_registry, from_namespace, to_namespace, translation_function);
 }
 
 

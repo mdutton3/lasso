@@ -36,8 +36,12 @@ extern "C" {
 #define LASSO_GOBJECT_NAMESPACE "http://lasso.entrouvert.org/ns/GObject"
 #define LASSO_PYTHON_NAMESPACE "http://lasso.entrouvert.org/ns/python"
 
-LASSO_EXPORT gint lasso_registry_default_add_mapping(const char *from_namespace,
+typedef const char *(*LassoRegistryTranslationFunction)(const char *from_namespace, const char *from_name, const char *to_namespace);
+
+LASSO_EXPORT gint lasso_registry_default_add_direct_mapping(const char *from_namespace,
 		const char *from_name, const char *to_namespace, const char *to_name);
+
+LASSO_EXPORT gint lasso_registry_default_add_functional_mapping(const char*from_namespace, const char *to_namespace, LassoRegistryTranslationFunction translation_function);
 
 LASSO_EXPORT const char* lasso_registry_default_get_mapping(const char *from_namespace,
 		const char *from_name, const char *to_namespace);
