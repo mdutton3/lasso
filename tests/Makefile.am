@@ -18,9 +18,11 @@ tests_LDADD = \
 	$(top_builddir)/lasso/liblasso.la \
 	$(LASSO_LIBS) \
 	$(CHECK_LIBS)
+tests_LDFLAGS = -rpath $(top_srcdir)/lasso/.libs/
 
 perfs_SOURCES = perfs.c
 perfs_LDADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
+perfs_LDFLAGS = -rpath $(top_srcdir)/lasso/.libs/
 
 endif
 
