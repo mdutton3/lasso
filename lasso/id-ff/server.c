@@ -97,9 +97,9 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 /**
  * lasso_server_add_service:
  * @server: a #LassoServer
- * @service:
+ * @service: a #LassoNode object implementing representing a service endpoint.
  * 
- * ...
+ * Add a service to the registry of service of this #LassoServer object. 
  * 
  * Return value: 0 on success; a negative value if an error occured.
  **/
