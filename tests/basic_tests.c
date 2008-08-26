@@ -75,6 +75,23 @@ START_TEST(test05_identity_load_dump_empty)
 }
 END_TEST
 
+#include <lasso/registry.h>
+
+START_TEST(test06_registry)
+{
+	const char *name;
+	gint r;
+
+	r = lasso_registry_default_add_mapping("http://lasso.entrouvert.org/ns/test",
+				"test", LASSO_GOBJECT_NAMESPACE,
+				"LassoTestClass");
+	fail_unless(r == 0, "lasso_registry_default_add_mapping should return 0 for new mappings");
+	name = lasso_registry_default_get_mapping("http://lasso.entrouvert.org/ns/test", "test", LASSO_GOBJECT_NAMESPACE);
+	fail_unless(name != NULL, "lasso_registry_default_get_mapping should return the recent mapping");
+	fail_unless(strcmp(name, "LassoTestClass") == 0, "lasso_registry_default_get_mapping should return LassoTestClass");
+}
+END_TEST
+
 
 Suite*
 basic_suite()
@@ -85,16 +102,19 @@ basic_suite()
 	TCase *tc_server_load_dump_random_xml = tcase_create("Create server from random XML");
 	TCase *tc_identity_load_dump_null = tcase_create("Create identity from NULL");
 	TCase *tc_identity_load_dump_empty = tcase_create("Create identity from empty string");
+	TCase *tc_registry = tcase_create("Test QName registry functionnality");
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
 	suite_add_tcase(s, tc_server_load_dump_random_xml);
 	suite_add_tcase(s, tc_identity_load_dump_null);
 	suite_add_tcase(s, tc_identity_load_dump_empty);
+	suite_add_tcase(s, tc_registry);
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
 	tcase_add_test(tc_server_load_dump_random_xml, test03_server_load_dump_random_xml);
 	tcase_add_test(tc_identity_load_dump_null, test04_identity_load_dump_null);
 	tcase_add_test(tc_identity_load_dump_empty, test05_identity_load_dump_empty);
+	tcase_add_test(tc_registry, test06_registry);
 	return s;
 }
 
