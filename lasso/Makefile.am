@@ -15,10 +15,11 @@ lasso.rc.lo: $(top_srcdir)/win32/lasso.rc
 
 lib_LTLIBRARIES = liblasso.la
 
-liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h
+liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h \
+			  registry.h
 BUILT_SOURCES = types.c errors.c symbols.sym
 
-liblasso_la_SOURCES = lasso.c errors.c
+liblasso_la_SOURCES = lasso.c errors.c registry.c
 
 if WSF_ENABLED
 SYMBOLS_ARGS = -wsf
@@ -37,7 +38,8 @@ MAINTAINERCLEANFILES = \
 clean-local:
 	-rm types.c symbols.sym errors.c
 
-EXTRA_DIST = utils.h extract_types.py extract_symbols.py build_strerror.py
+EXTRA_DIST = utils.h extract_types.py extract_symbols.py build_strerror.py \
+	     registry-private.h
 
 if WSF_ENABLED
 WSF_LIB_FILE = $(top_builddir)/lasso/id-wsf/liblasso-id-wsf.la
