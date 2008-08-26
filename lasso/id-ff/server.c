@@ -125,6 +125,18 @@ lasso_server_add_service(LassoServer *server, LassoNode *service)
 }
 
 
+/**
+ * lasso_server_add_service_from_dump:
+ * @server: a #LassoServer
+ * @dump: the XML dump of a #LassoNode representing a service endpoint.
+ *
+ * An utility function that parse a #LassoNode dump an try to add it as a
+ * service using lasso_server_add_service.
+ *
+ * Return value: 0 if succesfull, LASSO_PARAM_ERROR_BAD_TYPE_OF_NULL_OBJECT if
+ * said dump is not a #LassoNode or is not of the righ type,
+ * LASSO_PARAM_ERROR_INVALID_VALUE if dump is NULL.
+ */
 gint
 lasso_server_add_service_from_dump(LassoServer *server, const gchar *dump)
 {
