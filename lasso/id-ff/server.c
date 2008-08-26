@@ -49,28 +49,18 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-/**
- * lasso_server_add_provider:
- * @server: a #LassoServer
- * @role: provider role, identity provider or service provider
- * @metadata: path to the provider metadata file
- * @public_key: provider public key file (may be a certificate) or NULL
- * @ca_cert_chain: provider CA certificate chain file or NULL
- * 
- * Creates a new #LassoProvider and makes it known to the @server
- * 
- * Return value: 0 on success; a negative value if an error occured.
- **/
-gint
-lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
-		const gchar *metadata, const gchar *public_key, const gchar *ca_cert_chain)
+static gint
+lasso_server_add_provider_helper(LassoServer *server, LassoProviderRole role,
+		const gchar *metadata, const gchar *public_key, const gchar *ca_cert_chain,
+		LassoProvider *(*provider_constructor)(LassoProviderRole role, 
+		const char *metadata, const char *public_key, const char *ca_cert_chain))
 {
 	LassoProvider *provider;
 
 	g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(metadata != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	provider = lasso_provider_new(role, metadata, public_key, ca_cert_chain);
+	provider = provider_constructor(role, metadata, public_key, ca_cert_chain);
 	if (provider == NULL) {
 		return critical_error(LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED);
 	}
@@ -93,6 +83,45 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 	return 0;
 }
 
+/**
+ * lasso_server_add_provider:
+ * @server: a #LassoServer
+ * @role: provider role, identity provider or service provider
+ * @metadata: path to the provider metadata file
+ * @public_key: provider public key file (may be a certificate) or NULL
+ * @ca_cert_chain: provider CA certificate chain file or NULL
+ * 
+ * Creates a new #LassoProvider and makes it known to the @server
+ * 
+ * Return value: 0 on success; a negative value if an error occured.
+ **/
+gint
+lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
+		const gchar *metadata, const gchar *public_key, const gchar *ca_cert_chain)
+{
+	return lasso_server_add_provider_helper(server, role, metadata,
+			public_key, ca_cert_chain, lasso_provider_new);
+}
+
+/**
+ * lasso_server_add_provider_from_buffer:
+ * @server: a #LassoServer
+ * @role: provider role, identity provider or service provider
+ * @metadata: a string buffer containg the metadata file for a new provider
+ * @public_key: provider public key file (may be a certificate) or NULL
+ * @ca_cert_chain: provider CA certificate chain file or NULL
+ * 
+ * Creates a new #LassoProvider and makes it known to the @server
+ * 
+ * Return value: 0 on success; a negative value if an error occured.
+ **/
+gint
+lasso_server_add_provider_from_buffer(LassoServer *server, LassoProviderRole role,
+		const gchar *metadata, const gchar *public_key, const gchar *ca_cert_chain)
+{
+	return lasso_server_add_provider_helper(server, role, metadata,
+			public_key, ca_cert_chain, lasso_provider_new_from_buffer);
+}
 
 /**
  * lasso_server_add_service:

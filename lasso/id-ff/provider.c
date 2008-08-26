@@ -42,6 +42,7 @@
 #include <lasso/id-ff/providerprivate.h>
 
 #include <lasso/saml-2.0/providerprivate.h>
+#include "../utils.h"
 
 static char *protocol_uris[] = {
 	"http://projectliberty.org/profiles/fedterm",
@@ -59,6 +60,7 @@ static char *protocol_md_nodename[] = {
 };
 static char *protocol_roles[] = { NULL, "sp", "idp"};
 char *protocol_methods[] = {"", "", "", "", "", "-http", "-soap"};
+static gboolean lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc);
 
 /*****************************************************************************/
 /* public methods */
@@ -676,10 +678,62 @@ lasso_provider_get_protocol_conformance(LassoProvider *provider)
 	return provider->private_data->conformance;
 }
 
+/**
+ * lasso_provider_load_metadata_from_buffer:
+ * @provider: a #LassProvider object
+ * @metadta: a char* string containing a metadata XML file.
+ *
+ * Load metadta into this provider object using the given string buffer.
+ *
+ * Return value: TRUE if successfull, FALSE otherwise.
+ */
 gboolean
-lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
+lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *metadata)
 {
 	xmlDoc *doc;
+	gboolean ret;
+
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
+	doc = xmlParseDoc((xmlChar*)metadata);
+	if (doc == NULL)
+		return FALSE;
+	ret = lasso_provider_load_metadata_from_doc(provider, doc);
+	lasso_release_doc(doc);
+	return ret;
+
+}
+
+/**
+ * lasso_provider_load_metadata:
+ * @provider: a #LassProvider object
+ * @metadta: the path to a SAML 2.0 of ID-FF 1.2 metadata file.
+ *
+ * Load metadta into this provider object by reading them from the given file.
+ *
+ * Return value: TRUE if successfull, FALSE otherwise.
+ */
+gboolean
+lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
+{
+	xmlDoc *doc;
+	gboolean ret;
+
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
+	doc = xmlParseFile(path);
+	if (doc == NULL)
+		return FALSE;
+	ret = lasso_provider_load_metadata_from_doc(provider, doc);
+	if (ret == 0) {
+		lasso_assign_string(provider->metadata_filename, path);
+	}
+	lasso_release_doc(doc);
+	return ret;
+}
+
+
+static gboolean
+lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
+{
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
 	xmlNode *node;
@@ -688,7 +742,6 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	const char *xpath_organization = "/md:EntityDescriptor/md:Organization";
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
-	doc = xmlParseFile(metadata);
 	if (doc == NULL)
 		return FALSE;
 	
@@ -698,7 +751,6 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 		return FALSE;
 	}
 
-	provider->metadata_filename = g_strdup(metadata);
 
 	if (strcmp((char*)node->ns->href, LASSO_SAML2_METADATA_HREF) == 0) {
 		gboolean result;
@@ -777,32 +829,26 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	}
 	xmlXPathFreeObject(xpathObj);
 
-	xmlFreeDoc(doc);
 	xmlXPathFreeContext(xpathCtx);
 
 	return TRUE;
 }
 
-/**
- * lasso_provider_new:
- * @role: provider role, identity provider or service provider
- * @metadata: path to the provider metadata file
- * @public_key: path to the provider public key file (may be a certificate) or NULL
- * @ca_cert_chain: path to the provider CA certificate chain file or NULL
+/** lasso_provider_new_helper:
  *
- * Creates a new #LassoProvider.
+ * Helper function for the two other constructors, lasso_provider_new and lasso_provider_new_from_buffer.
+ * Help to factorize common code.
  *
- * Return value: a newly created #LassoProvider; or NULL if an error occured
  */
-LassoProvider*
-lasso_provider_new(LassoProviderRole role, const char *metadata,
-		const char *public_key, const char *ca_cert_chain)
+static LassoProvider*
+lasso_provider_new_helper(LassoProviderRole role, const char *metadata,
+		const char *public_key, const char *ca_cert_chain, gboolean (*loader)(LassoProvider *provider, const gchar *metadata))
 {
 	LassoProvider *provider;
 
 	provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
 	provider->role = role;
-	if (lasso_provider_load_metadata(provider, metadata) == FALSE) {
+	if (loader(provider, metadata) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "Failed to load metadata from %s.", metadata);
 		lasso_node_destroy(LASSO_NODE(provider));
 		return NULL;
@@ -823,6 +869,43 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
 	
 	return provider;
+}
+/**
+ * lasso_provider_new:
+ * @role: provider role, identity provider or service provider
+ * @metadata: path to the provider metadata file
+ * @public_key: path to the provider public key file (may be a certificate) or NULL
+ * @ca_cert_chain: path to the provider CA certificate chain file or NULL
+ *
+ * Creates a new #LassoProvider.
+ *
+ * Return value: a newly created #LassoProvider; or NULL if an error occured
+ */
+LassoProvider*
+lasso_provider_new(LassoProviderRole role, const char *metadata,
+		const char *public_key, const char *ca_cert_chain)
+{
+	return lasso_provider_new_helper(role, metadata, public_key, ca_cert_chain,
+			lasso_provider_load_metadata);
+}
+
+/**
+ * lasso_provider_new_from_buffer:
+ * @role: provider role, identity provider or service provider
+ * @metadata: string buffer containing a metadata file
+ * @public_key: path to the provider public key file (may be a certificate) or NULL
+ * @ca_cert_chain: path to the provider CA certificate chain file or NULL
+ *
+ * Creates a new #LassoProvider.
+ *
+ * Return value: a newly created #LassoProvider; or NULL if an error occured
+ */
+LassoProvider*
+lasso_provider_new_from_buffer(LassoProviderRole role, const char *metadata,
+		const char *public_key, const char *ca_cert_chain)
+{
+	return lasso_provider_new_helper(role, metadata, public_key, ca_cert_chain,
+			lasso_provider_load_metadata_from_buffer);
 }
 
 gboolean
