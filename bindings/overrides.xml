@@ -17,6 +17,9 @@
     <param name="subminor"/>
     <param name="mode" optional="true" default="c:LASSO_CHECK_VERSION_NUMERIC"/>
   </func>
+  <func name="lasso_registry_default_add_direct_mapping" skip="true"/>
+  <func name="lasso_registry_default_add_functional_mapping" skip="true"/>
+  <func name="lasso_registry_default_get_mapping" skip="true"/>
   <!-- LassoProvider -->
   <func name="lasso_provider_get_metadata_list" return_owner="false"/>
   <!-- LassoProfile -->
