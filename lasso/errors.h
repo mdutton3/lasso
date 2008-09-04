@@ -167,3 +167,5 @@
 #define LASSO_DST_ERROR_MODIFY_PARTIALLY_FAILED   -1304 /* Modify partially failed : some items were correctly processed */
 #define LASSO_DST_ERROR_NEW_DATA_MISSING          -1305 /* Missing new data */
 
+/* Lasso registry */
+#define LASSO_REGISTRY_ERROR_KEY_EXISTS                 -1400 /* Key alreadys exists in the registry */

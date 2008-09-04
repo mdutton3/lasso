@@ -214,9 +214,12 @@ const char* lasso_registry_get_mapping(LassoRegistry *registry, const char *from
 	const char *ret = NULL;
 
 	from_ns_quark = g_quark_try_string(from_namespace);
-	to_ns_quark = g_quark_try_string(from_name);
+	to_ns_quark = g_quark_try_string(to_namespace);
 
-	g_return_val_if_fail(from_ns_quark != 0 && to_ns_quark != 0, NULL);
+	if (from_ns_quark == 0 || to_ns_quark == 0) {
+		return NULL;
+	}
+
 	ret = lasso_registry_get_functional_mapping(registry->functional_mapping, from_ns_quark, from_name, to_ns_quark);
 	if (ret == NULL) {
 		ret = lasso_registry_get_direct_mapping(registry->direct_mapping, from_ns_quark, from_name, to_ns_quark);
@@ -230,7 +233,8 @@ const char* lasso_registry_get_mapping(LassoRegistry *registry, const char *from
  *
  * Add a new mapping from a QName to a QName.
  *
- * Return value: 0 if successfull, -1 if it already exists, -2 if arguments
+ * Return value: 0 if successfull, LASSO_REGISTRY_ERROR_KEY_EXISTS if it already exists,
+ * LASSO_PARAM_ERROR_INVALID_VALUE if arguments
  * are invalid.
  */
 gint lasso_registry_add_direct_mapping(LassoRegistry *registry, const char *from_namespace,
@@ -238,10 +242,10 @@ gint lasso_registry_add_direct_mapping(LassoRegistry *registry, const char *from
 {
 	LassoRegistryDirectMappingRecord *a_record;
 
-	g_return_val_if_fail(registry && from_namespace && from_name && to_namespace && to_name, -2);
+	g_return_val_if_fail(registry && from_namespace && from_name && to_namespace && to_name, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	if (lasso_registry_get_mapping(registry, from_namespace, from_name, to_namespace)) {
-		return -1;
+		return LASSO_REGISTRY_ERROR_KEY_EXISTS;
 	}
 	a_record = g_new0(LassoRegistryDirectMappingRecord, 1);
 	a_record->from_namespace = g_quark_from_string(from_namespace);
@@ -263,7 +267,8 @@ gint lasso_registry_add_direct_mapping(LassoRegistry *registry, const char *from
  * translation_function. This functions is not forced to return a value for
  * any string, it can return NULL.
  *
- * Return value: 0 if successfull, -1 otherwise.
+ * Return value: 0 if successfull, LASSO_REGISTRY_ERROR_KEY_EXISTS if this mapping is already registered,
+ * LASSO_PARAM_ERROR_INVALID_VALUE if one the argument is invalid.
  */
 gint lasso_registry_add_functional_mapping(LassoRegistry *registry, const char *from_namespace,
 		const char *to_namespace, LassoRegistryTranslationFunction translation_function)
@@ -271,11 +276,11 @@ gint lasso_registry_add_functional_mapping(LassoRegistry *registry, const char *
 	LassoRegistryFunctionalMappingRecord *a_record;
 	GQuark to_ns_quark, from_ns_quark;
 
-	g_return_val_if_fail(registry != NULL && from_namespace != NULL && to_namespace != NULL, -2);
+	g_return_val_if_fail(registry != NULL && from_namespace != NULL && to_namespace != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	from_ns_quark = g_quark_from_string(from_namespace);
 	to_ns_quark = g_quark_from_string(to_namespace);
 	if (lasso_registry_get_translation_function(registry->functional_mapping, from_ns_quark, to_ns_quark)) {
-		return -1;
+		return LASSO_REGISTRY_ERROR_KEY_EXISTS;
 	}
 	a_record = g_new0(LassoRegistryFunctionalMappingRecord, 1);
 	a_record->from_namespace = from_ns_quark;
@@ -296,8 +301,8 @@ gint lasso_registry_add_functional_mapping(LassoRegistry *registry, const char *
  *
  * Add a new mapping from a QName to a QName.
  *
- * Return value: 0 if successfull, -1 if it already exists, -2 if arguments
- * are invalid.
+ * Return value: 0 if successfull, LASSO_REGISTRY_ERROR_KEY_EXISTS if this mapping is already registered,
+ * LASSO_PARAM_ERROR_INVALID_VALUE if one the argument is invalid.
  */
 gint lasso_registry_default_add_direct_mapping(const char *from_namespace,
 		const char *from_name, const char *to_namespace, const char *to_name)
@@ -318,7 +323,8 @@ gint lasso_registry_default_add_direct_mapping(const char *from_namespace,
  * the default mapping. This functions is not forced to return a value for any string, it can return
  * NULL.
  *
- * Return value: 0 if successfull, -1 otherwise.
+ * Return value: 0 if successfull, LASSO_REGISTRY_ERROR_KEY_EXISTS if this mapping is already registered,
+ * LASSO_PARAM_ERROR_INVALID_VALUE if one the argument is invalid.
  */
 gint lasso_registry_default_add_functional_mapping(const char *from_namespace,
 		const char *to_namespace, LassoRegistryTranslationFunction translation_function)

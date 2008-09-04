@@ -109,6 +109,8 @@ lasso_strerror(int error_code)
 			return "Missing SAML artifact";
 		case LASSO_DS_ERROR_INVALID_SIGALG:
 			return "Invalid signature algorithm.";
+		case LASSO_REGISTRY_ERROR_KEY_EXISTS:
+			return "Key alreadys exists in the registry";
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
 			return "Unsupported protocol profile";
 		case LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT:

@@ -83,13 +83,15 @@ START_TEST(test06_registry_direct_mapping)
 	const char *name;
 	gint r;
 
-	r = lasso_registry_default_add_direct_mapping(LASSO_LIB_HREF,
-				"test", LASSO_LASSO_HREF,
-				"LassoTestClass");
+	r = lasso_registry_default_add_direct_mapping(LASSO_LIB_HREF, "test", LASSO_LASSO_HREF,
+			"LassoTestClass");
 	fail_unless(r == 0, "lasso_registry_default_add_direct_mapping should return 0 for new mappings");
 	name = lasso_registry_default_get_mapping(LASSO_LIB_HREF, "test", LASSO_LASSO_HREF);
 	fail_unless(name != NULL, "lasso_registry_default_get_mapping should return the recent mapping");
 	fail_unless(strcmp(name, "LassoTestClass") == 0, "lasso_registry_default_get_mapping should return LassoTestClass");
+	r = lasso_registry_default_add_direct_mapping(LASSO_LIB_HREF, "test", LASSO_LASSO_HREF,
+			"LassoTestClass");
+	fail_unless(r == LASSO_REGISTRY_ERROR_KEY_EXISTS, "lasso_registry_default_add_direct_mapping should return LASSO_REGISTRY_KEY_EXISTS when done two times");
 }
 END_TEST
 
@@ -117,6 +119,8 @@ START_TEST(test07_registry_functional_mapping)
 	name = lasso_registry_default_get_mapping(LASSO_LIB_HREF, "Assertion", LASSO_LASSO_HREF);
 	fail_unless(name != NULL, "lasso_registry_default_get_mapping should return the recent mapping");
 	fail_unless(strcmp(name, "LassoAssertion") == 0, "lasso_registry_default_get_mapping should return LassoAssertion");
+	r = lasso_registry_default_add_functional_mapping(LASSO_LIB_HREF, LASSO_LASSO_HREF, trad);
+	fail_unless(r == LASSO_REGISTRY_ERROR_KEY_EXISTS, "lasso_registry_default_add_functional_mapping should return LASSO_REGISTRY_KEY_EXISTS when done two times");
 }
 END_TEST
 
