@@ -723,7 +723,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 	if (doc == NULL)
 		return FALSE;
 	ret = lasso_provider_load_metadata_from_doc(provider, doc);
-	if (ret == 0) {
+	if (ret == TRUE) {
 		lasso_assign_string(provider->metadata_filename, path);
 	}
 	lasso_release_doc(doc);
