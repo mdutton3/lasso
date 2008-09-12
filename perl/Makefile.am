@@ -18,11 +18,16 @@ SWIG_I_FILES=$(shell find $(top_srcdir)/swig/ -name '*.[ih]')
 lasso_wrap.c lasso.pm: $(SWIG_I_FILES)
 	$(SWIG) -I$(top_builddir)/swig -v -perl5 -module lasso -o lasso_wrap.c $(top_srcdir)/swig/Lasso.i
 
+
 $(PERL_MAKEFILE): lasso.pm lasso_wrap.c
 	test -e Makefile.PL || test ! -e $(srcdir)/Makefile.PL || $(LN_S) $(srcdir)/Makefile.PL .
 	test -e lasso_wrap.c || test ! -e $(srcdir)/lasso_wrap.c || $(LN_S) $(srcdir)/lasso_wrap.c .
 	test -e lasso.pm || test ! -e $(srcdir)/lasso.pm || $(LN_S) $(srcdir)/lasso.pm .
-	VERSION="$(VERSION)" CC="$(CC)" CFLAGS="$(AM_CPPFLAGS) $(AM_CFLAGS) $(SWIG_OPTS) $(CPPFLAGS) $(AM_STANDARD_CFLAGS)" $(PERL) $(srcdir)/Makefile.PL DESTDIR="$(DESTDIR)" PREFIX="$(prefix)" $(MAKE_PL_OPTS) TOP_SRCDIR="$(top_srcdir)" TOP_BUILDDIR="$(top_builddir)"
+	VERSION="$(VERSION)" CC="$(CC)" CFLAGS="$(AM_CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) $(SWIG_OPTS) $(CPPFLAGS) $(AM_STANDARD_CFLAGS)" $(PERL) $(srcdir)/Makefile.PL DESTDIR="$(DESTDIR)" PREFIX="$(prefix)" $(MAKE_PL_OPTS) TOP_SRCDIR="$(top_srcdir)" TOP_BUILDDIR="$(top_builddir)"
+
+if DEBUGGING
+AM_CFLAGS+=-Wno-unused-parameter -Wno-sign-compare -Wno-unused-variable -Wno-unused-function
+endif
 
 -perl install-perl: $(PERL_MAKEFILE)
 	target=`echo $@ | sed -e 's/-perl//'`; \
