@@ -1,5 +1,4 @@
 MAINTAINERCLEANFILES = Makefile.in
-if JAVA_ENABLED
 INCLUDES = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
@@ -41,7 +40,11 @@ doc:
 com_entrouvert_lasso_LassoJNI.h: com/entrouvert/lasso/LassoJNI.class  $(java_lasso_source_files:.java=.class)
 	$(JAVAH) $(JAVAH_FLAGS) -classpath . `echo $< | sed 'su/u.ug;su.classuu'`
 
-libjnilasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir) @JAVA_INCLUDE@
+libjnilasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir) $(AM_CFLAGS) @JAVA_INCLUDE@
+if DEBUGGING
+libjnilasso_la_CFLAGS += -Wno-unused-parameter
+endif
+
 libjnilasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version
 libjnilasso_la_LIBADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 nodist_libjnilasso_la_SOURCES = com_entrouvert_lasso_LassoJNI.c 
@@ -92,5 +95,4 @@ AllJunitTests: $(test_source_files:.java=.class)
 	chmod +x $@
 endif
 
-endif
 
