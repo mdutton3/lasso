@@ -1,5 +1,14 @@
 MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = python php5 java
+SUBDIRS =
+if PYTHON_ENABLED
+SUBDIRS += python
+endif
+if PHP5_ENABLED
+SUBDIRS += php5
+endif
+if JAVA_ENABLED
+SUBDIRS += java
+endif
 
 CLEANFILES = bindings.pyc lang_java.pyc lang_python.pyc lang_php5.pyc \
              utils.pyc lang_php5_helpers/__init__.pyc lang_php5_helpers/php_code.pyc \
