@@ -838,10 +838,14 @@ AC_ARG_ENABLE(debugging,   [  --enable-debugging      enable debuging messages (
 if test "z$enable_debugging" = "zyes" ; then
     enable_debugging=yes
     LASSO_DEFINES="$LASSO_DEFINES -DLASSO_DEBUG"
+    AM_CFLAGS="$AM_CFLAGS -O0 -g -Wall -Wextra -Werror -Wno-missing-field-initializers"
 else
     enable_debugging=no
 fi    
+AM_CONDITIONAL([DEBUGGING],[test "x$enable_debugging" = "xyes"])
 AC_MSG_RESULT($enable_debugging)
+AC_SUBST(DEBUGGING)
+AC_SUBST(AM_CFLAGS)
 
 dnl Profiling 
 AC_MSG_CHECKING(for profiling) 
@@ -984,6 +988,7 @@ Main
 ----
 
 Compiler:                ${CC} 
+CFLAGS:                  ${CFLAGS}
 Install prefix:          ${prefix}
 Debugging:               $enable_debugging
 Experimental ID-WSF:     $enable_wsf
