@@ -49,6 +49,7 @@
 #include <lasso/xml/xml_enc.h>
 #include <lasso/xml/saml_name_identifier.h>
 #include "../utils.h"
+#include "../registry.h"
 
 
 static char* lasso_node_build_query(LassoNode *node);
@@ -1520,11 +1521,11 @@ LassoNode*
 lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 {
 	char *prefix = NULL;
-	char *typename;
-	char *tmp;
-	char *node_name;
-	xmlChar *xsitype;
-	LassoNode *node;
+	char *typename = NULL;
+	char *tmp = NULL;
+	char *node_name = NULL;
+	xmlChar *xsitype = NULL;
+	LassoNode *node = NULL;
 
 	if (xmlnode == NULL || xmlnode->ns == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Impossible to build LassoNode from xml node");
@@ -1572,73 +1573,85 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "IdWsf2Sec";
 	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSA_HREF) == 0)
 		prefix = "WsAddr";
+#if 0 /* Desactivate DGME lib special casing */
 	else if (strcmp((char*)xmlnode->ns->href, "urn:dgme:msp:ed:2007-01") == 0)
 		/* FIXME: new namespaces should be possible to add from another library than lasso */
 		prefix = "DgmeMspEd";
-	else {
+#endif
+	else if ((tmp = lasso_get_prefix_for_idwsf2_dst_service_href((char*)xmlnode->ns->href))
+			!= NULL) {
 		/* ID-WSF 2 Profile */
-		tmp = lasso_get_prefix_for_idwsf2_dst_service_href((char*)xmlnode->ns->href);
-		if (tmp) {
-			prefix = "IdWsf2DstRef";
-			g_free(tmp);
+		prefix = "IdWsf2DstRef";
+		g_free(tmp);
+	} else if ((tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href))
+			!= NULL) {
+		/* ID-WSF 1 Profile */
+		prefix = "Dst";
+		g_free(tmp);
+	}
+
+	if (prefix != NULL && strcmp(prefix, "Dst") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
+		prefix = "Utility";
+	else if (prefix != NULL && strcmp(prefix, "Disco") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
+		prefix = "Utility";
+	else if (prefix != NULL && strcmp(prefix, "Sa") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
+		prefix = "Utility";
+#if 0 /* Remove special casing for DGME lib */
+	else if (strcmp(prefix, "DgmeMspEd") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
+		prefix = "Utility";
+#endif
+
+	xsitype = xmlGetNsProp(xmlnode, (xmlChar*)"type", (xmlChar*)LASSO_XSI_HREF);
+	if (xsitype) {
+		xmlNsPtr ns;
+		xmlChar *xmlPrefix, *separator;
+
+		/** Honor xsi:type if the QName is in the LASSO_LASSO_HREF namespace */
+		xmlPrefix = (xmlChar*)xsitype;
+		separator = (xmlChar*)strchr((char*)xsitype, ':');
+		if (separator != NULL) {
+			xmlPrefix = (xmlChar*)g_strndup((char*)xmlPrefix, (size_t)(separator - xmlPrefix));
+			ns = xmlSearchNs(NULL, xmlnode, xmlPrefix);
+			if (ns != NULL && strcmp((char*)ns->href, LASSO_LASSO_HREF) == 0) {
+				typename = g_strdup((char*)(separator+1));
+			}
+			lasso_release(xmlPrefix);
+		}
+		lasso_release_xmlchar(xsitype);
+	}
+
+	if (typename == NULL) {
+		node_name = (char*)xmlnode->name;
+		if (strcmp(node_name, "EncryptedAssertion") == 0) {
+			typename = g_strdup("LassoSaml2EncryptedElement");
+		} else if (strcmp(node_name, "SvcMD") == 0) {
+			typename = g_strdup("LassoIdWsf2DiscoSvcMetadata");
+		} else if (prefix != NULL && strcmp(prefix, "IdWsf2DstRef") == 0 && strcmp(node_name, "Status") == 0) {
+			typename = g_strdup("LassoIdWsf2UtilStatus");
+		} else if (prefix != NULL && strcmp(prefix, "WsSec1") == 0 && strcmp(node_name, "Security") == 0) {
+			typename = g_strdup("LassoWsSec1SecurityHeader");
+		} else if (prefix != NULL && strcmp(prefix, "Soap") == 0 && strcmp(node_name, "detail") == 0) { /* FIXME */
+			typename = g_strdup("LassoSoapDetail");
+#if 0 /* Remove special casing for DGME lib */
+		} else if (prefix != NULL && strcmp(prefix, "DgmeMspEd") == 0 && strcmp(node_name, "file") == 0) { /* FIXME */
+			typename = g_strdup("LassoDgmeMspEdFile");
+#endif
 		} else {
-			/* ID-WSF 1 Profile */
-			tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
-			if (tmp) {
-				prefix = "Dst";
-				g_free(tmp);
+			if (prefix != NULL) {
+				typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
+			} else {
+				if (xmlnode->ns != NULL && xmlnode->ns->href != NULL) {
+					const char *ctypename = lasso_registry_default_get_mapping((char*)xmlnode->ns->href, node_name, LASSO_LASSO_HREF);
+					if (ctypename) {
+						typename = g_strdup(ctypename);
+					}
+				}
 			}
 		}
 	}
 
-	if (prefix == NULL)
-		return NULL;
-
-	if (strcmp(prefix, "Dst") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
-		prefix = "Utility";
-	else if (strcmp(prefix, "Disco") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
-		prefix = "Utility";
-	else if (strcmp(prefix, "Sa") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
-		prefix = "Utility";
-	else if (strcmp(prefix, "DgmeMspEd") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
-		prefix = "Utility";
-
-	xsitype = xmlGetNsProp(xmlnode, (xmlChar*)"type", (xmlChar*)LASSO_XSI_HREF);
-	if (xsitype) {
-		/* XXX: should look for proper namespace prefix declaration
-		 * and not assumes blindly that lib: is the liberty prefix;
-		 * should also use the declared type to get the proper typename
-		 * instead of falling back to good ol' xmlnode->name later.
-		 * yada yada
-		 */
-		if (strncmp((char*)xsitype, "lib:", 4) == 0)
-			prefix = "Lib";
-		xmlFree(xsitype);
-		xsitype = NULL;
-	}
-
-	if (prefix == NULL)
-		return NULL;
-
-	node_name = (char*)xmlnode->name;
-	if (strcmp(node_name, "EncryptedAssertion") == 0) {
-		typename = g_strdup("LassoSaml2EncryptedElement");
-	} else if (strcmp(node_name, "SvcMD") == 0) {
-		typename = g_strdup("LassoIdWsf2DiscoSvcMetadata");
-	} else if (strcmp(prefix, "IdWsf2DstRef") == 0 && strcmp(node_name, "Status") == 0) {
-		typename = g_strdup("LassoIdWsf2UtilStatus");
-	} else if (strcmp(prefix, "WsSec1") == 0 && strcmp(node_name, "Security") == 0) {
-		typename = g_strdup("LassoWsSec1SecurityHeader");
-	} else if (strcmp(prefix, "Soap") == 0 && strcmp(node_name, "detail") == 0) { /* FIXME */
-		typename = g_strdup("LassoSoapDetail");
-	} else if (strcmp(prefix, "DgmeMspEd") == 0 && strcmp(node_name, "file") == 0) { /* FIXME */
-		typename = g_strdup("LassoDgmeMspEdFile");
-	} else {
-		typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
-	}
-
 	node = lasso_node_new_from_xmlNode_with_type(xmlnode, typename);
-	g_free(typename);
+	lasso_release(typename);
 
 	return node;
 }

@@ -124,6 +124,34 @@ START_TEST(test07_registry_functional_mapping)
 }
 END_TEST
 
+START_TEST(test08_test_new_from_xmlNode)
+{
+	static GType this_type = 0;
+	gint r;
+	LassoNode *node = NULL;
+
+	static const GTypeInfo this_info = {
+		sizeof (LassoNodeClass),
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		sizeof(LassoNode),
+		0,
+		NULL,
+	};
+
+	this_type = g_type_register_static(LASSO_TYPE_NODE,
+			"LassoTest", &this_info, 0);
+	r = lasso_registry_default_add_direct_mapping("http://example.com", "Test1", LASSO_LASSO_HREF, "LassoTest");
+	fail_unless(r == 0, "no mapping for http://example.com:Test1 should exist");
+	node = lasso_node_new_from_dump("<Test1 xmlns=\"http://example.com\"></Test1>");
+	fail_unless(node != NULL, "parsing <Test1/> should return an object");
+	fail_unless(strcmp(G_OBJECT_TYPE_NAME(node), "LassoTest") == 0, "node classname should be LassoTest");
+}
+END_TEST
+
 
 Suite*
 basic_suite()
@@ -136,6 +164,7 @@ basic_suite()
 	TCase *tc_identity_load_dump_empty = tcase_create("Create identity from empty string");
 	TCase *tc_registry_direct_mapping = tcase_create("Test QName registry with direct mapping");
 	TCase *tc_registry_functional_mapping = tcase_create("Test QName registry with functional mapping");
+	TCase *tc_registry_new_from_xmlNode = tcase_create("Test parsing a node that has a mapping to Lasso Object in the registry");
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
 	suite_add_tcase(s, tc_server_load_dump_random_xml);
@@ -143,6 +172,7 @@ basic_suite()
 	suite_add_tcase(s, tc_identity_load_dump_empty);
 	suite_add_tcase(s, tc_registry_direct_mapping);
 	suite_add_tcase(s, tc_registry_functional_mapping);
+	suite_add_tcase(s, tc_registry_new_from_xmlNode);
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
 	tcase_add_test(tc_server_load_dump_random_xml, test03_server_load_dump_random_xml);
@@ -150,6 +180,7 @@ basic_suite()
 	tcase_add_test(tc_identity_load_dump_empty, test05_identity_load_dump_empty);
 	tcase_add_test(tc_registry_direct_mapping, test06_registry_direct_mapping);
 	tcase_add_test(tc_registry_functional_mapping, test07_registry_functional_mapping);
+	tcase_add_test(tc_registry_new_from_xmlNode, test08_test_new_from_xmlNode);
 	return s;
 }
 
