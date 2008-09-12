@@ -83,6 +83,7 @@ dnl
 dnl Check for programs
 dnl
 AC_PROG_CC
+CFLAGS=""
 AC_HEADER_STDC
 LT_AC_PROG_RC
 AC_EXEEXT
@@ -988,7 +989,7 @@ Main
 ----
 
 Compiler:                ${CC} 
-CFLAGS:                  ${CFLAGS}
+CFLAGS:                  ${AM_CFLAGS} ${CFLAGS}
 Install prefix:          ${prefix}
 Debugging:               $enable_debugging
 Experimental ID-WSF:     $enable_wsf
