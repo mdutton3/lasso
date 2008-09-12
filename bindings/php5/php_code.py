@@ -1,5 +1,5 @@
 # Lasso - A free implementation of the Liberty Alliance specifications.
-# 
+#
 # Copyright (C) 2004-2007 Entr'ouvert
 # http://lasso.entrouvert.org
 #
@@ -62,7 +62,7 @@ function cptrToPhp ($cptr) {
     if (is_null($cptr) || !$cptr) return null;
     $typename = lasso_get_object_typename($cptr);
     $class_name = $typename . "NoInit";
-    $obj = new $class_name(); 
+    $obj = new $class_name();
     if (! is_null($obj)) {
         $obj->_cptr = $cptr;
         return $obj;
@@ -182,7 +182,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
             mtype = m[0]
             mname = utils.format_as_camelcase(m[1])
             options = m[2]
-            
+
             # Getters
             print >> self.fd, '    /**'
             print >> self.fd, '     * @return %s' % self.get_docstring_return_type(mtype)

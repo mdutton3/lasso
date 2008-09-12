@@ -1,5 +1,5 @@
 # Lasso - A free implementation of the Liberty Alliance specifications.
-# 
+#
 # Copyright (C) 2004-2007 Entr'ouvert
 # http://lasso.entrouvert.org
 #
@@ -100,10 +100,10 @@ class Binding:
 
     def success(self):
         self.ret('SUCCESS')
-    
+
     def declare_zval(self, name):
         self.declare('zval*', zval(name))
-    
+
     def declare(self, type, name):
         self.module('%s %s;' % (type, name))
 
@@ -147,7 +147,7 @@ class Binding:
         if options.get('nonull') == None and ret:
             ret += '!'
         return ret
-    
+
     def generate_parse_args(self, arg):
         type, name, options = arg
         ret = ''
@@ -215,7 +215,7 @@ class Binding:
 
     def method_epilogue(self, args = list()):
         for arg in args:
-            type, name, options = arg 
+            type, name, options = arg
             type, name, options = arg
             if type == 'gboolean' and type in ['int', 'gint'] + self.binding_data.enums and type in ('char*', 'gchar*','const char*','const gchar*'):
                 pass
@@ -253,7 +253,7 @@ class Binding:
         else:
             par = '%s = %s;'
         self.module(pat % (left, right))
-        
+
     def return_c_value(self, type, name, options = dict()):
         if type is None:
             return
@@ -292,7 +292,7 @@ class Binding:
         self.module('RETVAL_NULL();')
         self.close()
 #
-        
+
     def generate(self):
         self.generate_php()
         self.generate_module()
@@ -411,7 +411,7 @@ class Binding:
 
     def generate_module_minit_constants(self):
         self.module('/* Constants (both enums and defines) */')
-        mapping = { 
+        mapping = {
             'i': 'REGISTER_LONG_CONSTANT("%(name)s", %(name)s, CONST_CS|CONST_PERSISTENT);',
             's': 'REGISTER_STRING_CONSTANT("%(name)s", %(name)s, CONST_CS|CONST_PERSISTENT);',
             'b': '''\
@@ -437,7 +437,7 @@ class Binding:
 
     def generate_module_rinit(self):
         self.generate_module_dummy_function('PHP_RINIT(lasso)')
-    
+
     def generate_module_rshutdown(self):
         self.generate_module_dummy_function('PHP_RSHUTDOWN(lasso)')
 

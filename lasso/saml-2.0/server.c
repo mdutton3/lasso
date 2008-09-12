@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -27,7 +27,7 @@
 #include <lasso/id-ff/providerprivate.h>
 
 
-int 
+int
 lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node)
 {
 	xmlNode *t;
@@ -40,7 +40,7 @@ lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node)
 	}
 
 	for (t = node->children; t; t = t->next) {
-		if (t->type == XML_ELEMENT_NODE && 
+		if (t->type == XML_ELEMENT_NODE &&
 				strcmp((char*)t->name, "AffiliationDescriptor") == 0) {
 			break;
 		}
@@ -55,7 +55,7 @@ lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node)
 	owner_id = (char*)xmlGetProp(t, (xmlChar*)"affiliationOwnerID");
 
 	for (t = t->children; t; t = t->next) {
-		if (t->type == XML_ELEMENT_NODE && 
+		if (t->type == XML_ELEMENT_NODE &&
 				strcmp((char*)t->name, "AffiliateMember") == 0) {
 			member_id = (char*)xmlNodeGetContent(t);
 			provider = lasso_server_get_provider(server, member_id);

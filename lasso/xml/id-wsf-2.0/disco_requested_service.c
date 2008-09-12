@@ -1,22 +1,22 @@
-/* $Id: disco_requested_service.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
+/* $Id: disco_requested_service.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -34,27 +34,27 @@
  * <xs:complexType name="RequestedServiceType">
  *   <xs:sequence>
  *     <xs:element ref="ServiceType" minOccurs="0" maxOccurs="unbounded" />
- *     
+ *
  *     <xs:element ref="ProviderID" minOccurs="0" maxOccurs="unbounded" />
- *     
+ *
  *     <xs:element ref="Options" minOccurs="0" maxOccurs="unbounded"/>
- *     
+ *
  *     <xs:element ref="SecurityMechID" minOccurs="0" maxOccurs="unbounded"/>
- *     
+ *
  *     <xs:element ref="Framework" minOccurs="0" maxOccurs="unbounded"/>
- *     
+ *
  *     <xs:element ref="Action" minOccurs="0" maxOccurs="unbounded"/>
- *     
+ *
  *     <xs:any namespace="##other"
  *       processContents="lax"
  *       minOccurs="0"
  *       maxOccurs="unbounded"/>
- *       
+ *
  *     </xs:sequence>
- *     
+ *
  *     <xs:attribute name="reqID" type="xs:string" use="optional" />
  *     <xs:attribute name="resultsType" type="xs:string" use="optional" />
- *     
+ *
  *   </xs:complexType>
  * ]]></programlisting>
  * </figure>

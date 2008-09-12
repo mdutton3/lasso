@@ -98,7 +98,7 @@ PHP_FUNCTION(lasso_get_object_typename)
 }
 
 /* List handling */
-static void 
+static void
 free_glist(GList **list, GFunc free_function) {
     g_return_if_fail(list);
     if (*list) {
@@ -304,9 +304,9 @@ get_hashtable_from_array_of_objects(zval *array)
 			}
 		} else {
 			if (cvt_temp != NULL) {
-				g_hash_table_insert(result, (gpointer)index, g_object_ref(cvt_temp->obj)); 
+				g_hash_table_insert(result, (gpointer)index, g_object_ref(cvt_temp->obj));
 			} else {
-				g_hash_table_insert(result, (gpointer)index, NULL); 
+				g_hash_table_insert(result, (gpointer)index, NULL);
 			}
 		}
 	}

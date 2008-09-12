@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -39,9 +39,9 @@
 /**
  * lasso_name_registration_build_request_msg:
  * @name_registration: a #LassoNameRegistration
- * 
+ *
  * Builds a register name identifier request message.
- * 
+ *
  * It gets the register name identifier protocol profile and:
  * <itemizedlist>
  * <listitem><para>
@@ -57,7 +57,7 @@
  *   identifier object, sets @msg_body to NULL.
  * </para></listitem>
  * </itemizedlist>
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -87,9 +87,9 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		profile->msg_url = lasso_provider_get_metadata_one(
 				remote_provider, "SoapEndpoint");
-		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file = 
+		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file =
 			profile->server->private_key;
-		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file = 
+		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file =
 			profile->server->certificate;
 		profile->msg_body = lasso_node_export_to_soap(profile->request);
 		return 0;
@@ -125,7 +125,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 /**
  * lasso_name_registration_build_response_msg:
  * @name_registration: a #LassoNameRegistration
- * 
+ *
  * Builds the register name idendifier response message.
  *
  * It gets the request message method and:
@@ -145,7 +145,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
  * If private key and certificate are set in server object it will also signs
  * the message (either with X509 if SOAP or with a simple signature for query
  * strings).
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -174,9 +174,9 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		profile->msg_url = NULL;
-		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->private_key_file = 
+		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->private_key_file =
 			profile->server->private_key;
-		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->certificate_file = 
+		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->certificate_file =
 			profile->server->certificate;
 		profile->msg_body = lasso_node_export_to_soap(profile->response);
 		return 0;
@@ -210,7 +210,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 /**
  * lasso_name_registration_destroy:
  * @name_registration: a #LassoNameRegistration
- * 
+ *
  * Destroys a #LassoNameRegistration object.
  **/
 void
@@ -230,7 +230,7 @@ lasso_name_registration_destroy(LassoNameRegistration *name_registration)
  * Initializes a new lib:RegisterNameIdentifierRequest request; it sets
  * @name_registration->nameIdentifier to the new name identifier and
  * @name_registration->oldNameIdentifier to the old one.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -299,7 +299,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 		}
 
 		oldNameIdentifier = g_object_ref(federation->local_nameIdentifier);
-		
+
 		spNameIdentifier = NULL;
 		if (federation->remote_nameIdentifier) {
 			spNameIdentifier = g_object_ref(federation->remote_nameIdentifier);
@@ -337,13 +337,13 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	profile->request = lasso_lib_register_name_identifier_request_new_full(
 			LASSO_PROVIDER(profile->server)->ProviderID,
 			idpNameIdentifier, spNameIdentifier, oldNameIdentifier,
-			profile->server->certificate ? 
+			profile->server->certificate ?
 				LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
 			LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	if (profile->request == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
-	LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request)->RelayState = 
+	LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request)->RelayState =
 			g_strdup(profile->msg_relayState);
 
 	if (lasso_provider_get_protocol_conformance(remote_provider) < LASSO_PROTOCOL_LIBERTY_1_2) {
@@ -361,7 +361,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
  * lasso_name_registration_process_request_msg:
  * @name_registration: a #LassoNameRegistration
  * @request_msg: the register name identifier request message
- * 
+ *
  * Processes a lib:RegisterNameIdentifierRequest message.  Rebuilds a request
  * object from the message and optionally verifies its signature.  Sets
  * profile->nameIdentifier to local name identifier.  If it changed (when this
@@ -435,7 +435,7 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
  * lasso_name_registration_process_response_msg:
  * @name_registration: a #LassoNameRegistration
  * @response_msg: the register name identifier response message
- * 
+ *
  * Processes a lib:RegisterNameIdentifierResponse message.  Rebuilds a response
  * object from the message and optionally verifies its signature.
  *
@@ -544,9 +544,9 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
  * @name_registration: a #LassoNameRegistration
  *
  * Checks profile request with regards to message status and principal
- * federations, update them accordingly and prepares a 
+ * federations, update them accordingly and prepares a
  * lib:RegisterNameIdentifierResponse accordingly.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -580,9 +580,9 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	/* set register name identifier response */
 	profile->response = lasso_lib_register_name_identifier_response_new_full(
 			LASSO_PROVIDER(profile->server)->ProviderID,
-			LASSO_SAML_STATUS_CODE_SUCCESS, 
+			LASSO_SAML_STATUS_CODE_SUCCESS,
 			LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request),
-			profile->server->certificate ? 
+			profile->server->certificate ?
 				LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
 			LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	if (LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(profile->response) == FALSE) {
@@ -718,9 +718,9 @@ lasso_name_registration_get_type()
 /**
  * lasso_name_registration_new:
  * @server: the #LassoServer
- * 
+ *
  * Creates a new #LassoNameRegistration.
- * 
+ *
  * Return value: a newly created #LassoNameRegistration object; or NULL if
  *     an error occured
  **/
@@ -758,7 +758,7 @@ lasso_name_registration_new_from_dump(LassoServer *server, const char *dump)
 
 	name_registration = lasso_name_registration_new(server);
 	doc = xmlParseMemory(dump, strlen(dump));
-	init_from_xml(LASSO_NODE(name_registration), xmlDocGetRootElement(doc)); 
+	init_from_xml(LASSO_NODE(name_registration), xmlDocGetRootElement(doc));
 	xmlFreeDoc(doc);
 
 	return name_registration;
@@ -767,9 +767,9 @@ lasso_name_registration_new_from_dump(LassoServer *server, const char *dump)
 /**
  * lasso_name_registration_dump:
  * @name_registration: a #LassoNameRegistration
- * 
+ *
  * Dumps @name_registration content to an XML string.
- * 
+ *
  * Return value: the dump string.  It must be freed by the caller.
  **/
 gchar *

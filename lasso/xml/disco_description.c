@@ -1,22 +1,22 @@
-/* $Id$ 
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -32,7 +32,7 @@
  *
  * <figure><title>Schema fragment for disco:DescriptionType</title>
  * <programlisting><![CDATA[
- * 
+ *
  * <xs:complexType name="DescriptionType">
  *   <xs:sequence>
  *     <xs:element name="SecurityMechID" type="xs:anyURI" minOccurs="1" maxOccurs="unbounded"/>
@@ -44,14 +44,14 @@
  *   </xs:sequence>
  *   <xs:attribute name="id" type="xs:ID"/>
  * </xs:complexType>
- * 
+ *
  * <xs:group name="WsdlRef">
  *   <xs:sequence>
  *     <xs:element name="WsdlURI" type="xs:anyURI"/>
  *     <xs:element name="ServiceNameRef" type="xs:QName"/>
  *   </xs:sequence>
  * </xs:group>
- * 
+ *
  * <xs:group name="BriefSoapHttpDescription">
  *   <xs:sequence>
  *     <xs:element name="Endpoint" type="xs:anyURI"/>
@@ -174,7 +174,7 @@ lasso_disco_description_new_with_BriefSoapHttpDescription(const gchar *securityM
 
 	g_return_val_if_fail(securityMechID != NULL, NULL);
 	g_return_val_if_fail(endpoint != NULL, NULL);
-	
+
 	description = g_object_new(LASSO_TYPE_DISCO_DESCRIPTION, NULL);
 
 	description->SecurityMechID = g_list_append(description->SecurityMechID,
@@ -213,12 +213,12 @@ lasso_disco_description_copy(LassoDiscoDescription *description)
 	newDescription->ServiceNameRef = g_strdup(description->ServiceNameRef);
 
 	if (description->Endpoint) {
-		newDescription->Endpoint = g_strdup(description->Endpoint);	
+		newDescription->Endpoint = g_strdup(description->Endpoint);
 	}
 	if (description->SoapAction) {
-		newDescription->SoapAction = g_strdup(description->SoapAction);	
+		newDescription->SoapAction = g_strdup(description->SoapAction);
 	}
-	
+
 	if (description->id) {
 		newDescription->id = g_strdup(description->id);
 	}

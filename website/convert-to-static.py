@@ -18,7 +18,7 @@ changelog_template.parse(file('templates/changelog.ezt').read())
 tests_template = ezt.Template()
 tests_template.parse(file('templates/tests.ezt').read())
 
-def getText(nodelist): 
+def getText(nodelist):
     if not nodelist:
         return None
     rc = ''
@@ -158,7 +158,7 @@ for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
             if src_file.endswith('.html'):
                 try:
                     body = re_body.findall(file(src_file).read())[0][1].strip()
-                except IndexError: 
+                except IndexError:
                     raise "no body found"
                 fd = StringIO()
                 base_template.generate(fd, {'body': body, 'title': 'Build Log', 'section': 'buildbox'})
@@ -287,7 +287,7 @@ for base, dirs, files in os.walk('web'):
             content = file(src_file).read()
             try:
                 body = re_body.findall(content)[0][1].strip()
-            except IndexError: 
+            except IndexError:
                 raise "no body found"
             title = re_title.findall(content)[0]
             fd = StringIO()

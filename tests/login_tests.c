@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ static char*
 generateIdentityProviderContextDump()
 {
 	LassoServer *serverContext;
-	
+
 	serverContext = lasso_server_new(
 			TESTSDATADIR "/idp1-la/metadata.xml",
 			TESTSDATADIR "/idp1-la/private-key-raw.pem",
@@ -52,7 +52,7 @@ static char*
 generateServiceProviderContextDump()
 {
 	LassoServer *serverContext;
-	
+
 	serverContext = lasso_server_new(
 			TESTSDATADIR "/sp1-la/metadata.xml",
 			TESTSDATADIR "/sp1-la/private-key-raw.pem",
@@ -71,7 +71,7 @@ generateServiceProviderContextDump()
 START_TEST(test01_generateServersContextDumps)
 {
 	char *identityProviderContextDump;
-	char *serviceProviderContextDump; 
+	char *serviceProviderContextDump;
 
 	identityProviderContextDump = generateIdentityProviderContextDump();
 	fail_unless(identityProviderContextDump != NULL,

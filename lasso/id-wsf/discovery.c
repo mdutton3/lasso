@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -38,23 +38,23 @@
  * <programlisting>
  * LassoServer *server;  // initialized before
  * char* session_dump;   // initialized before
- * 
+ *
  * LassoDiscovery *discovery;    // discovery service
  * char *soap_answer;            // SOAP answer from disco service
  * LassoProfileService *service; // instance to perform on requested service
- * 
+ *
  * discovery = lasso_discovery_new(server);
  * lasso_wsf_profile_set_session_from_dump(LASSO_WSF_PROFILE(discovery), session_dump);
  * lasso_discovery_init_query(discovery);
  * lasso_discovery_add_requested_service(discovery, LASSO_PP_HREF);
  * lasso_discovery_build_request_msg(discovery);
- * 
+ *
  * // service must perform SOAP call to LASSO_WSF_PROFILE(discovery)->msg_url
  * // the SOAP message is LASSO_WSF_PROFILE(discovery)->msg_body.  The answer
  * // is stored in char* soap_answer;
- * 
+ *
  * lasso_discovery_process_query_response_msg(discovery, soap_answer);
- * 
+ *
  * service = lasso_discovery_get_service(discovery);
  * </programlisting>
  * </informalexample>
@@ -124,7 +124,7 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	LassoSamlSubjectConfirmation *subject_confirmation = NULL;
 	LassoDsKeyInfo *key_info = NULL;
 	GList *iter = NULL;
-	LassoProvider *our_provider = 
+	LassoProvider *our_provider =
 		LASSO_PROVIDER(LASSO_WSF_PROFILE(discovery)->server);
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
@@ -234,7 +234,7 @@ lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
  * @entryID: the idenitfier of a ResourceOffering to remove.
  *
  * Add a RemoveEntry to the current Modify message for a Discovery service,
- * to remove the resource offering identified by entryID (returned in the 
+ * to remove the resource offering identified by entryID (returned in the
  * response to a Modify/InsertEntry message).
  *
  * Return value: 0
@@ -911,14 +911,14 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 	LassoDiscoQueryResponse *response;
 	int rc = 0;
 
-	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), 
+	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(message != NULL, 
+	g_return_val_if_fail(message != NULL,
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_WSF_PROFILE(discovery);
 	rc = lasso_wsf_profile_process_soap_response_msg(profile, message);
-	if (rc) 
+	if (rc)
 		goto exit;
 	response = LASSO_DISCO_QUERY_RESPONSE(profile->response);
 	if (strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_OK) != 0 &&
@@ -942,7 +942,7 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 				rc = LASSO_PROFILE_ERROR_SESSION_NOT_FOUND;
 				goto exit;
 			}
-		}	
+		}
 	}
 exit:
 	return rc;
@@ -1092,8 +1092,8 @@ lasso_discovery_unregister_constructor_for_service_type(
 	g_return_if_fail(constructor);
 	old_constructor = lookup_registry(service_type);
 	if (old_constructor != constructor) {
-		message(G_LOG_LEVEL_WARNING, 
-			"Mismatch of constructors when unregistering service type: %s", 
+		message(G_LOG_LEVEL_WARNING,
+			"Mismatch of constructors when unregistering service type: %s",
 				service_type);
 		return;
 	}
@@ -1200,7 +1200,7 @@ get_constructors_registry()
 	return registry;
 }
 
-static LassoWsfProfileConstructor 
+static LassoWsfProfileConstructor
 lookup_registry(gchar const *service_type) {
 	gpointer *t;
 
@@ -1293,7 +1293,7 @@ dispose(GObject *object)
 
 static void
 finalize(GObject *object)
-{ 
+{
 	LassoDiscovery *discovery = LASSO_DISCOVERY(object);
 	g_free(discovery->private_data);
 	discovery->private_data = NULL;
@@ -1373,7 +1373,7 @@ lasso_discovery_new(LassoServer *server)
 /**
  * lasso_discovery_new_full:
  * @server: the #LassoServer
- * @offering: the 
+ * @offering: the
  *
  * Creates a new #LassoDiscovery.
  *

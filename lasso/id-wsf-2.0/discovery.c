@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -75,7 +75,7 @@ struct _LassoIdWsf2DiscoveryPrivate
 /**
  * lasso_discovery_destroy:
  * @discovery: a LassoDiscovery
- * 
+ *
  * Destroys LassoDiscovery objects created with lasso_discovery_new() or
  * lasso_discovery_new_from_dump().
  **/
@@ -336,7 +336,7 @@ lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery)
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-		
+
 	/* verify if identity already exists else create it */
 	if (LASSO_PROFILE(profile)->identity == NULL) {
 		LASSO_PROFILE(profile)->identity = lasso_identity_new();
@@ -436,7 +436,7 @@ lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery, G_GNUC_UNUSED
 
 	lasso_idwsf2_profile_init_soap_request(profile,
 			LASSO_PROFILE(profile)->request, LASSO_IDWSF2_DISCO_HREF);
-	
+
 	epr = lasso_session_get_endpoint_reference(session, LASSO_IDWSF2_DISCO_HREF);
 	if (epr != NULL) {
 		LASSO_PROFILE(profile)->msg_url = g_strdup(epr->Address->content);
@@ -483,7 +483,7 @@ lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const 
 	if (! LASSO_IS_IDWSF2_DISCO_QUERY(LASSO_PROFILE(profile)->request)) {
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}
-	
+
 	return res;
 }
 
@@ -557,8 +557,8 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 		metadata->any = g_list_append(metadata->any,
 				g_object_ref((GObject*)endpoint_context->Framework->data));
 	}
-	
-	/* Identity token */	
+
+	/* Identity token */
 	federation = lasso_identity_get_federation(identity, svcMD->ProviderID);
 	if (federation != NULL) {
 		assertion = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
@@ -591,13 +591,13 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 
 		sec_token = LASSO_IDWSF2_SEC_TOKEN(lasso_idwsf2_sec_token_new());
 		sec_token->any = LASSO_NODE(assertion);
-		
+
 		security_context = LASSO_IDWSF2_DISCO_SECURITY_CONTEXT(
 			lasso_idwsf2_disco_security_context_new());
 		security_context->SecurityMechID = g_list_append(
 			security_context->SecurityMechID, g_strdup(LASSO_SECURITY_MECH_TLS_BEARER));
 		security_context->Token = g_list_append(security_context->Token, sec_token);
-		
+
 		metadata->any = g_list_append(metadata->any, security_context);
 	}
 
@@ -622,7 +622,7 @@ lasso_idwsf2_discovery_build_query_response_eprs(LassoIdWsf2Discovery *discovery
 	LassoWsAddrEndpointReference *epr;
 	LassoSoapEnvelope *envelope;
 	int res = 0;
-	
+
 	if (! LASSO_IS_IDWSF2_DISCO_QUERY(LASSO_PROFILE(profile)->request)) {
 		res = LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	} else 	if (! LASSO_IS_IDENTITY(identity)) {
@@ -657,7 +657,7 @@ lasso_idwsf2_discovery_build_query_response_eprs(LassoIdWsf2Discovery *discovery
 		}
 	}
 
-	/* Set response status code */		
+	/* Set response status code */
 	if (res == 0) {
 		response->Status = lasso_idwsf2_util_status_new();
 		response->Status->code = g_strdup(LASSO_DISCO_STATUS_CODE_OK);
@@ -807,7 +807,7 @@ dispose(GObject *object)
 
 static void
 finalize(GObject *object)
-{ 
+{
 	LassoIdWsf2Discovery *discovery = LASSO_IDWSF2_DISCOVERY(object);
 	g_free(discovery->private_data);
 	discovery->private_data = NULL;

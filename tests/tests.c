@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ main(int argc, char *argv[])
 	}
 
 	lasso_init();
-	
+
 	sr = srunner_create(suites[0]());
 
 	i = 1;
@@ -75,7 +75,7 @@ main(int argc, char *argv[])
 #endif
 	srunner_run_all (sr, CK_VERBOSE);
 	rc = srunner_ntests_failed(sr);
-	
+
 	srunner_free(sr);
 	/*suite_free(s);  */
 	/* no longer available in check 0.9.0; it will leak a

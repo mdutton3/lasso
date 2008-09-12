@@ -14,12 +14,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -79,7 +79,7 @@ class IdWsf2TestCase(unittest.TestCase):
             server.getProvider(server.providerIds[0]).setEncryptionMode(lasso.ENCRYPTION_MODE_NAMEID);
             server.addProvider(lasso.PROVIDER_ROLE_SP, wsc_metadata, None, None)
             self.idp_server_dump = server.dump()
-        
+
         return server
 
     def idpRegisterSelf(self, idp_server):
@@ -131,7 +131,7 @@ class IdWsf2TestCase(unittest.TestCase):
             idp_identity_dump = idp_login.identity.dump()
         if idp_login.isSessionDirty:
             idp_session_dump = idp_login.session.dump()
-    
+
         sp_login = lasso.Login(sp)
         query = idp_login.msgUrl.split('?')[1]
         query = query.replace("%3D", "=")
@@ -416,9 +416,9 @@ class MetadataAssociationAddTestCase(IdWsf2TestCase):
             wsp_disco.setSessionFromDump(wsp_session_dump)
         wsp_disco.initMetadataAssociationAdd(svcMDID)
         wsp_disco.buildRequestMsg()
-        
+
         self.failUnless(wsp_disco.msgBody, 'missing msgBody')
-        
+
     def test05(self):
         """Process metadata association add request"""
         idp = self.getIdpServer()
@@ -436,7 +436,7 @@ class MetadataAssociationAddTestCase(IdWsf2TestCase):
         wsp_disco.buildRequestMsg()
 
         idp_disco = lasso.IdWsf2Discovery(idp)
-        
+
         try:
             idp_disco.processMetadataAssociationAddMsg(wsp_disco.msgBody)
         except lasso.Error, e:
@@ -1217,7 +1217,7 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
         service, wsp = self.getProfileService()
         lasso.registerIdWsf2DstService('pp2', 'urn:liberty:id-sis-pp:2005-05')
         service.initQuery()
-        
+
         try:
             service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
         except lasso.Error, e:
@@ -1230,7 +1230,7 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
         service.initQuery()
         service.addQueryItem('/pp2:PP/pp2:InformalName', 'name')
         service.buildRequestMsg()
-        
+
         self.failUnless(service.msgBody, 'missing msgBody')
 
     def test05(self):
@@ -1242,7 +1242,7 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
         service.addQueryItem('not existing attribute', 'not existing attribute')
         service.addQueryItem('/pp2:PP/pp2:MsgContact', 'email')
         service.buildRequestMsg()
-        
+
         self.failUnless(service.msgBody, 'missing msgBody')
 
     def test06(self):
@@ -1589,7 +1589,7 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
 
         service.processQueryResponseMsg(wsp_service.msgBody)
         informal_name = service.getAttributeNode()
-        
+
         self.failUnlessEqual(informal_name, """<pp2:InformalName xmlns="urn:liberty:id-sis-pp:2005-05" xmlns:pp2="urn:liberty:id-sis-pp:2005-05">User name</pp2:InformalName>""", 'first attribute node is wrong')
 
     def test21(self):
@@ -1617,7 +1617,7 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
 
         service.processQueryResponseMsg(wsp_service.msgBody)
         informal_name = service.getAttributeString('name')
-        
+
         self.failUnlessEqual(informal_name, 'User name', 'attribute string is wrong')
 
     def test22(self):
@@ -1645,7 +1645,7 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
 
         service.processQueryResponseMsg(wsp_service.msgBody)
         email = service.getAttributeNode('email')
-        
+
         expected_result = """<pp2:MsgContact xmlns="urn:liberty:id-sis-pp:2005-05" xmlns:pp2="urn:liberty:id-sis-pp:2005-05">.*?<pp2:MsgAccount>Email account</pp2:MsgAccount>.*?<pp2:MsgProvider>Email server</pp2:MsgProvider>.*?</pp2:MsgContact>"""
 
         import re

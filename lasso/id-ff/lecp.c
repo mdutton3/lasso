@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -84,10 +84,10 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 	LASSO_SAMLP_REQUEST_ABSTRACT(lecp->authnRequestEnvelope->AuthnRequest)->certificate_file =
 		LASSO_PROFILE(lecp)->server->certificate;
 	msg = lasso_node_get_xmlNode(LASSO_NODE(lecp->authnRequestEnvelope), FALSE);
-	
+
 	/* msg is not SOAP but straight XML */
 	handler = xmlFindCharEncodingHandler("utf-8");
-	buf = xmlAllocOutputBuffer(handler); 
+	buf = xmlAllocOutputBuffer(handler);
 	xmlNodeDumpOutput(buf, NULL, msg, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
 
@@ -106,10 +106,10 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 /**
  * lasso_lecp_build_authn_request_msg:
  * @lecp: a #LassoLecp
- * 
+ *
  * Builds an authentication request. The data for the sending of the request are
  * stored in @msg_url and @msg_body (SOAP POST).
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 int
@@ -268,7 +268,7 @@ lasso_lecp_init_authn_request(LassoLecp *lecp, const char *remote_providerID)
  *
  * Processes received authentication request, checks it is signed correctly,
  * checks if requested protocol profile is supported, etc.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 int
@@ -288,7 +288,7 @@ lasso_lecp_process_authn_request_msg(LassoLecp *lecp, const char *authn_request_
  *
  * Processes received enveloped authentication request, extracts the
  * authentication request out of it.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 int
@@ -357,7 +357,7 @@ lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, const char *reque
  *
  * Processes received enveloped authentication response, extracts the
  * authentication response out of it and stores it in @response.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 int
@@ -397,7 +397,7 @@ lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, const char *resp
  * @lecp: a #LassoLecp
  *
  * Destroys a #LassoLecp object
- * 
+ *
  **/
 void
 lasso_lecp_destroy(LassoLecp *lecp)
@@ -417,7 +417,7 @@ static LassoNodeClass *parent_class = NULL;
 
 static void
 finalize(GObject *object)
-{  
+{
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
@@ -437,7 +437,7 @@ static void
 class_init(LassoLecpClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
-	
+
 	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 

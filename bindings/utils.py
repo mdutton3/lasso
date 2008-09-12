@@ -1,5 +1,5 @@
 # Lasso - A free implementation of the Liberty Alliance specifications.
-# 
+#
 # Copyright (C) 2004-2007 Entr'ouvert
 # http://lasso.entrouvert.org
 #
@@ -97,6 +97,6 @@ def group(list):
             pile.append(t)
         prev = x
     return pile[0]
-            
-            
+
+
 

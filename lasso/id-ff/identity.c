@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -205,10 +205,10 @@ struct HelperStruct {
  * type string */
 static
 void add_matching_resource_offering_to_list(char *name, LassoDiscoResourceOffering *offering,
-	struct HelperStruct *ctx) 
+	struct HelperStruct *ctx)
 {
 	if (ctx->service_type == NULL ||
-		( offering->ServiceInstance != NULL && 
+		( offering->ServiceInstance != NULL &&
 		offering->ServiceInstance->ServiceType != NULL &&
 		strcmp(offering->ServiceInstance->ServiceType, ctx->service_type) == 0)) {
 		lasso_list_add(ctx->list, offering);
@@ -231,7 +231,7 @@ lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type)
 
 	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
 
-	g_hash_table_foreach(identity->private_data->resource_offerings_map, 
+	g_hash_table_foreach(identity->private_data->resource_offerings_map,
 		(GHFunc)add_matching_resource_offering_to_list, &ctx);
 
 	return ctx.list;
@@ -321,7 +321,7 @@ get_xmlNode(LassoNode *node, G_GNUC_UNUSED gboolean lasso_dump)
 				(GHFunc)add_childnode_from_hashtable, xmlnode);
 #ifdef LASSO_WSF_ENABLED
 	/* Resource Offerings */
-	g_hash_table_foreach(identity->private_data->resource_offerings_map, 
+	g_hash_table_foreach(identity->private_data->resource_offerings_map,
 			(GHFunc)add_childnode_from_hashtable, xmlnode);
 
 	/* Service Metadatas IDs (svcMDID) */
@@ -446,7 +446,7 @@ instance_init(LassoIdentity *identity)
 #ifdef LASSO_WSF_ENABLED
 	identity->private_data->svcMDID = NULL;
 	identity->private_data->last_entry_id = 0;
-	identity->private_data->resource_offerings_map = g_hash_table_new_full(g_str_hash, 
+	identity->private_data->resource_offerings_map = g_hash_table_new_full(g_str_hash,
 			g_str_equal, (GDestroyNotify)g_free, (GDestroyNotify)g_object_unref);
 #endif
 	identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,

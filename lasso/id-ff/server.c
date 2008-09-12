@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -52,7 +52,7 @@
 static gint
 lasso_server_add_provider_helper(LassoServer *server, LassoProviderRole role,
 		const gchar *metadata, const gchar *public_key, const gchar *ca_cert_chain,
-		LassoProvider *(*provider_constructor)(LassoProviderRole role, 
+		LassoProvider *(*provider_constructor)(LassoProviderRole role,
 		const char *metadata, const char *public_key, const char *ca_cert_chain))
 {
 	LassoProvider *provider;
@@ -90,9 +90,9 @@ lasso_server_add_provider_helper(LassoServer *server, LassoProviderRole role,
  * @metadata: path to the provider metadata file
  * @public_key: provider public key file (may be a certificate) or NULL
  * @ca_cert_chain: provider CA certificate chain file or NULL
- * 
+ *
  * Creates a new #LassoProvider and makes it known to the @server
- * 
+ *
  * Return value: 0 on success; a negative value if an error occured.
  **/
 gint
@@ -110,9 +110,9 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
  * @metadata: a string buffer containg the metadata file for a new provider
  * @public_key: provider public key file (may be a certificate) or NULL
  * @ca_cert_chain: provider CA certificate chain file or NULL
- * 
+ *
  * Creates a new #LassoProvider and makes it known to the @server
- * 
+ *
  * Return value: 0 on success; a negative value if an error occured.
  **/
 gint
@@ -128,9 +128,9 @@ lasso_server_add_provider_from_buffer(LassoServer *server, LassoProviderRole rol
  * lasso_server_add_service:
  * @server: a #LassoServer
  * @service: a #LassoNode object implementing representing a service endpoint.
- * 
- * Add a service to the registry of service of this #LassoServer object. 
- * 
+ *
+ * Add a service to the registry of service of this #LassoServer object.
+ *
  * Return value: 0 on success; a negative value if an error occured.
  **/
 gint
@@ -467,7 +467,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				t2 = t2->next;
 			}
 		}
-		
+
 #ifdef LASSO_WSF_ENABLED
 		/* Services */
 		if (strcmp((char*)t->name, "Services") == 0) {
@@ -484,7 +484,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			}
 		}
 
-		/* Service Metadatas (SvcMD) */		
+		/* Service Metadatas (SvcMD) */
 		if (strcmp((char*)t->name, "SvcMDs") == 0) {
 			while (t2) {
 				LassoIdWsf2DiscoSvcMetadata *svcMD;
@@ -694,7 +694,7 @@ static void
 class_init(LassoServerClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
-	
+
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Server");
@@ -738,9 +738,9 @@ lasso_server_get_type()
  * @private_key: path to the the server private key file or NULL
  * @private_key_password: password to private key if it is encrypted, or NULL
  * @certificate: path to the server certificate file, or NULL
- * 
+ *
  * Creates a new #LassoServer.
- * 
+ *
  * Return value: a newly created #LassoServer object; or NULL if an error
  *      occured
  **/

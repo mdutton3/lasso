@@ -1,22 +1,22 @@
-/* $Id$ 
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -112,7 +112,7 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 	} else {
 		profile->nameIdentifier = g_object_ref(name_id_n);
 	}
-	if (oldNameIdentifier != NULL) 
+	if (oldNameIdentifier != NULL)
 		g_object_unref(oldNameIdentifier);
 
 	/* XXX: check HTTP method is supported */
@@ -135,7 +135,7 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 		LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request)->Terminate = \
 				LASSO_SAMLP2_TERMINATE(lasso_samlp2_terminate_new());
 	}
-	
+
 	profile->http_request_method = http_method;
 
 	return 0;
@@ -147,7 +147,7 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
  * @name_id_management: a #LassoNameIdManagement
  *
  * Builds the Name Id Management request message.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -213,7 +213,7 @@ lasso_name_id_management_build_request_msg(LassoNameIdManagement *name_id_manage
  * lasso_name_id_management_process_request_msg:
  * @name_id_management: a #LassoNameIdManagement
  * @request_msg: the Name Id Management request message
- * 
+ *
  * Processes a Name Id Management request message.  Rebuilds a request object
  * from the message and check its signature.
  *
@@ -233,9 +233,9 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 
 	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(request_msg != NULL, 
+	g_return_val_if_fail(request_msg != NULL,
 			LASSO_PARAM_ERROR_INVALID_VALUE);
-	
+
 	profile = LASSO_PROFILE(name_id_management);
 	profile->request = lasso_samlp2_manage_name_id_request_new();
 	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
@@ -295,7 +295,7 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 /**
  * lasso_name_id_management_validate_request:
  * @name_id_management: a #LassoNameIdManagement
- * 
+ *
  * Processes a Name Id Management request, performing requested actions against
  * principal federations.  Profile identity may have to be saved afterwards.
  *
@@ -320,7 +320,7 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 	if (profile->identity == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 	}
-	
+
 	if (profile->remote_providerID) {
 		g_free(profile->remote_providerID);
 	}
@@ -367,7 +367,7 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 	/* verify signature status */
 	if (profile->signature_status != 0) {
 		/* XXX: which SAML2 Status Code ? */
-		lasso_saml20_profile_set_response_status(profile, 
+		lasso_saml20_profile_set_response_status(profile,
 				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
 		return profile->signature_status;
 	}
@@ -424,9 +424,9 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 /**
  * lasso_name_id_management_build_response_msg:
  * @name_id_management: a #LassoNameIdManagement
- * 
+ *
  * Builds the Name Id Management response message.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 int
@@ -453,7 +453,7 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 		response->IssueInstant = lasso_get_current_time();
 		response->InResponseTo = g_strdup(
 				LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-		lasso_saml20_profile_set_response_status(profile, 
+		lasso_saml20_profile_set_response_status(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 
 		response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
@@ -525,7 +525,7 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
  * lasso_name_id_management_process_response_msg:
  * @name_id_management: a #LassoNameIdManagement
  * @response_msg: the response message
- * 
+ *
  * Parses the response message and builds the corresponding response object.
  * Performs requested actions against principal federations.  Profile identity
  * may have to be saved afterwards.
@@ -691,7 +691,7 @@ dispose(GObject *object)
 
 static void
 finalize(GObject *object)
-{  
+{
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
@@ -727,7 +727,7 @@ lasso_name_id_management_get_type()
 	if (!this_type) {
 		static const GTypeInfo this_info = {
 			sizeof (LassoNameIdManagementClass),
-			NULL, NULL, 
+			NULL, NULL,
 			(GClassInitFunc) class_init,
 			NULL, NULL,
 			sizeof(LassoNameIdManagement),
@@ -744,7 +744,7 @@ lasso_name_id_management_get_type()
 /**
  * lasso_name_id_management_new:
  * @server: the #LassoServer
- * 
+ *
  * Creates a new #LassoNameIdManagement.
  *
  * Return value: a newly created #LassoNameIdManagement object; or NULL if an error
@@ -766,7 +766,7 @@ lasso_name_id_management_new(LassoServer *server)
 /**
  * lasso_name_id_management_destroy:
  * @name_id_management: a #LassoNameIdManagement
- * 
+ *
  * Destroys a #LassoNameIdManagement object.
  **/
 void
@@ -795,7 +795,7 @@ lasso_name_id_management_new_from_dump(LassoServer *server, const char *dump)
 
 	name_id_management = lasso_name_id_management_new(g_object_ref(server));
 	doc = xmlParseMemory(dump, strlen(dump));
-	init_from_xml(LASSO_NODE(name_id_management), xmlDocGetRootElement(doc)); 
+	init_from_xml(LASSO_NODE(name_id_management), xmlDocGetRootElement(doc));
 	xmlFreeDoc(doc);
 
 	return name_id_management;

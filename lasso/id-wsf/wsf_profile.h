@@ -1,22 +1,22 @@
-/* $Id$ 
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -28,7 +28,7 @@
 #ifdef __cplusplus
 extern "C" {
 
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/identity.h>
@@ -49,7 +49,7 @@ extern "C" {
 #define LASSO_IS_WSF_PROFILE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
 	   LASSO_TYPE_WSF_PROFILE))
 #define LASSO_WSF_PROFILE_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSF_PROFILE, LassoWsfProfileClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSF_PROFILE, LassoWsfProfileClass))
 
 typedef struct _LassoWsfProfile LassoWsfProfile;
 typedef struct _LassoWsfProfileClass LassoWsfProfileClass;
@@ -116,7 +116,7 @@ G_GNUC_DEPRECATED LASSO_EXPORT LassoSoapBindingProvider* lasso_wsf_profile_set_p
 
 LASSO_EXPORT LassoWsfProfile* lasso_wsf_profile_new(LassoServer *server);
 
-LASSO_EXPORT LassoWsfProfile* lasso_wsf_profile_new_full(LassoServer *server, 
+LASSO_EXPORT LassoWsfProfile* lasso_wsf_profile_new_full(LassoServer *server,
 	LassoDiscoResourceOffering *offering);
 
 G_GNUC_DEPRECATED LASSO_EXPORT gboolean lasso_wsf_profile_principal_is_online(
@@ -125,9 +125,9 @@ G_GNUC_DEPRECATED LASSO_EXPORT gboolean lasso_wsf_profile_principal_is_online(
 G_GNUC_DEPRECATED LASSO_EXPORT gint lasso_wsf_profile_add_credential(LassoWsfProfile *profile,
 	xmlNode *credential);
 
-LASSO_EXPORT gint lasso_wsf_profile_set_description_from_offering( 
-		LassoWsfProfile *profile, 
-		const LassoDiscoResourceOffering *offering, 
+LASSO_EXPORT gint lasso_wsf_profile_set_description_from_offering(
+		LassoWsfProfile *profile,
+		const LassoDiscoResourceOffering *offering,
 		const char *security_mech_id);
 
 LASSO_EXPORT void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
@@ -153,7 +153,7 @@ G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_online(
 G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_offline(
 	LassoWsfProfile *profile);
 
-LASSO_EXPORT gint lasso_wsf_profile_init(LassoWsfProfile *profile, LassoServer *server, 
+LASSO_EXPORT gint lasso_wsf_profile_init(LassoWsfProfile *profile, LassoServer *server,
 	LassoDiscoResourceOffering *offering);
 
 #ifdef __cplusplus

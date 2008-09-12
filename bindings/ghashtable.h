@@ -1,4 +1,4 @@
-#ifndef G_HASHTABLE_H 
+#ifndef G_HASHTABLE_H
 #define G_HASHTABLE_H 1
 #if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 14)
 

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,7 @@ main(int argc, char *argv[])
 	char *authn_response_msg;
 
 	lasso_init();
-	
+
 	server = lasso_server_new(
 			TESTSDATADIR "/sp1-la/metadata.xml",
 			TESTSDATADIR "/sp1-la/private-key-raw.pem",
@@ -146,7 +146,7 @@ main(int argc, char *argv[])
 			(double)usec/1000000,
 			(double)n/usec*1000000,
 			(double)usec/1000/n);
-	
+
 	g_free(authn_response_msg);
 
 

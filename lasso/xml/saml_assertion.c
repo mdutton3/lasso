@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -34,7 +34,7 @@
  *
  * <figure><title>Schema fragment for saml:Assertion</title>
  * <programlisting><![CDATA[
- * 
+ *
  * <element name="Assertion" type="saml:AssertionType"/>
  * <complexType name="AssertionType">
  *   <sequence>
@@ -55,7 +55,7 @@
  *   <attribute name="Issuer" type="string" use="required"/>
  *   <attribute name="IssueInstant" type="dateTime" use="required"/>
  * </complexType>
- * 
+ *
  * From oasis-sstc-saml-schema-assertion-1.0.xsd:
  * <simpleType name="IDType">
  *   <restriction base="string"/>
@@ -73,7 +73,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Conditions", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAssertion, Conditions) },
 	{ "Advice", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAssertion, Advice) },
 	{ "SubjectStatement", SNIPPET_NODE,G_STRUCT_OFFSET(LassoSamlAssertion, SubjectStatement) },
-	{ "AuthenticationStatement", SNIPPET_NODE, 
+	{ "AuthenticationStatement", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlAssertion, AuthenticationStatement) },
 	{ "AttributeStatement", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlAssertion, AttributeStatement) },
@@ -115,7 +115,7 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 			t = t->next;
 			continue;
 		}
-		
+
 		if (xmlnode->ns && strcmp((char*)xmlnode->ns->href, LASSO_LIB_HREF) == 0) {
 			char *typename, *gtypename;
 			GType gtype;
@@ -152,7 +152,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 	xmlNs *ns;
 	int rc;
-	
+
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	ns = xmlSearchNs(NULL, xmlnode, (xmlChar*)"saml");
 	insure_namespace(xmlnode, ns);
@@ -174,7 +174,7 @@ static void
 class_init(LassoSamlAssertionClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
-	
+
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
@@ -211,9 +211,9 @@ lasso_saml_assertion_get_type()
 
 /**
  * lasso_saml_assertion_new:
- * 
+ *
  * Creates a new #LassoSamlAssertion object.
- * 
+ *
  * Return value: a newly created #LassoSamlAssertion object
  **/
 LassoSamlAssertion*

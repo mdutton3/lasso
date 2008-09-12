@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -126,7 +126,7 @@ lasso_session_add_assertion_with_id(LassoSession *session, const char *assertion
 	g_return_val_if_fail(assertionID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	g_hash_table_insert(session->private_data->assertions_by_id, 
+	g_hash_table_insert(session->private_data->assertions_by_id,
 			g_strdup(assertionID),
 			xmlCopyNode(assertion, 1));
 
@@ -420,7 +420,7 @@ lasso_session_get_endpoint_reference(LassoSession *session, const gchar *service
 
 	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
 	g_return_val_if_fail(service_type != NULL, NULL);
-	
+
 	epr = g_hash_table_lookup(session->private_data->eprs, service_type);
 	if (LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
 		return LASSO_WSA_ENDPOINT_REFERENCE(epr);
@@ -495,7 +495,7 @@ xmlNode_to_base64(xmlNode *node) {
 	xmlCharEncodingHandlerPtr handler = NULL;
 	xmlChar *buffer = NULL;
 	xmlChar *ret = NULL;
-	
+
 	handler = xmlFindCharEncodingHandler("utf-8");
 	if (! handler)
 		goto exit;
@@ -661,7 +661,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				if (content) {
 					assertion = base64_to_xmlNode(content);
 					if (assertion) {
-						lasso_session_add_assertion_with_id(session, 
+						lasso_session_add_assertion_with_id(session,
 								(char*)value, assertion);
 						xmlFreeNode(assertion);
 					}
@@ -683,7 +683,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			}
 		}
 
-#ifdef LASSO_WSF_ENABLED		
+#ifdef LASSO_WSF_ENABLED
 		/* Endpoint References */
 		if (strcmp((char*)t->name, "EndpointReferences") == 0) {
 			t2 = t->children;
@@ -736,7 +736,7 @@ dispose(GObject *object)
 	g_hash_table_destroy(session->private_data->assertions_by_id);
 	session->private_data->assertions_by_id = NULL;
 
-#ifdef LASSO_WSF_ENABLED	
+#ifdef LASSO_WSF_ENABLED
 	g_hash_table_destroy(session->private_data->eprs);
 	session->private_data->eprs = NULL;
 #endif
@@ -768,7 +768,7 @@ instance_init(LassoSession *session)
 	session->private_data->status = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,
 			(GDestroyNotify)lasso_node_destroy);
-	session->private_data->assertions_by_id = 
+	session->private_data->assertions_by_id =
 			g_hash_table_new_full(g_str_hash, g_str_equal,
 					(GDestroyNotify)g_free,
 					(GDestroyNotify)xmlFree);

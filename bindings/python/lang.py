@@ -1,5 +1,5 @@
 # Lasso - A free implementation of the Liberty Alliance specifications.
-# 
+#
 # Copyright (C) 2004-2007 Entr'ouvert
 # http://lasso.entrouvert.org
 #
@@ -33,7 +33,7 @@ class Binding:
     def is_pygobject(self, t):
         if t:
             m = re.match(r'(?:const\s*)?(.*)',t) # Remove const modifier
-            t = m.group(1) 
+            t = m.group(1)
             return t not in ['char*', 'gchar*',
                 'GList*', 'GHashTable*',
                 'int', 'gint', 'gboolean', 'xmlNode*'] + self.binding_data.enums
@@ -106,7 +106,7 @@ class frozendict(dict):
         print >> fd, '''\
 class Error(Exception):
     code = None
-    
+
     @staticmethod
     def raise_on_rc(rc):
         global exceptions_dict
@@ -270,7 +270,7 @@ if WSF_SUPPORT:
                         c_args.append('%s._cptr' % arg_name)
                     else:
                         c_args.append(arg_name)
-                    
+
                 c_args = ', '.join(c_args)
                 py_args = ', ' + ', '.join(py_args)
                 print >> fd, '    def __init__(self%s):' % py_args

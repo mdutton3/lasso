@@ -1,22 +1,22 @@
-/* $Id$ 
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -33,7 +33,7 @@
  *
  * <figure><title>Schema fragment for samlp:RequestAbstractType</title>
  * <programlisting><![CDATA[
- * 
+ *
  * <complexType name="RequestAbstractType" abstract="true">
  *   <sequence>
  *     <element ref="samlp:RespondWith" minOccurs="0" maxOccurs="unbounded"/>
@@ -44,9 +44,9 @@
  *   <attribute name="MinorVersion" type="integer" use="required"/>
  *   <attribute name="IssueInstant" type="dateTime" use="required"/>
  * </complexType>
- * 
+ *
  * <element name="RespondWith" type="QName"/>
- * 
+ *
  * From oasis-sstc-saml-schema-assertion-1.0.xsd:
  * <simpleType name="IDType">
  *   <restriction base="string"/>
@@ -82,7 +82,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	LassoSamlpRequestAbstract *request = LASSO_SAMLP_REQUEST_ABSTRACT(node);
 	xmlNode *xmlnode;
 	int rc;
-	
+
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 
 	if (lasso_dump == FALSE && request->sign_type) {

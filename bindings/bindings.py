@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 #
 # Lasso - A free implementation of the Liberty Alliance specifications.
-# 
+#
 # Copyright (C) 2004-2007 Entr'ouvert
 # http://lasso.entrouvert.org
 #
@@ -179,7 +179,7 @@ class Function:
     return_owner = True
     skip = False
     errors = None
-    
+
     def __repr__(self):
         return '<Function return_type:%s name:%s args:%r>' % (
                 self.return_type, self.name, self.args)
@@ -502,7 +502,7 @@ def main():
 
         java_binding = lang.Binding(binding)
         java_binding.print_list_of_files();
-        
+
 
 if __name__ == '__main__':
     main()

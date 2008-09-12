@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -30,7 +30,7 @@
  *
  * <figure><title>Schema fragment for saml:SubjectLocality</title>
  * <programlisting><![CDATA[
- * 
+ *
  * <element name="SubjectLocality" type="saml:SubjectLocalityType"/>
  * <complexType name="SubjectLocalityType">
  *   <attribute name="IPAddress" type="string" use="optional"/>
@@ -65,7 +65,7 @@ static void
 class_init(LassoSamlSubjectLocalityClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
-	
+
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "SubjectLocality");
 	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
@@ -98,9 +98,9 @@ lasso_saml_subject_locality_get_type()
 
 /**
  * lasso_saml_subject_locality_new:
- * 
+ *
  * Creates a new #LassoSamlSubjectLocality object.
- * 
+ *
  * Return value: a newly created #LassoSamlSubjectLocality object
  **/
 LassoNode* lasso_saml_subject_locality_new()

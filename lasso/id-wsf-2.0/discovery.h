@@ -1,22 +1,22 @@
-/* $Id: discovery.h,v 1.30 2006/02/21 09:51:49 Exp $ 
+/* $Id: discovery.h,v 1.30 2006/02/21 09:51:49 Exp $
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -28,7 +28,7 @@
 #ifdef __cplusplus
 extern "C" {
 
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/id-wsf-2.0/profile.h>
 #include <lasso/id-wsf-2.0/data_service.h>
@@ -47,7 +47,7 @@ extern "C" {
 #define LASSO_IS_IDWSF2_DISCOVERY_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDWSF2_DISCOVERY))
 #define LASSO_IDWSF2_DISCOVERY_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdWsf2DiscoveryClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDWSF2_DISCOVERY, LassoIdWsf2DiscoveryClass))
 
 typedef struct _LassoIdWsf2Discovery LassoIdWsf2Discovery;
 typedef struct _LassoIdWsf2DiscoveryClass LassoIdWsf2DiscoveryClass;
@@ -87,13 +87,13 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_register_msg(
 
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_register_response_msg(
 	LassoIdWsf2Discovery *discovery, const gchar *message);
-	
+
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_association_add(
 	LassoIdWsf2Discovery *discovery, const gchar *svcMDID);
-	
+
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_association_add_msg(
 	LassoIdWsf2Discovery *discovery, const gchar *message);
-	
+
 LASSO_EXPORT gint lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery);
 
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
@@ -104,7 +104,7 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discov
 
 LASSO_EXPORT gint lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2Discovery *discovery,
 	const gchar *service_type);
-	
+
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message);
 

@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -88,7 +88,7 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 		} else {
 			name_id_sp_name_qualifier = profile->remote_providerID;
 		}
-		
+
 		federation = g_hash_table_lookup(profile->identity->federations,
 				name_id_sp_name_qualifier);
 		if (federation == NULL) {
@@ -189,7 +189,7 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_method =
 		LASSO_SIGNATURE_METHOD_RSA_SHA1;
 	if (profile->server->certificate) {
-		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_type =	
+		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_type =
 			LASSO_SIGNATURE_TYPE_WITHX509;
 	} else {
 		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_type =
@@ -197,7 +197,7 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 	}
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file =
 		g_strdup(profile->server->private_key);
-	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file = 
+	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file =
 		g_strdup(profile->server->certificate);
 
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_SOAP) {
@@ -208,7 +208,7 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 		profile->msg_body = lasso_node_export_to_soap(profile->request);
 		return 0;
 	}
-	
+
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		char *url, *query;
 
@@ -236,7 +236,7 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 		g_free(query);
 		return 0;
 	}
-	
+
 	/* XXX: artifact support */
 
 	return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
@@ -366,13 +366,13 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	/* verify signature status */
 	if (profile->signature_status != 0) {
 		/* XXX: which SAML2 Status Code ? */
-		lasso_saml20_profile_set_response_status(profile, 
+		lasso_saml20_profile_set_response_status(profile,
 				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
 		return profile->signature_status;
 	}
 
 	/* Get the name identifier */
-	name_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID;	
+	name_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID;
 	if (name_id == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in logout request");
 		/* XXX: which status code in SAML 2.0 ? */
@@ -495,7 +495,7 @@ check_soap_support(G_GNUC_UNUSED gchar *key, LassoProvider *provider, LassoProfi
 
 	if (supported_profiles)
 		return; /* provider support profile */
-	
+
 	LASSO_LOGOUT(profile)->private_data->all_soap = FALSE;
 }
 
@@ -520,7 +520,7 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 			response->InResponseTo = g_strdup(
 					LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
 		}
-		lasso_saml20_profile_set_response_status(profile, 
+		lasso_saml20_profile_set_response_status(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 
 		response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
@@ -675,7 +675,7 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 		message(G_LOG_LEVEL_CRITICAL, "Status code is not success: %s", status_code_value);
 		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
-	
+
 	/* LogoutResponse status code value is ok */
 	/* XXX: handle RelayState if necessary */
 
@@ -694,7 +694,7 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 	 * can be a proxy. So we have to use the role of the initial remote
 	 * provider instead.
 	 */
-	if (logout->initial_remote_providerID && 
+	if (logout->initial_remote_providerID &&
 			g_hash_table_size(profile->session->assertions) == 0) {
 		remote_provider = g_hash_table_lookup(profile->server->providers,
 				logout->initial_remote_providerID);

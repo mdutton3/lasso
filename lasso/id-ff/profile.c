@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -150,7 +150,7 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		if (strcmp((char*)ns->href, LASSO_DISCO_HREF) == 0) {
 			type = LASSO_REQUEST_TYPE_DISCO_MODIFY;
 		} else {
-			type = LASSO_REQUEST_TYPE_DST_MODIFY;	
+			type = LASSO_REQUEST_TYPE_DST_MODIFY;
 		}
 	} else if (strcmp(name, "SASLRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_SASL_REQUEST;
@@ -322,7 +322,7 @@ lasso_profile_set_response_status(LassoProfile *profile, const char *statusCodeV
 
 	message(G_LOG_LEVEL_CRITICAL, "Failed to set status");
 	g_assert_not_reached();
-} 
+}
 
 void
 lasso_profile_clean_msg_info(LassoProfile *profile)
@@ -383,7 +383,7 @@ lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump)
 	profile->session = lasso_session_new_from_dump(dump);
 	if (profile->session == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BAD_SESSION_DUMP);
-	
+
 	IF_SAML2(profile) {
 		lasso_saml20_profile_set_session_from_dump(profile);
 	}
@@ -464,7 +464,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	xmlNode *t;
 
 	parent_class->init_from_xml(node, xmlnode);
-	
+
 	if (xmlnode == NULL)
 		return LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED;
 

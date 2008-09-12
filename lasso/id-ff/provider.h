@@ -1,22 +1,22 @@
-/* $Id$ 
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -27,7 +27,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
 #include <lasso/xml/xml_enc.h>
@@ -40,7 +40,7 @@ extern "C" {
 #define LASSO_IS_PROVIDER(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_PROVIDER))
 #define LASSO_IS_PROVIDER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_PROVIDER))
 #define LASSO_PROVIDER_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_PROVIDER, LassoProviderClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_PROVIDER, LassoProviderClass))
 
 typedef struct _LassoProvider LassoProvider;
 typedef struct _LassoProviderClass LassoProviderClass;
@@ -169,7 +169,7 @@ struct _LassoProviderClass {
 LASSO_EXPORT GType lasso_provider_get_type(void);
 LASSO_EXPORT LassoProvider* lasso_provider_new(LassoProviderRole role, const char *metadata,
 		const char *public_key, const char *ca_cert_chain);
-LASSO_EXPORT LassoProvider* lasso_provider_new_from_buffer(LassoProviderRole role, 
+LASSO_EXPORT LassoProvider* lasso_provider_new_from_buffer(LassoProviderRole role,
 		const char *metadata, const char *public_key, const char *ca_cert_chain);
 LASSO_EXPORT gchar* lasso_provider_get_assertion_consumer_service_url(LassoProvider *provider,
 		const char *service_id);

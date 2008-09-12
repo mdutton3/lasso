@@ -1,22 +1,22 @@
-/* $Id: assertion_query.c 3237 2007-05-30 17:17:45Z dlaniel $ 
+/* $Id: assertion_query.c 3237 2007-05-30 17:17:45Z dlaniel $
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -146,7 +146,7 @@ lasso_assertion_query_init_request(LassoAssertionQuery *assertion_query,
  * @assertion_query: a #LassoAssertionQuery
  *
  * Builds the Name Id Management request message.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -189,7 +189,7 @@ lasso_assertion_query_build_request_msg(LassoAssertionQuery *assertion_query)
  * lasso_assertion_query_process_request_msg:
  * @assertion_query: a #LassoAssertionQuery
  * @request_msg: the Assertion query or request message
- * 
+ *
  * Processes a Assertion query or request message.  Rebuilds a request object
  * from the message and check its signature.
  *
@@ -208,7 +208,7 @@ lasso_assertion_query_process_request_msg(LassoAssertionQuery *assertion_query,
 
 	g_return_val_if_fail(LASSO_IS_ASSERTION_QUERY(assertion_query),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
-	
+
 	profile = LASSO_PROFILE(assertion_query);
 	profile->request = lasso_node_new_from_soap(request_msg);
 
@@ -264,7 +264,7 @@ lasso_assertion_query_process_request_msg(LassoAssertionQuery *assertion_query,
 /**
  * lasso_assertion_query_validate_request:
  * @assertion_query: a #LassoAssertionQuery
- * 
+ *
  * Processes a Assertion query or request; caller must add assertions to the
  * response afterwards.
  *
@@ -328,7 +328,7 @@ lasso_assertion_query_validate_request(LassoAssertionQuery *assertion_query)
 	/* verify signature status */
 	if (profile->signature_status != 0) {
 		/* XXX: which SAML2 Status Code ? */
-		lasso_saml20_profile_set_response_status(profile, 
+		lasso_saml20_profile_set_response_status(profile,
 				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
 		return profile->signature_status;
 	}
@@ -340,9 +340,9 @@ lasso_assertion_query_validate_request(LassoAssertionQuery *assertion_query)
 /**
  * lasso_assertion_query_build_response_msg:
  * @assertion_query: a #LassoAssertionQuery
- * 
+ *
  * Builds the Response message.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 int
@@ -367,7 +367,7 @@ lasso_assertion_query_build_response_msg(LassoAssertionQuery *assertion_query)
 		response->IssueInstant = lasso_get_current_time();
 		response->InResponseTo = g_strdup(
 				LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-		lasso_saml20_profile_set_response_status(profile, 
+		lasso_saml20_profile_set_response_status(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 
 		response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
@@ -403,7 +403,7 @@ lasso_assertion_query_build_response_msg(LassoAssertionQuery *assertion_query)
  * lasso_assertion_query_process_response_msg:
  * @assertion_query: a #LassoAssertionQuery
  * @response_msg: the response message
- * 
+ *
  * Parses the response message and builds the corresponding response object.
  *
  * Return value: 0 on success; or a negative value otherwise.
@@ -522,7 +522,7 @@ dispose(GObject *object)
 
 static void
 finalize(GObject *object)
-{  
+{
 	LassoAssertionQuery *profile = LASSO_ASSERTION_QUERY(object);
 	g_free(profile->private_data);
 	profile->private_data = NULL;
@@ -567,7 +567,7 @@ lasso_assertion_query_get_type()
 	if (!this_type) {
 		static const GTypeInfo this_info = {
 			sizeof (LassoAssertionQueryClass),
-			NULL, NULL, 
+			NULL, NULL,
 			(GClassInitFunc) class_init,
 			NULL, NULL,
 			sizeof(LassoAssertionQuery),
@@ -584,7 +584,7 @@ lasso_assertion_query_get_type()
 /**
  * lasso_assertion_query_new:
  * @server: the #LassoServer
- * 
+ *
  * Creates a new #LassoAssertionQuery.
  *
  * Return value: a newly created #LassoAssertionQuery object; or NULL if
@@ -606,7 +606,7 @@ lasso_assertion_query_new(LassoServer *server)
 /**
  * lasso_assertion_query_destroy:
  * @assertion_query: a #LassoAssertionQuery
- * 
+ *
  * Destroys a #LassoAssertionQuery object.
  **/
 void

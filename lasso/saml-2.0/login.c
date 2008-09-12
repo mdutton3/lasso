@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -158,9 +158,9 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 	} else {
 		/* POST, SOAP and Artifact-GET|POST */
 		if (must_sign) {
-			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file = 
+			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file =
 				g_strdup(profile->server->private_key);
-			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file = 
+			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file =
 				g_strdup(profile->server->certificate);
 		}
 
@@ -511,13 +511,13 @@ lasso_saml20_login_validate_request_msg(LassoLogin *login, gboolean authenticati
 	if (profile->signature_status == 0 && authentication_result == TRUE) {
 		ret = lasso_saml20_login_process_federation(login, is_consent_obtained);
 		if (ret == LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND) {
-			lasso_saml20_profile_set_response_status(profile, 
+			lasso_saml20_profile_set_response_status(profile,
 				LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 			return ret;
 		}
 		/* Only possibility, consent not obtained. */
 		if (ret) {
-			lasso_saml20_profile_set_response_status(profile, 
+			lasso_saml20_profile_set_response_status(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 			return ret;
 		}
@@ -588,11 +588,11 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 		 * specified, don't create a federation */
 		return 0;
 	}
-	
+
 	if (federation && LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy == NULL) {
 		LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy = \
 			LASSO_SAMLP2_NAME_ID_POLICY(lasso_samlp2_name_id_policy_new());
-		LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy->Format = 
+		LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy->Format =
 			g_strdup(LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
 	}
 
@@ -690,24 +690,24 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 		metadata->any = g_list_append(metadata->any,
 			g_object_ref(endpoint_context->Framework->data));
 	}
-	
+
 	/* Identity token */
 	assertion_identity_token = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
 	assertion_identity_token->Subject = g_object_ref(assertion->Subject);
 
 	sec_token = lasso_idwsf2_sec_token_new();
 	sec_token->any = LASSO_NODE(assertion_identity_token);
-	
+
 	security_context = lasso_idwsf2_disco_security_context_new();
 	security_context->SecurityMechID = g_list_append(
 		security_context->SecurityMechID, g_strdup(LASSO_SECURITY_MECH_TLS_BEARER));
 	security_context->Token = g_list_append(security_context->Token, sec_token);
-	
+
 	metadata->any = g_list_append(metadata->any, security_context);
 
 	/* End of metadata construction */
 	epr->Metadata = metadata;
-	
+
 	/* Add the EPR to the assertion as a SAML attribute */
 	attributeValue = lasso_saml2_attribute_value_new();
 	attributeValue->any = g_list_append(attributeValue->any, epr);
@@ -722,7 +722,7 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 
 	assertion->AttributeStatement = g_list_append(assertion->AttributeStatement,
 		attributeStatement);
-	
+
 	/* Free resources */
 	g_list_foreach(svcMDs, (GFunc)lasso_node_destroy, NULL);
 	g_list_free(svcMDs);
@@ -790,7 +790,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 			lasso_saml2_subject_confirmation_new());
 	assertion->Subject->SubjectConfirmation->Method = g_strdup(
 			LASSO_SAML2_CONFIRMATION_METHOD_BEARER);
-	assertion->Subject->SubjectConfirmation->SubjectConfirmationData = 
+	assertion->Subject->SubjectConfirmation->SubjectConfirmationData =
 		LASSO_SAML2_SUBJECT_CONFIRMATION_DATA(
 			lasso_saml2_subject_confirmation_data_new());
 	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotBefore = g_strdup(
@@ -808,7 +808,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 				LASSO_PROVIDER(profile->server)->ProviderID);
 		name_id->Format = g_strdup(name_id_policy->Format);
 		assertion->Subject->NameID = name_id;
-	} else if (federation == NULL || 
+	} else if (federation == NULL ||
 			(name_id_policy && strcmp(name_id_policy->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0)) {
 		/* transient -> don't use a federation */
@@ -918,7 +918,7 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	url = lasso_saml20_login_get_assertion_consumer_service_url(login, remote_provider);
 	assertion = login->private_data->saml2_assertion;
 	if (LASSO_IS_SAML2_ASSERTION(assertion) == TRUE) {
-		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient = 
+		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient =
 			g_strdup(url);
 	}
 
@@ -983,7 +983,7 @@ lasso_saml20_login_build_request_msg(LassoLogin *login)
 
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file =
 		g_strdup(profile->server->private_key);
-	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file = 
+	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file =
 		g_strdup(profile->server->certificate);
 	profile->msg_body = lasso_node_export_to_soap(profile->request);
 
@@ -1032,9 +1032,9 @@ lasso_saml20_login_build_response_msg(LassoLogin *login)
 		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_method =
 			LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
-		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->private_key_file = 
+		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->private_key_file =
 			g_strdup(profile->server->private_key);
-		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file = 
+		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file =
 			g_strdup(profile->server->certificate);
 
 		remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
@@ -1187,7 +1187,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	response = LASSO_SAMLP2_STATUS_RESPONSE(LASSO_PROFILE(login)->response);
-	if (response->Status == NULL || ! LASSO_IS_SAMLP2_STATUS(response->Status) || 
+	if (response->Status == NULL || ! LASSO_IS_SAMLP2_STATUS(response->Status) ||
 			response->Status->StatusCode == NULL ||
 			response->Status->StatusCode->Value == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
@@ -1212,7 +1212,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 				}
 			}
 		}
-		
+
 		return LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS;
 	}
 
@@ -1437,9 +1437,9 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_method =
 		LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
-	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->private_key_file = 
+	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->private_key_file =
 		g_strdup(profile->server->private_key);
-	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file = 
+	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file =
 		g_strdup(profile->server->certificate);
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -1452,7 +1452,7 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 	if (profile->msg_url == NULL) {
 		return LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL;
 	}
-	
+
 	assertion = login->private_data->saml2_assertion;
 	if (LASSO_IS_SAML2_ASSERTION(assertion) == TRUE) {
 		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient =

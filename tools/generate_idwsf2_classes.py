@@ -165,25 +165,25 @@ class LassoClass:
 
     def generate_header(self):
         s = []
-        s.append("""/* $Id: %(file_name)s.h,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
+        s.append("""/* $Id: %(file_name)s.h,v 1.0 2005/10/14 15:17:55 fpeters Exp $
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -235,7 +235,7 @@ extern "C" {
                 else:
                     print b_pref, self.base_prefix, self.base_class_name
                     raise 'XXX'
-        
+
         s.append('#include <lasso/xml/xml.h>')
 
         for inc in includes.keys():
@@ -301,7 +301,7 @@ typedef struct _LassoSaml2Assertion LassoSaml2Assertion;
 #define LASSO_%(category_upper)s%(file_name_upper)s_GET_CLASS(o) \\
 \t(G_TYPE_INSTANCE_GET_CLASS ((o), \\
 \t\tLASSO_TYPE_%(category_upper)s%(file_name_upper)s, \\
-\t\tLasso%(prefix_cap)s%(name)sClass)) 
+\t\tLasso%(prefix_cap)s%(name)sClass))
 """ % self.__dict__)
 
         if len(self.prefix_cap) + len(self.name) > 30:
@@ -322,7 +322,7 @@ typedef struct _Lasso%(prefix_cap)s%(name)sClass Lasso%(prefix_cap)s%(name)sClas
         s.append("""
 struct _Lasso%(prefix_cap)s%(name)s {""" % self.__dict__)
         s.append("\tLasso%s parent;\n" % self.base_class_name)
-        
+
         s.append('\t/*< public >*/')
         if self.elements:
             s.append('\t/* elements */')
@@ -383,7 +383,7 @@ struct _Lasso%(prefix_cap)s%(name)s {""" % self.__dict__)
 \tchar *hrefServiceType;''')
 
         s.append('};\n')
-        
+
         s.append("""
 struct _Lasso%(prefix_cap)s%(name)sClass {
 \tLasso%(base_class_name)sClass parent;
@@ -415,25 +415,25 @@ LASSO_EXPORT Lasso%(prefix_cap)s%(name)s* lasso_%(category)s%(file_name)s_new(vo
 
     def generate_source(self):
         s = []
-        s.append("""/* $Id: %(file_name)s.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
+        s.append("""/* $Id: %(file_name)s.c,v 1.0 2005/10/14 15:17:55 fpeters Exp $
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -464,7 +464,7 @@ LASSO_EXPORT Lasso%(prefix_cap)s%(name)s* lasso_%(category)s%(file_name)s_new(vo
  *
 %s
  */""" % (self.schema_filename, self.schema_fragment))
-        
+
         s.append("""
 /*****************************************************************************/
 /* private methods                                                           */
@@ -631,7 +631,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
         elif self.base_class_name == 'Samlp2StatusResponse':
             has_build_query = True
             qs_name = 'SAMLResponse'
-        
+
         if self.name in ('ArtifactResolve', 'ArtifactResponse'):
             has_build_query = False
 
@@ -701,7 +701,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 static void
 instance_init(Lasso%s%s *node)
 {""" % (self.prefix_cap, self.name))
-        
+
         for elem in self.elements + self.attributes:
             name, type = elem[:2]
             if name in ('signed', ): # reserved keywords
@@ -720,7 +720,7 @@ instance_init(Lasso%s%s *node)
 \t\tg_str_hash, g_str_equal, g_free, g_free);''')
             else:
                 s.append('\tnode->%s = NULL;' % name)
-         
+
         if self.has_ds_signature:
             s.append('\tnode->sign_type = LASSO_SIGNATURE_TYPE_NONE;')
 
@@ -841,7 +841,7 @@ lasso_%(category)s%(file_name)s_new()
             s.append("""
 /**
  * lasso_%(category)s%(file_name)s_new_with_string:
- * @content: 
+ * @content:
  *
  * Creates a new #Lasso%(prefix_cap)s%(name)s object and initializes it
  * with @content.
@@ -863,7 +863,7 @@ lasso_%(category)s%(file_name)s_new_with_string(const char *content)
             s.append("""
 /**
  * lasso_%(category)s%(file_name)s_new_with_int:
- * @content: 
+ * @content:
  *
  * Creates a new #Lasso%(prefix_cap)s%(name)s object and initializes it
  * with @content.
@@ -888,25 +888,25 @@ lasso_%(category)s%(file_name)s_new_with_int(int content)
 
     def generate_swig(self):
         s = []
-        s.append("""/* $Id: %(file_name)s.i,v 1.0 2005/10/14 15:17:55 fpeters Exp $ 
+        s.append("""/* $Id: %(file_name)s.i,v 1.0 2005/10/14 15:17:55 fpeters Exp $
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -971,7 +971,7 @@ typedef struct {""" % self.__dict__)
                     continue
 
             name = '*'+name
-            
+
             if oname[0] in string.uppercase:
                 lname = oname[0].lower() + oname[1:]
                 s.append("""#ifndef SWIGPHP4
@@ -1054,7 +1054,7 @@ typedef struct {""" % self.__dict__)
             if bclass != base_class:
                 s.append('/* inherited from %s */\n' % bclass.name)
                 base_class = bclass
-            
+
             s.append('/* %s */' % name)
 
             if bclass is None:
@@ -1329,7 +1329,7 @@ for filename in xsd_filenames:
                 '_idp', '_idp_').replace('_md', '_md_')
         if file_name.endswith('_'):
             file_name = file_name[:-1]
-        
+
         klass = LassoClass()
         klass.prefix = prefix
         if klass.prefix.startswith('ws'):
@@ -1481,7 +1481,7 @@ for filename in xsd_filenames:
 
                     else:
                         elem_type = 'xs:string'
-                    
+
                     if attr.attributes.has_key('name'):
                         klass.attributes.append((attr.attributes['name'].value, elem_type))
                     else:
@@ -1709,7 +1709,7 @@ def generate_swig_main(prefix):
     s.append('%{')
 
     clsses = get_ordered_classes()
-    
+
     for klass in clsses:
         if prefix == 'ws' and not klass.prefix.startswith('ws'):
             continue

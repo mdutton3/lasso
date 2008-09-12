@@ -50,7 +50,7 @@ get_dict_from_hashtable_of_objects(GHashTable *value)
 		item_value = g_hash_table_lookup(value, keys->data);
 		if (item_value) {
 			item = PyGObjectPtr_New(G_OBJECT(item_value));
-			PyDict_SetItemString(dict, (char*)keys->data, item); 
+			PyDict_SetItemString(dict, (char*)keys->data, item);
 			Py_DECREF(item);
 		} else {
 			PyErr_Warn(PyExc_RuntimeWarning, "hashtable contains a null value");
@@ -108,12 +108,12 @@ free_list(GList **a_list, GFunc free_help) {
 }
 
 /** Remove all elements from a_hash and replace them with
- * the key-values pairs from the python dict. 
+ * the key-values pairs from the python dict.
  * Increase reference of new values before removeing
  * values from the hash, so if there are somme common
  * values with RefCoun = 1 they won't be deallocated.
  * */
-static void 
+static void
 set_hashtable_of_pygobject(GHashTable *a_hash, PyObject *dict) {
 	PyObject *key, *value;
 	int i;
@@ -132,7 +132,7 @@ set_hashtable_of_pygobject(GHashTable *a_hash, PyObject *dict) {
 	while (PyDict_Next(dict, &i, &key, &value)) {
 		if (! PyString_Check(key) || ! PyObject_TypeCheck(value, &PyGObjectPtrType))
 		{
-		    	PyErr_SetString(PyExc_TypeError, 
+			PyErr_SetString(PyExc_TypeError,
 					"value should be a dict,"
 					"with string keys"
 					"and GObjectPtr values");
@@ -155,7 +155,7 @@ failure:
 	}
 }
 
-/** Set the GList* pointer, pointed by a_list, to a pointer on a new GList 
+/** Set the GList* pointer, pointed by a_list, to a pointer on a new GList
  * created by converting the python seq into a GList of char*.
  */
 static void
@@ -170,7 +170,7 @@ set_list_of_strings(GList **a_list, PyObject *seq) {
 	for (i=0; i<l; i++) {
 		PyObject *pystr = PySequence_Fast_GET_ITEM(seq, i);
 		if (! PyString_Check(pystr)) {
-			PyErr_SetString(PyExc_TypeError, 
+			PyErr_SetString(PyExc_TypeError,
 					"value should be a tuple of strings");
 			goto failure;
 		}
@@ -183,7 +183,7 @@ failure:
 	free_list(&list, (GFunc)g_free);
 }
 
-/** Set the GList* pointer, pointed by a_list, to a pointer on a new GList 
+/** Set the GList* pointer, pointed by a_list, to a pointer on a new GList
  * created by converting the python seq into a GList of xmlNode*.
  */
 static void
@@ -199,7 +199,7 @@ set_list_of_xml_nodes(GList **a_list, PyObject *seq) {
 		PyObject *item = PySequence_Fast_GET_ITEM(seq, i);
 		xmlNode *item_node;
 		if (! PyString_Check(item)) {
-			PyErr_SetString(PyExc_TypeError, 
+			PyErr_SetString(PyExc_TypeError,
 					"value should be a tuple of strings");
 			goto failure;
 		}
@@ -213,7 +213,7 @@ failure:
 	free_list(&list, (GFunc)xmlFreeNode);
 }
 
-/** Set the GList* pointer, pointed by a_list, to a pointer on a new GList 
+/** Set the GList* pointer, pointed by a_list, to a pointer on a new GList
  * created by converting the python seq into a GList of GObject*.
  */
 static void
@@ -229,7 +229,7 @@ set_list_of_pygobject(GList **a_list, PyObject *seq) {
 		PyObject *item = PySequence_Fast_GET_ITEM(seq, i);
 		GObject *gobject;
 		if (! PyObject_TypeCheck(item, &PyGObjectPtrType)) {
-			PyErr_SetString(PyExc_TypeError, 
+			PyErr_SetString(PyExc_TypeError,
 					"value should be a tuple of PyGobject");
 			goto failure;
 		}
@@ -279,7 +279,7 @@ get_list_of_strings(const GList *a_list) {
 			PyTuple_SetItem(a_tuple, i, str);
 			i++;
 		} else {
-			PyErr_Warn(PyExc_RuntimeWarning, 
+			PyErr_Warn(PyExc_RuntimeWarning,
 				"list contains a NULL value");
 		}
 		a_list = a_list->next;
@@ -289,7 +289,7 @@ get_list_of_strings(const GList *a_list) {
 	return a_tuple;
 failure:
 	PyErr_SetString(PyExc_TypeError, "Allocation problem in get_list_of_strings");
-	Py_XDECREF(a_tuple); 	
+	Py_XDECREF(a_tuple);
 	return noneRef();
 }
 
@@ -312,11 +312,11 @@ get_list_of_xml_nodes(const GList *a_list) {
 				PyTuple_SetItem(a_tuple, i, str);
 				i++;
 			} else {
-				PyErr_Warn(PyExc_RuntimeWarning, 
+				PyErr_Warn(PyExc_RuntimeWarning,
 					"could not convert an xmlNode to a string");
 			}
 		} else {
-			PyErr_Warn(PyExc_RuntimeWarning, 
+			PyErr_Warn(PyExc_RuntimeWarning,
 				"list contains a NULL value");
 		}
 		a_list = a_list->next;
@@ -326,7 +326,7 @@ get_list_of_xml_nodes(const GList *a_list) {
 	return a_tuple;
 failure:
 	PyErr_SetString(PyExc_TypeError, "Allocation problem in get_list_of_strings");
-	Py_XDECREF(a_tuple); 	
+	Py_XDECREF(a_tuple);
 	return noneRef();
 }
 
@@ -350,11 +350,11 @@ get_list_of_pygobject(const GList *a_list) {
 				PyTuple_SetItem(a_tuple, i, pygobject);
 				i++;
 			} else {
-				PyErr_Warn(PyExc_RuntimeWarning, 
+				PyErr_Warn(PyExc_RuntimeWarning,
 					"could not convert a GObject to a PyGobject");
 			}
 		} else {
-			PyErr_Warn(PyExc_RuntimeWarning, 
+			PyErr_Warn(PyExc_RuntimeWarning,
 				"list contains a NULL value");
 		}
 		a_list = a_list->next;
@@ -364,7 +364,7 @@ get_list_of_pygobject(const GList *a_list) {
 	return a_tuple;
 failure:
 	PyErr_SetString(PyExc_TypeError, "Allocation problem in get_list_of_strings");
-	Py_XDECREF(a_tuple); 	
+	Py_XDECREF(a_tuple);
 	return noneRef();
 }
 
@@ -390,7 +390,7 @@ PyGObjectPtr_dealloc(PyGObjectPtr *self)
 static int
 startswith(const char *string, const char *prefix)
 {
-    return strncmp(string, prefix, strlen(prefix)) == 0; 
+    return strncmp(string, prefix, strlen(prefix)) == 0;
 }
 
 static PyObject*
@@ -438,7 +438,7 @@ static PyMemberDef PyGObjectPtr_members[] = {
 	{NULL}
 };
 
-static PyObject* 
+static PyObject*
 PyGObjectPtr_get_refcount(PyGObjectPtr *self, G_GNUC_UNUSED void *closure)
 {
 	PyObject *refcount;
@@ -495,7 +495,7 @@ set_object_field(GObject **a_gobject_ptr, PyGObjectPtr *a_pygobject) {
 		g_object_unref(*a_gobject_ptr);
 	}
 	if ((PyObject*)a_pygobject == Py_None) {
-		*a_gobject_ptr = NULL; 
+		*a_gobject_ptr = NULL;
 	} else {
 		*a_gobject_ptr = g_object_ref(a_pygobject->obj);
 	}

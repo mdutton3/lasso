@@ -12,12 +12,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -98,7 +98,7 @@ class IdWsf1TestCase(unittest.TestCase):
         sp_login.request.nameIdPolicy = lasso.LIB_NAMEID_POLICY_TYPE_FEDERATED
         sp_login.request.protocolProfile = lasso.LIB_PROTOCOL_PROFILE_BRWS_POST
         sp_login.buildAuthnRequestMsg()
-        
+
         idp_login = lasso.Login(idp)
         idp_login.processAuthnRequestMsg(sp_login.msgBody)
         idp_login.validateRequestMsg(True, True)
@@ -182,7 +182,7 @@ class DiscoveryModifyTestCase(IdWsf1TestCase):
 
         # Process Modify
         request_type = lasso.getRequestTypeFromSoapMsg(wsp_disco.msgBody)
-        self.failUnless(request_type == lasso.REQUEST_TYPE_DISCO_MODIFY) 
+        self.failUnless(request_type == lasso.REQUEST_TYPE_DISCO_MODIFY)
         idp_disco = lasso.Discovery(self.idp)
         idp_disco.processModifyMsg(wsp_disco.msgBody)
         idp_disco.setIdentityFromDump(idp_identity_dump)
@@ -216,7 +216,7 @@ class DiscoveryRemoveTestCase(IdWsf1TestCase):
 
         # Process Modify
         request_type = lasso.getRequestTypeFromSoapMsg(wsp_disco.msgBody)
-        self.failUnless(request_type == lasso.REQUEST_TYPE_DISCO_MODIFY) 
+        self.failUnless(request_type == lasso.REQUEST_TYPE_DISCO_MODIFY)
         idp_disco = lasso.Discovery(self.idp)
         idp_disco.processModifyMsg(wsp_disco.msgBody)
         idp_disco.setIdentityFromDump(idp_identity_dump)
@@ -274,7 +274,7 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
         wsc_service.buildRequestMsg()
 
         request_type = lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
-        self.failUnless(request_type == lasso.REQUEST_TYPE_DST_MODIFY) 
+        self.failUnless(request_type == lasso.REQUEST_TYPE_DST_MODIFY)
 
         self.wsp = self.get_wsp_server()
         wsp_service = lasso.DataService(self.wsp)
@@ -313,9 +313,9 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
         wsc_service = self.get_pp_service()
         wsc_service.initModify(xpath, new_data)
         wsc_service.buildRequestMsg()
- 
+
         request_type = lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
-        self.failUnless(request_type == lasso.REQUEST_TYPE_DST_MODIFY) 
+        self.failUnless(request_type == lasso.REQUEST_TYPE_DST_MODIFY)
 
         self.wsp = self.get_wsp_server()
         wsp_service = lasso.DataService(self.wsp)
@@ -347,7 +347,7 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
         wsc_service.buildRequestMsg()
 
         request_type = lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
-        self.failUnless(request_type == lasso.REQUEST_TYPE_DST_MODIFY) 
+        self.failUnless(request_type == lasso.REQUEST_TYPE_DST_MODIFY)
 
         self.wsp = self.get_wsp_server()
         wsp_service = lasso.DataService(self.wsp)

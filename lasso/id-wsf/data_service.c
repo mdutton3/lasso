@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -29,28 +29,28 @@
  * Following up on #LassoDiscovery first example, it created a @service object,
  * this is a #LassoDataService instance.  This example continues from that step
  * and retrieves the name of the principal:
- *  
+ *
  * <informalexample>
  * <programlisting>
  * char *soap_answer;            // SOAP answer from data service
  * xmlNode *principal_name;      // libxml2 xmlNode with the principal name
- * 
+ *
  * service = lasso_discovery_get_service(discovery);
  * lasso_data_service_init_query(service, "/pp:PP/pp:InformalName", NULL);
  * lasso_data_service_build_request_msg(service);
- * 
+ *
  * // service must perform SOAP call to LASSO_WSF_PROFILE(service)->msg_url
  * // the SOAP message is LASSO_WSF_PROFILE(service)->msg_body.  The answer
  * // is stored in char* soap_answer;
- * 
+ *
  * lasso_data_service_process_query_response_msg(service, soap_answer);
  * principal_name = lasso_data_service_get_answer(service, "/pp:PP/pp:InformalName");
- * 
+ *
  * // app should probably then use xmlNodeGetContent libxml2 function to get
  * // access to node content.
  * </programlisting>
  * </informalexample>
- * 
+ *
  */
 
 #include "../utils.h"
@@ -224,8 +224,8 @@ lasso_data_service_add_query_item(LassoDataService *service,
 	}
 
 	query = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request);
-	
-	if (query->QueryItem && query->QueryItem->data && 
+
+	if (query->QueryItem && query->QueryItem->data &&
 			LASSO_DST_QUERY_ITEM(query->QueryItem->data)->itemID == NULL) {
 		/* XXX: all items must have itemID if there is more than one,
 		 * perhaps we could generate an item id for those lacking it */
@@ -269,7 +269,7 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 	if (doc == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
-	
+
 	xmlnode = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeSignature,
 			xmlSecDSigNs);
 	if (xmlnode) {
@@ -403,7 +403,7 @@ lasso_data_service_build_response_msg(LassoDataService *service)
  * lasso_data_service_get_answer:
  * @service: a #LassoDataService
  * @select: resource selection string (typically a XPath query)
- * 
+ *
  * Returns the answer for the specified @select request.
  *
  * Return value: the node (libxml2 xmlNode*); or NULL if it was not found.
@@ -476,7 +476,7 @@ lasso_data_service_get_answer(LassoDataService *service, const char *select)
  * lasso_data_service_get_answer_for_item_id:
  * @service: a #LassoDataService
  * @item_id: query item identifier
- * 
+ *
  * Returns the answer for the specified @item_id query item.
  *
  * Return value: the node (libxml2 xmlNode*); or NULL if it was not found.
@@ -651,7 +651,7 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 		return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
 	}
 	offering = service->private_data->offering;
-	
+
 	if (offering->ServiceInstance == NULL
 			|| offering->ServiceInstance->ServiceType == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE;
@@ -949,7 +949,7 @@ dispose(GObject *object)
 
 static void
 finalize(GObject *object)
-{ 
+{
 	LassoDataService *service = LASSO_DATA_SERVICE(object);
 	if (service->private_data->offering) {
 		lasso_node_destroy(LASSO_NODE(service->private_data->offering));
@@ -977,7 +977,7 @@ static void
 class_init(LassoDataServiceClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
-	
+
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
@@ -1035,7 +1035,7 @@ lasso_data_service_new_full(LassoServer *server, LassoDiscoResourceOffering *off
 	LassoDataService *service = lasso_data_service_new(server);
 
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(offering), NULL);
-	
+
 	if (service == NULL) {
 		return NULL;
 	}

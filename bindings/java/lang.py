@@ -1,5 +1,5 @@
 # Lasso - A free implementation of the Liberty Alliance specifications.
-# 
+#
 # Copyright (C) 2004-2007 Entr'ouvert
 # http://lasso.entrouvert.org
 #
@@ -126,7 +126,7 @@ class Binding:
             print p,
         print
         print
-    
+
     def is_int_type(self, type):
         return type in ['gboolean','int','gint'] + self.binding_data.enums
 
@@ -193,7 +193,7 @@ public abstract interface LassoConstants {
                 self.generate_JNI_functions(m, fd)
         self.generate_JNI_footer(fd)
         fd.close();
-    
+
     def generate_JNI_header(self, fd):
         print >> fd, '''\
 /* this file has been generated automatically; do not edit */
@@ -295,7 +295,7 @@ protected static native void destroy(long cptr);
                 print >> fd, '   public static native void %s(GObject obj, %s[] value);' % (name,jtype)
                 name = '%s_add' % prefix
                 print >> fd, '   public static native void %s(GObject obj, %s value);' % (name,jtype)
-                if not m[2].get('elem_type') in ('xmlNode*',): 
+                if not m[2].get('elem_type') in ('xmlNode*',):
                     name = '%s_remove' % prefix
                     print >> fd, '   public static native void %s(GObject obj, %s value);' % (name,jtype)
             elif mtype == 'GHashTable*':
@@ -324,8 +324,8 @@ protected static native void destroy(long cptr);
     }
 '''
         print >>fd, '}'
-            
-        
+
+
 # Wrappers
     def generate_wrapper(self):
         fd = open('com_entrouvert_lasso_LassoJNI.c', 'w')

@@ -1,22 +1,22 @@
-/* $Id$ 
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -53,9 +53,9 @@ static xmlSecKeyPtr lasso_get_public_key_from_private_key_file(const char *priva
  * lasso_build_random_sequence:
  * @buffer: buffer to fill with random sequence
  * @size: the sequence size in byte (character)
- * 
+ *
  * Builds a random sequence of [0-9A-F] characters of size @size.
- * 
+ *
  * Return value: None
  **/
 void
@@ -77,9 +77,9 @@ lasso_build_random_sequence(char *buffer, unsigned int size)
 /**
  * lasso_build_unique_id:
  * @size: the ID's length (between 32 and 40)
- * 
+ *
  * Builds an ID which has an unicity probability of 2^(-size*4).
- * 
+ *
  * Return value: a "unique" ID (begin always with _ character)
  **/
 char*
@@ -109,9 +109,9 @@ lasso_build_unique_id(unsigned int size)
 
 /**
  * lasso_get_current_time:
- * 
+ *
  * Returns the current time, format is "yyyy-mm-ddThh:mm:ssZ".
- * 
+ *
  * Return value: a string
  **/
 char*
@@ -132,9 +132,9 @@ lasso_get_current_time()
 /**
  * lasso_get_pem_file_type:
  * @pem_file: a pem file
- * 
+ *
  * Gets the type of a pem file.
- * 
+ *
  * Return value: the pem file type
  **/
 LassoPemFileType
@@ -213,9 +213,9 @@ xmlSecKeyPtr lasso_get_public_key_from_pem_file(const char *file) {
 /**
  * lasso_get_public_key_from_pem_cert_file:
  * @pem_cert_file: an X509 pem certificate file
- * 
+ *
  * Gets the public key in an X509 pem certificate file.
- * 
+ *
  * Return value: a public key or NULL if an error occurs.
  **/
 xmlSecKeyPtr
@@ -269,18 +269,18 @@ lasso_get_public_key_from_pem_cert_file(const char *pem_cert_file)
 static xmlSecKeyPtr
 lasso_get_public_key_from_private_key_file(const char *private_key_file)
 {
-	return xmlSecCryptoAppKeyLoad(private_key_file, 
+	return xmlSecCryptoAppKeyLoad(private_key_file,
 			xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 }
 
 /**
  * lasso_load_certs_from_pem_certs_chain_file:
  * @pem_certs_chain_file: a CA certificate chain file
- * 
+ *
  * Creates a keys manager and loads inside all the CA certificates of
  * @pem_certs_chain_file. Caller is responsible for freeing it with
  * xmlSecKeysMngrDestroy() function.
- * 
+ *
  * Return value: a newly allocated keys manager or NULL if an error occurs.
  **/
 xmlSecKeysMngrPtr
@@ -308,7 +308,7 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 				lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED));
 		xmlSecKeysMngrDestroy(keys_mngr);
 		return NULL;
-	}    
+	}
 
 	gioc = g_io_channel_new_file(pem_certs_chain_file, "r", NULL);
 	while (g_io_channel_read_line(gioc, &line, &len, &pos, NULL) == G_IO_STATUS_NORMAL) {
@@ -354,9 +354,9 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
  * @query: a query (an url-encoded node)
  * @sign_method: the Signature transform method
  * @private_key_file: the private key
- * 
+ *
  * Signs a query (url-encoded message).
- * 
+ *
  * Return value: a newly allocated query signed or NULL if an error occurs.
  **/
 char*
@@ -507,7 +507,7 @@ lasso_assertion_encrypt(LassoSaml2Assertion *assertion)
 		encryption_public_key, assertion->encryption_sym_key_type));
 
 	g_free(b64_value);
-	g_free(value);	
+	g_free(value);
 
 	return encrypted_element;
 }
@@ -517,9 +517,9 @@ lasso_assertion_encrypt(LassoSaml2Assertion *assertion)
  * lasso_query_verify_signature:
  * @query: a query (an url-encoded message)
  * @sender_public_key: the query sender public key
- * 
+ *
  * Verifies the query signature.
- * 
+ *
  * Return value: 0 if signature is valid
  * a positive value if signature was not found or is invalid
  * a negative value if an error occurs during verification
@@ -629,9 +629,9 @@ done:
 /**
  * lasso_sha1:
  * @str: a string
- * 
+ *
  * Builds the SHA-1 message digest (cryptographic hash) of @str
- * 
+ *
  * Return value: 20-bytes buffer allocated with xmlMalloc
  **/
 char*
@@ -674,7 +674,7 @@ urlencoded_to_strings(const char *str)
 
 void
 _debug(GLogLevelFlags level, const char *filename, int line,
-		const char *function, const char *format, ...) 
+		const char *function, const char *format, ...)
 {
 	char debug_string[1024];
 	time_t ts;
@@ -785,7 +785,7 @@ lasso_node_build_deflated_query(LassoNode *node)
 	z_stream stream;
 
 	xmlnode = lasso_node_get_xmlNode(node, FALSE);
-	
+
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
 	xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 0, "utf-8");

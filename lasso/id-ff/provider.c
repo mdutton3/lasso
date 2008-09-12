@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -243,7 +243,7 @@ gboolean
 lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote_provider,
 		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,
 		gboolean initiate_profile)
-{ 
+{
 	LassoProviderRole initiating_role;
 	char *protocol_profile;
 
@@ -301,11 +301,11 @@ lasso_provider_has_protocol_profile(LassoProvider *provider,
 		LassoMdProtocolType protocol_type, const char *protocol_profile)
 {
 	GList *supported;
-	
+
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE); /* Be conservative */
 	supported = lasso_provider_get_metadata_list(
 			provider, protocol_md_nodename[protocol_type]);
-	
+
 	if (g_list_find_custom(supported, protocol_profile, (GCompareFunc)strcmp) == NULL)
 		return FALSE;
 	return TRUE;
@@ -396,7 +396,7 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
 			}
 			if (use && strcmp((char*)use, "encryption") == 0) {
-				provider->private_data->encryption_key_descriptor = 
+				provider->private_data->encryption_key_descriptor =
 					xmlCopyNode(t, 1);
 			}
 			if (use) {
@@ -460,7 +460,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	xmlChar *s;
 
 	parent_class->init_from_xml(node, xmlnode);
-	
+
 	if (xmlnode == NULL) {
 		return LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED;
 	}
@@ -744,7 +744,7 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	if (doc == NULL)
 		return FALSE;
-	
+
 	node = xmlDocGetRootElement(doc);
 	if (node == NULL || node->ns == NULL) {
 		xmlFreeDoc(doc);
@@ -867,7 +867,7 @@ lasso_provider_new_helper(LassoProviderRole role, const char *metadata,
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
-	
+
 	return provider;
 }
 /**
@@ -1045,13 +1045,13 @@ lasso_provider_new_from_dump(const gchar *dump)
 
 	provider = g_object_new(LASSO_TYPE_PROVIDER, NULL);
 	doc = xmlParseMemory(dump, strlen(dump));
-	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc)); 
+	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc));
 	xmlFreeDoc(doc);
 
 	return provider;
 }
 
-int 
+int
 lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format)
 {

@@ -1,22 +1,22 @@
-/* $Id$ 
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -43,9 +43,9 @@
 /**
  * lasso_defederation_build_notification_msg:
  * @defederation: a #LassoDefederation
- * 
+ *
  * Builds the federation termination notification message.
- * 
+ *
  * It gets the federation termination notification protocol profile and:
  * <itemizedlist>
  * <listitem><para>
@@ -62,7 +62,7 @@
  *   object, sets @msg_body to NULL.
  * </para></listitem>
  * </itemizedlist>
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -97,9 +97,9 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 		/* build the logout request message */
 		profile->msg_url = lasso_provider_get_metadata_one(
 				remote_provider, "SoapEndpoint");
-		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file = 
+		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file =
 			profile->server->private_key;
-		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file = 
+		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file =
 			profile->server->certificate;
 		profile->msg_body = lasso_node_export_to_soap(LASSO_NODE(profile->request));
 		return 0;
@@ -136,7 +136,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 /**
  * lasso_defederation_destroy:
  * @defederation: a #LassoDefederation
- * 
+ *
  * Destroys a #LassoDefederation object.
  **/
 void
@@ -155,7 +155,7 @@ lasso_defederation_destroy(LassoDefederation *defederation)
  * Sets a new federation termination notification to the remote provider id
  * with the provider id of the requester (from the server object) and the name
  * identifier of the federated principal.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -238,7 +238,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 		profile->request = lasso_lib_federation_termination_notification_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				nameIdentifier,
-				profile->server->certificate ? 
+				profile->server->certificate ?
 					LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
 				LASSO_SIGNATURE_METHOD_RSA_SHA1);
 		if (profile->msg_relayState) {
@@ -253,7 +253,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 				nameIdentifier,
 				LASSO_SIGNATURE_TYPE_NONE,
 				0);
-		LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request)->RelayState = 
+		LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request)->RelayState =
 			g_strdup(profile->msg_relayState);
 	}
 
@@ -282,10 +282,10 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
  * lasso_defederation_process_notification_msg:
  * @defederation: the federation termination object
  * @notification_msg: the federation termination notification message
- * 
+ *
  * Processes a lib:FederationTerminationNotification message.  Rebuilds a
  * request object from the message and optionally verifies its signature.
- * 
+ *
  * Set the msg_nameIdentifier attribute with the NameIdentifier content of the
  * notification object and optionally set the msg_relayState attribute with the
  * RelayState content of the notification object.
@@ -343,10 +343,10 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 /**
  * lasso_defederation_validate_notification:
  * @defederation: a #LassoDefederation
- * 
+ *
  * Checks notification with regards to message status and principal
  * federations; update them accordingly.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -463,7 +463,7 @@ lasso_defederation_get_type()
 /**
  * lasso_defederation_new:
  * @server: the #LassoServer
- * 
+ *
  * Creates a new #LassoDefederation.
  *
  * Return value: a newly created #LassoDefederation object; or NULL if an error

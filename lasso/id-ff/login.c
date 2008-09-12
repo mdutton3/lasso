@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -52,30 +52,30 @@
  *    </itemizedlist>
  *    </para></listitem>
  * </itemizedlist>
- * </para> 
+ * </para>
  * <example>
  * <title>Service Provider Login URL</title>
  * <programlisting>
  * LassoLogin *login;
- * 
+ *
  * login = lasso_login_new(server);
  * lasso_login_init_authn_request(login, "http://identity-provider-id/",
  *                 LASSO_HTTP_METHOD_REDIRECT);
- * 
+ *
  * // customize AuthnRequest
  * request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
  * request->NameIDPolicy = strdup(LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
  * request->ForceAuthn = TRUE;
  * request->IsPassive = FALSE;
  * request->ProtocolProfile = strdup(LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART);
- * 
+ *
  * lasso_login_build_authn_request_msg(login);
- * 
+ *
  * // redirect user to identity provider
  * printf("Location: %s\n\nRedirected to IdP\n", LASSO_PROFILE(login)->msg_url);
  * </programlisting>
  * </example>
- * 
+ *
  * <example>
  * <title>Service Provider Assertion Consumer Service URL</title>
  * <programlisting>
@@ -84,7 +84,7 @@
  * char *artifact_msg = NULL, *lares = NULL, *lareq = NULL;
  * char *name_identifier;
  * lassoHttpMethod method;
- * 
+ *
  * login = lasso_login_new(server);
  * if (strcmp(request_method, "GET") == 0) {
  *         artifact_msg = getenv("QUERY_STRING");
@@ -101,7 +101,7 @@
  *         }
  *         method = LASSO_HTTP_METHOD_POST;
  * }
- * 
+ *
  * if (artifact_msg) {
  *         lasso_login_init_request(login, artifact_msg, method);
  *         lasso_login_build_request_msg(login);
@@ -112,15 +112,15 @@
  * } else if (response_msg) {
  *         lasso_login_process_authn_response_msg(login, response_msg);
  * }
- * 
+ *
  * // looks up name_identifier in local file, database, whatever and gets back
  * // two things: identity_dump and session_dump
  * name_identifier = LASSO_PROFILE(login)->nameIdentifier
  * lasso_profile_set_identity_from_dump(LASSO_PROFILE(login), identity_dump);
  * lasso_profile_set_session_from_dump(LASSO_PROFILE(login), session_dump);
- * 
+ *
  * lasso_login_accept_sso(login);
- * 
+ *
  * if (lasso_profile_is_identity_dirty(LASSO_PROFILE(login))) {
  *         LassoIdentity *identity;
  *         char *identity_dump;
@@ -128,7 +128,7 @@
  *         identity_dump = lasso_identity_dump(identity);
  *         // record identity_dump in file, database...
  * }
- * 
+ *
  * if (lasso_profile_is_session_dirty(LASSO_PROFILE(login))) {
  *         LassoSession *session;
  *         char *session_dump;
@@ -136,12 +136,12 @@
  *         session_dump = lasso_session_dump(session);
  *         // record session_dump in file, database...
  * }
- * 
+ *
  * // redirect user anywhere
  * printf("Location: %s\n\nRedirected to site root\n", login->msg_url);
  * </programlisting>
  * </example>
- */ 
+ */
 
 #include <xmlsec/base64.h>
 
@@ -205,7 +205,7 @@ lasso_login_assertion_add_discovery(LassoLogin *login)
 	LassoSamlAttributeValue *attributeValue;
 
 	serviceInstance = lasso_server_get_service(profile->server, LASSO_DISCO_HREF);
-	if (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance) && 
+	if (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance) &&
 			login->private_data->resourceId) {
 		newServiceInstance = lasso_disco_service_instance_copy(serviceInstance);
 
@@ -240,7 +240,7 @@ lasso_login_assertion_add_discovery(LassoLogin *login)
  * @authenticationInstant: the time at which the authentication took place
  * @notBefore: the earliest time instant at which the assertion is valid
  * @notOnOrAfter: the time instant at which the assertion has expired
- * 
+ *
  * Builds an assertion and stores it in profile session.
  * @authenticationInstant, reauthenticateOnOrAfter, @notBefore and
  * @notOnOrAfter may be NULL.  If @authenticationInstant is NULL, the current
@@ -280,7 +280,7 @@ lasso_login_build_assertion(LassoLogin *login,
 
 	federation = g_hash_table_lookup(profile->identity->federations,
 			profile->remote_providerID);
-	
+
 	assertion = LASSO_SAML_ASSERTION(lasso_lib_assertion_new_full(
 			LASSO_PROVIDER(profile->server)->ProviderID,
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID,
@@ -353,7 +353,7 @@ lasso_login_build_assertion(LassoLogin *login,
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			LASSO_NODE(assertion));
 
-	if (LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion == 1 && 
+	if (LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion == 1 &&
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MinorVersion < 2) {
 		/* pre-id-ff 1.2, saml 1.0 */
 
@@ -374,7 +374,7 @@ lasso_login_build_assertion(LassoLogin *login,
 		/* liberty-architecture-bindings-profiles-v1.1.pdf, page 24, line 729 */
 		ss->Subject->SubjectConfirmation->ConfirmationMethod = g_list_append(NULL,
 				g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01));
-		ss->Subject->SubjectConfirmation->SubjectConfirmationData = 
+		ss->Subject->SubjectConfirmation->SubjectConfirmationData =
 			g_strdup(login->assertionArtifact);
 
 		if (nameIdentifier) {
@@ -385,17 +385,17 @@ lasso_login_build_assertion(LassoLogin *login,
 			nameIdentifier->Format = NULL;
 		}
 	}
-	
+
 	return 0;
 }
 
 /**
  * lasso_login_must_ask_for_consent_private:
  * @login: a #LassoLogin
- * 
- * Evaluates if it is necessary to ask the consent of the Principal. 
+ *
+ * Evaluates if it is necessary to ask the consent of the Principal.
  * This method doesn't take the isPassive value into account.
- * 
+ *
  * Return value: TRUE or FALSE
  **/
 static gboolean
@@ -527,7 +527,7 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 			login->nameIDPolicy = g_strdup(LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME);
 			return 0;
 		}
-		
+
 		/* if protocolProfile is LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST
 		 * set StatusCode to FederationDoesNotExist in lib:AuthnResponse
 		 */
@@ -546,7 +546,7 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 		lasso_identity_add_federation(LASSO_PROFILE(login)->identity, federation);
 	}
 
-	LASSO_PROFILE(login)->nameIdentifier = 
+	LASSO_PROFILE(login)->nameIdentifier =
 		g_object_ref(LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
 
 	return ret;
@@ -569,7 +569,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 
 	response = LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response);
 
-	if (response->Status == NULL || ! LASSO_IS_SAMLP_STATUS(response->Status) || 
+	if (response->Status == NULL || ! LASSO_IS_SAMLP_STATUS(response->Status) ||
 			response->Status->StatusCode == NULL ||
 			response->Status->StatusCode->Value == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
@@ -678,12 +678,12 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 /**
  * lasso_login_accept_sso:
  * @login: a #LassoLogin
- * 
+ *
  * Gets the assertion of the response and adds it into the session.
  * Builds a federation with the 2 name identifiers of the assertion
  * and adds it into the identity.
  * If the session or the identity are NULL, they are created.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -700,7 +700,7 @@ lasso_login_accept_sso(LassoLogin *login)
 	profile = LASSO_PROFILE(login);
 
 	if (profile->identity == NULL)
-		profile->identity = lasso_identity_new(); 
+		profile->identity = lasso_identity_new();
 
 	if (profile->session == NULL)
 		profile->session = lasso_session_new();
@@ -778,7 +778,7 @@ lasso_login_build_assertion_artifact(LassoLogin *login)
  * lasso_login_build_artifact_msg:
  * @login: a #LassoLogin
  * @http_method: the HTTP method to send the artifact (REDIRECT or POST)
- * 
+ *
  * Builds a SAML artifact. Depending of the HTTP method, the data for the sending of
  * the artifact are stored in @msg_url (REDIRECT) or @msg_url, @msg_body and
  * @msg_relayState (POST).
@@ -880,7 +880,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 		if (relayState == NULL) {
 			query = g_strdup_printf("SAMLart=%s", escaped_artifact);
 		} else {
-			query = g_strdup_printf("SAMLart=%s&RelayState=%s", 
+			query = g_strdup_printf("SAMLart=%s&RelayState=%s",
 					escaped_artifact, relayState);
 		}
 		profile->msg_url = lasso_concat_url_query(url, query);
@@ -917,14 +917,14 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 /**
  * lasso_login_build_authn_request_msg:
  * @login: a #LassoLogin
- * 
+ *
  * Converts profile authentication request (@request member) into a Liberty
  * message, either an URL in HTTP-Redirect profile or an URL and a field value
  * in Browser-POST (form) profile.
  *
  * The URL is set into the @msg_url member and the eventual field value (LAREQ)
  * is set into the @msg_body member.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -1017,9 +1017,9 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 			 * snippets so it is not freed on destroy, so it is
 			 * normal to not strdup() it; nevertheless it would
 			 * probably be more clean not to to it this way */
-			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file = 
+			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file =
 				profile->server->private_key;
-			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file = 
+			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file =
 				profile->server->certificate;
 		}
 		lareq = lasso_node_export_to_base64(profile->request);
@@ -1039,7 +1039,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 /**
  * lasso_login_build_authn_response_msg:
  * @login: a #LassoLogin
- * 
+ *
  * Converts profile authentication response (@response member) into a Liberty
  * message.
  *
@@ -1090,9 +1090,9 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 	}
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method =
 		LASSO_SIGNATURE_METHOD_RSA_SHA1;
-	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->private_key_file = 
+	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->private_key_file =
 		profile->server->private_key;
-	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->certificate_file = 
+	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->certificate_file =
 		profile->server->certificate;
 
 	/* build an lib:AuthnResponse base64 encoded */
@@ -1114,12 +1114,12 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 /**
  * lasso_login_build_request_msg:
  * @login: a #LassoLogin
- * 
+ *
  * Converts profile artifact request into a Liberty SOAP message.
  *
  * The URL is set into the @msg_url member and the SOAP message is set into the
  * @msg_body member.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -1144,7 +1144,7 @@ lasso_login_build_request_msg(LassoLogin *login)
 
 	LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file =
 		profile->server->private_key;
-	LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file = 
+	LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file =
 		profile->server->certificate;
 	profile->msg_body = lasso_node_export_to_soap(profile->request);
 
@@ -1161,13 +1161,13 @@ lasso_login_build_request_msg(LassoLogin *login)
  * lasso_login_build_response_msg:
  * @login: a #LassoLogin
  * @remote_providerID: service provider ID
- * 
+ *
  * Converts profile assertion response (@response member) into a Liberty SOAP
  * messageresponse message.
  *
  * The URL is set into the @msg_url member and the SOAP message is set into the
  * @msg_body member.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -1186,7 +1186,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 	}
 
 	profile->response = lasso_samlp_response_new();
-	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->InResponseTo = 
+	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->InResponseTo =
 		g_strdup(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID);
 	if (LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion == 1 &&
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MinorVersion == 0) {
@@ -1195,13 +1195,13 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 	}
 
 	if (profile->server->certificate) {
-		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = 
+		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type =
 			LASSO_SIGNATURE_TYPE_WITHX509;
 	} else {
-		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = 
+		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type =
 			LASSO_SIGNATURE_TYPE_SIMPLE;
 	}
-	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method = 
+	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method =
 		LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
 	if (remote_providerID != NULL) {
@@ -1256,7 +1256,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 		lasso_profile_set_response_status(profile, LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
 	}
 
-	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->private_key_file = 
+	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->private_key_file =
 		profile->server->private_key;
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->certificate_file =
 		profile->server->certificate;
@@ -1268,7 +1268,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 /**
  * lasso_login_destroy:
  * @login: a #LassoLogin
- * 
+ *
  * Destroys a #LassoLogin object.
  **/
 void
@@ -1373,7 +1373,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
  * (in redirect mode) or the form LAREQ field (in browser-post mode).
  *
  * Return value: 0 on success; or a negative value otherwise.
- **/ 
+ **/
 gint
 lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 		LassoHttpMethod response_http_method)
@@ -1389,7 +1389,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-	
+
 	profile = LASSO_PROFILE(login);
 	IF_SAML2(profile) {
 		return lasso_saml20_login_init_request(login, response_msg,
@@ -1458,7 +1458,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	request->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
 	profile->request = LASSO_NODE(request);
-	
+
 	return ret;
 }
 
@@ -1467,12 +1467,12 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
  * @login: a #LassoLogin.
  * @remote_providerID: the providerID of the remote service provider (may be
  *      NULL)
- * 
+ *
  * Generates an authentication response without matching authentication
  * request.
  *
  * If @remote_providerID is NULL, the first known provider is used.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -1505,9 +1505,9 @@ lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
 /**
  * lasso_login_must_ask_for_consent:
  * @login: a #LassoLogin
- * 
+ *
  * Evaluates if consent must be asked to the Principal to federate him.
- * 
+ *
  * Return value: %TRUE if consent must be asked
  **/
 gboolean
@@ -1530,9 +1530,9 @@ lasso_login_must_ask_for_consent(LassoLogin *login)
 /**
  * lasso_login_must_authenticate:
  * @login: a #LassoLogin
- * 
+ *
  * Evaluates if user must be authenticated.
- * 
+ *
  * Return value: %TRUE if user must be authenticated
  **/
 gboolean
@@ -1545,7 +1545,7 @@ lasso_login_must_authenticate(LassoLogin *login)
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	profile = LASSO_PROFILE(login);
-	
+
 	IF_SAML2(profile) {
 		return lasso_saml20_login_must_authenticate(login);
 	}
@@ -1606,7 +1606,7 @@ lasso_login_must_authenticate(LassoLogin *login)
 					 */
 					method = LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD;
 				}
-				
+
 				if (compa == 0) { /* exact */
 					if (strcmp(method, class_ref) == 0) {
 						matched = TRUE;
@@ -1649,7 +1649,7 @@ lasso_login_must_authenticate(LassoLogin *login)
  *
  * Processes received authentication request, checks it is signed correctly,
  * checks if requested protocol profile is supported, etc.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -1680,11 +1680,11 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 
 		/* LibAuthnRequest already set by lasso_login_init_idp_initiated_authn_request() */
 		request = LASSO_LIB_AUTHN_REQUEST(profile->request);
-		
+
 		/* verify that NameIDPolicy is 'any' */
 		if (request->NameIDPolicy == NULL)
 			return LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY;
-			
+
 		if (strcmp(request->NameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY) != 0)
 			return LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY;
 	} else {
@@ -1694,7 +1694,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 				format == LASSO_MESSAGE_FORMAT_ERROR) {
 			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
-		
+
 		profile->request = LASSO_NODE(request);
 
 		/* get remote ProviderID */
@@ -1761,7 +1761,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	profile->response = lasso_lib_authn_response_new(
 			LASSO_PROVIDER(profile->server)->ProviderID,
 			LASSO_LIB_AUTHN_REQUEST(profile->request));
-	if (LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion == 1 && 
+	if (LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion == 1 &&
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MinorVersion < 2) {
 		/* pre-id-ff 1.2, move accordingly */
 		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->MajorVersion = 1;
@@ -1778,7 +1778,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
  * @authn_response_msg: the authentication response received
  *
  * Processes received authentication response.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -1797,7 +1797,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	IF_SAML2(profile) {
 		return lasso_saml20_login_process_authn_response_msg(login, authn_response_msg);
 	}
-	
+
 	/* clean state */
 	if (profile->remote_providerID)
 		g_free(LASSO_PROFILE(login)->remote_providerID);
@@ -1842,7 +1842,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
  * @request_msg: the artifact request received
  *
  * Processes received artifact request.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -1882,7 +1882,7 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
  * @response_msg: the assertion response received
  *
  * Processes received assertion response.
- * 
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -2059,7 +2059,7 @@ dispose(GObject *object)
 
 static void
 finalize(GObject *object)
-{  
+{
 	LassoLogin *login = LASSO_LOGIN(object);
 	g_free(login->private_data);
 	login->private_data = NULL;
@@ -2169,7 +2169,7 @@ lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
 
 	login = g_object_new(LASSO_TYPE_LOGIN, NULL);
 	doc = xmlParseMemory(dump, strlen(dump));
-	init_from_xml(LASSO_NODE(login), xmlDocGetRootElement(doc)); 
+	init_from_xml(LASSO_NODE(login), xmlDocGetRootElement(doc));
 	LASSO_PROFILE(login)->server = g_object_ref(server);
 	xmlFreeDoc(doc);
 

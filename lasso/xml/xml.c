@@ -1,22 +1,22 @@
-/* $Id$ 
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -139,7 +139,7 @@ xmlDetectSAX2(xmlParserCtxtPtr ctxt) {
 	if (ctxt == NULL) return;
 #ifdef LIBXML_SAX1_ENABLED
 	if ((ctxt->sax != NULL) && (ctxt->sax->initialized == XML_SAX2_MAGIC) &&
-			((ctxt->sax->startElementNs != NULL) || 
+			((ctxt->sax->startElementNs != NULL) ||
 			 (ctxt->sax->endElementNs != NULL)))
 		ctxt->sax2 = 1;
 #else
@@ -218,9 +218,9 @@ lasso_xml_parse_memory(const char *buffer, int size)
 /**
  * lasso_node_dump:
  * @node: a #LassoNode
- * 
+ *
  * Dumps @node.  All datas in object are dumped in an XML format.
- * 
+ *
  * Return value: a full XML dump of @node.  The string must be freed by the
  *     caller.
  **/
@@ -255,7 +255,7 @@ lasso_node_dump(LassoNode *node)
 /**
  * lasso_node_destroy:
  * @node: a #LassoNode
- * 
+ *
  * Destroys the #LassoNode.
  **/
 void
@@ -273,9 +273,9 @@ lasso_node_destroy(LassoNode *node)
 /**
  * lasso_node_export_to_base64:
  * @node: a #LassoNode
- * 
+ *
  * Exports @node to a base64-encoded message.
- * 
+ *
  * Return value: a base64-encoded export of @node.  The string must be freed by
  *      the caller.
  **/
@@ -287,7 +287,7 @@ lasso_node_export_to_base64(LassoNode *node)
 	xmlCharEncodingHandlerPtr handler = NULL;
 	xmlChar *buffer;
 	char *ret;
-	
+
 	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
 	message = lasso_node_get_xmlNode(node, FALSE);
@@ -309,9 +309,9 @@ lasso_node_export_to_base64(LassoNode *node)
 /**
  * lasso_node_export_to_ecp_soap_response:
  * @node: a #LassoNode
- * 
+ *
  * Exports @node to a ECP SOAP message.
- * 
+ *
  * Return value: a ECP SOAP export of @node.  The string must be freed by the
  *      caller.
  **/
@@ -365,9 +365,9 @@ lasso_node_export_to_ecp_soap_response(LassoNode *node, const char *assertionCon
 /**
  * lasso_node_export_to_paos_request:
  * @node: a #LassoNode
- * 
+ *
  * Exports @node to a PAOS message.
- * 
+ *
  * Return value: a PAOS export of @node.  The string must be freed by the
  *      caller.
  **/
@@ -452,10 +452,10 @@ lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
  * @node: a #LassoNode
  * @sign_method: the Signature transform method
  * @private_key_file: the path to the private key (may be NULL)
- * 
+ *
  * Exports @node to a HTTP query string.  If @private_key_file is NULL,
  * query won't be signed.
- * 
+ *
  * Return value: a HTTP query export of @node.  The string must be freed by the
  *      caller.
  **/
@@ -481,9 +481,9 @@ lasso_node_export_to_query(LassoNode *node,
 /**
  * lasso_node_export_to_xml:
  * @node: a #LassoNode
- * 
+ *
  * Exports @node to an xml message.
- * 
+ *
  * Return value: an xml export of @node.  The string must be freed by the
  *      caller.
  **/
@@ -512,9 +512,9 @@ lasso_node_export_to_xml(LassoNode *node)
 /**
  * lasso_node_export_to_soap:
  * @node: a #LassoNode
- * 
+ *
  * Exports @node to a SOAP message.
- * 
+ *
  * Return value: a SOAP export of @node.  The string must be freed by the
  *      caller.
  **/
@@ -556,7 +556,7 @@ lasso_node_export_to_soap(LassoNode *node)
  *
  * Generate a DES key and encrypt it with the RSA key.
  * Then encrypt @lasso_node with the DES key.
- * 
+ *
  * Return value: an xmlNode which is the @node in an encrypted fashion.
  * It must be freed by the caller.
  **/
@@ -620,7 +620,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 
 	/* create and initialize keys manager, we use a simple list based
 	 * keys manager, implement your own xmlSecKeysStore klass if you need
-	 * something more sophisticated 
+	 * something more sophisticated
 	 */
 	key_manager = xmlSecKeysMngrCreate();
 	if (key_manager == NULL) {
@@ -635,7 +635,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	}
 
 	/* add key to keys manager, from now on keys manager is responsible
-	 * for destroying key 
+	 * for destroying key
 	 */
 	if (xmlSecCryptoAppDefaultKeysMngrAdoptKey(key_manager, encryption_public_key) < 0) {
 		xmlSecKeysMngrDestroy(key_manager);
@@ -712,7 +712,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	ret = encrypted_element;
 	encrypted_element = NULL;
 
-exit: 
+exit:
 	lasso_release_gobject(encrypted_element);
 	lasso_release_encrypt_context(enc_ctx);
 	lasso_release_doc(doc);
@@ -728,7 +728,7 @@ exit:
  *
  * Decrypt a DES EncryptedKey with the RSA key.
  * Then decrypt @xml_node with the DES key.
- * 
+ *
  * Return value: a LassoNode which is the decrypted @xml_node.
  * It must be freed by the caller.
  **/
@@ -1431,9 +1431,9 @@ lasso_node_get_type()
 
 /**
  * lasso_node_new:
- * 
+ *
  * Creates a new #LassoNode.
- * 
+ *
  * Return value: a newly created #LassoNode object
  **/
 LassoNode*
@@ -1507,9 +1507,9 @@ lasso_node_new_from_soap(const char *soap)
 /**
  * lasso_node_new_from_xmlNode:
  * @node: an xmlNode
- * 
+ *
  * Builds a new #LassoNode from an xmlNode.
- * 
+ *
  * Return value: a new node
  **/
 LassoNode*
@@ -2465,7 +2465,7 @@ xmlUseNsDef(xmlNs *ns, xmlNode *node)
 
 /**
  * xmlCleanNs
- * @root_node: 
+ * @root_node:
  *
  * xmlCleanNs removes duplicate xml namespace declarations and merge them on
  * the @root_node.

@@ -9,8 +9,8 @@
 
 #define LASSO_ROOT "com/entrouvert/lasso/"
 #define check_exception (*env)->ExceptionCheck(env)
-#define g_return_val_if_exception(value) if ((*env)->ExceptionCheck(env)) return (value); 
-#define g_return_if_exception() if ((*env)->ExceptionCheck(env)) return; 
+#define g_return_val_if_exception(value) if ((*env)->ExceptionCheck(env)) return (value);
+#define g_return_if_exception() if ((*env)->ExceptionCheck(env)) return;
 #define convert_jlong_to_gobject(value) ((GObject*)(ptrdiff_t)value)
 #define g_error_if_fail(value) { if (!(value)) { g_on_error_query("LassoJNI"); } }
 #define PTR_TO_JLONG(x) (jlong)((ptrdiff_t)x)
@@ -173,12 +173,12 @@ static int nullWeakRef(JNIEnv *env, jweak weakRef) {
     return weakRef && (*env)->IsSameObject(env, weakRef, NULL);
 }
 /** Return the shadow object associated with the gobject.
- *  If the weak global reference is dead, frees it. 
+ *  If the weak global reference is dead, frees it.
  *  If not shadow object is present, return NULL. */
-static jobject 
+static jobject
 get_shadow_object(JNIEnv *env, GObject *obj) {
     jweak weakRef;
-    
+
     g_error_if_fail (obj && env);
     weakRef = (jweak)g_object_get_qdata(obj, lasso_wrapper_key);
     if (weakRef == NULL) {
@@ -197,11 +197,11 @@ get_shadow_object(JNIEnv *env, GObject *obj) {
  * Replacing a non NULL weak global reference by another one should not happend.
  * It means that two java shadow object for the same GObject exist at the same time
  */
-static void 
+static void
 set_shadow_object(JNIEnv *env, GObject *obj, jobject shadow_object) {
     jweak weakRef;
     jweak old_weakRef;
-    
+
     g_error_if_fail(obj && env);
 
     old_weakRef = (jweak)g_object_get_qdata(obj, lasso_wrapper_key);
@@ -218,7 +218,7 @@ set_shadow_object(JNIEnv *env, GObject *obj, jobject shadow_object) {
     }
 }
 /** Throw a new RuntimeException containing this message. */
-static void 
+static void
 exception(JNIEnv *env, char *message) {
     jclass cls = (*env)->FindClass(env, "java/lang/RuntimeException");
     if (cls != NULL) {
@@ -338,7 +338,7 @@ out:
 }
 
 /* lasso objects handling impl */
-static void 
+static void
 create_class_name(char *dest, const char *typename) {
         char *ret;
 
@@ -346,8 +346,8 @@ create_class_name(char *dest, const char *typename) {
         if (ret) {
             typename = ret+5;
         }
-        strncpy(dest+sizeof(LASSO_ROOT)-1, typename,50);    
-        dest[sizeof(LASSO_ROOT)+49] = 0; 
+        strncpy(dest+sizeof(LASSO_ROOT)-1, typename,50);
+        dest[sizeof(LASSO_ROOT)+49] = 0;
 }
 /** Convert the GObject obj to a java object encapsulating it.
  * If obj is NULL, return NULL.
@@ -375,7 +375,7 @@ gobject_to_jobject_aux(JNIEnv *env, GObject *obj, gboolean doRef, jobject *jobj)
         /* Create the shadow object */
         char clsName[sizeof(LASSO_ROOT)+50] = LASSO_ROOT;
         const char *typename;
-        
+
         typename = G_OBJECT_TYPE_NAME(obj);
         create_class_name(clsName, typename);
         if (! new_object_with_gobject(env, obj, clsName, &self)) {
@@ -410,7 +410,7 @@ static int
 jobject_to_gobject(JNIEnv *env, jobject obj, GObject **gobj) {
     jlong value;
     GObject *gobject;
-    
+
     g_error_if_fail(env);
 
     if (! obj) {
@@ -444,7 +444,7 @@ jobject_to_gobject_for_list(JNIEnv *env, jobject obj, GObject **gobj) {
 }
 
 /* List handling */
-static void 
+static void
 free_glist(GList **list, GFunc free_function) {
     g_return_if_fail(list);
     if (*list) {
@@ -519,9 +519,9 @@ error:
     free_glist(&new, free_function);
     return 0;
 }
-/** Remove a value obtained via the convert function on obj from *list. 
+/** Remove a value obtained via the convert function on obj from *list.
  * It is searched inside *list using the compare function.
- * If pointer is found, it is freed using the free_function. 
+ * If pointer is found, it is freed using the free_function.
  * Return 0 if an exception was throwed.
  **/
 static int
@@ -559,7 +559,7 @@ remove_from_list_of_strings(JNIEnv *env, GList **list, jstring jstr) {
  * Returns 1.
  * Returns 0 and throws if anything fail.
  */
-static int 
+static int
 add_to_list(JNIEnv* env, GList** list, jobject obj, OutConverter convert) {
     gpointer data;
 
@@ -612,7 +612,7 @@ out:
     return ret;
 }
 /** Fill a GHashTable with content of java array arr.
- * Even indexed element coressponds to keys (jstring) and 
+ * Even indexed element coressponds to keys (jstring) and
  * odd indexed one to value (GObject).
  * Returns 1.
  * Returns 0 and thows an exception if anything fail.
@@ -633,13 +633,13 @@ set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr)
         for (i = 1; i < l; i += 2) {
             jobject jobj;
             GObject *gobj;
-            
+
             g_return_val_if_fail(get_array_element(env, jarr, i, &jobj), 0);
             g_return_val_if_fail(jobject_to_gobject(env, jobj, &gobj), 0);
             g_object_ref(gobj);
         }
     }
-    /** Remove old values, if hashtable is well initialized 
+    /** Remove old values, if hashtable is well initialized
      * it should unref objects automatically. */
     g_hash_table_remove_all(hashtable);
     /** Insert new values */
@@ -670,7 +670,7 @@ set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr)
 /** Insert a java String array, containing
  * keys at odd indexes, and values at even indexes into an existing
  * GHashTable. Old entries are lost, but hopefully deallocated by
- * the hashtable free functions --- setted at creation, see GLib 
+ * the hashtable free functions --- setted at creation, see GLib
  * documentation.
  *
  * @param env the JNI context given by the JVM
@@ -734,7 +734,7 @@ remove_from_hash(JNIEnv *env, GHashTable *hashtable, jstring jkey) {
 }
 /** Add a jobject to an hashtable */
 static int
-add_to_hash(JNIEnv *env, GHashTable *hashtable, jstring jkey, jobject jvalue, OutConverter convert, GFunc free_function) 
+add_to_hash(JNIEnv *env, GHashTable *hashtable, jstring jkey, jobject jvalue, OutConverter convert, GFunc free_function)
 {
     void *value = NULL;
     char *key = NULL;
@@ -754,8 +754,8 @@ error:
         free_function(value, NULL);
     return 0;
 }
-static int 
-get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Converter convert, jobject *jvalue) 
+static int
+get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Converter convert, jobject *jvalue)
 {
     const char *key;
     gpointer value;
@@ -782,7 +782,7 @@ throw_by_name(JNIEnv *env, const char *name, const char *msg)
 
 /* JNI Functions */
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoJNI_init2(JNIEnv *env, jclass cls) {
-    lasso_wrapper_key = g_quark_from_static_string("JavaLasso::wrapper"); 
+    lasso_wrapper_key = g_quark_from_static_string("JavaLasso::wrapper");
 }
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoJNI_destroy(JNIEnv *env, jclass cls, jlong cptr) {
     GObject *obj = (GObject*)(ptrdiff_t)cptr;
@@ -791,7 +791,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoJNI_destroy(JNIEnv *env, j
 }
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoJNI_set_1shadow_1object(JNIEnv *env, jclass cls, jlong cptr, jobject shadow_object) {
     GObject *gobj;
-    
+
     gobj = convert_jlong_to_gobject(cptr);
     set_shadow_object(env, gobj, shadow_object);
 }

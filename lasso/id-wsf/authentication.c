@@ -1,22 +1,22 @@
-/* $Id$ 
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -51,7 +51,7 @@ lasso_sasl_cb_authname(void* context, int id, const char** result, unsigned* len
 		*result = g_strdup(account->login);
 		if (len) *len = strlen(account->login);
 		ret = SASL_OK;
-	} 
+	}
 
 	return ret;
 }
@@ -286,7 +286,7 @@ lasso_authentication_init_request(LassoAuthentication *authentication,
 		sasl_callback_t* callback;
 
 		callback = lasso_sasl_callbacks;
-	
+
 		callback->id = SASL_CB_AUTHNAME;
 		callback->proc = &lasso_sasl_cb_authname;
 		callback->context = account;
@@ -334,7 +334,7 @@ lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 	LassoSoapBindingCorrelation *correlation;
 	gchar *messageId;
 	int res = 0;
-	
+
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
@@ -529,7 +529,7 @@ lasso_authentication_server_start(LassoAuthentication *authentication)
 	if (nbmech > 1 && request->Data != NULL) {
 		g_free(response->Status->code);
 		response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
-		return res;	
+		return res;
 	}
 
 	/* decode Data if not NULL */
@@ -582,7 +582,7 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 	const char *out;
 	unsigned int outlen = 0;
 	xmlChar *outbase64, *inbase64;
-	
+
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -682,7 +682,7 @@ dispose(GObject *object)
 
 static void
 finalize(GObject *object)
-{ 
+{
 	LassoAuthentication *authentication = LASSO_AUTHENTICATION(object);
 	g_free(authentication->private_data);
 	authentication->private_data = NULL;

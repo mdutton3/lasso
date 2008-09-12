@@ -1,22 +1,22 @@
-/* $Id$ 
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -27,7 +27,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
 #include <lasso/xml/utility_status.h>
@@ -45,7 +45,7 @@ extern "C" {
 	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_MODIFY_RESPONSE))
 #define LASSO_DISCO_MODIFY_RESPONSE_GET_CLASS(o) \
 	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_MODIFY_RESPONSE, \
-				    LassoDiscoModifyResponseClass)) 
+				    LassoDiscoModifyResponseClass))
 
 typedef struct _LassoDiscoModifyResponse LassoDiscoModifyResponse;
 typedef struct _LassoDiscoModifyResponseClass LassoDiscoModifyResponseClass;
@@ -53,7 +53,7 @@ typedef struct _LassoDiscoModifyResponseClass LassoDiscoModifyResponseClass;
 struct _LassoDiscoModifyResponse {
 	LassoNode parent;
 
-	/* 
+	/*
 	 * - QNames define in strings.h (LASSO_DISCO_STATUS_CODE_* ) are expected to appear in
 	 *   the"code" attribute of Status elements used in Discovery Service protocol messages.
 	 * - The "ref" attribute on the Status element is not used in this specification,

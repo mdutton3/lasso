@@ -4,19 +4,19 @@
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
- * 
+ *
  * Authors: See AUTHORS file in top-level directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -55,11 +55,11 @@ lasso_personal_profile_service_get_email(LassoPersonalProfileService *service)
 		} else if (strcmp((char *)child->name, "MsgProvider") == 0) {
 			msgProvider = xmlNodeGetContent(child);
 		}
-				
+
 		if (msgAccount != NULL && msgProvider != NULL) {
 			break;
 		}
-		
+
 		child = child->next;
 	}
 
@@ -97,7 +97,7 @@ lasso_personal_profile_service_get_type()
 	static GType this_type = 0;
 
 	if (!this_type) {
-		lasso_discovery_register_constructor_for_service_type(LASSO_PP_HREF, 
+		lasso_discovery_register_constructor_for_service_type(LASSO_PP_HREF,
 			(LassoWsfProfileConstructor)lasso_personal_profile_service_new_full);
 		static const GTypeInfo this_info = {
 			sizeof(LassoPersonalProfileServiceClass),
@@ -136,7 +136,7 @@ lasso_personal_profile_service_new_full(LassoServer *server, LassoDiscoResourceO
 	LassoPersonalProfileService *service = lasso_personal_profile_service_new(server);
 
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(offering), NULL);
-	
+
 	if (service == NULL) {
 		return NULL;
 	}
