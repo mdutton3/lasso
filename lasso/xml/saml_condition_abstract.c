@@ -46,11 +46,6 @@
 /*****************************************************************************/
 
 static void
-instance_init(LassoSamlConditionAbstract *node)
-{
-}
-
-static void
 class_init(LassoSamlConditionAbstractClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -75,7 +70,7 @@ lasso_saml_condition_abstract_get_type()
 			NULL,
 			sizeof(LassoSamlConditionAbstract),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

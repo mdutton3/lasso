@@ -175,7 +175,9 @@
 #include <lasso/saml-2.0/loginprivate.h>
 
 
-static void lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion);
+#ifdef LASSO_WSF_ENABLED
+static void lasso_login_assertion_add_discovery(LassoLogin *login);
+#endif
 static void lasso_login_build_assertion_artifact(LassoLogin *login);
 
 /*****************************************************************************/
@@ -183,6 +185,7 @@ static void lasso_login_build_assertion_artifact(LassoLogin *login);
 /*****************************************************************************/
 
 
+#ifdef LASSO_WSF_ENABLED
 /**
  * lasso_login_assertion_add_discovery:
  * @login: a #LassoLogin
@@ -192,9 +195,8 @@ static void lasso_login_build_assertion_artifact(LassoLogin *login);
  * there is a discovery service.
  **/
 static void
-lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion)
+lasso_login_assertion_add_discovery(LassoLogin *login)
 {
-#ifdef LASSO_WSF_ENABLED
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoDiscoResourceOffering *resourceOffering;
 	LassoDiscoServiceInstance *serviceInstance, *newServiceInstance;
@@ -227,8 +229,8 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 
 		/* FIXME: Add CredentialsRef and saml:Advice Assertions */
 	}
-#endif
 }
+#endif
 
 
 /**
@@ -236,8 +238,6 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
  * @login: a #LassoLogin
  * @authenticationMethod: the authentication method
  * @authenticationInstant: the time at which the authentication took place
- * @reauthenticateOnOrAfter: the time at, or after which the service provider
- *     must reauthenticates the principal with the identity provider
  * @notBefore: the earliest time instant at which the assertion is valid
  * @notOnOrAfter: the time instant at which the assertion has expired
  * 
@@ -275,7 +275,7 @@ lasso_login_build_assertion(LassoLogin *login,
 	IF_SAML2(profile) {
 		return lasso_saml20_login_build_assertion(login,
 				authenticationMethod, authenticationInstant,
-				reauthenticateOnOrAfter, notBefore, notOnOrAfter);
+				notBefore, notOnOrAfter);
 	}
 
 	federation = g_hash_table_lookup(profile->identity->federations,
@@ -339,7 +339,9 @@ lasso_login_build_assertion(LassoLogin *login,
 				g_object_ref(assertion));
 	}
 
-	lasso_login_assertion_add_discovery(login, assertion);
+#ifdef LASSO_WSF_ENABLED
+	lasso_login_assertion_add_discovery(login);
+#endif
 
 	/* store assertion in session object */
 	if (profile->session == NULL) {
@@ -1180,7 +1182,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 	lasso_profile_clean_msg_info(profile);
 
 	IF_SAML2(profile) {
-		return lasso_saml20_login_build_response_msg(login, remote_providerID);
+		return lasso_saml20_login_build_response_msg(login);
 	}
 
 	profile->response = lasso_samlp_response_new();
@@ -1320,7 +1322,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 	IF_SAML2(profile) {
-		return lasso_saml20_login_init_authn_request(login, remote_provider, http_method);
+		return lasso_saml20_login_init_authn_request(login, http_method);
 	}
 
 	if (http_method != LASSO_HTTP_METHOD_REDIRECT && http_method != LASSO_HTTP_METHOD_POST) {
@@ -1912,6 +1914,7 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 }
 
 
+#ifdef LASSO_WSF_ENABLED
 /**
  * lasso_login_set_encryptedResourceId:
  * @login: a #LassoLogin
@@ -1925,18 +1928,18 @@ int
 lasso_login_set_encryptedResourceId(LassoLogin *login,
 		LassoDiscoEncryptedResourceID *encryptedResourceId)
 {
-#ifdef LASSO_WSF_ENABLED
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_ENCRYPTED_RESOURCE_ID(encryptedResourceId),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	login->private_data->encryptedResourceId = g_object_ref(encryptedResourceId);
-#endif
 
 	return 0;
 }
+#endif
 
 
+#ifdef LASSO_WSF_ENABLED
 /**
  * lasso_login_set_resourceId:
  * @login: a #LassoLogin
@@ -1949,14 +1952,19 @@ lasso_login_set_encryptedResourceId(LassoLogin *login,
 int
 lasso_login_set_resourceId(LassoLogin *login, const char *content)
 {
-#ifdef LASSO_WSF_ENABLED
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(content != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	login->private_data->resourceId = lasso_disco_resource_id_new(content);
-#endif
 	return 0;
 }
+#else
+int
+lasso_login_set_resourceId(G_GNUC_UNUSED LassoLogin *login, G_GNUC_UNUSED const char *content)
+{
+	return LASSO_ERROR_UNIMPLEMENTED;
+}
+#endif
 
 /*****************************************************************************/
 /* private methods                                                           */

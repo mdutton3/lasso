@@ -70,8 +70,7 @@ static char* lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *l
 		LassoProvider *remote_provider);
 
 gint
-lasso_saml20_login_init_authn_request(LassoLogin *login, LassoProvider *remote_provider,
-		LassoHttpMethod http_method)
+lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_method)
 {
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoSamlp2RequestAbstract *request;
@@ -618,10 +617,10 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 }
 
 
+#ifdef LASSO_WSF_ENABLED
 static void
 lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertion *assertion)
 {
-#ifdef LASSO_WSF_ENABLED
 	GList *svcMDIDs;
 	GList *svcMDs;
 	LassoIdWsf2DiscoSvcMetadata *svcMD;
@@ -727,14 +726,18 @@ lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertio
 	/* Free resources */
 	g_list_foreach(svcMDs, (GFunc)lasso_node_destroy, NULL);
 	g_list_free(svcMDs);
-#endif
 }
+#else
+static void
+lasso_saml20_login_assertion_add_discovery(G_GNUC_UNUSED LassoLogin *login, G_GNUC_UNUSED LassoSaml2Assertion *assertion)
+{
+}
+#endif
 
 int
 lasso_saml20_login_build_assertion(LassoLogin *login,
 		const char *authenticationMethod,
 		const char *authenticationInstant,
-		const char *reauthenticateOnOrAfter,
 		const char *notBefore,
 		const char *notOnOrAfter)
 {
@@ -1010,7 +1013,7 @@ lasso_saml20_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 }
 
 gint
-lasso_saml20_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
+lasso_saml20_login_build_response_msg(LassoLogin *login)
 {
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoProvider *remote_provider;
@@ -1288,10 +1291,10 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	return ret;
 }
 
+#ifdef LASSO_WSF_ENABLED
 static gint
 lasso_saml20_login_copy_assertion_epr(LassoLogin *login)
 {
-#ifdef LASSO_WSF_ENABLED
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoSession *session = profile->session;
 	LassoSaml2Assertion *assertion;
@@ -1339,10 +1342,16 @@ lasso_saml20_login_copy_assertion_epr(LassoLogin *login)
 			}
 		}
 	}
-#endif
 
 	return 0;
 }
+#else
+static gint
+lasso_saml20_login_copy_assertion_epr(G_GNUC_UNUSED LassoLogin *login)
+{
+	return LASSO_ERROR_UNIMPLEMENTED;
+}
+#endif
 
 gint
 lasso_saml20_login_accept_sso(LassoLogin *login)

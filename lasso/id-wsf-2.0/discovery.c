@@ -417,8 +417,9 @@ lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery, const gchar *security_mech_id)
+lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery, G_GNUC_UNUSED const gchar *security_mech_id)
 {
+	/* FIXME: add support of security mechanims */
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoSession *session = LASSO_PROFILE(profile)->session;
 	LassoWsAddrEndpointReference *epr;
@@ -731,8 +732,9 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
  *     error occured.
  **/
 LassoIdWsf2DataService*
-lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, const gchar *service_type)
+lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, G_GNUC_UNUSED const gchar *service_type)
 {
+	/* FIXME: service_type is unused, should we remove it from public API ? */
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
 	LassoIdWsf2DiscoQueryResponse *response;
 	LassoWsAddrEndpointReference *epr = NULL;

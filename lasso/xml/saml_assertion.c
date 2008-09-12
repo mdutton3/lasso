@@ -171,11 +171,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 /*****************************************************************************/
 
 static void
-instance_init(LassoSamlAssertion *assertion)
-{
-}
-
-static void
 class_init(LassoSamlAssertionClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -205,7 +200,7 @@ lasso_saml_assertion_get_type()
 			NULL,
 			sizeof(LassoSamlAssertion),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

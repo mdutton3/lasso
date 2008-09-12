@@ -533,16 +533,6 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoNameIdentifierMapping *name_identifier_mapping)
-{
-}
-
-static void
-class_init(LassoNameIdentifierMappingClass *klass)
-{
-}
-
 GType
 lasso_name_identifier_mapping_get_type()
 {
@@ -553,12 +543,12 @@ lasso_name_identifier_mapping_get_type()
 			sizeof (LassoNameIdentifierMappingClass),
 			NULL,
 			NULL,
-			(GClassInitFunc) class_init,
+			NULL,
 			NULL,
 			NULL,
 			sizeof(LassoNameIdentifierMapping),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

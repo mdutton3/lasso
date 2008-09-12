@@ -56,12 +56,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-
-static void
-instance_init(LassoSamlpStatusCode *node)
-{
-}
-
 static void
 class_init(LassoSamlpStatusCodeClass *klass)
 {
@@ -88,7 +82,7 @@ lasso_samlp_status_code_get_type()
 			NULL,
 			sizeof(LassoSamlpStatusCode),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -31,8 +31,7 @@ extern "C" {
 
 #include <lasso/id-ff/login.h>
 
-gint lasso_saml20_login_init_authn_request(LassoLogin *login, LassoProvider *remote_provider,
-		LassoHttpMethod http_method);
+gint lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_method);
 gint lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *remote_provider);
 gint lasso_saml20_login_build_authn_response_msg(LassoLogin *login);
 gint lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *authn_request_msg);
@@ -42,14 +41,13 @@ int lasso_saml20_login_validate_request_msg(LassoLogin *login, gboolean authenti
 		gboolean is_consent_obtained);
 int lasso_saml20_login_build_assertion(LassoLogin *login,
 		const char *authenticationMethod, const char *authenticationInstant,
-		const char *reauthenticateOnOrAfter, const char *notBefore,
-		const char *notOnOrAfter);
+		const char *notBefore, const char *notOnOrAfter);
 gint lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method);
 gint lasso_saml20_login_init_request(LassoLogin *login, gchar *response_msg,
 		LassoHttpMethod response_http_method);
 gint lasso_saml20_login_build_request_msg(LassoLogin *login);
 gint lasso_saml20_login_process_request_msg(LassoLogin *login, gchar *request_msg);
-gint lasso_saml20_login_build_response_msg(LassoLogin *login, gchar *remote_providerID);
+gint lasso_saml20_login_build_response_msg(LassoLogin *login);
 gint lasso_saml20_login_process_response_msg(LassoLogin *login, gchar *response_msg);
 gint lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_msg);
 gint lasso_saml20_login_accept_sso(LassoLogin *login);

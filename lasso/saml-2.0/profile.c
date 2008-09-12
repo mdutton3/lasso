@@ -329,7 +329,7 @@ lasso_profile_is_saml_query(const gchar *query)
 
 static void
 lasso_saml20_profile_set_session_from_dump_decrypt(
-		gpointer key, LassoSaml2Assertion *assertion, gpointer data)
+		G_GNUC_UNUSED gpointer key, LassoSaml2Assertion *assertion, G_GNUC_UNUSED gpointer data)
 {
 	if (LASSO_IS_SAML2_ASSERTION(assertion) == FALSE) {
 		return;

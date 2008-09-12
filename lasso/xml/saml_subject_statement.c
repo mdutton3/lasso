@@ -39,11 +39,6 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /*****************************************************************************/
 
 static void
-instance_init(LassoSamlSubjectStatement *node)
-{
-}
-
-static void
 class_init(LassoSamlSubjectStatementClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -68,7 +63,7 @@ lasso_saml_subject_statement_get_type()
 			NULL,
 			sizeof(LassoSamlSubjectStatement),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,

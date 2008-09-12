@@ -274,7 +274,7 @@ lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider
 }
 
 static void
-add_assertion_consumer_url_to_list(gchar *key, gpointer value, GList **list)
+add_assertion_consumer_url_to_list(gchar *key, G_GNUC_UNUSED gpointer value, GList **list)
 {
 	if (strncmp(key, "AssertionConsumerService", 24) == 0) {
 		*list = g_list_append(*list, key);

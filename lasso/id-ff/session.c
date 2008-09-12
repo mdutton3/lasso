@@ -199,7 +199,7 @@ lasso_session_get_assertion_by_id(LassoSession *session, const gchar *assertionI
 }
 
 static void
-add_assertion_to_list(gchar *key, LassoLibAssertion *value, GList **list)
+add_assertion_to_list(G_GNUC_UNUSED gchar *key, LassoLibAssertion *value, GList **list)
 {
 	*list = g_list_append(*list, value);
 }
@@ -255,7 +255,7 @@ lasso_session_get_status(LassoSession *session, const gchar *providerID)
 }
 
 static void
-add_providerID(gchar *key, LassoLibAssertion *assertion, LassoSession *session)
+add_providerID(gchar *key, G_GNUC_UNUSED LassoLibAssertion *assertion, LassoSession *session)
 {
 	session->private_data->providerIDs = g_list_append(
 			session->private_data->providerIDs, key);
@@ -556,7 +556,7 @@ add_childnode_from_hashtable(gchar *key, LassoNode *value, struct DumpContext *c
 #endif
 
 static xmlNode*
-get_xmlNode(LassoNode *node, gboolean lasso_dump)
+get_xmlNode(LassoNode *node, G_GNUC_UNUSED gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	LassoSession *session = LASSO_SESSION(node);

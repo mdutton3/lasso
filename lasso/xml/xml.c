@@ -1196,7 +1196,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 /*****************************************************************************/
 
 static char*
-lasso_node_impl_build_query(LassoNode *node)
+lasso_node_impl_build_query(G_GNUC_UNUSED LassoNode *node)
 {
 	g_assert_not_reached();
 	return NULL;
@@ -1369,11 +1369,6 @@ lasso_node_finalize(GObject *object)
 /*****************************************************************************/
 
 static void
-instance_init(LassoNode *node)
-{
-}
-
-static void
 class_init(LassoNodeClass *class)
 {
 	GObjectClass *gobject_class = G_OBJECT_CLASS(class);
@@ -1426,7 +1421,7 @@ lasso_node_get_type()
 			NULL,
 			sizeof(LassoNode),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(G_TYPE_OBJECT , "LassoNode", &this_info, 0);

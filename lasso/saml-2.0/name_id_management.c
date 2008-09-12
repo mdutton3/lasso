@@ -702,11 +702,6 @@ finalize(GObject *object)
 /*****************************************************************************/
 
 static void
-instance_init(LassoNameIdManagement *name_id_management)
-{
-}
-
-static void
 class_init(LassoNameIdManagementClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -737,7 +732,7 @@ lasso_name_id_management_get_type()
 			NULL, NULL,
 			sizeof(LassoNameIdManagement),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

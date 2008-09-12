@@ -32,7 +32,7 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include <lasso/id-ff/server.h>
 
-int lasso_saml20_server_load_affiliation(LassoServer *server, xmlDoc *doc, xmlNode *node);
+int lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node);
 
 #ifdef __cplusplus
 }

@@ -123,6 +123,7 @@ lasso_server_add_provider_from_buffer(LassoServer *server, LassoProviderRole rol
 			public_key, ca_cert_chain, lasso_provider_new_from_buffer);
 }
 
+#ifdef LASSO_WSF_ENABLED
 /**
  * lasso_server_add_service:
  * @server: a #LassoServer
@@ -135,7 +136,6 @@ lasso_server_add_provider_from_buffer(LassoServer *server, LassoProviderRole rol
 gint
 lasso_server_add_service(LassoServer *server, LassoNode *service)
 {
-#ifdef LASSO_WSF_ENABLED
 	g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(service != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -149,9 +149,15 @@ lasso_server_add_service(LassoServer *server, LassoNode *service)
 	} else {
 		return LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ;
 	}
-#endif
 	return 0;
 }
+#else
+gint
+lasso_server_add_service(G_GNUC_UNUSED LassoServer *server, G_GNUC_UNUSED LassoNode *service)
+{
+	return LASSO_ERROR_UNIMPLEMENTED;
+}
+#endif
 
 
 /**
@@ -322,7 +328,7 @@ lasso_server_load_affiliation(LassoServer *server, const gchar *filename)
 	}
 
 	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
-		rc = lasso_saml20_server_load_affiliation(server, doc, node);
+		rc = lasso_saml20_server_load_affiliation(server, node);
 	} else {
 		/* affiliations are not supported in ID-FF 1.2 mode */
 		rc = LASSO_ERROR_UNIMPLEMENTED;
@@ -348,7 +354,7 @@ static struct XmlSnippet schema_snippets[] = {
 static LassoNodeClass *parent_class = NULL;
 
 static void
-add_provider_childnode(gchar *key, LassoProvider *value, xmlNode *xmlnode)
+add_provider_childnode(G_GNUC_UNUSED gchar *key, LassoProvider *value, xmlNode *xmlnode)
 {
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
@@ -503,7 +509,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 
 static gboolean
-get_first_providerID(gchar *key, gpointer value, char **providerID)
+get_first_providerID(gchar *key, G_GNUC_UNUSED gpointer value, char **providerID)
 {
 	*providerID = key;
 	return TRUE;
@@ -564,7 +570,7 @@ lasso_server_get_service(LassoServer *server, const gchar *serviceType)
 
 
 static gboolean
-get_providerID_with_hash(gchar *key, gpointer value, char **providerID)
+get_providerID_with_hash(gchar *key, G_GNUC_UNUSED gpointer value, char **providerID)
 {
 	char *hash = *providerID;
 	xmlChar *hash_providerID;

@@ -57,11 +57,6 @@ static LassoNodeClass *parent_class = NULL;
 /*****************************************************************************/
 
 static void
-instance_init(LassoIdWsf2SubsRefCreateResponse *node)
-{
-}
-
-static void
 class_init(LassoIdWsf2SubsRefCreateResponseClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -88,7 +83,7 @@ lasso_idwsf2_subsref_create_response_get_type()
 			NULL,
 			sizeof(LassoIdWsf2SubsRefCreateResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_SUBSREF_DATA_RESPONSE,

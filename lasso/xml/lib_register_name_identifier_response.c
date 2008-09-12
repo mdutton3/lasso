@@ -45,11 +45,6 @@
 /*****************************************************************************/
 
 static void
-instance_init(LassoLibRegisterNameIdentifierResponse *node)
-{
-}
-
-static void
 class_init(LassoLibRegisterNameIdentifierResponseClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -73,7 +68,7 @@ lasso_lib_register_name_identifier_response_get_type()
 			NULL,
 			sizeof(LassoLibRegisterNameIdentifierResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		register_name_identifier_response_type = g_type_register_static(

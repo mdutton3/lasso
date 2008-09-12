@@ -474,7 +474,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 }
 
 static void
-check_soap_support(gchar *key, LassoProvider *provider, LassoProfile *profile)
+check_soap_support(G_GNUC_UNUSED gchar *key, LassoProvider *provider, LassoProfile *profile)
 {
 	GList *supported_profiles;
 	LassoSaml2Assertion *assertion;

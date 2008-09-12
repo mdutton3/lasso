@@ -52,8 +52,9 @@
 /*****************************************************************************/
 
 static LassoSoapEnvelope*
-lasso_idwsf2_profile_build_soap_envelope(const char *refToMessageId, const char *providerId)
+lasso_idwsf2_profile_build_soap_envelope(G_GNUC_UNUSED const char *refToMessageId, G_GNUC_UNUSED const char *providerId)
 {
+	/* FIXME: add support for sb:Correlation header, and refToMessageId parameter */
 	LassoSoapEnvelope *envelope;
 	LassoSoapHeader *header;
 	LassoSoapBody *body;
@@ -128,7 +129,7 @@ gint
 lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const gchar *message)
 {
 	LassoSoapEnvelope *envelope = NULL;
-	LassoSaml2Assertion *assertion;
+	LassoSaml2Assertion *assertion = NULL;
 	LassoWsSec1SecurityHeader *wsse_security;
 	LassoSaml2EncryptedElement *encrypted_id = NULL;
 	LassoNode *decrypted_name_id = NULL;

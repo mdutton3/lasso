@@ -82,11 +82,6 @@ init_from_query(LassoNode *node, char **query_fields)
 /*****************************************************************************/
 
 static void
-instance_init(LassoSamlp2ManageNameIDResponse *node)
-{
-}
-
-static void
 class_init(LassoSamlp2ManageNameIDResponseClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -115,7 +110,7 @@ lasso_samlp2_manage_name_id_response_get_type()
 			NULL,
 			sizeof(LassoSamlp2ManageNameIDResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_STATUS_RESPONSE,

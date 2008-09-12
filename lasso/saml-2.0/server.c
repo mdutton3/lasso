@@ -28,7 +28,7 @@
 
 
 int 
-lasso_saml20_server_load_affiliation(LassoServer *server, xmlDoc *doc, xmlNode *node)
+lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node)
 {
 	xmlNode *t;
 	char *owner_id, *member_id, *affiliation_id;

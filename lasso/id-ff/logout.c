@@ -984,7 +984,7 @@ static struct XmlSnippet schema_snippets[] = {
 static LassoNodeClass *parent_class = NULL;
 
 static void
-check_soap_support(gchar *key, LassoProvider *provider, LassoProfile *profile)
+check_soap_support(G_GNUC_UNUSED gchar *key, LassoProvider *provider, LassoProfile *profile)
 {
 	GList *supported_profiles;
 	LassoSamlAssertion *assertion;

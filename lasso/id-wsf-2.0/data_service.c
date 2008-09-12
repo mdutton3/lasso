@@ -298,8 +298,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 }
 
 static gint
-lasso_idwsf2_data_service_process_query_response_soap_fault_msg(LassoIdWsf2DataService *service,
-	const gchar *message)
+lasso_idwsf2_data_service_process_query_response_soap_fault_msg(LassoIdWsf2DataService *service)
 {
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(service);
 	LassoSoapFault *fault;
@@ -357,7 +356,7 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 	/* Message can be either a SoapFault or a QueryResponse */
 	if (LASSO_IS_SOAP_FAULT(LASSO_PROFILE(profile)->response)) {
 		return lasso_idwsf2_data_service_process_query_response_soap_fault_msg(
-			service, message);
+			service);
 	}
 
 	if (! LASSO_IS_IDWSF2_DSTREF_QUERY_RESPONSE(LASSO_PROFILE(profile)->response)) {
@@ -680,8 +679,8 @@ lasso_idwsf2_data_service_process_modify_msg(LassoIdWsf2DataService *service, co
 }
 
 static gint
-lasso_idwsf2_data_service_parse_one_modify_item(LassoIdWsf2DstRefModifyItem *item,
-	LassoIdWsf2DstRefModifyResponse *response, xmlDoc *cur_doc, xmlXPathContext *cur_xpathCtx)
+lasso_idwsf2_data_service_parse_one_modify_item(LassoIdWsf2DstRefModifyItem *item, xmlDoc *cur_doc,
+		xmlXPathContext *cur_xpathCtx)
 {
 	xmlXPathObject *cur_xpathObj;
 	xmlNode *new_node;
@@ -787,7 +786,7 @@ lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
 	for (iter = g_list_first(request->ModifyItem); iter != NULL; iter = g_list_next(iter)) {
 		item = iter->data;
 		res = lasso_idwsf2_data_service_parse_one_modify_item(
-			item, response, cur_doc, cur_xpathCtx);
+			item, cur_doc, cur_xpathCtx);
 		if (res != 0) {
 			/* If one item fails, stop and roll back */
 			break;

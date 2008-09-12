@@ -44,11 +44,6 @@
 /*****************************************************************************/
 
 static void
-instance_init(LassoLibLogoutResponse *node)
-{
-}
-
-static void
 class_init(LassoLibLogoutResponseClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -72,7 +67,7 @@ lasso_lib_logout_response_get_type()
 			NULL,
 			sizeof(LassoLibLogoutResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		logout_response_type = g_type_register_static(LASSO_TYPE_LIB_STATUS_RESPONSE,

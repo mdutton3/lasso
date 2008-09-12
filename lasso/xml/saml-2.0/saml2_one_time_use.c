@@ -57,11 +57,6 @@ static LassoNodeClass *parent_class = NULL;
 /*****************************************************************************/
 
 static void
-instance_init(LassoSaml2OneTimeUse *node)
-{
-}
-
-static void
 class_init(LassoSaml2OneTimeUseClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -88,7 +83,7 @@ lasso_saml2_one_time_use_get_type()
 			NULL,
 			sizeof(LassoSaml2OneTimeUse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML2_CONDITION_ABSTRACT,

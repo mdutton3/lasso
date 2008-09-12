@@ -697,7 +697,7 @@ _debug(GLogLevelFlags level, const char *filename, int line,
 }
 
 int
-error_code(GLogLevelFlags level, int error, ...)
+error_code(G_GNUC_UNUSED GLogLevelFlags level, int error, ...)
 {
 	const char *format;
 	char message[1024];

@@ -57,11 +57,6 @@ static LassoNodeClass *parent_class = NULL;
 /*****************************************************************************/
 
 static void
-instance_init(LassoIdWsf2DstRefDeleteResponse *node)
-{
-}
-
-static void
 class_init(LassoIdWsf2DstRefDeleteResponseClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -88,7 +83,7 @@ lasso_idwsf2_dstref_delete_response_get_type()
 			NULL,
 			sizeof(LassoIdWsf2DstRefDeleteResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_UTIL_RESPONSE,

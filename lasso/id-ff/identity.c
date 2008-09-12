@@ -289,7 +289,7 @@ lasso_identity_get_svc_md_ids(LassoIdentity *identity)
 static LassoNodeClass *parent_class = NULL;
 
 static void
-add_childnode_from_hashtable(gchar *key, LassoNode *value, xmlNode *xmlnode)
+add_childnode_from_hashtable(G_GNUC_UNUSED gchar *key, LassoNode *value, xmlNode *xmlnode)
 {
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
@@ -303,7 +303,7 @@ add_text_childnode_from_list(gchar *value, xmlNode *xmlnode)
 #endif
 
 static xmlNode*
-get_xmlNode(LassoNode *node, gboolean lasso_dump)
+get_xmlNode(LassoNode *node, G_GNUC_UNUSED gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	LassoIdentity *identity = LASSO_IDENTITY(node);

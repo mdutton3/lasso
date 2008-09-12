@@ -513,7 +513,7 @@ free_string(char *string)
 }
 
 static void
-free_list_strings(gchar *key, GList *list, gpointer data)
+free_list_strings(G_GNUC_UNUSED gchar *key, GList *list, G_GNUC_UNUSED gpointer data)
 {
 	g_list_foreach(list, (GFunc)free_string, NULL);
 	g_list_free(list);
