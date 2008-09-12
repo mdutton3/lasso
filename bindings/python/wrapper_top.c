@@ -439,7 +439,7 @@ static PyMemberDef PyGObjectPtr_members[] = {
 };
 
 static PyObject* 
-PyGObjectPtr_get_refcount(PyGObjectPtr *self, void *closure)
+PyGObjectPtr_get_refcount(PyGObjectPtr *self, G_GNUC_UNUSED void *closure)
 {
 	PyObject *refcount;
 

@@ -630,7 +630,7 @@ register_constants(PyObject *d)
             mname = utils.format_as_camelcase(m[1])
             # getter
             print >> fd, '''static PyObject*
-%s_%s_get(PyObject *self, PyObject *args)
+%s_%s_get(G_GNUC_UNUSED PyObject *self, PyObject *args)
 {''' % (klassname[5:], mname)
             self.wrapper_list.append('%s_%s_get' % (klassname[5:], mname))
 
@@ -660,7 +660,7 @@ register_constants(PyObject *d)
 
             # setter
             print >> fd, '''static PyObject*
-%s_%s_set(PyObject *self, PyObject *args)
+%s_%s_set(G_GNUC_UNUSED PyObject *self, PyObject *args)
 {''' % (klassname[5:], mname)
             self.wrapper_list.append('%s_%s_set' % (klassname[5:], mname))
 
@@ -779,7 +779,7 @@ register_constants(PyObject *d)
             name = m.name[6:]
         self.wrapper_list.append(name)
         print >> fd, '''static PyObject*
-%s(PyObject *self, PyObject *args)
+%s(G_GNUC_UNUSED PyObject *self, PyObject *args)
 {''' % name
         parse_tuple_format = []
         parse_tuple_args = []
