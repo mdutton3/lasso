@@ -842,6 +842,7 @@ if test "z$enable_debugging" = "zyes" ; then
     AM_CFLAGS="$AM_CFLAGS -O0 -g -Wall -Wextra -Werror -Wno-missing-field-initializers"
 else
     enable_debugging=no
+    AM_CFLAGS="$AM_CFLAGS -O2"
 fi    
 AM_CONDITIONAL([DEBUGGING],[test "x$enable_debugging" = "xyes"])
 AC_MSG_RESULT($enable_debugging)
