@@ -26,7 +26,7 @@ $(PERL_MAKEFILE): lasso.pm lasso_wrap.c
 	VERSION="$(VERSION)" CC="$(CC)" CFLAGS="$(AM_CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) $(SWIG_OPTS) $(CPPFLAGS) $(AM_STANDARD_CFLAGS)" $(PERL) $(srcdir)/Makefile.PL DESTDIR="$(DESTDIR)" PREFIX="$(prefix)" $(MAKE_PL_OPTS) TOP_SRCDIR="$(top_srcdir)" TOP_BUILDDIR="$(top_builddir)"
 
 if DEBUGGING
-AM_CFLAGS+=-Wno-unused-parameter -Wno-sign-compare -Wno-unused-variable -Wno-unused-function
+AM_CFLAGS+=-Wno-unused-parameter -Wno-sign-compare -Wno-unused-variable -Wno-unused-function -Wno-deprecated-declarations
 endif
 
 -perl install-perl: $(PERL_MAKEFILE)

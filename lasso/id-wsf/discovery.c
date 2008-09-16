@@ -108,7 +108,7 @@ static LassoDsKeyInfo* lasso_discovery_build_key_info_node(LassoDiscovery *disco
 
 /* Needs REVIEW */
 static gchar*
-lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *providerId)
+lasso_discovery_build_credential(LassoDiscovery *discovery, G_GNUC_UNUSED const gchar *providerId)
 {
 	/* XXX: providerId parameter is never used */
 
@@ -309,9 +309,9 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
  * @Deprecated: Since 2.2.1, use lasso_discovery_init_insert() instead.
  */
 gint
-lasso_discovery_init_modify(LassoDiscovery *discovery,
-		LassoDiscoResourceOffering *resourceOffering,
-		LassoDiscoDescription *description)
+lasso_discovery_init_modify(G_GNUC_UNUSED LassoDiscovery *discovery,
+		G_GNUC_UNUSED LassoDiscoResourceOffering *resourceOffering,
+		G_GNUC_UNUSED LassoDiscoDescription *description)
 {
 	return 0;
 }

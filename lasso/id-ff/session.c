@@ -473,12 +473,12 @@ lasso_session_get_assertion_identity_token(LassoSession *session, const gchar *s
 
 static LassoNodeClass *parent_class = NULL;
 
-struct DumpContext {
+typedef struct _DumpContext {
 	xmlNode *parent;
-};
+} DumpContext;
 
 static void
-add_assertion_childnode(gchar *key, LassoLibAssertion *value, struct DumpContext *context)
+add_assertion_childnode(gchar *key, LassoLibAssertion *value, DumpContext *context)
 {
 	xmlNode *t;
 	xmlNode *xmlnode;
@@ -516,7 +516,7 @@ exit:
 }
 
 static void
-add_assertion_by_id(gchar *key, xmlNode *value, struct DumpContext *context)
+add_assertion_by_id(gchar *key, xmlNode *value, DumpContext *context)
 {
 	xmlNode *t, *xmlnode;
 	xmlChar *content;
@@ -533,7 +533,7 @@ add_assertion_by_id(gchar *key, xmlNode *value, struct DumpContext *context)
 }
 
 static void
-add_status_childnode(gchar *key, LassoSamlpStatus *value, struct DumpContext *context)
+add_status_childnode(gchar *key, LassoSamlpStatus *value, DumpContext *context)
 {
 	xmlNode *t;
 	xmlNode *xmlnode;
@@ -546,7 +546,7 @@ add_status_childnode(gchar *key, LassoSamlpStatus *value, struct DumpContext *co
 
 #ifdef LASSO_WSF_ENABLED
 static void
-add_childnode_from_hashtable(gchar *key, LassoNode *value, struct DumpContext *context)
+add_childnode_from_hashtable(G_GNUC_UNUSED gchar *key, LassoNode *value, DumpContext *context)
 {
 	xmlNode *xmlnode;
 
@@ -560,7 +560,7 @@ get_xmlNode(LassoNode *node, G_GNUC_UNUSED gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	LassoSession *session = LASSO_SESSION(node);
-	struct DumpContext context;
+	DumpContext context;
 #ifdef LASSO_WSF_ENABLED
 	xmlNode *t;
 #endif

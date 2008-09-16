@@ -59,8 +59,7 @@ struct _LassoIsSelectClass {
 
 LASSO_EXPORT GType lasso_is_select_get_type(void);
 
-LASSO_EXPORT LassoIsSelect* lasso_is_select_new(LassoIsItem *item1, LassoIsItem *item2);
-	/* FIXME : choose proper names */
+LASSO_EXPORT LassoIsSelect* lasso_is_select_new(void);
 
 #ifdef __cplusplus
 }

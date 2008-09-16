@@ -217,7 +217,7 @@ lasso_wsf_profile_build_soap_envelope_internal(const char *refToMessageId, const
  * Return value: 0.
  */
 gint
-lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
+lasso_wsf_profile_move_credentials(G_GNUC_UNUSED LassoWsfProfile *src, G_GNUC_UNUSED LassoWsfProfile *dest)
 {
 	return 0;
 }
@@ -232,7 +232,7 @@ lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
  * Return value: 0.
  */
 gint
-lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential)
+lasso_wsf_profile_add_credential(G_GNUC_UNUSED LassoWsfProfile *profile, G_GNUC_UNUSED xmlNode *credential)
 {
 	return 0;
 }
@@ -461,7 +461,7 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *pr
  * Return value: FALSE.
  **/
 gboolean
-lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile)
+lasso_wsf_profile_principal_is_online(G_GNUC_UNUSED LassoWsfProfile *profile)
 {
 	return FALSE;
 }
@@ -475,7 +475,7 @@ lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile)
  *
  **/
 void
-lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile, const char *status)
+lasso_wsf_profile_set_principal_status(G_GNUC_UNUSED LassoWsfProfile *profile, G_GNUC_UNUSED const char *status)
 {
 }
 
@@ -487,7 +487,7 @@ lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile, const char *sta
  *
  **/
 void
-lasso_wsf_profile_set_principal_online(LassoWsfProfile *profile)
+lasso_wsf_profile_set_principal_online(G_GNUC_UNUSED LassoWsfProfile *profile)
 {
 }
 
@@ -499,7 +499,7 @@ lasso_wsf_profile_set_principal_online(LassoWsfProfile *profile)
  *
  **/
 void
-lasso_wsf_profile_set_principal_offline(LassoWsfProfile *profile)
+lasso_wsf_profile_set_principal_offline(G_GNUC_UNUSED LassoWsfProfile *profile)
 {
 }
 
@@ -742,7 +742,7 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 
 gint
 lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar *message,
-	const gchar *service_type, const gchar *security_mech_id)
+	G_GNUC_UNUSED const gchar *service_type, const gchar *security_mech_id)
 {
 	LassoSoapBindingCorrelation *correlation = NULL;
 	LassoSoapEnvelope *envelope = NULL;
@@ -886,8 +886,9 @@ exit:
  *
  * Return value: NULL
  */
-LassoSoapBindingProvider *lasso_wsf_profile_set_provider_soap_request(LassoWsfProfile *profile,
-	const char *providerId)
+LassoSoapBindingProvider *
+lasso_wsf_profile_set_provider_soap_request(G_GNUC_UNUSED LassoWsfProfile *profile,
+	G_GNUC_UNUSED const char *providerId)
 {
 	return NULL;
 }

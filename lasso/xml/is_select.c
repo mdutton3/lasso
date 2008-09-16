@@ -104,7 +104,7 @@ lasso_is_select_get_type()
 }
 
 LassoIsSelect*
-lasso_is_select_new(LassoIsItem *item1, LassoIsItem *item2)
+lasso_is_select_new()
 {
 	LassoIsSelect *node;
 

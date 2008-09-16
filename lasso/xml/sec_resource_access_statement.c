@@ -63,11 +63,6 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoSecResourceAccessStatement *node)
-{
-}
-
-static void
 class_init(LassoSecResourceAccessStatementClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -93,7 +88,7 @@ lasso_sec_resource_access_statement_get_type()
 			NULL,
 			sizeof(LassoSecResourceAccessStatement),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,

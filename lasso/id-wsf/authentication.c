@@ -32,13 +32,13 @@
 static sasl_callback_t lasso_sasl_callbacks[5];
 
 static int
-lasso_sasl_cb_log(void* context, int priority, const char* message)
+lasso_sasl_cb_log(G_GNUC_UNUSED void* context, G_GNUC_UNUSED int priority, G_GNUC_UNUSED const char* message)
 {
 	return SASL_OK;
 }
 
 static int
-lasso_sasl_cb_authname(void* context, int id, const char** result, unsigned* len)
+lasso_sasl_cb_authname(void* context, G_GNUC_UNUSED int id, const char** result, unsigned* len)
 {
 	LassoUserAccount *account;
 	int ret = SASL_FAIL;
@@ -57,7 +57,7 @@ lasso_sasl_cb_authname(void* context, int id, const char** result, unsigned* len
 }
 
 static int
-lasso_sasl_cb_pass(sasl_conn_t* conn, void* context, int id, sasl_secret_t** psecret)
+lasso_sasl_cb_pass(G_GNUC_UNUSED sasl_conn_t* conn, void* context, G_GNUC_UNUSED int id, sasl_secret_t** psecret)
 {
 	static sasl_secret_t *s;
 	LassoUserAccount *account;

@@ -204,7 +204,7 @@ struct HelperStruct {
  * Helper function for lasso_identity_get_offerings, match them with a service
  * type string */
 static
-void add_matching_resource_offering_to_list(char *name, LassoDiscoResourceOffering *offering,
+void add_matching_resource_offering_to_list(G_GNUC_UNUSED char *name, LassoDiscoResourceOffering *offering,
 	struct HelperStruct *ctx)
 {
 	if (ctx->service_type == NULL ||

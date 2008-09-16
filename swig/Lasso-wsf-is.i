@@ -636,7 +636,7 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoIsSelect(LassoIsItem *item1, LassoIsItem *item2);
+	LassoIsSelect();
 
 	~LassoIsSelect();
 

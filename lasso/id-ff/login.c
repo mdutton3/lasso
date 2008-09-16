@@ -175,9 +175,6 @@
 #include <lasso/saml-2.0/loginprivate.h>
 
 
-#ifdef LASSO_WSF_ENABLED
-static void lasso_login_assertion_add_discovery(LassoLogin *login);
-#endif
 static void lasso_login_build_assertion_artifact(LassoLogin *login);
 
 /*****************************************************************************/
@@ -195,7 +192,7 @@ static void lasso_login_build_assertion_artifact(LassoLogin *login);
  * there is a discovery service.
  **/
 static void
-lasso_login_assertion_add_discovery(LassoLogin *login)
+lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion)
 {
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoDiscoResourceOffering *resourceOffering;
@@ -323,6 +320,7 @@ lasso_login_build_assertion(LassoLogin *login,
 
 	assertion->AuthenticationStatement = LASSO_SAML_AUTHENTICATION_STATEMENT(as);
 
+	/* Save signing material in assertion private datas to be able to sign later */
 	if (profile->server->certificate) {
 		assertion->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
 	} else {
@@ -340,7 +338,7 @@ lasso_login_build_assertion(LassoLogin *login,
 	}
 
 #ifdef LASSO_WSF_ENABLED
-	lasso_login_assertion_add_discovery(login);
+	lasso_login_assertion_add_discovery(login, assertion);
 #endif
 
 	/* store assertion in session object */

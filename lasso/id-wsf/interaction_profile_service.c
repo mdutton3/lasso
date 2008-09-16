@@ -86,12 +86,6 @@ static LassoInteractionProfileServiceClass *parent_class = NULL;
 /*****************************************************************************/
 
 static void
-instance_init(LassoInteractionProfileService *pp)
-{
-
-}
-
-static void
 class_init(LassoInteractionProfileServiceClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
@@ -113,7 +107,7 @@ lasso_interaction_profile_service_get_type()
 			NULL,
 			sizeof(LassoInteractionProfileService),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_WSF_PROFILE,

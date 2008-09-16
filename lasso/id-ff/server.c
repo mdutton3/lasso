@@ -361,7 +361,7 @@ add_provider_childnode(G_GNUC_UNUSED gchar *key, LassoProvider *value, xmlNode *
 
 #ifdef LASSO_WSF_ENABLED
 static void
-add_service_childnode(gchar *key, LassoNode *value, xmlNode *xmlnode)
+add_service_childnode(G_GNUC_UNUSED gchar *key, LassoNode *value, xmlNode *xmlnode)
 {
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }

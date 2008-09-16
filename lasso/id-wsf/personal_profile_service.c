@@ -79,18 +79,6 @@ lasso_personal_profile_service_get_email(LassoPersonalProfileService *service)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoPersonalProfileService *service)
-{
-
-}
-
-static void
-class_init(LassoPersonalProfileServiceClass *klass)
-{
-
-}
-
 GType
 lasso_personal_profile_service_get_type()
 {
@@ -103,12 +91,12 @@ lasso_personal_profile_service_get_type()
 			sizeof(LassoPersonalProfileServiceClass),
 			NULL,
 			NULL,
-			(GClassInitFunc) class_init,
+			NULL,
 			NULL,
 			NULL,
 			sizeof(LassoPersonalProfileService),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_DATA_SERVICE,
