@@ -681,9 +681,9 @@ lasso_provider_get_protocol_conformance(LassoProvider *provider)
 /**
  * lasso_provider_load_metadata_from_buffer:
  * @provider: a #LassProvider object
- * @metadta: a char* string containing a metadata XML file.
+ * @metadata: a char* string containing a metadata XML file.
  *
- * Load metadta into this provider object using the given string buffer.
+ * Load metadata into this provider object using the given string buffer.
  *
  * Return value: TRUE if successfull, FALSE otherwise.
  */
@@ -706,9 +706,9 @@ lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *m
 /**
  * lasso_provider_load_metadata:
  * @provider: a #LassProvider object
- * @metadta: the path to a SAML 2.0 of ID-FF 1.2 metadata file.
+ * @path: the path to a SAML 2.0 of ID-FF 1.2 metadata file.
  *
- * Load metadta into this provider object by reading them from the given file.
+ * Load metadata into this provider object by reading them from the given file.
  *
  * Return value: TRUE if successfull, FALSE otherwise.
  */
