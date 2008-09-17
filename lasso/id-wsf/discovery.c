@@ -200,7 +200,7 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, G_GNUC_UNUSED const 
  *
  * Return value: the newly created #LassoDiscoInsertEntry or NULL if some
  * preconditions failed.
- */
+ **/
 LassoDiscoInsertEntry*
 lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
 		LassoDiscoServiceInstance *serviceInstance,
@@ -238,7 +238,7 @@ lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
  * response to a Modify/InsertEntry message).
  *
  * Return value: 0
- */
+ **/
 gint
 lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 		const gchar    *entryID)
@@ -307,7 +307,7 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 /** lasso_discovery_init_modify:
  *
  * @Deprecated: Since 2.2.1, use lasso_discovery_init_insert() instead.
- */
+ **/
 gint
 lasso_discovery_init_modify(G_GNUC_UNUSED LassoDiscovery *discovery,
 		G_GNUC_UNUSED LassoDiscoResourceOffering *resourceOffering,

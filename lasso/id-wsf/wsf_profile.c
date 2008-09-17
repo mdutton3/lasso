@@ -627,7 +627,7 @@ lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile, const gchar  *
  * the ref count of request is increased by one after this call.
  *
  * Return value: 0 if initialization was successfull.
- */
+ **/
 gint
 lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request)
 {
@@ -656,7 +656,7 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
  * mechanism requested.
  *
  * Return value: 0 if construction is successfull.
- */
+ **/
 gint
 lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 {
@@ -709,7 +709,7 @@ exit:
  * response.
  *
  * Return value: 0 if construction is successfull.
- */
+ **/
 int
 lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 {
@@ -816,7 +816,7 @@ exit:
  * eventually signal a SOAP fault.
  *
  * Return value: 0 if the processing of this message was successful.
- */
+ **/
 gint
 lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gchar *message)
 {
@@ -885,7 +885,7 @@ exit:
  * @Deprecated: Since 2.2.1
  *
  * Return value: NULL
- */
+ **/
 LassoSoapBindingProvider *
 lasso_wsf_profile_set_provider_soap_request(G_GNUC_UNUSED LassoWsfProfile *profile,
 	G_GNUC_UNUSED const char *providerId)

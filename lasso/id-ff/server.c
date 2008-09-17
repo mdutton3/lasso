@@ -171,7 +171,7 @@ lasso_server_add_service(G_GNUC_UNUSED LassoServer *server, G_GNUC_UNUSED LassoN
  * Return value: 0 if succesfull, LASSO_PARAM_ERROR_BAD_TYPE_OF_NULL_OBJECT if
  * said dump is not a #LassoNode or is not of the righ type,
  * LASSO_PARAM_ERROR_INVALID_VALUE if dump is NULL.
- */
+ **/
 gint
 lasso_server_add_service_from_dump(LassoServer *server, const gchar *dump)
 {
