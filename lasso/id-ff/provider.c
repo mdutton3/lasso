@@ -686,7 +686,7 @@ lasso_provider_get_protocol_conformance(LassoProvider *provider)
  * Load metadata into this provider object using the given string buffer.
  *
  * Return value: TRUE if successfull, FALSE otherwise.
- */
+ **/
 gboolean
 lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *metadata)
 {
@@ -695,8 +695,10 @@ lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *m
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	doc = xmlParseDoc((xmlChar*)metadata);
-	if (doc == NULL)
+	if (doc == NULL) {
+		lasso_release_doc(doc);
 		return FALSE;
+	}
 	ret = lasso_provider_load_metadata_from_doc(provider, doc);
 	lasso_release_doc(doc);
 	return ret;
@@ -711,7 +713,7 @@ lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *m
  * Load metadata into this provider object by reading them from the given file.
  *
  * Return value: TRUE if successfull, FALSE otherwise.
- */
+ **/
 gboolean
 lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 {
@@ -720,8 +722,10 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	doc = xmlParseFile(path);
-	if (doc == NULL)
+	if (doc == NULL) {
+		lasso_release_doc(doc);
 		return FALSE;
+	}
 	ret = lasso_provider_load_metadata_from_doc(provider, doc);
 	if (ret == TRUE) {
 		lasso_assign_string(provider->metadata_filename, path);
@@ -729,7 +733,6 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 	lasso_release_doc(doc);
 	return ret;
 }
-
 
 static gboolean
 lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
@@ -742,12 +745,12 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 	const char *xpath_organization = "/md:EntityDescriptor/md:Organization";
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
-	if (doc == NULL)
+	if (doc == NULL) {
 		return FALSE;
+	}
 
 	node = xmlDocGetRootElement(doc);
 	if (node == NULL || node->ns == NULL) {
-		xmlFreeDoc(doc);
 		return FALSE;
 	}
 
@@ -756,7 +759,6 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 		gboolean result;
 		provider->private_data->conformance = LASSO_PROTOCOL_SAML_2_0;
 		result = lasso_saml20_provider_load_metadata(provider, node);
-		xmlFreeDoc(doc);
 		return result;
 	}
 
@@ -774,7 +776,6 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 				(xmlChar*)"/md11:SPDescriptor|/md11:IDPDescriptor", xpathCtx);
 		if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
 			xmlXPathFreeObject(xpathObj);
-			xmlFreeDoc(doc);
 			xmlXPathFreeContext(xpathCtx);
 			return FALSE;
 		}
