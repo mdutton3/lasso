@@ -55,6 +55,31 @@ if (!extension_loaded('lasso')) {
     die("Lasso extension is not loaded");
 }
 
+/**
+ * @package Lasso
+ *
+ * Root class of all Lasso objects to define generic getter and setter
+ */
+class LassoObject {
+    /**
+     * @return mixed
+     */
+    public function __get($attr) {
+        $func = "get_" . $attr;
+        if (method_exists($this, $func)) {
+            return call_user_func(array($this, $func));
+        }
+        return null;
+    }
+
+    public function __set($attr, $value) {
+        $func = "set_" . $attr;
+        if (method_exists($this, $func)) {
+            call_user_func(array($this, $func), $value);
+        }
+    }
+}
+
 /*
  * Convert a C object to a PHP object
  */
@@ -85,7 +110,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
         if klass.parent != 'GObject':
             inheritence = ' extends %s' % klass.parent
         else:
-            inheritence = ''
+            inheritence = ' extends LassoObject'
 
         print >> self.fd, '/**'
         print >> self.fd, ' * @package Lasso'
@@ -155,28 +180,6 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
     def generate_getters_and_setters(self, klass):
 
         # FIXME: handle objects and GLists
-
-        # Generic getter
-        print >> self.fd, '    /**'
-        print >> self.fd, '     * @return mixed'
-        print >> self.fd, '     */'
-        print >> self.fd, '    public function __get($attr) {'
-        print >> self.fd, '        $func = "get_" . $attr;'
-        print >> self.fd, '        if (method_exists($this, $func)) {'
-        print >> self.fd, '            return call_user_func(array($this, $func));'
-        print >> self.fd, '        }'
-        print >> self.fd, '        return null;'
-        print >> self.fd, '    }'
-        print >> self.fd, ''
-
-        # Generic setter
-        print >> self.fd, '    public function __set($attr, $value) {'
-        print >> self.fd, '        $func = "set_" . $attr;'
-        print >> self.fd, '        if (method_exists($this, $func)) {'
-        print >> self.fd, '            call_user_func(array($this, $func), $value);'
-        print >> self.fd, '        }'
-        print >> self.fd, '    }'
-        print >> self.fd, ''
 
         for m in klass.members:
             mtype = m[0]
