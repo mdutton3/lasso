@@ -622,6 +622,7 @@ instance_init(LassoProvider *provider)
 	provider->private_data->encryption_public_key_str = NULL;
 	provider->private_data->encryption_public_key = NULL;
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
+	provider->private_data->encryption_sym_key_type = LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128;
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->IDPDescriptor = g_hash_table_new_full(

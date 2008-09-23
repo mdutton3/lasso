@@ -20,19 +20,19 @@ typedef int (*Converter)(JNIEnv *env, void *from, jobject *to);
 typedef int *(*OutConverter)(JNIEnv *env, jobject from, gpointer *to);
 
 /* Static declarations */
-G_GNUC_UNUSED static int gpointer_equal(gpointer p1, gpointer p2);
-G_GNUC_UNUSED static int new_object_with_gobject(JNIEnv *env, GObject *obj, char *clsName, jobject *jobj);
+G_GNUC_UNUSED static int gpointer_equal(const gpointer p1, const gpointer p2);
+G_GNUC_UNUSED static int new_object_with_gobject(JNIEnv *env, GObject *obj, const char *clsName, jobject *jobj);
 G_GNUC_UNUSED static int jstring_to_local_string(JNIEnv *env, jstring jstr, const char **str);
 G_GNUC_UNUSED static void release_local_string(JNIEnv *env, jstring str, const char *utf_str);
-G_GNUC_UNUSED static int get_jlong_field(JNIEnv *env, jobject obj, char *field, jlong *dest);
-G_GNUC_UNUSED static jclass get_jclass_by_name(JNIEnv *env, char *name);
+G_GNUC_UNUSED static int get_jlong_field(JNIEnv *env, jobject obj, const char *field, jlong *dest);
+G_GNUC_UNUSED static jclass get_jclass_by_name(JNIEnv *env, const char *name);
 G_GNUC_UNUSED static int get_array_element(JNIEnv *env, jobjectArray arr, jsize i, jobject *dest);
 G_GNUC_UNUSED static int set_array_element(JNIEnv *env, jobjectArray arr, jsize i, jobject value);
 G_GNUC_UNUSED static int get_array_size(JNIEnv *env, jobjectArray arr, jsize *dest);
-G_GNUC_UNUSED static int create_object_array(JNIEnv *env, char *clsName, jsize size, jobjectArray *jarr);
+G_GNUC_UNUSED static int create_object_array(JNIEnv *env, const char *clsName, jsize size, jobjectArray *jarr);
 G_GNUC_UNUSED static jobject get_shadow_object(JNIEnv *env, GObject *obj);
 G_GNUC_UNUSED static void set_shadow_object(JNIEnv *env, GObject *obj, jobject shadow_object);
-G_GNUC_UNUSED static void exception(JNIEnv *env, char *message);
+G_GNUC_UNUSED static void exception(JNIEnv *env, const char *message);
 G_GNUC_UNUSED static int string_to_jstring(JNIEnv *env, const char* str, jstring *jstr);
 G_GNUC_UNUSED static int string_to_jstring_and_free(JNIEnv *env, char* str, jstring *jstr);
 G_GNUC_UNUSED static int jstring_to_string(JNIEnv *env, jstring jstr, char **str);
@@ -45,7 +45,7 @@ G_GNUC_UNUSED static int gobject_to_jobject_and_ref(JNIEnv *env, GObject *obj, j
 G_GNUC_UNUSED static int jobject_to_gobject(JNIEnv *env, jobject obj, GObject **gobj);
 G_GNUC_UNUSED static int jobject_to_gobject_for_list(JNIEnv *env, jobject obj, GObject **gobj);
 G_GNUC_UNUSED static void free_glist(GList **list, GFunc free_function);
-G_GNUC_UNUSED static int get_list(JNIEnv *env, char *clsName, GList *list, Converter convert, jobjectArray *jarr);
+G_GNUC_UNUSED static int get_list(JNIEnv *env, const char *clsName, const GList *list, Converter convert, jobjectArray *jarr);
 G_GNUC_UNUSED static int set_list(JNIEnv *env, GList **list, jobjectArray jarr, GFunc free_function, OutConverter convert);
 G_GNUC_UNUSED static int remove_from_list(JNIEnv *env,GList **list,jobject obj,GFunc free_function,GCompareFunc compare,OutConverter convert);
 G_GNUC_UNUSED static int add_to_list(JNIEnv* env, GList** list, jobject obj, OutConverter convert);
@@ -81,11 +81,12 @@ G_GNUC_UNUSED static void throw_by_name(JNIEnv *env, const char *name, const cha
 
 
 static int
-gpointer_equal(gpointer p1, gpointer p2) {
+gpointer_equal(const gpointer p1, const gpointer p2) {
     return p1 != p2;
 }
+
 static int
-new_object_with_gobject(JNIEnv *env, GObject *obj, char *clsName, jobject *jobj) {
+new_object_with_gobject(JNIEnv *env, GObject *obj, const char *clsName, jobject *jobj) {
     jclass cls;
     jmethodID mid;
 
@@ -96,6 +97,7 @@ new_object_with_gobject(JNIEnv *env, GObject *obj, char *clsName, jobject *jobj)
     g_return_val_if_fail((*jobj = (*env)->NewObject(env, cls, mid, PTR_TO_JLONG(obj))), 0);
     return 1;
 }
+
 /** Convert a java string to a jstring */
 static int
 jstring_to_local_string(JNIEnv *env, jstring jstr, const char **str)
@@ -110,6 +112,7 @@ jstring_to_local_string(JNIEnv *env, jstring jstr, const char **str)
     }
     return 1;
 }
+
 /** Release a local string. IT'S MANDATORY TO CALL THIS !!! */
 static void
 release_local_string(JNIEnv *env, jstring str, const char *utf_str) {
@@ -119,8 +122,9 @@ release_local_string(JNIEnv *env, jstring str, const char *utf_str) {
         (*env)->ReleaseStringUTFChars(env, str, utf_str);
     }
 }
+
 static int
-get_jlong_field(JNIEnv *env, jobject obj, char *field, jlong *dest)
+get_jlong_field(JNIEnv *env, jobject obj, const char *field, jlong *dest)
 {
     jclass cls;
     jfieldID fid;
@@ -136,15 +140,17 @@ get_jlong_field(JNIEnv *env, jobject obj, char *field, jlong *dest)
 }
 
 static jclass
-get_jclass_by_name(JNIEnv *env, char *name) {
+get_jclass_by_name(JNIEnv *env, const char *name) {
     return (*env)->FindClass(env,name);
 }
+
 static int
 get_array_element(JNIEnv *env, jobjectArray arr, jsize i, jobject *dest) {
     *dest = (*env)->GetObjectArrayElement(env, arr, i);
     g_return_val_if_fail(! (*env)->ExceptionCheck(env), 0);
     return 1;
 }
+
 static int
 set_array_element(JNIEnv *env, jobjectArray arr, jsize i, jobject value) {
         (*env)->SetObjectArrayElement(env, arr, i, value);
@@ -158,7 +164,7 @@ get_array_size(JNIEnv *env, jobjectArray jarr, jsize *dest) {
     return 1;
 }
 static int
-create_object_array(JNIEnv *env, char *clsName, jsize size, jobjectArray *jarr) {
+create_object_array(JNIEnv *env, const char *clsName, jsize size, jobjectArray *jarr) {
     jclass cls;
 
     g_error_if_fail(env && clsName && jarr);
@@ -219,7 +225,7 @@ set_shadow_object(JNIEnv *env, GObject *obj, jobject shadow_object) {
 }
 /** Throw a new RuntimeException containing this message. */
 static void
-exception(JNIEnv *env, char *message) {
+exception(JNIEnv *env, const char *message) {
     jclass cls = (*env)->FindClass(env, "java/lang/RuntimeException");
     if (cls != NULL) {
         throw_by_name(env, "java/lang/RuntimeException", message);
@@ -462,12 +468,12 @@ free_glist(GList **list, GFunc free_function) {
  * Can throw. If list is null or empty, return NULL.
  */
 static int
-get_list(JNIEnv *env, char *clsName, GList *list, Converter convert, jobjectArray *jarr) {
+get_list(JNIEnv *env, const char *clsName, const GList *list, Converter convert, jobjectArray *jarr) {
     jsize l,i;
     jclass cls;
 
     g_error_if_fail (env && clsName && convert);
-    l = g_list_length(list);
+    l = g_list_length((GList*)list);
     if (!l) {
         *jarr = NULL;
         goto out;

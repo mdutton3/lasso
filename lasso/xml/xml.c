@@ -570,21 +570,15 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	xmlSecKeysMngrPtr key_manager = NULL;
 	xmlNodePtr key_info_node = NULL;
 	xmlNodePtr encrypted_key_node = NULL;
+	xmlNodePtr encrypted_data = NULL;
 	xmlNodePtr key_info_node2 = NULL;
 	xmlSecEncCtxPtr enc_ctx = NULL;
 	xmlSecTransformId xmlsec_encryption_sym_key_type;
-	LassoSaml2EncryptedElement *ret = NULL;
 
 	if (encryption_public_key == NULL || !xmlSecKeyIsValid(encryption_public_key)) {
 		message(G_LOG_LEVEL_WARNING, "Invalid encryption key");
 		goto exit;
 	}
-
-	/* Create a new EncryptedElement */
-	encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_saml2_encrypted_element_new());
-
-	/* Save the original data for dumps */
-	encrypted_element->original_data = g_object_ref(lasso_node);
 
 	/* Create a document to contain the node to encrypt */
 	doc = xmlNewDoc((xmlChar*)"1.0");
@@ -606,14 +600,15 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	}
 
 	/* Create encryption template for a specific symetric key type */
-	encrypted_element->EncryptedData = xmlSecTmplEncDataCreate(doc,
+	encrypted_data = xmlSecTmplEncDataCreate(doc,
 			xmlsec_encryption_sym_key_type,	NULL, xmlSecTypeEncElement, NULL, NULL);
-	if (encrypted_element->EncryptedData == NULL) {
+
+	if (encrypted_data == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to create encryption template");
 		goto exit;
 	}
 
-	if (xmlSecTmplEncDataEnsureCipherValue(encrypted_element->EncryptedData) == NULL) {
+	if (xmlSecTmplEncDataEnsureCipherValue(encrypted_data) == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to add CipherValue node");
 		goto exit;
 	}
@@ -643,7 +638,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	}
 
 	/* add <dsig:KeyInfo/> */
-	key_info_node = xmlSecTmplEncDataEnsureKeyInfo(encrypted_element->EncryptedData, NULL);
+	key_info_node = xmlSecTmplEncDataEnsureKeyInfo(encrypted_data, NULL);
 	if (key_info_node == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to add key info");
 		goto exit;
@@ -700,24 +695,26 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	}
 
 	/* encrypt the data */
-	if (xmlSecEncCtxXmlEncrypt(enc_ctx, encrypted_element->EncryptedData, orig_node) < 0) {
+	if (xmlSecEncCtxXmlEncrypt(enc_ctx, encrypted_data, orig_node) < 0) {
 		message(G_LOG_LEVEL_WARNING, "Encryption failed");
 		goto exit;
 	}
 
-	encrypted_element->EncryptedKey = g_list_append(encrypted_element->EncryptedKey,
-			xmlCopyNode(encrypted_key_node, 1));
 
-	/* Transfer reference to return value*/
-	ret = encrypted_element;
-	encrypted_element = NULL;
+	/* Create a new EncryptedElement */
+	encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_saml2_encrypted_element_new());
+	lasso_assign_gobject(encrypted_element->original_data, lasso_node);
+	lasso_list_add(encrypted_element->EncryptedKey, xmlCopyNode(encrypted_key_node, 1));
+	lasso_assign_node(encrypted_element->EncryptedData, encrypted_element->EncryptedData);
 
 exit:
+	/* If encryption worked, encrypted node should have replaced orig_node inside the xmlDoc,
+	 * enc_ctx->resultReplaced signal such replacement */
 	lasso_release_gobject(encrypted_element);
 	lasso_release_encrypt_context(enc_ctx);
 	lasso_release_doc(doc);
 
-	return ret;
+	return encrypted_element;
 }
 
 

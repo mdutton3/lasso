@@ -198,6 +198,7 @@
   <!-- IdWsf -->
   <arg name="abstract" rename="abstract_" language="java"/>
   <func name="lasso_personal_profile_service_new_full" rename="lasso_personal_profile_server_new_personal_profile_service_full"/>
+  <func name="lasso_wsf_profile_new_full" rename="lasso_wsf_profile_wsf_profile_new_full"/>
   <func name="lasso_authentication_init_request" skip="true"/>
   <!-- LassoIdWsf2Discovery -->
   <func name="lasso_idwsf2_discovery_metadata_register_self">>

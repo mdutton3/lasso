@@ -55,6 +55,13 @@
 		dest = (void*)(src); \
 	}
 
+#define lasso_assign_node(dest,src) \
+	{ \
+		if (dest) \
+			xmlFreeNodeList(dest); \
+		dest = xmlCopyNode(src, 1); \
+	}
+
 #define lasso_list_add_gobject(dest, src) \
 	{ \
 		dest = g_list_append(dest, g_object_ref(src)); \
