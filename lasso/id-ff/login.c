@@ -1782,7 +1782,6 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 gint
 lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_msg)
 {
-	gint ret1 = 0, ret2 = 0;
 	LassoMessageFormat format;
 	LassoProvider *remote_provider;
 	LassoProfile *profile;
@@ -1813,7 +1812,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 			LASSO_LIB_AUTHN_RESPONSE(profile->response)->ProviderID);
 
 	if (profile->remote_providerID == NULL) {
-		ret1 = critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -1826,11 +1825,11 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 
 	profile->signature_status = lasso_provider_verify_signature(
 			remote_provider, authn_response_msg, "ResponseID", format);
-	ret2 = lasso_login_process_response_status_and_assertion(login);
+
+	return lasso_login_process_response_status_and_assertion(login);
 
 	/* XXX: and what about signature_status ?  Shouldn't it return error on
 	 * failure ? */
-	return ret2 == 0 ? ret1 : ret2;
 }
 
 
