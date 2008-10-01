@@ -160,8 +160,7 @@ lasso_wsf_profile_comply_with_security_mechanism(LassoWsfProfile *profile)
 	if (lasso_security_mech_id_is_saml_authentication(sec_mech_id)) {
 		return lasso_wsf_profile_comply_with_saml_authentication(profile);
 	}
-	if (sec_mech_id == NULL
-		|| lasso_security_mech_id_is_null_authentication(sec_mech_id)) {
+	if (lasso_security_mech_id_is_null_authentication(sec_mech_id)) {
 		return 0;
 	}
 	return LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM;
@@ -342,9 +341,6 @@ lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
 	lasso_return_val_if_invalid_param(WSF_PROFILE, profile,
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	if (security_mech_id == NULL) {
-		security_mech_id = LASSO_SECURITY_MECH_NULL;
-	}
 	if (lasso_security_mech_id_is_saml_authentication(security_mech_id)
 			|| lasso_security_mech_id_is_null_authentication(security_mech_id)) {
 		lasso_assign_string(profile->private_data->security_mech_id, security_mech_id);
@@ -776,21 +772,17 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 
 	/* Get the correlation header */
 	goto_exit_if_fail(envelope->Header != NULL, LASSO_SOAP_ERROR_MISSING_HEADER);
-	iter = envelope->Header->Other;
-	while (iter && ! LASSO_IS_SOAP_BINDING_CORRELATION(iter->data)) {
-		iter = iter->next;
-	}
-	if (iter) {
-		correlation = LASSO_SOAP_BINDING_CORRELATION(iter->data);
+	for (iter = envelope->Header->Other; iter != NULL; iter = iter->next) {
+		if (LASSO_IS_SOAP_BINDING_CORRELATION(iter->data)) {
+			correlation = LASSO_SOAP_BINDING_CORRELATION(iter->data);
+			break;
+		}
 	}
 	goto_exit_if_fail (correlation != NULL && correlation->messageID != NULL,
 		LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION);
 	messageId = correlation->messageID;
 	/* Comply with security mechanism */
-	if (security_mech_id == NULL
-			|| lasso_security_mech_id_is_null_authentication(security_mech_id)) {
-		rc = 0;
-	} else {
+	if (lasso_security_mech_id_is_null_authentication(security_mech_id) == FALSE) {
 		/** FIXME: add security mechanisms */
 		goto_exit_if_fail(FALSE, LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM);
 	}
@@ -800,11 +792,14 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	envelope = lasso_wsf_profile_build_soap_envelope_internal(messageId,
 		LASSO_PROVIDER(profile->server)->ProviderID);
 	lasso_assign_gobject(LASSO_WSF_PROFILE(profile)->soap_envelope_response, envelope);
+
 exit:
-	if (envelope)
+	if (envelope) {
 		lasso_release_gobject(envelope);
-	if (doc)
+	}
+	if (doc) {
 		xmlFreeDoc(doc);
+	}
 
 	return rc;
 }
