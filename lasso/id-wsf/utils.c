@@ -33,21 +33,23 @@
  */
 
 #include <glib.h>
-#include <lasso/xml/strings.h>
 #include <string.h>
+
+#include <lasso/xml/strings.h>
 
 gboolean
 lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
 {
-	if (!security_mech_id)
+	if (!security_mech_id) {
 		return FALSE;
-
+	}
 	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0 ||
 			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 ||
 			strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0 ||
 			strcmp(security_mech_id, LASSO_SECURITY11_MECH_SAML) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY11_MECH_TLS_SAML) == 0)
+			strcmp(security_mech_id, LASSO_SECURITY11_MECH_TLS_SAML) == 0) {
 		return TRUE;
+	}
 
 	return FALSE;
 }
@@ -64,6 +66,9 @@ lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
 gboolean
 lasso_security_mech_id_is_x509_authentication(const char *security_mech_id)
 {
+	if (!security_mech_id) {
+		return FALSE;
+	}
 	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_X509) == 0 ||
 			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_X509) == 0 ||
 			strcmp(security_mech_id, LASSO_SECURITY_MECH_X509) == 0 ||
@@ -86,7 +91,8 @@ lasso_security_mech_id_is_x509_authentication(const char *security_mech_id)
 gboolean
 lasso_security_mech_id_is_null_authentication(const char *security_mech_id)
 {
-	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS) == 0 ||
+	if (security_mech_id == NULL ||
+			strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS) == 0 ||
 			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS) == 0 ||
 			strcmp(security_mech_id, LASSO_SECURITY_MECH_NULL) == 0) {
 		return TRUE;
@@ -110,15 +116,16 @@ lasso_security_mech_id_is_null_authentication(const char *security_mech_id)
 gboolean
 lasso_security_mech_id_is_bearer_authentication(const gchar *security_mech_id)
 {
-	if (!security_mech_id)
+	if (!security_mech_id) {
 		return FALSE;
-
+	}
 	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_BEARER) == 0 ||
 			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_BEARER) == 0 ||
 			strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_BEARER) == 0 ||
 			strcmp(security_mech_id, LASSO_SECURITY11_MECH_BEARER) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY11_MECH_TLS_BEARER) == 0)
+			strcmp(security_mech_id, LASSO_SECURITY11_MECH_TLS_BEARER) == 0) {
 		return TRUE;
+	}
 
 	return FALSE;
 }

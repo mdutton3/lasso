@@ -694,9 +694,11 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	xmlOutputBufferFlush(buf);
 	profile->msg_body = g_strdup(
 		(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
-exit:
-	if (buf)
+	if (buf) {
 		xmlOutputBufferClose(buf);
+	}
+
+exit:
 	lasso_release_doc(doc);
 	return rc;
 }
