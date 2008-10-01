@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
-    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
-    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
-    entityID="http://sp5/metadata">
-<SPSSODescriptor
-    AuthnRequestsSigned="true"
-    protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
-<KeyDescriptor use="signing">
-    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-      <ds:X509Data>
-        <ds:X509Certificate>-----BEGIN CERTIFICATE-----
+      xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+      xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+      entityID="http://sp5/metadata">
+  <SPSSODescriptor
+      AuthnRequestsSigned="true"
+      protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>-----BEGIN CERTIFICATE-----
 MIIDnjCCAoagAwIBAgIBATANBgkqhkiG9w0BAQUFADBUMQswCQYDVQQGEwJGUjEP
 MA0GA1UECBMGRnJhbmNlMQ4wDAYDVQQHEwVQYXJpczETMBEGA1UEChMKRW50cm91
 dmVydDEPMA0GA1UEAxMGRGFtaWVuMB4XDTA2MTAyNzA5MDc1NFoXDTExMTAyNjA5
@@ -31,14 +31,14 @@ fiYxZfJJLPBqwlkw/7f1SyzXoPXnz5QbNwDmrHelga6rKSprYKb3pueqaIe8j/AP
 NC1/bzp8cGOcJ88BD5+Ny6qgPVCrMLE5twQumJ12V3SvjGNtzFBvg2c/9S5OmVqR
 LlTxKnCrWAXftSm1rNtewTsF
 -----END CERTIFICATE-----</ds:X509Certificate>
-      </ds:X509Data>
-    </ds:KeyInfo>
-  </KeyDescriptor>
-
-<KeyDescriptor use="encryption">
-    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-      <ds:X509Data>
-        <ds:X509Certificate>-----BEGIN CERTIFICATE-----
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </KeyDescriptor>
+  
+    <KeyDescriptor use="encryption">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>-----BEGIN CERTIFICATE-----
 MIIDnjCCAoagAwIBAgIBATANBgkqhkiG9w0BAQUFADBUMQswCQYDVQQGEwJGUjEP
 MA0GA1UECBMGRnJhbmNlMQ4wDAYDVQQHEwVQYXJpczETMBEGA1UEChMKRW50cm91
 dmVydDEPMA0GA1UEAxMGRGFtaWVuMB4XDTA2MTAyNzA5MDc1NFoXDTExMTAyNjA5
@@ -60,35 +60,35 @@ fiYxZfJJLPBqwlkw/7f1SyzXoPXnz5QbNwDmrHelga6rKSprYKb3pueqaIe8j/AP
 NC1/bzp8cGOcJ88BD5+Ny6qgPVCrMLE5twQumJ12V3SvjGNtzFBvg2c/9S5OmVqR
 LlTxKnCrWAXftSm1rNtewTsF
 -----END CERTIFICATE-----</ds:X509Certificate>
-      </ds:X509Data>
-    </ds:KeyInfo>
-  </KeyDescriptor>
-
-  <SingleLogoutService
-    Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
-    Location="http://sp5/singleLogoutSOAP" />
-  <SingleLogoutService
-    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-    Location="http://sp5/singleLogout"
-    ResponseLocation="http://sp5/singleLogoutReturn" />
-  <ManageNameIDService
-    Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
-    Location="http://sp5/manageNameIdSOAP" />
-  <ManageNameIDService
-    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-    Location="http://sp5/manageNameId"
-    ResponseLocation="http://sp5/manageNameIdReturn" />
-  <AssertionConsumerService isDefault="true" index="0"
-    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
-    Location="http://sp5/singleSignOnArtifact" />
-  <AssertionConsumerService index="1"
-    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-    Location="http://sp5/singleSignOnPost" />
-  <AssertionConsumerService index="2"
-    Binding="urn:oasis:names:tc:SAML:2.0:bindings:PAOS"
-    Location="http://sp5/singleSignOnSOAP" />
-</SPSSODescriptor>
-<Organization>
-   <OrganizationName xml:lang="en">WCS Entrouvert</OrganizationName>
-</Organization>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </KeyDescriptor>
+  
+    <SingleLogoutService
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+      Location="http://sp5/singleLogoutSOAP" />
+    <SingleLogoutService
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+      Location="http://sp5/singleLogout"
+      ResponseLocation="http://sp5/singleLogoutReturn" />
+    <ManageNameIDService
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+      Location="http://sp5/manageNameIdSOAP" />
+    <ManageNameIDService
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+      Location="http://sp5/manageNameId"
+      ResponseLocation="http://sp5/manageNameIdReturn" />
+    <AssertionConsumerService isDefault="true" index="0"
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+      Location="http://sp5/singleSignOnArtifact" />
+    <AssertionConsumerService index="1"
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+      Location="http://sp5/singleSignOnPost" />
+    <AssertionConsumerService index="2"
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:PAOS"
+      Location="http://sp5/singleSignOnSOAP" />
+  </SPSSODescriptor>
+  <Organization>
+     <OrganizationName xml:lang="en">Example SAML 2.0 metadatas</OrganizationName>
+  </Organization>
 </EntityDescriptor>
