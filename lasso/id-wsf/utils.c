@@ -27,7 +27,7 @@
  * @security_mech_id: the URI of an authentication mechanism
  *
  * Return value: %TRUE if @security_mech_id is one of
- * urn:liberty:security:2003-08:NULL:SAML,
+ * urn:liberty:security:2003-08:null:SAML,
  * urn:liberty:security:2003-08:TLS:SAML or
  * urn:liberty:security:2003-08:ClientTLS:SAML, FALSE otherwise.
  */
@@ -37,31 +37,37 @@
 
 #include <lasso/xml/strings.h>
 
+/**
+ * lasso_security_mech_id_is_null_authentication:
+ * @security_mech_id: the URI of an authentication mechanism
+ *
+ * Return value: %TRUE if @security_mech_id is null or one of
+ * urn:liberty:security:2003-08:null:null,
+ * urn:liberty:security:2003-08:TLS:null,
+ * urn:liberty:security:2003-08:ClientTLS:null,
+ * FALSE otherwise.
+ */
 gboolean
-lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
+lasso_security_mech_id_is_null_authentication(const char *security_mech_id)
 {
-	if (!security_mech_id) {
-		return FALSE;
-	}
-	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY11_MECH_SAML) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY11_MECH_TLS_SAML) == 0) {
+	if (security_mech_id == NULL ||
+			strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS) == 0 ||
+			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS) == 0 ||
+			strcmp(security_mech_id, LASSO_SECURITY_MECH_NULL) == 0) {
 		return TRUE;
 	}
-
 	return FALSE;
 }
 
 /**
- * lasso_security_mech_is_x509_authentication:
+ * lasso_security_mech_id_is_x509_authentication:
  * @security_mech_id: the URI of an authentication mechanism
  *
  * Return value: %TRUE if @security_mech_id is one of
- * urn:liberty:security:2003-08:NULL:X509,
- * urn:liberty:security:2003-08:TLS:X509 or
- * urn:liberty:security:2003-08:ClientTLS:X509, FALSE otherwise.
+ * urn:liberty:security:2003-08:null:X509,
+ * urn:liberty:security:2003-08:TLS:X509,
+ * urn:liberty:security:2003-08:ClientTLS:X509,
+ * FALSE otherwise.
  */
 gboolean
 lasso_security_mech_id_is_x509_authentication(const char *security_mech_id)
@@ -80,37 +86,44 @@ lasso_security_mech_id_is_x509_authentication(const char *security_mech_id)
 }
 
 /**
- * lasso_security_mech_is_null_authentication:
+ * lasso_security_mech_id_is_saml_authentication:
  * @security_mech_id: the URI of an authentication mechanism
  *
  * Return value: %TRUE if @security_mech_id is one of
- * urn:liberty:security:2003-08:NULL:NULL,
- * urn:liberty:security:2003-08:TLS:NULL or
- * urn:liberty:security:2003-08:ClientTLS:NULL, FALSE otherwise.
+ * urn:liberty:security:2003-08:null:SAML,
+ * urn:liberty:security:2003-08:TLS:SAML,
+ * urn:liberty:security:2003-08:ClientTLS:SAML,
+ * urn:liberty:security:2005-02:null:SAML,
+ * urn:liberty:security:2005-02:TLS:SAML,
+ * FALSE otherwise.
  */
 gboolean
-lasso_security_mech_id_is_null_authentication(const char *security_mech_id)
+lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
 {
-	if (security_mech_id == NULL ||
-			strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS) == 0 ||
-			strcmp(security_mech_id, LASSO_SECURITY_MECH_NULL) == 0) {
+	if (!security_mech_id) {
+		return FALSE;
+	}
+	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0 ||
+			strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 ||
+			strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0 ||
+			strcmp(security_mech_id, LASSO_SECURITY11_MECH_SAML) == 0 ||
+			strcmp(security_mech_id, LASSO_SECURITY11_MECH_TLS_SAML) == 0) {
 		return TRUE;
 	}
+
 	return FALSE;
 }
 
 /**
- * lasso_security_mech_is_null_authentication:
+ * lasso_security_mech_id_is_bearer_authentication:
  * @security_mech_id: the URI of an authentication mechanism
  *
  * Return value: %TRUE if @security_mech_id is one of
- * urn:liberty:security:2003-08:NULL:Bearer,
- * urn:liberty:security:2003-08:TLS:Bearer or
+ * urn:liberty:security:2003-08:null:Bearer,
+ * urn:liberty:security:2003-08:TLS:Bearer,
  * urn:liberty:security:2003-08:ClientTLS:Bearer,
- * urn:liberty:security:2005-02:NULL:Bearer,
- * urn:liberty:security:2005-02:TLS:Bearer or
- * urn:liberty:security:2005-02:ClientTLS:Bearer,
+ * urn:liberty:security:2005-02:null:Bearer,
+ * urn:liberty:security:2005-02:TLS:Bearer,
  * FALSE otherwise.
  */
 gboolean
