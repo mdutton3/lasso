@@ -43,6 +43,7 @@
 
 #include <lasso/saml-2.0/providerprivate.h>
 #include "../utils.h"
+#include "../debug.h"
 
 static char *protocol_uris[] = {
 	"http://projectliberty.org/profiles/fedterm",
@@ -1070,6 +1071,9 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	xmlXPathObject *xpathObj = NULL;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	if (lasso_flag_verify_signature == FALSE)
+		return 0;
 
 	msg = (char*)message;
 	if (message == NULL)

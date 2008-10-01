@@ -3,6 +3,7 @@
 #include <lasso/lasso.h>
 #include <config.h>
 #include "../ghashtable.h"
+#include "../../lasso/debug.h"
 
 GQuark lasso_wrapper_key;
 
@@ -375,12 +376,12 @@ failure:
 static void
 PyGObjectPtr_dealloc(PyGObjectPtr *self)
 {
-#ifdef LASSO_DEBUG
-	fprintf(stderr, "dealloc (%p ptr to %p (type:%s, rc:%d))\n",
-			self, self->obj,
-			G_OBJECT_TYPE_NAME(self->obj),
-			self->obj->ref_count);
-#endif
+	if (lasso_flag_memory_debug) {
+		fprintf(stderr, "dealloc (%p ptr to %p (type:%s, rc:%d))\n",
+				self, self->obj,
+				G_OBJECT_TYPE_NAME(self->obj),
+				self->obj->ref_count);
+	}
 	g_object_set_qdata_full(self->obj, lasso_wrapper_key, NULL, NULL);
 	g_object_unref(self->obj);
 	Py_XDECREF(self->typename);

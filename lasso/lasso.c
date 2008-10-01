@@ -28,11 +28,24 @@
  *
  **/
 
+#include <stdlib.h> /* getenv */
 #include <xmlsec/xmlsec.h>
 #include <xmlsec/crypto.h>
 #include <libxslt/xslt.h>
 #include <config.h>
 #include "lasso.h"
+#include "debug.h"
+
+/* Set to true, it forces lasso_provider_verify_signature and lasso_query_verify_signature to always
+ * return TRUE. */
+gboolean lasso_flag_verify_signature = TRUE;
+/* Set to true, it activates debugging code for LassoNode freeing */
+gboolean lasso_flag_memory_debug = FALSE;
+static void lasso_flag_parse_environment_variable();
+
+#ifndef LASSO_FLAG_ENV_VAR
+#define LASSO_FLAG_ENV_VAR "LASSO_FLAG"
+#endif
 
 #if defined _MSC_VER
 HINSTANCE g_hModule = NULL;
@@ -116,6 +129,7 @@ int lasso_init()
 		message(G_LOG_LEVEL_CRITICAL, "xmlsec-crypto initialization failed.");
 		return LASSO_ERROR_UNDEFINED;
 	}
+	lasso_flag_parse_environment_variable();
 	return 0;
 }
 
@@ -143,10 +157,10 @@ int lasso_shutdown()
 #endif /* XMLSEC_NO_XSLT */
 	/* Cleanup function for the XML library */
 	xmlCleanupParser();
-#ifdef LASSO_DEBUG
+	if (lasso_flag_memory_debug == TRUE) {
 	/* this is to debug memory for regression tests */
-	xmlMemoryDump();
-#endif
+		xmlMemoryDump();
+	}
 	return 0;
 }
 
@@ -206,3 +220,53 @@ lasso_check_version(int major, int minor, int subminor, LassoCheckVersionMode mo
 
 	return 1;
 }
+
+/**
+ * lasso_set_flag:
+ * @flag: a string representing a flag name, prefix with 'no-' to disable it.
+ *
+ * Set a debugging flag. You can also use the environment variable named by the #LASSO_FLAG_ENV_VAR
+ * macro to get the same effect. LASSO_DEBUG must contain flag name separated by spaces, commas,
+ * tabulations or colons.
+ */
+void lasso_set_flag(char *flag) {
+	gboolean value = TRUE;
+
+	g_return_if_fail(flag);
+
+	/* Handle negative flags */
+	if (flag && strncmp(flag, "no-", 3) == 0) {
+		value = FALSE;
+		flag += 3;
+	}
+
+	do {
+		if (g_strcmp0(flag, "verify-signature") == 0) {
+			lasso_flag_verify_signature = value;
+			continue;
+		}
+		if (g_strcmp0(flag,"memory-debug") == 0) {
+			lasso_flag_memory_debug = value;
+			continue;
+		}
+	} while (FALSE);
+}
+
+static void lasso_flag_parse_environment_variable() {
+	char *lasso_flag = getenv(LASSO_FLAG_ENV_VAR);
+	char *save_ptr;
+	char *token;
+	const char delim[] = ", \t:";
+
+	if (lasso_flag) {
+		token = strtok_r(lasso_flag, delim, &save_ptr);
+		do {
+			lasso_set_flag(token);
+		} while ((token = strtok_r(NULL, delim, &save_ptr)) != NULL);
+	}
+}
+
+
+
+
+

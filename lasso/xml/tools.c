@@ -45,6 +45,7 @@
 #include <lasso/xml/xml.h>
 #include <lasso/xml/xml_enc.h>
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
+#include "../debug.h"
 
 LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
 static xmlSecKeyPtr lasso_get_public_key_from_private_key_file(const char *private_key_file);
@@ -536,6 +537,11 @@ lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_k
 	char *sig_alg, *usig_alg = NULL;
 
 	g_return_val_if_fail(query != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	if (lasso_flag_verify_signature == FALSE) {
+		return 0;
+	}
+
 	g_return_val_if_fail(sender_public_key != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(sender_public_key->value != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 

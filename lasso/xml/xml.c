@@ -50,6 +50,7 @@
 #include <lasso/xml/saml_name_identifier.h>
 #include "../utils.h"
 #include "../registry.h"
+#include "../debug.h"
 
 
 static char* lasso_node_build_query(LassoNode *node);
@@ -1278,9 +1279,9 @@ lasso_node_dispose(GObject *object)
 	SnippetType type;
 	GList *elem;
 
-#ifdef LASSO_DEBUG
-	fprintf(stderr, "dispose of %s (at %p)\n", G_OBJECT_TYPE_NAME(object), object);
-#endif
+	if (lasso_flag_memory_debug == TRUE) {
+		fprintf(stderr, "dispose of %s (at %p)\n", G_OBJECT_TYPE_NAME(object), object);
+	}
 
 	class = LASSO_NODE_GET_CLASS(object);
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
@@ -1296,10 +1297,10 @@ lasso_node_dispose(GObject *object)
 			if (*value == NULL)
 				continue;
 
-#ifdef LASSO_DEBUG
-			fprintf(stderr, "  freeing %s/%s (at %p)\n",
-					G_OBJECT_TYPE_NAME(object), snippet->name, *value);
-#endif
+			if (lasso_flag_memory_debug == TRUE) {
+				fprintf(stderr, "  freeing %s/%s (at %p)\n",
+						G_OBJECT_TYPE_NAME(object), snippet->name, *value);
+			}
 			switch (type) {
 				case SNIPPET_NODE:
 				case SNIPPET_NAME_IDENTIFIER:
@@ -1331,7 +1332,9 @@ lasso_node_dispose(GObject *object)
 				case SNIPPET_TEXT_CHILD:
 				case SNIPPET_ATTRIBUTE: {
 								if (snippet->type & SNIPPET_ANY) {
-									g_hash_table_destroy(*value);
+									if (*value) {
+										g_hash_table_destroy(*value);
+									}
 								} else {
 									g_free(*value);
 								}

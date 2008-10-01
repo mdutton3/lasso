@@ -84,6 +84,7 @@ dnl Check for programs
 dnl
 AC_PROG_CC
 CFLAGS=""
+AM_CFLAGS="-Wall -Wextra -Werror -Wno-missing-field-initializers"
 AC_HEADER_STDC
 LT_AC_PROG_RC
 AC_EXEEXT
@@ -835,14 +836,14 @@ AM_CONDITIONAL(HAVE_INKSCAPE, test -n "$ac_cv_prog_INKSCAPE")
 
 dnl Debug 
 AC_MSG_CHECKING(for debugging) 
-AC_ARG_ENABLE(debugging,   [  --enable-debugging      enable debuging messages (no)])
+AC_ARG_ENABLE(debugging,   [  --enable-debugging      enable debuging optimization flags (no)])
 if test "z$enable_debugging" = "zyes" ; then
     enable_debugging=yes
     LASSO_DEFINES="$LASSO_DEFINES -DLASSO_DEBUG"
-    AM_CFLAGS="$AM_CFLAGS -O0 -g -Wall -Wextra -Werror -Wno-missing-field-initializers"
+    AM_CFLAGS="$AM_CFLAGS -O0 -g"
 else
     enable_debugging=no
-    AM_CFLAGS="$AM_CFLAGS -O2"
+    AM_CFLAGS="$AM_CFLAGS -O2 -g"
 fi    
 AM_CONDITIONAL([DEBUGGING],[test "x$enable_debugging" = "xyes"])
 AC_MSG_RESULT($enable_debugging)
@@ -853,7 +854,7 @@ dnl Profiling
 AC_MSG_CHECKING(for profiling) 
 AC_ARG_ENABLE(profiling,   [  --enable-profiling      enable profiling compilation flags (no)])
 if test "z$enable_profiling" = "zyes" ; then
-    CFLAGS="$CFLAGS -pg"
+    AM_CFLAGS="$AM_CFLAGS -pg"
     AC_MSG_RESULT(yes)
 else
     AC_MSG_RESULT(no)
