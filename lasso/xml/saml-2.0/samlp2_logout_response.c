@@ -22,6 +22,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+
+#include <libxml/uri.h>
+
 #include "samlp2_logout_response.h"
 
 /**
@@ -51,7 +54,7 @@ static LassoNodeClass *parent_class = NULL;
 static gchar*
 build_query(LassoNode *node)
 {
-	char *ret, *deflated_message;
+	char *ret, *deflated_message, *relay_state;
 	LassoSamlp2LogoutResponse *response = LASSO_SAMLP2_LOGOUT_RESPONSE(node);
 
 	deflated_message = lasso_node_build_deflated_query(node);
@@ -59,8 +62,10 @@ build_query(LassoNode *node)
 		return NULL;
 	}
 	if (response->relayState) {
+		relay_state = (char*)xmlURIEscapeStr((xmlChar *)response->relayState, NULL);
 		ret = g_strdup_printf("SAMLResponse=%s&RelayState=%s",
-				deflated_message, response->relayState);
+				deflated_message, relay_state);
+		xmlFree(relay_state);
 	} else {
 		ret = g_strdup_printf("SAMLResponse=%s", deflated_message);
 	}
