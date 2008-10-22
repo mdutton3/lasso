@@ -626,7 +626,7 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 	LassoDstModification *modification;
 	LassoDstNewData *newData;
 	LassoDiscoResourceOffering *offering;
-	LassoDiscoDescription *description;
+	LassoDiscoDescription *description = NULL;
 	LassoWsfProfile *profile;
 	LassoDstModify *modify;
 

@@ -161,7 +161,7 @@ lasso_authentication_client_step(LassoAuthentication *authentication)
 {
 	LassoSaSASLRequest *request;
 	LassoSaSASLResponse *response;
-	int res;
+	int res = 0;
 	xmlChar *in = NULL;
 	int inlen = 0;
 	xmlChar *inbase64 = NULL;
