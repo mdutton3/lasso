@@ -66,6 +66,7 @@ struct _LassoProviderPrivate
 
 
 gboolean lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata);
+gboolean lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *metadata);
 int lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format);
 gboolean lasso_provider_load_public_key(LassoProvider *provider,
