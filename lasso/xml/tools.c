@@ -747,12 +747,27 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 			xmlSecKeyDataFormatPem,
 			NULL, NULL, NULL);
 	if (dsig_ctx->signKey == NULL) {
+		int len = private_key_file ? strlen(private_key_file) : 0;
+
+		dsig_ctx->signKey = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)private_key_file, len,
+				xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+	}
+	if (dsig_ctx->signKey == NULL) {
 		xmlSecDSigCtxDestroy(dsig_ctx);
 		return critical_error(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED);
 	}
 	if (certificate_file != NULL && certificate_file[0] != 0) {
-		if (xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
-					xmlSecKeyDataFormatPem) < 0) {
+		int rc;
+
+		rc = xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
+					xmlSecKeyDataFormatPem);
+		if (rc < 0) {
+			int len = certificate_file ? strlen(certificate_file) : 0;
+
+			rc = xmlSecCryptoAppKeyCertLoadMemory(dsig_ctx->signKey, (xmlSecByte*)certificate_file,
+						len, xmlSecKeyDataFormatPem);
+		}
+		if (rc < 0) {
 			xmlSecDSigCtxDestroy(dsig_ctx);
 			return critical_error(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED);
 		}
