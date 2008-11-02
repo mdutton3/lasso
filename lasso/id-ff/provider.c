@@ -42,6 +42,7 @@
 #include <lasso/id-ff/providerprivate.h>
 
 #include <lasso/saml-2.0/providerprivate.h>
+#include <unistd.h>
 #include "../utils.h"
 #include "../debug.h"
 
@@ -723,9 +724,11 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 	gboolean ret;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
+	if (access(path, R_OK) != 0) {
+		return FALSE;
+	}
 	doc = xmlParseFile(path);
 	if (doc == NULL) {
-		lasso_release_doc(doc);
 		return FALSE;
 	}
 	ret = lasso_provider_load_metadata_from_doc(provider, doc);
