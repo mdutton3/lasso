@@ -703,6 +703,9 @@ lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *m
 		return FALSE;
 	}
 	ret = lasso_provider_load_metadata_from_doc(provider, doc);
+	if (ret == TRUE) {
+		lasso_assign_string(provider->metadata_filename, metadata);
+	}
 	lasso_release_doc(doc);
 	return ret;
 

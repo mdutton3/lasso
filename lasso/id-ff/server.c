@@ -45,6 +45,8 @@
 #include <lasso/xml/id-wsf-2.0/disco_service_context.h>
 #endif
 
+#include "../utils.h"
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -771,6 +773,39 @@ lasso_server_new(const gchar *metadata,
 	return server;
 }
 
+/**
+ * lasso_server_new_from_buffers:
+ * @metadata: NULL terminated string containing the content of an ID-FF 1.2 metadata file
+ * @privatekey: NULL terminated string containing a PEM formatted private key
+ * @private_key_password: a NULL terminated string which is the optional password of the private key
+ * @certificate: NULL terminated string containing a PEM formatted X509 certificate
+ *
+ * Creates a new #LassoServer.
+ *
+ * Return value: a newly created #LassoServer object; or NULL if an error occured
+ */
+LassoServer*
+lasso_server_new_from_buffers(const char *metadata, const char *private_key_content, const char
+		*private_key_password, const char *certificate_content)
+{
+	LassoServer *server;
+
+	server = g_object_new(LASSO_TYPE_SERVER, NULL);
+	/* metadata can be NULL (if server is a LECP) */
+	if (metadata != NULL) {
+		if (lasso_provider_load_metadata_from_buffer(LASSO_PROVIDER(server), metadata) == FALSE) {
+			message(G_LOG_LEVEL_CRITICAL,
+					"Failed to load metadata from preloaded buffer");
+			lasso_node_destroy(LASSO_NODE(server));
+			return NULL;
+		}
+	}
+	lasso_assign_string(server->private_key, private_key_content);
+	lasso_assign_string(server->private_key_password, private_key_password);
+	lasso_assign_string(server->certificate, certificate_content);
+
+	return server;
+}
 /**
  * lasso_server_new_from_dump:
  * @dump: XML server dump
