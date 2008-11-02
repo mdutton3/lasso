@@ -494,7 +494,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	/* Load metadata */
 	if (provider->metadata_filename) {
-		lasso_provider_load_metadata(provider, provider->metadata_filename);
+		if (! lasso_provider_load_metadata(provider, provider->metadata_filename)) {
+			lasso_provider_load_metadata_from_buffer(provider, provider->metadata_filename);
+		}
 	}
 
 	/* Load signing and encryption public keys */
