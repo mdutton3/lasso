@@ -45,6 +45,7 @@
 #include <lasso/xml/xml.h>
 #include <lasso/xml/xml_enc.h>
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
+#include <unistd.h>
 #include "../debug.h"
 
 LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
@@ -743,12 +744,12 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	}
 
 	dsig_ctx = xmlSecDSigCtxCreate(NULL);
-	dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
-			xmlSecKeyDataFormatPem,
-			NULL, NULL, NULL);
-	if (dsig_ctx->signKey == NULL) {
+	if (access(private_key_file, R_OK) == 0) {
+		dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
+				xmlSecKeyDataFormatPem,
+				NULL, NULL, NULL);
+	} else {
 		int len = private_key_file ? strlen(private_key_file) : 0;
-
 		dsig_ctx->signKey = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)private_key_file, len,
 				xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 	}
@@ -757,11 +758,12 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 		return critical_error(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED);
 	}
 	if (certificate_file != NULL && certificate_file[0] != 0) {
-		int rc;
+		int rc = -1;
 
-		rc = xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
-					xmlSecKeyDataFormatPem);
-		if (rc < 0) {
+		if (access(certificate_file, R_OK) == 0) {
+			rc = xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
+						xmlSecKeyDataFormatPem);
+		} else {
 			int len = certificate_file ? strlen(certificate_file) : 0;
 
 			rc = xmlSecCryptoAppKeyCertLoadMemory(dsig_ctx->signKey, (xmlSecByte*)certificate_file,
