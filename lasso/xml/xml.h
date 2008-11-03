@@ -108,6 +108,7 @@ typedef struct _LassoNodeClassData LassoNodeClassData;
  **/
 struct _LassoNode {
 	GObject parent;
+	xmlNodePtr original_xmlNode;
 };
 
 struct _LassoNodeClass {
