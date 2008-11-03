@@ -958,7 +958,7 @@ lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump)
  *
  * @node: a #LassoNode
  *
- * Traverse the #LassoNode tree starting at Node and remove original_xmlNode if found.
+ * Traverse the #LassoNode tree starting at Node and remove keeped xmlNode if one is found.
  */
 void
 lasso_node_cleanup_original_xmlnodes(LassoNode *node)
@@ -966,13 +966,42 @@ lasso_node_cleanup_original_xmlnodes(LassoNode *node)
 	lasso_node_traversal(node, lasso_node_remove_original_xmlnode);
 }
 
+static GQuark original_xmlnode_quark;
+
+/**
+ * lasso_node_get_original_xmlnode:
+ * @node: a #LassoNode
+ *
+ * Retrieve the original xmlNode eventually associated to this #LassoNode.
+ *
+ * Return value: an #xmlNodePtr or NULL.
+ */
+xmlNodePtr
+lasso_node_get_original_xmlnode(LassoNode *node)
+{
+	return g_object_get_qdata(G_OBJECT(node), original_xmlnode_quark);
+}
+
 /*****************************************************************************/
 /* implementation methods                                                    */
 /*****************************************************************************/
 
 static void
+lasso_node_set_original_xmlnode(LassoNode *node, xmlNodePtr xmlNode)
+{
+	g_object_set_qdata_full(G_OBJECT(node), original_xmlnode_quark, xmlCopyNode(xmlNode, 1), (GDestroyNotify)xmlFreeNode);
+}
+
+static void
 lasso_node_remove_original_xmlnode(LassoNode *node) {
-	lasso_release_gobject(node->original_xmlNode);
+	LassoNodeClass *class;
+	class = LASSO_NODE_GET_CLASS(node);
+
+	// We optimize by reseting only object of classes that advertise that
+	// they could have an xmlNode associated to their instances.
+	if (class->node_data->keep_xmlnode) {
+		lasso_node_set_original_xmlnode(node, NULL);
+	}
 }
 
 static void
@@ -1042,7 +1071,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		return 0;
 
 	if (class->node_data->keep_xmlnode) {
-		lasso_assign_node(node->original_xmlNode, xmlnode);
+		lasso_node_set_original_xmlnode(node, xmlnode);
 	}
 
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
@@ -1351,12 +1380,6 @@ lasso_node_dispose(GObject *object)
 
 	class = LASSO_NODE_GET_CLASS(object);
 
-	if (class && class->node_data && class->node_data->keep_xmlnode) {
-		LassoNode *node = LASSO_NODE(object);
-
-		lasso_release_node(node->original_xmlNode);
-	}
-
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 		for (snippet = class->node_data->snippets; snippet && snippet->name; snippet++) {
 			void **value = G_STRUCT_MEMBER_P(object, snippet->offset);
@@ -1460,6 +1483,7 @@ class_init(LassoNodeClass *class)
 	gobject_class->dispose = lasso_node_dispose;
 	gobject_class->finalize = lasso_node_finalize;
 
+	original_xmlnode_quark = g_quark_from_static_string("lasso_original_xmlnode");
 	class->node_data = NULL;
 }
 
