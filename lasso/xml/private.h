@@ -79,6 +79,7 @@ struct _LassoNodeClassData
 	xmlNs *ns;
 	int sign_type_offset;
 	int sign_method_offset;
+	gboolean keep_xmlnode;
 };
 
 void lasso_node_class_set_nodename(LassoNodeClass *klass, char *name);
