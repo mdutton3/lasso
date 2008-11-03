@@ -979,6 +979,10 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (class->node_data == NULL || xmlnode == NULL)
 		return 0;
 
+	if (class->node_data->keep_xmlnode) {
+		lasso_assign_node(node->original_xmlNode, xmlnode);
+	}
+
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 
 		for (t = xmlnode->children; t; t = t->next) {
@@ -1284,6 +1288,13 @@ lasso_node_dispose(GObject *object)
 	}
 
 	class = LASSO_NODE_GET_CLASS(object);
+
+	if (class && class->node_data && class->node_data->keep_xmlnode) {
+		LassoNode *node = LASSO_NODE(object);
+
+		lasso_release_node(node->original_xmlNode);
+	}
+
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 		for (snippet = class->node_data->snippets; snippet && snippet->name; snippet++) {
 			void **value = G_STRUCT_MEMBER_P(object, snippet->offset);
