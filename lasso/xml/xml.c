@@ -64,8 +64,10 @@ static gboolean find_path(LassoNode *node, char *path, LassoNode **value_node,
 
 static void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippet_signature);
+static void lasso_node_traversal(LassoNode *node, void (*do_to_node)(LassoNode *node));
 
 static LassoNode* lasso_node_new_from_xmlNode_with_type(xmlNode *xmlnode, char *typename);
+static void lasso_node_remove_original_xmlnode(LassoNode *node);
 
 GHashTable *dst_services_by_href = NULL; /* ID-WSF 1 extra DST services, indexed on href */
 GHashTable *dst_services_by_prefix = NULL; /* ID-WSF 1 extra DST services, indexed on prefix */
@@ -951,9 +953,69 @@ lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	return class->get_xmlNode(node, lasso_dump);
 }
 
+/**
+ * lasso_node_cleanup_original_xmlnodes:
+ *
+ * @node: a #LassoNode
+ *
+ * Traverse the #LassoNode tree starting at Node and remove original_xmlNode if found.
+ */
+void
+lasso_node_cleanup_original_xmlnodes(LassoNode *node)
+{
+	lasso_node_traversal(node, lasso_node_remove_original_xmlnode);
+}
+
 /*****************************************************************************/
 /* implementation methods                                                    */
 /*****************************************************************************/
+
+static void
+lasso_node_remove_original_xmlnode(LassoNode *node) {
+	lasso_release_gobject(node->original_xmlNode);
+}
+
+static void
+lasso_node_traversal(LassoNode *node, void (*do_to_node)(LassoNode *node)) {
+	LassoNodeClass *class;
+	struct XmlSnippet *snippet;
+	do_to_node(node);
+
+	class = LASSO_NODE_GET_CLASS(node);
+	if (class->node_data == NULL || node == NULL || do_to_node == NULL) {
+		return;
+	}
+	snippet = class->node_data->snippets;
+	while (snippet->name != NULL) {
+		SnippetType type;
+		void **value = G_STRUCT_MEMBER_P(node, snippet->offset);
+
+		type = snippet->type & 0xff;
+		switch (type) {
+			case SNIPPET_NODE:
+			case SNIPPET_NAME_IDENTIFIER:
+			case SNIPPET_NODE_IN_CHILD:
+				do_to_node(*value);
+				lasso_node_traversal(*value, do_to_node);
+				break;
+			case SNIPPET_LIST_NODES:
+				{
+					GList *list = *value;
+					while (list != NULL) {
+						if (list->data) {
+							do_to_node(list->data);
+							lasso_node_traversal(*value, do_to_node);
+						}
+						list = g_list_next(list);
+					}
+				}
+				break;
+			default:
+				break;
+		}
+		snippet++;
+	}
+}
 
 static void
 lasso_node_impl_destroy(LassoNode *node)

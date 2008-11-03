@@ -129,6 +129,7 @@ LASSO_EXPORT LassoNode* lasso_node_new_from_dump(const char *dump);
 LASSO_EXPORT LassoNode* lasso_node_new_from_soap(const char *soap);
 LASSO_EXPORT LassoNode* lasso_node_new_from_xmlNode(xmlNode* node);
 
+LASSO_EXPORT void lasso_node_cleanup_original_xmlnodes(LassoNode *node);
 LASSO_EXPORT void lasso_node_destroy(LassoNode *node);
 LASSO_EXPORT char* lasso_node_dump(LassoNode *node);
 LASSO_EXPORT char* lasso_node_export_to_base64(LassoNode *node);
