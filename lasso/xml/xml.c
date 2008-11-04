@@ -1594,9 +1594,9 @@ lasso_node_new_from_soap(const char *soap)
 		node = lasso_node_new_from_xmlNode(xmlnode);
 	}
 
-	lasso_release_doc(doc);
 	xmlXPathFreeContext(xpathCtx);
 	xmlXPathFreeObject(xpathObj);
+	lasso_release_doc(doc);
 
 	return node;
 }
