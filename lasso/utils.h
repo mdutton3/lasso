@@ -58,7 +58,7 @@
 #define lasso_assign_node(dest,src) \
 	{ \
 		if (dest) \
-			xmlFreeNodeList(dest); \
+			xmlFreeNode(dest); \
 		dest = xmlCopyNode(src, 1); \
 	}
 
