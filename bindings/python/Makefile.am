@@ -1,4 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
+MOSTLYCLEANFILES = __init__.pyc lang.pyc
 SUBDIRS = tests
 
 if PYTHON_ENABLED

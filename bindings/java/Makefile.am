@@ -62,7 +62,11 @@ doc-publish: doc
 	ssh bdauvergne@perso.entrouvert.org tar czf -C public_html/java-binding-doc doc.tgz
 	rm doc.tgz
 
-MOSTLYCLEANFILES =  com_entrouvert_lasso_LassoJNI.c  com_entrouvert_lasso_LassoJNI.h com/entrouvert/lasso/* lasso.jar *.class $(TESTS)
+MOSTLYCLEANFILES =  com_entrouvert_lasso_LassoJNI.c  com_entrouvert_lasso_LassoJNI.h \
+		    com/entrouvert/lasso/* lasso.jar *.class $(TESTS) \
+		    __init__.pyc lang.pyc
+
+
 
 EXTRA_DIST = \
 	GObject.java \
