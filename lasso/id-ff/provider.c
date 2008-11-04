@@ -696,20 +696,16 @@ gboolean
 lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *metadata)
 {
 	xmlDoc *doc;
-	gboolean ret;
+	gboolean rc;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	doc = xmlParseDoc((xmlChar*)metadata);
-	if (doc == NULL) {
-		lasso_release_doc(doc);
-		return FALSE;
-	}
-	ret = lasso_provider_load_metadata_from_doc(provider, doc);
-	if (ret == TRUE) {
-		lasso_assign_string(provider->metadata_filename, metadata);
-	}
+	goto_exit_if_fail (doc != NULL, FALSE);
+	goto_exit_if_fail (lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
+	lasso_assign_string(provider->metadata_filename, metadata);
+exit:
 	lasso_release_doc(doc);
-	return ret;
+	return rc;
 
 }
 
@@ -726,22 +722,20 @@ gboolean
 lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 {
 	xmlDoc *doc;
-	gboolean ret;
+	gboolean rc;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	if (access(path, R_OK) != 0) {
 		return FALSE;
 	}
 	doc = xmlParseFile(path);
-	if (doc == NULL) {
-		return FALSE;
-	}
-	ret = lasso_provider_load_metadata_from_doc(provider, doc);
-	if (ret == TRUE) {
-		lasso_assign_string(provider->metadata_filename, path);
-	}
+	goto_exit_if_fail(doc != NULL, FALSE);
+	goto_exit_if_fail(lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
+	/** Conserve metadata path for future dump/reload */
+	lasso_assign_string(provider->metadata_filename, path);
+exit:
 	lasso_release_doc(doc);
-	return ret;
+	return rc;
 }
 
 static gboolean
@@ -1069,12 +1063,12 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	/* this duplicates some code from lasso_node_init_from_message;
 	 * reflection about code reuse is under way...
 	 */
-	char *msg;
-	xmlDoc *doc;
-	xmlNode *xmlnode = NULL, *sign, *x509data;
+	char *msg = NULL;
+	xmlDoc *doc = NULL;
+	xmlNode *xmlnode = NULL, *sign = NULL, *x509data = NULL;
 	xmlSecKeysMngr *keys_mngr = NULL;
-	xmlSecDSigCtx *dsigCtx;
-	int rc;
+	xmlSecDSigCtx *dsigCtx = NULL;
+	int rc = 0;
 	xmlXPathContext *xpathCtx = NULL;
 	xmlXPathObject *xpathObj = NULL;
 
@@ -1098,17 +1092,15 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	}
 
 	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
+		int len;
 		msg = g_malloc(strlen(message));
-		rc = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
-		if (rc < 0) {
-			g_free(msg);
-			return LASSO_PROFILE_ERROR_INVALID_MSG;
+		len = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
+		if (len < 0) {
+			goto_exit_with_rc(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
-	}
-
-	doc = xmlParseMemory(msg, strlen(msg));
-	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
-		g_free(msg);
+		doc = xmlParseMemory(msg, strlen(msg));
+	} else {
+		doc = xmlParseMemory(msg, strlen(msg));
 		msg = NULL;
 	}
 
@@ -1119,12 +1111,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 		if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr ) {
 			xmlnode = xpathObj->nodesetval->nodeTab[0];
 		}
-		if (xmlnode == NULL) {
-			lasso_release_doc(doc);
-			xmlXPathFreeContext(xpathCtx);
-			xmlXPathFreeObject(xpathObj);
-			return LASSO_PROFILE_ERROR_INVALID_MSG;
-		}
+		goto_exit_if_fail (xmlnode != NULL, LASSO_PROFILE_ERROR_INVALID_MSG);
 	} else {
 		xmlnode = xmlDocGetRootElement(doc);
 	}
@@ -1151,18 +1138,12 @@ lasso_provider_verify_signature(LassoProvider *provider,
 		}
 	}
 
-
-	if (sign == NULL) {
-		lasso_release_doc(doc);
-		xmlXPathFreeContext(xpathCtx);
-		xmlXPathFreeObject(xpathObj);
-		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
-	}
+	goto_exit_if_fail (sign != NULL, LASSO_DS_ERROR_SIGNATURE_NOT_FOUND);
 
 	if (id_attr_name) {
 		xmlChar *id_value = xmlGetProp(xmlnode, (xmlChar*)id_attr_name);
 		xmlAttr *id_attr = xmlHasProp(xmlnode, (xmlChar*)id_attr_name);
-		if (id_value) {
+		if (id_value != NULL) {
 			xmlAddID(NULL, doc, id_value, id_attr);
 			xmlFree(id_value);
 		}
@@ -1172,52 +1153,32 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	if (x509data != NULL && provider->ca_cert_chain != NULL) {
 		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
 				provider->ca_cert_chain);
-		if (keys_mngr == NULL) {
-			lasso_release_doc(doc);
-			xmlXPathFreeContext(xpathCtx);
-			xmlXPathFreeObject(xpathObj);
-			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
-		}
+		goto_exit_if_fail (keys_mngr != NULL, LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED);
 	}
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
 	if (keys_mngr == NULL) {
 		dsigCtx->signKey = xmlSecKeyDuplicate(lasso_provider_get_public_key(provider));
-		if (dsigCtx->signKey == NULL) {
-			/* XXX: should this be detected on lasso_provider_new ? */
-			xmlSecDSigCtxDestroy(dsigCtx);
-			xmlXPathFreeContext(xpathCtx);
-			xmlXPathFreeObject(xpathObj);
-			lasso_release_doc(doc);
-			return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-		}
+		goto_exit_if_fail (dsigCtx->signKey != NULL, LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 	}
 
-	if (xmlSecDSigCtxVerify(dsigCtx, sign) < 0) {
-		xmlSecDSigCtxDestroy(dsigCtx);
-		if (keys_mngr)
-			xmlSecKeysMngrDestroy(keys_mngr);
-		lasso_release_doc(doc);
-		xmlXPathFreeContext(xpathCtx);
-		xmlXPathFreeObject(xpathObj);
-		return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
-	}
-	if (keys_mngr)
-		xmlSecKeysMngrDestroy(keys_mngr);
+	goto_exit_if_fail (xmlSecDSigCtxVerify(dsigCtx, sign) >= 0, LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
 
 	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
-		xmlSecDSigCtxDestroy(dsigCtx);
-		lasso_release_doc(doc);
-		xmlXPathFreeContext(xpathCtx);
-		xmlXPathFreeObject(xpathObj);
-		return LASSO_DS_ERROR_INVALID_SIGNATURE;
+		rc = LASSO_DS_ERROR_INVALID_SIGNATURE;
+		goto exit;
 	}
 
-	xmlSecDSigCtxDestroy(dsigCtx);
-	xmlXPathFreeContext(xpathCtx);
-	xmlXPathFreeObject(xpathObj);
+exit:
+	lasso_release_string(msg);
+	lasso_release_key_manager(keys_mngr);
+	lasso_release_signature_context(dsigCtx);
+	if (xpathCtx)
+		xmlXPathFreeContext(xpathCtx);
+	if (xpathObj)
+		xmlXPathFreeObject(xpathObj);
 	lasso_release_doc(doc);
-	return 0;
+	return rc;
 }
 
 /**
