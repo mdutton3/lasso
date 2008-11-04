@@ -1111,7 +1111,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				type = snippet->type & 0xff;
 				value = G_STRUCT_MEMBER_P(node, snippet->offset);
 
-				if (snippet->type & SNIPPET_ANY) {
+				if ((snippet->type & SNIPPET_ANY) && type != SNIPPET_ATTRIBUTE) {
 					snippet_any = snippet;
 				}
 
