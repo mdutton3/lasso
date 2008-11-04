@@ -85,6 +85,7 @@
 #include <lasso/id-wsf/personal_profile_service.h>
 #include <lasso/id-wsf/wsf_profile_private.h>
 #include <lasso/id-wsf/utils.h>
+#include "../utils.h"
 
 struct _LassoDiscoveryPrivate
 {
@@ -1179,7 +1180,7 @@ lasso_discovery_build_key_info_node(LassoDiscovery *discovery, const gchar *prov
 	key_info->KeyValue = key_value;
 
 	xmlXPathFreeContext(xpathCtx);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return key_info;
 }

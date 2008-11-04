@@ -4,6 +4,7 @@
 #include <config.h>
 #include "../ghashtable.h"
 #include "../../lasso/debug.h"
+#include "../../lasso/utils.h"
 
 GQuark lasso_wrapper_key;
 
@@ -254,7 +255,7 @@ get_xml_node_from_pystring(PyObject *string) {
 	if (node != NULL) {
 		node = xmlCopyNode(node, 1);
 	}
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return node;
 }

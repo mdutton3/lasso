@@ -173,6 +173,7 @@
 #include <lasso/id-ff/loginprivate.h>
 
 #include <lasso/saml-2.0/loginprivate.h>
+#include "../utils.h"
 
 
 static void lasso_login_build_assertion_artifact(LassoLogin *login);
@@ -2168,7 +2169,7 @@ lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(login), xmlDocGetRootElement(doc));
 	LASSO_PROFILE(login)->server = g_object_ref(server);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return login;
 }

@@ -7,6 +7,7 @@
 #include <lasso/lasso.h>
 #include "php_lasso.h"
 #include "../ghashtable.h"
+#include "../../lasso/utils.h"
 
 /* utility functions */
 static void free_glist(GList **list, GFunc free_function);
@@ -133,7 +134,7 @@ get_xml_node_from_string(char *string)
 	if (node != NULL) {
 		node = xmlCopyNode(node, 1);
 	}
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return node;
 }

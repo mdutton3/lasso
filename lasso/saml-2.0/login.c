@@ -63,6 +63,8 @@
 #include <lasso/xml/id-wsf-2.0/sec_token.h>
 #endif
 
+#include "../utils.h"
+
 static int lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obtained);
 static gboolean lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login);
 static gint lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login);
@@ -1087,7 +1089,7 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 		xmlnode = xpathObj->nodesetval->nodeTab[0];
 	}
 	if (xmlnode == NULL) {
-		xmlFreeDoc(doc);
+		lasso_release_doc(doc);
 		xmlXPathFreeContext(xpathCtx);
 		xmlXPathFreeObject(xpathObj);
 		return LASSO_PROFILE_ERROR_INVALID_MSG;
@@ -1101,7 +1103,7 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 	}
 	xmlXPathFreeContext(xpathCtx);
 	xmlXPathFreeObject(xpathObj);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	profile->response = response;
 	profile->remote_providerID = g_strdup(

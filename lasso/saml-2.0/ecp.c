@@ -40,6 +40,7 @@
 #include <lasso/saml-2.0/ecpprivate.h>
 
 #include <lasso/saml-2.0/ecp.h>
+#include "../utils.h"
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -174,7 +175,7 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	LASSO_PROFILE(ecp)->msg_body = g_strdup(
 			(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
 	if (profile->remote_providerID == NULL) {
@@ -277,7 +278,7 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 			(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
 
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return 0;
 }

@@ -1057,7 +1057,7 @@ lasso_provider_new_from_dump(const gchar *dump)
 	provider = g_object_new(LASSO_TYPE_PROVIDER, NULL);
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc));
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return provider;
 }
@@ -1120,7 +1120,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 			xmlnode = xpathObj->nodesetval->nodeTab[0];
 		}
 		if (xmlnode == NULL) {
-			xmlFreeDoc(doc);
+			lasso_release_doc(doc);
 			xmlXPathFreeContext(xpathCtx);
 			xmlXPathFreeObject(xpathObj);
 			return LASSO_PROFILE_ERROR_INVALID_MSG;
@@ -1153,7 +1153,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 
 
 	if (sign == NULL) {
-		xmlFreeDoc(doc);
+		lasso_release_doc(doc);
 		xmlXPathFreeContext(xpathCtx);
 		xmlXPathFreeObject(xpathObj);
 		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
@@ -1173,7 +1173,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
 				provider->ca_cert_chain);
 		if (keys_mngr == NULL) {
-			xmlFreeDoc(doc);
+			lasso_release_doc(doc);
 			xmlXPathFreeContext(xpathCtx);
 			xmlXPathFreeObject(xpathObj);
 			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
@@ -1188,7 +1188,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 			xmlSecDSigCtxDestroy(dsigCtx);
 			xmlXPathFreeContext(xpathCtx);
 			xmlXPathFreeObject(xpathObj);
-			xmlFreeDoc(doc);
+			lasso_release_doc(doc);
 			return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
 		}
 	}
@@ -1197,7 +1197,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 		xmlSecDSigCtxDestroy(dsigCtx);
 		if (keys_mngr)
 			xmlSecKeysMngrDestroy(keys_mngr);
-		xmlFreeDoc(doc);
+		lasso_release_doc(doc);
 		xmlXPathFreeContext(xpathCtx);
 		xmlXPathFreeObject(xpathObj);
 		return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
@@ -1207,7 +1207,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 
 	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
 		xmlSecDSigCtxDestroy(dsigCtx);
-		xmlFreeDoc(doc);
+		lasso_release_doc(doc);
 		xmlXPathFreeContext(xpathCtx);
 		xmlXPathFreeObject(xpathObj);
 		return LASSO_DS_ERROR_INVALID_SIGNATURE;
@@ -1216,7 +1216,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	xmlSecDSigCtxDestroy(dsigCtx);
 	xmlXPathFreeContext(xpathCtx);
 	xmlXPathFreeObject(xpathObj);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 	return 0;
 }
 

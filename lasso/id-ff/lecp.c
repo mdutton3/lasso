@@ -33,6 +33,7 @@
 
 #include <lasso/id-ff/lecp.h>
 #include <lasso/id-ff/profileprivate.h>
+#include "../utils.h"
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -324,7 +325,7 @@ lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, const char *reque
 	authn_request = xmlCopyNode(xpathObj->nodesetval->nodeTab[0], 1);
 	xmlXPathFreeContext(xpathCtx);
 	xmlXPathFreeObject(xpathObj);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 	xpathCtx = NULL;
 	xpathObj = NULL;
 	doc = NULL;

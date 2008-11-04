@@ -31,6 +31,7 @@
 #include <lasso/id-ff/name_registration.h>
 #include <lasso/id-ff/profileprivate.h>
 #include <lasso/id-ff/providerprivate.h>
+#include "../utils.h"
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -759,7 +760,7 @@ lasso_name_registration_new_from_dump(LassoServer *server, const char *dump)
 	name_registration = lasso_name_registration_new(server);
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(name_registration), xmlDocGetRootElement(doc));
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return name_registration;
 }

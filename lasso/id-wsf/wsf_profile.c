@@ -733,7 +733,7 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 	profile->msg_body = g_strdup(
 		(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return 0;
 }
@@ -798,7 +798,7 @@ exit:
 		lasso_release_gobject(envelope);
 	}
 	if (doc) {
-		xmlFreeDoc(doc);
+		lasso_release_doc(doc);
 	}
 
 	return rc;
@@ -871,7 +871,7 @@ exit:
 		lasso_release_gobject(envelope);
 	}
 	if (doc) {
-		xmlFreeDoc(doc);
+		lasso_release_doc(doc);
 	}
 	return rc;
 }

@@ -856,13 +856,13 @@ lasso_session_new_from_dump(const gchar *dump)
 
 	rootElement = xmlDocGetRootElement(doc);
 	if (strcmp((char*)rootElement->name, "Session") != 0) {
-		xmlFreeDoc(doc);
+		lasso_release_doc(doc);
 		return NULL;
 	}
 
 	session = lasso_session_new();
 	init_from_xml(LASSO_NODE(session), rootElement);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return session;
 }

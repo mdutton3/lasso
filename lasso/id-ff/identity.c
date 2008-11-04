@@ -528,12 +528,12 @@ lasso_identity_new_from_dump(const gchar *dump)
 
 	rootElement = xmlDocGetRootElement(doc);
 	if (strcmp((char*)rootElement->name, "Identity") != 0) {
-		xmlFreeDoc(doc);
+		lasso_release_doc(doc);
 		return NULL;
 	}
 	identity = lasso_identity_new();
 	init_from_xml(LASSO_NODE(identity), rootElement);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return identity;
 }

@@ -6,6 +6,7 @@
 #include "com_entrouvert_lasso_LassoJNI.h"
 #include <string.h>
 #include "../ghashtable.h"
+#include "../../lasso/utils.h"
 
 #define LASSO_ROOT "com/entrouvert/lasso/"
 #define check_exception (*env)->ExceptionCheck(env)
@@ -337,7 +338,7 @@ jstring_to_xml_node(JNIEnv *env, jstring jstr, xmlNode **xmlnode) {
 out:
     *xmlnode = node;
     if (doc)
-        xmlFreeDoc(doc);
+        lasso_release_doc(doc);
     if (jstr && local_str)
         release_local_string(env, jstr, local_str);
     return ret;

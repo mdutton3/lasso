@@ -47,6 +47,7 @@
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
 #include <unistd.h>
 #include "../debug.h"
+#include "../utils.h"
 
 LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
 static xmlSecKeyPtr lasso_get_public_key_from_private_key_file(const char *private_key_file);
@@ -787,7 +788,7 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	/* memory leak since we don't free doc but it causes some little memory
 	 * corruption; probably caused by the direct manipulation of xmlnode
 	 * parent attribute. */
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 #endif
 
 	return 0;
@@ -917,7 +918,7 @@ lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string)
 	xmlFree(re);
 	root = xmlDocGetRootElement(doc);
 	lasso_node_init_from_xml(node, root);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return TRUE;
 }

@@ -205,7 +205,7 @@ lasso_xml_parse_memory(const char *buffer, int size)
 		ret = ctxt->myDoc;
 	} else {
 		ret = NULL;
-		xmlFreeDoc(ctxt->myDoc);
+		lasso_release_doc(ctxt->myDoc);
 		ctxt->myDoc = NULL;
 	}
 	xmlFreeParserCtxt(ctxt);
@@ -864,7 +864,7 @@ cleanup:
 	if (encCtx) {
 		xmlSecEncCtxDestroy(encCtx);
 	}
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return decrypted_node;
 }
@@ -1562,7 +1562,7 @@ lasso_node_new_from_dump(const char *dump)
 
 	node = lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc));
 
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 	return node;
 }
 
@@ -1594,7 +1594,7 @@ lasso_node_new_from_soap(const char *soap)
 		node = lasso_node_new_from_xmlNode(xmlnode);
 	}
 
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 	xmlXPathFreeContext(xpathCtx);
 	xmlXPathFreeObject(xpathObj);
 
@@ -1842,7 +1842,7 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 		lasso_node_init_from_xml(node, root);
 		xmlXPathFreeObject(xpathObj);
 		xmlXPathFreeContext(xpathCtx);
-		xmlFreeDoc(doc);
+		lasso_release_doc(doc);
 		if (xpathCtx) {
 			/* this tests a pointer which has been freed, it works
 			 * but is not really elegant */

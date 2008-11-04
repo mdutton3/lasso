@@ -285,7 +285,7 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 	}
 	query = LASSO_DST_QUERY(envelope->Body->any->data);
 	service_type = g_strdup(query->hrefServiceType);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	profile = LASSO_WSF_PROFILE(service);
 	rc = lasso_wsf_profile_process_soap_request_msg(profile, message, service_type,
@@ -394,7 +394,7 @@ lasso_data_service_build_response_msg(LassoDataService *service)
 
 	xmlUnlinkNode(service->resource_data);
 	xmlXPathFreeContext(xpathCtx);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return lasso_wsf_profile_build_soap_response_msg(profile);
 }
@@ -793,7 +793,7 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service)
 
 	xmlXPathFreeContext(xpathCtx);
 	g_list_foreach(node_to_free, (GFunc)xmlFreeNode, NULL);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 	lasso_release_list(node_to_free);
 
 	return lasso_wsf_profile_build_soap_response_msg(profile);
@@ -824,7 +824,7 @@ lasso_data_service_process_modify_msg(LassoDataService *service,
 
 	modify = LASSO_DST_MODIFY(envelope->Body->any->data);
 	service_type = g_strdup(modify->hrefServiceType);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	profile = LASSO_WSF_PROFILE(service);
 	rc = lasso_wsf_profile_process_soap_request_msg(profile, modify_soap_msg, service_type,

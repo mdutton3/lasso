@@ -38,6 +38,7 @@
 #include <lasso/id-ff/sessionprivate.h>
 
 #include <lasso/saml-2.0/logoutprivate.h>
+#include "../utils.h"
 
 static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile *profile);
 
@@ -1155,7 +1156,7 @@ lasso_logout_new_from_dump(LassoServer *server, const char *dump)
 	logout = lasso_logout_new(g_object_ref(server));
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(logout), xmlDocGetRootElement(doc));
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return logout;
 }

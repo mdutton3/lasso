@@ -39,6 +39,7 @@
 #include <lasso/xml/id-wsf-2.0/dstref_modify_response.h>
 
 #include <lasso/xml/soap_fault.h>
+#include "../utils.h"
 
 struct _LassoIdWsf2DataServicePrivate
 {
@@ -284,7 +285,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	/* Free XML parsing objects */
 	xmlUnlinkNode(service->data);
 	xmlXPathFreeContext(xpathCtx);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	response2 = LASSO_IDWSF2_UTIL_RESPONSE(response);
 	response2->Status = lasso_idwsf2_util_status_new();
@@ -618,7 +619,7 @@ static void set_xml_string(xmlNode **xmlnode, const char* string)
 	if (node != NULL) {
 		node = xmlCopyNode(node, 1);
 	}
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	if (*xmlnode) {
 		xmlFreeNode(*xmlnode);
@@ -811,7 +812,7 @@ lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
 
 	/* Free XML parsing objects */
 	xmlXPathFreeContext(cur_xpathCtx);
-	xmlFreeDoc(cur_doc);
+	lasso_release_doc(cur_doc);
 
 	return res;
 }

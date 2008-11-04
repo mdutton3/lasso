@@ -325,7 +325,7 @@ lasso_server_load_affiliation(LassoServer *server, const gchar *filename)
 
 	node = xmlDocGetRootElement(doc);
 	if (node == NULL || node->ns == NULL) {
-		xmlFreeDoc(doc);
+		lasso_release_doc(doc);
 		return LASSO_XML_ERROR_NODE_NOT_FOUND;
 	}
 
@@ -336,7 +336,7 @@ lasso_server_load_affiliation(LassoServer *server, const gchar *filename)
 		rc = LASSO_ERROR_UNIMPLEMENTED;
 	}
 
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return rc;
 }

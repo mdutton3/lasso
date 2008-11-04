@@ -71,6 +71,8 @@
 #include <lasso/xml/disco_encrypted_resource_id.h>
 #endif
 
+#include "../lasso/utils.h"
+
 %}
 
 /* GLib types */
@@ -1488,7 +1490,7 @@ static xmlNode *get_string_xml(const char *string) {
 	if (node != NULL) {
 		node = xmlCopyNode(node, 1);
 	}
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return node;
 }
@@ -1588,7 +1590,7 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
 				if (node != NULL) {
 					node = xmlCopyNode(node, 1);
 				}
-				xmlFreeDoc(doc);
+				lasso_release_doc(doc);
 			}
 			*xmlListPointer = g_list_append(*xmlListPointer, node);
 		}
@@ -1605,7 +1607,7 @@ static void set_xml_string(xmlNode **xmlnode, const char* string)
 	if (node != NULL) {
 		node = xmlCopyNode(node, 1);
 	}
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	if (*xmlnode) {
 		xmlFreeNode(*xmlnode);

@@ -41,6 +41,7 @@
 #include <lasso/id-ff/providerprivate.h>
 
 #include <lasso/saml-2.0/profileprivate.h>
+#include "../utils.h"
 
 /*****************************************************************************/
 /* public functions                                                          */
@@ -166,7 +167,7 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 
 	xmlXPathFreeObject(xpathObj);
 	xmlXPathFreeContext(xpathCtx);
-	xmlFreeDoc(doc);
+	lasso_release_doc(doc);
 
 	return type;
 }
