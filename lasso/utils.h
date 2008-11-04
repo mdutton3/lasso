@@ -137,6 +137,9 @@
 #define lasso_release_key_manager(dest) \
 	lasso_release_full(dest, xmlSecKeysMngrDestroy)
 
+#define lasso_release_output_buffer(dest) \
+	lasso_release_full(dest, xmlOutputBufferClose)
+
 /* Bad param handling */
 #define lasso_return_val_if_invalid_param(kind, name, val) \
 	g_return_val_if_fail(LASSO_IS_##kind(name), val)
@@ -147,6 +150,12 @@
 
 #define lasso_null_param(name) \
 	g_return_val_if_fail(name != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+#define goto_exit_with_rc(rc_value) \
+	{\
+		rc = (rc_value); \
+		goto exit; \
+	}
 
 #define goto_exit_if_fail(condition, rc_value) \
 	{\
