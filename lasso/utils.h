@@ -25,6 +25,8 @@
 #ifndef __LASSO_UTILS_H__
 #define __LASSO_UTILS_H__
 
+#include <glib.h>
+
 /* Assignment and list appending */
 #define lasso_assign_string(dest,src) \
 	{ \
