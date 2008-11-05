@@ -316,7 +316,7 @@ lasso_server_load_affiliation(LassoServer *server, const gchar *filename)
 	LassoProvider *provider = LASSO_PROVIDER(server);
 	xmlDoc *doc;
 	xmlNode *node;
-	int rc;
+	int rc = 0;
 
 	doc = xmlParseFile(filename);
 	goto_exit_if_fail (doc != NULL, LASSO_XML_ERROR_INVALID_FILE);
@@ -419,7 +419,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	LassoServer *server = LASSO_SERVER(node);
 	xmlNode *t;
 	xmlChar *s;
-	int rc;
+	int rc = 0;
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc)

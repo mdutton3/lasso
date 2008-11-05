@@ -728,7 +728,7 @@ gboolean
 lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 {
 	xmlDoc *doc;
-	gboolean rc;
+	gboolean rc = TRUE;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	if (access(path, R_OK) != 0) {
@@ -957,7 +957,7 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		xmlChar *b64_value;
 		xmlSecByte *value;
 		int length;
-		int rc;
+		int rc = 0;
 
 		/* could use XPath but going down manually will do */
 		while (t) {
