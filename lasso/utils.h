@@ -169,6 +169,10 @@
 #define lasso_warn_deprecated() \
 	g_warning("Function %s is deprecated !!!", G_STRFUNC)
 
+/* Declare type of element in a container */
 #define OFTYPE(x)
+
+/* Get a printable extract for error messages */
+char* lasso_safe_prefix_string(const char *str, gsize length);
 
 #endif /* __LASSO_UTILS_H__ */

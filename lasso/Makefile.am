@@ -20,7 +20,7 @@ liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h \
 nodist_liblassoinclude_HEADERS = debug.h utils.h registry-private.h
 BUILT_SOURCES = types.c errors.c symbols.sym
 
-liblasso_la_SOURCES = lasso.c errors.c registry.c debug.h
+liblasso_la_SOURCES = lasso.c errors.c registry.c utils.c debug.h
 
 if WSF_ENABLED
 SYMBOLS_ARGS = -wsf
