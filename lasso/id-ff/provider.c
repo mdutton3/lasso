@@ -696,7 +696,7 @@ gboolean
 lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *metadata)
 {
 	xmlDoc *doc;
-	gboolean rc;
+	gboolean rc = TRUE;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	doc = xmlParseDoc((xmlChar*)metadata);
