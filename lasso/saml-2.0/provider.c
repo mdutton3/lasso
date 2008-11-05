@@ -161,16 +161,21 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 		while (node && strcmp((char*)node->name, "EntityDescriptor") != 0) {
 			node = node->next;
 		}
-		if (node == NULL)
+		if (node == NULL) {
+			message (G_LOG_LEVEL_CRITICAL, "lasso_saml20_provider_load_metadata_from_doc: no EntityDescriptor");
 			return FALSE;
+		}
 	} else {
+		message (G_LOG_LEVEL_CRITICAL, "lasso_saml20_provider_load_metadata_from_doc: no EntityDescriptor");
 		/* what? */
 		return FALSE;
 	}
 
 	provider->ProviderID = (char*)xmlGetProp(node, (xmlChar*)"entityID");
-	if (provider->ProviderID == NULL)
+	if (provider->ProviderID == NULL) {
+		message (G_LOG_LEVEL_CRITICAL, "lasso_saml20_provider_load_metadata_from_doc: no entityID attribute");
 		return FALSE;
+	}
 
 	for (descriptor_node = node->children; descriptor_node != NULL;
 			descriptor_node = descriptor_node->next) {

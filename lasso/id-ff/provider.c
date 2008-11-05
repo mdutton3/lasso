@@ -700,7 +700,13 @@ lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *m
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	doc = xmlParseDoc((xmlChar*)metadata);
-	goto_exit_if_fail (doc != NULL, FALSE);
+	if (doc == NULL) {
+		char *extract;
+		extract = lasso_safe_prefix_string(metadata, 80);
+		message(G_LOG_LEVEL_CRITICAL, "Cannot parse metadatas: '%s'", extract);
+		lasso_release(extract);
+		return FALSE;
+	}
 	goto_exit_if_fail (lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
 	lasso_assign_string(provider->metadata_filename, metadata);
 exit:
@@ -755,6 +761,7 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 
 	node = xmlDocGetRootElement(doc);
 	if (node == NULL || node->ns == NULL) {
+		message (G_LOG_LEVEL_CRITICAL, "lasso_provider_load_metadata_from_doc: no root element");
 		return FALSE;
 	}
 
@@ -779,6 +786,7 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 		xpathObj = xmlXPathEvalExpression(
 				(xmlChar*)"/md11:SPDescriptor|/md11:IDPDescriptor", xpathCtx);
 		if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
+			message (G_LOG_LEVEL_CRITICAL, "lasso_saml20_provider_load_metadata_from_doc: no md12:EntityDescriptor or md11:SPDesriptor or md11:IDPDescriptor");
 			xmlXPathFreeObject(xpathObj);
 			xmlXPathFreeContext(xpathCtx);
 			return FALSE;
