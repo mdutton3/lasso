@@ -381,7 +381,12 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 			sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1, NULL);
 	g_return_val_if_fail(private_key_file != NULL, NULL);
 
-	bio = BIO_new_file(private_key_file, "rb");
+	if (access(private_key_file, R_OK) == 0) {
+		bio = BIO_new_file(private_key_file, "rb");
+	} else {
+		// Safe deconst cast, the BIO is read-only
+		bio = BIO_new_mem_buf((char*)private_key_file, -1);
+	}
 	if (bio == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Failed to open %s private key file",
 				private_key_file);
