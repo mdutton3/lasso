@@ -415,7 +415,7 @@ gobject_to_jobject_and_ref(JNIEnv *env, GObject *obj, jobject *jobj) {
  * It throws and return 0 if anything fail unexpectedly. */
 static int
 jobject_to_gobject(JNIEnv *env, jobject obj, GObject **gobj) {
-    jlong value;
+    jlong value = 0;
     GObject *gobject;
 
     g_error_if_fail(env);
