@@ -23,6 +23,7 @@
  */
 
 #include <lasso/xml/soap_envelope.h>
+#include "../utils.h"
 
 /**
  * SECTION:soap_envelope
@@ -93,7 +94,7 @@ lasso_soap_envelope_new(LassoSoapBody *body)
 
 	envelope = g_object_new(LASSO_TYPE_SOAP_ENVELOPE, NULL);
 
-	envelope->Body = body;
+	lasso_assign_gobject(envelope->Body, body);
 
 	return envelope;
 }
