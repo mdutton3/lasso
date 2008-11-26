@@ -40,7 +40,7 @@ clean-local:
 	-rm types.c symbols.sym errors.c
 
 EXTRA_DIST = utils.h extract_types.py extract_symbols.py build_strerror.py \
-	     registry-private.h
+	     registry-private.h errors.h.in
 
 if WSF_ENABLED
 WSF_LIB_FILE = $(top_builddir)/lasso/id-wsf/liblasso-id-wsf.la
