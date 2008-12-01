@@ -59,6 +59,7 @@
 #include <lasso/id-wsf-2.0/identity.h>
 #include <lasso/id-wsf-2.0/server.h>
 #include <lasso/id-wsf-2.0/session.h>
+#include "../utils.h"
 
 struct _LassoIdWsf2DiscoveryPrivate
 {
@@ -194,7 +195,7 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 		request = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_PROFILE(profile)->request);
 		/* FIXME : foreach on the list instead */
 		if (request != NULL && request->SvcMD != NULL) {
-			discovery->metadata = LASSO_IDWSF2_DISCO_SVC_METADATA(request->SvcMD->data);
+			lasso_assign_gobject(discovery->metadata, request->SvcMD->data);
 			/* Build a unique SvcMDID */
 			lasso_build_random_sequence(unique_id, 32);
 			unique_id[32] = 0;
@@ -319,7 +320,7 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 	envelope = profile->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
-	LASSO_PROFILE(profile)->response = LASSO_NODE(response);
+	lasso_assign_gobject(LASSO_PROFILE(profile)->response, response);
 
 	return res;
 }
@@ -429,10 +430,7 @@ lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery, G_GNUC_UNUSED
 
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 
-	if (LASSO_PROFILE(profile)->request) {
-		lasso_node_destroy(LASSO_NODE(LASSO_PROFILE(profile)->request));
-	}
-	LASSO_PROFILE(profile)->request = LASSO_NODE(lasso_idwsf2_disco_query_new());
+	lasso_assign_new_gobject(LASSO_PROFILE(profile)->request, lasso_idwsf2_disco_query_new());
 
 	lasso_idwsf2_profile_init_soap_request(profile,
 			LASSO_PROFILE(profile)->request, LASSO_IDWSF2_DISCO_HREF);
@@ -584,8 +582,9 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 				provider->private_data->encryption_sym_key_type));
 			if (encrypted_element != NULL) {
 				assertion->Subject->EncryptedID = encrypted_element;
-				g_object_unref(assertion->Subject->NameID);
-				assertion->Subject->NameID = NULL;
+				lasso_release_gobject(assertion->Subject->NameID);
+			} else {
+				/** FIXME: find a return value for this case */
 			}
 		}
 
@@ -755,7 +754,7 @@ lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, G_GNUC_UNUSE
 	}
 
 	service = lasso_idwsf2_data_service_new_full(LASSO_PROFILE(profile)->server, epr);
-	LASSO_PROFILE(service)->session = g_object_ref(LASSO_PROFILE(profile)->session);
+	lasso_assign_gobject(LASSO_PROFILE(service)->session, LASSO_PROFILE(profile)->session);
 
 	return service;
 }

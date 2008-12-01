@@ -46,6 +46,7 @@
 #include <lasso/xml/ws/wsse_security_header.h>
 
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
+#include "../utils.h"
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -95,14 +96,14 @@ lasso_idwsf2_profile_init_soap_request(LassoIdWsf2Profile *profile, LassoNode *r
 	/* Initialise soap envelope */
 	envelope = lasso_idwsf2_profile_build_soap_envelope(NULL,
 		LASSO_PROVIDER(LASSO_PROFILE(profile)->server)->ProviderID);
-	profile->soap_envelope_request = envelope;
+	lasso_assign_new_gobject(profile->soap_envelope_request, envelope);
 
 	/* Add identity token (if it exists in the session) in soap header */
 	assertion = lasso_session_get_assertion_identity_token(session, service_type);
 
 	if (assertion != NULL) {
 		wsse_security = lasso_wsse_security_header_new();
-		wsse_security->any = g_list_append(wsse_security->any, assertion);
+		lasso_list_add(wsse_security->any, assertion);
 
 		envelope->Header->Other = g_list_append(envelope->Header->Other, wsse_security);
 	}
@@ -143,16 +144,10 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	/* Get soap request */
-	if (profile->soap_envelope_request) {
-		g_object_unref(profile->soap_envelope_request);
-	}
-	profile->soap_envelope_request = lasso_soap_envelope_new_from_message(message);
+	lasso_assign_new_gobject(profile->soap_envelope_request, lasso_soap_envelope_new_from_message(message));
 	envelope = profile->soap_envelope_request;
 
-	if (LASSO_PROFILE(profile)->nameIdentifier != NULL) {
-		lasso_node_destroy(LASSO_PROFILE(profile)->nameIdentifier);
-		LASSO_PROFILE(profile)->nameIdentifier = NULL;
-	}
+	lasso_release_gobject(LASSO_PROFILE(profile)->nameIdentifier);
 
 	/* Get NameIdentifier (if exists) from the soap header */
 	for (i = g_list_first(envelope->Header->Other); i != NULL; i = g_list_next(i)) {
@@ -169,7 +164,7 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 				continue;
 			}
 			if (LASSO_IS_SAML2_NAME_ID(assertion->Subject->NameID)) {
-				LASSO_PROFILE(profile)->nameIdentifier = g_object_ref(
+				lasso_assign_gobject(LASSO_PROFILE(profile)->nameIdentifier,
 						assertion->Subject->NameID);
 			} else if (LASSO_IS_SAML2_ENCRYPTED_ELEMENT(
 					assertion->Subject->EncryptedID)) {
@@ -188,15 +183,12 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 	if (LASSO_PROFILE(profile)->nameIdentifier == NULL && encrypted_id != NULL
 			&& encryption_private_key != NULL) {
 		decrypted_name_id = lasso_node_decrypt(encrypted_id, encryption_private_key);
-		if (LASSO_IS_SAML2_NAME_ID(decrypted_name_id)) {
-			LASSO_PROFILE(profile)->nameIdentifier = decrypted_name_id;
-		}
-		g_object_unref(encrypted_id);
-		assertion->Subject->EncryptedID = NULL;
+		lasso_assign_new_gobject(LASSO_PROFILE(profile)->nameIdentifier, decrypted_name_id);
+		lasso_release_gobject(assertion->Subject->EncryptedID);
 	}
 
 	if (envelope != NULL && envelope->Body != NULL && envelope->Body->any != NULL) {
-		LASSO_PROFILE(profile)->request = LASSO_NODE(envelope->Body->any->data);
+		lasso_assign_gobject(LASSO_PROFILE(profile)->request, envelope->Body->any->data);
 	} else {
 		res = LASSO_SOAP_ERROR_MISSING_BODY;
 	}
@@ -206,11 +198,8 @@ lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile, const
 	}
 
 	/* Set soap response */
-	if (profile->soap_envelope_response) {
-		g_object_unref(profile->soap_envelope_response);
-	}
-	profile->soap_envelope_response = lasso_idwsf2_profile_build_soap_envelope(NULL,
-		LASSO_PROVIDER(LASSO_PROFILE(profile)->server)->ProviderID);
+	lasso_assign_new_gobject(profile->soap_envelope_response, lasso_idwsf2_profile_build_soap_envelope(NULL,
+		LASSO_PROVIDER(LASSO_PROFILE(profile)->server)->ProviderID));
 
 	return res;
 }
@@ -240,10 +229,10 @@ lasso_idwsf2_profile_process_soap_response_msg(LassoIdWsf2Profile *profile, cons
 	/* Get soap response */
 	envelope = lasso_soap_envelope_new_from_message(message);
 
-	profile->soap_envelope_response = envelope;
+	lasso_assign_new_gobject(profile->soap_envelope_response, envelope);
 
 	if (envelope != NULL && envelope->Body != NULL && envelope->Body->any != NULL) {
-		LASSO_PROFILE(profile)->response = LASSO_NODE(envelope->Body->any->data);
+		lasso_assign_gobject(LASSO_PROFILE(profile)->response, LASSO_NODE(envelope->Body->any->data));
 	} else {
 		res = LASSO_SOAP_ERROR_MISSING_BODY;
 	}
@@ -265,15 +254,9 @@ dispose(GObject *object)
 {
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(object);
 
-	if (profile->soap_envelope_request) {
-		lasso_node_destroy(LASSO_NODE(profile->soap_envelope_request));
-		profile->soap_envelope_request = NULL;
-	}
+	lasso_release_gobject(profile->soap_envelope_request);
+	lasso_release_gobject(profile->soap_envelope_response);
 
-	if (profile->soap_envelope_response) {
-		lasso_node_destroy(LASSO_NODE(profile->soap_envelope_response));
-		profile->soap_envelope_response = NULL;
-	}
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 

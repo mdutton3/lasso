@@ -76,7 +76,7 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 	if (LASSO_PROFILE(profile)->request) {
 		lasso_node_destroy(LASSO_NODE(LASSO_PROFILE(profile)->request));
 	}
-	LASSO_PROFILE(profile)->request = LASSO_NODE(query);
+	lasso_assign_new_gobject(LASSO_PROFILE(profile)->request, query);
 
 	if (service == NULL || service->private_data == NULL
 			|| service->private_data->epr == NULL
@@ -110,7 +110,7 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 
 	/* Set msg_url as epr address, which is the SoapEndpoint */
 	if (epr->Address != NULL) {
-		LASSO_PROFILE(profile)->msg_url = g_strdup(epr->Address->content);
+		lasso_assign_string(LASSO_PROFILE(profile)->msg_url, epr->Address->content);
 	} else {
 		return LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS;
 	}
@@ -162,7 +162,7 @@ lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, con
 		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	} else {
 		request = LASSO_IDWSF2_DSTREF_QUERY(LASSO_PROFILE(profile)->request);
-		service->type = g_strdup(request->hrefServiceType);
+		lasso_assign_string(service->type, request->hrefServiceType);
 	}
 
 	if (res == 0) {
@@ -221,8 +221,8 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	response = lasso_idwsf2_dstref_query_response_new();
 	response->prefixServiceType = g_strdup(request->prefixServiceType);
 	response->hrefServiceType = g_strdup(request->hrefServiceType);
-	LASSO_PROFILE(profile)->response = LASSO_NODE(response);
-	envelope->Body->any = g_list_append(envelope->Body->any, response);
+	lasso_assign_new_gobject(LASSO_PROFILE(profile)->response, response);
+	lasso_list_add_gobject(envelope->Body->any, response);
 
 	/* Initialise XML parsing */
 	doc = xmlNewDoc((xmlChar*)"1.0");
@@ -288,7 +288,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	lasso_release_doc(doc);
 
 	response2 = LASSO_IDWSF2_UTIL_RESPONSE(response);
-	response2->Status = lasso_idwsf2_util_status_new();
+	lasso_assign_new_gobject(response2->Status, lasso_idwsf2_util_status_new());
 	response2->Status->code = g_strdup(status_code);
 
 	if (strcmp(status_code, LASSO_DST_STATUS_CODE_FAILED) == 0) {
@@ -563,11 +563,7 @@ lasso_idwsf2_data_service_init_modify(LassoIdWsf2DataService *service)
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	modify = lasso_idwsf2_dstref_modify_new();
-
-	if (LASSO_PROFILE(profile)->request) {
-		lasso_node_destroy(LASSO_NODE(LASSO_PROFILE(profile)->request));
-	}
-	LASSO_PROFILE(profile)->request = LASSO_NODE(modify);
+	lasso_assign_new_gobject(LASSO_PROFILE(profile)->request, modify);
 
 	if (service == NULL || service->private_data == NULL
 			|| service->private_data->epr == NULL
@@ -770,8 +766,8 @@ lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
 	response = lasso_idwsf2_dstref_modify_response_new();
 	response->prefixServiceType = g_strdup(request->prefixServiceType);
 	response->hrefServiceType = g_strdup(request->hrefServiceType);
-	LASSO_PROFILE(profile)->response = LASSO_NODE(response);
-	envelope->Body->any = g_list_append(envelope->Body->any, response);
+	lasso_assign_new_gobject(LASSO_PROFILE(profile)->response, response);
+	lasso_list_add_gobject(envelope->Body->any, response);
 
 	response2 = LASSO_IDWSF2_UTIL_RESPONSE(response);
 	response2->Status = lasso_idwsf2_util_status_new();
@@ -911,9 +907,7 @@ dispose(GObject *object)
 		g_list_free(service->query_items);
 		service->query_items = NULL;
 	}
-
-	lasso_node_destroy(LASSO_NODE(service->private_data->epr));
-	service->private_data->epr = NULL;
+	lasso_release_gobject(service->private_data->epr);
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
