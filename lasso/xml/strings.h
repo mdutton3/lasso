@@ -641,9 +641,10 @@
 	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
 #define LASSO_WSU_PREFIX "wsu"
 
-#define LASSO_SOAP_FAULT_CODE_SERVER "Server"
+#define LASSO_SOAP_FAULT_CODE_SERVER "S:server"
 
 #define LASSO_SOAP_FAULT_STRING_SERVER "Server Error"
+#define LASSO_SOAP_FAULT_STRING_IDENTITY_NOT_FOUND "Identity not found"
 
 #endif /* __LASSO_STRINGS_H__ */
 

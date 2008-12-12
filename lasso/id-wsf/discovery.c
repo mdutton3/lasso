@@ -844,7 +844,7 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 	if (profile->identity == NULL) {
 		fault = lasso_soap_fault_new();
 		fault->faultcode = LASSO_SOAP_FAULT_CODE_SERVER;
-		fault->faultstring = LASSO_SOAP_FAULT_STRING_SERVER;
+		fault->faultstring = LASSO_SOAP_FAULT_STRING_IDENTITY_NOT_FOUND;
 		lasso_list_add_gobject(envelope->Body->any, fault);
 		return lasso_wsf_profile_build_soap_response_msg(profile);
 	}
