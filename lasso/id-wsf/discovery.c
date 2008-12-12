@@ -823,6 +823,7 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 	LassoDiscoQuery *request = NULL;
 	LassoDiscoQueryResponse *response = NULL;
 	LassoSoapEnvelope *envelope = NULL;
+	LassoSoapFault *fault = NULL;
 	GList *offerings = NULL;
 	gchar *credentialRef;
 	GList *iter = NULL;
@@ -834,13 +835,18 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 
 	profile = LASSO_WSF_PROFILE(discovery);
 	request = LASSO_DISCO_QUERY(profile->request);
+	envelope = profile->soap_envelope_response;
 
 	if (lasso_wsf_profile_get_fault(profile)) {
 		return lasso_wsf_profile_build_soap_response_msg(profile);
 	}
 
 	if (profile->identity == NULL) {
-		return LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND;
+		fault = lasso_soap_fault_new();
+		fault->faultcode = LASSO_SOAP_FAULT_CODE_SERVER;
+		fault->faultstring = LASSO_SOAP_FAULT_STRING_SERVER;
+		lasso_list_add_gobject(envelope->Body->any, fault);
+		return lasso_wsf_profile_build_soap_response_msg(profile);
 	}
 
 	iter = request->RequestedServiceType;
@@ -859,7 +865,6 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 	g_list_foreach(offerings, (GFunc)g_object_ref, NULL);
 	response->ResourceOffering = offerings;
 	profile->response = LASSO_NODE(response);
-	envelope = profile->soap_envelope_response;
 	lasso_list_add_gobject(envelope->Body->any, response);
 
 	/* Add needed credentials for offerings */
