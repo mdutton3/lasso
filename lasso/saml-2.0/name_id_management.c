@@ -116,8 +116,19 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 	if (oldNameIdentifier != NULL)
 		g_object_unref(oldNameIdentifier);
 
-	/* XXX: check HTTP method is supported */
+	/* check HTTP method is supported */
+	if (http_method != LASSO_HTTP_METHOD_ANY &&
+		lasso_saml20_provider_accept_http_method(
+					LASSO_PROVIDER(profile->server),
+					remote_provider,
+					LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID,
+					http_method,
+					TRUE
+					) == FALSE) {
+		return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+	}
 
+	/* create request */
 	profile->request = lasso_samlp2_manage_name_id_request_new();
 
 	request = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request);
