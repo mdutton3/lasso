@@ -625,7 +625,7 @@ lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_k
 		status = DSA_verify(NID_sha1, (unsigned char*)digest, 20, signature, key_size, dsa);
 	}
 
-	if (status == 0) {
+	if (status != 1) {
 		ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
 	}
 
