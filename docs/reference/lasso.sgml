@@ -60,6 +60,8 @@
 <!ENTITY LassoStrings SYSTEM "sgml/strings.xml">
 <!ENTITY LassoDiscovery SYSTEM "sgml/discovery.xml">
 <!ENTITY LassoDataService SYSTEM "sgml/data_service.xml">
+<!ENTITY LassoIdWsf2Discovery SYSTEM "sgml/idwsf2_discovery.xml">
+<!ENTITY LassoIdWsf2DataService SYSTEM "sgml/idwsf2_data_service.xml">
 
 <!ENTITY LassoSaml2Action SYSTEM "sgml/saml2_action.xml">
 <!ENTITY LassoSaml2Advice SYSTEM "sgml/saml2_advice.xml">
@@ -248,6 +250,9 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
 
     &LassoDiscovery;
     &LassoDataService;
+    &LassoIdWsf2Discovery;
+    &LassoIdWsf2DataService;
+
 
   </chapter>
 
