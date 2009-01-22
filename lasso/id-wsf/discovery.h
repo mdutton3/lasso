@@ -78,13 +78,11 @@ LASSO_EXPORT LassoDiscovery* lasso_discovery_new(LassoServer *server);
 LASSO_EXPORT LassoDiscoInsertEntry* lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
 	LassoDiscoServiceInstance *serviceInstance, LassoDiscoResourceID *resourceId);
 
-LASSO_EXPORT gint  lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
+LASSO_EXPORT gint lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 	const gchar *entryID);
 
 LASSO_EXPORT LassoDiscoRequestedServiceType* lasso_discovery_add_requested_service_type(
 	LassoDiscovery *discovery, const gchar *service_type, const gchar *option);
-
-LASSO_EXPORT void lasso_discovery_destroy(LassoDiscovery *discovery);
 
 LASSO_EXPORT gint lasso_discovery_init_insert(LassoDiscovery *discovery,
 	LassoDiscoResourceOffering *new_offering, const char *security_mech_id);

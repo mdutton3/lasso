@@ -73,19 +73,6 @@ struct _LassoIdWsf2DiscoveryPrivate
 /*****************************************************************************/
 
 
-/**
- * lasso_discovery_destroy:
- * @discovery: a LassoDiscovery
- *
- * Destroys LassoDiscovery objects created with lasso_discovery_new() or
- * lasso_discovery_new_from_dump().
- **/
-void
-lasso_idwsf2_discovery_destroy(LassoIdWsf2Discovery *discovery)
-{
-	lasso_node_destroy(LASSO_NODE(discovery));
-}
-
 /* XXX: return value must be freed by caller */
 gchar*
 lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
