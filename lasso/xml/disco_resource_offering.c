@@ -23,6 +23,7 @@
  */
 
 #include <lasso/xml/disco_resource_offering.h>
+#include "../utils.h"
 
 /**
  * SECTION:disco_resource_offering
@@ -129,11 +130,8 @@ lasso_disco_resource_offering_new(LassoDiscoServiceInstance *serviceInstance)
 
 	g_return_val_if_fail(LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance), NULL);
 
-	g_object_ref(serviceInstance);
-
 	resource = g_object_new(LASSO_TYPE_DISCO_RESOURCE_OFFERING, NULL);
-
-	resource->ServiceInstance = serviceInstance;
+	lasso_assign_gobject(resource->ServiceInstance, serviceInstance);
 
 	return resource;
 }
