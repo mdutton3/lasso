@@ -515,6 +515,7 @@ lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
 	LassoMessageFormat format;
+	LassoLibLogoutRequest *logout_request;
 
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -525,12 +526,19 @@ lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 		return lasso_saml20_logout_process_request_msg(logout, request_msg);
 	}
 
-	profile->request = lasso_lib_logout_request_new();
+	lasso_assign_new_gobject(profile->request, lasso_lib_logout_request_new());
 	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
+	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR || ! LASSO_IS_LIB_LOGOUT_REQUEST(profile->request)) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
+	logout_request = LASSO_LIB_LOGOUT_REQUEST(profile->request);
+
+	/* Validate some schema constraints */
+	if (LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID == NULL
+			|| LASSO_IS_SAML_NAME_IDENTIFIER(logout_request->NameIdentifier) == FALSE) {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
 	if (profile->remote_providerID) {
 		g_free(profile->remote_providerID);
 	}
