@@ -1052,12 +1052,13 @@ lasso_verify_signature(xmlNode *signed_node, const char *id_attr_name,
 		gint size = xmlSecPtrListGetSize(&(dsigCtx->signedInfoReferences));
 		int i;
 		for (i = 0; i < size; ++i) {
+
 			dsig_reference_ctx = (xmlSecDSigReferenceCtx*)xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), i);
 			if (dsig_reference_ctx->uri == NULL) {
 				g_warning("dsig_reference_ctx->uri cannot be null");
 				continue;
 			}
-			lasso_list_add_string(*uri_references, (char*)dsig_reference_ctx->uri);
+			lasso_list_add_xml_string(*uri_references, dsig_reference_ctx->uri);
 		}
 	}
 
@@ -1066,10 +1067,10 @@ lasso_verify_signature(xmlNode *signed_node, const char *id_attr_name,
 	}
 
 exit:
-	lasso_release(reference_uri);
+	lasso_release_string(reference_uri);
 	lasso_release_signature_context(dsigCtx);
 	xmlUnlinkNode(signed_node);
 	lasso_release_doc(doc);
-	lasso_release(id);
+	lasso_release_string(id);
 	return rc;
 }
