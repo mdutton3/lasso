@@ -42,6 +42,7 @@
 
 #include <zlib.h>
 
+#include <glib.h>
 #include <lasso/xml/xml.h>
 #include <lasso/xml/xml_enc.h>
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
@@ -938,3 +939,137 @@ lasso_concat_url_query(char *url, char *query)
 	}
 }
 
+static gboolean
+lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
+	/* Limit allowed transforms for signature and reference processing */
+	if((xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformInclC14NId) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformExclC14NId) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformSha1Id) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformRsaSha1Id) < 0)) {
+
+		g_warning("Error: failed to limit allowed signature transforms");
+		return FALSE;
+	}
+	if((xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformInclC14NId) < 0) ||
+			(xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformExclC14NId) < 0) ||
+			(xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformSha1Id) < 0) ||
+			(xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformEnvelopedId) < 0)) {
+
+		g_warning("Error: failed to limit allowed reference transforms");
+		return FALSE;
+	}
+
+	/* Limit possible key info to X509, RSA and DSA */
+	if((xmlSecPtrListAdd(&(dsigCtx->keyInfoReadCtx.enabledKeyData), BAD_CAST xmlSecKeyDataX509Id) < 0) ||
+			(xmlSecPtrListAdd(&(dsigCtx->keyInfoReadCtx.enabledKeyData), BAD_CAST xmlSecKeyDataRsaId) < 0) ||
+			(xmlSecPtrListAdd(&(dsigCtx->keyInfoReadCtx.enabledKeyData), BAD_CAST xmlSecKeyDataDsaId) < 0)) {
+		g_warning("Error: failed to limit allowed key data");
+		return FALSE;
+	}
+	return TRUE;
+}
+
+/**
+ * lasso_verify_signature:
+ * @signed_node: an #xmlNode containing an enveloped xmlDSig signature
+ * @id_attr_name: the id attribune name for this node
+ * @keys_manager: an #xmlSecKeysMnr containing the CA cert chain, to validate the key in the
+ * signature if there is one.
+ * @public_key: a public key to validate the signature, if present the function ignore the key
+ * contained in the signature.
+ *
+ * This function validate a signature on an xmlNode following the instructions given in the document
+ * Assertions and Protocol or the OASIS Security Markup Language (SAML) V1.1.
+ *
+ * Beware that it does not validate every needed properties for a SAML assertion, request or
+ * response to be acceptable.
+ *
+ * Return: 0 if signature was validated, and error code otherwise.
+ */
+
+gboolean
+lasso_verify_signature(xmlNode *signed_node, const char *id_attr_name,
+		xmlSecKeysMngr *keys_manager, xmlSecKey *public_key,
+		SignatureVerificationOption signature_verification_option,
+		GList **uri_references)
+{
+	int rc = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
+	xmlDoc *doc = NULL;
+	xmlNodePtr signature = NULL;
+	xmlSecDSigCtx *dsigCtx = NULL;
+	xmlChar *id = NULL;
+	char *reference_uri = NULL;
+	xmlSecDSigReferenceCtx *dsig_reference_ctx = NULL;
+
+	g_return_val_if_fail(signed_node && id_attr_name && (keys_manager || public_key),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	/* Find signature */
+	signature = xmlSecFindNode(signed_node, xmlSecNodeSignature, xmlSecDSigNs);
+	goto_exit_if_fail (signature, LASSO_DS_ERROR_SIGNATURE_NOT_FOUND);
+
+	/* Create a temporary doc */
+	doc = xmlNewDoc((xmlChar*)XML_DEFAULT_VERSION);
+	goto_exit_if_fail(doc, LASSO_ERROR_OUT_OF_MEMORY);
+	xmlDocSetRootElement(doc, signed_node);
+
+	/* Find ID */
+	id = xmlGetProp(signed_node, (xmlChar*)id_attr_name);
+	if (id) {
+		xmlAddID(NULL, doc, id, xmlHasProp(signed_node, (xmlChar*)id_attr_name));
+	}
+
+	/* Create DSig context */
+	dsigCtx = xmlSecDSigCtxCreate(keys_manager);
+	goto_exit_if_fail(doc, LASSO_DS_ERROR_CONTEXT_CREATION_FAILED);
+	/* XXX: Is xmlSecTransformUriTypeSameEmpty permitted ?
+	 * I would say yes only if signed_node == signature->parent. */
+	dsigCtx->enabledReferenceUris = xmlSecTransformUriTypeSameDocument;
+	goto_exit_if_fail(lasso_saml_constrain_dsigctxt(dsigCtx),
+			LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
+	/* Given a public key use it to validate the signature ! */
+	if (public_key) {
+		dsigCtx->signKey = xmlSecKeyDuplicate(public_key);
+	}
+
+	/* Verify signature */
+	goto_exit_if_fail(xmlSecDSigCtxVerify(dsigCtx, signature) >= 0,
+			LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
+	goto_exit_if_fail(dsigCtx->status == xmlSecDSigStatusSucceeded,
+			LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
+
+	/* There should be only one reference */
+	goto_exit_if_fail(((signature_verification_option & NO_SINGLE_REFERENCE) == 0) &&
+			xmlSecPtrListGetSize(&(dsigCtx->signedInfoReferences)) == 1, LASSO_DS_ERROR_TOO_MUCH_REFERENCES);
+	/* The reference should be to the signed node */
+	reference_uri = g_strdup_printf("#%s", id);
+	dsig_reference_ctx = (xmlSecDSigReferenceCtx*)xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), 0);
+	goto_exit_if_fail(dsig_reference_ctx != 0 &&
+			strcmp((char*)dsig_reference_ctx->uri, reference_uri) == 0,
+			LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML);
+	/* Keep URI of all nodes signed if asked */
+	if (uri_references) {
+		gint size = xmlSecPtrListGetSize(&(dsigCtx->signedInfoReferences));
+		int i;
+		for (i = 0; i < size; ++i) {
+			dsig_reference_ctx = (xmlSecDSigReferenceCtx*)xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), i);
+			if (dsig_reference_ctx->uri == NULL) {
+				g_warning("dsig_reference_ctx->uri cannot be null");
+				continue;
+			}
+			lasso_list_add_string(*uri_references, (char*)dsig_reference_ctx->uri);
+		}
+	}
+
+	if (dsigCtx->status == xmlSecDSigStatusSucceeded) {
+		rc = 0;
+	}
+
+exit:
+	lasso_release(reference_uri);
+	lasso_release_signature_context(dsigCtx);
+	xmlUnlinkNode(signed_node);
+	lasso_release_doc(doc);
+	lasso_release(id);
+	return rc;
+}

@@ -57,6 +57,12 @@ typedef enum {
 	SNIPPET_ALLOW_TEXT = 1 << 26 /* allow text childs in list of nodes */
 } SnippetType;
 
+typedef enum {
+	NO_OPTION = 0,
+	NO_SINGLE_REFERENCE = 1 /* SAML signature should contain a single reference,
+				  * but WS-Security signatures can contain many */
+} SignatureVerificationOption;
+
 struct XmlSnippet {
 	char *name;
 	SnippetType type;
@@ -121,6 +127,10 @@ char** urlencoded_to_strings(const char *str);
 int lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value,
 		const char *private_key_file, const char *certificate_file);
 
+gboolean lasso_verify_signature(xmlNode *signed_node, const char *id_attr_name,
+		xmlSecKeysMngr *keys_manager, xmlSecKey *public_key,
+		SignatureVerificationOption signature_verification_option,
+		GList **uri_references);
 void xmlCleanNs(xmlNode *root_node);
 
 void xml_insure_namespace(xmlNode *xmlnode, xmlNs *ns, gboolean force,
