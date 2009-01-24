@@ -149,6 +149,8 @@ lasso_strerror(int error_code)
 			return "Error building request QUERY url";
 		case LASSO_DST_ERROR_MISSING_SERVICE_DATA:
 			return "Missing service data";
+		case LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST:
+			return "If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object";
 		case LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED:
 			return "Failed to load certificate.";
 		case LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP:
