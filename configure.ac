@@ -740,7 +740,7 @@ LASSO_WSF_SUPPORT=0
 if test "x$enable_wsf" = "xyes"; then
 	AC_DEFINE(LASSO_WSF_ENABLED, [], [Define if ID-WSF support is enabled])
 	LASSO_WSF_SUPPORT=1
-	if grep -q 'WSF_SUPPORT.*0' $srcdir/*/lasso_wrap.c;
+	if grep -q 'WSF_SUPPORT.*0' $srcdir/*/lasso_wrap.c 2>/dev/null;
 	then
 		if test "x$SWIG" = "xecho"; then
 			AC_MSG_WARN(Bindings were pre-generated without ID-WSF support)
@@ -750,7 +750,7 @@ if test "x$enable_wsf" = "xyes"; then
 		rm -f $srcdir/*/lasso_wrap.c $srcdir/csharp/liblassosharpglue_wrap.c
 	fi
 else
-	if grep -q 'WSF_SUPPORT.*1' $srcdir/*/lasso_wrap.c;
+	if grep -q 'WSF_SUPPORT.*1' $srcdir/*/lasso_wrap.c 2>/dev/null;
 	then
 		if test "x$SWIG" = "xecho"; then
 			AC_MSG_WARN(Bindings were pre-generated with ID-WSF support)
