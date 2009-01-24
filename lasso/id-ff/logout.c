@@ -789,6 +789,10 @@ gint lasso_logout_reset_providerID_index(LassoLogout *logout)
  *   Sets a logout response with status code value to success.
  * </para></listitem>
  * <listitem><para>
+ *   Checks current signature status, if verification failed, stop processing
+ *   and set the status code value to failure.
+ * </para></listitem>
+ * <listitem><para>
  *   Verifies federation and authentication.
  * </para></listitem>
  * <listitem><para>
@@ -831,11 +835,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 	if (LASSO_IS_LIB_LOGOUT_REQUEST(profile->request) == FALSE)
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 
-	if (profile->remote_providerID) {
-		g_free(profile->remote_providerID);
-	}
-
-	profile->remote_providerID = g_strdup(
+	lasso_assign_string(profile->remote_providerID =
 			LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID);
 
 	/* get the provider */
@@ -846,7 +846,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 	}
 
 	/* Set LogoutResponse */
-	profile->response = NULL;
+	lasso_release_gobject(profile->response);
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		profile->response = lasso_lib_logout_response_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
@@ -868,10 +868,11 @@ lasso_logout_validate_request(LassoLogout *logout)
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED);
 	}
 
-	/* verify signature status */
+	/* Verify signature status, if signature is invalid, stop validation here */
 	if (profile->signature_status != 0) {
 		lasso_profile_set_response_status(profile,
 				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
+		return profile->signature_status;
 	}
 
 	/* Get the name identifier */
@@ -949,13 +950,9 @@ lasso_logout_validate_request(LassoLogout *logout)
 	 */
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP &&
 			g_hash_table_size(profile->session->assertions) >= 1) {
-		logout->initial_remote_providerID = profile->remote_providerID;
-		logout->initial_request = LASSO_NODE(profile->request);
-		logout->initial_response = LASSO_NODE(profile->response);
-
-		profile->remote_providerID = NULL;
-		profile->request = NULL;
-		profile->response = NULL;
+		lasso_transfer_string(logout->initial_remote_providerID, profile->remote_providerID);
+		lasso_transfer_gobject(logout->initial_request, LASSO_NODE(profile->request));
+		lasso_transfer_gobject(logout->initial_response, LASSO_NODE(profile->response));
 	}
 
 	return 0;
