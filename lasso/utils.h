@@ -64,6 +64,11 @@
 		dest = xmlCopyNode(src, 1); \
 	}
 
+#define lasso_list_add_string(dest, src) \
+	{ \
+		(dest) = g_list_append((dest), g_strdup(src));\
+	}
+
 #define lasso_list_add_gobject(dest, src) \
 	{ \
 		dest = g_list_append(dest, g_object_ref(src)); \
