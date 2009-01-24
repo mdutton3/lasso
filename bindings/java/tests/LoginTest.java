@@ -212,7 +212,7 @@ public class LoginTest extends TestCase {
         idp = Server.newFromDump(idpDump);
         assertNotNull(idp);
         idpLogout = new Logout(idp);
-        idpLogout.processRequestMsg(soapRequestMsg);
+	assertEquals(0, idpLogout.processRequestMsg(soapRequestMsg));
         assertEquals(nameIdentifier, ((SamlNameIdentifier)idpLogout.getNameIdentifier()).getContent());
         assertNotNull(idpIdentityDump);
         idpLogout.setIdentityFromDump(idpIdentityDump);
@@ -237,6 +237,7 @@ public class LoginTest extends TestCase {
         String identityProviderDump = generateIdentityProviderDump();
         Server server = Server.newFromDump(identityProviderDump);
         Map providers = server.getProviders();
+	assertNotNull(providers);
     }
 
     public static Test suite() { 
