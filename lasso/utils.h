@@ -327,7 +327,9 @@
 	}
 
 /* Declare type of element in a container */
+#ifndef OFTYPE
 #define OFTYPE(x)
+#endif
 
 /* Get a printable extract for error messages */
 char* lasso_safe_prefix_string(const char *str, gsize length);
