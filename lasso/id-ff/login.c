@@ -562,7 +562,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 	LassoNode *encrypted_id = NULL;
 	LassoSaml2EncryptedElement* encrypted_element = NULL;
 	xmlSecKey *encryption_private_key = NULL;
-	int ret = 0;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -603,8 +603,23 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 		if (idp == NULL) {
 			return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 		}
+		/* If the status of the signature verification process is not 0, we try to verify on
+		 * the assertion */
+		if (profile->signature_status != 0) {
+			xmlNode *assertion_xmlnode;
+			gchar *assertion_issuer;
 
-		/* FIXME: verify assertion signature */
+			assertion_xmlnode = lasso_node_get_original_xmlnode(LASSO_NODE(assertion));
+			assertion_issuer = (gchar*)xmlGetProp(assertion_xmlnode, (xmlChar*)"Issuer");
+			goto_exit_if_fail(assertion_issuer, LASSO_PROFILE_ERROR_MISSING_ISSUER);
+			goto_exit_if_fail(strcmp(assertion_issuer, profile->remote_providerID) == 0,
+					LASSO_PROFILE_ERROR_INVALID_ISSUER);
+
+			if (assertion_xmlnode) {
+				profile->signature_status = lasso_provider_verify_saml_signature(idp, assertion_xmlnode);
+				goto_exit_if_fail(profile->signature_status == 0, profile->signature_status);
+			}
+		}
 
 		/* store NameIdentifier */
 		if (assertion->AuthenticationStatement) {
@@ -635,7 +650,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 		}
 
 		if (profile->nameIdentifier != NULL) {
-			return ret;
+			return rc;
 		}
 
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(encrypted_id);
@@ -666,8 +681,9 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 			return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 		}
 	}
+exit:
 
-	return ret;
+	return rc;
 }
 
 /*****************************************************************************/
