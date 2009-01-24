@@ -1924,6 +1924,34 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
+	/* Validate RequestID and InResponseTo */
+	if (profile->request == NULL) {
+		if (LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->InResponseTo) {
+			return critical_error(LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST);
+		}
+	} else {
+		if (! LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID ||
+				strcmp(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID,
+					LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->InResponseTo) != 0) {
+			return critical_error(LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST);
+		}
+	}
+
+	/* In the artifact profile we cannot verify the signature on the message, we must wait the
+	 * verification on the assertion, so for the moment the signature verification failed. */
+	profile->signature_status = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
+
+	xmlNode *signed_response;
+	signed_response = lasso_node_get_original_xmlnode(LASSO_NODE(profile->response));
+	if (signed_response && profile->remote_providerID) {
+		LassoProvider *idp;
+
+		idp = LASSO_PROVIDER(g_hash_table_lookup(profile->server->providers,
+					profile->remote_providerID));
+		profile->signature_status = lasso_provider_verify_saml_signature(idp,
+				signed_response);
+	}
+
 	return lasso_login_process_response_status_and_assertion(login);
 }
 
