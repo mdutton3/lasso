@@ -40,93 +40,14 @@
 #define lasso_check_type_equality(a,b)
 #endif
 
-/* Assignment and list appending */
-#define lasso_assign_string(dest,src) \
+#ifdef __GNUC__
+#define lasso_check_type_equality2(a,b,c) \
 	{ \
-		void *t = g_strdup(src);\
-		if (dest) g_free(dest); \
-		dest = t; \
+		enum { TYPE_MISMATCH = (1 / (__builtin_types_compatible_p(typeof(a), typeof(b))+__builtin_types_compatible_p(typeof(a), typeof(c)))) }; \
 	}
-
-#define lasso_assign_new_string(dest,src) \
-	{ \
-		if (dest) g_free(dest); \
-		dest = src; \
-	}
-
-#define lasso_assign_gobject(dest,src) \
-	{ \
-		lasso_check_type_equality(dest, src); \
-		if (src) \
-			g_object_ref(src); \
-		if (dest) \
-			g_object_unref(dest); \
-		dest = (void*)(src); \
-	}
-
-#define lasso_assign_new_gobject(dest,src) \
-	{ \
-		lasso_check_type_equality(dest, src); \
-		if (dest) \
-			g_object_unref(dest); \
-		dest = (void*)(src); \
-	}
-
-#define lasso_assign_node(dest,src) \
-	{ \
-		lasso_check_type_equality(dest, src); \
-		if (dest) \
-			xmlFreeNode(dest); \
-		dest = xmlCopyNode(src, 1); \
-	}
-
-#define lasso_list_add(dest, src) \
-	{ \
-		lasso_check_type_equality(src, void*); \
-		dest = g_list_append(dest, src); \
-	}
-
-#define lasso_list_add_non_null(dest, src) \
-	{ \
-		lasso_check_type_equality(src, void*); \
-		if (src != NULL) { \
-			dest = g_list_append(dest, src); \
-		} else { \
-			g_critical("Adding a NULL value to a non-NULL content list: dest=%s src=%s", #dest, #src); \
-		} \
-	}
-
-#define lasso_list_add_string(dest, src) \
-	{ \
-		lasso_check_type_equality(dest, GList*); \
-		lasso_check_type_equality(src, gchar*); \
-		(dest) = g_list_append((dest), g_strdup(src));\
-	}
-
-#define lasso_list_add_xml_string(dest, src) \
-	{ \
-		lasso_check_type_equality(dest, GList*); \
-		lasso_check_type_equality(src, xmlChar*); \
-		(dest) = g_list_append((dest), g_strdup((char*)src));\
-	}
-
-#define lasso_list_add_gobject(dest, src) \
-	{ \
-		if (G_IS_OBJECT(src)) { \
-			dest = g_list_append(dest, g_object_ref(src)); \
-		} else { \
-			g_critical("Trying to add to a GList* a non GObject pointer dest=%s src=%s", #dest, #src); \
-		} \
-	}
-
-#define lasso_list_add_new_gobject(dest, src) \
-	{ \
-		if (G_IS_OBJECT(src)) { \
-			dest = g_list_append(dest, src); \
-		} else { \
-			g_critical("Trying to add to a GList* a non GObject pointer dest=%s src=%s", #dest, #src); \
-		} \
-	}
+#else
+#define lasso_check_type_equality2(a,b,c)
+#endif
 
 /* Freeing */
 #define lasso_release(dest) \
@@ -183,7 +104,7 @@
 #define lasso_unlink_and_release_node(node) \
 	lasso_release_list_of_full(dest, xmlFreeNode)
 
-#define lasso_release_node(node) \
+#define lasso_release_xml_node(node) \
 	lasso_release_full2(node, xmlFreeNode, xmlNodePtr)
 
 #define lasso_release_doc(doc) \
@@ -215,6 +136,145 @@
 	lasso_release_xpath_context(xpathContext); \
 	lasso_release_doc(xmlDocument)
 
+/* Assignment and list appending */
+#define lasso_assign_string(dest,src) \
+	{ \
+		char *__tmp = g_strdup(src);\
+		lasso_release_string(dest); \
+		dest = __tmp; \
+	}
+
+#define lasso_assign_xml_string(dest,src) \
+	{ \
+		xmlChar *__tmp = g_strdup(src); \
+		lasso_release_xml_string(dest); \
+		dest = __tmp; \
+	}
+
+#define lasso_assign_new_string(dest,src) \
+	{ \
+		if (dest) g_free(dest); \
+		dest = src; \
+	}
+
+#define lasso_assign_gobject(dest,src) \
+	{ \
+		lasso_check_type_equality(dest, src); \
+		if (src) \
+			g_object_ref(src); \
+		if (dest) \
+			g_object_unref(dest); \
+		dest = (void*)(src); \
+	}
+
+#define lasso_assign_new_gobject(dest,src) \
+	{ \
+		lasso_check_type_equality(dest, src); \
+		if (dest) \
+			g_object_unref(dest); \
+		dest = (void*)(src); \
+	}
+
+#define lasso_assign_xml_node(dest,src) \
+	{ \
+		lasso_check_type_equality(dest, src); \
+		if (dest) \
+			xmlFreeNode(dest); \
+		dest = xmlCopyNode(src, 1); \
+	}
+
+#define lasso_assign_new_list_of_gobjects(dest, src) \
+	{ \
+		GList *__tmp = (src); \
+		lasso_release_gobject_list(dest); \
+		dest = __tmp; \
+	}
+
+#define lasso_assign_list_of_gobjects(dest, src) \
+	{ \
+		GList *__tmp = (src); \
+		lasso_release_list_of_gobjects(dest); \
+		dest = g_list_copy(__tmp); \
+		for (;__tmp != NULL; __tmp = g_list_next(__tmp)) { \
+			if (G_IS_OBJECT(__tmp->data)) { \
+				g_object_ref(__tmp->data); \
+			} \
+		} \
+	}
+
+#define lasso_assign_list_of_strings(dest, src) \
+	{ \
+		GList *__tmp = src; \
+		GList *__iter_dest; \
+		lasso_release_list_of_strings(dest); \
+		dest = g_list_copy(__tmp); \
+		for (__iter_dest = dest ; __iter_dest != NULL ; __iter_dest = g_list_next(__iter_dest)) { \
+			__iter_dest->data = g_strdup(__iter_dest->data); \
+		} \
+	}
+
+
+/* List appending */
+#define lasso_list_add(dest, src) \
+	{ \
+		lasso_check_type_equality((src), void*); \
+		dest = g_list_append(dest, (src)); \
+	}
+
+#define lasso_list_add_non_null(dest, src) \
+	{ \
+		void *__tmp_non_null_src = (src); \
+		if (__tmp_non_null_src != NULL) { \
+			dest = g_list_append(dest, __tmp_non_null_src); \
+		} else { \
+			g_critical("Adding a NULL value to a non-NULL content list: dest=%s src=%s", #dest, #src); \
+		} \
+	}
+
+#define lasso_list_add_string(dest, src) \
+	{ \
+		lasso_list_add_non_null(dest, g_strdup(src));\
+	}
+
+#define lasso_list_add_new_string(dest, src) \
+	{ \
+		gchar *__tmp = src; \
+		lasso_list_add_non_null(dest, __tmp); \
+	}
+
+#define lasso_list_add_xml_string(dest, src) \
+	{\
+		xmlChar *__tmp_src = (src);\
+		lasso_list_add_non_null(dest, (void*)g_strdup((char*)__tmp_src));\
+	}
+
+#define lasso_list_add_gobject(dest, src) \
+	{ \
+		void *__tmp_src = (src); \
+		if (G_IS_OBJECT(__tmp_src)) { \
+			dest = g_list_append(dest, g_object_ref(__tmp_src)); \
+		} else { \
+			g_critical("Trying to add to a GList* a non GObject pointer dest=%s src=%s", #dest, #src); \
+		} \
+	}
+
+#define lasso_list_add_new_gobject(dest, src) \
+	{ \
+		void *__tmp_src = (src); \
+		if (G_IS_OBJECT(__tmp_src)) { \
+			dest = g_list_append(dest, __tmp_src); \
+		} else { \
+			g_critical("Trying to add to a GList* a non GObject pointer dest=%s src=%s", #dest, #src); \
+		} \
+	}
+
+#define lasso_list_add_xml_node(dest, src) \
+	{ \
+		xmlNode *__tmp_src = src; \
+		lasso_list_add_non_null(dest, __tmp_src); \
+	}
+
+/* Pointer ownership transfer */
 #define lasso_transfer_full(dest, src, kind) \
 	{\
 		lasso_release_##kind((dest)); \
