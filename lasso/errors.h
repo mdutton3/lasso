@@ -28,6 +28,7 @@
 /* undefined */
 #define LASSO_ERROR_UNDEFINED                           -1 /* Undefined error case */
 #define LASSO_ERROR_UNIMPLEMENTED                       -2 /* Unimplemented part of Lasso */
+#define LASSO_ERROR_OUT_OF_MEMORY                       -3 /* Out of memory */
 
 /* generic XML */
 #define LASSO_XML_ERROR_NODE_NOT_FOUND                 -10 /* Unable to get child of element. */
@@ -54,6 +55,8 @@
 #define LASSO_DS_ERROR_INVALID_SIGALG                 -113 /* Invalid signature algorithm. */
 #define LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED          -114
 #define LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND   -115 /* Signature template has not been found. */
+#define LASSO_DS_ERROR_TOO_MUCH_REFERENCES            -116 /* SAML signature must contain only one reference */
+#define LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML     -117 /* SAML signature reference must be to a Request, a Reponse or an Assertion ID attribute */
 
 /* Server */
 #define LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND         -201 /* ProviderID unknown to LassoServer. */
@@ -105,6 +108,7 @@
 #define LASSO_PROFILE_ERROR_MISSING_SERVICE_INSTANCE  -434 /* Missing service instance */
 #define LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE -435 /* Missing endpoint reference */
 #define LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS -436 /* Missing endpoint reference address */
+#define LASSO_PROFILE_ERROR_INVALID_ISSUER            -437 /* Assertion issuer is not thesame as the requested issuer */
 
 /* functions/methods parameters checking */
 #define LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ        -501 /* An object type provided as parameter  */

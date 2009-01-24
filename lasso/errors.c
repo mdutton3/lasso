@@ -69,8 +69,8 @@ lasso_strerror(int error_code)
 			return "Invalid HTTP method";
 		case LASSO_PROFILE_ERROR_INVALID_POST_MSG:
 			return "Invalid POST message";
-		case LASSO_DST_ERROR_MISSING_SERVICE_DATA:
-			return "Missing service data";
+		case LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION:
+			return "No ID-WSF web Service description could be found for the current security mechanism";
 		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE:
 			return "Target name space not found";
 		case LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS:
@@ -87,10 +87,12 @@ lasso_strerror(int error_code)
 			return "Federation not found";
 		case LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL:
 			return "Unable to find Profile URL in metadata";
+		case LASSO_ERROR_OUT_OF_MEMORY:
+			return "Out of memory";
 		case LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND:
 			return "Name identifier not found";
-		case LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION:
-			return "No ID-WSF web Service description could be found for the current security mechanism";
+		case LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION:
+			return "Correlation SOAP Header is missing";
 		case LASSO_PROFILE_ERROR_INVALID_ARTIFACT:
 			return "Invalid artifact";
 		case LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST:
@@ -99,12 +101,14 @@ lasso_strerror(int error_code)
 			return "Unable to get attribute value of element.";
 		case LASSO_DS_ERROR_CONTEXT_CREATION_FAILED:
 			return "Failed to create signature context.";
-		case LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION:
-			return "Correlation SOAP Header is missing";
+		case LASSO_DS_ERROR_TOO_MUCH_REFERENCES:
+			return "SAML signature must contain only one reference";
 		case LASSO_SERVER_ERROR_INVALID_XML:
 			return "LASSO_SERVER_ERROR_INVALID_XML";
 		case LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE:
 			return "Missing service type";
+		case LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML:
+			return "SAML signature reference must be to a Request, a Reponse or an Assertion ID attribute";
 		case LASSO_PROFILE_ERROR_MISSING_ARTIFACT:
 			return "Missing SAML artifact";
 		case LASSO_DS_ERROR_INVALID_SIGALG:
@@ -143,6 +147,8 @@ lasso_strerror(int error_code)
 			return "Failed to create session from dump";
 		case LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED:
 			return "Error building request QUERY url";
+		case LASSO_DST_ERROR_MISSING_SERVICE_DATA:
+			return "Missing service data";
 		case LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED:
 			return "Failed to load certificate.";
 		case LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP:
@@ -237,6 +243,8 @@ lasso_strerror(int error_code)
 			return "Missing SOAP header";
 		case LASSO_PROFILE_ERROR_MISSING_ISSUER:
 			return "Missing issuer";
+		case LASSO_PROFILE_ERROR_INVALID_ISSUER:
+			return "Assertion issuer is not thesame as the requested issuer";
 		case LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL:
 			return "Missing SOAP fault detail";
 		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE:
