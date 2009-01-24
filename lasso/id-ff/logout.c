@@ -843,7 +843,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 	if (LASSO_IS_LIB_LOGOUT_REQUEST(profile->request) == FALSE)
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 
-	lasso_assign_string(profile->remote_providerID =
+	lasso_assign_string(profile->remote_providerID,
 			LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID);
 
 	/* get the provider */
@@ -959,8 +959,8 @@ lasso_logout_validate_request(LassoLogout *logout)
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP &&
 			g_hash_table_size(profile->session->assertions) >= 1) {
 		lasso_transfer_string(logout->initial_remote_providerID, profile->remote_providerID);
-		lasso_transfer_gobject(logout->initial_request, LASSO_NODE(profile->request));
-		lasso_transfer_gobject(logout->initial_response, LASSO_NODE(profile->response));
+		lasso_transfer_gobject(logout->initial_request, profile->request);
+		lasso_transfer_gobject(logout->initial_response, profile->response);
 	}
 
 	return 0;
