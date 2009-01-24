@@ -172,6 +172,15 @@
 		} \
 	}
 
+#define goto_exit_if_fail_with_warning(condition, rc_value) \
+	{\
+		if (! (condition) ) {\
+			g_warning("%s %s", __STRING(condition), __STRING(rc_value));\
+			rc = (rc_value); \
+			goto exit; \
+		} \
+	}
+
 /* Declare type of element in a container */
 #define OFTYPE(x)
 
