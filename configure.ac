@@ -95,6 +95,7 @@ AC_PROG_LN_S
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
+AS_COMPILER_FLAGS(WARNING_FLAGS, "-Wall -Wextra -Wno-missing-field-initializers -Wno-unused-parameter -Wold-style-definition -Wdeclaration-after-statement -Wmissing-declarations -Wredundant-decls -Wmissing-noreturn -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Winline -Wformat-nonliteral -Wformat-security -Wswitch-enum -Wswitch-default -Winit-self -Wmissing-include-dirs -Wundef -Waggregate-return -Wmissing-format-attribute -Wnested-externs")
 
 dnl Find tar command for make dist
 AC_CHECK_PROGS(TAR, gnutar gtar tar)
