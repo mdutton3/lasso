@@ -208,6 +208,7 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 		newServiceInstance = lasso_disco_service_instance_copy(serviceInstance);
 
 		resourceOffering = lasso_disco_resource_offering_new(newServiceInstance);
+		lasso_release_gobject(newServiceInstance);
 		resourceOffering->ResourceID = g_object_ref(login->private_data->resourceId);
 
 		attributeValue = lasso_saml_attribute_value_new();
