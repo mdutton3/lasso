@@ -1827,10 +1827,10 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	profile->signature_status = lasso_provider_verify_signature(
 			remote_provider, authn_response_msg, "ResponseID", format);
 
+	if (profile->signature_status) {
+		return profile->signature_status;
+	}
 	return lasso_login_process_response_status_and_assertion(login);
-
-	/* XXX: and what about signature_status ?  Shouldn't it return error on
-	 * failure ? */
 }
 
 
