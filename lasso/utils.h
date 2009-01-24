@@ -167,10 +167,6 @@
 		} \
 	}
 
-/* Warn of a call to a deprecated function */
-#define lasso_warn_deprecated() \
-	g_warning("Function %s is deprecated !!!", G_STRFUNC)
-
 /* Declare type of element in a container */
 #define OFTYPE(x)
 
