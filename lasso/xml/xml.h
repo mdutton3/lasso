@@ -62,6 +62,7 @@ extern "C" {
  * message that was passed to that function.
  **/
 typedef enum {
+	LASSO_MESSAGE_FORMAT_XSCHEMA_ERROR = -2,
 	LASSO_MESSAGE_FORMAT_ERROR = -1,
 	LASSO_MESSAGE_FORMAT_UNKNOWN,
 	LASSO_MESSAGE_FORMAT_XML,
