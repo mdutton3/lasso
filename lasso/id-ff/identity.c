@@ -211,7 +211,7 @@ void add_matching_resource_offering_to_list(G_GNUC_UNUSED char *name, LassoDisco
 		( offering->ServiceInstance != NULL &&
 		offering->ServiceInstance->ServiceType != NULL &&
 		strcmp(offering->ServiceInstance->ServiceType, ctx->service_type) == 0)) {
-		lasso_list_add(ctx->list, offering);
+		lasso_list_add_gobject(ctx->list, offering);
 	}
 }
 
