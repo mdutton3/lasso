@@ -64,13 +64,13 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoQuery, ResourceID) },
+	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoQuery, ResourceID), NULL, NULL, NULL},
 	{ "EncryptedResourceID",
-		SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoQuery, EncryptedResourceID) },
+		SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoQuery, EncryptedResourceID), NULL, NULL, NULL},
 	{ "RequestedServiceType", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoDiscoQuery, RequestedServiceType) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoQuery, id) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoDiscoQuery, RequestedServiceType), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoQuery, id), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -113,6 +113,7 @@ lasso_disco_query_get_type()
 			sizeof(LassoDiscoQuery),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

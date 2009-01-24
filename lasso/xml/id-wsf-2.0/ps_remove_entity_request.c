@@ -51,8 +51,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "TargetObjectID", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2PsRemoveEntityRequest, TargetObjectID) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2PsRemoveEntityRequest, TargetObjectID), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -96,6 +96,7 @@ lasso_idwsf2_ps_remove_entity_request_get_type()
 			sizeof(LassoIdWsf2PsRemoveEntityRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_PS_REQUEST_ABSTRACT,

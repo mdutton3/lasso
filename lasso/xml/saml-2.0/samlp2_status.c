@@ -49,12 +49,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "StatusCode", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2Status, StatusCode) },
+		G_STRUCT_OFFSET(LassoSamlp2Status, StatusCode), NULL, NULL, NULL},
 	{ "StatusMessage", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoSamlp2Status, StatusMessage) },
+		G_STRUCT_OFFSET(LassoSamlp2Status, StatusMessage), NULL, NULL, NULL},
 	{ "StatusDetail", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2Status, StatusDetail) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlp2Status, StatusDetail), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -100,6 +100,7 @@ lasso_samlp2_status_get_type()
 			sizeof(LassoSamlp2Status),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

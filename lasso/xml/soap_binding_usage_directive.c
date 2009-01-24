@@ -51,14 +51,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, other) },
+		G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, other), NULL, NULL, NULL},
 	{ "ref", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, ref) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, id) },
+		G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, ref), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, id), NULL, NULL, NULL},
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, mustUnderstand) },
-	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, actor) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, mustUnderstand), NULL, NULL, NULL},
+	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingUsageDirective, actor), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -102,6 +102,7 @@ lasso_soap_binding_usage_directive_get_type()
 			sizeof(LassoSoapBindingUsageDirective),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -45,8 +45,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Attribute", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSamlAttributeStatement, Attribute) },
-	{ NULL, 0, 0 }
+		G_STRUCT_OFFSET(LassoSamlAttributeStatement, Attribute), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -86,6 +86,7 @@ lasso_saml_attribute_statement_get_type()
 			sizeof(LassoSamlAttributeStatement),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,

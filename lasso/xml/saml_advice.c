@@ -54,10 +54,10 @@
 
 static struct XmlSnippet schema_snippets[] = {
 /*	{ "AssertionIDReference", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoSamlAdvice, AssertionIDReference) },
-	{ "Assertion", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAdvice, Assertion) }, */
-	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoSamlAdvice, any) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlAdvice, AssertionIDReference), NULL, NULL, NULL},
+	{ "Assertion", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAdvice, Assertion), NULL, NULL, NULL}, */
+	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoSamlAdvice, any), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -99,6 +99,7 @@ lasso_saml_advice_get_type()
 			sizeof(LassoSamlAdvice),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

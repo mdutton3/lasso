@@ -50,12 +50,12 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "RequestedAuthnContext", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoIdWsf2Sb2CredentialsContext, RequestedAuthnContext),
-		"LassoSamlp2RequestedAuthnContext" },
+		"LassoSamlp2RequestedAuthnContext", NULL, NULL },
 	{ "SecurityMechID", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2CredentialsContext, SecurityMechID) },
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2CredentialsContext, SecurityMechID), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2CredentialsContext, attributes) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2CredentialsContext, attributes), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -102,6 +102,7 @@ lasso_idwsf2_sb2_credentials_context_get_type()
 			sizeof(LassoIdWsf2Sb2CredentialsContext),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

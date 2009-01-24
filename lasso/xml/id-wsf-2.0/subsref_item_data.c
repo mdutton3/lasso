@@ -49,12 +49,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "itemIDRef", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefItemData, itemIDRef) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefItemData, itemIDRef), NULL, NULL, NULL},
 	{ "notSorted", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefItemData, notSorted) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefItemData, notSorted), NULL, NULL, NULL},
 	{ "changeFormat", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefItemData, changeFormat) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefItemData, changeFormat), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -100,6 +100,7 @@ lasso_idwsf2_subsref_item_data_get_type()
 			sizeof(LassoIdWsf2SubsRefItemData),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_SUBSREF_APP_DATA,

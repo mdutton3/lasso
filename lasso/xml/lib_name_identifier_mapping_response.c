@@ -53,14 +53,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Extension", SNIPPET_EXTENSION,
-		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingResponse, Extension) },
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingResponse, Extension), NULL, NULL, NULL},
 	{ "ProviderID", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingResponse, ProviderID) },
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingResponse, ProviderID), NULL, NULL, NULL},
 	{ "Status", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingResponse, Status) },
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingResponse, Status), NULL, NULL, NULL},
 	{ "NameIdentifier", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingResponse, NameIdentifier) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingResponse, NameIdentifier), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -103,6 +103,7 @@ lasso_lib_name_identifier_mapping_response_get_type()
 			sizeof(LassoLibNameIdentifierMappingResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		name_identifier_mapping_response_type = g_type_register_static

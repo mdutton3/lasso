@@ -45,7 +45,7 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -128,6 +128,7 @@ lasso_samlp2_logout_response_get_type()
 			sizeof(LassoSamlp2LogoutResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_STATUS_RESPONSE,

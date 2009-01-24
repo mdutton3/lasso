@@ -421,17 +421,17 @@ lasso_profile_set_artifact_message(LassoProfile *profile, char *message)
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Request", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoProfile, request) },
-	{ "Response", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoProfile, response) },
+	{ "Request", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoProfile, request), NULL, NULL, NULL},
+	{ "Response", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoProfile, response), NULL, NULL, NULL},
 	{ "NameIdentifier", SNIPPET_NODE_IN_CHILD,
-		G_STRUCT_OFFSET(LassoProfile, nameIdentifier) },
-	{ "RemoteProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, remote_providerID) },
-	{ "MsgUrl", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_url) },
-	{ "MsgBody", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_body) },
-	{ "MsgRelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_relayState) },
+		G_STRUCT_OFFSET(LassoProfile, nameIdentifier), NULL, NULL, NULL},
+	{ "RemoteProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, remote_providerID), NULL, NULL, NULL},
+	{ "MsgUrl", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_url), NULL, NULL, NULL},
+	{ "MsgBody", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_body), NULL, NULL, NULL},
+	{ "MsgRelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_relayState), NULL, NULL, NULL},
 	{ "HttpRequestMethod", SNIPPET_CONTENT | SNIPPET_INTEGER,
-		G_STRUCT_OFFSET(LassoProfile, http_request_method) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoProfile, http_request_method), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -595,6 +595,7 @@ lasso_profile_get_type()
 			sizeof(LassoProfile),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -59,15 +59,15 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoLibLogoutRequest, Extension) },
-	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, ProviderID) },
-	{ "NameIdentifier", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibLogoutRequest, NameIdentifier) },
-	{ "SessionIndex", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, SessionIndex) },
-	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, RelayState) },
-	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibLogoutRequest, consent) },
+	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoLibLogoutRequest, Extension), NULL, NULL, NULL},
+	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, ProviderID), NULL, NULL, NULL},
+	{ "NameIdentifier", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibLogoutRequest, NameIdentifier), NULL, NULL, NULL},
+	{ "SessionIndex", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, SessionIndex), NULL, NULL, NULL},
+	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, RelayState), NULL, NULL, NULL},
+	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibLogoutRequest, consent), NULL, NULL, NULL},
 	{ "NotOnOrAfter", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoLibLogoutRequest, NotOnOrAfter) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibLogoutRequest, NotOnOrAfter), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static struct QuerySnippet query_snippets[] = {
@@ -159,6 +159,7 @@ lasso_lib_logout_request_get_type()
 			sizeof(LassoLibLogoutRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,

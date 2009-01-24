@@ -57,14 +57,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Extension", SNIPPET_EXTENSION,
-		G_STRUCT_OFFSET(LassoLibFederationTerminationNotification, Extension) },
+		G_STRUCT_OFFSET(LassoLibFederationTerminationNotification, Extension), NULL, NULL, NULL},
 	{ "ProviderID", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibFederationTerminationNotification, ProviderID) },
+		G_STRUCT_OFFSET(LassoLibFederationTerminationNotification, ProviderID), NULL, NULL, NULL},
 	{ "NameIdentifier", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoLibFederationTerminationNotification, NameIdentifier) },
+		G_STRUCT_OFFSET(LassoLibFederationTerminationNotification, NameIdentifier), NULL, NULL, NULL},
 	{ "consent", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoLibFederationTerminationNotification, consent) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibFederationTerminationNotification, consent), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static struct QuerySnippet query_snippets[] = {
@@ -184,6 +184,7 @@ lasso_lib_federation_termination_notification_get_type()
 			sizeof(LassoLibFederationTerminationNotification),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,

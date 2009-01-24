@@ -52,10 +52,10 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Notification", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefNotify, Notification) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefNotify, Notification), NULL, NULL, NULL},
 	{ "timeStamp", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefNotify, timeStamp) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefNotify, timeStamp), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -100,6 +100,7 @@ lasso_idwsf2_subsref_notify_get_type()
 			sizeof(LassoIdWsf2SubsRefNotify),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_DST_REQUEST,

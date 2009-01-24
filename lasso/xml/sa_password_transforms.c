@@ -67,8 +67,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Transform", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSaPasswordTransforms, Transform) },
-	{ NULL, 0, 0}
+	{ "Transform", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSaPasswordTransforms, Transform), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -108,6 +108,7 @@ lasso_sa_password_transforms_get_type()
 			sizeof(LassoSaPasswordTransforms),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

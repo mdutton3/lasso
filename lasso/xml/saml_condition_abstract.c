@@ -71,6 +71,7 @@ lasso_saml_condition_abstract_get_type()
 			sizeof(LassoSamlConditionAbstract),
 			0,
 			NULL,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -47,8 +47,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDstNewData, any) },
-	{NULL, 0, 0}
+	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDstNewData, any), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -90,6 +90,7 @@ lasso_dst_new_data_get_type()
 			sizeof(LassoDstNewData),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

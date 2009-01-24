@@ -59,10 +59,10 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDstData, any) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstData, id) },
-	{ "itemIDRef", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstData, itemIDRef) },
-	{ NULL, 0, 0}
+	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDstData, any), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstData, id), NULL, NULL, NULL},
+	{ "itemIDRef", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstData, itemIDRef), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 
@@ -105,6 +105,7 @@ lasso_dst_data_get_type()
 			sizeof(LassoDstData),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

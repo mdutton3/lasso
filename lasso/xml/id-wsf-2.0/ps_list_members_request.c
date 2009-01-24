@@ -55,16 +55,16 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "TargetObjectID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsListMembersRequest, TargetObjectID) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsListMembersRequest, TargetObjectID), NULL, NULL, NULL},
 	{ "Subscription", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsListMembersRequest, Subscription) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsListMembersRequest, Subscription), NULL, NULL, NULL},
 	{ "Structured", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2PsListMembersRequest, Structured) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsListMembersRequest, Structured), NULL, NULL, NULL},
 	{ "Count", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
-		G_STRUCT_OFFSET(LassoIdWsf2PsListMembersRequest, Count) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsListMembersRequest, Count), NULL, NULL, NULL},
 	{ "Offset", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
-		G_STRUCT_OFFSET(LassoIdWsf2PsListMembersRequest, Offset) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2PsListMembersRequest, Offset), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -112,6 +112,7 @@ lasso_idwsf2_ps_list_members_request_get_type()
 			sizeof(LassoIdWsf2PsListMembersRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_PS_REQUEST_ABSTRACT,

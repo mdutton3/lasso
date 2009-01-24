@@ -968,18 +968,18 @@ lasso_logout_validate_request(LassoLogout *logout)
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "InitialRequest", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoLogout, initial_request) },
+	{ "InitialRequest", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoLogout, initial_request), NULL, NULL, NULL},
 	{ "InitialResponse", SNIPPET_NODE_IN_CHILD,
-		G_STRUCT_OFFSET(LassoLogout, initial_response) },
+		G_STRUCT_OFFSET(LassoLogout, initial_response), NULL, NULL, NULL},
 	{ "InitialRemoteProviderID", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLogout, initial_remote_providerID) },
+		G_STRUCT_OFFSET(LassoLogout, initial_remote_providerID), NULL, NULL, NULL},
 	{ "InitialHttpRequestMethod", SNIPPET_CONTENT | SNIPPET_INTEGER,
-		G_STRUCT_OFFSET(LassoLogout, initial_http_request_method) },
+		G_STRUCT_OFFSET(LassoLogout, initial_http_request_method), NULL, NULL, NULL},
 	/* "ProviderIdIndex" must not be dumped (since apps assume to get
 	 * it back to 0 after a restore from dump) (maybe this behaviour should
 	 * be fixed)
 	 */
-	{ NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -1105,6 +1105,7 @@ lasso_logout_get_type()
 			sizeof(LassoLogout),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

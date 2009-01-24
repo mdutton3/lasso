@@ -49,14 +49,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "count", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
-		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, count) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, count), NULL, NULL, NULL},
 	{ "offset", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
-		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, offset) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, offset), NULL, NULL, NULL},
 	{ "setID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, setID) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, setID), NULL, NULL, NULL},
 	{ "setReq", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, setReq) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2DstRefQueryItem, setReq), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -103,6 +103,7 @@ lasso_idwsf2_dstref_query_item_get_type()
 			sizeof(LassoIdWsf2DstRefQueryItem),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_DSTREF_RESULT_QUERY,

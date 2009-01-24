@@ -52,15 +52,15 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "RequestAuthnContext", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, RequestAuthnContext) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, RequestAuthnContext), NULL, NULL, NULL},
 	{ "SecurityMechID", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, SecurityMechID) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, id) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, SecurityMechID), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, id), NULL, NULL, NULL},
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, mustUnderstand) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, mustUnderstand), NULL, NULL, NULL},
 	{ "actor", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, actor) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, actor), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -104,6 +104,7 @@ lasso_soap_binding_ext_credentials_context_get_type()
 			sizeof(LassoSoapBindingExtCredentialsContext),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

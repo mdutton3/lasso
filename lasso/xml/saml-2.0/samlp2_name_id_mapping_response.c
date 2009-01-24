@@ -52,11 +52,11 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "NameID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2NameIDMappingResponse, NameID) },
+		G_STRUCT_OFFSET(LassoSamlp2NameIDMappingResponse, NameID), NULL, NULL, NULL},
 	{ "EncryptedID", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlp2NameIDMappingResponse, EncryptedID),
-		"LassoSaml2EncryptedElement" },
-	{NULL, 0, 0}
+		"LassoSaml2EncryptedElement", NULL, NULL },
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -132,6 +132,7 @@ lasso_samlp2_name_id_mapping_response_get_type()
 			sizeof(LassoSamlp2NameIDMappingResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_STATUS_RESPONSE,

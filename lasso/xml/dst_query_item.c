@@ -63,13 +63,13 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Select", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQueryItem, Select) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, id) },
+	{ "Select", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQueryItem, Select), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, id), NULL, NULL, NULL},
 	{ "includeCommonAttributes", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN, \
-		G_STRUCT_OFFSET(LassoDstQueryItem, includeCommonAttributes) },
-	{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, itemID) },
-	{ "changedSince", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, changedSince) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoDstQueryItem, includeCommonAttributes), NULL, NULL, NULL},
+	{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, itemID), NULL, NULL, NULL},
+	{ "changedSince", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, changedSince), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -116,6 +116,7 @@ lasso_dst_query_item_get_type()
 			sizeof(LassoDstQueryItem),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

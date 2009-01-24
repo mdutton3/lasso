@@ -68,16 +68,16 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "SecurityMechID", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoDiscoDescription, SecurityMechID) },
+		G_STRUCT_OFFSET(LassoDiscoDescription, SecurityMechID), NULL, NULL, NULL},
 	{ "CredentialRef", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoDiscoDescription, CredentialRef) },
-	{ "WsdlURI", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, WsdlURI) },
+		G_STRUCT_OFFSET(LassoDiscoDescription, CredentialRef), NULL, NULL, NULL},
+	{ "WsdlURI", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, WsdlURI), NULL, NULL, NULL},
 	{ "ServiceNameRef", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoDiscoDescription, ServiceNameRef) },
-	{ "Endpoint", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, Endpoint) },
-	{ "SoapAction", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, SoapAction) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoDescription, id) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoDiscoDescription, ServiceNameRef), NULL, NULL, NULL},
+	{ "Endpoint", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, Endpoint), NULL, NULL, NULL},
+	{ "SoapAction", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, SoapAction), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoDescription, id), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -126,6 +126,7 @@ lasso_disco_description_get_type()
 			sizeof(LassoDiscoDescription),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

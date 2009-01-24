@@ -97,6 +97,7 @@ lasso_personal_profile_service_get_type()
 			sizeof(LassoPersonalProfileService),
 			0,
 			NULL,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_DATA_SERVICE,

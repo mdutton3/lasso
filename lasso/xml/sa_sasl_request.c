@@ -59,18 +59,18 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Data", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoSaSASLRequest, Data) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, Data), NULL, NULL, NULL},
 	{ "RequestAuthnContext", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSaSASLRequest, RequestAuthnContext) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, RequestAuthnContext), NULL, NULL, NULL},
 	{ "mechanism", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaSASLRequest, mechanism) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, mechanism), NULL, NULL, NULL},
 	{ "authzID", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaSASLRequest, authzID) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, authzID), NULL, NULL, NULL},
 	{ "advisoryAuthnID", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaSASLRequest, advisoryAuthnID) },
+		G_STRUCT_OFFSET(LassoSaSASLRequest, advisoryAuthnID), NULL, NULL, NULL},
 	{ "id", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaSASLRequest, id) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSaSASLRequest, id), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -116,6 +116,7 @@ lasso_sa_sasl_request_get_type()
 			sizeof(LassoSaSASLRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

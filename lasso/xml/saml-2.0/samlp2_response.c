@@ -56,10 +56,10 @@ extern LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Assertion", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSamlp2Response, Assertion) },
+		G_STRUCT_OFFSET(LassoSamlp2Response, Assertion), NULL, NULL, NULL},
 	{ "EncryptedAssertion", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSamlp2Response, EncryptedAssertion) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlp2Response, EncryptedAssertion), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -177,6 +177,7 @@ lasso_samlp2_response_get_type()
 			sizeof(LassoSamlp2Response),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_STATUS_RESPONSE,

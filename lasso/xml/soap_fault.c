@@ -55,10 +55,10 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "faultcode", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoSoapFault, faultcode) },
-	{ "faultstring", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoSoapFault, faultstring) },
-	{ "detail", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSoapFault, Detail) },
-	{ NULL, 0, 0}
+	{ "faultcode", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoSoapFault, faultcode), NULL, NULL, NULL},
+	{ "faultstring", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoSoapFault, faultstring), NULL, NULL, NULL},
+	{ "detail", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSoapFault, Detail), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -101,6 +101,7 @@ lasso_soap_fault_get_type()
 			sizeof(LassoSoapFault),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

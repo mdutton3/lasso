@@ -44,12 +44,12 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Action", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoWsAddrProblemAction, Action),
-		"LassoWsAddrAttributedURI" },
+		"LassoWsAddrAttributedURI", NULL, NULL },
 	{ "SoapAction", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoWsAddrProblemAction, SoapAction) },
+		G_STRUCT_OFFSET(LassoWsAddrProblemAction, SoapAction), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoWsAddrProblemAction, attributes) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoWsAddrProblemAction, attributes), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -96,6 +96,7 @@ lasso_wsa_problem_action_get_type()
 			sizeof(LassoWsAddrProblemAction),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

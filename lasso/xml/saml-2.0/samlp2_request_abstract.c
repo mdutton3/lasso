@@ -59,33 +59,33 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Issuer", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, Issuer),
-		"LassoSaml2NameID" },
+		"LassoSaml2NameID", NULL, NULL },
 	{ "Signature", SNIPPET_SIGNATURE,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, ID) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, ID), NULL, NULL, NULL},
 	{ "Extensions", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, Extensions) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, Extensions), NULL, NULL, NULL},
 	{ "ID", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, ID) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, ID), NULL, NULL, NULL},
 	{ "Version", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, Version) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, Version), NULL, NULL, NULL},
 	{ "IssueInstant", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, IssueInstant) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, IssueInstant), NULL, NULL, NULL},
 	{ "Destination", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, Destination) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, Destination), NULL, NULL, NULL},
 	{ "Consent", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, Consent) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, Consent), NULL, NULL, NULL},
 
 	/* hidden fields; used in lasso dumps */
 	{ "SignType", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, sign_type) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, sign_type), NULL, NULL, NULL},
 	{ "SignMethod", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, sign_method) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, sign_method), NULL, NULL, NULL},
 	{ "PrivateKeyFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, private_key_file) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, private_key_file), NULL, NULL, NULL},
 	{ "CertificateFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, certificate_file) },
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, certificate_file), NULL, NULL, NULL},
 
-	{NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -169,6 +169,7 @@ lasso_samlp2_request_abstract_get_type()
 			sizeof(LassoSamlp2RequestAbstract),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

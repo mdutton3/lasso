@@ -52,20 +52,20 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Inquiry", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, Inquiry) },
-	{ "Signature", SNIPPET_SIGNATURE  },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, Inquiry), NULL, NULL, NULL},
+	{ "Signature", SNIPPET_SIGNATURE, 0, NULL, NULL, NULL  },
 
 	/* hidden fields; used in lasso dumps */
 	{ "SignType", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, sign_type) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, sign_type), NULL, NULL, NULL},
 	{ "SignMethod", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, sign_method) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, sign_method), NULL, NULL, NULL},
 	{ "PrivateKeyFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, private_key_file) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, private_key_file), NULL, NULL, NULL},
 	{ "CertificateFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, certificate_file) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, certificate_file), NULL, NULL, NULL},
 
-	{NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -115,6 +115,7 @@ lasso_idwsf2_is_interaction_statement_get_type()
 			sizeof(LassoIdWsf2IsInteractionStatement),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

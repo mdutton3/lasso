@@ -62,32 +62,32 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Subject", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, Subject) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, Subject), NULL, NULL, NULL},
 	{ "NameIDPolicy", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, NameIDPolicy) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, NameIDPolicy), NULL, NULL, NULL},
 	{ "Conditions", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, Conditions) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, Conditions), NULL, NULL, NULL},
 	{ "RequestedAuthnContext", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, RequestedAuthnContext) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, RequestedAuthnContext), NULL, NULL, NULL},
 	{ "Scoping", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, Scoping) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, Scoping), NULL, NULL, NULL},
 	{ "ForceAuthn", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, ForceAuthn) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, ForceAuthn), NULL, NULL, NULL},
 	{ "IsPassive", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, IsPassive) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, IsPassive), NULL, NULL, NULL},
 	{ "ProtocolBinding", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, ProtocolBinding) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, ProtocolBinding), NULL, NULL, NULL},
 	{ "AssertionConsumerServiceIndex",
 		SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, AssertionConsumerServiceIndex) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, AssertionConsumerServiceIndex), NULL, NULL, NULL},
 	{ "AssertionConsumerServiceURL", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, AssertionConsumerServiceURL) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, AssertionConsumerServiceURL), NULL, NULL, NULL},
 	{ "AttributeConsumingServiceIndex",
 		SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, AttributeConsumingServiceIndex) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, AttributeConsumingServiceIndex), NULL, NULL, NULL},
 	{ "ProviderName", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, ProviderName) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, ProviderName), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -176,6 +176,7 @@ lasso_samlp2_authn_request_get_type()
 			sizeof(LassoSamlp2AuthnRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_REQUEST_ABSTRACT,

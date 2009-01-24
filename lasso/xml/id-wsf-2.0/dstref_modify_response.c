@@ -46,7 +46,7 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -128,6 +128,7 @@ lasso_idwsf2_dstref_modify_response_get_type()
 			sizeof(LassoIdWsf2DstRefModifyResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_DSTREF_DATA_RESPONSE,

@@ -54,15 +54,15 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "InteractionService", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIsUserInteraction, InteractionService) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsUserInteraction, id) },
-	{ "interact", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsUserInteraction, interact) },
-	{ "language", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsUserInteraction, language) },
+		G_STRUCT_OFFSET(LassoIsUserInteraction, InteractionService), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsUserInteraction, id), NULL, NULL, NULL},
+	{ "interact", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsUserInteraction, interact), NULL, NULL, NULL},
+	{ "language", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsUserInteraction, language), NULL, NULL, NULL},
 	{ "redirect", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN,
-		G_STRUCT_OFFSET(LassoIsUserInteraction, redirect) },
+		G_STRUCT_OFFSET(LassoIsUserInteraction, redirect), NULL, NULL, NULL},
 	{ "maxInteractTime", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIsUserInteraction, maxInteractTime) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIsUserInteraction, maxInteractTime), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -107,6 +107,7 @@ lasso_is_user_interaction_get_type()
 			sizeof(LassoIsUserInteraction),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

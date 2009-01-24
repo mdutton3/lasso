@@ -56,11 +56,11 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Extension", SNIPPET_EXTENSION,
-		G_STRUCT_OFFSET(LassoLibStatusResponse, Extension) },
-	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibStatusResponse, ProviderID) },
-	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibStatusResponse, Status) },
-	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibStatusResponse, RelayState) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibStatusResponse, Extension), NULL, NULL, NULL},
+	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibStatusResponse, ProviderID), NULL, NULL, NULL},
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibStatusResponse, Status), NULL, NULL, NULL},
+	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibStatusResponse, RelayState), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static struct QuerySnippet query_snippets[] = {
@@ -153,6 +153,7 @@ lasso_lib_status_response_get_type()
 			sizeof(LassoLibStatusResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		status_response_type = g_type_register_static(LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT,

@@ -68,6 +68,7 @@ lasso_lib_logout_response_get_type()
 			sizeof(LassoLibLogoutResponse),
 			0,
 			NULL,
+			NULL,
 		};
 
 		logout_response_type = g_type_register_static(LASSO_TYPE_LIB_STATUS_RESPONSE,

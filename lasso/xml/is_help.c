@@ -46,10 +46,10 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "label", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsHelp, label) },
-	{ "link", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsHelp, link) },
-	{ "moreLink", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsHelp, moreLink) },
-	{ NULL, 0, 0}
+	{ "label", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsHelp, label), NULL, NULL, NULL},
+	{ "link", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsHelp, link), NULL, NULL, NULL},
+	{ "moreLink", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsHelp, moreLink), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -91,6 +91,7 @@ lasso_is_help_get_type()
 			sizeof(LassoIsHelp),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

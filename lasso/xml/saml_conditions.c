@@ -50,12 +50,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "AudienceRestrictionCondition", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSamlConditions, AudienceRestrictionCondition) },
+		G_STRUCT_OFFSET(LassoSamlConditions, AudienceRestrictionCondition), NULL, NULL, NULL},
 	{ "NotBefore", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlConditions, NotBefore) },
+		G_STRUCT_OFFSET(LassoSamlConditions, NotBefore), NULL, NULL, NULL},
 	{ "NotOnOrAfter", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlConditions, NotOnOrAfter) },
-	{ NULL, 0, 0 }
+		G_STRUCT_OFFSET(LassoSamlConditions, NotOnOrAfter), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -98,6 +98,7 @@ lasso_saml_conditions_get_type()
 			sizeof(LassoSamlConditions),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

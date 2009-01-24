@@ -47,12 +47,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "AuthorityKind", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlAuthorityBinding, AuthorityKind) },
+		G_STRUCT_OFFSET(LassoSamlAuthorityBinding, AuthorityKind), NULL, NULL, NULL},
 	{ "Location", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlAuthorityBinding, Location) },
+		G_STRUCT_OFFSET(LassoSamlAuthorityBinding, Location), NULL, NULL, NULL},
 	{ "Binding", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlAuthorityBinding, Binding) },
-	{ NULL, 0, 0 }
+		G_STRUCT_OFFSET(LassoSamlAuthorityBinding, Binding), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -94,6 +94,7 @@ lasso_saml_authority_binding_get_type()
 			sizeof(LassoSamlAuthorityBinding),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

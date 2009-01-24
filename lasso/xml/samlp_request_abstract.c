@@ -61,17 +61,17 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "RespondWith", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RespondWith) },
+		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RespondWith), NULL, NULL, NULL},
 	{ "Signature", SNIPPET_SIGNATURE,
-		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RequestID) },
-	{ "RequestID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RequestID) },
+		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RequestID), NULL, NULL, NULL},
+	{ "RequestID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RequestID), NULL, NULL, NULL},
 	{ "MajorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
-		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, MajorVersion) },
+		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, MajorVersion), NULL, NULL, NULL},
 	{ "MinorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
-		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, MinorVersion) },
+		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, MinorVersion), NULL, NULL, NULL},
 	{ "IssueInstant", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, IssueInstant) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, IssueInstant), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -142,6 +142,7 @@ lasso_samlp_request_abstract_get_type()
 			sizeof(LassoSamlpRequestAbstract),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

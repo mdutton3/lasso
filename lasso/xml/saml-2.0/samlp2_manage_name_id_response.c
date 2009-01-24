@@ -42,7 +42,7 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -111,6 +111,7 @@ lasso_samlp2_manage_name_id_response_get_type()
 			sizeof(LassoSamlp2ManageNameIDResponse),
 			0,
 			NULL,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_STATUS_RESPONSE,

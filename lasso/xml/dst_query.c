@@ -58,14 +58,14 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstQuery, ResourceID) },
+	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstQuery, ResourceID), NULL, NULL, NULL},
 	{ "EncryptedResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstQuery,
-			EncryptedResourceID) },
-	{ "QueryItem", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstQuery, QueryItem) },
-	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoDstQuery, Extension) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, id) },
-	{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, itemID) },
-	{NULL, 0, 0}
+			EncryptedResourceID), NULL, NULL, NULL },
+	{ "QueryItem", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstQuery, QueryItem), NULL, NULL, NULL},
+	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoDstQuery, Extension), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, id), NULL, NULL, NULL},
+	{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, itemID), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -164,6 +164,7 @@ lasso_dst_query_get_type()
 			sizeof(LassoDstQuery),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

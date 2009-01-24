@@ -84,7 +84,7 @@ dnl Check for programs
 dnl
 AC_PROG_CC
 CFLAGS=""
-AM_CFLAGS="-Wall -Wextra -Werror -Wno-missing-field-initializers"
+AM_CFLAGS="-Wall -Wextra -Werror"
 AC_HEADER_STDC
 LT_AC_PROG_RC
 AC_EXEEXT

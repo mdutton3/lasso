@@ -46,10 +46,10 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Address", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2SubjectLocality, Address) },
+		G_STRUCT_OFFSET(LassoSaml2SubjectLocality, Address), NULL, NULL, NULL},
 	{ "DNSName", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2SubjectLocality, DNSName) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSaml2SubjectLocality, DNSName), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -94,6 +94,7 @@ lasso_saml2_subject_locality_get_type()
 			sizeof(LassoSaml2SubjectLocality),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

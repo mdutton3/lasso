@@ -67,25 +67,25 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ServiceType", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, ServiceType) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, ServiceType), NULL, NULL, NULL},
 	{ "ProviderID", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, ProviderID) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, ProviderID), NULL, NULL, NULL},
 	{ "Options", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, Options),
-		"LassoIdWsf2DiscoOptions" },
+		"LassoIdWsf2DiscoOptions", NULL, NULL },
 	{ "SecurityMechID", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, SecurityMechID) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, SecurityMechID), NULL, NULL, NULL},
 	{ "Framework", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, Framework) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, Framework), NULL, NULL, NULL},
 	{ "Action", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, Action) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, Action), NULL, NULL, NULL},
 	{ "", SNIPPET_NODE | SNIPPET_ANY | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, any) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, any), NULL, NULL, NULL},
 	{ "reqID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, reqID) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, reqID), NULL, NULL, NULL},
 	{ "resultsType", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, resultsType) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoRequestedService, resultsType), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -137,6 +137,7 @@ lasso_idwsf2_disco_requested_service_get_type()
 			sizeof(LassoIdWsf2DiscoRequestedService),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

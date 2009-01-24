@@ -54,18 +54,18 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "InteractionService", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, InteractionService) },
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, InteractionService), NULL, NULL, NULL},
 	{ "interact", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, interact) },
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, interact), NULL, NULL, NULL},
 	{ "language", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, language) },
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, language), NULL, NULL, NULL},
 	{ "redirect", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, redirect) },
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, redirect), NULL, NULL, NULL},
 	{ "maxInteractTime", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, maxInteractTime) },
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, maxInteractTime), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, attributes) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2UserInteractionHeader, attributes), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -115,6 +115,7 @@ lasso_idwsf2_sb2_user_interaction_header_get_type()
 			sizeof(LassoIdWsf2Sb2UserInteractionHeader),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

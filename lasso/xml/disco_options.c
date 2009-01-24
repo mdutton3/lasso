@@ -46,8 +46,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Option", SNIPPET_LIST_CONTENT, G_STRUCT_OFFSET(LassoDiscoOptions, Option) },
-	{ NULL, 0, 0}
+	{ "Option", SNIPPET_LIST_CONTENT, G_STRUCT_OFFSET(LassoDiscoOptions, Option), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -87,6 +87,7 @@ lasso_disco_options_get_type()
 			sizeof(LassoDiscoOptions),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

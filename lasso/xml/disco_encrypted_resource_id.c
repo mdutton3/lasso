@@ -49,12 +49,12 @@
 static struct XmlSnippet schema_snippets[] = {
 #if 0
 	{ "EncryptedData", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedData) },
+		G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedData), NULL, NULL, NULL},
 	{ "EncryptedKey", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedKey) },
+		G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedKey), NULL, NULL, NULL},
 #endif
-	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, any) },
-	{ NULL, 0, 0}
+	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, any), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -98,6 +98,7 @@ lasso_disco_encrypted_resource_id_get_type()
 			sizeof(LassoDiscoEncryptedResourceID),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

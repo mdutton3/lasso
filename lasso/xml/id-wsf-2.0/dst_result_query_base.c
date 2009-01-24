@@ -54,22 +54,22 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ChangeFormat", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, ChangeFormat) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, ChangeFormat), NULL, NULL, NULL},
 	{ "itemIDRef", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, itemIDRef) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, itemIDRef), NULL, NULL, NULL},
 	{ "contingency", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, contingency) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, contingency), NULL, NULL, NULL},
 	{ "includeCommonAttributes", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, includeCommonAttributes) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, includeCommonAttributes), NULL, NULL, NULL},
 	{ "changedSince", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, changedSince) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, changedSince), NULL, NULL, NULL},
 	{ "itemID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, itemID) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, itemID), NULL, NULL, NULL},
 	{ "objectType", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, objectType) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, objectType), NULL, NULL, NULL},
 	{ "predefined", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, predefined) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2DstResultQueryBase, predefined), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -120,6 +120,7 @@ lasso_idwsf2_dst_result_query_base_get_type()
 			sizeof(LassoIdWsf2DstResultQueryBase),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -50,8 +50,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "IDPProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER,
-		G_STRUCT_OFFSET(LassoLibSubject, IDPProvidedNameIdentifier) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibSubject, IDPProvidedNameIdentifier), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -91,6 +91,7 @@ lasso_lib_subject_get_type()
 			sizeof(LassoLibSubject),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT,

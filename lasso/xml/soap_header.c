@@ -35,8 +35,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSoapHeader, Other) },
-	{ NULL, 0, 0}
+	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSoapHeader, Other), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -76,6 +76,7 @@ lasso_soap_header_get_type()
 			sizeof(LassoSoapHeader),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

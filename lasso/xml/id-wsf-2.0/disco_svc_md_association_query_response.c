@@ -50,12 +50,12 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Status", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDAssociationQueryResponse, Status),
-		"LassoIdWsf2UtilStatus" },
+		"LassoIdWsf2UtilStatus", NULL, NULL },
 	{ "SvcMDID", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDAssociationQueryResponse, SvcMDID) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDAssociationQueryResponse, SvcMDID), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDAssociationQueryResponse, attributes) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDAssociationQueryResponse, attributes), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -102,6 +102,7 @@ lasso_idwsf2_disco_svc_md_association_query_response_get_type()
 			sizeof(LassoIdWsf2DiscoSvcMDAssociationQueryResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

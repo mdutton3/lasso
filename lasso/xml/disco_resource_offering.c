@@ -57,18 +57,18 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ResourceID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoDiscoResourceOffering, ResourceID) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, ResourceID), NULL, NULL, NULL},
 	{ "EncryptedResourceID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoDiscoResourceOffering, EncryptedResourceID) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, EncryptedResourceID), NULL, NULL, NULL},
 	{ "ServiceInstance", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoDiscoResourceOffering, ServiceInstance) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, ServiceInstance), NULL, NULL, NULL},
 	{ "Options", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoDiscoResourceOffering, Options) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, Options), NULL, NULL, NULL},
 	{ "Abstract", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoDiscoResourceOffering, Abstract) },
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, Abstract), NULL, NULL, NULL},
 	{ "entryID", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoDiscoResourceOffering, entryID) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoDiscoResourceOffering, entryID), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -113,6 +113,7 @@ lasso_disco_resource_offering_get_type()
 			sizeof(LassoDiscoResourceOffering),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

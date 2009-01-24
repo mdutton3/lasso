@@ -46,18 +46,18 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Address", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoWsAddrEndpointReference, Address),
-		"LassoWsAddrAttributedURI" },
+		"LassoWsAddrAttributedURI", NULL, NULL },
 	{ "ReferenceParameters", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoWsAddrEndpointReference, ReferenceParameters),
-		"LassoWsAddrReferenceParameters" },
+		"LassoWsAddrReferenceParameters", NULL, NULL },
 	{ "Metadata", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoWsAddrEndpointReference, Metadata),
-		"LassoWsAddrMetadata" },
+		"LassoWsAddrMetadata", NULL, NULL },
 	{ "", SNIPPET_LIST_NODES | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoWsAddrEndpointReference, any) },
+		G_STRUCT_OFFSET(LassoWsAddrEndpointReference, any), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoWsAddrEndpointReference, attributes) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoWsAddrEndpointReference, attributes), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -106,6 +106,7 @@ lasso_wsa_endpoint_reference_get_type()
 			sizeof(LassoWsAddrEndpointReference),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

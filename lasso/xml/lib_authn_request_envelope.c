@@ -72,20 +72,20 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Extension", SNIPPET_EXTENSION,
-		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, Extension) },
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, Extension), NULL, NULL, NULL},
 	{ "AuthnRequest", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, AuthnRequest) },
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, AuthnRequest), NULL, NULL, NULL},
 	{ "ProviderID", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, ProviderID) },
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, ProviderID), NULL, NULL, NULL},
 	{ "ProviderName", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, ProviderName) },
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, ProviderName), NULL, NULL, NULL},
 	{ "AssertionConsumerServiceURL", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, AssertionConsumerServiceURL) },
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, AssertionConsumerServiceURL), NULL, NULL, NULL},
 	{ "IDPList", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, IDPList) },
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, IDPList), NULL, NULL, NULL},
 	{ "IsPassive", SNIPPET_CONTENT | SNIPPET_BOOLEAN,
-		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, IsPassive) },
-	{ NULL, 0, 0 }
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, IsPassive), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -131,6 +131,7 @@ lasso_lib_authn_request_envelope_get_type()
 			sizeof(LassoLibAuthnRequestEnvelope),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

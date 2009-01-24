@@ -49,12 +49,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "maxProcessingTime", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER, \
-		G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, maxProcessingTime) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, id) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, maxProcessingTime), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, id), NULL, NULL, NULL},
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, mustUnderstand) },
-	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, actor) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, mustUnderstand), NULL, NULL, NULL},
+	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtTimeout, actor), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -97,6 +97,7 @@ lasso_soap_binding_ext_timeout_get_type()
 			sizeof(LassoSoapBindingExtTimeout),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

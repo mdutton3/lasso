@@ -89,24 +89,24 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoLibAuthnRequest, Extension) },
-	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, ProviderID) },
-	{ "AffiliationID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, AffiliationID) },
-	{ "NameIDPolicy", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, NameIDPolicy) },
+	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoLibAuthnRequest, Extension), NULL, NULL, NULL},
+	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, ProviderID), NULL, NULL, NULL},
+	{ "AffiliationID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, AffiliationID), NULL, NULL, NULL},
+	{ "NameIDPolicy", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, NameIDPolicy), NULL, NULL, NULL},
 	{ "ForceAuthn", SNIPPET_CONTENT | SNIPPET_BOOLEAN,
-		G_STRUCT_OFFSET(LassoLibAuthnRequest, ForceAuthn) },
+		G_STRUCT_OFFSET(LassoLibAuthnRequest, ForceAuthn), NULL, NULL, NULL},
 	{ "IsPassive", SNIPPET_CONTENT | SNIPPET_BOOLEAN,
-		G_STRUCT_OFFSET(LassoLibAuthnRequest, IsPassive) },
+		G_STRUCT_OFFSET(LassoLibAuthnRequest, IsPassive), NULL, NULL, NULL},
 	{ "ProtocolProfile", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibAuthnRequest, ProtocolProfile) },
+		G_STRUCT_OFFSET(LassoLibAuthnRequest, ProtocolProfile), NULL, NULL, NULL},
 	{ "AssertionConsumerServiceID", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibAuthnRequest, AssertionConsumerServiceID) },
+		G_STRUCT_OFFSET(LassoLibAuthnRequest, AssertionConsumerServiceID), NULL, NULL, NULL},
 	{ "RequestAuthnContext", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoLibAuthnRequest, RequestAuthnContext) },
-	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, RelayState) },
-	{ "Scoping", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibAuthnRequest, Scoping) },
-	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibAuthnRequest, consent) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibAuthnRequest, RequestAuthnContext), NULL, NULL, NULL},
+	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, RelayState), NULL, NULL, NULL},
+	{ "Scoping", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibAuthnRequest, Scoping), NULL, NULL, NULL},
+	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibAuthnRequest, consent), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static struct QuerySnippet query_snippets[] = {
@@ -214,6 +214,7 @@ lasso_lib_authn_request_get_type()
 			sizeof(LassoLibAuthnRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,

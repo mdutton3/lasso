@@ -37,10 +37,10 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "AuthnResponse", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoLibAuthnResponseEnvelope, AuthnResponse) },
+		G_STRUCT_OFFSET(LassoLibAuthnResponseEnvelope, AuthnResponse), NULL, NULL, NULL},
 	{ "AssertionConsumerServiceURL", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibAuthnResponseEnvelope, AssertionConsumerServiceURL) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibAuthnResponseEnvelope, AssertionConsumerServiceURL), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -82,6 +82,7 @@ lasso_lib_authn_response_envelope_get_type()
 			sizeof(LassoLibAuthnResponseEnvelope),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

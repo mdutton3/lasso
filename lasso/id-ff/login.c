@@ -1969,10 +1969,10 @@ lasso_login_set_resourceId(G_GNUC_UNUSED LassoLogin *login, G_GNUC_UNUSED const 
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "AssertionArtifact", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLogin, assertionArtifact) },
-	{ "NameIDPolicy", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLogin, nameIDPolicy) },
-	{ "Assertion", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoLogin, assertion) },
-	{ NULL, 0, 0}
+	{ "AssertionArtifact", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLogin, assertionArtifact), NULL, NULL, NULL},
+	{ "NameIDPolicy", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLogin, nameIDPolicy), NULL, NULL, NULL},
+	{ "Assertion", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoLogin, assertion), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -2117,6 +2117,7 @@ lasso_login_get_type()
 			sizeof(LassoLogin),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

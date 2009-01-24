@@ -646,8 +646,8 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "OldNameIdentifier", SNIPPET_NODE_IN_CHILD,
-		G_STRUCT_OFFSET(LassoNameRegistration, oldNameIdentifier) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoNameRegistration, oldNameIdentifier), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -708,6 +708,7 @@ lasso_name_registration_get_type()
 			sizeof(LassoNameRegistration),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

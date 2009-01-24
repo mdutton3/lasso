@@ -52,16 +52,16 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "TestResult", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2SubsNotification, TestResult),
-		"LassoIdWsf2UtilTestResult" },
+		"LassoIdWsf2UtilTestResult", NULL, NULL },
 	{ "id", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsNotification, id) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsNotification, id), NULL, NULL, NULL},
 	{ "subscriptionID", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsNotification, subscriptionID) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsNotification, subscriptionID), NULL, NULL, NULL},
 	{ "expires", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsNotification, expires) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsNotification, expires), NULL, NULL, NULL},
 	{ "endReason", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsNotification, endReason) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2SubsNotification, endReason), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -109,6 +109,7 @@ lasso_idwsf2_subs_notification_get_type()
 			sizeof(LassoIdWsf2SubsNotification),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -63,11 +63,11 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoModifyResponse, Status) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoModifyResponse, id) },
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoModifyResponse, Status), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoModifyResponse, id), NULL, NULL, NULL},
 	{ "newEntryIDs", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoDiscoModifyResponse, newEntryIDs) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoDiscoModifyResponse, newEntryIDs), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -138,6 +138,7 @@ lasso_disco_modify_response_get_type()
 			sizeof(LassoDiscoModifyResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

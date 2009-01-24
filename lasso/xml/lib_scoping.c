@@ -47,9 +47,9 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ProxyCount", SNIPPET_CONTENT | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
-		G_STRUCT_OFFSET(LassoLibScoping, ProxyCount) },
-	{ "IDPList", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibScoping, IDPList) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibScoping, ProxyCount), NULL, NULL, NULL},
+	{ "IDPList", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibScoping, IDPList), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -90,6 +90,7 @@ lasso_lib_scoping_get_type()
 			sizeof(LassoLibScoping),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

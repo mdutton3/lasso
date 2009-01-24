@@ -51,10 +51,10 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Item", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoIsSelect, Item) },
+	{ "Item", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoIsSelect, Item), NULL, NULL, NULL},
 	{ "multiple", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN,
-		G_STRUCT_OFFSET(LassoIsSelect, multiple) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIsSelect, multiple), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -95,6 +95,7 @@ lasso_is_select_get_type()
 			sizeof(LassoIsSelect),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

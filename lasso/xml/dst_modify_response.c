@@ -50,12 +50,12 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModifyResponse, Status) },
-	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoDstModifyResponse, Extension) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModifyResponse, id) },
-	{ "itemIDRef", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModifyResponse, itemIDRef) },
-	{ "timeStamp", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModifyResponse, timeStamp) },
-	{NULL, 0, 0}
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModifyResponse, Status), NULL, NULL, NULL},
+	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoDstModifyResponse, Extension), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModifyResponse, id), NULL, NULL, NULL},
+	{ "itemIDRef", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModifyResponse, itemIDRef), NULL, NULL, NULL},
+	{ "timeStamp", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModifyResponse, timeStamp), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -146,6 +146,7 @@ lasso_dst_modify_response_get_type()
 			sizeof(LassoDstModifyResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

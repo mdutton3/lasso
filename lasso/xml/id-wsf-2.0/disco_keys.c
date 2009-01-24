@@ -49,8 +49,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "KeyDescriptor", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoKeys, KeyDescriptor) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoKeys, KeyDescriptor), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -94,6 +94,7 @@ lasso_idwsf2_disco_keys_get_type()
 			sizeof(LassoIdWsf2DiscoKeys),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

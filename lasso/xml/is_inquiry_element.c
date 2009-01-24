@@ -49,12 +49,12 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Help", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInquiryElement, Help) },
-	{ "Hint", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsInquiryElement, Hint) },
-	{ "Label", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsInquiryElement, Label) },
-	{ "Value", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsInquiryElement, Value) },
-	{ "name", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsInquiryElement, name) },
-	{ NULL, 0, 0}
+	{ "Help", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInquiryElement, Help), NULL, NULL, NULL},
+	{ "Hint", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsInquiryElement, Hint), NULL, NULL, NULL},
+	{ "Label", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsInquiryElement, Label), NULL, NULL, NULL},
+	{ "Value", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsInquiryElement, Value), NULL, NULL, NULL},
+	{ "name", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsInquiryElement, name), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -98,6 +98,7 @@ lasso_is_inquiry_element_get_type()
 			sizeof(LassoIsInquiryElement),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

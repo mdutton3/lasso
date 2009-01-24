@@ -140,6 +140,7 @@ START_TEST(test08_test_new_from_xmlNode)
 		sizeof(LassoNode),
 		0,
 		NULL,
+		NULL
 	};
 
 	this_type = g_type_register_static(LASSO_TYPE_NODE,

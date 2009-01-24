@@ -63,25 +63,25 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "RefItem", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, RefItem) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, RefItem), NULL, NULL, NULL},
 	{ "Extension", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, Extension),
-		"LassoIdWsf2Utilextension" },
+		"LassoIdWsf2Utilextension", NULL, NULL },
 	{ "subscriptionID", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, subscriptionID) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, subscriptionID), NULL, NULL, NULL},
 	{ "notifyToRef", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, notifyToRef) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, notifyToRef), NULL, NULL, NULL},
 	{ "adminNotifyToRef", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, adminNotifyToRef) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, adminNotifyToRef), NULL, NULL, NULL},
 	{ "starts", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, starts) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, starts), NULL, NULL, NULL},
 	{ "expires", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, expires) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, expires), NULL, NULL, NULL},
 	{ "id", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, id) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, id), NULL, NULL, NULL},
 	{ "includeData", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, includeData) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, includeData), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -133,6 +133,7 @@ lasso_idwsf2_subs_subscription_get_type()
 			sizeof(LassoIdWsf2SubsSubscription),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

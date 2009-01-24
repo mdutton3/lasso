@@ -57,14 +57,14 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Select", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstModification, Select) },
-	{ "NewData", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModification, NewData) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModification, id) },
+	{ "Select", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstModification, Select), NULL, NULL, NULL},
+	{ "NewData", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModification, NewData), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModification, id), NULL, NULL, NULL},
 	{ "notChangedSince", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModification,
-								notChangedSince) },
+			notChangedSince), NULL, NULL, NULL },
 	{ "overrideAllowed", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModification,
-								overrideAllowed) },
-	{NULL, 0, 0}
+			overrideAllowed), NULL, NULL, NULL },
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -111,6 +111,7 @@ lasso_dst_modification_get_type()
 			sizeof(LassoDstModification),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

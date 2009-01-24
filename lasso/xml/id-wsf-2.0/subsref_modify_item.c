@@ -49,18 +49,18 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Select", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, Select) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, Select), NULL, NULL, NULL},
 	{ "NewData", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, NewData) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, NewData), NULL, NULL, NULL},
 	{ "notChangedSince", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, notChangedSince) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, notChangedSince), NULL, NULL, NULL},
 	{ "overrideAllowed", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, overrideAllowed) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, overrideAllowed), NULL, NULL, NULL},
 	{ "id", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, id) },
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, id), NULL, NULL, NULL},
 	{ "itemID", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, itemID) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2SubsRefModifyItem, itemID), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -109,6 +109,7 @@ lasso_idwsf2_subsref_modify_item_get_type()
 			sizeof(LassoIdWsf2SubsRefModifyItem),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

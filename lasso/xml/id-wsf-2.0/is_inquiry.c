@@ -55,18 +55,18 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Help", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, Help) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, Help), NULL, NULL, NULL},
 	{ "Select", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, Select) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, Select), NULL, NULL, NULL},
 	{ "Confirm", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, Confirm) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, Confirm), NULL, NULL, NULL},
 	{ "Text", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, Text) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, Text), NULL, NULL, NULL},
 	{ "id", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, id) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, id), NULL, NULL, NULL},
 	{ "title", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, title) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2IsInquiry, title), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -115,6 +115,7 @@ lasso_idwsf2_is_inquiry_get_type()
 			sizeof(LassoIdWsf2IsInquiry),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

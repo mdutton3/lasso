@@ -55,22 +55,22 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ObjectID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsObject, ObjectID) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsObject, ObjectID), NULL, NULL, NULL},
 	{ "DisplayName", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2PsObject, DisplayName) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsObject, DisplayName), NULL, NULL, NULL},
 	{ "Tag", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsObject, Tag) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsObject, Tag), NULL, NULL, NULL},
 	{ "Object", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2PsObject, Object) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsObject, Object), NULL, NULL, NULL},
 	{ "ObjectRef", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2PsObject, ObjectRef) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsObject, ObjectRef), NULL, NULL, NULL},
 	{ "NodeType", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsObject, NodeType) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsObject, NodeType), NULL, NULL, NULL},
 	{ "CreatedDateTime", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2PsObject, CreatedDateTime) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsObject, CreatedDateTime), NULL, NULL, NULL},
 	{ "ModifiedDateTime", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2PsObject, ModifiedDateTime) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2PsObject, ModifiedDateTime), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -121,6 +121,7 @@ lasso_idwsf2_ps_object_get_type()
 			sizeof(LassoIdWsf2PsObject),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

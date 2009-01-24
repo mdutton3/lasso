@@ -49,8 +49,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "updateType", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2EndpointUpdate, updateType) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2EndpointUpdate, updateType), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -94,6 +94,7 @@ lasso_idwsf2_sb2_endpoint_update_get_type()
 			sizeof(LassoIdWsf2Sb2EndpointUpdate),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_WSA_ENDPOINT_REFERENCE,

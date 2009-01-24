@@ -1519,6 +1519,7 @@ lasso_node_get_type()
 			sizeof(LassoNode),
 			0,
 			NULL,
+			NULL,
 		};
 
 		this_type = g_type_register_static(G_TYPE_OBJECT , "LassoNode", &this_info, 0);

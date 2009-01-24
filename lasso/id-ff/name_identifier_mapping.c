@@ -549,6 +549,7 @@ lasso_name_identifier_mapping_get_type()
 			sizeof(LassoNameIdentifierMapping),
 			0,
 			NULL,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

@@ -56,11 +56,11 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoUtilityStatus, Status) },
-	{ "code", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoUtilityStatus, code) },
-	{ "ref", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoUtilityStatus, ref) },
-	{ "comment", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoUtilityStatus, comment) },
-	{ NULL, 0, 0}
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoUtilityStatus, Status), NULL, NULL, NULL},
+	{ "code", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoUtilityStatus, code), NULL, NULL, NULL},
+	{ "ref", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoUtilityStatus, ref), NULL, NULL, NULL},
+	{ "comment", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoUtilityStatus, comment), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -103,6 +103,7 @@ lasso_utility_status_get_type()
 			sizeof(LassoUtilityStatus),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

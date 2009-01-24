@@ -48,12 +48,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "EncryptedData", SNIPPET_XMLNODE,
-		G_STRUCT_OFFSET(LassoSaml2EncryptedElement, EncryptedData) },
+		G_STRUCT_OFFSET(LassoSaml2EncryptedElement, EncryptedData), NULL, NULL, NULL},
 	{ "EncryptedKey", SNIPPET_LIST_XMLNODES,
-		G_STRUCT_OFFSET(LassoSaml2EncryptedElement, EncryptedKey) },
+		G_STRUCT_OFFSET(LassoSaml2EncryptedElement, EncryptedKey), NULL, NULL, NULL},
 	{ "NameID", SNIPPET_NODE | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoSaml2EncryptedElement, original_data) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSaml2EncryptedElement, original_data), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -100,6 +100,7 @@ lasso_saml2_encrypted_element_get_type()
 			sizeof(LassoSaml2EncryptedElement),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

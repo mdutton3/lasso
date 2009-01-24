@@ -64,6 +64,7 @@ lasso_saml_subject_statement_get_type()
 			sizeof(LassoSamlSubjectStatement),
 			0,
 			NULL,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,

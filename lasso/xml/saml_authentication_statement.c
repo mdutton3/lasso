@@ -54,14 +54,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "SubjectLocality", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, SubjectLocality) },
+		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, SubjectLocality), NULL, NULL, NULL},
 	{ "AuthorityBinding", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthorityBinding) },
+		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthorityBinding), NULL, NULL, NULL},
 	{ "AuthenticationMethod", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthenticationMethod) },
+		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthenticationMethod), NULL, NULL, NULL},
 	{ "AuthenticationInstant", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthenticationInstant) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthenticationInstant), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -104,6 +104,7 @@ lasso_saml_authentication_statement_get_type()
 			sizeof(LassoSamlAuthenticationStatement),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,

@@ -52,10 +52,10 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Audience", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoSaml2ProxyRestriction, Audience) },
+		G_STRUCT_OFFSET(LassoSaml2ProxyRestriction, Audience), NULL, NULL, NULL},
 	{ "Count", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoSaml2ProxyRestriction, Count) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSaml2ProxyRestriction, Count), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -99,6 +99,7 @@ lasso_saml2_proxy_restriction_get_type()
 			sizeof(LassoSaml2ProxyRestriction),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML2_CONDITION_ABSTRACT,

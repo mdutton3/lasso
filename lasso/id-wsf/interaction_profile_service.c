@@ -108,6 +108,7 @@ lasso_interaction_profile_service_get_type()
 			sizeof(LassoInteractionProfileService),
 			0,
 			NULL,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_WSF_PROFILE,

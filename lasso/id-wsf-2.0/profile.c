@@ -295,6 +295,7 @@ lasso_idwsf2_profile_get_type()
 			sizeof(LassoIdWsf2Profile),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

@@ -50,14 +50,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ServiceType", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoServiceContext, ServiceType) },
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoServiceContext, ServiceType), NULL, NULL, NULL},
 	{ "Options", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoServiceContext, Options),
-		"LassoIdWsf2DiscoOptions" },
+		"LassoIdWsf2DiscoOptions", NULL, NULL },
 	{ "EndpointContext", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoServiceContext, EndpointContext),
-		"LassoIdWsf2DiscoEndpointContext" },
-	{NULL, 0, 0}
+		"LassoIdWsf2DiscoEndpointContext", NULL, NULL },
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -103,6 +103,7 @@ lasso_idwsf2_disco_service_context_get_type()
 			sizeof(LassoIdWsf2DiscoServiceContext),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

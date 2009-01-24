@@ -668,7 +668,7 @@ lasso_name_id_management_process_response_msg(
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -745,6 +745,7 @@ lasso_name_id_management_get_type()
 			sizeof(LassoNameIdManagement),
 			0,
 			NULL,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

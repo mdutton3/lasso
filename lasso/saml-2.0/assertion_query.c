@@ -487,7 +487,7 @@ lasso_assertion_query_process_response_msg(
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -573,6 +573,7 @@ lasso_assertion_query_get_type()
 			sizeof(LassoAssertionQuery),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

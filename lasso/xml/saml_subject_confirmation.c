@@ -52,12 +52,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ConfirmationMethod", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, ConfirmationMethod) },
+		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, ConfirmationMethod), NULL, NULL, NULL},
 	{ "SubjectConfirmationData", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, SubjectConfirmationData) },
+		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, SubjectConfirmationData), NULL, NULL, NULL},
 	{ "KeyInfo", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, KeyInfo) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, KeyInfo), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -99,6 +99,7 @@ lasso_saml_subject_confirmation_get_type()
 			sizeof(LassoSamlSubjectConfirmation),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

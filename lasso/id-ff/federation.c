@@ -158,12 +158,12 @@ lasso_federation_verify_name_identifier(LassoFederation *federation,
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "LocalNameIdentifier", SNIPPET_NODE_IN_CHILD,
-		G_STRUCT_OFFSET(LassoFederation, local_nameIdentifier) },
+		G_STRUCT_OFFSET(LassoFederation, local_nameIdentifier), NULL, NULL, NULL},
 	{ "RemoteNameIdentifier", SNIPPET_NODE_IN_CHILD,
-		G_STRUCT_OFFSET(LassoFederation, remote_nameIdentifier) },
+		G_STRUCT_OFFSET(LassoFederation, remote_nameIdentifier), NULL, NULL, NULL},
 	{ "RemoteProviderID", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoFederation, remote_providerID) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoFederation, remote_providerID), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -257,6 +257,7 @@ lasso_federation_get_type()
 			sizeof(LassoFederation),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

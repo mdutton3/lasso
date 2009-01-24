@@ -47,14 +47,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "id", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2DstTestItemBase, id) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstTestItemBase, id), NULL, NULL, NULL},
 	{ "itemID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2DstTestItemBase, itemID) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstTestItemBase, itemID), NULL, NULL, NULL},
 	{ "objectType", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2DstTestItemBase, objectType) },
+		G_STRUCT_OFFSET(LassoIdWsf2DstTestItemBase, objectType), NULL, NULL, NULL},
 	{ "predefined", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2DstTestItemBase, predefined) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2DstTestItemBase, predefined), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -101,6 +101,7 @@ lasso_idwsf2_dst_test_item_base_get_type()
 			sizeof(LassoIdWsf2DstTestItemBase),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

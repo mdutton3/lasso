@@ -62,8 +62,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "InResponseTo", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoLibAssertion, InResponseTo) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibAssertion, InResponseTo), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -103,6 +103,7 @@ lasso_lib_assertion_get_type()
 			sizeof(LassoLibAssertion),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML_ASSERTION,

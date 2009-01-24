@@ -442,7 +442,7 @@ static function_entry lasso_functions[] = {'''
         for m in self.functions_list:
             print >> self.fd, '    PHP_FE(%s, NULL)' % m
         print >> self.fd, '''\
-    {NULL, NULL, NULL}
+    {NULL, NULL, NULL, 0, 0}
 };
 '''
 

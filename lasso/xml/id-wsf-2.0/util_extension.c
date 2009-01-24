@@ -51,7 +51,7 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -88,6 +88,7 @@ lasso_idwsf2_util_extension_get_type()
 			NULL,
 			sizeof(LassoIdWsf2Utilextension),
 			0,
+			NULL,
 			NULL,
 		};
 

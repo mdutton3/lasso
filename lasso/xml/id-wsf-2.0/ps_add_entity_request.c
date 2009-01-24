@@ -55,16 +55,16 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Object", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, Object) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, Object), NULL, NULL, NULL},
 	{ "PStoSPRedirectURL", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, PStoSPRedirectURL) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, PStoSPRedirectURL), NULL, NULL, NULL},
 	{ "CreatePSObject", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, CreatePSObject) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, CreatePSObject), NULL, NULL, NULL},
 	{ "Subscription", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, Subscription) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, Subscription), NULL, NULL, NULL},
 	{ "TokenPolicy", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, TokenPolicy) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, TokenPolicy), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -112,6 +112,7 @@ lasso_idwsf2_ps_add_entity_request_get_type()
 			sizeof(LassoIdWsf2PsAddEntityRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_PS_REQUEST_ABSTRACT,

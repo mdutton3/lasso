@@ -58,19 +58,19 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "BaseID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, BaseID) },
+		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, BaseID), NULL, NULL, NULL},
 	{ "NameID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, NameID) },
+		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, NameID), NULL, NULL, NULL},
 	{ "EncryptedID", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, EncryptedID),
-		"LassoSaml2EncryptedElement" },
+		"LassoSaml2EncryptedElement", NULL, NULL },
 	{ "SessionIndex", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, SessionIndex) },
+		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, SessionIndex), NULL, NULL, NULL},
 	{ "Reason", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, Reason) },
+		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, Reason), NULL, NULL, NULL},
 	{ "NotOnOrAfter", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, NotOnOrAfter) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlp2LogoutRequest, NotOnOrAfter), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -153,6 +153,7 @@ lasso_samlp2_logout_request_get_type()
 			sizeof(LassoSamlp2LogoutRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_REQUEST_ABSTRACT,

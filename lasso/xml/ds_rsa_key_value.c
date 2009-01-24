@@ -33,9 +33,9 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Modulus", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDsRsaKeyValue, Modulus) },
-	{ "Exponent", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDsRsaKeyValue, Exponent) },
-	{ NULL, 0, 0}
+	{ "Modulus", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDsRsaKeyValue, Modulus), NULL, NULL, NULL},
+	{ "Exponent", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDsRsaKeyValue, Exponent), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -76,6 +76,7 @@ lasso_ds_rsa_key_value_get_type()
 			sizeof(LassoDsRsaKeyValue),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

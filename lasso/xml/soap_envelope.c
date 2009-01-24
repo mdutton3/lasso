@@ -36,9 +36,9 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Header", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSoapEnvelope, Header) },
-	{ "Body", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSoapEnvelope, Body) },
-	{ NULL, 0, 0}
+	{ "Header", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSoapEnvelope, Header), NULL, NULL, NULL},
+	{ "Body", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSoapEnvelope, Body), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -79,6 +79,7 @@ lasso_soap_envelope_get_type()
 			sizeof(LassoSoapEnvelope),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -66,19 +66,19 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSaSASLResponse, Status) },
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSaSASLResponse, Status), NULL, NULL, NULL},
 	{ "PasswordTransforms", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSaSASLResponse, PasswordTransforms) },
+		G_STRUCT_OFFSET(LassoSaSASLResponse, PasswordTransforms), NULL, NULL, NULL},
 	{ "Data", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoSaSASLResponse, Data) },
+		G_STRUCT_OFFSET(LassoSaSASLResponse, Data), NULL, NULL, NULL},
 	{ "ResourceOffering", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSaSASLResponse, ResourceOffering) },
-	{ "Credentials", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSaSASLResponse, Credentials) },
+		G_STRUCT_OFFSET(LassoSaSASLResponse, ResourceOffering), NULL, NULL, NULL},
+	{ "Credentials", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSaSASLResponse, Credentials), NULL, NULL, NULL},
 	{ "serverMechanism", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaSASLResponse, serverMechanism) },
+		G_STRUCT_OFFSET(LassoSaSASLResponse, serverMechanism), NULL, NULL, NULL},
 	{ "id", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaSASLResponse, id) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSaSASLResponse, id), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -154,6 +154,7 @@ lasso_sa_sasl_response_get_type()
 			sizeof(LassoSaSASLResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

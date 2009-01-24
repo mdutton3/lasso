@@ -52,10 +52,10 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Object", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2PsSetObjectInfoRequest, Object) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsSetObjectInfoRequest, Object), NULL, NULL, NULL},
 	{ "Subscription", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsSetObjectInfoRequest, Subscription) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2PsSetObjectInfoRequest, Subscription), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -100,6 +100,7 @@ lasso_idwsf2_ps_set_object_info_request_get_type()
 			sizeof(LassoIdWsf2PsSetObjectInfoRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_PS_REQUEST_ABSTRACT,

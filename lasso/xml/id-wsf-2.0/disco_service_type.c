@@ -43,8 +43,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "content", SNIPPET_TEXT_CHILD,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoServiceType, content) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoServiceType, content), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -88,6 +88,7 @@ lasso_idwsf2_disco_service_type_get_type()
 			sizeof(LassoIdWsf2DiscoServiceType),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

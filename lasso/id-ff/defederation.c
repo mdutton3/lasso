@@ -244,7 +244,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 		if (profile->msg_relayState) {
 			message(G_LOG_LEVEL_WARNING,
 					"RelayState was defined but can't be used "\
-					"in SOAP Federation Termination Notification");
+					"in SOAP Federation Termination Notification", NULL);
 		}
 
 	} else { /* LASSO_HTTP_METHOD_REDIRECT */
@@ -452,6 +452,7 @@ lasso_defederation_get_type()
 			sizeof(LassoDefederation),
 			0,
 			NULL,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

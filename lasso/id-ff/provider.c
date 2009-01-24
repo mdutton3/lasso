@@ -361,11 +361,11 @@ lasso_provider_get_organization(LassoProvider *provider)
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "PublicKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, public_key) },
-	{ "CaCertChainFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, ca_cert_chain) },
-	{ "MetadataFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, metadata_filename) },
-	{ "ProviderID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoProvider, ProviderID) },
-	{ NULL, 0, 0}
+	{ "PublicKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, public_key), NULL, NULL, NULL},
+	{ "CaCertChainFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, ca_cert_chain), NULL, NULL, NULL},
+	{ "MetadataFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, metadata_filename), NULL, NULL, NULL},
+	{ "ProviderID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoProvider, ProviderID), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -668,6 +668,7 @@ lasso_provider_get_type()
 			sizeof(LassoProvider),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -45,8 +45,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "redirectURL", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsRedirectRequest, redirectURL) },
-	{ NULL, 0, 0}
+	{ "redirectURL", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsRedirectRequest, redirectURL), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -86,6 +86,7 @@ lasso_is_redirect_request_get_type()
 			sizeof(LassoIsRedirectRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

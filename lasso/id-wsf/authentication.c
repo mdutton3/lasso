@@ -728,6 +728,7 @@ lasso_authentication_get_type()
 			sizeof(LassoAuthentication),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_WSF_PROFILE,

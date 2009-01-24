@@ -51,8 +51,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "any", SNIPPET_NODE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoSamlp2ArtifactResponse, any) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlp2ArtifactResponse, any), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -96,6 +96,7 @@ lasso_samlp2_artifact_response_get_type()
 			sizeof(LassoSamlp2ArtifactResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_STATUS_RESPONSE,

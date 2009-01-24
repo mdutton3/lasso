@@ -52,12 +52,12 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInteractionResponse, Status) },
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInteractionResponse, Status), NULL, NULL, NULL},
 	{ "InteractionStatement", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoIsInteractionResponse,
-			InteractionStatement) },
+			InteractionStatement), NULL, NULL, NULL },
 	{ "Parameter", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoIsInteractionResponse,
-			Parameter) },
-	{ NULL, 0, 0}
+			Parameter), NULL, NULL, NULL },
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -99,6 +99,7 @@ lasso_is_interaction_response_get_type()
 			sizeof(LassoIsInteractionResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

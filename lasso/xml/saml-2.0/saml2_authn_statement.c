@@ -55,16 +55,16 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "SubjectLocality", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSaml2AuthnStatement, SubjectLocality) },
+		G_STRUCT_OFFSET(LassoSaml2AuthnStatement, SubjectLocality), NULL, NULL, NULL},
 	{ "AuthnContext", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSaml2AuthnStatement, AuthnContext) },
+		G_STRUCT_OFFSET(LassoSaml2AuthnStatement, AuthnContext), NULL, NULL, NULL},
 	{ "AuthnInstant", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2AuthnStatement, AuthnInstant) },
+		G_STRUCT_OFFSET(LassoSaml2AuthnStatement, AuthnInstant), NULL, NULL, NULL},
 	{ "SessionIndex", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2AuthnStatement, SessionIndex) },
+		G_STRUCT_OFFSET(LassoSaml2AuthnStatement, SessionIndex), NULL, NULL, NULL},
 	{ "SessionNotOnOrAfter", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2AuthnStatement, SessionNotOnOrAfter) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSaml2AuthnStatement, SessionNotOnOrAfter), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -112,6 +112,7 @@ lasso_saml2_authn_statement_get_type()
 			sizeof(LassoSaml2AuthnStatement),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML2_STATEMENT_ABSTRACT,

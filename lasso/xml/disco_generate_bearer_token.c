@@ -46,8 +46,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "descriptionIDRefs",SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoDiscoGenerateBearerToken, descriptionIDRefs) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoDiscoGenerateBearerToken, descriptionIDRefs), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -87,6 +87,7 @@ lasso_disco_generate_bearer_token_get_type()
 			sizeof(LassoDiscoGenerateBearerToken),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

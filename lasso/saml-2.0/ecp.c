@@ -299,6 +299,7 @@ lasso_ecp_get_type()
 			sizeof(LassoEcp),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

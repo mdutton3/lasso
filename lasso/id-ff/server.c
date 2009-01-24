@@ -340,11 +340,11 @@ exit:
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "PrivateKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, private_key) },
+	{ "PrivateKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, private_key), NULL, NULL, NULL},
 	{ "PrivateKeyPassword", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoServer, private_key_password) },
-	{ "CertificateFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, certificate) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoServer, private_key_password), NULL, NULL, NULL},
+	{ "CertificateFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, certificate), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -720,6 +720,7 @@ lasso_server_get_type()
 			sizeof(LassoServer),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROVIDER,

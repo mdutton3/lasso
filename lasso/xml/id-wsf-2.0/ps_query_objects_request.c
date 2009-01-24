@@ -54,14 +54,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Filter", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoIdWsf2PsQueryObjectsRequest, Filter) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsQueryObjectsRequest, Filter), NULL, NULL, NULL},
 	{ "Subscription", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsQueryObjectsRequest, Subscription) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsQueryObjectsRequest, Subscription), NULL, NULL, NULL},
 	{ "Count", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
-		G_STRUCT_OFFSET(LassoIdWsf2PsQueryObjectsRequest, Count) },
+		G_STRUCT_OFFSET(LassoIdWsf2PsQueryObjectsRequest, Count), NULL, NULL, NULL},
 	{ "Offset", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
-		G_STRUCT_OFFSET(LassoIdWsf2PsQueryObjectsRequest, Offset) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2PsQueryObjectsRequest, Offset), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -108,6 +108,7 @@ lasso_idwsf2_ps_query_objects_request_get_type()
 			sizeof(LassoIdWsf2PsQueryObjectsRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_PS_REQUEST_ABSTRACT,

@@ -38,7 +38,7 @@ extern "C" {
  **/
 typedef enum {
 	LASSO_PUBLIC_KEY_SIGNING,
-	LASSO_PUBLIC_KEY_ENCRYPTION,
+	LASSO_PUBLIC_KEY_ENCRYPTION
 } LassoPublicKeyType;
 
 

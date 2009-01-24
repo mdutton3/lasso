@@ -48,16 +48,16 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "messageID", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingCorrelation, messageID) },
+		G_STRUCT_OFFSET(LassoSoapBindingCorrelation, messageID), NULL, NULL, NULL},
 	{ "refToMessageID", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingCorrelation, refToMessageID) },
+		G_STRUCT_OFFSET(LassoSoapBindingCorrelation, refToMessageID), NULL, NULL, NULL},
 	{ "timestamp", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingCorrelation, timestamp) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingCorrelation, id) },
+		G_STRUCT_OFFSET(LassoSoapBindingCorrelation, timestamp), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingCorrelation, id), NULL, NULL, NULL},
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingCorrelation, mustUnderstand) },
-	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingCorrelation, actor) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSoapBindingCorrelation, mustUnderstand), NULL, NULL, NULL},
+	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingCorrelation, actor), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -102,6 +102,7 @@ lasso_soap_binding_correlation_get_type()
 			sizeof(LassoSoapBindingCorrelation),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

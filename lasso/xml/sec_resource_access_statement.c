@@ -55,7 +55,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -89,6 +89,7 @@ lasso_sec_resource_access_statement_get_type()
 			sizeof(LassoSecResourceAccessStatement),
 			0,
 			NULL,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,

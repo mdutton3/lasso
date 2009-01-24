@@ -437,7 +437,7 @@ PyGObjectPtr_repr(PyGObjectPtr *obj)
 
 static PyMemberDef PyGObjectPtr_members[] = {
 	{"typename", T_OBJECT, offsetof(PyGObjectPtr, typename), 0, "typename"},
-	{NULL}
+	{NULL, 0, 0, 0, NULL}
 };
 
 static PyObject*
@@ -453,7 +453,7 @@ PyGObjectPtr_get_refcount(PyGObjectPtr *self, G_GNUC_UNUSED void *closure)
 static PyGetSetDef PyGObjectPtr_getseters[] = {
 	{"refcount", (getter)PyGObjectPtr_get_refcount, NULL,
 		"reference count of intern GObject*", NULL},
-	{NULL}  /* Sentinel */
+	{NULL, NULL, NULL, NULL, NULL}  /* Sentinel */
 };
 
 
@@ -466,7 +466,7 @@ static PyTypeObject PyGObjectPtrType = {
 	(destructor)PyGObjectPtr_dealloc, /* tp_dealloc */
 	0,       /*tp_print*/
 	0,                      /*tp_getattr*/
-	0,       /*tp_setattr*/
+	.tp_setattr = 0,       /*tp_setattr*/
 	0,       /*tp_compare*/
 	(reprfunc)PyGObjectPtr_repr,       /*tp_repr*/
 	0,       /*tp_as_number*/
@@ -489,6 +489,8 @@ static PyTypeObject PyGObjectPtrType = {
 	0,       /* tp_methods */
 	PyGObjectPtr_members,   /* tp_members */
 	PyGObjectPtr_getseters, /* tp_getset */
+	NULL,
+	NULL
 };
 
 static void

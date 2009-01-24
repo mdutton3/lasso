@@ -43,10 +43,10 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "content", SNIPPET_TEXT_CHILD | SNIPPET_INTEGER,
-		G_STRUCT_OFFSET(LassoWsAddrAttributedUnsignedLong, content) },
+		G_STRUCT_OFFSET(LassoWsAddrAttributedUnsignedLong, content), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoWsAddrAttributedUnsignedLong, attributes) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoWsAddrAttributedUnsignedLong, attributes), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -92,6 +92,7 @@ lasso_wsa_attributed_unsigned_long_get_type()
 			sizeof(LassoWsAddrAttributedUnsignedLong),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

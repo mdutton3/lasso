@@ -483,6 +483,7 @@ lasso_identity_get_type()
 			sizeof(LassoIdentity),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -52,8 +52,8 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "DeleteItem", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRefDelete, DeleteItem),
-		"LassoIdWsf2DstRefDeleteItem" },
-	{NULL, 0, 0}
+		"LassoIdWsf2DstRefDeleteItem", NULL, NULL },
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -97,6 +97,7 @@ lasso_idwsf2_dstref_delete_get_type()
 			sizeof(LassoIdWsf2DstRefDelete),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_IDWSF2_DST_REQUEST,

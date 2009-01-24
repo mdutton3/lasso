@@ -54,12 +54,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "AuthnContext", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoLibAuthenticationStatement, AuthnContext) },
+		G_STRUCT_OFFSET(LassoLibAuthenticationStatement, AuthnContext), NULL, NULL, NULL},
 	{ "ReauthenticateOnOrAfter", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoLibAuthenticationStatement, ReauthenticateOnOrAfter) },
+		G_STRUCT_OFFSET(LassoLibAuthenticationStatement, ReauthenticateOnOrAfter), NULL, NULL, NULL},
 	{ "SessionIndex", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoLibAuthenticationStatement, SessionIndex) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibAuthenticationStatement, SessionIndex), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -101,6 +101,7 @@ lasso_lib_authentication_statement_get_type()
 			sizeof(LassoLibAuthenticationStatement),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT,

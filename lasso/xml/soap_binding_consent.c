@@ -50,14 +50,14 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "uri", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingConsent, uri) },
+		G_STRUCT_OFFSET(LassoSoapBindingConsent, uri), NULL, NULL, NULL},
 	{ "timestamp", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingConsent, timestamp) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingConsent, id) },
+		G_STRUCT_OFFSET(LassoSoapBindingConsent, timestamp), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingConsent, id), NULL, NULL, NULL},
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingConsent, mustUnderstand) },
-	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingConsent, actor) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSoapBindingConsent, mustUnderstand), NULL, NULL, NULL},
+	{ "actor", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingConsent, actor), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -101,6 +101,7 @@ lasso_soap_binding_consent_get_type()
 			sizeof(LassoSoapBindingConsent),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

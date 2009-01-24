@@ -47,12 +47,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Id", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoWsSec1SecurityTokenReference, Id) },
+		G_STRUCT_OFFSET(LassoWsSec1SecurityTokenReference, Id), NULL, NULL, NULL},
 	{ "Usage", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoWsSec1SecurityTokenReference, Usage) },
+		G_STRUCT_OFFSET(LassoWsSec1SecurityTokenReference, Usage), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoWsSec1SecurityTokenReference, attributes) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoWsSec1SecurityTokenReference, attributes), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -99,6 +99,7 @@ lasso_wsse_security_token_reference_get_type()
 			sizeof(LassoWsSec1SecurityTokenReference),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

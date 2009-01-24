@@ -62,18 +62,18 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Extension", SNIPPET_EXTENSION,
-		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, Extension) },
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, Extension), NULL, NULL, NULL},
 	{ "ProviderID", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, ProviderID) },
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, ProviderID), NULL, NULL, NULL},
 	{ "IDPProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER,
-		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, IDPProvidedNameIdentifier)},
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, IDPProvidedNameIdentifier), NULL, NULL, NULL},
 	{ "SPProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER,
-		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, SPProvidedNameIdentifier) },
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, SPProvidedNameIdentifier), NULL, NULL, NULL},
 	{ "OldProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER,
-		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, OldProvidedNameIdentifier)},
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, OldProvidedNameIdentifier), NULL, NULL, NULL},
 	{ "RelayState", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, RelayState) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, RelayState), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static struct QuerySnippet query_snippets[] = {
@@ -184,6 +184,7 @@ lasso_lib_register_name_identifier_request_get_type()
 			sizeof(LassoLibRegisterNameIdentifierRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,

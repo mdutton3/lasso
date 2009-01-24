@@ -47,8 +47,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSaCredentials, any) },
-	{ NULL, 0, 0}
+	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSaCredentials, any), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -87,6 +87,7 @@ lasso_sa_credentials_get_type()
 			sizeof(LassoSaCredentials),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

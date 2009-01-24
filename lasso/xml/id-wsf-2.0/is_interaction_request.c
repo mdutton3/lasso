@@ -52,18 +52,18 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Inquiry", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, Inquiry) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, Inquiry), NULL, NULL, NULL},
 	{ "KeyInfo", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, KeyInfo) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, KeyInfo), NULL, NULL, NULL},
 	{ "id", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, id) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, id), NULL, NULL, NULL},
 	{ "language", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, language) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, language), NULL, NULL, NULL},
 	{ "maxInteractTime", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, maxInteractTime) },
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, maxInteractTime), NULL, NULL, NULL},
 	{ "signed", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, signed_) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, signed_), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -112,6 +112,7 @@ lasso_idwsf2_is_interaction_request_get_type()
 			sizeof(LassoIdWsf2IsInteractionRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -55,11 +55,11 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoLibAuthnResponse, Extension) },
-	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnResponse, ProviderID) },
-	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnResponse, RelayState) },
-	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibAuthnResponse, consent) },
-	{ NULL, 0, 0 }
+	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoLibAuthnResponse, Extension), NULL, NULL, NULL},
+	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnResponse, ProviderID), NULL, NULL, NULL},
+	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnResponse, RelayState), NULL, NULL, NULL},
+	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibAuthnResponse, consent), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -102,6 +102,7 @@ lasso_lib_authn_response_get_type()
 			sizeof(LassoLibAuthnResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		authn_response_type = g_type_register_static(LASSO_TYPE_SAMLP_RESPONSE,

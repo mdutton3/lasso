@@ -42,10 +42,10 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "", SNIPPET_LIST_NODES | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoWsAddrMetadata, any) },
+		G_STRUCT_OFFSET(LassoWsAddrMetadata, any), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoWsAddrMetadata, attributes) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoWsAddrMetadata, attributes), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -91,6 +91,7 @@ lasso_wsa_metadata_get_type()
 			sizeof(LassoWsAddrMetadata),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

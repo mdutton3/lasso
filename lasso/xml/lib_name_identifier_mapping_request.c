@@ -56,16 +56,16 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Extension", SNIPPET_EXTENSION,
-		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, Extension) },
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, Extension), NULL, NULL, NULL},
 	{ "ProviderID", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, ProviderID) },
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, ProviderID), NULL, NULL, NULL},
 	{ "NameIdentifier", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, NameIdentifier) },
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, NameIdentifier), NULL, NULL, NULL},
 	{ "TargetNamespace", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, TargetNamespace) },
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, TargetNamespace), NULL, NULL, NULL},
 	{ "consent", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, consent) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, consent), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -109,6 +109,7 @@ lasso_lib_name_identifier_mapping_request_get_type()
 			sizeof(LassoLibNameIdentifierMappingRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,

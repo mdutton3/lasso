@@ -69,6 +69,7 @@ lasso_lib_register_name_identifier_response_get_type()
 			sizeof(LassoLibRegisterNameIdentifierResponse),
 			0,
 			NULL,
+			NULL,
 		};
 
 		register_name_identifier_response_type = g_type_register_static(

@@ -51,8 +51,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "KeyInfo", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSaml2KeyInfoConfirmationData, KeyInfo) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSaml2KeyInfoConfirmationData, KeyInfo), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -96,6 +96,7 @@ lasso_saml2_key_info_confirmation_data_get_type()
 			sizeof(LassoSaml2KeyInfoConfirmationData),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

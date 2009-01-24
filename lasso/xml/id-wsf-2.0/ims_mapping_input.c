@@ -49,12 +49,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "TokenPolicy", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2ImsMappingInput, TokenPolicy) },
+		G_STRUCT_OFFSET(LassoIdWsf2ImsMappingInput, TokenPolicy), NULL, NULL, NULL},
 	{ "Token", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2ImsMappingInput, Token) },
+		G_STRUCT_OFFSET(LassoIdWsf2ImsMappingInput, Token), NULL, NULL, NULL},
 	{ "reqID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2ImsMappingInput, reqID) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2ImsMappingInput, reqID), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -100,6 +100,7 @@ lasso_idwsf2_ims_mapping_input_get_type()
 			sizeof(LassoIdWsf2ImsMappingInput),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

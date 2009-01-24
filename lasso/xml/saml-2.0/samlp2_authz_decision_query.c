@@ -53,12 +53,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Action", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Action) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Action), NULL, NULL, NULL},
 	{ "Evidence", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Evidence) },
+		G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Evidence), NULL, NULL, NULL},
 	{ "Resource", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Resource) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Resource), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -104,6 +104,7 @@ lasso_samlp2_authz_decision_query_get_type()
 			sizeof(LassoSamlp2AuthzDecisionQuery),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_SUBJECT_QUERY_ABSTRACT,

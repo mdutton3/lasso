@@ -48,8 +48,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "TransitedProvider", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2SecTransitedProviderPath, TransitedProvider) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2SecTransitedProviderPath, TransitedProvider), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -93,6 +93,7 @@ lasso_idwsf2_sec_transited_provider_path_get_type()
 			sizeof(LassoIdWsf2SecTransitedProviderPath),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

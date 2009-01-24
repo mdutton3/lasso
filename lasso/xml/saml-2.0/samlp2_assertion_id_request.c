@@ -51,8 +51,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "AssertionIDRef", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoSamlp2AssertionIDRequest, AssertionIDRef) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlp2AssertionIDRequest, AssertionIDRef), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -127,6 +127,7 @@ lasso_samlp2_assertion_id_request_get_type()
 			sizeof(LassoSamlp2AssertionIDRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_REQUEST_ABSTRACT,

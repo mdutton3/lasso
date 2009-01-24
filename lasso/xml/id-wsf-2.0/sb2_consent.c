@@ -47,12 +47,12 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "uri", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2Consent, uri) },
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2Consent, uri), NULL, NULL, NULL},
 	{ "timestamp", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2Consent, timestamp) },
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2Consent, timestamp), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoIdWsf2Sb2Consent, attributes) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2Sb2Consent, attributes), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -99,6 +99,7 @@ lasso_idwsf2_sb2_consent_get_type()
 			sizeof(LassoIdWsf2Sb2Consent),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

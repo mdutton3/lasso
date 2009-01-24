@@ -52,18 +52,18 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Condition", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSaml2Conditions, Condition) },
+		G_STRUCT_OFFSET(LassoSaml2Conditions, Condition), NULL, NULL, NULL},
 	{ "AudienceRestriction", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSaml2Conditions, AudienceRestriction) },
+		G_STRUCT_OFFSET(LassoSaml2Conditions, AudienceRestriction), NULL, NULL, NULL},
 	{ "OneTimeUse", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSaml2Conditions, OneTimeUse) },
+		G_STRUCT_OFFSET(LassoSaml2Conditions, OneTimeUse), NULL, NULL, NULL},
 	{ "ProxyRestriction", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSaml2Conditions, ProxyRestriction) },
+		G_STRUCT_OFFSET(LassoSaml2Conditions, ProxyRestriction), NULL, NULL, NULL},
 	{ "NotBefore", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2Conditions, NotBefore) },
+		G_STRUCT_OFFSET(LassoSaml2Conditions, NotBefore), NULL, NULL, NULL},
 	{ "NotOnOrAfter", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2Conditions, NotOnOrAfter) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSaml2Conditions, NotOnOrAfter), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -112,6 +112,7 @@ lasso_saml2_conditions_get_type()
 			sizeof(LassoSaml2Conditions),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

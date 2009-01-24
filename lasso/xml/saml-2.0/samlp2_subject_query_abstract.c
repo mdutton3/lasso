@@ -51,8 +51,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Subject", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2SubjectQueryAbstract, Subject) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSamlp2SubjectQueryAbstract, Subject), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -127,6 +127,7 @@ lasso_samlp2_subject_query_abstract_get_type()
 			sizeof(LassoSamlp2SubjectQueryAbstract),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_SAMLP2_REQUEST_ABSTRACT,

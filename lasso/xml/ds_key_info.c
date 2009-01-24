@@ -33,8 +33,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "KeyValue", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDsKeyInfo, KeyValue) },
-	{ NULL, 0, 0}
+	{ "KeyValue", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDsKeyInfo, KeyValue), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -74,6 +74,7 @@ lasso_ds_key_info_get_type()
 			sizeof(LassoDsKeyInfo),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

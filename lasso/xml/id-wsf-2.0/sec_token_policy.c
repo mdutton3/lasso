@@ -52,18 +52,18 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "", SNIPPET_NODE | SNIPPET_ANY | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, any) },
+		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, any), NULL, NULL, NULL},
 	{ "validUntil", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, validUntil) },
+		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, validUntil), NULL, NULL, NULL},
 	{ "issueTo", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, issueTo) },
+		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, issueTo), NULL, NULL, NULL},
 	{ "type", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, type) },
+		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, type), NULL, NULL, NULL},
 	{ "wantDSEPR", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN | SNIPPET_OPTIONAL,
-		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, wantDSEPR) },
+		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, wantDSEPR), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
-		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, attributes) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoIdWsf2SecTokenPolicy, attributes), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -113,6 +113,7 @@ lasso_idwsf2_sec_token_policy_get_type()
 			sizeof(LassoIdWsf2SecTokenPolicy),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -458,6 +458,7 @@ lasso_lecp_get_type()
 			sizeof(LassoLecp),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_LOGIN,

@@ -51,10 +51,10 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "AuthnContextClassRef", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibAuthnContext, AuthnContextClassRef) },
+		G_STRUCT_OFFSET(LassoLibAuthnContext, AuthnContextClassRef), NULL, NULL, NULL},
 	{ "AuthnContextStatementRef", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibAuthnContext, AuthnContextStatementRef) },
-	{ NULL, 0, 0 }
+		G_STRUCT_OFFSET(LassoLibAuthnContext, AuthnContextStatementRef), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -95,6 +95,7 @@ lasso_lib_authn_context_get_type()
 			sizeof(LassoLibAuthnContext),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

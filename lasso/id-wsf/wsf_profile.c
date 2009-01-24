@@ -66,18 +66,18 @@
 static gint lasso_wsf_profile_add_saml_signature(LassoWsfProfile *wsf_profile, xmlDoc *doc);
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Server", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, server) },
-	{ "Request", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, request) },
-	{ "Response", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, response) },
+	{ "Server", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, server), NULL, NULL, NULL},
+	{ "Request", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, request), NULL, NULL, NULL},
+	{ "Response", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, response), NULL, NULL, NULL},
 	{ "SOAP-Request", SNIPPET_NODE_IN_CHILD,
-		G_STRUCT_OFFSET(LassoWsfProfile, soap_envelope_request) },
+		G_STRUCT_OFFSET(LassoWsfProfile, soap_envelope_request), NULL, NULL, NULL},
 	{ "SOAP-Response", SNIPPET_NODE_IN_CHILD,
-		G_STRUCT_OFFSET(LassoWsfProfile, soap_envelope_response) },
-	{ "MsgUrl", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsfProfile, msg_url) },
-	{ "MsgBody", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsfProfile, msg_body) },
-	{ "Identity", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, identity) },
-	{ "Session", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, session) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoWsfProfile, soap_envelope_response), NULL, NULL, NULL},
+	{ "MsgUrl", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsfProfile, msg_url), NULL, NULL, NULL},
+	{ "MsgBody", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsfProfile, msg_body), NULL, NULL, NULL},
+	{ "Identity", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, identity), NULL, NULL, NULL},
+	{ "Session", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, session), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*
@@ -964,6 +964,7 @@ lasso_wsf_profile_get_type()
 			sizeof(LassoWsfProfile),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

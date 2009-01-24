@@ -47,9 +47,9 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Inquiry", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInteractionStatement, Inquiry) },
+	{ "Inquiry", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInteractionStatement, Inquiry), NULL, NULL, NULL},
 	/* TODO : Signature */
-	{ NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -89,6 +89,7 @@ lasso_is_interaction_statement_get_type()
 			sizeof(LassoIsInteractionStatement),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

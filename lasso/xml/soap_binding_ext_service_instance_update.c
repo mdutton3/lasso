@@ -59,17 +59,17 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "SecurityMechID", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, SecurityMechID) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, SecurityMechID), NULL, NULL, NULL},
 	{ "Credential", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, Credential) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, Credential), NULL, NULL, NULL},
 	{ "Endpoint", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, Endpoint) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, id) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, Endpoint), NULL, NULL, NULL},
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, id), NULL, NULL, NULL},
 	{ "mustUnderstand", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, mustUnderstand) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, mustUnderstand), NULL, NULL, NULL},
 	{ "actor", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, actor) },
-	{ NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSoapBindingExtServiceInstanceUpdate, actor), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -114,6 +114,7 @@ lasso_soap_binding_ext_service_instance_update_get_type()
 			sizeof(LassoSoapBindingExtServiceInstanceUpdate),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

@@ -70,34 +70,34 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Conditions", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAssertion, Conditions) },
-	{ "Advice", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAssertion, Advice) },
-	{ "SubjectStatement", SNIPPET_NODE,G_STRUCT_OFFSET(LassoSamlAssertion, SubjectStatement) },
+	{ "Conditions", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAssertion, Conditions), NULL, NULL, NULL},
+	{ "Advice", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAssertion, Advice), NULL, NULL, NULL},
+	{ "SubjectStatement", SNIPPET_NODE,G_STRUCT_OFFSET(LassoSamlAssertion, SubjectStatement), NULL, NULL, NULL},
 	{ "AuthenticationStatement", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlAssertion, AuthenticationStatement) },
+		G_STRUCT_OFFSET(LassoSamlAssertion, AuthenticationStatement), NULL, NULL, NULL},
 	{ "AttributeStatement", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlAssertion, AttributeStatement) },
+		G_STRUCT_OFFSET(LassoSamlAssertion, AttributeStatement), NULL, NULL, NULL},
 	{ "Signature", SNIPPET_SIGNATURE,
-		G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID) },
+		G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID), NULL, NULL, NULL},
 	{ "MajorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
-		G_STRUCT_OFFSET(LassoSamlAssertion, MajorVersion) },
+		G_STRUCT_OFFSET(LassoSamlAssertion, MajorVersion), NULL, NULL, NULL},
 	{ "MinorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
-		G_STRUCT_OFFSET(LassoSamlAssertion, MinorVersion) },
-	{ "AssertionID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID) },
-	{ "Issuer", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, Issuer) },
-	{ "IssueInstant", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, IssueInstant) },
+		G_STRUCT_OFFSET(LassoSamlAssertion, MinorVersion), NULL, NULL, NULL},
+	{ "AssertionID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID), NULL, NULL, NULL},
+	{ "Issuer", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, Issuer), NULL, NULL, NULL},
+	{ "IssueInstant", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, IssueInstant), NULL, NULL, NULL},
 
 	/* hidden fields; use in lasso dumps */
 	{ "SignType", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoSamlAssertion, sign_type) },
+		G_STRUCT_OFFSET(LassoSamlAssertion, sign_type), NULL, NULL, NULL},
 	{ "SignMethod", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoSamlAssertion, sign_method) },
+		G_STRUCT_OFFSET(LassoSamlAssertion, sign_method), NULL, NULL, NULL},
 	{ "PrivateKeyFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoSamlAssertion, private_key_file) },
+		G_STRUCT_OFFSET(LassoSamlAssertion, private_key_file), NULL, NULL, NULL},
 	{ "CertificateFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
-		G_STRUCT_OFFSET(LassoSamlAssertion, certificate_file) },
+		G_STRUCT_OFFSET(LassoSamlAssertion, certificate_file), NULL, NULL, NULL},
 
-	{ NULL, 0, 0}
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -200,6 +200,7 @@ lasso_saml_assertion_get_type()
 			NULL,
 			sizeof(LassoSamlAssertion),
 			0,
+			NULL,
 			NULL,
 		};
 

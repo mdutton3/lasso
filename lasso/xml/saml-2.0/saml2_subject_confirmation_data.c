@@ -57,16 +57,16 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "NotBefore", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, NotBefore) },
+		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, NotBefore), NULL, NULL, NULL},
 	{ "NotOnOrAfter", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, NotOnOrAfter) },
+		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, NotOnOrAfter), NULL, NULL, NULL},
 	{ "Recipient", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, Recipient) },
+		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, Recipient), NULL, NULL, NULL},
 	{ "InResponseTo", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, InResponseTo) },
+		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, InResponseTo), NULL, NULL, NULL},
 	{ "Address", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, Address) },
-	{NULL, 0, 0}
+		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, Address), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -114,6 +114,7 @@ lasso_saml2_subject_confirmation_data_get_type()
 			sizeof(LassoSaml2SubjectConfirmationData),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,

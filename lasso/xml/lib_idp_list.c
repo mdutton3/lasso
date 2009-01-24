@@ -48,9 +48,9 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "IDPEntries", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibIDPList, IDPEntries) },
-	{ "GetComplete", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibIDPList, GetComplete) },
-	{ NULL, 0, 0}
+	{ "IDPEntries", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibIDPList, IDPEntries), NULL, NULL, NULL},
+	{ "GetComplete", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibIDPList, GetComplete), NULL, NULL, NULL},
+	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
@@ -91,6 +91,7 @@ lasso_lib_idp_list_get_type()
 			sizeof(LassoLibIDPList),
 			0,
 			(GInstanceInitFunc) instance_init,
+			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
