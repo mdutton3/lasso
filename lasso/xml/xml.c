@@ -569,7 +569,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 {
 	xmlDocPtr doc = NULL;
 	xmlNodePtr orig_node = NULL;
-	LassoSaml2EncryptedElement *encrypted_element = NULL;
+	LassoSaml2EncryptedElement *encrypted_element = NULL, *ret = NULL;
 	xmlSecKeysMngrPtr key_manager = NULL;
 	xmlNodePtr key_info_node = NULL;
 	xmlNodePtr encrypted_key_node = NULL;
@@ -703,21 +703,19 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 		goto exit;
 	}
 
-
 	/* Create a new EncryptedElement */
 	encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_saml2_encrypted_element_new());
 	lasso_assign_gobject(encrypted_element->original_data, lasso_node);
-	lasso_list_add(encrypted_element->EncryptedKey, xmlCopyNode(encrypted_key_node, 1));
-	lasso_assign_node(encrypted_element->EncryptedData, encrypted_element->EncryptedData);
+	lasso_list_add_xml_node(encrypted_element->EncryptedKey, xmlCopyNode(encrypted_key_node, 1));
+	lasso_assign_xml_node(encrypted_element->EncryptedData, xmlCopyNode(xmlDocGetRootElement(doc), 1));
+	lasso_transfer_gobject(ret, encrypted_element);
 
 exit:
-	/* If encryption worked, encrypted node should have replaced orig_node inside the xmlDoc,
-	 * enc_ctx->resultReplaced signal such replacement */
 	lasso_release_gobject(encrypted_element);
 	lasso_release_encrypt_context(enc_ctx);
 	lasso_release_doc(doc);
 
-	return encrypted_element;
+	return ret;
 }
 
 
