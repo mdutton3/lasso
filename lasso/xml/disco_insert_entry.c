@@ -23,6 +23,7 @@
  */
 
 #include <lasso/xml/disco_insert_entry.h>
+#include "../utils.h"
 
 /**
  * SECTION:disco_insert_entry
@@ -107,8 +108,7 @@ lasso_disco_insert_entry_new(LassoDiscoResourceOffering *resourceOffering)
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering) == TRUE, NULL);
 
 	insertEntry = g_object_new(LASSO_TYPE_DISCO_INSERT_ENTRY, NULL);
-
-	insertEntry->ResourceOffering = g_object_ref(resourceOffering);
+	lasso_assign_gobject(insertEntry->ResourceOffering, resourceOffering);
 
 	return insertEntry;
 }
