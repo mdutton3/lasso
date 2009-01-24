@@ -1807,30 +1807,34 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 	int rc;
 
 	msg = (char*)message;
+
+	/* BASE64 case */
 	if (message[0] != 0 && is_base64(message)) {
 		msg = g_malloc(strlen(message));
 		rc = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
 		if (rc >= 0) {
 			b64 = TRUE;
 		} else {
-			/* oops; was not base64 after all */
 			g_free(msg);
 			msg = (char*)message;
 		}
 	}
 
+	/* XML case */
 	if (strchr(msg, '<')) {
-		/* looks like xml */
 		xmlDoc *doc;
 		xmlNode *root;
 		xmlXPathContext *xpathCtx = NULL;
 		xmlXPathObject *xpathObj = NULL;
+		gboolean is_soap = FALSE;
 
 		doc = xmlParseMemory(msg, strlen(msg));
 		if (doc == NULL)
 			return LASSO_MESSAGE_FORMAT_UNKNOWN;
 		root = xmlDocGetRootElement(doc);
-		if (root->ns && strcmp((char*)root->ns->href, LASSO_SOAP_ENV_HREF) == 0) {
+
+		is_soap = root->ns && strcmp((char*)root->ns->href, LASSO_SOAP_ENV_HREF) == 0;
+		if (is_soap) {
 			xpathCtx = xmlXPathNewContext(doc);
 			xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
 			xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body/*", xpathCtx);
@@ -1838,13 +1842,12 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 				root = xpathObj->nodesetval->nodeTab[0];
 			}
 		}
-		lasso_node_init_from_xml(node, root);
-		xmlXPathFreeObject(xpathObj);
-		xmlXPathFreeContext(xpathCtx);
-		lasso_release_doc(doc);
-		if (xpathCtx) {
-			/* this tests a pointer which has been freed, it works
-			 * but is not really elegant */
+		rc = lasso_node_init_from_xml(node, root);
+		lasso_release_xpath_job(xpathObj, xpathCtx, doc);
+		if (rc != 0) {
+			return LASSO_MESSAGE_FORMAT_XSCHEMA_ERROR;
+		}
+		if (is_soap) {
 			return LASSO_MESSAGE_FORMAT_SOAP;
 		}
 		if (b64) {
@@ -1854,8 +1857,8 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 		return LASSO_MESSAGE_FORMAT_XML;
 	}
 
+	/* HTTP query CASE */
 	if (strchr(msg, '&') || strchr(msg, '=')) {
-		/* looks like a query string */
 		/* XXX: detect SAML artifact messages to return a different status code ? */
 		if (lasso_node_init_from_query(node, msg) == FALSE) {
 			return LASSO_MESSAGE_FORMAT_ERROR;
