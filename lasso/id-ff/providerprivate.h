@@ -72,6 +72,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 gboolean lasso_provider_load_public_key(LassoProvider *provider,
 		LassoPublicKeyType public_key_type);
 xmlSecKey* lasso_provider_get_public_key(LassoProvider *provider);
+int lasso_provider_verify_saml_signature(LassoProvider *provider, xmlNode *signed_node);
 
 
 #ifdef __cplusplus

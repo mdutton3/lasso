@@ -1066,6 +1066,46 @@ lasso_provider_new_from_dump(const gchar *dump)
 }
 
 int
+lasso_provider_verify_saml_signature(LassoProvider *provider,
+		xmlNode *signed_node)
+{
+	const char *id_attribute_name = NULL;
+	const xmlChar *node_ns = NULL;
+	xmlSecKey *public_key;
+	xmlSecKeysMngr *keys_manager;
+	int rc = 0;
+
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider) && signed_node,
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	/* ID-FF 1.2 Signatures case */
+	if (xmlSecCheckNodeName(signed_node, (xmlChar*)"Request", (xmlChar*)LASSO_SAML_PROTOCOL_HREF)) {
+		id_attribute_name = "RequestID";
+	}
+	if (xmlSecCheckNodeName(signed_node, (xmlChar*)"Response", (xmlChar*)LASSO_SAML_PROTOCOL_HREF)) {
+		id_attribute_name = "ResponseID";
+	}
+	if (xmlSecCheckNodeName(signed_node, (xmlChar*)"Assertion", (xmlChar*)LASSO_SAML_ASSERTION_HREF)) {
+		id_attribute_name = "AssertionID";
+	}
+	/* SAML 2.0 signature case */
+	node_ns = xmlSecGetNodeNsHref(signed_node);
+	if ((strcmp((char*)node_ns, LASSO_SAML2_PROTOCOL_HREF) == 0) ||
+			(strcmp((char*)node_ns, LASSO_SAML2_ASSERTION_HREF) == 0)) {
+		id_attribute_name = "ID";
+	}
+	goto_exit_if_fail(id_attribute_name, LASSO_PARAM_ERROR_INVALID_VALUE);
+	/* Get provider credentials */
+	public_key = lasso_provider_get_public_key(provider);
+	keys_manager = lasso_load_certs_from_pem_certs_chain_file(provider->ca_cert_chain);
+	goto_exit_if_fail_with_warning(public_key && keys_manager,
+			LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
+	rc = lasso_verify_signature(signed_node, id_attribute_name, keys_manager, public_key,
+			NO_OPTION, NULL);
+exit:
+	return rc;
+}
+
+int
 lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format)
 {
