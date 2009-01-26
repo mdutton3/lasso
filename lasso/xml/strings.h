@@ -31,10 +31,6 @@
 #ifndef __LASSO_STRINGS_H__
 #define __LASSO_STRINGS_H__
 
-/* prefix & href */
-#define LASSO_DS_HREF   "http://www.w3.org/2000/09/xmldsig#"
-#define LASSO_DS_PREFIX "ds"
-
 /*****************************************************************************/
 /* Lasso                                                                     */
 /*****************************************************************************/
@@ -225,28 +221,32 @@
 /* Liberty Alliance ID-WSF                                                   */
 /*****************************************************************************/
 
-/* Liberty Security Mechanisms */
+/* Liberty Security Mechanisms - 1st version */
 #define LASSO_SECURITY_MECH_NULL   "urn:liberty:security:2003-08:null:null"
 
 #define LASSO_SECURITY_MECH_X509   "urn:liberty:security:2003-08:null:X509"
 #define LASSO_SECURITY_MECH_SAML   "urn:liberty:security:2003-08:null:SAML"
 #define LASSO_SECURITY_MECH_BEARER "urn:liberty:security:2004-04:null:Bearer"
-#define LASSO_SECURITY11_MECH_X509   "urn:liberty:security:2005-02:null:X509"
-#define LASSO_SECURITY11_MECH_SAML   "urn:liberty:security:2005-02:null:SAML"
-#define LASSO_SECURITY11_MECH_BEARER "urn:liberty:security:2005-02:null:Bearer"
 
 #define LASSO_SECURITY_MECH_TLS        "urn:liberty:security:2003-08:TLS:null"
 #define LASSO_SECURITY_MECH_TLS_X509   "urn:liberty:security:2003-08:TLS:X509"
 #define LASSO_SECURITY_MECH_TLS_SAML   "urn:liberty:security:2003-08:TLS:SAML"
 #define LASSO_SECURITY_MECH_TLS_BEARER "urn:liberty:security:2004-04:TLS:Bearer"
-#define LASSO_SECURITY11_MECH_TLS_X509   "urn:liberty:security:2005-02:TLS:X509"
-#define LASSO_SECURITY11_MECH_TLS_SAML   "urn:liberty:security:2005-02:TLS:SAML"
-#define LASSO_SECURITY11_MECH_TLS_BEARER "urn:liberty:security:2005-02:TLS:Bearer"
 
 #define LASSO_SECURITY_MECH_CLIENT_TLS        "urn:liberty:security:2003-08:ClientTLS:null"
 #define LASSO_SECURITY_MECH_CLIENT_TLS_X509   "urn:liberty:security:2003-08:ClientTLS:X509"
 #define LASSO_SECURITY_MECH_CLIENT_TLS_SAML   "urn:liberty:security:2003-08:ClientTLS:SAML"
 #define LASSO_SECURITY_MECH_CLIENT_TLS_BEARER "urn:liberty:security:2004-04:ClientTLS:Bearer"
+
+/* Liberty Security Mechanisms - latest version */
+
+#define LASSO_SECURITY11_MECH_X509   "urn:liberty:security:2005-02:null:X509"
+#define LASSO_SECURITY11_MECH_SAML   "urn:liberty:security:2005-02:null:SAML"
+#define LASSO_SECURITY11_MECH_BEARER "urn:liberty:security:2005-02:null:Bearer"
+
+#define LASSO_SECURITY11_MECH_TLS_X509   "urn:liberty:security:2005-02:TLS:X509"
+#define LASSO_SECURITY11_MECH_TLS_SAML   "urn:liberty:security:2005-02:TLS:SAML"
+#define LASSO_SECURITY11_MECH_TLS_BEARER "urn:liberty:security:2005-02:TLS:Bearer"
 
 /* liberty wsf prefix & href */
 #define LASSO_DISCO_HREF          "urn:liberty:disco:2003-08"
@@ -382,25 +382,14 @@
 #define LASSO_SOAP_BINDING_HREF          "urn:liberty:sb:2003-08"
 #define LASSO_SOAP_BINDING_PREFIX        "sb"
 
+#define LASSO_SOAP_BINDING_EXT_HREF "urn:liberty:sb:2004-04"
+#define LASSO_SOAP_BINDING_EXT_PREFIX "sbe"
+
 #define LASSO_IDWSF2_SB2_HREF "urn:liberty:sb:2006-08"
 #define LASSO_IDWSF2_SB2_PREFIX "sb"
 
 #define LASSO_IDWSF2_SBF_HREF "urn:liberty:sb"
 #define LASSO_IDWSF2_SBF_PREFIX "sbf"
-
-#define LASSO_SOAP_BINDING_EXT_HREF "urn:liberty:sb:2004-04"
-#define LASSO_SOAP_BINDING_EXT_PREFIX "sbe"
-
-#define LASSO_WSSE_HREF "http://schemas.xmlsoap.org/ws/2002/07/secext"
-#define LASSO_WSSE_PREFIX "wsse"
-
-#define LASSO_WSSE1_HREF \
-	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
-#define LASSO_WSSE1_PREFIX "wsse"
-
-#define LASSO_WSUTIL1_HREF \
-	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
-#define LASSO_WSUTIL1_PREFIX "wsutil"
 
 #define LASSO_SOAP_BINDING_PROCESS_CONTEXT_PRINCIPAL_OFFLINE \
 	"urn:liberty:sb:2003-08:ProcessingContext:PrincipalOffline"
@@ -408,6 +397,11 @@
 	"urn:liberty:sb:2003-08:ProcessingContext:PrincipalOnline"
 #define LASSO_SOAP_BINDING_PROCESS_CONTEXT_SIMULATE \
 	"urn:liberty:sb:2003-08:ProcessingContext:Simulate"
+
+#define LASSO_SOAP_FAULT_CODE_SERVER "S:server"
+
+#define LASSO_SOAP_FAULT_STRING_SERVER "Server Error"
+#define LASSO_SOAP_FAULT_STRING_IDENTITY_NOT_FOUND "Identity not found"
 
 /*****************************************************************************/
 /* POAS BINDING                                                              */
@@ -613,19 +607,20 @@
 #define LASSO_IDWSF2_SEC_HREF "urn:liberty:security:2006-08"
 #define LASSO_IDWSF2_SEC_PREFIX "sec"
 
-#define LASSO_IDWSF2_SOAP_BINDING_HREF   "urn:liberty:sb"
-#define LASSO_IDWSF2_SOAP_BINDING_PREFIX "sb"
-
-#define LASSO_IDWSF2_SOAP_BINDING2_HREF   "urn:liberty:sb:2006-08"
-#define LASSO_IDWSF2_SOAP_BINDING2_PREFIX "sb2"
-
 /*****************************************************************************/
-/* Others                                                                    */
+/* WS-*                                                                      */
 /*****************************************************************************/
 
-/* xsi prefix & href */
-#define LASSO_XSI_HREF "http://www.w3.org/2001/XMLSchema-instance"
-#define LASSO_XSI_PREFIX "xsi"
+#define LASSO_WSSE_HREF "http://schemas.xmlsoap.org/ws/2002/07/secext"
+#define LASSO_WSSE_PREFIX "wsse"
+
+#define LASSO_WSSE1_HREF \
+	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+#define LASSO_WSSE1_PREFIX "wsse"
+
+#define LASSO_WSUTIL1_HREF \
+	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+#define LASSO_WSUTIL1_PREFIX "wsutil"
 
 /* WS-Addressing */
 #define LASSO_WSA_HREF "http://www.w3.org/2005/08/addressing"
@@ -641,10 +636,17 @@
 	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
 #define LASSO_WSU_PREFIX "wsu"
 
-#define LASSO_SOAP_FAULT_CODE_SERVER "S:server"
+/*****************************************************************************/
+/* Others                                                                    */
+/*****************************************************************************/
 
-#define LASSO_SOAP_FAULT_STRING_SERVER "Server Error"
-#define LASSO_SOAP_FAULT_STRING_IDENTITY_NOT_FOUND "Identity not found"
+/* xmldsig prefix & href */
+#define LASSO_DS_HREF   "http://www.w3.org/2000/09/xmldsig#"
+#define LASSO_DS_PREFIX "ds"
+
+/* xsi prefix & href */
+#define LASSO_XSI_HREF "http://www.w3.org/2001/XMLSchema-instance"
+#define LASSO_XSI_PREFIX "xsi"
 
 #endif /* __LASSO_STRINGS_H__ */
 
