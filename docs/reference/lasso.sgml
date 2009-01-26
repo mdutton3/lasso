@@ -220,7 +220,8 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
 
   </chapter>
 
-  
+  <index/>
+
   <chapter id="architecture">
     <title>Lasso Architecture</title>
     &LassoProvider;
@@ -252,7 +253,6 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     &LassoDataService;
     &LassoIdWsf2Discovery;
     &LassoIdWsf2DataService;
-
 
   </chapter>
 
