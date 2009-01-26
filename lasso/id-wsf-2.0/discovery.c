@@ -22,6 +22,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:idwsf2_discovery
+ * @short_description: ID-WSF 2.0 Discovery Service profile
+ *
+ * The Discovery service usually runs on the principal identity provider and
+ * knowns about resources and services related to the principal.  Attribute
+ * providers can register themselves as offering resources for an user while
+ * other services can ask where to find a given resource.
+ */
+
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
@@ -72,8 +82,20 @@ struct _LassoIdWsf2DiscoveryPrivate
 /* public methods */
 /*****************************************************************************/
 
-
-/* XXX: return value must be freed by caller */
+/**
+ * lasso_idwsf2_discovery_metadata_register_self:
+ * @discovery: a #LassoIdWsf2Discovery
+ * @service_type: the service type of the registered metadata, for example LASSO_IDWSF2_DISCO_HREF
+ * @abstract: label/title of the service, free form
+ * @soap_endpoint: URL of the SoapEndpoint to the service
+ * @svcMDID: identifier of the metadatas if caller wants to specify which identifier it wants.
+ *           If NULL, a random identifier will be generated.
+ *
+ * Register metadata service on itself as an ID-WSF Provider (WSP).
+ * Typically used for an IdP to register itself as Discovery service.
+ * 
+ * Return value: the svcMDID of the registered service metadata.
+ **/
 gchar*
 lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	const gchar *service_type, const gchar *abstract,
@@ -115,6 +137,19 @@ lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	return new_svcMDID;
 }
 
+/**
+ * lasso_idwsf2_discovery_init_metadata_register:
+ * @discovery: a #LassoIdWsf2Discovery
+ * @service_type: the service type of the registered metadata, for example LASSO_IDWSF2_DISCO_HREF
+ * @abstract: label/title of the service, free form
+ * @disco_provider_id: provider identifier of the discovery service
+ * @soap_endpoint: URL of the SoapEndpoint to the service
+ *
+ * Initialise a ID-WSF service metadata registration request to a Discovery service
+ * specified by disco_provider_id.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 	const gchar *service_type, const gchar *abstract,
@@ -154,6 +189,16 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 	return 0;
 }
 
+/**
+ * lasso_idwsf2_discovery_process_metadata_register_msg:
+ * @discovery: a #LassoIdWsf2Discovery
+ * @message: received metadata register soap request
+ *
+ * Process received metadata register request.
+ * If successful, register the service metadata into the discovery service.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
@@ -214,6 +259,18 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 	return res;
 }
 
+/**
+ * lasso_idwsf2_discovery_process_metadata_register_response_msg:
+ * @discovery: a #LassoIdWsf2Discovery
+ * @message: received metadata register soap response
+ *
+ * Process received metadata register response.
+ * Check response status code.
+ * If successful, save into @discovery->svcMDID the service metadata identifier
+ * found in the response.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
@@ -249,7 +306,16 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 	return res;
 }
 
-
+/**
+ * lasso_idwsf2_discovery_init_metadata_association_add:
+ * @discovery: a #LassoIdWsf2Discovery
+ * @svcMDID: identifier of the service metadata the user wants to associate with
+ *
+ * Initialise a request to associate a user account to a service metadata, allowing
+ * a WSC to request this service for data related to this user account.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *discovery,
 	const gchar *svcMDID)
@@ -281,6 +347,15 @@ lasso_idwsf2_discovery_init_metadata_association_add(LassoIdWsf2Discovery *disco
 	return 0;
 }
 
+/**
+ * lasso_idwsf2_discovery_process_metadata_association_add_msg:
+ * @discovery: a #LassoIdWsf2Discovery
+ * @message: received metadata association add soap request
+ *
+ * Process received metadata association add request.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
@@ -312,6 +387,14 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 	return res;
 }
 
+/**
+ * lasso_idwsf2_discovery_register_metadata:
+ * @discovery: a #LassoIdWsf2Discovery
+ *
+ * Add service metadata identifier into user identity object.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery)
 {
@@ -360,6 +443,16 @@ lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery)
 	return res;
 }
 
+/**
+ * lasso_idwsf2_discovery_process_metadata_association_add_response_msg:
+ * @discovery: a #LassoIdWsf2Discovery
+ * @message: received metadata association add soap response
+ *
+ * Process received metadata association add response.
+ * Check response status code.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 	LassoIdWsf2Discovery *discovery, const gchar *message)
@@ -399,8 +492,9 @@ lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
 /**
  * lasso_idwsf2_discovery_init_query
  * @discovery: a #LassoIdWsf2Discovery
+ * @security_mech_id: obsolete ; can be NULL
  *
- * Initializes a disco:Query message.
+ * Initialise a request for ID-WSF discovery Query to a discovery service.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -430,6 +524,15 @@ lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery, G_GNUC_UNUSED
 	return 0;
 }
 
+/**
+ * lasso_idwsf2_discovery_add_requested_service_type
+ * @discovery: a #LassoIdWsf2Discovery
+ * @service_type: the service type (or data profile) requested
+ *
+ * Select the requested service type which will be queried.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2Discovery *discovery,
 	const gchar *service_type)
@@ -452,6 +555,15 @@ lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2Discovery *discover
 	return 0;
 }
 
+/**
+ * lasso_idwsf2_discovery_process_query_msg:
+ * @discovery: a #LassoIdWsf2Discovery
+ * @message: received query soap request
+ *
+ * Process received query request.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const gchar *message)
 {
@@ -472,6 +584,17 @@ lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery, const 
 	return res;
 }
 
+/**
+ * lasso_idwsf2_discovery_build_epr:
+ * @service: a #LassoIdWsf2DiscoRequestedService containing the query criteria
+ * @identity: a #LassoIdentity of the current user
+ * @server: current #LassoServer
+ *
+ * Build an EndpointReference (EPR) which contains all the information about a WSP providing
+ * the requested service type and matching other query criteria to allow a WSC to request it.
+ *
+ * Return value: the newly built EPR; or NULL if no WSP match the query criteria.
+ **/
 static LassoWsAddrEndpointReference*
 lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 	LassoIdentity *identity, LassoServer *server)
@@ -596,6 +719,15 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2DiscoRequestedService *service,
 	return epr;
 }
 
+/**
+ * lasso_idwsf2_discovery_build_query_response_eprs:
+ * @discovery: a #LassoIdWsf2Discovery
+ *
+ * Build a query response containing one or more EndpointReference (EPR) for each WSP providing
+ * the requested service type and matching other query criteria to allow a WSC to request them.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_build_query_response_eprs(LassoIdWsf2Discovery *discovery)
 {
@@ -659,6 +791,17 @@ lasso_idwsf2_discovery_build_query_response_eprs(LassoIdWsf2Discovery *discovery
 	return res;
 }
 
+/**
+ * lasso_idwsf2_discovery_process_query_response_msg:
+ * @discovery: a #LassoIdWsf2Discovery
+ * @message: received query soap response
+ *
+ * Process received query response.
+ * Copy returned EPRs into session object.
+ * Check response status code.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
@@ -711,11 +854,10 @@ lasso_idwsf2_discovery_process_query_response_msg(LassoIdWsf2Discovery *discover
  * @discovery: a #LassoIdWsf2Discovery
  * @service_type: the requested service type
  *
- * After a disco:query message, creates a #LassoIdWsf2DataService instance for the
+ * After a discovery query message, create a #LassoIdWsf2DataService instance for the
  * requested @service_type.
  *
- * Return value: a newly created #LassoIdWsf2DataService object; or NULL if an
- *     error occured.
+ * Return value: a newly created #LassoIdWsf2DataService object; or NULL if an error occured.
  **/
 LassoIdWsf2DataService*
 lasso_idwsf2_discovery_get_service(LassoIdWsf2Discovery *discovery, G_GNUC_UNUSED const gchar *service_type)
@@ -854,10 +996,9 @@ lasso_idwsf2_discovery_get_type()
  * lasso_idwsf2_discovery_new:
  * @server: the #LassoServer
  *
- * Creates a new #LassoIdWsf2Discovery.
+ * Create a new #LassoIdWsf2Discovery.
  *
- * Return value: a newly created #LassoIdWsf2Discovery object; or NULL if an error
- *      occured.
+ * Return value: a newly created #LassoIdWsf2Discovery object; or NULL if an error occured.
  **/
 LassoIdWsf2Discovery*
 lasso_idwsf2_discovery_new(LassoServer *server)

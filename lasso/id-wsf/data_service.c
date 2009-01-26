@@ -24,7 +24,10 @@
 
 /**
  * SECTION:data_service
- * @short_description: ID-WSF Data Service Profile
+ * @short_description: ID-WSF Data Service profile
+ *
+ * DataService allows Attribute Consumers (WSC) to request an Attribute Provider (WSP) to get
+ * or modify data about users with their consent.
  *
  * Following up on #LassoDiscovery first example, it created a @service object,
  * this is a #LassoDataService instance.  This example continues from that step
@@ -1030,6 +1033,15 @@ lasso_data_service_new(LassoServer *server)
 	return service;
 }
 
+/**
+ * lasso_data_service_new_full:
+ * @server: the #LassoServer
+ * @offering: the #LassoDiscoResourceOffering
+ *
+ * Creates a new #LassoDataService.
+ *
+ * Return value: a newly created #LassoDataService object; or NULL if an error occured.
+ **/
 LassoDataService*
 lasso_data_service_new_full(LassoServer *server, LassoDiscoResourceOffering *offering)
 {

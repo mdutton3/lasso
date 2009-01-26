@@ -22,6 +22,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * SECTION:idwsf2_data_service
+ * @short_description: ID-WSF 2.0 Data Service profile
+ *
+ * DataService allows Attribute Consumers (WSC) to request an Attribute Provider (WSP) to get
+ * or modify data about users with their consent.
+ */
+
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
@@ -58,6 +66,14 @@ static GList* duplicate_glist_of_xmlnodes(GList*);
 /* public methods                                                            */
 /*****************************************************************************/
 
+/**
+ * lasso_idwsf2_data_service_init_query:
+ * @service: a #LassoIdWsf2DataService
+ *
+ * Initialise an ID-WSF 2.0 DataService query request.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 {
@@ -118,6 +134,16 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 	return 0;
 }
 
+/**
+ * lasso_idwsf2_data_service_add_query_item:
+ * @service: a #LassoIdWsf2DataService
+ * @item_xpath: XPATH of the queried item
+ * @item_id: identifier of the queried item, which will allow to retrieve it in the response
+ *
+ * Add an item in the query request.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const gchar *item_xpath,
 	const gchar *item_id)
@@ -143,6 +169,16 @@ lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const 
 	return 0;
 }
 
+/**
+ * lasso_idwsf2_data_service_process_query_msg:
+ * @service: a #LassoIdWsf2DataService
+ * @message: received query soap request
+ *
+ * Process received query request.
+ * Parse query items and put the list of queried XPATH into @service->query_items.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, const gchar *message)
 {
@@ -179,6 +215,16 @@ lasso_idwsf2_data_service_process_query_msg(LassoIdWsf2DataService *service, con
 	return res;
 }
 
+/**
+ * lasso_idwsf2_data_service_parse_query_items:
+ * @service: a #LassoIdWsf2DataService
+ *
+ * Parse query items and user data from @service->data and fill response->Data accordingly.
+ * Set response status code to OK is all items were parsed correctly, FAILED if no item was parsed
+ * correctly, or PARTIAL if some items were parsed corretly and some others not.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 {
@@ -267,7 +313,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 				xmlXPathFreeObject(xpathObj);
 				xpathObj = NULL;
 			}
-			/* Stop processing at first error */
+			/* Stop processing at first error, according to the specifications */
 			break;
 		}
 
@@ -337,6 +383,17 @@ lasso_idwsf2_data_service_process_query_response_soap_fault_msg(LassoIdWsf2DataS
 	return res;
 }
 
+/**
+ * lasso_idwsf2_data_service_process_query_response_msg:
+ * @service: a #LassoIdWsf2DataService
+ * @message: received query soap response
+ *
+ * Process received query response.
+ * Check if the response if a normal response or a soap fault.
+ * Check response status code.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *service,
 	const gchar *message)
@@ -378,7 +435,15 @@ lasso_idwsf2_data_service_process_query_response_msg(LassoIdWsf2DataService *ser
 	return 0;
 }
 
-
+/**
+ * lasso_idwsf2_data_service_get_attribute_nodes:
+ * @service: a #LassoIdWsf2DataService
+ * @item_id: identifier of the item to retrieve
+ *
+ * Get one of several items for specified @item_id and return them raw as a list of xmlnodes.
+ *
+ * Return value: a list of xmlnodes; or NULL if no item with the specified @item_id was found.
+ **/
 GList*
 lasso_idwsf2_data_service_get_attribute_nodes(LassoIdWsf2DataService *service,
 	const gchar *item_id)
@@ -425,6 +490,15 @@ lasso_idwsf2_data_service_get_attribute_nodes(LassoIdWsf2DataService *service,
 	return duplicate_glist_of_xmlnodes(data->any);
 }
 
+/**
+ * lasso_idwsf2_data_service_get_attribute_node:
+ * @service: a #LassoIdWsf2DataService
+ * @item_id: identifier of the item to retrieve
+ *
+ * Get one item for specified @item_id and return it raw as an xmlnode.
+ *
+ * Return value: an xmlnode; or NULL if no item with the specified @item_id was found.
+ **/
 xmlNode*
 lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, const gchar *item_id)
 {
@@ -471,6 +545,15 @@ lasso_idwsf2_data_service_get_attribute_node(LassoIdWsf2DataService *service, co
 	return xmlCopyNode(data->any->data, 1);
 }
 
+/**
+ * lasso_idwsf2_data_service_get_attribute_strings:
+ * @service: a #LassoIdWsf2DataService
+ * @item_id: identifier of the item to retrieve
+ *
+ * Get one of several items for specified @item_id and return their content as a list of strings.
+ *
+ * Return value: a list of strings; or NULL if no item with the specified @item_id was found.
+ **/
 GList*
 lasso_idwsf2_data_service_get_attribute_strings(LassoIdWsf2DataService *service,
 	const gchar *item_id)
@@ -495,6 +578,15 @@ lasso_idwsf2_data_service_get_attribute_strings(LassoIdWsf2DataService *service,
 	return contents;
 }
 
+/**
+ * lasso_idwsf2_data_service_get_attribute_string:
+ * @service: a #LassoIdWsf2DataService
+ * @item_id: identifier of the item to retrieve
+ *
+ * Get one item for specified @item_id and return its content as a string.
+ *
+ * Return value: a string; or NULL if no item with the specified @item_id was found.
+ **/
 gchar*
 lasso_idwsf2_data_service_get_attribute_string(LassoIdWsf2DataService *service,
 	const gchar *item_id)
@@ -515,6 +607,15 @@ lasso_idwsf2_data_service_get_attribute_string(LassoIdWsf2DataService *service,
 	return content;
 }
 
+/**
+ * lasso_idwsf2_data_service_init_redirect_user_for_consent:
+ * @service: a #LassoIdWsf2DataService
+ * @redirect_url: URL to ask for redirection
+ *
+ * Initialise a soap fault response to ask the requesting service to redirect to the @redirect_url.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_init_redirect_user_for_consent(LassoIdWsf2DataService *service,
 	const gchar *redirect_url)
@@ -549,6 +650,14 @@ lasso_idwsf2_data_service_init_redirect_user_for_consent(LassoIdWsf2DataService 
 	return 0;
 }
 
+/**
+ * lasso_idwsf2_data_service_init_modify:
+ * @service: a #LassoIdWsf2DataService
+ *
+ * Initialise an ID-WSF 2.0 DataService modify request.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_init_modify(LassoIdWsf2DataService *service)
 {
@@ -624,6 +733,19 @@ static void set_xml_string(xmlNode **xmlnode, const char* string)
 	*xmlnode = node;
 }
 
+/**
+ * lasso_idwsf2_data_service_add_modify_item:
+ * @service: a #LassoIdWsf2DataService
+ * @item_xpath: XPATH of the item to modify
+ * @item_id: identifier of the item to modify
+ * @new_data: new value for the selected item
+ * @overrideAllowed: FALSE means only allowing to create a new item, but not modify existing one,
+ *                   TRUE means allowing to modify existing item
+ *
+ * Add an item in the modification request.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_add_modify_item(LassoIdWsf2DataService *service, const gchar *item_xpath,
 	const gchar *item_id, const gchar *new_data, gboolean overrideAllowed)
@@ -652,6 +774,15 @@ lasso_idwsf2_data_service_add_modify_item(LassoIdWsf2DataService *service, const
 	return 0;
 }
 
+/**
+ * lasso_idwsf2_data_service_process_modify_msg:
+ * @service: a #LassoIdWsf2DataService
+ * @message: received modify soap request
+ *
+ * Process received modify request.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_process_modify_msg(LassoIdWsf2DataService *service, const gchar *message)
 {
@@ -728,6 +859,14 @@ lasso_idwsf2_data_service_parse_one_modify_item(LassoIdWsf2DstRefModifyItem *ite
 	return res;
 }
 
+/**
+ * lasso_idwsf2_data_service_parse_modify_items:
+ * @service: a #LassoIdWsf2DataService
+ *
+ * Parse modify items and modify @service->data accordingly.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
 {
@@ -813,6 +952,16 @@ lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
 	return res;
 }
 
+/**
+ * lasso_idwsf2_data_service_process_modify_response_msg:
+ * @service: a #LassoIdWsf2DataService
+ * @message: received modify soap response
+ *
+ * Process received modify response.
+ * Check response status code.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_idwsf2_data_service_process_modify_response_msg(LassoIdWsf2DataService *service,
 	const gchar *message)
@@ -975,8 +1124,9 @@ lasso_idwsf2_data_service_get_type()
 
 /**
  * lasso_idwsf2_data_service_new:
+ * @server: the #LassoServer
  *
- * Creates a new #LassoIdWsf2DataService.
+ * Create a new #LassoIdWsf2DataService.
  *
  * Return value: a newly created #LassoIdWsf2DataService object
  **/
@@ -994,6 +1144,15 @@ lasso_idwsf2_data_service_new(LassoServer *server)
 	return service;
 }
 
+/**
+ * lasso_idwsf2_data_service_new_full:
+ * @server: the #LassoServer
+ * @epr: the #LassoWsAddrEndpointReference
+ *
+ * Create a new #LassoIdWsf2DataService.
+ *
+ * Return value: a newly created #LassoIdWsf2DataService object; or NULL if an error occured.
+ **/
 LassoIdWsf2DataService*
 lasso_idwsf2_data_service_new_full(LassoServer *server, LassoWsAddrEndpointReference *epr)
 {

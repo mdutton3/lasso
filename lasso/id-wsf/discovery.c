@@ -1360,8 +1360,7 @@ lasso_discovery_get_type()
  *
  * Creates a new #LassoDiscovery.
  *
- * Return value: a newly created #LassoDiscovery object; or NULL if an error
- *      occured.
+ * Return value: a newly created #LassoDiscovery object; or NULL if an error occured.
  **/
 LassoDiscovery*
 lasso_discovery_new(LassoServer *server)
@@ -1376,16 +1375,14 @@ lasso_discovery_new(LassoServer *server)
 	return discovery;
 }
 
-
 /**
  * lasso_discovery_new_full:
  * @server: the #LassoServer
- * @offering: the
+ * @offering: the #LassoDiscoResourceOffering
  *
  * Creates a new #LassoDiscovery.
  *
- * Return value: a newly created #LassoDiscovery object; or NULL if an error
- *      occured.
+ * Return value: a newly created #LassoDiscovery object; or NULL if an error occured.
  **/
 LassoDiscovery*
 lasso_discovery_new_full(LassoServer *server, LassoDiscoResourceOffering *offering)
