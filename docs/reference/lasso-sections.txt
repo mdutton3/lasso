@@ -1075,6 +1075,7 @@ LASSO_DISCOVERY_GET_CLASS
 <TITLE>LassoDataService</TITLE>
 LassoDataService
 lasso_data_service_new
+lasso_data_service_new_full
 lasso_data_service_init_query
 lasso_data_service_add_query_item
 lasso_data_service_process_query_msg
@@ -1097,7 +1098,6 @@ LASSO_DATA_SERVICE_GET_CLASS
 <TITLE>LassoIdWsf2Discovery</TITLE>
 LassoIdWsf2Discovery
 lasso_idwsf2_discovery_new
-lasso_idwsf2_discovery_destroy
 lasso_idwsf2_discovery_metadata_register_self
 lasso_idwsf2_discovery_init_metadata_register
 lasso_idwsf2_discovery_process_metadata_register_msg
