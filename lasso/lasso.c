@@ -189,7 +189,7 @@ int lasso_shutdown()
  *
  * Checks if the loaded version of Lasso library could be used.
  *
- * Returns 1 if the loaded lasso library version is OK to use
+ * Return value: 1 if the loaded lasso library version is OK to use
  *     0 if it is not; or a negative value if an error occurs.
  **/
 int

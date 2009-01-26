@@ -305,7 +305,8 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 	return rst;
 }
 
-/** lasso_discovery_init_modify:
+/**
+ * lasso_discovery_init_modify:
  *
  * @Deprecated: Since 2.2.1, use lasso_discovery_init_insert() instead.
  **/

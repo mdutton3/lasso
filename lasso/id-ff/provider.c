@@ -848,11 +848,11 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 	return TRUE;
 }
 
-/** lasso_provider_new_helper:
+/**
+ * lasso_provider_new_helper:
  *
  * Helper function for the two other constructors, lasso_provider_new and lasso_provider_new_from_buffer.
  * Help to factorize common code.
- *
  */
 static LassoProvider*
 lasso_provider_new_helper(LassoProviderRole role, const char *metadata,

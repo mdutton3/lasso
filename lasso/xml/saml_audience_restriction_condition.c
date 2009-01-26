@@ -113,7 +113,7 @@ lasso_saml_audience_restriction_condition_new()
 
 /**
  * lasso_saml_audience_restriction_condition_new_full:
- * @audience:
+ * @audience: a string which specify to which audience the restriction condition applies
  *
  * Creates a new #LassoSamlAudienceRestrictionCondition object and initializes
  * it with the parameters.
