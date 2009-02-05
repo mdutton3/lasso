@@ -390,7 +390,7 @@ def parse_header(header_file):
                 i += 1
                 line = line[:-1] + lines[i].lstrip()
 
-            m = re.match(r'LASSO_EXPORT\s+((?:const |)[\w]+\s*\*?)\s+(OFTYPE\(.*?\)\s+)?(\*?\w+)\s*\((.*?)\)', line)
+            m = re.match(r'LASSO_EXPORT\s+((?:const |)[\w]+\s*\*?)\s+(OFTYPE\(.*?\)\s*)?(\*?\w+)\s*\((.*?)\)', line)
             if m and not m.group(3).endswith('_get_type'):
                 return_type, oftype, function_name, args = m.groups()
                 return_type = return_type.strip()
