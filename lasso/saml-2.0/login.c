@@ -94,6 +94,7 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_me
 
 	request = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request);
 	request->ID = lasso_build_unique_id(32);
+	lasso_assign_string(login->private_data->request_id, request->ID);
 	request->Version = g_strdup("2.0");
 	request->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
 			LASSO_PROVIDER(profile->server)->ProviderID));
@@ -1189,6 +1190,17 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	response = LASSO_SAMLP2_STATUS_RESPONSE(LASSO_PROFILE(login)->response);
+	/* Try to validate the InResponseTo attribute */
+	{
+		char *previous_reqid = login->private_data->request_id;
+		if (previous_reqid) {
+			char *in_response_to = response->InResponseTo;
+			if (in_response_to == NULL || strcmp(previous_reqid, in_response_to) != 0) {
+				return LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST;
+			}
+		}
+	}
+
 	if (response->Status == NULL || ! LASSO_IS_SAMLP2_STATUS(response->Status) ||
 			response->Status->StatusCode == NULL ||
 			response->Status->StatusCode->Value == NULL) {

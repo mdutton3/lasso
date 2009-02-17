@@ -45,6 +45,7 @@ struct _LassoLoginPrivate
 {
 	char *soap_request_msg;
 	LassoSaml2Assertion *saml2_assertion;
+	char *request_id;
 #ifdef LASSO_WSF_ENABLED
 	LassoDiscoResourceID *resourceId;
 	LassoDiscoEncryptedResourceID *encryptedResourceId;

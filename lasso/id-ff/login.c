@@ -1354,6 +1354,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 
 	request = LASSO_SAMLP_REQUEST_ABSTRACT(profile->request);
 	request->RequestID = lasso_build_unique_id(32);
+	lasso_assign_string(login->private_data->request_id, request->RequestID);
 	request->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
 	request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
 	if (lasso_provider_get_protocol_conformance(remote_provider) < LASSO_PROTOCOL_LIBERTY_1_2) {
@@ -1904,6 +1905,7 @@ gint
 lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 {
 	LassoProfile *profile;
+	LassoSamlpResponse *response;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -1924,17 +1926,16 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 		profile->response = NULL;
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
+	response = LASSO_SAMLP_RESPONSE(profile->response);
 
 	/* Validate RequestID and InResponseTo */
-	if (profile->request == NULL) {
-		if (LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->InResponseTo) {
-			return critical_error(LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST);
-		}
-	} else {
-		if (! LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID ||
-				strcmp(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID,
-					LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->InResponseTo) != 0) {
-			return critical_error(LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST);
+	{
+		char *previous_reqid = login->private_data->request_id;
+		if (previous_reqid) {
+			if (response->parent.InResponseTo == NULL ||
+				strcmp(response->parent.InResponseTo, previous_reqid) != 0) {
+				return critical_error(LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST);
+			}
 		}
 	}
 
@@ -2097,6 +2098,7 @@ dispose(GObject *object)
 	lasso_node_destroy(LASSO_NODE(login->private_data->encryptedResourceId));
 	login->private_data->encryptedResourceId = NULL;
 #endif
+	lasso_release_string(login->private_data->request_id);
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
@@ -2116,13 +2118,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoLogin *login)
 {
-	login->private_data = g_new(LassoLoginPrivate, 1);
-	login->private_data->soap_request_msg = NULL;
-	login->private_data->saml2_assertion = NULL;
-#ifdef LASSO_WSF_ENABLED
-	login->private_data->resourceId = NULL;
-	login->private_data->encryptedResourceId = NULL;
-#endif
+	login->private_data = g_new0(LassoLoginPrivate, 1);
 
 	login->protocolProfile = 0;
 	login->assertionArtifact = NULL;
