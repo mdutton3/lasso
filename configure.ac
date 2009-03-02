@@ -454,7 +454,7 @@ if test x$have_expat_lib = xno; then
 fi
 
 AC_MSG_CHECKING(for PHP 4 development files)
-if $PHP4_CONFIG --version | grep -q "^4" || test "x$ENABLE_PHP4_FORCE" == "xyes"
+if $PHP4_CONFIG --version | grep -q "^4" || test "x$ENABLE_PHP4_FORCE" = "xyes"
 then
 	PHP4_VERSION=`$PHP4_CONFIG --version 2> /dev/null`
 	languages_available="$languages_available php4($PHP4_VERSION)"
@@ -536,7 +536,7 @@ if test x$have_expat_lib = xno; then
 fi
 
 AC_MSG_CHECKING(for PHP 5 development files)
-if $PHP5_CONFIG --version | grep -q "^5" || test "x$ENABLE_PHP5_FORCE" == "xyes"
+if $PHP5_CONFIG --version | grep -q "^5" || test "x$ENABLE_PHP5_FORCE" = "xyes"
 then
 	PHP5_VERSION=`$PHP5_CONFIG --version 2> /dev/null`
 	languages_available="$languages_available php5($PHP5_VERSION)"
@@ -915,8 +915,8 @@ AC_SUBST(CLASSPATH_JUNIT)
 AC_SUBST(SWIG_VERSION)
 
 dnl Dirty system often means dirty hacks...
-AM_CONDITIONAL(MINGW, test $MINGW == 1)
-AM_CONDITIONAL(DARWIN, test $DARWIN == 1)
+AM_CONDITIONAL(MINGW, test $MINGW -eq 1)
+AM_CONDITIONAL(DARWIN, test $DARWIN -eq 1)
 
 dnl bindings
 
