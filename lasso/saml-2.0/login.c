@@ -754,8 +754,13 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	LassoProvider *provider = NULL;
 	LassoSaml2EncryptedElement *encrypted_element = NULL;
 	LassoSamlp2Response *response = NULL;
+	LassoSamlp2RequestAbstract *request_abstract = NULL;
 
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
+
+	if (profile->request && LASSO_IS_SAMLP2_REQUEST_ABSTRACT(profile->request)) {
+		request_abstract = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request);
+	}
 
 	if (profile->identity && strcmp(login->nameIDPolicy,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) != 0) {
@@ -800,6 +805,10 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 		notBefore);
 	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter = g_strdup(
 		notOnOrAfter);
+	if (request_abstract) {
+		lasso_assign_string(assertion->Subject->SubjectConfirmation->SubjectConfirmationData->InResponseTo,
+				request_abstract->ID);
+	}
 
 	if (name_id_policy && (strcmp(name_id_policy->Format,
 			LASSO_SAML2_NAME_IDENTIFIER_FORMAT_EMAIL) == 0 ||
@@ -1190,16 +1199,6 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	response = LASSO_SAMLP2_STATUS_RESPONSE(LASSO_PROFILE(login)->response);
-	/* Try to validate the InResponseTo attribute */
-	{
-		char *previous_reqid = login->private_data->request_id;
-		if (previous_reqid) {
-			char *in_response_to = response->InResponseTo;
-			if (in_response_to == NULL || strcmp(previous_reqid, in_response_to) != 0) {
-				return LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST;
-			}
-		}
-	}
 
 	if (response->Status == NULL || ! LASSO_IS_SAMLP2_STATUS(response->Status) ||
 			response->Status->StatusCode == NULL ||
@@ -1270,6 +1269,16 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		if (assertion->Subject == NULL) {
 			return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
 		}
+
+		/* Verify some SubjectConfirmationData InResponseTo */
+		if (login->private_data->request_id && (
+			assertion->Subject->SubjectConfirmation == NULL ||
+			assertion->Subject->SubjectConfirmation->SubjectConfirmationData == NULL ||
+			assertion->Subject->SubjectConfirmation->SubjectConfirmationData->InResponseTo == NULL ||
+			strcmp(assertion->Subject->SubjectConfirmation->SubjectConfirmationData->InResponseTo, login->private_data->request_id) != 0)) {
+			return LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID;
+		}
+
 
 		if (assertion->Subject->NameID != NULL) {
 			id_node = g_object_ref(assertion->Subject->NameID);

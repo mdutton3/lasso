@@ -600,10 +600,29 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 	if (response->Assertion) {
 		LassoProfile *profile = LASSO_PROFILE(login);
 		LassoSamlAssertion *assertion = response->Assertion->data;
+		LassoLibAssertion *lib_assertion = NULL;
+
+		if (LASSO_IS_LIB_ASSERTION(assertion)) {
+			lib_assertion = LASSO_LIB_ASSERTION(assertion);
+		}
+
 		idp = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 		if (idp == NULL) {
 			return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 		}
+
+		/* Validate AuthnRequest RequestID and InResponseTo */
+		{
+			char *previous_reqid = login->private_data->request_id;
+			if (previous_reqid) {
+				if (lib_assertion == NULL ||
+					lib_assertion->InResponseTo == NULL ||
+					strcmp(lib_assertion->InResponseTo, previous_reqid) != 0) {
+					return critical_error(LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID);
+				}
+			}
+		}
+
 		/* If the status of the signature verification process is not 0, we try to verify on
 		 * the assertion */
 		if (profile->signature_status != 0) {
@@ -1928,17 +1947,6 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 	}
 	response = LASSO_SAMLP_RESPONSE(profile->response);
 
-	/* Validate RequestID and InResponseTo */
-	{
-		char *previous_reqid = login->private_data->request_id;
-		if (previous_reqid) {
-			if (response->parent.InResponseTo == NULL ||
-				strcmp(response->parent.InResponseTo, previous_reqid) != 0) {
-				return critical_error(LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST);
-			}
-		}
-	}
-
 	/* In the artifact profile we cannot verify the signature on the message, we must wait the
 	 * verification on the assertion, so for the moment the signature verification failed. */
 	profile->signature_status = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
@@ -2031,6 +2039,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlSetProp(xmlnode, (xmlChar*)"LoginDumpVersion", (xmlChar*)"2");
+	xmlSetProp(xmlnode, (xmlChar*)"RequestID", (xmlChar*)LASSO_LOGIN(node)->private_data->request_id);
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART)
 		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"ProtocolProfile", (xmlChar*)"Artifact");
@@ -2051,6 +2060,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc) return rc;
+
+	lasso_assign_new_string(LASSO_LOGIN(node)->private_data->request_id, (char*)xmlGetProp(xmlnode,
+				(xmlChar*)"RequestID"));
 
 	t = xmlnode->children;
 	while (t) {
