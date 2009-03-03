@@ -129,6 +129,8 @@ lasso_strerror(int error_code)
 			return "LASSO_XML_ERROR_MISSING_NAMESPACE";
 		case LASSO_DS_ERROR_INVALID_SIGNATURE:
 			return "Invalid signature.";
+		case LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID:
+			return "If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object";
 		case LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED:
 			return "Failed to load encryption private key.";
 		case LASSO_DS_ERROR_SIGNATURE_FAILED:
@@ -149,8 +151,6 @@ lasso_strerror(int error_code)
 			return "Error building request QUERY url";
 		case LASSO_DST_ERROR_MISSING_SERVICE_DATA:
 			return "Missing service data";
-		case LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST:
-			return "If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object";
 		case LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED:
 			return "Failed to load certificate.";
 		case LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP:

@@ -127,7 +127,8 @@
 #define LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL            608 /* Unknown principal */
 #define LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT          609 /* No default endpoint */
 #define LASSO_LOGIN_ERROR_ASSERTION_REPLAY             610 /* Assertion replay */
-#define LASSO_LOGIN_ERROR_REFER_TO_UNKNOWN_REQUEST     611 /* If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object */
+#define LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID    611 /* If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object */
+;
 
 /* Federation Termination Notification */
 #define LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER -700 /* Name identifier not found in request */
