@@ -126,7 +126,9 @@ START_TEST(test02_serviceProviderLogin)
 	char *serviceProviderId, *soapRequestMsg, *soapResponseMsg;
 	char *spIdentityContextDump;
 	char *spSessionDump;
+	char *spLoginDump;
 	int requestType;
+	char *found;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
@@ -151,6 +153,7 @@ START_TEST(test02_serviceProviderLogin)
 	authnRequestQuery = strchr(authnRequestUrl, '?')+1;
 	fail_unless(strlen(authnRequestQuery) > 0,
 			"authnRequestRequest shouldn't be an empty string");
+	spLoginDump = lasso_node_dump(LASSO_NODE(spLoginContext));
 
 	/* Identity provider singleSignOn, for a user having no federation. */
 	identityProviderContextDump = generateIdentityProviderContextDump();
@@ -200,7 +203,7 @@ START_TEST(test02_serviceProviderLogin)
 	lasso_login_destroy(spLoginContext);
 
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
-	spLoginContext = lasso_login_new(spContext);
+	spLoginContext = lasso_login_new_from_dump(spContext, spLoginDump);
 	rc = lasso_login_init_request(spLoginContext,
 			responseQuery,
 			LASSO_HTTP_METHOD_REDIRECT);
@@ -240,6 +243,19 @@ START_TEST(test02_serviceProviderLogin)
 	spIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(spLoginContext)->identity);
 	fail_unless(spIdentityContextDump != NULL, "lasso_identity_dump failed");
 	spSessionDump = lasso_session_dump(LASSO_PROFILE(spLoginContext)->session);
+
+	/* Test InResponseTo checking */
+	found = strstr(soapResponseMsg, "Assertion");
+	fail_unless(found != NULL, "We must find an Assertion");
+	found = strstr(found, "InResponseTo=\"");
+	fail_unless(found != NULL, "We must find an InResponseTo attribute");
+	found[sizeof("InResponseTo=\"")] = '?';
+	lasso_set_flag("no-verify-signature");
+	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
+	lasso_set_flag("verify-signature");
+	fail_unless(rc != 0, "lasso_login_process_response_msg must fail");
+	rc = lasso_login_accept_sso(spLoginContext);
+	fail_unless(rc == 0, "lasso_login_accept_sso must fail");
 
 	g_free(serviceProviderId);
 	g_free(serviceProviderContextDump);
