@@ -987,7 +987,7 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
  * Return: 0 if signature was validated, and error code otherwise.
  */
 
-gboolean
+int
 lasso_verify_signature(xmlNode *signed_node, const char *id_attr_name,
 		xmlSecKeysMngr *keys_manager, xmlSecKey *public_key,
 		SignatureVerificationOption signature_verification_option,
@@ -1004,6 +1004,9 @@ lasso_verify_signature(xmlNode *signed_node, const char *id_attr_name,
 	g_return_val_if_fail(signed_node && id_attr_name && (keys_manager || public_key),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
+	if (lasso_flag_verify_signature == FALSE) {
+		return 0;
+	}
 	/* Find signature */
 	signature = xmlSecFindNode(signed_node, xmlSecNodeSignature, xmlSecDSigNs);
 	goto_exit_if_fail (signature, LASSO_DS_ERROR_SIGNATURE_NOT_FOUND);
