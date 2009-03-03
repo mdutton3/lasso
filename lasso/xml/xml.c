@@ -1600,6 +1600,84 @@ lasso_node_new_from_soap(const char *soap)
 	return node;
 }
 
+static char *
+prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
+	char *prefix = NULL;
+	char *tmp = NULL;
+
+	if (strcmp((char*)href, LASSO_LASSO_HREF) == 0)
+		prefix = "";
+	else if (strcmp((char*)href, LASSO_SAML_ASSERTION_HREF) == 0)
+		prefix = "Saml";
+	else if (strcmp((char*)href, LASSO_SAML_PROTOCOL_HREF) == 0)
+		prefix = "Samlp";
+	else if (strcmp((char*)href, LASSO_LIB_HREF) == 0)
+		prefix = "Lib";
+	else if (strcmp((char*)href, LASSO_SAML2_ASSERTION_HREF) == 0)
+		prefix = "Saml2";
+	else if (strcmp((char*)href, LASSO_SAML2_PROTOCOL_HREF) == 0)
+		prefix = "Samlp2";
+	else if (strcmp((char*)href, LASSO_SOAP_ENV_HREF) == 0)
+		prefix = "Soap";
+	else if (strcmp((char*)href, LASSO_SOAP_BINDING_HREF) == 0)
+		prefix = "SoapBinding";
+	else if (strcmp((char*)href, LASSO_DISCO_HREF) == 0)
+		prefix = "Disco";
+	else if (strcmp((char*)href, LASSO_DS_HREF) == 0)
+		prefix = "Ds";
+	else if (strcmp((char*)href, LASSO_IS_HREF) == 0)
+		prefix = "Is";
+	else if (strcmp((char*)href, LASSO_SA_HREF) == 0)
+		prefix = "Sa";
+	else if (strcmp((char*)href, LASSO_WSSE_HREF) == 0)
+		prefix = "Wsse";
+	else if (strcmp((char*)href, LASSO_WSSE1_HREF) == 0)
+		prefix = "WsSec1";
+	else if (strcmp((char*)href, LASSO_IDWSF2_DISCO_HREF) == 0)
+		prefix = "IdWsf2Disco";
+	else if (strcmp((char*)href, LASSO_IDWSF2_SBF_HREF) == 0)
+		prefix = "IdWsf2Sbf";
+	else if (strcmp((char*)href, LASSO_IDWSF2_SB2_HREF) == 0)
+		prefix = "IdWsf2Sb2";
+	else if (strcmp((char*)href, LASSO_IDWSF2_UTIL_HREF) == 0)
+		prefix = "IdWsf2Util";
+	else if (strcmp((char*)href, LASSO_IDWSF2_SEC_HREF) == 0)
+		prefix = "IdWsf2Sec";
+	else if (strcmp((char*)href, LASSO_WSA_HREF) == 0)
+		prefix = "WsAddr";
+#if 0 /* Desactivate DGME lib special casing */
+	else if (strcmp((char*)href, "urn:dgme:msp:ed:2007-01") == 0)
+		/* FIXME: new namespaces should be possible to add from another library than lasso */
+		prefix = "DgmeMspEd";
+#endif
+	else if ((tmp = lasso_get_prefix_for_idwsf2_dst_service_href((char*)href))
+			!= NULL) {
+		/* ID-WSF 2 Profile */
+		prefix = "IdWsf2DstRef";
+		lasso_release_string(tmp);
+	} else if ((tmp = lasso_get_prefix_for_dst_service_href((char*)href))
+			!= NULL) {
+		/* ID-WSF 1 Profile */
+		prefix = "Dst";
+		lasso_release_string(tmp);
+	}
+
+	if (prefix != NULL && strcmp(prefix, "Dst") == 0 && strcmp((char*)nodename, "Status") == 0)
+		prefix = "Utility";
+	else if (prefix != NULL && strcmp(prefix, "Disco") == 0 && strcmp((char*)nodename, "Status") == 0)
+		prefix = "Utility";
+	else if (prefix != NULL && strcmp(prefix, "Sa") == 0 && strcmp((char*)nodename, "Status") == 0)
+		prefix = "Utility";
+
+	return prefix;
+}
+
+static char *
+prefix_from_node(xmlNode *xmlnode) {
+	return prefix_from_href_and_nodename(xmlnode->ns->href, xmlnode->name);
+
+}
+
 /**
  * lasso_node_new_from_xmlNode:
  * @node: an xmlNode
@@ -1613,7 +1691,6 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 {
 	char *prefix = NULL;
 	char *typename = NULL;
-	char *tmp = NULL;
 	char *node_name = NULL;
 	xmlChar *xsitype = NULL;
 	LassoNode *node = NULL;
@@ -1623,74 +1700,7 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		return NULL;
 	}
 
-	/* autodetect type name */
-	if (strcmp((char*)xmlnode->ns->href, LASSO_LASSO_HREF) == 0)
-		prefix = "";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_SAML_ASSERTION_HREF) == 0)
-		prefix = "Saml";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_SAML_PROTOCOL_HREF) == 0)
-		prefix = "Samlp";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_LIB_HREF) == 0)
-		prefix = "Lib";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_SAML2_ASSERTION_HREF) == 0)
-		prefix = "Saml2";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_SAML2_PROTOCOL_HREF) == 0)
-		prefix = "Samlp2";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_SOAP_ENV_HREF) == 0)
-		prefix = "Soap";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_SOAP_BINDING_HREF) == 0)
-		prefix = "SoapBinding";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_DISCO_HREF) == 0)
-		prefix = "Disco";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_DS_HREF) == 0)
-		prefix = "Ds";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_IS_HREF) == 0)
-		prefix = "Is";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_SA_HREF) == 0)
-		prefix = "Sa";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_HREF) == 0)
-		prefix = "Wsse";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE1_HREF) == 0)
-		prefix = "WsSec1";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_DISCO_HREF) == 0)
-		prefix = "IdWsf2Disco";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SBF_HREF) == 0)
-		prefix = "IdWsf2Sbf";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SB2_HREF) == 0)
-		prefix = "IdWsf2Sb2";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_UTIL_HREF) == 0)
-		prefix = "IdWsf2Util";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_IDWSF2_SEC_HREF) == 0)
-		prefix = "IdWsf2Sec";
-	else if (strcmp((char*)xmlnode->ns->href, LASSO_WSA_HREF) == 0)
-		prefix = "WsAddr";
-#if 0 /* Desactivate DGME lib special casing */
-	else if (strcmp((char*)xmlnode->ns->href, "urn:dgme:msp:ed:2007-01") == 0)
-		/* FIXME: new namespaces should be possible to add from another library than lasso */
-		prefix = "DgmeMspEd";
-#endif
-	else if ((tmp = lasso_get_prefix_for_idwsf2_dst_service_href((char*)xmlnode->ns->href))
-			!= NULL) {
-		/* ID-WSF 2 Profile */
-		prefix = "IdWsf2DstRef";
-		g_free(tmp);
-	} else if ((tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href))
-			!= NULL) {
-		/* ID-WSF 1 Profile */
-		prefix = "Dst";
-		g_free(tmp);
-	}
-
-	if (prefix != NULL && strcmp(prefix, "Dst") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
-		prefix = "Utility";
-	else if (prefix != NULL && strcmp(prefix, "Disco") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
-		prefix = "Utility";
-	else if (prefix != NULL && strcmp(prefix, "Sa") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
-		prefix = "Utility";
-#if 0 /* Remove special casing for DGME lib */
-	else if (strcmp(prefix, "DgmeMspEd") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
-		prefix = "Utility";
-#endif
+	prefix = prefix_from_node(xmlnode);
 
 	xsitype = xmlGetNsProp(xmlnode, (xmlChar*)"type", (xmlChar*)LASSO_XSI_HREF);
 	if (xsitype) {
@@ -1703,8 +1713,12 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		if (separator != NULL) {
 			xmlPrefix = (xmlChar*)g_strndup((char*)xmlPrefix, (size_t)(separator - xmlPrefix));
 			ns = xmlSearchNs(NULL, xmlnode, xmlPrefix);
-			if (ns != NULL && strcmp((char*)ns->href, LASSO_LASSO_HREF) == 0) {
-				typename = g_strdup((char*)(separator+1));
+			if (ns != NULL) {
+				if (strcmp((char*)ns->href, LASSO_LASSO_HREF) == 0) {
+					typename = g_strdup((char*)(separator+1));
+				} else {
+					prefix = prefix_from_href_and_nodename(ns->href, separator+1);
+				}
 			}
 			lasso_release(xmlPrefix);
 		}
