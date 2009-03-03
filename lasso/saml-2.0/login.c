@@ -808,6 +808,14 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	if (request_abstract) {
 		lasso_assign_string(assertion->Subject->SubjectConfirmation->SubjectConfirmationData->InResponseTo,
 				request_abstract->ID);
+		if (request_abstract->ID) {
+			/**
+			 * It MUST NOT contain a NotBefore attribute. If
+			 * the containing message is in response to an <AuthnRequest>,
+			 * then the InResponseTo attribute MUST match the request's ID.
+			 */
+			lasso_release_string(assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotBefore);
+		}
 	}
 
 	if (name_id_policy && (strcmp(name_id_policy->Format,
