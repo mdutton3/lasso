@@ -24,6 +24,7 @@
 
 #include <libxml/uri.h>
 #include <lasso/xml/lib_logout_request.h>
+#include "../utils.h"
 
 /**
  * SECTION:lib_logout_request
@@ -104,11 +105,16 @@ init_from_query(LassoNode *node, char **query_fields)
 	lasso_node_init_from_query_fields(node, query_fields);
 
 	if (request->ProviderID == NULL ||
-			request->NameIdentifier->content == NULL ||
-			request->NameIdentifier->Format == NULL) {
-		lasso_node_destroy(LASSO_NODE(request->NameIdentifier));
-		request->NameIdentifier = NULL;
+			request->NameIdentifier == NULL ||
+			request->NameIdentifier->content == NULL) {
+		lasso_release_gobject(request->NameIdentifier);
 		return FALSE;
+	}
+
+	if (request->NameIdentifier->Format == NULL) {
+		lasso_assign_string(request->NameIdentifier->Format,
+				"LASSO_SAML2_NAME_IDENTIFIER_FORMAT_UNSPECIFIED");
+
 	}
 
 	return TRUE;
