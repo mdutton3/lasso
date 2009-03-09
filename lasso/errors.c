@@ -129,6 +129,8 @@ lasso_strerror(int error_code)
 			return "LASSO_XML_ERROR_MISSING_NAMESPACE";
 		case LASSO_DS_ERROR_INVALID_SIGNATURE:
 			return "Invalid signature.";
+		case LASSO_DS_ERROR_DECRYPTION_FAILED:
+			return "Decryption of an encrypted node failed";
 		case LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID:
 			return "If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object";
 		case LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED:
@@ -205,6 +207,8 @@ lasso_strerror(int error_code)
 			return "Invalid XML file";
 		case LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT:
 			return "Cannot find an WSP endpoint for the ID-WSF service";
+		case LASSO_PROFILE_ERROR_MISSING_SERVER:
+			return "No server object set in the profile";
 		case LASSO_XML_ERROR_NODE_NOT_FOUND:
 			return "Unable to get child of element.";
 		case LASSO_ERROR_UNIMPLEMENTED:

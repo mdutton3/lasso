@@ -57,6 +57,7 @@
 #define LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND   -115 /* Signature template has not been found. */
 #define LASSO_DS_ERROR_TOO_MUCH_REFERENCES            -116 /* SAML signature must contain only one reference */
 #define LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML     -117 /* SAML signature reference must be to a Request, a Reponse or an Assertion ID attribute */
+#define LASSO_DS_ERROR_DECRYPTION_FAILED              -118 /* Decryption of an encrypted node failed */
 
 /* Server */
 #define LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND         -201 /* ProviderID unknown to LassoServer. */
@@ -109,6 +110,7 @@
 #define LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE -435 /* Missing endpoint reference */
 #define LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS -436 /* Missing endpoint reference address */
 #define LASSO_PROFILE_ERROR_INVALID_ISSUER            -437 /* Assertion issuer is not thesame as the requested issuer */
+#define LASSO_PROFILE_ERROR_MISSING_SERVER            -438 /* No server object set in the profile */
 
 /* functions/methods parameters checking */
 #define LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ        -501 /* An object type provided as parameter  */

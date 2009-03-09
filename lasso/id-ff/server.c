@@ -837,3 +837,44 @@ lasso_server_dump(LassoServer *server)
 {
 	return lasso_node_dump(LASSO_NODE(server));
 }
+
+/**
+ * lasso_decrypt_nameid:
+ * @profile: a #LassoProfile object
+ * @nameid_field: reference to the nameid pointer.
+ * @encryptedid_field: reference to the encryptedid pointer.
+ *
+ * Decrypt the LassoNode pointed by the first field pointer, and try to place the result in the
+ * second field.
+ *
+ * Return value: LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ,
+ * LASSO_PROFILE_ERROR_MISSING_SERVER,
+ * LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY,
+ * LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND,
+ * LASSO_DS_ERROR_DECRYPTION_FAILED
+ */
+int
+lasso_server_decrypt_nameid(LassoServer *server,
+		LassoSaml2EncryptedElement **encryptedid_field,
+		LassoNode **nameid_field)
+{
+	LassoNode *new_name_id;
+	xmlSecKey *encryption_private_key;
+
+	lasso_bad_param(SERVER, server);
+	lasso_null_param(encryptedid_field);
+	lasso_null_param(nameid_field);
+
+	encryption_private_key = server->private_data->encryption_private_key;
+	g_return_val_if_fail(encryption_private_key != NULL, LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY);
+	new_name_id = lasso_node_decrypt(*encryptedid_field, encryption_private_key);
+
+	if (new_name_id) {
+		return LASSO_DS_ERROR_DECRYPTION_FAILED;
+	}
+	lasso_assign_new_gobject(*nameid_field, new_name_id);
+	lasso_release_gobject(*encryptedid_field);
+
+	return 0;
+}
+

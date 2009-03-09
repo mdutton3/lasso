@@ -38,6 +38,9 @@ struct _LassoServerPrivate
 
 gchar* lasso_server_get_first_providerID(LassoServer *server);
 gchar* lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash);
+int lasso_server_decrypt_nameid(LassoServer *profile,
+		LassoSaml2EncryptedElement **encryptedid_field,
+		LassoNode **nameid_field);
 
 #ifdef __cplusplus
 }
