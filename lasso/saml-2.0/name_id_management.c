@@ -22,15 +22,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/saml-2.0/name_id_management.h>
-#include <lasso/saml-2.0/providerprivate.h>
-#include <lasso/saml-2.0/profileprivate.h>
-#include <lasso/id-ff/providerprivate.h>
-#include <lasso/id-ff/profileprivate.h>
-#include <lasso/id-ff/identityprivate.h>
-#include <lasso/id-ff/serverprivate.h>
-#include <lasso/xml/xml_enc.h>
+#include <../saml-2.0/name_id_management.h>
+#include <../saml-2.0/providerprivate.h>
+#include <../saml-2.0/profileprivate.h>
+#include <../id-ff/providerprivate.h>
+#include <../id-ff/profileprivate.h>
+#include <../id-ff/identityprivate.h>
+#include <../id-ff/serverprivate.h>
+#include <../xml/xml_enc.h>
 #include "../utils.h"
+#include <../xml/saml-2.0/samlp2_manage_name_id_request.h>
 
 /**
  * SECTION:name_id_management
@@ -235,19 +236,20 @@ gint
 lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_management,
 		char *request_msg)
 {
-	LassoProfile *profile;
-	LassoProvider *remote_provider;
+	LassoProfile *profile = NULL;
+	LassoProvider *remote_provider = NULL;
 	LassoMessageFormat format;
-	LassoSaml2NameID *name_id;
-	LassoSaml2EncryptedElement *encrypted_id;
-	LassoSaml2EncryptedElement* encrypted_element = NULL;
-	xmlSecKey *encryption_private_key = NULL;
+	LassoSaml2NameID *name_id = NULL;
+	LassoSaml2EncryptedElement *encrypted_id = NULL;
+	LassoSamlp2ManageNameIDRequest *request = NULL;
+	LassoSamlp2RequestAbstract *abstract_request = NULL;
 
 	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(request_msg != NULL,
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
+	/* Parsing */
 	profile = LASSO_PROFILE(name_id_management);
 	profile->request = lasso_samlp2_manage_name_id_request_new();
 	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
@@ -255,12 +257,17 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
-	if (profile->remote_providerID) {
-		g_free(profile->remote_providerID);
+	/* Validation and extraction */
+	if (! LASSO_IS_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)) {
+		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	}
+	request = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request);
+	abstract_request = &request->parent;
 
-	profile->remote_providerID = g_strdup(
-			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content);
+	if (abstract_request->Issuer == NULL || abstract_request->Issuer->content) {
+		return LASSO_PROFILE_ERROR_MISSING_ISSUER;
+	}
+	lasso_assign_string(profile->remote_providerID, abstract_request->Issuer->content);
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 
@@ -278,26 +285,24 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 	if (format == LASSO_MESSAGE_FORMAT_QUERY)
 		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 
-	name_id = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID;
-	encrypted_id = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->EncryptedID;
+	name_id = request->NameID;
+	encrypted_id = request->EncryptedID;
 
-	if (name_id == NULL && encrypted_id != NULL) {
-		encryption_private_key = profile->server->private_data->encryption_private_key;
-		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(encrypted_id);
-		if (encrypted_element != NULL && encryption_private_key == NULL) {
-			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+	if (name_id == NULL) {
+		int rc;
+
+		if (request->EncryptedID == NULL) {
+			return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 		}
-		if (encrypted_element != NULL && encryption_private_key != NULL) {
-			profile->nameIdentifier = LASSO_NODE(lasso_node_decrypt(
-				encrypted_id, encryption_private_key));
-			LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID = \
-				LASSO_SAML2_NAME_ID(profile->nameIdentifier);
-			g_object_unref(
-				LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->EncryptedID);
-			LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->EncryptedID = NULL;
-		}
+
+		g_return_val_if_fail(LASSO_IS_SERVER(profile->server), LASSO_PROFILE_ERROR_MISSING_SERVER);
+		rc = lasso_server_decrypt_nameid(profile->server, &request->EncryptedID, (LassoNode**)&request->NameID);
+		if (rc != 0)
+			return rc;
+
+		lasso_assign_gobject(profile->nameIdentifier, request->NameID);
 	} else {
-		profile->nameIdentifier = g_object_ref(name_id);
+		lasso_assign_gobject(profile->nameIdentifier, name_id);
 	}
 
 	return profile->signature_status;
