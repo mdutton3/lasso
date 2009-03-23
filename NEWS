@@ -1,6 +1,13 @@
 NEWS
 ====
 
+2.2.2 - March 24th 2009
+-----------------------
+
+Many fixes and improvements to the ID-WSF 1 support, new API to load SSL keys
+off memory, documentation for ID-WSF methods, general robustness and memory
+leak fixes.
+
 2.2.1 - July 22nd 2008
 ----------------------
 
