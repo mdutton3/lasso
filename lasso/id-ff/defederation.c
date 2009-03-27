@@ -98,13 +98,13 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 	/* build the federation termination notification message (SOAP or HTTP-Redirect) */
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		/* build the logout request message */
-		profile->msg_url = lasso_provider_get_metadata_one(
-				remote_provider, "SoapEndpoint");
-		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file =
-			profile->server->private_key;
-		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file =
-			profile->server->certificate;
-		profile->msg_body = lasso_node_export_to_soap(LASSO_NODE(profile->request));
+		lasso_assign_new_string(profile->msg_url, lasso_provider_get_metadata_one(
+				remote_provider, "SoapEndpoint"));
+		lasso_assign_string(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file,
+			profile->server->private_key);
+		lasso_assign_string(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file,
+			profile->server->certificate);
+		lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(LASSO_NODE(profile->request)));
 		return 0;
 	}
 
@@ -121,14 +121,14 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 				profile->server->private_key);
 
 		if (query == NULL) {
-			g_free(url);
+			lasso_release(url);
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 
-		profile->msg_url = lasso_concat_url_query(url, query);
-		profile->msg_body = NULL;
-		g_free(url);
-		g_free(query);
+		lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
+		lasso_release(profile->msg_body);
+		lasso_release(url);
+		lasso_release(query);
 
 		return 0;
 	}
@@ -176,15 +176,13 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 
 	profile = LASSO_PROFILE(defederation);
 
-	if (profile->remote_providerID)
-		g_free(profile->remote_providerID);
-	if (profile->request)
-		lasso_node_destroy(LASSO_NODE(profile->request));
+	lasso_release(profile->remote_providerID);
+	lasso_release_gobject(profile->request);
 
 	if (remote_providerID != NULL) {
-		profile->remote_providerID = g_strdup(remote_providerID);
+		lasso_assign_string(profile->remote_providerID, remote_providerID);
 	} else {
-		profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
+		lasso_assign_new_string(profile->remote_providerID, lasso_server_get_first_providerID(profile->server));
 		if (profile->remote_providerID == NULL) {
 			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 		}
@@ -215,9 +213,9 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(nameIdentifier_n);
 
 	if (federation->local_nameIdentifier) {
-		profile->nameIdentifier = g_object_ref(federation->local_nameIdentifier);
+		lasso_assign_gobject(profile->nameIdentifier, federation->local_nameIdentifier);
 	} else {
-		profile->nameIdentifier = g_object_ref(nameIdentifier);
+		lasso_assign_gobject(profile->nameIdentifier, nameIdentifier);
 	}
 
 	/* get / verify http method */
@@ -256,8 +254,8 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 				nameIdentifier,
 				LASSO_SIGNATURE_TYPE_NONE,
 				0);
-		LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request)->RelayState =
-			g_strdup(profile->msg_relayState);
+		lasso_assign_string(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request)->RelayState,
+			profile->msg_relayState);
 	}
 
 	if (lasso_provider_get_protocol_conformance(remote_provider) < LASSO_PROTOCOL_LIBERTY_1_2) {
@@ -308,7 +306,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 
 	profile = LASSO_PROFILE(defederation);
 
-	profile->request = lasso_lib_federation_termination_notification_new();
+	lasso_assign_new_gobject(profile->request, lasso_lib_federation_termination_notification_new());
 	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
@@ -319,7 +317,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 				lasso_get_relaystate_from_query(request_msg));
 	}
 
-	profile->remote_providerID = g_strdup(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
+	lasso_assign_string(profile->remote_providerID, LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
 				profile->request)->ProviderID);
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
@@ -336,12 +334,12 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 	if (format == LASSO_MESSAGE_FORMAT_QUERY)
 		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 
-	profile->nameIdentifier = g_object_ref(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
+	lasso_assign_gobject(profile->nameIdentifier, LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
 				profile->request)->NameIdentifier);
 
 	/* get the RelayState (only available in redirect mode) */
 	if (LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request)->RelayState)
-		profile->msg_relayState = g_strdup(
+		lasso_assign_string(profile->msg_relayState.
 				LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
 					profile->request)->RelayState);
 
@@ -377,8 +375,8 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 	/* If SOAP notification, then msg_url and msg_body are NULL */
 	/* if HTTP-Redirect notification, set msg_url with the federation
 	 * termination service return url, and set msg_body to NULL */
-	profile->msg_url = NULL;
-	profile->msg_body = NULL;
+	lasso_release(profile->msg_url)
+	lasso_release(profile->msg_body)
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -401,9 +399,8 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 			gchar *url;
 			gchar *query = g_strdup_printf("RelayState=%s", profile->msg_relayState);
 			url = lasso_concat_url_query(profile->msg_url, query);
-			g_free(profile->msg_url);
 			g_free(query);
-			profile->msg_url = url;
+			lasso_assign_new_string(profile->msg_url, url);
 		}
 	}
 
