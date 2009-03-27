@@ -108,7 +108,6 @@ build_query(LassoNode *node)
 		return NULL;
 	}
 	ret = g_strdup_printf("SAMLResponse=%s", deflated_message);
-	/* XXX: must support RelayState (which profiles?) */
 	g_free(deflated_message);
 	return ret;
 }
