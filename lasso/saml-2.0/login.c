@@ -49,6 +49,7 @@
 #include <lasso/xml/saml-2.0/saml2_attribute.h>
 #include <lasso/xml/saml-2.0/saml2_attribute_statement.h>
 #include <lasso/xml/saml-2.0/saml2_attribute_value.h>
+#include <lasso/xml/saml-2.0/saml2_name_id.h>
 
 #ifdef LASSO_WSF_ENABLED
 #include <lasso/id-wsf-2.0/identity.h>
