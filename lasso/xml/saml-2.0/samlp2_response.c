@@ -54,7 +54,6 @@ extern LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
 /* private methods                                                           */
 /*****************************************************************************/
 
-
 static struct XmlSnippet schema_snippets[] = {
 	{ "Assertion", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoSamlp2Response, Assertion), NULL, NULL, NULL},
@@ -64,23 +63,6 @@ static struct XmlSnippet schema_snippets[] = {
 };
 
 static LassoNodeClass *parent_class = NULL;
-
-
-static gchar*
-build_query(LassoNode *node)
-{
-	char *ret, *deflated_message;
-
-	deflated_message = lasso_node_build_deflated_query(node);
-	if (deflated_message == NULL) {
-		return NULL;
-	}
-	ret = g_strdup_printf("SAMLResponse=%s", deflated_message);
-	/* XXX: must support RelayState (which profiles?) */
-	g_free(deflated_message);
-	return ret;
-}
-
 
 static gboolean
 init_from_query(LassoNode *node, char **query_fields)
@@ -153,7 +135,6 @@ class_init(LassoSamlp2ResponseClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nclass->build_query = build_query;
 	nclass->init_from_query = init_from_query;
 	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);

@@ -51,31 +51,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-
-static gchar*
-build_query(LassoNode *node)
-{
-	char *ret, *deflated_message, *relay_state;
-	LassoSamlp2LogoutResponse *response = LASSO_SAMLP2_LOGOUT_RESPONSE(node);
-
-	deflated_message = lasso_node_build_deflated_query(node);
-	if (deflated_message == NULL) {
-		return NULL;
-	}
-	if (response->relayState) {
-		relay_state = (char*)xmlURIEscapeStr((xmlChar *)response->relayState, NULL);
-		ret = g_strdup_printf("SAMLResponse=%s&RelayState=%s",
-				deflated_message, relay_state);
-		xmlFree(relay_state);
-	} else {
-		ret = g_strdup_printf("SAMLResponse=%s", deflated_message);
-	}
-	/* XXX: must support RelayState (which profiles?) */
-	g_free(deflated_message);
-	return ret;
-}
-
-
 static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
@@ -105,7 +80,6 @@ class_init(LassoSamlp2LogoutResponseClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nclass->build_query = build_query;
 	nclass->init_from_query = init_from_query;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "LogoutResponse");
