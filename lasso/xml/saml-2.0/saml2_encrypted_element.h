@@ -67,8 +67,7 @@ struct _LassoSaml2EncryptedElementClass {
 
 LASSO_EXPORT GType lasso_saml2_encrypted_element_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml2_encrypted_element_new(void);
-
-
+LASSO_EXPORT int lasso_saml2_encrypted_element_decrypt(LassoSaml2EncryptedElement* encrypted_element, xmlSecKey *encryption_private_key, LassoNode** decrypted_node);
 
 #ifdef __cplusplus
 }

@@ -32,7 +32,6 @@ extern "C" {
 #include <xmlsec/xmlenc.h>
 
 #include <lasso/xml/xml.h>
-#include <lasso/xml/saml-2.0/saml2_encrypted_element.h>
 
 /**
  * LassoEncryptionSymKeyType:
@@ -49,13 +48,6 @@ typedef enum {
 	LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128,
 	LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES
 } LassoEncryptionSymKeyType;
-
-LassoSaml2EncryptedElement* lasso_node_encrypt(LassoNode *lasso_node,
-				xmlSecKey *encryption_public_key,
-				LassoEncryptionSymKeyType encryption_sym_key_type);
-LassoNode* lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
-				xmlSecKey *encryption_private_key);
-
 
 #ifdef __cplusplus
 }

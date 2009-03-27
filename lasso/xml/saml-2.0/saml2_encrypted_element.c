@@ -24,10 +24,16 @@
 
 #include "../private.h"
 #include "saml2_encrypted_element.h"
+#include "../../utils.h"
+#include "../../errors.h"
+#include "../xml_enc.h"
 
 /**
  * SECTION:saml2_encrypted_element
  * @short_description: &lt;saml2:EncryptedElement&gt;
+ *
+ * This element can contain an encrypted XML document fragment, use
+ * lasso_saml2_encrypted_element_decrypt() to retrieve it.
  *
  * <figure><title>Schema fragment for saml2:EncryptedElement</title>
  * <programlisting><![CDATA[
@@ -121,4 +127,34 @@ LassoNode*
 lasso_saml2_encrypted_element_new()
 {
 	return g_object_new(LASSO_TYPE_SAML2_ENCRYPTED_ELEMENT, NULL);
+}
+
+/**
+ * lasso_saml2_encrypted_element_decrypt:
+ * @encrypted_element: the #LassoSaml2EncryptedElement to decrypt
+ * @encryption_private_key: the #xmlSecKey to decrypt the node
+ *
+ *
+ * Decrypt the content of a #LassoSaml2EncryptedElement using the given #xmlSecKey.
+ * The #xmlNode resulting of decrypting it is converted into a #LassoNode object.
+ *
+ * Return value: 0 if successful, an error otherwise.
+ */
+int
+lasso_saml2_encrypted_element_decrypt(LassoSaml2EncryptedElement* encrypted_element,
+		xmlSecKey *encryption_private_key, LassoNode **decrypted_node)
+{
+	LassoNode *result;
+	int rc = 0;
+
+	result = lasso_node_decrypt(encrypted_element,
+			encryption_private_key);
+	if (result) {
+		lasso_assign_gobject(*decrypted_node, result);
+	} else {
+		rc = LASSO_DS_ERROR_DECRYPTION_FAILED;
+	}
+	lasso_release_gobject(result);
+
+	return rc;
 }

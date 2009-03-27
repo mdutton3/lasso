@@ -17,6 +17,7 @@
     <param name="subminor"/>
     <param name="mode" optional="true" default="c:LASSO_CHECK_VERSION_NUMERIC"/>
   </func>
+  <func name="lasso_saml2_encrypted_element_decrypt" skip="true"/>
   <func name="lasso_registry_default_add_direct_mapping" skip="true"/>
   <func name="lasso_registry_default_add_functional_mapping" skip="true"/>
   <func name="lasso_registry_default_get_mapping" skip="true"/>
