@@ -143,7 +143,7 @@ START_TEST(test02_serviceProviderLogin)
 	request->IsPassive = 0;
 	request->NameIDPolicy = g_strdup(LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
 	request->consent = g_strdup(LASSO_LIB_CONSENT_OBTAINED);
-	relayState = "fake";
+	relayState = "fake[]";
 	request->RelayState = g_strdup(relayState);
 	rc = lasso_login_build_authn_request_msg(spLoginContext);
 	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
@@ -152,8 +152,12 @@ START_TEST(test02_serviceProviderLogin)
 			"authnRequestUrl shouldn't be NULL");
 	authnRequestQuery = strchr(authnRequestUrl, '?')+1;
 	fail_unless(strlen(authnRequestQuery) > 0,
-			"authnRequestRequest shouldn't be an empty string");
+			"authnRequestQuery shouldn't be an empty string");
 	spLoginDump = lasso_node_dump(LASSO_NODE(spLoginContext));
+	fail_unless(strstr(authnRequestQuery, "RelayState") != NULL,
+			"authnRequestQuery should contain a RelayState parameter");
+	fail_unless(strstr(authnRequestQuery, "fake%5B%5D") != NULL,
+			"authnRequestQuery RelayState parameter should be encoded");
 
 	/* Identity provider singleSignOn, for a user having no federation. */
 	identityProviderContextDump = generateIdentityProviderContextDump();
@@ -169,6 +173,10 @@ START_TEST(test02_serviceProviderLogin)
 			"protocoleProfile should be ProfileBrwsArt");
 	fail_unless(! lasso_login_must_ask_for_consent(idpLoginContext),
 			"lasso_login_must_ask_for_consent() should be FALSE");
+	fail_unless(idpLoginContext->parent.msg_relayState != NULL,
+			"lasso_login_process_authn_request_msg should restore the RelayState parameter");
+	fail_unless(g_strcmp0(idpLoginContext->parent.msg_relayState, relayState) == 0,
+			"lasso_login_process_authn_request_msg should restore the same RelayState thant sent in the request");
 	rc = lasso_login_validate_request_msg(idpLoginContext,
 			1, /* authentication_result */
 		        0 /* is_consent_obtained */
@@ -194,6 +202,10 @@ START_TEST(test02_serviceProviderLogin)
 	responseQuery = strchr(responseUrl, '?')+1;
 	fail_unless(strlen(responseQuery) > 0,
 			"responseQuery shouldn't be an empty string");
+	fail_unless(strstr(responseQuery, "RelayState") != NULL,
+			"responseQuery should contain a RelayState parameter");
+	fail_unless(strstr(responseQuery, "fake%5B%5D") != NULL,
+			"responseQuery RelayState parameter should be encoded");
 	serviceProviderId = g_strdup(LASSO_PROFILE(idpLoginContext)->remote_providerID);
 	fail_unless(serviceProviderId != NULL,
 		    "lasso_profile_get_remote_providerID shouldn't return NULL");
@@ -207,6 +219,10 @@ START_TEST(test02_serviceProviderLogin)
 	rc = lasso_login_init_request(spLoginContext,
 			responseQuery,
 			LASSO_HTTP_METHOD_REDIRECT);
+	fail_unless(spLoginContext->parent.msg_relayState != NULL,
+			"lasso_login_init_request should restore the RelayState parameter");
+	fail_unless(g_strcmp0(spLoginContext->parent.msg_relayState, relayState) == 0,
+			"lasso_login_init_request should restore the same RelayState thant sent in the request");
 	fail_unless(rc == 0, "lasso_login_init_request failed");
 	rc = lasso_login_build_request_msg(spLoginContext);
 	fail_unless(rc == 0, "lasso_login_build_request_msg failed");
