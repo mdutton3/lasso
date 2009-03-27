@@ -1068,7 +1068,7 @@ lasso_provider_new_from_dump(const gchar *dump)
 
 int
 lasso_provider_verify_saml_signature(LassoProvider *provider,
-		xmlNode *signed_node)
+		xmlNode *signed_node, xmlDoc *doc)
 {
 	const char *id_attribute_name = NULL;
 	const xmlChar *node_ns = NULL;
@@ -1076,8 +1076,10 @@ lasso_provider_verify_saml_signature(LassoProvider *provider,
 	xmlSecKeysMngr *keys_manager;
 	int rc = 0;
 
-	g_return_val_if_fail(LASSO_IS_PROVIDER(provider) && signed_node,
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	lasso_bad_param(PROVIDER, provider);
+	lasso_null_param(signed_node);
+	g_return_val_if_fail((signed_node->doc && doc) || ! signed_node->doc, LASSO_PARAM_ERROR_INVALID_VALUE);
+
 	/* ID-FF 1.2 Signatures case */
 	if (xmlSecCheckNodeName(signed_node, (xmlChar*)"Request", (xmlChar*)LASSO_SAML_PROTOCOL_HREF)) {
 		id_attribute_name = "RequestID";
@@ -1098,11 +1100,12 @@ lasso_provider_verify_saml_signature(LassoProvider *provider,
 	/* Get provider credentials */
 	public_key = lasso_provider_get_public_key(provider);
 	keys_manager = lasso_load_certs_from_pem_certs_chain_file(provider->ca_cert_chain);
-	goto_exit_if_fail_with_warning(public_key && keys_manager,
+	goto_exit_if_fail_with_warning(public_key || keys_manager,
 			LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
-	rc = lasso_verify_signature(signed_node, id_attribute_name, keys_manager, public_key,
+	rc = lasso_verify_signature(signed_node, doc, id_attribute_name, keys_manager, public_key,
 			NO_OPTION, NULL);
 exit:
+	lasso_release_key_manager(keys_manager);
 	return rc;
 }
 

@@ -634,7 +634,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 					LASSO_PROFILE_ERROR_INVALID_ISSUER);
 
 			if (assertion_xmlnode) {
-				profile->signature_status = lasso_provider_verify_saml_signature(idp, assertion_xmlnode);
+				profile->signature_status = lasso_provider_verify_saml_signature(idp, assertion_xmlnode, NULL);
 				goto_exit_if_fail(profile->signature_status == 0, profile->signature_status);
 			}
 		}
