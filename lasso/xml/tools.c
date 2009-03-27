@@ -934,7 +934,7 @@ lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string)
 	inflateEnd(&zstr);
 	xmlFree(zre);
 
-	doc = xmlParseMemory((char*)re, strlen((char*)re));
+	doc = lasso_xml_parse_memory((char*)re, strlen((char*)re));
 	xmlFree(re);
 	root = xmlDocGetRootElement(doc);
 	lasso_node_init_from_xml(node, root);

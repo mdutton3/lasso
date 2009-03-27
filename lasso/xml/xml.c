@@ -1800,7 +1800,7 @@ lasso_node_init_from_message_with_format(LassoNode *node, const char *message, L
 		if (strchr(msg, '<')) {
 			gboolean is_soap = FALSE;
 
-			doc = xmlParseMemory(msg, strlen(msg));
+			doc = lasso_xml_parse_memory(msg, strlen(msg));
 			if (doc == NULL) {
 				rc = LASSO_MESSAGE_FORMAT_UNKNOWN;
 				goto cleanup;

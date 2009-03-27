@@ -701,7 +701,7 @@ lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *m
 	gboolean rc = TRUE;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
-	doc = xmlParseDoc((xmlChar*)metadata);
+	doc = lasso_xml_parse_memory(metadata, strlen(metadata));
 	if (doc == NULL) {
 		char *extract;
 		extract = lasso_safe_prefix_string(metadata, 80);
@@ -1059,7 +1059,7 @@ lasso_provider_new_from_dump(const gchar *dump)
 		return NULL;
 
 	provider = g_object_new(LASSO_TYPE_PROVIDER, NULL);
-	doc = xmlParseMemory(dump, strlen(dump));
+	doc = lasso_xml_parse_memory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc));
 	lasso_release_doc(doc);
 
@@ -1151,9 +1151,9 @@ lasso_provider_verify_signature(LassoProvider *provider,
 		if (len < 0) {
 			goto_exit_with_rc(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
-		doc = xmlParseMemory(msg, strlen(msg));
+		doc = lasso_xml_parse_memory(msg, strlen(msg));
 	} else {
-		doc = xmlParseMemory(msg, strlen(msg));
+		doc = lasso_xml_parse_memory(msg, strlen(msg));
 		msg = NULL;
 	}
 
