@@ -1687,10 +1687,6 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 			typename = g_strdup("LassoWsSec1SecurityHeader");
 		} else if (prefix != NULL && strcmp(prefix, "Soap") == 0 && strcmp(node_name, "detail") == 0) { /* FIXME */
 			typename = g_strdup("LassoSoapDetail");
-#if 0 /* Remove special casing for DGME lib */
-		} else if (prefix != NULL && strcmp(prefix, "DgmeMspEd") == 0 && strcmp(node_name, "file") == 0) { /* FIXME */
-			typename = g_strdup("LassoDgmeMspEdFile");
-#endif
 		} else {
 			if (prefix != NULL) {
 				typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
