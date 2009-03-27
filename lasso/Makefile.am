@@ -26,10 +26,10 @@ if WSF_ENABLED
 SYMBOLS_ARGS = -wsf
 endif
 
-types.c:
+types.c: *.h */*.h */*/*.h
 	$(PYTHON) $(srcdir)/extract_types.py $(srcdir) $(SYMBOLS_ARGS)
 
-symbols.sym:
+symbols.sym: *.h */*.h */*/*.h
 	$(PYTHON) $(srcdir)/extract_symbols.py $(srcdir) $(SYMBOLS_ARGS) > symbols.sym
 
 MAINTAINERCLEANFILES = \
@@ -40,7 +40,7 @@ clean-local:
 	-rm types.c symbols.sym errors.c
 
 EXTRA_DIST = utils.h extract_types.py extract_symbols.py build_strerror.py \
-	     registry-private.h errors.h.in
+	     registry-private.h errors.c.in
 
 if WSF_ENABLED
 WSF_LIB_FILE = $(top_builddir)/lasso/id-wsf/liblasso-id-wsf.la
@@ -86,5 +86,3 @@ errors.c: errors.h
 	if ! cmp -s $(srcdir)/errors.c $(srcdir)/.errors.c.new; then \
 	mv -f $(srcdir)/.errors.c.new $(srcdir)/errors.c; else \
 	rm $(srcdir)/.errors.c.new; fi
-
-.PHONY: types.c symbols.sym

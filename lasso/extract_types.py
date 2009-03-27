@@ -61,5 +61,4 @@ for header_file in header_files:
 print >> fd, "\tNULL"
 print >> fd, "};"
 
-if not os.path.exists('types.c') or fd.getvalue() != file('types.c').read():
-    file('types.c', 'w').write(fd.getvalue())
+file('types.c', 'w').write(fd.getvalue())
