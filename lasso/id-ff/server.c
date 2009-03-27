@@ -544,6 +544,9 @@ lasso_server_get_first_providerID(LassoServer *server)
 LassoProvider*
 lasso_server_get_provider(LassoServer *server, const gchar *providerID)
 {
+	if (! LASSO_IS_SERVER(server) || providerID == NULL || strlen(providerID) == 0) {
+		return NULL;
+	}
 	return g_hash_table_lookup(server->providers, providerID);
 }
 
