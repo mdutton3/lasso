@@ -2294,7 +2294,7 @@ lasso_node_init_from_query_fields(LassoNode *node, char **query_fields)
 }
 
 gboolean
-lasso_node_init_from_saml2_query_fields(LassoNode *node, char **query_fields, char **relay_state)
+lasso_node_init_from_saml2_query_fields(LassoNode *node, char **query_fields, G_GNUC_UNUSED char **relay_state)
 {
 	int i;
 	char *field, *t;
@@ -2313,10 +2313,6 @@ lasso_node_init_from_saml2_query_fields(LassoNode *node, char **query_fields, ch
 		}
 		if (strcmp(field, "SAMLRequest") == 0 || strcmp(field, "SAMLResponse") == 0) {
 			req = t+1;
-			continue;
-		}
-		if (strcmp(field, "RelayState") == 0) {
-			*relay_state = g_strdup(t+1);
 			continue;
 		}
 	}
