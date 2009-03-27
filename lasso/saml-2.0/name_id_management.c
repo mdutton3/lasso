@@ -26,6 +26,7 @@
 #include <../saml-2.0/name_id_management.h>
 #include <../saml-2.0/providerprivate.h>
 #include <../saml-2.0/profileprivate.h>
+#include <../saml-2.0/serverprivate.h>
 #include <../id-ff/providerprivate.h>
 #include <../id-ff/profileprivate.h>
 #include <../id-ff/identityprivate.h>
@@ -62,95 +63,31 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 		char *new_name_id,
 		LassoHttpMethod http_method)
 {
-	LassoProfile *profile;
-	LassoProvider *remote_provider;
-	LassoFederation *federation;
-	LassoSaml2NameID *name_id, *name_id_n;
-	LassoSamlp2RequestAbstract *request;
-	LassoSession *session = NULL;
-	LassoNode *oldNameIdentifier;
+	LassoProfile *profile = NULL;
+	LassoSamlp2ManageNameIDRequest *manage_name_id_request = NULL;
+	LassoSamlp2RequestAbstract *request = NULL;
+	int rc = 0;
 
-	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
-			LASSO_PARAM_ERROR_INVALID_VALUE);
-
+	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 	profile = LASSO_PROFILE(name_id_management);
 
-	/* verify if the identity */
-	if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
-		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
-	}
+	request = (LassoSamlp2RequestAbstract*)lasso_samlp2_manage_name_id_request_new();
+	manage_name_id_request = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request);
+	rc = lasso_saml20_init_request(profile, remote_provider_id, TRUE, request, http_method,
+			LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID);
+	if (rc)
+		goto cleanup;
 
-	/* set the remote provider id */
-	g_free (profile->remote_providerID);
-	if (remote_provider_id == NULL) {
-		/* verify if session exists */
-		session = lasso_profile_get_session(profile);
-		if (session == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
-		}
-		profile->remote_providerID = lasso_session_get_provider_index(session, 0);
-	} else {
-		profile->remote_providerID = g_strdup(remote_provider_id);
-	}
-
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
-	/* Get federation */
-	federation = g_hash_table_lookup(profile->identity->federations,
-			profile->remote_providerID);
-	if (LASSO_IS_FEDERATION(federation) == FALSE) {
-		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
-	}
-
-	/* get the current NameID */
-	name_id_n = LASSO_SAML2_NAME_ID(lasso_profile_get_nameIdentifier(profile));
-	name_id = LASSO_SAML2_NAME_ID(name_id_n);
-	oldNameIdentifier = profile->nameIdentifier;
-	if (federation->local_nameIdentifier) {
-		profile->nameIdentifier = g_object_ref(federation->local_nameIdentifier);
-	} else {
-		profile->nameIdentifier = g_object_ref(name_id_n);
-	}
-	if (oldNameIdentifier != NULL)
-		g_object_unref(oldNameIdentifier);
-
-	/* check HTTP method is supported */
-	if (http_method != LASSO_HTTP_METHOD_ANY &&
-		lasso_saml20_provider_accept_http_method(
-					LASSO_PROVIDER(profile->server),
-					remote_provider,
-					LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID,
-					http_method,
-					TRUE
-					) == FALSE) {
-		return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
-	}
-
-	/* create request */
-	profile->request = lasso_samlp2_manage_name_id_request_new();
-
-	request = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request);
-	request->ID = lasso_build_unique_id(32);
-	request->Version = g_strdup("2.0");
-	request->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
-			LASSO_PROVIDER(profile->server)->ProviderID));
-	request->IssueInstant = lasso_get_current_time();
-
-	LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request)->NameID = g_object_ref( \
-			profile->nameIdentifier);
-
+	lasso_assign_gobject(manage_name_id_request->NameID, (LassoSaml2NameID*)profile->nameIdentifier);
 	if (new_name_id) {
-		LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request)->NewID = g_strdup(new_name_id);
+		lasso_assign_string(manage_name_id_request->NewID, new_name_id);
 	} else {
-		LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request)->Terminate = \
-				LASSO_SAMLP2_TERMINATE(lasso_samlp2_terminate_new());
+		lasso_assign_new_gobject(manage_name_id_request->Terminate,
+				LASSO_SAMLP2_TERMINATE(lasso_samlp2_terminate_new()));
 	}
 
-	profile->http_request_method = http_method;
+cleanup:
+	lasso_release_gobject(request);
 
 	return 0;
 }
@@ -167,59 +104,9 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 gint
 lasso_name_id_management_build_request_msg(LassoNameIdManagement *name_id_management)
 {
-	LassoProfile *profile;
-	LassoProvider *remote_provider;
+	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 
-	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
-			LASSO_PARAM_ERROR_INVALID_VALUE);
-
-	profile = LASSO_PROFILE(name_id_management);
-	lasso_profile_clean_msg_info(profile);
-
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
-	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
-		profile->msg_url = lasso_provider_get_metadata_one(remote_provider,
-				"ManageNameIDService SOAP");
-		/* XXX set private key so message is signed */
-		profile->msg_body = lasso_node_export_to_soap(profile->request);
-		return 0;
-	}
-
-	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		char *url, *query;
-
-		/* don't include signature stuff in XML when exporting to a
-		 * query string */
-		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_type =
-			LASSO_SIGNATURE_TYPE_NONE;
-
-		url = lasso_provider_get_metadata_one(remote_provider,
-				"ManageNameIDService HTTP-Redirect");
-		if (url == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
-		}
-		query = lasso_node_export_to_query(LASSO_NODE(profile->request),
-				profile->server->signature_method,
-				profile->server->private_key);
-		if (query == NULL) {
-			g_free(url);
-			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
-		}
-		profile->msg_url = lasso_concat_url_query(url, query);
-		profile->msg_body = NULL;
-		g_free(url);
-		g_free(query);
-		return 0;
-	}
-
-	/* XXX: Artifact profile support */
-
-	return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
+	return lasso_saml20_profile_build_request_msg(&name_id_management->parent, "ManageNameIDService", FALSE);
 }
 
 
@@ -237,76 +124,34 @@ gint
 lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_management,
 		char *request_msg)
 {
+	int rc1 = 0, rc2 = 0;
 	LassoProfile *profile = NULL;
-	LassoProvider *remote_provider = NULL;
-	LassoMessageFormat format;
-	LassoSaml2NameID *name_id = NULL;
-	LassoSaml2EncryptedElement *encrypted_id = NULL;
 	LassoSamlp2ManageNameIDRequest *request = NULL;
-	LassoSamlp2RequestAbstract *abstract_request = NULL;
 
-	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(request_msg != NULL,
-			LASSO_PARAM_ERROR_INVALID_VALUE);
+	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
+	lasso_null_param(request_msg);
 
 	/* Parsing */
 	profile = LASSO_PROFILE(name_id_management);
-	profile->request = lasso_samlp2_manage_name_id_request_new();
-	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
-	}
+	rc1 = lasso_saml20_profile_process_any_request(profile,
+			lasso_samlp2_manage_name_id_request_new(),
+			request_msg);
 
-	/* Validation and extraction */
 	if (! LASSO_IS_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)) {
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	}
 	request = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request);
-	abstract_request = &request->parent;
 
-	if (abstract_request->Issuer == NULL || abstract_request->Issuer->content) {
-		return LASSO_PROFILE_ERROR_MISSING_ISSUER;
-	}
-	lasso_assign_string(profile->remote_providerID, abstract_request->Issuer->content);
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	/* NameID treatment */
+	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile,
+			&request->NameID, &request->EncryptedID);
 
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
+	if (rc1)
+		return rc1;
+	if (rc2)
+		return rc2;
 
-	/* verify signatures */
-	profile->signature_status = lasso_provider_verify_signature(
-			remote_provider, request_msg, "ID", format);
-	profile->signature_status = 0; /* XXX: signature check disabled for zxid */
-
-	if (format == LASSO_MESSAGE_FORMAT_SOAP)
-		profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
-	if (format == LASSO_MESSAGE_FORMAT_QUERY)
-		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
-
-	name_id = request->NameID;
-	encrypted_id = request->EncryptedID;
-
-	if (name_id == NULL) {
-		int rc;
-
-		if (request->EncryptedID == NULL) {
-			return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
-		}
-
-		g_return_val_if_fail(LASSO_IS_SERVER(profile->server), LASSO_PROFILE_ERROR_MISSING_SERVER);
-		rc = lasso_server_decrypt_nameid(profile->server, &request->EncryptedID, (LassoNode**)&request->NameID);
-		if (rc != 0)
-			return rc;
-
-		lasso_assign_gobject(profile->nameIdentifier, request->NameID);
-	} else {
-		lasso_assign_gobject(profile->nameIdentifier, name_id);
-	}
-
-	return profile->signature_status;
+	return 0;
 }
 
 
@@ -322,82 +167,30 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 int
 lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_management)
 {
-	LassoProfile *profile;
-	LassoProvider *remote_provider;
-	LassoFederation *federation;
-	LassoSamlp2StatusResponse *response;
-	LassoSaml2NameID *name_id;
+	LassoProfile *profile = NULL;
+	LassoProvider *remote_provider = NULL;
+	LassoFederation *federation = NULL;
+	LassoSamlp2StatusResponse *response = NULL;
+	LassoSaml2NameID *name_id = NULL;
+	int rc = 0;
 
-	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
-			LASSO_PARAM_ERROR_INVALID_VALUE);
+	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 	profile = LASSO_PROFILE(name_id_management);
 
-	if (LASSO_IS_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request) == FALSE)
-		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+	response = (LassoSamlp2StatusResponse*)lasso_samlp2_manage_name_id_response_new();
+	rc = lasso_saml20_profile_validate_request(profile, TRUE, response, &remote_provider);
+	if (rc)
+		goto cleanup;
 
-	if (profile->identity == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
-	}
-
-	if (profile->remote_providerID) {
-		g_free(profile->remote_providerID);
-	}
-
-	profile->remote_providerID = g_strdup(
-			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content);
-
-	/* get the provider */
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
-	federation = g_hash_table_lookup(profile->identity->federations,
-			profile->remote_providerID);
-	if (LASSO_IS_FEDERATION(federation) == FALSE) {
-		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
-	}
-
-	if (profile->response) {
-		lasso_node_destroy(profile->response);
-	}
-
-	profile->response = lasso_samlp2_manage_name_id_response_new();
-	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
-	response->ID = lasso_build_unique_id(32);
-	response->Version = g_strdup("2.0");
-	response->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
-			LASSO_PROVIDER(profile->server)->ProviderID));
-	response->IssueInstant = lasso_get_current_time();
-	response->InResponseTo = g_strdup(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS);
-
-	response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-	if (profile->server->certificate) {
-		response->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
-	} else {
-		response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
-	}
-	response->private_key_file = g_strdup(profile->server->private_key);
-	response->certificate_file = g_strdup(profile->server->certificate);
-
-	/* verify signature status */
-	if (profile->signature_status != 0) {
-		/* XXX: which SAML2 Status Code ? */
-		lasso_saml20_profile_set_response_status(profile,
-				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
-		return profile->signature_status;
-	}
 
 	/* Get the name identifier */
 	name_id = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID;
 	if (name_id == NULL) {
 		message(G_LOG_LEVEL_CRITICAL,
 				"Name identifier not found in name id management request");
-		/* XXX: which status code in SAML 2.0 ? */
 		lasso_saml20_profile_set_response_status(
-				profile, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
+				profile,
+				LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
 		return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 	}
 
@@ -435,8 +228,9 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 		federation->local_nameIdentifier = g_object_ref(new_name_id);
 		profile->identity->is_dirty = TRUE;
 	}
-
-	return 0;
+cleanup:
+	lasso_release_gobject(response);
+	return rc;
 }
 
 /**
@@ -450,92 +244,21 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 int
 lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_management)
 {
-	LassoProfile *profile;
-	LassoSamlp2StatusResponse *response;
-	LassoProvider *provider;
-	char *url, *query;
+	LassoProfile *profile = NULL;
+	gint rc = 0;
 
-	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
-			LASSO_PARAM_ERROR_INVALID_VALUE);
-	profile = LASSO_PROFILE(name_id_management);
-	lasso_profile_clean_msg_info(profile);
+	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
+	profile = &name_id_management->parent;
 
-	if (profile->response == NULL) {
-		/* no response set here means request denied */
+	/* no response set here means request denied */
+	if (! profile->response) {
 		profile->response = lasso_samlp2_manage_name_id_response_new();
-		response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
-		response->ID = lasso_build_unique_id(32);
-		response->Version = g_strdup("2.0");
-		response->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
-				LASSO_PROVIDER(profile->server)->ProviderID));
-		response->IssueInstant = lasso_get_current_time();
-		response->InResponseTo = g_strdup(
-				LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-		lasso_saml20_profile_set_response_status(profile,
-				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
-
-		response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-		if (profile->server->certificate) {
-			response->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
-		} else {
-			response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
-		}
-		response->private_key_file = g_strdup(profile->server->private_key);
-		response->certificate_file = g_strdup(profile->server->certificate);
-		return 0;
+		lasso_saml20_profile_init_response(profile, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 	}
 
-	if (profile->remote_providerID == NULL || profile->response == NULL) {
-		/* no remote provider id set or no response set, this means
-		 * this function got called before validate_request, probably
-		 * because there were no identity or federation */
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
+	rc = lasso_saml20_profile_build_response(profile, "ManageNameIDService", FALSE, profile->http_request_method);
 
-	/* build logout response message */
-	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
-		profile->msg_url = NULL;
-		profile->msg_body = lasso_node_export_to_soap(profile->response);
-		return 0;
-	}
-
-	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		/* don't include signature stuff in XML when exporting to a
-		 * query string */
-		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
-			LASSO_SIGNATURE_TYPE_NONE;
-
-		/* get the provider */
-		provider = g_hash_table_lookup(profile->server->providers,
-				profile->remote_providerID);
-		if (provider == NULL) {
-			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-		}
-
-		url = lasso_provider_get_metadata_one(provider,
-				"ManageNameIDService HTTP-Redirect ResponseLocation");
-		if (url == NULL) {
-			url = lasso_provider_get_metadata_one(provider,
-					"ManageNameIDService HTTP-Redirect");
-			if (url == NULL) {
-				return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
-			}
-		}
-		query = lasso_node_export_to_query(LASSO_NODE(profile->response),
-				profile->server->signature_method,
-				profile->server->private_key);
-		if (query == NULL) {
-			g_free(url);
-			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
-		}
-		profile->msg_url = lasso_concat_url_query(url, query);
-		profile->msg_body = NULL;
-		g_free(url);
-		g_free(query);
-		return 0;
-	}
-
-	return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+	return rc;
 }
 
 
@@ -555,70 +278,18 @@ lasso_name_id_management_process_response_msg(
 		LassoNameIdManagement *name_id_management,
 		gchar *response_msg)
 {
-	LassoProfile *profile;
-	LassoHttpMethod response_method;
-	LassoProvider *remote_provider;
-	LassoSamlp2StatusResponse *response;
-	LassoMessageFormat format;
-	char *status_code_value;
-	int rc;
+	LassoProfile *profile = NULL;
+	LassoSamlp2StatusResponse *response = NULL;
+	int rc = 0;
 
-	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
-			LASSO_PARAM_ERROR_INVALID_VALUE);
-	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
+	lasso_null_param(response_msg);
 
-	profile = LASSO_PROFILE(name_id_management);
-
-	if (LASSO_IS_SAMLP2_MANAGE_NAME_ID_RESPONSE(profile->response) == TRUE) {
-		lasso_node_destroy(profile->response);
-		profile->response = NULL;
-	}
-
-	profile->response = lasso_samlp2_manage_name_id_response_new();
-	format = lasso_node_init_from_message(LASSO_NODE(profile->response), response_msg);
-
-	switch (format) {
-		case LASSO_MESSAGE_FORMAT_SOAP:
-			response_method = LASSO_HTTP_METHOD_SOAP;
-			break;
-		case LASSO_MESSAGE_FORMAT_QUERY:
-			response_method = LASSO_HTTP_METHOD_REDIRECT;
-			break;
-		default:
-			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
-	}
-
-	profile->remote_providerID = g_strdup(
-			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->Issuer->content);
-
-	/* get the provider */
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
-	/* verify signature */
-	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ID", format);
-	if (rc == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
-		/* XXX: is signature mandatory ? */
-		message(G_LOG_LEVEL_WARNING, "No signature on response");
-		rc = 0;
-	}
-
-	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
-
-	if (response->Status == NULL || response->Status->StatusCode == NULL
-			|| response->Status->StatusCode->Value == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "No Status in ManageNameIDResponse !");
-		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
-	}
-	status_code_value = response->Status->StatusCode->Value;
-
-	if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
-		message(G_LOG_LEVEL_CRITICAL, "Status code is not success: %s", status_code_value);
-		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
-	}
+	profile = (LassoProfile*)name_id_management;
+	response = (LassoSamlp2StatusResponse*)lasso_samlp2_manage_name_id_response_new();
+	rc = lasso_saml20_profile_process_any_response(profile, response, response_msg);
+	if (rc)
+		goto cleanup;
 
 	if (LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->Terminate) {
 		lasso_identity_remove_federation(profile->identity, profile->remote_providerID);
@@ -665,7 +336,10 @@ lasso_name_id_management_process_response_msg(
 
 	}
 
-	return 0;
+
+cleanup:
+	lasso_release_gobject(response);
+	return rc;
 }
 
 
@@ -691,30 +365,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	return xmlnode;
 }
 
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	return parent_class->init_from_xml(node, xmlnode);
-}
-
-/*****************************************************************************/
-/* overridden parent class methods                                           */
-/*****************************************************************************/
-
-static void
-dispose(GObject *object)
-{
-	G_OBJECT_CLASS(parent_class)->dispose(object);
-}
-
-static void
-finalize(GObject *object)
-{
-	G_OBJECT_CLASS(parent_class)->finalize(object);
-}
-
-
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -726,13 +376,9 @@ class_init(LassoNameIdManagementClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->get_xmlNode = get_xmlNode;
-	nclass->init_from_xml = init_from_xml;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "NameIdManagement");
 	lasso_node_class_add_snippets(nclass, schema_snippets);
-
-	G_OBJECT_CLASS(klass)->dispose = dispose;
-	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
 
@@ -814,7 +460,7 @@ lasso_name_id_management_new_from_dump(LassoServer *server, const char *dump)
 
 	name_id_management = lasso_name_id_management_new(g_object_ref(server));
 	doc = xmlParseMemory(dump, strlen(dump));
-	init_from_xml(LASSO_NODE(name_id_management), xmlDocGetRootElement(doc));
+	lasso_node_init_from_xml(LASSO_NODE(name_id_management), xmlDocGetRootElement(doc));
 	lasso_release_doc(doc);
 
 	return name_id_management;
