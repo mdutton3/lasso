@@ -93,21 +93,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-static gboolean
-init_from_query(LassoNode *node, char **query_fields)
-{
-	gboolean rc;
-	char *relay_state = NULL;
-	LassoSamlp2AuthnRequest *request = LASSO_SAMLP2_AUTHN_REQUEST(node);
-
-	rc = lasso_node_init_from_saml2_query_fields(node, query_fields, &relay_state);
-	if (rc && relay_state != NULL) {
-		request->relayState = relay_state;
-	}
-	return rc;
-}
-
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -136,7 +121,6 @@ class_init(LassoSamlp2AuthnRequestClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nclass->init_from_query = init_from_query;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "AuthnRequest");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_PROTOCOL_HREF, LASSO_SAML2_PROTOCOL_PREFIX);

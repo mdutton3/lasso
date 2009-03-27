@@ -64,18 +64,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-static gboolean
-init_from_query(LassoNode *node, char **query_fields)
-{
-	gboolean rc;
-	char *relay_state = NULL;
-	rc = lasso_node_init_from_saml2_query_fields(node, query_fields, &relay_state);
-	if (rc && relay_state != NULL) {
-		/* XXX: support RelayState? */
-	}
-	return rc;
-}
-
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
@@ -135,7 +123,6 @@ class_init(LassoSamlp2ResponseClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nclass->init_from_query = init_from_query;
 	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Response");

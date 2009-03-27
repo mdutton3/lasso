@@ -116,16 +116,8 @@ build_query(LassoNode *node)
 static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
-	gboolean rc;
-	char *relay_state = NULL;
-	rc = lasso_node_init_from_saml2_query_fields(node, query_fields, &relay_state);
-	if (rc && relay_state != NULL) {
-		/* XXX: support RelayState? */
-	}
-	return rc;
+	return lasso_node_init_from_saml2_query_fields(node, query_fields, NULL);
 }
-
-
 
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
