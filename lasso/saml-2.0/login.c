@@ -1085,97 +1085,47 @@ lasso_saml20_login_build_response_msg(LassoLogin *login)
 gint
 lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 {
-	LassoProfile *profile = LASSO_PROFILE(login);
-	LassoNode *response;
-	xmlDoc *doc;
-	xmlXPathContext *xpathCtx;
-	xmlXPathObject *xpathObj;
-	xmlNode *xmlnode;
+	LassoProfile *profile;
+	int rc1, rc2;
 
-	response = lasso_node_new_from_soap(msg);
-	if (response == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	lasso_bad_param(LOGIN, login);
+	lasso_null_param(msg);
+
+	profile = LASSO_PROFILE(login);
+	rc1 = lasso_saml20_profile_process_soap_response(profile, msg);
+	rc2 = lasso_saml20_login_process_response_status_and_assertion(login);
+
+	if (rc1) {
+		return rc1;
 	}
-
-	doc = lasso_xml_parse_memory(msg, strlen(msg));
-	xpathCtx = xmlXPathNewContext(doc);
-
-	/* XXX:BEFORE-LASSO-2.0 */
-	/* check PAOS response */
-	/*xmlnode = NULL;
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"paos", (xmlChar*)LASSO_PAOS_HREF);
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//paos:Response", xpathCtx);
-	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		xmlnode = xpathObj->nodesetval->nodeTab[0];
-	}
-	if (xmlnode == NULL) {
-		lasso_release_doc(doc);
-		xmlXPathFreeContext(xpathCtx);
-		xmlXPathFreeObject(xpathObj);
-		return LASSO_PROFILE_ERROR_INVALID_MSG;
-	}*/
-
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ecp", (xmlChar*)LASSO_ECP_HREF);
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:RelayState", xpathCtx);
-	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		xmlnode = xpathObj->nodesetval->nodeTab[0];
-		LASSO_PROFILE(login)->msg_relayState = (char*)xmlNodeGetContent(xmlnode);
-	}
-	xmlXPathFreeContext(xpathCtx);
-	xmlXPathFreeObject(xpathObj);
-	lasso_release_doc(doc);
-
-	profile->response = response;
-	profile->remote_providerID = g_strdup(
-			LASSO_SAMLP2_STATUS_RESPONSE(response)->Issuer->content);
-
-	return lasso_saml20_login_process_response_status_and_assertion(login);
+	return rc2;
 }
 
 gint
 lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_msg)
 {
-	LassoMessageFormat format;
-	LassoProvider *remote_provider;
-	LassoProfile *profile;
+	LassoProfile *profile = NULL;
+	int rc1, rc2;
 
-	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(authn_response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	lasso_bad_param(LOGIN, login);
+	lasso_null_param(authn_response_msg);
 
+	/* parse the message */
 	profile = LASSO_PROFILE(login);
+	rc1 = lasso_saml20_profile_process_any_response(profile,
+		(LassoSamlp2StatusResponse*)lasso_samlp2_response_new(),
+		authn_response_msg);
 
-	/* clean state */
-	if (profile->remote_providerID)
-		g_free(LASSO_PROFILE(login)->remote_providerID);
-	if (profile->response)
-		lasso_node_destroy(LASSO_NODE(profile->response));
+	rc2 = lasso_saml20_login_process_response_status_and_assertion(login);
 
-	profile->response = lasso_samlp2_response_new();
-	format = lasso_node_init_from_message(
-			LASSO_NODE(profile->response), authn_response_msg);
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
-	}
-
-	profile->remote_providerID = g_strdup(
-			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->Issuer->content);
-
-	if (profile->remote_providerID == NULL) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-
-	profile->signature_status = lasso_provider_verify_signature(
-		remote_provider, authn_response_msg, "ID", format);
-	if (profile->signature_status != 0) {
+	/** The more important signature errors */
+	if (profile->signature_status) {
 		return profile->signature_status;
 	}
-
-	return lasso_saml20_login_process_response_status_and_assertion(login);
+	if (rc1) {
+		return rc1;
+	}
+	return rc2;
 }
 
 gint
@@ -1195,20 +1145,22 @@ lasso_saml20_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 static gint
 lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 {
-	LassoProvider *idp;
 	LassoSamlp2StatusResponse *response;
+	LassoSamlp2Response *samlp2_response = NULL;
 	LassoProfile *profile;
-	LassoSaml2EncryptedElement* encrypted_element = NULL;
 	xmlSecKey *encryption_private_key = NULL;
-	LassoNode *decrypted_node = NULL;
 	char *status_value;
-	int ret = 0;
-	LassoSaml2Assertion * assertion;
-	LassoNode *id_node = NULL;
+	GList *it = NULL;
+	int rc = 0, rc1 = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	response = LASSO_SAMLP2_STATUS_RESPONSE(LASSO_PROFILE(login)->response);
+	profile = LASSO_PROFILE(login);
+	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
+	lasso_extract_node_or_fail(response, profile->response, SAMLP2_STATUS_RESPONSE,
+			LASSO_PROFILE_ERROR_INVALID_MSG);
+	lasso_extract_node_or_fail(samlp2_response, response, SAMLP2_RESPONSE,
+			LASSO_PROFILE_ERROR_INVALID_MSG);
 
 	if (response->Status == NULL || ! LASSO_IS_SAMLP2_STATUS(response->Status) ||
 			response->Status->StatusCode == NULL ||
@@ -1239,48 +1191,57 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		return LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS;
 	}
 
-	profile = LASSO_PROFILE(login);
 
-	if (LASSO_SAMLP2_RESPONSE(response)->Assertion != NULL ||
-			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion != NULL) {
+	if (LASSO_IS_SERVER(profile->server) && profile->server->private_data) {
 		encryption_private_key = profile->server->private_data->encryption_private_key;
-		if (profile->remote_providerID == NULL)
-			return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
-		idp = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
-		if (idp == NULL)
-			return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
 	}
 
-	/* Decrypt Assertion */
-	if (LASSO_SAMLP2_RESPONSE(response)->Assertion == NULL &&
-			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion != NULL) {
+	/* Decrypt all EncryptedAssertions */
+	it = samlp2_response->EncryptedAssertion;
+	for (;it;it = it->next) {
+		LassoSaml2EncryptedElement *encrypted_assertion;
+		LassoSaml2Assertion * assertion = NULL;
 
-		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(
-			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion->data);
-		if (encrypted_element != NULL && encryption_private_key == NULL) {
-			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+		if (! encryption_private_key) {
+			message(G_LOG_LEVEL_WARNING, "Missing private encryption key, cannot decrypt assertions.");
+			break;
 		}
-		if (encrypted_element != NULL && encryption_private_key != NULL) {
-			decrypted_node = LASSO_NODE(lasso_node_decrypt(encrypted_element,
-				encryption_private_key));
-			LASSO_SAMLP2_RESPONSE(response)->Assertion =
-				g_list_append(NULL, LASSO_SAML2_ASSERTION(decrypted_node));
-			g_object_unref(LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion);
-			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion = NULL;
+
+		if (! LASSO_IS_SAML2_ENCRYPTED_ELEMENT(it->data)) {
+			message(G_LOG_LEVEL_WARNING, "EncryptedAssertion contains a non EncryptedElement object");
+			continue;
 		}
+		encrypted_assertion = (LassoSaml2EncryptedElement*)it->data;
+		rc1 = lasso_saml2_encrypted_element_decrypt(encrypted_assertion, encryption_private_key, (LassoNode**)&assertion);
+
+		if (rc1) {
+			message(G_LOG_LEVEL_WARNING, "Could not decrypt an assertion");
+			continue;
+		}
+
+		if (! LASSO_IS_SAML2_ASSERTION(assertion)) {
+			message(G_LOG_LEVEL_WARNING, "EncryptedAssertion contains something that is not an assertion");
+			lasso_release_gobject(assertion);
+			continue;
+		}
+		lasso_list_add_gobject(samlp2_response->Assertion, assertion);
+		lasso_release_gobject(assertion);
 	}
 
-	if (LASSO_SAMLP2_RESPONSE(response)->Assertion != NULL) {
-		assertion = LASSO_SAMLP2_RESPONSE(response)->Assertion->data;
+	/** FIXME: treat more than the first assertion ? */
+	if (samlp2_response->Assertion != NULL) {
+		LassoSaml2Subject *subject;
+		LassoSaml2Assertion *assertion = samlp2_response->Assertion->data;
+		int rc2 = 0;
 
 		/* FIXME: verify assertion signature */
 
-		/* store NameIdentifier */
-		if (assertion->Subject == NULL) {
+		if (! LASSO_IS_SAML2_SUBJECT(assertion->Subject)) {
 			return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
 		}
+		subject = assertion->Subject;
 
-		/* Verify some SubjectConfirmationData InResponseTo */
+		/* Verify Subject->SubjectConfirmationData->InResponseTo */
 		if (login->private_data->request_id && (
 			assertion->Subject->SubjectConfirmation == NULL ||
 			assertion->Subject->SubjectConfirmation->SubjectConfirmationData == NULL ||
@@ -1289,39 +1250,23 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 			return LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID;
 		}
 
+		/** Handle nameid */
+		rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile, &subject->NameID, &subject->EncryptedID);
 
-		if (assertion->Subject->NameID != NULL) {
-			id_node = g_object_ref(assertion->Subject->NameID);
-			if (id_node != NULL) {
-				profile->nameIdentifier = id_node;
-				return ret;
-			}
+		if (rc2) {
+			rc = rc2;
 		}
-
-		if (! LASSO_IS_SAML2_ENCRYPTED_ELEMENT(assertion->Subject->EncryptedID)) {
-			return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
-		}
-
-		encrypted_element = assertion->Subject->EncryptedID;
-		if (encrypted_element != NULL && encryption_private_key == NULL) {
-			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
-		}
-
-		/* Decrypt NameID */
-		if (encrypted_element != NULL && encryption_private_key != NULL) {
-			profile->nameIdentifier = LASSO_NODE(
-				lasso_node_decrypt(encrypted_element, encryption_private_key));
-			assertion->Subject->NameID = LASSO_SAML2_NAME_ID(profile->nameIdentifier);
-			g_object_unref(assertion->Subject->EncryptedID);
-			assertion->Subject->EncryptedID = NULL;
-		}
-
-		if (profile->nameIdentifier == NULL) {
-			return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
+	} else {
+		if (rc1) {
+			rc = rc1;
+		} else {
+			rc = LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 		}
 	}
 
-	return ret;
+cleanup:
+
+	return rc;
 }
 
 #ifdef LASSO_WSF_ENABLED
