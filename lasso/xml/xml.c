@@ -49,8 +49,6 @@
 #include "../registry.h"
 #include "../debug.h"
 
-
-static char* lasso_node_build_query(LassoNode *node);
 static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump);
 static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name);
@@ -690,11 +688,17 @@ lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	return class->init_from_xml(node, xmlnode);
 }
 
-/*****************************************************************************/
-/* virtual private methods                                                   */
-/*****************************************************************************/
-
-static char*
+/**
+ * lasso_node_build_query(LassoNode *node)
+ * @node: a #LassoNode
+ *
+ * Build an HTTP query from the given LassoNode, this is a pure virtual
+ * function, you must overload it in subclass.
+ *
+ * Return value: a newly allocated string containing the query if it succeed,
+ * or NULL otherwise.
+ */
+char*
 lasso_node_build_query(LassoNode *node)
 {
 	LassoNodeClass *class;
