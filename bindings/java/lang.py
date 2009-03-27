@@ -747,7 +747,6 @@ protected static native void destroy(long cptr);
             if do_import_util:
                 print >> fd, 'import java.util.*;'
             print >> fd, ''
-            #print 'class %s extends %s {' % (class_name,parent_name)
             print >> fd, 'public class %s extends %s {' % (class_name,parent_name)
             # Constructeur private
             print >> fd, '    /* Constructors */'
@@ -762,14 +761,12 @@ protected static native void destroy(long cptr);
                 else:
                     return name[:i].replace('_','').lower()
             cons = [ x for x in self.binding_data.functions if cprefix(x.name) == c.name.lower() and x.name.endswith('_new') ]
-            #print 'cons ', cons
             for m in cons:
                 print >> fd, '    public %s(%s) {' % (class_name, generate_arg_list(self,m.args))
                 print >> fd, '        super(LassoJNI.%s(%s));' % (self.JNI_function_name(m),generate_arg_list2(m.args))
                 print >> fd, '    }'
             # Constructeurs speciaux
             cons = [ x for x in self.binding_data.functions if cprefix(x.name) == c.name.lower() and not x.name.endswith('_new') ]
-            #print 'cons ', cons
             for m in cons:
                 name = method_name(m,class_name)
                 print >> fd, '    static public %s %s(%s) {' % (class_name, name, generate_arg_list(self,m.args))

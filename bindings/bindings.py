@@ -122,7 +122,7 @@ class BindingData:
                 return None
             else:
                 return funcs[0]
-        regex = re.compile(r'\/\*\*\s(.*?)\*\*\/', re.DOTALL)
+        regex = re.compile(r'\/\*\*\s(.*?)\*\/', re.DOTALL)
         for base, dirnames, filenames in os.walk(srcdir):
             if base.endswith('/.svn'):
                 # ignore svn directories
@@ -421,7 +421,7 @@ def parse_header(header_file):
                         if m:
                             f.args.append(list(normalise_var(m.group(1), m.group(3))) + [{}])
                         else:
-                            print 'failed to process:', arg, 'in line:', line
+                            print >>sys.stderr, 'failed to process:', arg, 'in line:', line
                     f.apply_overrides()
                     if not f.skip:
                         binding.functions.append(f)
