@@ -26,6 +26,7 @@
 #define __LASSO_UTILS_H__
 
 #include <glib.h>
+#include "debug.h"
 
 #ifdef LASSO_DEBUG
 #ifdef __GNUC__
@@ -355,6 +356,12 @@
 			rc = (rc_value); \
 			goto exit; \
 		} \
+	}
+
+#define lasso_mem_debug(who, what, where) \
+	{ \
+		if (lasso_flag_memory_debug) \
+		fprintf(stdout, "  freeing %s/%s (at %p)\n", who, what, (void*)where); \
 	}
 
 /* Declare type of element in a container */
