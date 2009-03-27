@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "saml2_encrypted_element.h"
+#include "../xml.h"
 #include "../../utils.h"
 #include "../../errors.h"
 #include "../xml_enc.h"
@@ -144,17 +145,5 @@ int
 lasso_saml2_encrypted_element_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		xmlSecKey *encryption_private_key, LassoNode **decrypted_node)
 {
-	LassoNode *result;
-	int rc = 0;
-
-	result = lasso_node_decrypt(encrypted_element,
-			encryption_private_key);
-	if (result) {
-		lasso_assign_gobject(*decrypted_node, result);
-	} else {
-		rc = LASSO_DS_ERROR_DECRYPTION_FAILED;
-	}
-	lasso_release_gobject(result);
-
-	return rc;
+	return lasso_node_decrypt_xmlnode(encrypted_element->EncryptedData, encrypted_element->EncryptedKey, encryption_private_key, decrypted_node);
 }
