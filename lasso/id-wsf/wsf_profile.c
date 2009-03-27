@@ -1278,10 +1278,10 @@ exit:
 	if (dsig_ctx) {
 		xmlSecDSigCtxDestroy(dsig_ctx);
 	}
-	lasso_release_xmlchar(provider_id);
-	lasso_release_xmlchar(correlation_id);
-	lasso_release_xmlchar(interaction_id);
-	lasso_release_xmlchar(body_id);
-	lasso_release_xmlchar(assertion_id);
+	lasso_release_xml_string(provider_id);
+	lasso_release_xml_string(correlation_id);
+	lasso_release_xml_string(interaction_id);
+	lasso_release_xml_string(body_id);
+	lasso_release_xml_string(assertion_id);
 	return rc;
 }

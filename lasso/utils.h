@@ -110,7 +110,7 @@
 #define lasso_release_doc(doc) \
 	lasso_release_full2(doc, xmlFreeDoc, xmlDocPtr)
 
-#define lasso_release_xmlchar(dest) \
+#define lasso_release_xml_string(dest) \
 	lasso_release_full2(dest, xmlFree, xmlChar*)
 
 #define lasso_release_encrypt_context(dest) \
