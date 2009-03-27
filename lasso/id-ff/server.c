@@ -47,6 +47,7 @@
 #endif
 
 #include "../utils.h"
+#include "../debug.h"
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -658,7 +659,7 @@ finalize(GObject *object)
 	g_free(server->private_key);
 	if (server->private_key_password) {
 		/* don't use memset() because it may be optimised away by
-		 * compiler (since the string is freeed just after */
+		 * compiler (since the string is freed just after */
 		while (server->private_key_password[i])
 			server->private_key_password[i++] = 0;
 		g_free(server->private_key_password);
@@ -683,7 +684,7 @@ instance_init(LassoServer *server)
 
 	server->providers = g_hash_table_new_full(
 			g_str_hash, g_str_equal, g_free,
-			(GDestroyNotify)lasso_node_destroy);
+			g_object_unref);
 
 	server->private_key = NULL;
 	server->private_key_password = NULL;
@@ -692,7 +693,7 @@ instance_init(LassoServer *server)
 
 	server->services = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,
-			(GDestroyNotify)lasso_node_destroy);
+			g_object_unref);
 }
 
 static void

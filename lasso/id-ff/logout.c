@@ -564,13 +564,19 @@ lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	profile->signature_status = lasso_provider_verify_signature(
 			remote_provider, request_msg, "RequestID", format);
 
-	if (format == LASSO_MESSAGE_FORMAT_SOAP)
-		profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
-	if (format == LASSO_MESSAGE_FORMAT_QUERY)
-		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
+	switch (format) {
+		case LASSO_MESSAGE_FORMAT_SOAP:
+			profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
+			break;
+		case LASSO_MESSAGE_FORMAT_QUERY:
+			profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
+			break;
+		default:
+			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
 
 	lasso_assign_gobject(profile->nameIdentifier,
-			logout_request->NameIdentifier);
+			LASSO_NODE(logout_request->NameIdentifier));
 
 	return profile->signature_status;
 }

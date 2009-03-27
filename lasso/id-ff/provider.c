@@ -512,15 +512,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 /*****************************************************************************/
 
 static void
-free_string(char *string)
-{
-	g_free(string);
-}
-
-static void
 free_list_strings(G_GNUC_UNUSED gchar *key, GList *list, G_GNUC_UNUSED gpointer data)
 {
-	g_list_foreach(list, (GFunc)free_string, NULL);
+	g_list_foreach(list, (GFunc)g_free, NULL);
 	g_list_free(list);
 }
 
@@ -839,8 +833,8 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 
 	xpathObj = xmlXPathEvalExpression((xmlChar*)xpath_organization, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
-		provider->private_data->organization = xmlCopyNode(
-				xpathObj->nodesetval->nodeTab[0], 1);
+		lasso_assign_xml_node(provider->private_data->organization,
+				xpathObj->nodesetval->nodeTab[0]);
 	}
 	xmlXPathFreeObject(xpathObj);
 
