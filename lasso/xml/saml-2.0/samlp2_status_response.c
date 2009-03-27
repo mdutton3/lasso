@@ -24,10 +24,10 @@
 
 
 #include "../private.h"
+#include "../../utils.h"
+#include "./samlp2_status_response.h"
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
-
-#include "samlp2_status_response.h"
 
 /**
  * SECTION:samlp2_status_response
@@ -97,7 +97,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-
 static gchar*
 build_query(LassoNode *node)
 {
@@ -112,7 +111,6 @@ build_query(LassoNode *node)
 	return ret;
 }
 
-
 static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
@@ -122,26 +120,30 @@ init_from_query(LassoNode *node, char **query_fields)
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
-	LassoSamlp2StatusResponse *request = LASSO_SAMLP2_STATUS_RESPONSE(node);
+	LassoSamlp2StatusResponse *response = LASSO_SAMLP2_STATUS_RESPONSE(node);
 	xmlNode *xmlnode;
-	int rc;
+	int rc = -1;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 
-	if (lasso_dump == FALSE && request->sign_type) {
-		if (request->private_key_file == NULL) {
+	if (lasso_dump == FALSE && response->sign_type) {
+		if (response->private_key_file == NULL) {
 			message(G_LOG_LEVEL_WARNING,
-					"No Private Key set for signing samlp2:RequestAbstract");
+					"No Private Key set for signing samlp2:StatusResponse");
 		} else {
-			rc = lasso_sign_node(xmlnode, "ID", request->ID,
-				request->private_key_file, request->certificate_file);
-			/* signature may have failed; what to do ? */
+			rc = lasso_sign_node(xmlnode, "ID", response->ID,
+				response->private_key_file, response->certificate_file);
+			if (rc != 0) {
+				message(G_LOG_LEVEL_WARNING, "Signing of samlp2:StatusResponse failed: %s", lasso_strerror(rc));
+			}
+		}
+		if (rc != 0) {
+			lasso_release_xml_node(xmlnode);
 		}
 	}
 
 	return xmlnode;
 }
-
 
 /*****************************************************************************/
 /* instance and class init functions                                         */

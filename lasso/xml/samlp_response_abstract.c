@@ -23,6 +23,7 @@
  */
 
 #include "private.h"
+#include "../utils.h"
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 
@@ -86,14 +87,24 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoSamlpResponseAbstract *response = LASSO_SAMLP_RESPONSE_ABSTRACT(node);
 	xmlNode *xmlnode;
-	int rc;
+	int rc = -1;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 
 	if (lasso_dump == FALSE && response->sign_type) {
-		rc = lasso_sign_node(xmlnode, "ResponseID", response->ResponseID,
-				response->private_key_file, response->certificate_file);
-		/* signature may have failed; what to do ? */
+		if (response->private_key_file == NULL) {
+			message(G_LOG_LEVEL_WARNING,
+					"No Private Key set for signing samlp:ResponseAbstract");
+		} else {
+			rc = lasso_sign_node(xmlnode, "ResponseID", response->ResponseID,
+					response->private_key_file, response->certificate_file);
+			if (rc != 0) {
+				message(G_LOG_LEVEL_WARNING, "Signing of samlp:ResponseAbstract failed: %s", lasso_strerror(rc));
+			}
+		}
+		if (rc != 0) {
+			lasso_release_xml_node(xmlnode);
+		}
 	}
 
 	return xmlnode;

@@ -23,6 +23,7 @@
  */
 
 #include "private.h"
+#include "../utils.h"
 #include <xmlsec/xmltree.h>
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
@@ -152,16 +153,26 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
 	xmlNode *xmlnode;
 	xmlNs *ns;
-	int rc;
+	int rc = -1;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	ns = xmlSearchNs(NULL, xmlnode, (xmlChar*)"saml");
 	insure_namespace(xmlnode, ns);
 
 	if (lasso_dump == FALSE && assertion->sign_type) {
-		rc = lasso_sign_node(xmlnode, "AssertionID", assertion->AssertionID,
+		if (assertion->private_key_file == NULL) {
+			message(G_LOG_LEVEL_WARNING,
+					"No Private Key set for signing saml:Assertion");
+		} else {
+			rc = lasso_sign_node(xmlnode, "AssertionID", assertion->AssertionID,
 				assertion->private_key_file, assertion->certificate_file);
-		/* signature may have failed; what to do ? */
+			if (rc != 0) {
+				message(G_LOG_LEVEL_WARNING, "Signing of saml:Assertion failed: %s", lasso_strerror(rc));
+			}
+		}
+		if (rc != 0) {
+			lasso_release_xml_node(xmlnode);
+		}
 	}
 
 	return xmlnode;

@@ -23,6 +23,7 @@
  */
 
 
+#include "../../utils.h"
 #include "../private.h"
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
@@ -116,20 +117,25 @@ static LassoNodeClass *parent_class = NULL;
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
-	LassoSaml2Assertion *request = LASSO_SAML2_ASSERTION(node);
+	LassoSaml2Assertion *assertion = LASSO_SAML2_ASSERTION(node);
 	xmlNode *xmlnode;
 	int rc;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 
-	if (lasso_dump == FALSE && request->sign_type) {
-		if (request->private_key_file == NULL) {
+	if (lasso_dump == FALSE && assertion->sign_type) {
+		if (assertion->private_key_file == NULL) {
 			message(G_LOG_LEVEL_WARNING,
-					"No Private Key set for signing samlp2:RequestAbstract");
+					"No Private Key set for signing saml2:Assertion");
 		} else {
-			rc = lasso_sign_node(xmlnode, "ID", request->ID,
-				request->private_key_file, request->certificate_file);
-			/* signature may have failed; what to do ? */
+			rc = lasso_sign_node(xmlnode, "ID", assertion->ID,
+				assertion->private_key_file, assertion->certificate_file);
+			if (rc != 0) {
+				message(G_LOG_LEVEL_WARNING, "Signing of saml2:Assertion failed: %s", lasso_strerror(rc));
+			}
+		}
+		if (rc != 0) {
+			lasso_release_xml_node(xmlnode);
 		}
 	}
 
