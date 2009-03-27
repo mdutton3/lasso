@@ -59,6 +59,10 @@ int lasso_saml20_profile_build_request_msg(LassoProfile *profile, char *service,
 int lasso_saml20_profile_build_response(LassoProfile *profile, char *service, gboolean no_signature, LassoHttpMethod method);
 int lasso_saml20_profile_init_response(LassoProfile *profile, const char *status_code);
 int lasso_saml20_profile_validate_request(LassoProfile *profile, gboolean needs_identity, LassoSamlp2StatusResponse *status_response, LassoProvider **provider_out);
+gint lasso_saml20_build_http_redirect_query_simple(LassoProfile *profile, LassoNode *msg,
+		gboolean must_sign, const char *profile_name, gboolean is_response);
+gint lasso_saml20_profile_build_http_redirect(LassoProfile *profile, LassoNode *msg,
+		gboolean must_sign, const char *url);
 
 #ifdef __cplusplus
 }

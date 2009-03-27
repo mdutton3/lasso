@@ -25,6 +25,7 @@
 #include "../xml/private.h"
 #include <xmlsec/base64.h>
 
+#include "../utils.h"
 #include <lasso/saml-2.0/providerprivate.h>
 #include <lasso/saml-2.0/profileprivate.h>
 #include <lasso/saml-2.0/profile.h>
@@ -34,6 +35,7 @@
 #include <lasso/id-ff/profileprivate.h>
 #include <lasso/id-ff/serverprivate.h>
 
+#include <lasso/xml/private.h>
 #include <lasso/xml/saml-2.0/samlp2_request_abstract.h>
 #include <lasso/xml/saml-2.0/samlp2_artifact_resolve.h>
 #include <lasso/xml/saml-2.0/samlp2_artifact_response.h>
@@ -42,8 +44,11 @@
 #include <lasso/xml/saml-2.0/samlp2_response.h>
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
 #include "../utils.h"
+#include "../debug.h"
 
 static char* lasso_saml20_profile_build_artifact(LassoProvider *provider);
+static void remove_all_signatures(LassoNode *node);
+static char * lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int sign);
 
 /*
  * Helper functions
@@ -367,7 +372,6 @@ lasso_saml20_profile_process_artifact_response(LassoProfile *profile, const char
 		profile->response = lasso_samlp2_response_new();
 		return LASSO_PROFILE_ERROR_MISSING_RESPONSE;
 	}
-
 	profile->response = g_object_ref(artifact_response->any);
 	lasso_node_destroy(response);
 
@@ -1014,6 +1018,121 @@ lasso_saml20_profile_build_soap_response(LassoProfile *profile)
 	return 0;
 }
 
+/**
+ * lasso_saml20_profile_export_to_query:
+ * @profile: a #LassoProfile
+ * @request_or_response: 0 to encode the request, 1 to encode the response
+ * @sign: TRUE if query must signed, FALSE otherwise
+ *
+ * Create a query following the DEFLATE encoding of the SAML 2.0 HTTP
+ * Redirect binding.
+ *
+ * Return value: a newly allocated string containing the query string if successfull, NULL otherwise.
+ */
+static char *
+lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int sign) {
+	char *unsigned_query = NULL;
+	char *result = NULL;
+
+	g_return_val_if_fail(LASSO_IS_NODE(msg), NULL);
+
+	unsigned_query = lasso_node_build_query(msg);
+	if (profile->msg_relayState) {
+		char *query = unsigned_query;
+		xmlChar *encoded_relayState;
+		if (strlen(profile->msg_relayState) < 81) {
+			encoded_relayState = xmlURIEscape((xmlChar*)profile->msg_relayState);
+			if (encoded_relayState != NULL) {
+				unsigned_query = g_strdup_printf("%s&RelayState=%s", query,
+						(char*)encoded_relayState);
+				lasso_release_string(query);
+				lasso_release_xml_string(encoded_relayState);
+			}
+		} else {
+			g_warning("Refused to encode a RelayState of more than 80 bytes, #3.4.3 of"
+					" saml-bindings-2.0-os");
+		}
+	}
+	if (sign && lasso_flag_add_signature) {
+		result = lasso_query_sign(unsigned_query, profile->server->signature_method,
+				profile->server->private_key);
+		lasso_release_string(unsigned_query);
+	} else {
+		result = unsigned_query;
+	}
+	return result;
+}
+
+static void
+remove_signature(LassoNode *node) {
+	LassoNodeClass *klass;
+
+	if (node == NULL)
+		return;
+	klass = LASSO_NODE_GET_CLASS(node);
+	if (klass->node_data->sign_type_offset != 0) {
+		G_STRUCT_MEMBER(LassoSignatureType, node,klass->node_data->sign_type_offset) =
+			LASSO_SIGNATURE_TYPE_NONE;
+	}
+}
+
+static void
+remove_all_signatures(LassoNode *node) {
+	LassoNodeClass *klass;
+	struct XmlSnippet *snippet;
+
+	if (node == NULL)
+		return;
+	klass = LASSO_NODE_GET_CLASS(node);
+	remove_signature(node);
+	snippet = klass->node_data->snippets;
+	while (snippet && snippet->name) {
+		SnippetType type;
+		void *value;
+		GList *elem;
+
+		value = G_STRUCT_MEMBER(void*, node, snippet->offset);
+		type = snippet->type & 0xff;
+		switch (type) {
+			case SNIPPET_NODE:
+			case SNIPPET_NODE_IN_CHILD:
+				remove_all_signatures(LASSO_NODE(value));
+				break;
+			case SNIPPET_LIST_NODES:
+				elem = (GList*)value;
+				while (elem) {
+					remove_all_signatures(LASSO_NODE(elem->data));
+					elem = g_list_next(elem);
+				}
+				break;
+			default:
+				break;
+		}
+		snippet++;
+	}
+}
+
+gint
+lasso_saml20_profile_build_http_redirect(LassoProfile *profile,
+	LassoNode *msg,
+	gboolean must_sign,
+	const char *url)
+{
+	char *query;
+
+	if (url == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
+	}
+	/* No signature on the XML message */
+	remove_all_signatures(msg);
+	query = lasso_saml20_profile_export_to_query(profile, msg, must_sign);
+	lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
+	lasso_release(profile->msg_body);
+	lasso_release(query);
+
+	return 0;
+}
+
 int
 lasso_saml20_profile_build_response(LassoProfile *profile, char *service, gboolean no_signature,
 		LassoHttpMethod method)
@@ -1186,5 +1305,34 @@ lasso_saml20_profile_process_soap_response(LassoProfile *profile,
 			remote_provider, response_msg, "ID", LASSO_MESSAGE_FORMAT_SOAP);
 
 cleanup:
+	return rc;
+}
+
+gint
+lasso_saml20_build_http_redirect_query_simple(LassoProfile *profile,
+		LassoNode *msg,
+		gboolean must_sign,
+		const char *profile_name,
+		gboolean is_response)
+{
+	char *idx = NULL;
+	char *url = NULL;
+	LassoProvider *remote_provider = NULL;
+	int rc;
+
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
+	if (is_response) {
+		idx = g_strdup_printf("%s HTTP-Redirect ResponseLocation", profile_name);
+		url = lasso_provider_get_metadata_one(remote_provider, idx);
+		lasso_release(idx);
+	}
+	if (url == NULL) {
+		idx = g_strdup_printf("%s HTTP-Redirect", profile_name);
+		url = lasso_provider_get_metadata_one(remote_provider, idx);
+		lasso_release(idx);
+	}
+	rc = lasso_saml20_profile_build_http_redirect(profile, msg, must_sign, url);
+	lasso_release(url);
 	return rc;
 }
