@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<div xmlns="http://www.w3.org/1999/xhtml">
+ <h3>2009-03-27: Released 2.2.2</h3>
+
+ <p>
+  Lasso 2.2.2 has been released.
+  <a href="/download/">Download it now</a>
+ </p>
+
+ <p class="changes">
+  <strong>What changed ?</strong>
+Many fixes and improvements to the ID-WSF 1 support, new API to load SSL keys
+off memory, documentation for ID-WSF methods, general robustness and memory
+leak fixes.
+ </p>
+
+</div>
