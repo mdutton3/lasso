@@ -561,9 +561,6 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 	char *status_value;
 	LassoSamlSubjectStatementAbstract *sssa = NULL;
 	LassoSamlSubjectStatementAbstract *sas = NULL;
-	LassoNode *encrypted_id = NULL;
-	LassoSaml2EncryptedElement* encrypted_element = NULL;
-	xmlSecKey *encryption_private_key = NULL;
 	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -642,65 +639,30 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 			}
 		}
 
-		/* store NameIdentifier */
+		lasso_release_gobject(profile->nameIdentifier);
+
+		/* Retrieve the name identifier from one of the statements */
 		if (assertion->AuthenticationStatement) {
 			sssa = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
 					assertion->AuthenticationStatement);
 			if (sssa->Subject && sssa->Subject->NameIdentifier) {
-				profile->nameIdentifier = g_object_ref(
-						sssa->Subject->NameIdentifier);
-			} else {
-				encrypted_id = g_object_ref(sssa->Subject->EncryptedNameIdentifier);
+				lasso_assign_gobject(profile->nameIdentifier,
+						LASSO_NODE(sssa->Subject->NameIdentifier));
 			}
 		}
 
-		if (profile->nameIdentifier == NULL && encrypted_id == NULL) {
-			/* it was not found in AuthenticationStatement, look it
-			 * up in saml:AttributeStatement */
+		if (profile->nameIdentifier == NULL && assertion->AttributeStatement) {
 			sas = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(assertion->AttributeStatement);
 			if (sas->Subject && sas->Subject->NameIdentifier) {
-				profile->nameIdentifier = g_object_ref(
-						sas->Subject->NameIdentifier);
-			} else {
-				encrypted_id = g_object_ref(sas->Subject->EncryptedNameIdentifier);
-			}
-		}
-
-		if (profile->nameIdentifier == NULL && encrypted_id == NULL) {
-			return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
-		}
-
-		if (profile->nameIdentifier != NULL) {
-			return rc;
-		}
-
-		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(encrypted_id);
-		encryption_private_key =
-			LASSO_PROFILE(profile)->server->private_data->encryption_private_key;
-		if (encrypted_element != NULL && encryption_private_key == NULL) {
-			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
-		}
-
-		/* Decrypt NameID */
-		if (encrypted_element != NULL && encryption_private_key != NULL) {
-			profile->nameIdentifier = LASSO_NODE(
-				lasso_node_decrypt(encrypted_element, encryption_private_key));
-			if (sssa != NULL && sssa->Subject != NULL) {
-				sssa->Subject->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
-					profile->nameIdentifier);
-				g_object_unref(sssa->Subject->EncryptedNameIdentifier);
-				sssa->Subject->EncryptedNameIdentifier = NULL;
-			} else if (sas != NULL && sas->Subject != NULL) {
-				sas->Subject->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
-					profile->nameIdentifier);
-				g_object_unref(sas->Subject->EncryptedNameIdentifier);
-				sas->Subject->EncryptedNameIdentifier = NULL;
+				lasso_assign_gobject(profile->nameIdentifier,
+						LASSO_NODE(sas->Subject->NameIdentifier));
 			}
 		}
 
 		if (profile->nameIdentifier == NULL) {
 			return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 		}
+
 	}
 exit:
 
@@ -1960,7 +1922,7 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 		idp = LASSO_PROVIDER(g_hash_table_lookup(profile->server->providers,
 					profile->remote_providerID));
 		profile->signature_status = lasso_provider_verify_saml_signature(idp,
-				signed_response);
+				signed_response, NULL);
 	}
 
 	return lasso_login_process_response_status_and_assertion(login);
