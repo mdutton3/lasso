@@ -65,10 +65,10 @@ static gboolean find_path(LassoNode *node, char *path, LassoNode **value_node,
 
 static void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippet_signature);
-static void lasso_node_traversal(LassoNode *node, void (*do_to_node)(LassoNode *node));
+static void lasso_node_traversal(LassoNode *node, void (*do_to_node)(LassoNode *node, SnippetType type), SnippetType type);
 
 static LassoNode* lasso_node_new_from_xmlNode_with_type(xmlNode *xmlnode, char *typename);
-static void lasso_node_remove_original_xmlnode(LassoNode *node);
+static void lasso_node_remove_original_xmlnode(LassoNode *node, SnippetType type);
 
 GHashTable *dst_services_by_href = NULL; /* ID-WSF 1 extra DST services, indexed on href */
 GHashTable *dst_services_by_prefix = NULL; /* ID-WSF 1 extra DST services, indexed on prefix */
@@ -958,11 +958,13 @@ lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump)
  * @node: a #LassoNode
  *
  * Traverse the #LassoNode tree starting at Node and remove keeped xmlNode if one is found.
+ *
+ * Return value: None
  */
 void
 lasso_node_cleanup_original_xmlnodes(LassoNode *node)
 {
-	lasso_node_traversal(node, lasso_node_remove_original_xmlnode);
+	lasso_node_traversal(node, lasso_node_remove_original_xmlnode, 0);
 }
 
 static GQuark original_xmlnode_quark;
@@ -992,27 +994,26 @@ lasso_node_set_original_xmlnode(LassoNode *node, xmlNodePtr xmlNode)
 }
 
 static void
-lasso_node_remove_original_xmlnode(LassoNode *node) {
+lasso_node_remove_original_xmlnode(LassoNode *node, SnippetType type) {
 	LassoNodeClass *class;
 	class = LASSO_NODE_GET_CLASS(node);
 
-	// We optimize by reseting only object of classes that advertise that
-	// they could have an xmlNode associated to their instances.
-	if (class->node_data->keep_xmlnode) {
+	if (class->node_data->keep_xmlnode || type & SNIPPET_KEEP_XMLNODE) {
 		lasso_node_set_original_xmlnode(node, NULL);
 	}
 }
 
 static void
-lasso_node_traversal(LassoNode *node, void (*do_to_node)(LassoNode *node)) {
+lasso_node_traversal(LassoNode *node, void (*do_to_node)(LassoNode *node, SnippetType type), SnippetType type) {
 	LassoNodeClass *class;
 	struct XmlSnippet *snippet;
-	do_to_node(node);
 
 	class = LASSO_NODE_GET_CLASS(node);
 	if (class->node_data == NULL || node == NULL || do_to_node == NULL) {
 		return;
 	}
+	do_to_node(node, type);
+
 	snippet = class->node_data->snippets;
 	while (snippet->name != NULL) {
 		SnippetType type;
@@ -1023,16 +1024,14 @@ lasso_node_traversal(LassoNode *node, void (*do_to_node)(LassoNode *node)) {
 			case SNIPPET_NODE:
 			case SNIPPET_NAME_IDENTIFIER:
 			case SNIPPET_NODE_IN_CHILD:
-				do_to_node(*value);
-				lasso_node_traversal(*value, do_to_node);
+				lasso_node_traversal(*value, do_to_node, snippet->type);
 				break;
 			case SNIPPET_LIST_NODES:
 				{
 					GList *list = *value;
 					while (list != NULL) {
 						if (list->data) {
-							do_to_node(list->data);
-							lasso_node_traversal(*value, do_to_node);
+							lasso_node_traversal(LASSO_NODE(list->data), do_to_node, snippet->type);
 						}
 						list = g_list_next(list);
 					}
@@ -1153,6 +1152,10 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 						n = lasso_node_new_from_xmlNode_with_type(t,
 								"LassoMiscTextNode");
 					}
+					if (n && snippet->type & SNIPPET_KEEP_XMLNODE &&
+							! LASSO_NODE_GET_CLASS(n)->node_data->keep_xmlnode) {
+						lasso_node_set_original_xmlnode(n, t);
+					}
 
 					if (n) {
 						*location = g_list_append(*location, n);
@@ -1175,6 +1178,12 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 				if (tmp == NULL)
 					break;
+
+				if (type == SNIPPET_NODE || type == SNIPPET_NODE_IN_CHILD || type ==
+						SNIPPET_NAME_IDENTIFIER) { if (snippet->type &
+							SNIPPET_KEEP_XMLNODE && !
+							LASSO_NODE_GET_CLASS(tmp)->node_data->keep_xmlnode)
+						{ lasso_node_set_original_xmlnode(tmp, t); } }
 
 				if (snippet->type & SNIPPET_INTEGER) {
 					int val = atoi(tmp);
@@ -2073,6 +2082,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 			case SNIPPET_OPTIONAL_NEG:
 			case SNIPPET_ALLOW_TEXT:
 			case SNIPPET_ANY:
+			case SNIPPET_KEEP_XMLNODE:
 				g_assert_not_reached();
 		}
 		if (snippet->type & SNIPPET_INTEGER)
