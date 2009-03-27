@@ -339,7 +339,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 
 	/* get the RelayState (only available in redirect mode) */
 	if (LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request)->RelayState)
-		lasso_assign_string(profile->msg_relayState.
+		lasso_assign_string(profile->msg_relayState,
 				LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
 					profile->request)->RelayState);
 

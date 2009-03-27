@@ -545,16 +545,14 @@ lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	logout_request = LASSO_LIB_LOGOUT_REQUEST(profile->request);
 
 	/* Validate some schema constraints */
-	if (LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID == NULL
+	if (logout_request->ProviderID == NULL
 			|| LASSO_IS_SAML_NAME_IDENTIFIER(logout_request->NameIdentifier) == FALSE) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
-	if (profile->remote_providerID) {
-		g_free(profile->remote_providerID);
-	}
-
+	lasso_assign_string(profile->msg_relayState,
+			logout_request->RelayState);
 	lasso_assign_string(profile->remote_providerID,
-			LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID);
+			logout_request->ProviderID);
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
@@ -572,7 +570,7 @@ lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 
 	lasso_assign_gobject(profile->nameIdentifier,
-			LASSO_LIB_LOGOUT_REQUEST(profile->request)->NameIdentifier);
+			logout_request->NameIdentifier);
 
 	return profile->signature_status;
 }
@@ -827,6 +825,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 	LassoSamlNameIdentifier *nameIdentifier;
 	LassoSamlAssertion *assertion;
 	LassoNode *assertion_n;
+	LassoLibLogoutRequest *logout_request = NULL;
 
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -840,9 +839,10 @@ lasso_logout_validate_request(LassoLogout *logout)
 	if (LASSO_IS_LIB_LOGOUT_REQUEST(profile->request) == FALSE) {
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	}
+	logout_request = LASSO_LIB_LOGOUT_REQUEST(profile->request);
 
 	lasso_assign_string(profile->remote_providerID,
-			LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID);
+			logout_request->ProviderID);
 
 	/* get the provider */
 	remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -857,7 +857,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 		lasso_assign_gobject(profile->response, lasso_lib_logout_response_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				LASSO_SAML_STATUS_CODE_SUCCESS,
-				LASSO_LIB_LOGOUT_REQUEST(profile->request),
+				logout_request,
 				profile->server->certificate ?
 					LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
 				LASSO_SIGNATURE_METHOD_RSA_SHA1));
@@ -866,13 +866,17 @@ lasso_logout_validate_request(LassoLogout *logout)
 		lasso_assign_gobject(profile->response, lasso_lib_logout_response_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				LASSO_SAML_STATUS_CODE_SUCCESS,
-				LASSO_LIB_LOGOUT_REQUEST(profile->request),
+				logout_request,
 				LASSO_SIGNATURE_TYPE_NONE,
 				0));
 	}
 	if (LASSO_IS_LIB_LOGOUT_RESPONSE(profile->response) == FALSE) {
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED);
 	}
+
+	/* copy the RelayState */
+	lasso_assign_string(LASSO_LIB_STATUS_RESPONSE(profile->response)->RelayState,
+			profile->msg_relayState);
 
 	/* Verify signature status, if signature is invalid, stop validation here */
 	if (profile->signature_status != 0) {
@@ -882,7 +886,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 	}
 
 	/* Get the name identifier */
-	nameIdentifier = LASSO_LIB_LOGOUT_REQUEST(profile->request)->NameIdentifier;
+	nameIdentifier = logout_request->NameIdentifier;
 	if (nameIdentifier == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in logout request");
 		lasso_profile_set_response_status(
