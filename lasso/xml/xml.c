@@ -1025,7 +1025,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				}
 				(*(int*)value) = val;
 			} else {
-				(*(char**)value) = g_strdup(tmp);
+				lasso_assign_string((*(char**)value), tmp);
 			}
 			xmlFree(tmp);
 		}
