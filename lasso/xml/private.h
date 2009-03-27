@@ -101,6 +101,7 @@ gchar* lasso_node_build_query_from_snippets(LassoNode *node);
 gboolean lasso_node_init_from_query_fields(LassoNode *node, char **query_fields);
 gboolean lasso_node_init_from_saml2_query_fields(LassoNode *node,
 		char **query_fields, char **relay_state);
+LassoMessageFormat lasso_node_init_from_message_with_format(LassoNode *node, const char *message, LassoMessageFormat constraint, xmlDoc **doc_out, xmlNode **root_out);
 
 typedef enum {
 	LASSO_PEM_FILE_TYPE_UNKNOWN,

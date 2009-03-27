@@ -25,6 +25,7 @@
 #include "private.h"
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 #include <libxml/uri.h>
 
@@ -54,6 +55,7 @@
 
 LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
 static xmlSecKeyPtr lasso_get_public_key_from_private_key_file(const char *private_key_file);
+static gboolean is_base64(const char *message);
 
 /**
  * lasso_build_random_sequence:
@@ -1086,6 +1088,7 @@ exit:
 	lasso_release_string(id);
 	return rc;
 }
+
 gboolean
 lasso_xml_is_soap(xmlNode *root)
 {
@@ -1117,4 +1120,96 @@ lasso_xml_get_soap_content(xmlNode *root)
 	}
 
 	return content;
+}
+
+LassoMessageFormat
+lasso_xml_parse_message(const char *message, LassoMessageFormat constraint, xmlDoc **doc_out, xmlNode **root_out)
+{
+	char *msg = NULL;
+	gboolean b64 = FALSE;
+	LassoMessageFormat rc = LASSO_MESSAGE_FORMAT_UNKNOWN;
+	xmlDoc *doc = NULL;
+	xmlNode *root = NULL;
+	gboolean any = constraint == LASSO_MESSAGE_FORMAT_UNKNOWN;
+
+	msg = (char*)message;
+
+	/* BASE64 case */
+	if (any || constraint == LASSO_MESSAGE_FORMAT_BASE64) {
+		if (message[0] != 0 && is_base64(message)) {
+			msg = g_malloc(strlen(message));
+			rc = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
+			if (rc >= 0) {
+				b64 = TRUE;
+			} else {
+				g_free(msg);
+				msg = (char*)message;
+			}
+		}
+	}
+
+	/* XML case */
+	if (any || constraint == LASSO_MESSAGE_FORMAT_BASE64 ||
+		constraint == LASSO_MESSAGE_FORMAT_XML ||
+		constraint == LASSO_MESSAGE_FORMAT_SOAP) {
+		if (strchr(msg, '<')) {
+			doc = lasso_xml_parse_memory(msg, strlen(msg));
+			if (doc == NULL) {
+				rc = LASSO_MESSAGE_FORMAT_UNKNOWN;
+				goto cleanup;
+			}
+			root = xmlDocGetRootElement(doc);
+
+			if (any || constraint == LASSO_MESSAGE_FORMAT_SOAP) {
+				gboolean is_soap = FALSE;
+
+				is_soap = lasso_xml_is_soap(root);
+				if (is_soap) {
+					root = lasso_xml_get_soap_content(root);
+				}
+				if (! root) {
+					rc = LASSO_MESSAGE_FORMAT_ERROR;
+					goto cleanup;
+				}
+				if (is_soap) {
+					rc = LASSO_MESSAGE_FORMAT_SOAP;
+					goto cleanup;
+				}
+				if (b64) {
+					g_free(msg);
+					rc = LASSO_MESSAGE_FORMAT_BASE64;
+					goto cleanup;
+				}
+				rc = LASSO_MESSAGE_FORMAT_XML;
+				goto cleanup;
+			}
+		}
+	}
+
+cleanup:
+	if (doc_out) {
+		*doc_out = doc;
+		if (root_out) {
+			*root_out = root;
+		}
+	} else {
+		lasso_release_doc(doc);
+		lasso_release_xml_node(root);
+	}
+	return rc;
+}
+
+static gboolean
+is_base64(const char *message)
+{
+	const char *c;
+
+	c = message;
+	while (*c != 0 && (isalnum(*c) || *c == '+' || *c == '/' || *c == '\n' || *c == '\r')) c++;
+	while (*c == '=' || *c == '\n' || *c == '\r') c++; /* trailing = */
+
+	if (*c == 0)
+		return TRUE;
+
+	return FALSE;
 }

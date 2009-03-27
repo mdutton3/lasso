@@ -44,6 +44,7 @@
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
+#include <xmlsec/soap.h>
 #include <xmlsec/xmlenc.h>
 
 #include <lasso/xml/xml.h>
@@ -1829,6 +1830,124 @@ is_base64(const char *message)
 
 
 /**
+ * lasso_node_init_from_message_with_format:
+ * @node: a #LassoNode (or derived class)
+ * @message: a Liberty message
+ * @constraint: LASSO_MESSAGE_FORMAT_UNKNOWN or the format the message must be in
+ * @doc_out: a pointer to store the resulting #xmlDoc structure
+ * @node_out: a pointer to store the resulting content #xmlNode
+ *
+ * Parses @message and initialiazes @node fields with data from it.  Message type may be base64,
+ * SOAP, XML or query string, correct type is found automatically if contraint is
+ * LASSO_MESSAGE_FORMAT_UNKNOWN or is limited to the value given.
+ * If the format is one of LASSO_MESSAGE_FORMAT_XML or LASSO_MESSAGE_FORMAT_XML or
+ * LASSO_MESSAGE_FORMAT_BASE64 the resulting #xmlDoc and #xmlNode of the message can be retrieved.
+ *
+ * Return value: a #LassoMessageFormat value.
+ **/
+LassoMessageFormat
+lasso_node_init_from_message_with_format(LassoNode *node, const char *message, LassoMessageFormat constraint, xmlDoc **doc_out, xmlNode **root_out)
+{
+	char *msg = NULL;
+	gboolean b64 = FALSE;
+	LassoMessageFormat rc = LASSO_MESSAGE_FORMAT_UNKNOWN;
+	xmlDoc *doc = NULL;
+	xmlNode *root = NULL;
+	gboolean any = constraint == LASSO_MESSAGE_FORMAT_UNKNOWN;
+
+	msg = (char*)message;
+
+	/* BASE64 case */
+	if (any || constraint == LASSO_MESSAGE_FORMAT_BASE64) {
+		if (message[0] != 0 && is_base64(message)) {
+			msg = g_malloc(strlen(message));
+			rc = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
+			if (rc >= 0) {
+				b64 = TRUE;
+			} else {
+				g_free(msg);
+				msg = (char*)message;
+			}
+		}
+	}
+
+	/* XML case */
+	if (any || constraint == LASSO_MESSAGE_FORMAT_XML ||
+		constraint == LASSO_MESSAGE_FORMAT_SOAP) {
+		if (strchr(msg, '<')) {
+			gboolean is_soap = FALSE;
+
+			doc = xmlParseMemory(msg, strlen(msg));
+			if (doc == NULL) {
+				rc = LASSO_MESSAGE_FORMAT_UNKNOWN;
+				goto cleanup;
+			}
+			root = xmlDocGetRootElement(doc);
+
+			if (any || constraint == LASSO_MESSAGE_FORMAT_SOAP) {
+				is_soap = xmlSecSoap11CheckEnvelope(root) ||
+					xmlSecSoap12CheckEnvelope(root);
+
+				if (is_soap) {
+					xmlNode *body;
+
+					if (xmlSecSoap11CheckEnvelope(root)) {
+						body = xmlSecSoap11GetBody(root);
+					} else {
+						body = xmlSecSoap12GetBody(root);
+					}
+					if (body) {
+						root = xmlSecGetNextElementNode(body->children);
+					}
+				}
+				rc = lasso_node_init_from_xml(node, root);
+				if (rc != 0) {
+					rc = LASSO_MESSAGE_FORMAT_XSCHEMA_ERROR;
+					goto cleanup;
+
+				}
+				if (is_soap) {
+					rc = LASSO_MESSAGE_FORMAT_SOAP;
+					goto cleanup;
+				}
+				if (b64) {
+					g_free(msg);
+					rc = LASSO_MESSAGE_FORMAT_BASE64;
+					goto cleanup;
+				}
+				rc = LASSO_MESSAGE_FORMAT_XML;
+				goto cleanup;
+			}
+		}
+	}
+
+	/* HTTP query CASE */
+	if (any || constraint == LASSO_MESSAGE_FORMAT_QUERY) {
+		if (strchr(msg, '&') || strchr(msg, '=')) {
+			/* XXX: detect SAML artifact messages to return a different status code ? */
+			if (lasso_node_init_from_query(node, msg) == FALSE) {
+				rc = LASSO_MESSAGE_FORMAT_ERROR;
+				goto cleanup;
+			}
+			rc = LASSO_MESSAGE_FORMAT_QUERY;
+			goto cleanup;
+		}
+	}
+
+cleanup:
+	if (doc_out) {
+		*doc_out = doc;
+		if (root_out) {
+			*root_out = root;
+		}
+	} else {
+		lasso_release_doc(doc);
+		lasso_release_xml_node(root);
+	}
+	return rc;
+}
+
+/**
  * lasso_node_init_from_message:
  * @node: a #LassoNode (or derived class)
  * @message: a Liberty message
@@ -1842,71 +1961,7 @@ is_base64(const char *message)
 LassoMessageFormat
 lasso_node_init_from_message(LassoNode *node, const char *message)
 {
-	char *msg;
-	gboolean b64 = FALSE;
-	int rc;
-
-	msg = (char*)message;
-
-	/* BASE64 case */
-	if (message[0] != 0 && is_base64(message)) {
-		msg = g_malloc(strlen(message));
-		rc = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
-		if (rc >= 0) {
-			b64 = TRUE;
-		} else {
-			g_free(msg);
-			msg = (char*)message;
-		}
-	}
-
-	/* XML case */
-	if (strchr(msg, '<')) {
-		xmlDoc *doc;
-		xmlNode *root;
-		xmlXPathContext *xpathCtx = NULL;
-		xmlXPathObject *xpathObj = NULL;
-		gboolean is_soap = FALSE;
-
-		doc = xmlParseMemory(msg, strlen(msg));
-		if (doc == NULL)
-			return LASSO_MESSAGE_FORMAT_UNKNOWN;
-		root = xmlDocGetRootElement(doc);
-
-		is_soap = root->ns && strcmp((char*)root->ns->href, LASSO_SOAP_ENV_HREF) == 0;
-		if (is_soap) {
-			xpathCtx = xmlXPathNewContext(doc);
-			xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
-			xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body/*", xpathCtx);
-			if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr ) {
-				root = xpathObj->nodesetval->nodeTab[0];
-			}
-		}
-		rc = lasso_node_init_from_xml(node, root);
-		lasso_release_xpath_job(xpathObj, xpathCtx, doc);
-		if (rc != 0) {
-			return LASSO_MESSAGE_FORMAT_XSCHEMA_ERROR;
-		}
-		if (is_soap) {
-			return LASSO_MESSAGE_FORMAT_SOAP;
-		}
-		if (b64) {
-			g_free(msg);
-			return LASSO_MESSAGE_FORMAT_BASE64;
-		}
-		return LASSO_MESSAGE_FORMAT_XML;
-	}
-
-	/* HTTP query CASE */
-	if (strchr(msg, '&') || strchr(msg, '=')) {
-		/* XXX: detect SAML artifact messages to return a different status code ? */
-		if (lasso_node_init_from_query(node, msg) == FALSE) {
-			return LASSO_MESSAGE_FORMAT_ERROR;
-		}
-		return LASSO_MESSAGE_FORMAT_QUERY;
-	}
-
-	return LASSO_MESSAGE_FORMAT_UNKNOWN;
+	return lasso_node_init_from_message_with_format(node, message, LASSO_MESSAGE_FORMAT_UNKNOWN, NULL, NULL);
 }
 
 /**
