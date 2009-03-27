@@ -1464,3 +1464,33 @@ xmlDetectSAX2(xmlParserCtxtPtr ctxt) {
 		ctxt->errNo = XML_ERR_NO_MEMORY;
 	}
 }
+
+char *
+lasso_get_relaystate_from_query(const char *query) {
+	char *start, *end;
+	char *result = NULL;
+
+	if (query == NULL)
+		return NULL;
+	start = strstr(query, "?RelayState=");
+	if (! start) {
+		start = strstr(query, "&RelayState=");
+	}
+	if (start) {
+		ptrdiff_t length;
+
+		start += sizeof("&RelayState=") - 1;
+		end = strchr(start, '&');
+		if (end) {
+			length = end-start;
+		} else {
+			length = strlen(start);
+		}
+		if (length > 240) {
+			g_warning("Refused to parse a RelayState of size %ti > 240", length);
+		} else {
+			result = xmlURIUnescapeString(start, length, NULL);
+		}
+	}
+	return result;
+}

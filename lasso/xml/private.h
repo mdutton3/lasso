@@ -210,6 +210,8 @@ static inline void message(GLogLevelFlags level, const char *format, ...)
 	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
 			LASSO_PROTOCOL_SAML_2_0)
 
+char * lasso_get_relaystate_from_query(const char *query);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
