@@ -153,35 +153,38 @@
 
 #define lasso_assign_new_string(dest,src) \
 	{ \
-		if (dest != src) \
+		char *__tmp = src; \
+		if (dest != __tmp) \
 			lasso_release_string(dest); \
-		dest = src; \
+		dest = __tmp; \
 	}
 
 #define lasso_assign_gobject(dest,src) \
 	{ \
+		GObject *__tmp = G_OBJECT(src); \
 		lasso_check_type_equality(dest, src); \
-		if (src) \
-			g_object_ref(src); \
-		if (dest) \
-			g_object_unref(dest); \
-		dest = (void*)(src); \
+		if (__tmp) \
+			g_object_ref(__tmp); \
+		lasso_release_gobject(dest); \
+		dest = (void*)(__tmp); \
 	}
 
 #define lasso_assign_new_gobject(dest,src) \
 	{ \
+		GObject *__tmp = G_OBJECT(src); \
 		lasso_check_type_equality(dest, src); \
-		if (dest != (void*)src) \
-			g_object_unref(dest); \
-		dest = (void*)(src); \
+		if (dest != (void*)__tmp) \
+			lasso_release_gobject(dest); \
+		dest = (void*)(__tmp); \
 	}
 
 #define lasso_assign_xml_node(dest,src) \
 	{ \
+		xmlNode *__tmp = (src); \
 		lasso_check_type_equality(dest, src); \
 		if (dest) \
 			xmlFreeNode(dest); \
-		dest = xmlCopyNode(src, 1); \
+		dest = xmlCopyNode(__tmp, 1); \
 	}
 
 #define lasso_assign_new_list_of_gobjects(dest, src) \
