@@ -99,6 +99,8 @@ init_from_query(LassoNode *node, char **query_fields)
 	request->NameIdentifier = lasso_saml_name_identifier_new();
 
 	rc = parent_class->init_from_query(node, query_fields);
+	if (! rc)
+		goto exit;
 
 	if (request->ProviderID == NULL ||
 			request->NameIdentifier == NULL ||
@@ -110,8 +112,8 @@ init_from_query(LassoNode *node, char **query_fields)
 	if (request->NameIdentifier->Format == NULL) {
 		lasso_assign_string(request->NameIdentifier->Format,
 				"LASSO_SAML2_NAME_IDENTIFIER_FORMAT_UNSPECIFIED");
-
 	}
+ exit:
 
 	return rc;
 }
