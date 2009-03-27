@@ -74,7 +74,6 @@ static struct XmlSnippet schema_snippets[] = {
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
-static LassoNodeClass *parent_class = NULL;
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -94,7 +93,6 @@ class_init(LassoSamlp2ManageNameIDRequestClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "ManageNameIDRequest");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_PROTOCOL_HREF, LASSO_SAML2_PROTOCOL_PREFIX);
