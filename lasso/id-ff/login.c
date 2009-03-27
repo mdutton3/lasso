@@ -1343,9 +1343,10 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 		request->MinorVersion = 0;
 	}
 	request->IssueInstant = lasso_get_current_time();
-	LASSO_LIB_AUTHN_REQUEST(profile->request)->ProviderID = g_strdup(
+	lasso_assign_string(LASSO_LIB_AUTHN_REQUEST(profile->request)->ProviderID,
 			LASSO_PROVIDER(profile->server)->ProviderID);
-	LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState = g_strdup(profile->msg_relayState);
+	lasso_assign_string(LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState,
+			profile->msg_relayState);
 
 	if (http_method == LASSO_HTTP_METHOD_POST) {
 		request->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
