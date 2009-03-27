@@ -100,19 +100,10 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoSamlp2AuthnRequest *node)
 {
-	node->Subject = NULL;
-	node->NameIDPolicy = NULL;
-	node->Conditions = NULL;
-	node->RequestedAuthnContext = NULL;
-	node->Scoping = NULL;
 	node->ForceAuthn = FALSE;
 	node->IsPassive = FALSE;
-	node->ProtocolBinding = NULL;
 	node->AssertionConsumerServiceIndex = -1;
-	node->AssertionConsumerServiceURL = NULL;
 	node->AttributeConsumingServiceIndex = -1;
-	node->ProviderName = NULL;
-	node->relayState = NULL;
 }
 
 static void

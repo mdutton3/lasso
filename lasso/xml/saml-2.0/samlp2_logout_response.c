@@ -56,12 +56,6 @@ static LassoNodeClass *parent_class = NULL;
 /*****************************************************************************/
 
 static void
-instance_init(LassoSamlp2LogoutResponse *node)
-{
-	node->relayState = NULL; /* XXX: free me sometimes */
-}
-
-static void
 class_init(LassoSamlp2LogoutResponseClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -88,7 +82,7 @@ lasso_samlp2_logout_response_get_type()
 			NULL,
 			sizeof(LassoSamlp2LogoutResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

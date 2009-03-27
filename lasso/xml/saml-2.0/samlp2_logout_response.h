@@ -53,8 +53,9 @@ typedef struct _LassoSamlp2LogoutResponseClass LassoSamlp2LogoutResponseClass;
 struct _LassoSamlp2LogoutResponse {
 	LassoSamlp2StatusResponse parent;
 
-	/*< public >*/
-	char *relayState;
+	/* This field is deprecated do not use it,
+	 * kept for ABI compatibility */
+	G_GNUC_DEPRECATED char *relayState;
 };
 
 

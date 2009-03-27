@@ -74,8 +74,9 @@ struct _LassoSamlp2AuthnRequest {
 	int AttributeConsumingServiceIndex;
 	char *ProviderName;
 
-	/* out of schema */
-	char *relayState;
+	/* This field is deprecated do not use it,
+	 * kept for ABI compatibility */
+	G_GNUC_DEPRECATED char *relayState;
 };
 
 

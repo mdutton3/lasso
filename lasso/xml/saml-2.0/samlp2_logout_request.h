@@ -66,7 +66,9 @@ struct _LassoSamlp2LogoutRequest {
 	char *Reason;
 	char *NotOnOrAfter;
 
-	char *relayState;
+	/* This field is deprecated do not use it,
+	 * kept for ABI compatibility */
+	G_GNUC_DEPRECATED char *relayState;
 };
 
 

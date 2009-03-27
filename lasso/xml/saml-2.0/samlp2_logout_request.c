@@ -82,18 +82,6 @@ static LassoNodeClass *parent_class = NULL;
 /*****************************************************************************/
 
 static void
-instance_init(LassoSamlp2LogoutRequest *node)
-{
-	node->BaseID = NULL;
-	node->NameID = NULL;
-	node->EncryptedID = NULL;
-	node->SessionIndex = NULL;
-	node->Reason = NULL;
-	node->NotOnOrAfter = NULL;
-	node->relayState = NULL;
-}
-
-static void
 class_init(LassoSamlp2LogoutRequestClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -120,7 +108,7 @@ lasso_samlp2_logout_request_get_type()
 			NULL,
 			sizeof(LassoSamlp2LogoutRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 
