@@ -126,7 +126,7 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_me
 gint
 lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *remote_provider)
 {
-	char *query, *url;
+	char *url;
 	char *md_authnRequestsSigned;
 	gboolean must_sign;
 	LassoProfile *profile = LASSO_PROFILE(login);
@@ -137,29 +137,8 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 	g_free(md_authnRequestsSigned);
 
 	if (login->http_method == LASSO_HTTP_METHOD_REDIRECT) {
-		/* REDIRECT -> query */
-		if (must_sign) {
-			query = lasso_node_export_to_query(profile->request,
-					profile->server->signature_method,
-					profile->server->private_key);
-		} else {
-			query = lasso_node_export_to_query(
-					LASSO_NODE(profile->request), 0, NULL);
-		}
-		if (query == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
-		}
-
-		url = lasso_provider_get_metadata_one(remote_provider,
-				"SingleSignOnService HTTP-Redirect");
-		if (url == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
-		}
-
-		profile->msg_url = lasso_concat_url_query(url, query);
-		profile->msg_body = NULL;
-		g_free(query);
-		g_free(url);
+		return lasso_saml20_build_http_redirect_query_simple(profile, profile->request,
+				must_sign, "SingleSignOnService", FALSE);
 	} else {
 		/* POST, SOAP and Artifact-GET|POST */
 		if (must_sign) {
@@ -1442,24 +1421,17 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 		/* build an lib:AuthnResponse base64 encoded */
 		profile->msg_body = lasso_node_export_to_base64(LASSO_NODE(profile->response));
 	} else {
-		char *url, *query;
-
-		/* don't include signature stuff in XML when exporting to a
-		 * query string */
-		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
-			LASSO_SIGNATURE_TYPE_NONE;
+		int rc;
+		char *url;
 
 		url = profile->msg_url;
-		query = lasso_node_export_to_query(profile->response,
-				profile->server->signature_method,
-				profile->server->private_key);
-		if (query == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
+		rc = lasso_saml20_profile_build_http_redirect(profile, profile->response, 1, profile->msg_url);
+		if (profile->msg_url != url) {
+			lasso_release(url);
 		}
-		profile->msg_url = lasso_concat_url_query(url, query);
-		profile->msg_body = NULL;
-		g_free(query);
-		g_free(url);
+		if (rc != 0) {
+			return rc;
+		}
 	}
 
 

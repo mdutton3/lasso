@@ -210,33 +210,9 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 		profile->msg_body = lasso_node_export_to_soap(profile->request);
 		return 0;
 	}
-
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		char *url, *query;
-
-		/* don't include signature stuff in XML when exporting to a
-		 * query string */
-		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_type =
-			LASSO_SIGNATURE_TYPE_NONE;
-
-		url = lasso_provider_get_metadata_one(remote_provider,
-				"SingleLogoutService HTTP-Redirect");
-		if (url == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
-		}
-		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Destination = g_strdup(url);
-		query = lasso_node_export_to_query(profile->request,
-					profile->server->signature_method,
-					profile->server->private_key);
-		if (query == NULL) {
-			g_free(url);
-			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
-		}
-		profile->msg_url = lasso_concat_url_query(url, query);
-		profile->msg_body = NULL;
-		g_free(url);
-		g_free(query);
-		return 0;
+		return lasso_saml20_build_http_redirect_query_simple(profile, profile->request,
+				TRUE, "SingleLogoutService", FALSE);
 	}
 
 	/* XXX: artifact support */
@@ -466,8 +442,6 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 {
 	LassoProfile *profile = LASSO_PROFILE(logout);
 	LassoSamlp2StatusResponse *response;
-	LassoProvider *provider;
-	char *url, *query;
 
 	if (profile->response == NULL) {
 		/* no response set here means request denied */
@@ -510,41 +484,7 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 	}
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		/* don't include signature stuff in XML when exporting to a
-		 * query string */
-		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
-			LASSO_SIGNATURE_TYPE_NONE;
-
-		/* get the provider */
-		provider = g_hash_table_lookup(profile->server->providers,
-				profile->remote_providerID);
-		if (provider == NULL) {
-			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-		}
-
-		url = lasso_provider_get_metadata_one(provider,
-				"SingleLogoutService HTTP-Redirect ResponseLocation");
-		if (url == NULL) {
-			url = lasso_provider_get_metadata_one(provider,
-					"SingleLogoutService HTTP-Redirect");
-			if (url == NULL) {
-				return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
-			}
-		}
-		LASSO_SAMLP2_LOGOUT_RESPONSE(profile->response)->relayState = g_strdup(
-				profile->msg_relayState);
-		query = lasso_node_export_to_query(LASSO_NODE(profile->response),
-				profile->server->signature_method,
-				profile->server->private_key);
-		if (query == NULL) {
-			g_free(url);
-			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
-		}
-		profile->msg_url = lasso_concat_url_query(url, query);
-		profile->msg_body = NULL;
-		g_free(url);
-		g_free(query);
-		return 0;
+		return lasso_saml20_build_http_redirect_query_simple(profile,  profile->response, TRUE, "SingleLogoutService", TRUE);
 	}
 
 	return LASSO_PROFILE_ERROR_MISSING_REQUEST;
