@@ -26,10 +26,10 @@ if WSF_ENABLED
 SYMBOLS_ARGS = -wsf
 endif
 
-types.c: *.h */*.h */*/*.h
+types.c: $(srcdir)/*.h $(srcdir)/*/*.h $(srcdir)/*/*/*.h
 	$(PYTHON) $(srcdir)/extract_types.py $(srcdir) $(SYMBOLS_ARGS)
 
-symbols.sym: *.h */*.h */*/*.h
+symbols.sym: $(srcdir)/*.h $(srcdir)/*/*.h $(srcdir)/*/*/*.h
 	$(PYTHON) $(srcdir)/extract_symbols.py $(srcdir) $(SYMBOLS_ARGS) > symbols.sym
 
 MAINTAINERCLEANFILES = \
