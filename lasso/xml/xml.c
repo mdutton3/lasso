@@ -40,7 +40,6 @@
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
-#include <xmlsec/soap.h>
 #include <xmlsec/xmlenc.h>
 
 #include <lasso/xml/xml.h>
@@ -1636,10 +1635,9 @@ lasso_node_init_from_message_with_format(LassoNode *node, const char *message, L
 
 	/* XML case */
 	if (any || constraint == LASSO_MESSAGE_FORMAT_XML ||
+		constraint == LASSO_MESSAGE_FORMAT_BASE64 ||
 		constraint == LASSO_MESSAGE_FORMAT_SOAP) {
 		if (strchr(msg, '<')) {
-			gboolean is_soap = FALSE;
-
 			doc = lasso_xml_parse_memory(msg, strlen(msg));
 			if (doc == NULL) {
 				rc = LASSO_MESSAGE_FORMAT_UNKNOWN;
@@ -1648,20 +1646,11 @@ lasso_node_init_from_message_with_format(LassoNode *node, const char *message, L
 			root = xmlDocGetRootElement(doc);
 
 			if (any || constraint == LASSO_MESSAGE_FORMAT_SOAP) {
-				is_soap = xmlSecSoap11CheckEnvelope(root) ||
-					xmlSecSoap12CheckEnvelope(root);
+				gboolean is_soap = FALSE;
 
+				is_soap = lasso_xml_is_soap(root);
 				if (is_soap) {
-					xmlNode *body;
-
-					if (xmlSecSoap11CheckEnvelope(root)) {
-						body = xmlSecSoap11GetBody(root);
-					} else {
-						body = xmlSecSoap12GetBody(root);
-					}
-					if (body) {
-						root = xmlSecGetNextElementNode(body->children);
-					}
+					root = lasso_xml_get_soap_content(root);
 				}
 				rc = lasso_node_init_from_xml(node, root);
 				if (rc != 0) {
@@ -1705,7 +1694,6 @@ cleanup:
 		}
 	} else {
 		lasso_release_doc(doc);
-		lasso_release_xml_node(root);
 	}
 	return rc;
 }
