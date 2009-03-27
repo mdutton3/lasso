@@ -901,9 +901,6 @@ class DiscoveryQueryTestCase(IdWsf2TestCase):
 
         idp_disco.processQueryMsg(wsc_disco.msgBody)
 
-        self.failUnless(idp_disco.nameIdentifier and idp_disco.nameIdentifier.content,
-            'missing name identifier')
-
     def test08(self):
         """Build discovery query response EPRs"""
         idp = self.getIdpServer()
@@ -1321,9 +1318,6 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
 
         wsp_service = lasso.IdWsf2DataService(wsp)
         wsp_service.processQueryMsg(service.msgBody)
-
-        self.failUnless(wsp_service.nameIdentifier and wsp_service.nameIdentifier.content,
-            'missing name identifier')
 
     def test11(self):
         """Data service parse query items - success"""

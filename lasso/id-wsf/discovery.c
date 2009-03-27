@@ -168,7 +168,7 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, G_GNUC_UNUSED const 
 
 	/* SubjectConfirmation */
 	subject_confirmation = lasso_saml_subject_confirmation_new();
-	lasso_list_add(subject_confirmation->ConfirmationMethod,
+	lasso_list_add_string(subject_confirmation->ConfirmationMethod,
 		g_strdup(LASSO_SAML_CONFIRMATION_METHOD_HOLDER_OF_KEY));
 
 	/* Add public key value in credential */
@@ -185,7 +185,7 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, G_GNUC_UNUSED const 
 	/* Add credential to disco:QueryResponse */
 	response = LASSO_DISCO_QUERY_RESPONSE(profile->response);
 	credentials = lasso_disco_credentials_new();
-	lasso_list_add(credentials->any, assertion);
+	lasso_list_add_new_gobject(credentials->any, assertion);
 	response->Credentials = credentials;
 
 	return g_strdup(assertion->AssertionID);
@@ -225,7 +225,7 @@ lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
 
 	insertEntry = lasso_disco_insert_entry_new(resourceOffering);
 
-	lasso_list_add(modify->InsertEntry, insertEntry);
+	lasso_list_add_new_gobject(modify->InsertEntry, insertEntry);
 
 	return insertEntry;
 }
@@ -253,7 +253,7 @@ lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 	modify = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
 
 	/* add RemoveEntry */
-	lasso_list_add(modify->RemoveEntry, lasso_disco_remove_entry_new(entryID));
+	lasso_list_add_new_gobject(modify->RemoveEntry, lasso_disco_remove_entry_new(entryID));
 
 	return 0;
 }
@@ -301,7 +301,7 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 	}
 
 	/* add RequestedServiceType */
-	lasso_list_add(query->RequestedServiceType, rst);
+	lasso_list_add_new_gobject(query->RequestedServiceType, rst);
 
 	return rst;
 }
@@ -513,7 +513,7 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 	lasso_wsf_profile_set_description(profile, description);
 	assign_resource_id(offering, modify);
 	lasso_node_destroy(LASSO_NODE(offering));
-	lasso_list_add(modify->InsertEntry, lasso_disco_insert_entry_new(new_offering));
+	lasso_list_add_new_gobject(modify->InsertEntry, lasso_disco_insert_entry_new(new_offering));
 	if (description->Endpoint != NULL) {
 		profile->msg_url = g_strdup(description->Endpoint);
 	} /* TODO: else, description->WsdlURI, get endpoint automatically */
@@ -562,7 +562,7 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
 	/* TODO: EncryptedResourceID support */
 	modify->ResourceID = g_object_ref(offering->ResourceID);
 	lasso_node_destroy(LASSO_NODE(offering));
-	lasso_list_add(modify->RemoveEntry, lasso_disco_remove_entry_new(entry_id));
+	lasso_list_add_new_gobject(modify->RemoveEntry, lasso_disco_remove_entry_new(entry_id));
 	if (description->Endpoint != NULL) {
 		profile->msg_url = g_strdup(description->Endpoint);
 	} /* TODO: else, description->WsdlURI, get endpoint automatically */
@@ -883,7 +883,7 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 							iter3->data) == TRUE) {
 					credentialRef = lasso_discovery_build_credential(
 							discovery, NULL);
-					lasso_list_add(description->CredentialRef, credentialRef);
+					lasso_list_add_new_gobject(description->CredentialRef, credentialRef);
 				}
 				iter3 = g_list_next(iter3);
 			}
@@ -1051,7 +1051,7 @@ lasso_discovery_get_services(LassoDiscovery *discovery)
 			continue;
 		}
 		service = lasso_discovery_build_wsf_profile(discovery, offering);
-		lasso_list_add(services, service);
+		lasso_list_add_new_gobject(services, service);
 	}
 
 	return services;

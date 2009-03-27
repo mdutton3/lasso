@@ -93,7 +93,7 @@ lasso_idwsf2_data_service_init_query(LassoIdWsf2DataService *service)
 	if (LASSO_PROFILE(profile)->request) {
 		lasso_node_destroy(LASSO_NODE(LASSO_PROFILE(profile)->request));
 	}
-	lasso_assign_new_gobject(LASSO_PROFILE(profile)->request, query);
+	lasso_assign_new_gobject(LASSO_PROFILE(profile)->request, LASSO_NODE(query));
 
 	if (service == NULL || service->private_data == NULL
 			|| service->private_data->epr == NULL
@@ -268,7 +268,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	response = lasso_idwsf2_dstref_query_response_new();
 	response->prefixServiceType = g_strdup(request->prefixServiceType);
 	response->hrefServiceType = g_strdup(request->hrefServiceType);
-	lasso_assign_new_gobject(LASSO_PROFILE(profile)->response, response);
+	lasso_assign_new_gobject(LASSO_PROFILE(profile)->response, LASSO_NODE(response));
 	lasso_list_add_gobject(envelope->Body->any, response);
 
 	/* Initialise XML parsing */
@@ -673,7 +673,7 @@ lasso_idwsf2_data_service_init_modify(LassoIdWsf2DataService *service)
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	modify = lasso_idwsf2_dstref_modify_new();
-	lasso_assign_new_gobject(LASSO_PROFILE(profile)->request, modify);
+	lasso_assign_new_gobject(LASSO_PROFILE(profile)->request, LASSO_NODE(modify));
 
 	if (service == NULL || service->private_data == NULL
 			|| service->private_data->epr == NULL
@@ -906,7 +906,7 @@ lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
 	response = lasso_idwsf2_dstref_modify_response_new();
 	response->prefixServiceType = g_strdup(request->prefixServiceType);
 	response->hrefServiceType = g_strdup(request->hrefServiceType);
-	lasso_assign_new_gobject(LASSO_PROFILE(profile)->response, response);
+	lasso_assign_new_gobject(LASSO_PROFILE(profile)->response, LASSO_NODE(response));
 	lasso_list_add_gobject(envelope->Body->any, response);
 
 	response2 = LASSO_IDWSF2_UTIL_RESPONSE(response);

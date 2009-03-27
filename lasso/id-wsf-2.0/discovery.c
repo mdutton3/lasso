@@ -228,7 +228,8 @@ lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *disco
 		request = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_PROFILE(profile)->request);
 		/* FIXME : foreach on the list instead */
 		if (request != NULL && request->SvcMD != NULL) {
-			lasso_assign_gobject(discovery->metadata, request->SvcMD->data);
+			lasso_assign_gobject(discovery->metadata,
+					LASSO_IDWSF2_DISCO_SVC_METADATA(request->SvcMD->data));
 			/* Build a unique SvcMDID */
 			lasso_build_random_sequence(unique_id, 32);
 			unique_id[32] = 0;
@@ -383,7 +384,7 @@ lasso_idwsf2_discovery_process_metadata_association_add_msg(LassoIdWsf2Discovery
 	envelope = profile->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
-	lasso_assign_gobject(LASSO_PROFILE(profile)->response, response);
+	lasso_assign_gobject(LASSO_PROFILE(profile)->response, LASSO_NODE(response));
 
 	return res;
 }
@@ -512,7 +513,7 @@ lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery, G_GNUC_UNUSED
 
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 
-	lasso_assign_new_gobject(LASSO_PROFILE(profile)->request, lasso_idwsf2_disco_query_new());
+	lasso_assign_new_gobject(LASSO_PROFILE(profile)->request, (LassoNode*)lasso_idwsf2_disco_query_new());
 
 	lasso_idwsf2_profile_init_soap_request(profile,
 			LASSO_PROFILE(profile)->request, LASSO_IDWSF2_DISCO_HREF);

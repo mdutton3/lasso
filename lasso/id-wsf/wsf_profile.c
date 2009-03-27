@@ -125,7 +125,7 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 		char *ref = (char*)credentialRefs->data;
 		xmlNode *assertion = lasso_session_get_assertion_by_id(session, ref);
 		if (assertion) {
-			lasso_list_add(wsse_security->any, assertion);
+			lasso_list_add_xml_node(wsse_security->any, assertion);
 		}
 		credentialRefs = g_list_next(credentialRefs);
 	}
