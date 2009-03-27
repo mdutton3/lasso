@@ -1657,7 +1657,7 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		xmlNsPtr ns;
 		xmlChar *xmlPrefix, *separator;
 
-		/** Honor xsi:type if the QName is in the LASSO_LASSO_HREF namespace */
+		/** Honor xsi:type  */
 		xmlPrefix = (xmlChar*)xsitype;
 		separator = (xmlChar*)strchr((char*)xsitype, ':');
 		if (separator != NULL) {
