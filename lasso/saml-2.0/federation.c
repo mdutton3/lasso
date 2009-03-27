@@ -23,6 +23,7 @@
  */
 
 
+#include "../xml/private.h"
 #include <lasso/id-ff/federation.h>
 #include "federationprivate.h"
 

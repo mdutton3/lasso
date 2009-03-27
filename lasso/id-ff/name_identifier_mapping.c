@@ -28,6 +28,7 @@
  *
  **/
 
+#include "../xml/private.h"
 #include <lasso/id-ff/name_identifier_mapping.h>
 
 #include <lasso/id-ff/profileprivate.h>

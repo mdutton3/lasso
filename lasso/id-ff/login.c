@@ -143,6 +143,7 @@
  * </example>
  */
 
+#include "../xml/private.h"
 #include <xmlsec/base64.h>
 
 #include <config.h>

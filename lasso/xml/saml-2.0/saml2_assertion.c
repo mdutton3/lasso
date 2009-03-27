@@ -23,6 +23,7 @@
  */
 
 
+#include "../private.h"
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 

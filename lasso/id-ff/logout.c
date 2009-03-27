@@ -28,6 +28,7 @@
  *
  */
 
+#include "../xml/private.h"
 #include <lasso/xml/lib_authentication_statement.h>
 
 #include <lasso/id-ff/logout.h>

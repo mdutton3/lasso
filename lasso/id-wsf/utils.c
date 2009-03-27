@@ -32,6 +32,7 @@
  * urn:liberty:security:2003-08:ClientTLS:SAML, FALSE otherwise.
  */
 
+#include "../xml/private.h"
 #include <glib.h>
 #include <string.h>
 

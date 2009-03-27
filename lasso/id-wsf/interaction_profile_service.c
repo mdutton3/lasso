@@ -22,6 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "../xml/private.h"
 #include <lasso/id-wsf/interaction_profile_service.h>
 
 struct _LassoInteractionProfileServicePrivate

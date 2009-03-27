@@ -28,6 +28,7 @@
  *
  **/
 
+#include "../xml/private.h"
 #include <lasso/id-ff/federation.h>
 #include <lasso/id-ff/provider.h>
 

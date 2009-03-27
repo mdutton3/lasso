@@ -22,6 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "../xml/private.h"
 #include <lasso/id-wsf/authentication.h>
 #include <lasso/xml/sa_sasl_request.h>
 #include <lasso/xml/sa_sasl_response.h>

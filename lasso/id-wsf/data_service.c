@@ -56,6 +56,7 @@
  *
  */
 
+#include "../xml/private.h"
 #include "../utils.h"
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>

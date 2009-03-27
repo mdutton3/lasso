@@ -30,7 +30,10 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/xml_enc.h>
 #include <xmlsec/crypto.h>
+#include <xmlsec/xmlenc.h>
+#include <lasso/xml/saml-2.0/saml2_encrypted_element.h>
 
 typedef enum {
 	SNIPPET_NODE,

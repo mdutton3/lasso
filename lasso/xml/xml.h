@@ -162,10 +162,6 @@ LASSO_EXPORT char* lasso_get_prefix_for_dst_service_href(const char *href);
 LASSO_EXPORT void lasso_register_idwsf2_dst_service(const gchar *prefix, const gchar *href);
 LASSO_EXPORT gchar* lasso_get_prefix_for_idwsf2_dst_service_href(const gchar *href);
 
-#ifdef LASSO_INTERNALS
-#include <lasso/xml/private.h>
-#endif
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

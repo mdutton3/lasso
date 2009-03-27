@@ -28,6 +28,7 @@
  *
  **/
 
+#include "../xml/private.h"
 #include <config.h>
 #include "../utils.h"
 #include <lasso/id-ff/identity.h>

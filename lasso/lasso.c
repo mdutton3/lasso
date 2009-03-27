@@ -28,6 +28,7 @@
  *
  **/
 
+#include "xml/private.h"
 #include <stdlib.h> /* getenv */
 #include <string.h> /* strcmp */
 #include <xmlsec/xmlsec.h>

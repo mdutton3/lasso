@@ -20,6 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "../private.h"
 #include <lasso/xml/saml-2.0/saml2_attribute_value.h>
 
 /*

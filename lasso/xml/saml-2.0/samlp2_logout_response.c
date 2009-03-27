@@ -23,6 +23,7 @@
  */
 
 
+#include "../private.h"
 #include <libxml/uri.h>
 
 #include "samlp2_logout_response.h"

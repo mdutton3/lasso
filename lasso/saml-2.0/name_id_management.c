@@ -22,6 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "../xml/private.h"
 #include <../saml-2.0/name_id_management.h>
 #include <../saml-2.0/providerprivate.h>
 #include <../saml-2.0/profileprivate.h>

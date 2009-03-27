@@ -31,6 +31,7 @@
  *
  */
 
+#include "private.h"
 #include <ctype.h>
 
 #include <libxml/xpath.h>

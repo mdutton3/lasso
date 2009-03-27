@@ -29,6 +29,7 @@
  * It holds all the data about a provider.
  **/
 
+#include "../xml/private.h"
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
