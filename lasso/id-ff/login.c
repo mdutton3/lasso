@@ -166,14 +166,13 @@
 #include <lasso/id-ff/login.h>
 #include <lasso/id-ff/provider.h>
 
-#include <lasso/id-ff/profileprivate.h>
-#include <lasso/id-ff/providerprivate.h>
-#include <lasso/id-ff/serverprivate.h>
-#include <lasso/id-ff/sessionprivate.h>
-#include <lasso/id-ff/identityprivate.h>
-#include <lasso/id-ff/loginprivate.h>
-
-#include <lasso/saml-2.0/loginprivate.h>
+#include "./profileprivate.h"
+#include "./providerprivate.h"
+#include "./serverprivate.h"
+#include "./sessionprivate.h"
+#include "./identityprivate.h"
+#include "./loginprivate.h"
+#include "../saml-2.0/loginprivate.h"
 #include "../utils.h"
 
 
