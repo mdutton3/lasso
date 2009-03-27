@@ -153,6 +153,8 @@ LassoSaml2EncryptedElement* lasso_node_encrypt(LassoNode *lasso_node,
 int lasso_node_decrypt_xmlnode(xmlNode* encrypted_element, GList *encrypted_key,
 		xmlSecKey *encryption_private_key, LassoNode **output);
 
+xmlDocPtr lasso_xml_parse_memory(const char *buffer, int size);
+
 char* lasso_concat_url_query(char *url, char *query);
 
 xmlDocPtr lasso_xml_parse_memory(const char *buffer, int size);
