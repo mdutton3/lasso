@@ -91,7 +91,19 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
+static gchar*
+build_query(LassoNode *node)
+{
+	char *ret, *deflated_message;
 
+	deflated_message = lasso_node_build_deflated_query(node);
+	if (deflated_message == NULL) {
+		return NULL;
+	}
+	ret = g_strdup_printf("SAMLRequest=%s", deflated_message);
+	g_free(deflated_message);
+	return ret;
+}
 
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
@@ -142,6 +154,7 @@ class_init(LassoSamlp2RequestAbstractClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
+	nclass->build_query = build_query;
 	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "RequestAbstract");
