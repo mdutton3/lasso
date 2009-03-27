@@ -36,6 +36,8 @@
 #include <lasso/id-ff/identityprivate.h>
 #include <lasso/id-ff/profileprivate.h>
 #include <lasso/id-ff/serverprivate.h>
+#include "../xml/private.h"
+#include "../utils.h"
 
 /*****************************************************************************/
 /* public methods                                                            */
