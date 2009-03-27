@@ -156,6 +156,10 @@ char* lasso_concat_url_query(char *url, char *query);
 
 xmlDocPtr lasso_xml_parse_memory(const char *buffer, int size);
 
+xmlNode* lasso_xml_get_soap_content(xmlNode *root);
+
+gboolean lasso_xml_is_soap(xmlNode *root);
+
 void _debug(GLogLevelFlags level, const char *filename, int line,
 		const char *function, const char *format, ...);
 

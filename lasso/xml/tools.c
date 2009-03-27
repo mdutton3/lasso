@@ -40,6 +40,7 @@
 #include <xmlsec/errors.h>
 #include <xmlsec/openssl/x509.h>
 #include <xmlsec/openssl/crypto.h>
+#include <xmlsec/soap.h>
 
 #include <zlib.h>
 
@@ -1084,4 +1085,36 @@ exit:
 	lasso_release_doc(doc);
 	lasso_release_string(id);
 	return rc;
+}
+gboolean
+lasso_xml_is_soap(xmlNode *root)
+{
+	return xmlSecCheckNodeName(root, xmlSecNodeEnvelope, xmlSecSoap11Ns) ||
+		xmlSecCheckNodeName(root, xmlSecNodeEnvelope, xmlSecSoap12Ns);
+}
+
+xmlNode*
+lasso_xml_get_soap_content(xmlNode *root)
+{
+	gboolean is_soap11 = FALSE;
+	gboolean is_soap12 = FALSE;
+	xmlNode *content = NULL;
+
+	is_soap11 = xmlSecCheckNodeName(root, xmlSecNodeEnvelope, xmlSecSoap11Ns);
+	is_soap12 = xmlSecCheckNodeName(root, xmlSecNodeEnvelope, xmlSecSoap12Ns);
+
+	if (is_soap11 || is_soap12) {
+		xmlNode *body;
+
+		if (is_soap11) {
+			body = xmlSecSoap11GetBody(root);
+		} else {
+			body = xmlSecSoap12GetBody(root);
+		}
+		if (body) {
+			content = xmlSecGetNextElementNode(body->children);
+		}
+	}
+
+	return content;
 }
