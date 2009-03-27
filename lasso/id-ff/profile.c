@@ -43,6 +43,7 @@
 
 #include <lasso/saml-2.0/profileprivate.h>
 #include "../utils.h"
+#include "../debug.h"
 
 /*****************************************************************************/
 /* public functions                                                          */
@@ -511,12 +512,16 @@ dispose(GObject *object)
 	}
 	profile->private_data->dispose_has_run = TRUE;
 
+
+	lasso_mem_debug("LassoProfile", "Server", profile->server);
 	lasso_server_destroy(profile->server);
 	profile->server = NULL;
 
+	lasso_mem_debug("LassoProfile", "Identity", profile->identity);
 	lasso_identity_destroy(profile->identity);
 	profile->identity = NULL;
 
+	lasso_mem_debug("LassoProfile", "Session", profile->session);
 	lasso_session_destroy(profile->session);
 	profile->session = NULL;
 
