@@ -1088,10 +1088,9 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 /*****************************************************************************/
 
 static char*
-lasso_node_impl_build_query(G_GNUC_UNUSED LassoNode *node)
+lasso_node_impl_build_query(LassoNode *node)
 {
-	g_assert_not_reached();
-	return NULL;
+	return lasso_node_build_query_from_snippets(node);
 }
 
 static xmlNode*
@@ -1263,6 +1262,12 @@ lasso_node_finalize(GObject *object)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
+static gboolean
+init_from_query(LassoNode *node, char **query_fields)
+{
+	return lasso_node_init_from_query_fields(node, query_fields);
+}
+
 static void
 class_init(LassoNodeClass *class)
 {
@@ -1271,7 +1276,7 @@ class_init(LassoNodeClass *class)
 	parent_class = g_type_class_peek_parent(class);
 	/* virtual public methods */
 	class->destroy = lasso_node_impl_destroy;
-	class->init_from_query = NULL;
+	class->init_from_query = init_from_query;
 	class->init_from_xml = lasso_node_impl_init_from_xml;
 
 	/* virtual private methods */

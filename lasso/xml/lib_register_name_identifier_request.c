@@ -22,9 +22,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "private.h"
-#include <libxml/uri.h>
-#include <lasso/xml/lib_register_name_identifier_request.h>
+#include "./private.h"
+#include "./lib_register_name_identifier_request.h"
+#include "../utils.h"
 
 /**
  * SECTION:lib_register_name_identifier_request
@@ -98,16 +98,11 @@ static struct QuerySnippet query_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-static gchar*
-build_query(LassoNode *node)
-{
-	return lasso_node_build_query_from_snippets(node);
-}
-
 static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoLibRegisterNameIdentifierRequest *request;
+	gboolean rc;
 
 	request = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node);
 
@@ -115,19 +110,16 @@ init_from_query(LassoNode *node, char **query_fields)
 	request->SPProvidedNameIdentifier = lasso_saml_name_identifier_new();
 	request->OldProvidedNameIdentifier = lasso_saml_name_identifier_new();
 
-	lasso_node_init_from_query_fields(node, query_fields);
+	rc = parent_class->init_from_query(node, query_fields);
 
 	if (request->IDPProvidedNameIdentifier->content == NULL) {
-		g_object_unref(request->IDPProvidedNameIdentifier);
-		request->IDPProvidedNameIdentifier = NULL;
+		lasso_release_gobject(request->IDPProvidedNameIdentifier);
 	}
 	if (request->SPProvidedNameIdentifier->content == NULL) {
-		g_object_unref(request->SPProvidedNameIdentifier);
-		request->SPProvidedNameIdentifier = NULL;
+		lasso_release_gobject(request->SPProvidedNameIdentifier);
 	}
 	if (request->OldProvidedNameIdentifier->content == NULL) {
-		g_object_unref(request->OldProvidedNameIdentifier);
-		request->OldProvidedNameIdentifier = NULL;
+		lasso_release_gobject(request->OldProvidedNameIdentifier);
 	}
 
 	if (request->ProviderID == NULL ||
@@ -136,7 +128,7 @@ init_from_query(LassoNode *node, char **query_fields)
 		return FALSE;
 	}
 
-	return TRUE;
+	return rc;
 }
 
 
@@ -160,7 +152,6 @@ class_init(LassoLibRegisterNameIdentifierRequestClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nclass->build_query = build_query;
 	nclass->init_from_query = init_from_query;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "RegisterNameIdentifierRequest");

@@ -25,6 +25,7 @@
 #include "private.h"
 #include <lasso/xml/lib_authn_request.h>
 #include <libxml/uri.h>
+#include "../utils.h"
 
 /**
  * SECTION:lib_authn_request
@@ -136,31 +137,26 @@ static struct QuerySnippet query_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-static gchar*
-build_query(LassoNode *node)
-{
-	return lasso_node_build_query_from_snippets(node);
-}
-
 static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
+	gboolean rc;
 
 	request->RequestAuthnContext = lasso_lib_request_authn_context_new();
 	/* XXX needs code for Scoping, IDPList, IDPEntries... */
-	lasso_node_init_from_query_fields(node, query_fields);
+	rc = parent_class->init_from_query(node, query_fields);
+
 	if (request->RequestAuthnContext->AuthnContextClassRef == NULL &&
 			request->RequestAuthnContext->AuthnContextStatementRef == NULL &&
 			request->RequestAuthnContext->AuthnContextComparison == NULL) {
-		lasso_node_destroy(LASSO_NODE(request->RequestAuthnContext));
-		request->RequestAuthnContext = NULL;
+		lasso_release_gobject(request->RequestAuthnContext);
 	}
 
 	if (request->ProviderID == NULL)
 		return FALSE;
 
-	return TRUE;
+	return rc;
 }
 
 
@@ -190,7 +186,6 @@ class_init(LassoLibAuthnRequestClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nclass->build_query = build_query;
 	nclass->init_from_query = init_from_query;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "AuthnRequest");

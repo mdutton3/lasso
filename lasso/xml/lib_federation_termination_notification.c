@@ -109,23 +109,12 @@ static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoLibFederationTerminationNotification *request;
-	int i;
-	char *t;
+	gboolean rc;
 
 	request = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
-
 	request->NameIdentifier = lasso_saml_name_identifier_new();
 
-	for (i=0; (t=query_fields[i]); i++) {
-		/* RelayState is not part of <lib:FederationTerminationNotification>
-		 * but can exists nevertheless */
-		if (g_str_has_prefix(t, "RelayState=")) {
-			request->RelayState = g_strdup(t+11);
-			continue;
-		}
-	}
-
-	lasso_node_init_from_query_fields(node, query_fields);
+	rc = parent_class->init_from_query(node, query_fields);
 
 	if (request->ProviderID == NULL ||
 			request->NameIdentifier->content == NULL ||
@@ -135,7 +124,7 @@ init_from_query(LassoNode *node, char **query_fields)
 		return FALSE;
 	}
 
-	return TRUE;
+	return rc;
 }
 
 
