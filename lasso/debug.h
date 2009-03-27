@@ -35,6 +35,7 @@ extern "C" {
 LASSO_EXPORT extern gboolean lasso_flag_verify_signature;
 LASSO_EXPORT extern gboolean lasso_flag_memory_debug;
 LASSO_EXPORT extern gboolean lasso_flag_strict_checking;
+LASSO_EXPORT extern gboolean lasso_flag_add_signature;
 
 #ifdef __cplusplus
 }
