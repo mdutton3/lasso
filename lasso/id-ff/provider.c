@@ -1005,9 +1005,9 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		g_free(value);
 
 		if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
-			provider->private_data->public_key = pub_key;
+			lasso_assign_new_sec_key(provider->private_data->public_key, pub_key);
 		} else {
-			provider->private_data->encryption_public_key = pub_key;
+			lasso_assign_new_sec_key(provider->private_data->encryption_public_key, pub_key);
 		}
 
 		if (pub_key) {
@@ -1035,7 +1035,7 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 			break; /* with a warning ? */
 	}
 
-	provider->private_data->public_key = pub_key;
+	lasso_assign_new_sec_key(provider->private_data->public_key, pub_key);
 
 	return (pub_key != NULL);
 }
@@ -1104,6 +1104,7 @@ lasso_provider_verify_saml_signature(LassoProvider *provider,
 			LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 	rc = lasso_verify_signature(signed_node, doc, id_attribute_name, keys_manager, public_key,
 			NO_OPTION, NULL);
+	lasso_release_key_manager(keys_manager);
 exit:
 	lasso_release_key_manager(keys_manager);
 	return rc;

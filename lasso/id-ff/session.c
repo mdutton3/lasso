@@ -456,8 +456,7 @@ lasso_session_get_assertion_identity_token(LassoSession *session, const gchar *s
 			if (security_context->Token != NULL) {
 				sec_token = security_context->Token->data;
 				if (LASSO_IS_SAML2_ASSERTION(sec_token->any)) {
-					assertion = LASSO_SAML2_ASSERTION(
-						g_object_ref(sec_token->any));
+					lasso_assign_gobject(assertion, sec_token->any);
 					break;
 				}
 			}
@@ -652,6 +651,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 					assertion = lasso_node_new_from_xmlNode(n);
 					lasso_session_add_assertion_simple(session, (char*)value, assertion);
+					lasso_release_gobject(assertion);
 					xmlFree(value);
 				}
 			} else if ((value = xmlGetProp(t, (xmlChar*)"ID"))) {

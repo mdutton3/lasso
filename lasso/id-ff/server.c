@@ -625,11 +625,10 @@ dispose(GObject *object)
 	}
 	server->private_data->dispose_has_run = TRUE;
 
-	/* FIXME : Probably necessary, must be tested */
-/* 	if (server->private_data->encryption_private_key != NULL) { */
-/* 		xmlSecKeyDestroy(server->private_data->encryption_private_key); */
-/* 		server->private_data->encryption_private_key = NULL; */
-/* 	} */
+	if (server->private_data->encryption_private_key != NULL) {
+		xmlSecKeyDestroy(server->private_data->encryption_private_key);
+		server->private_data->encryption_private_key = NULL;
+	}
 
 	if (server->private_data->svc_metadatas != NULL) {
 		g_list_foreach(server->private_data->svc_metadatas, (GFunc)g_object_unref, NULL);
@@ -637,7 +636,13 @@ dispose(GObject *object)
 		server->private_data->svc_metadatas = NULL;
 	}
 
+	if (server->services) {
+		g_hash_table_destroy(server->services);
+		server->services = NULL;
+	}
+
 	/* free allocated memory for hash tables */
+	lasso_mem_debug("LassoServer", "Providers", server->providers);
 	g_hash_table_destroy(server->providers);
 	server->providers = NULL;
 
