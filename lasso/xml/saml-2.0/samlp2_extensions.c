@@ -52,10 +52,21 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
+
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
+{
+	LassoNodeClass *parent_class = NULL;
+	xmlNode *cur;
+
+	parent_class = g_type_class_peek_parent(LASSO_NODE_GET_CLASS(node));
+	cur = parent_class->get_xmlNode(node, lasso_dump);
+
+	return lasso_node_get_xmlnode_for_any_type(node, cur);
+}
 
 static void
 class_init(LassoSamlp2ExtensionsClass *klass)
@@ -64,6 +75,8 @@ class_init(LassoSamlp2ExtensionsClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	nclass->node_data->keep_xmlnode = TRUE;
+	nclass->get_xmlNode = get_xmlNode;
 	lasso_node_class_set_nodename(nclass, "Extensions");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_PROTOCOL_HREF, LASSO_SAML2_PROTOCOL_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);

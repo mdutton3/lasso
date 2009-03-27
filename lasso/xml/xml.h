@@ -148,9 +148,13 @@ LASSO_EXPORT char* lasso_node_export_to_ecp_soap_response(LassoNode *node,
 				const char *assertionConsumerURL);
 
 LASSO_EXPORT xmlNode* lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump);
+
 LASSO_EXPORT xmlNode* lasso_node_get_original_xmlnode(LassoNode *node);
 
+LASSO_EXPORT void lasso_node_set_original_xmlnode(LassoNode *node, xmlNode* xmlNode);
+
 LASSO_EXPORT LassoMessageFormat lasso_node_init_from_message(LassoNode *node, const char *message);
+
 LASSO_EXPORT gboolean lasso_node_init_from_query(LassoNode *node, const char *query);
 LASSO_EXPORT int lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode);
 

@@ -144,6 +144,8 @@ gchar* lasso_node_build_deflated_query(LassoNode *node);
 
 gboolean lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string);
 
+xmlNode* lasso_node_get_xmlnode_for_any_type(LassoNode *node, xmlNode *cur);
+
 char* lasso_concat_url_query(char *url, char *query);
 
 xmlDocPtr lasso_xml_parse_memory(const char *buffer, int size);

@@ -983,15 +983,23 @@ lasso_node_get_original_xmlnode(LassoNode *node)
 	return g_object_get_qdata(G_OBJECT(node), original_xmlnode_quark);
 }
 
-/*****************************************************************************/
-/* implementation methods                                                    */
-/*****************************************************************************/
-
-static void
-lasso_node_set_original_xmlnode(LassoNode *node, xmlNodePtr xmlNode)
+/**
+ * lasso_node_set_original_xmlnode:
+ * @node: the #LassoNode object
+ * @xmlNode: an #xmlNode
+ *
+ * Set the underlying XML representation of the object.
+ *
+ */
+void
+lasso_node_set_original_xmlnode(LassoNode *node, xmlNode* xmlNode)
 {
 	g_object_set_qdata_full(G_OBJECT(node), original_xmlnode_quark, xmlCopyNode(xmlNode, 1), (GDestroyNotify)xmlFreeNode);
 }
+
+/*****************************************************************************/
+/* implementation methods                                                    */
+/*****************************************************************************/
 
 static void
 lasso_node_remove_original_xmlnode(LassoNode *node, SnippetType type) {
@@ -2644,3 +2652,27 @@ xml_insure_namespace(xmlNode *xmlnode, xmlNs *ns, gboolean force, gchar *ns_href
 	}
 }
 
+/**
+ * lasso_node_get_xmlnode_for_any_type:
+ * @node: a #LassoNode.
+ * @xmlnode: the #xmlNode returned.
+ *
+ * Return value: a xmlNode completed with the content of the produced by the get_xmlNode virtual
+ * method of the parent class.
+ */
+xmlNode*
+lasso_node_get_xmlnode_for_any_type(LassoNode *node, xmlNode *cur)
+{
+
+	xmlNode *original_xmlnode;
+
+	original_xmlnode = lasso_node_get_original_xmlnode(node);
+	if (original_xmlnode) {
+		return xmlCopyNode(original_xmlnode, 1);
+	} else {
+		xmlNode *children = xmlCopyNodeList(original_xmlnode->children);
+		xmlCopyPropList(cur, original_xmlnode->properties);
+		xmlAddChildList(cur, children);
+		return cur;
+	}
+}

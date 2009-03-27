@@ -43,10 +43,21 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2AttributeValue *node)
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
-	node->any = NULL;
+	LassoSaml2AttributeValue *value = LASSO_SAML2_ATTRIBUTE_VALUE(node);
+	LassoNodeClass *parent_class = NULL;
+	xmlNode *cur;
+
+	parent_class = g_type_class_peek_parent(LASSO_NODE_GET_CLASS(node));
+	cur = parent_class->get_xmlNode(node, lasso_dump);
+
+	if (value->any) {
+		return cur;
+	} else {
+		return lasso_node_get_xmlnode_for_any_type(node, cur);
+	}
 }
 
 static void
@@ -55,6 +66,8 @@ class_init(LassoSaml2AttributeValueClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->node_data->keep_xmlnode = TRUE;
 	lasso_node_class_set_nodename(nclass, "AttributeValue");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
@@ -75,7 +88,7 @@ lasso_saml2_attribute_value_get_type()
 			NULL,
 			sizeof(LassoSaml2AttributeValue),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 
