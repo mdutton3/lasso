@@ -34,10 +34,6 @@
 #include "private.h"
 #include <ctype.h>
 
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
-#include <libxml/parser.h>
-#include <libxml/parserInternals.h>
 
 #include <xmlsec/base64.h>
 #include <xmlsec/xmltree.h>
@@ -1380,23 +1376,19 @@ LassoNode*
 lasso_node_new_from_soap(const char *soap)
 {
 	xmlDoc *doc;
-	xmlXPathContext *xpathCtx;
-	xmlXPathObject *xpathObj;
 	xmlNode *xmlnode;
 	LassoNode *node = NULL;
 
 	doc = lasso_xml_parse_memory(soap, strlen(soap));
-	xpathCtx = xmlXPathNewContext(doc);
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
-	xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body/*", xpathCtx);
-
-	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		xmlnode = xpathObj->nodesetval->nodeTab[0];
-		node = lasso_node_new_from_xmlNode(xmlnode);
+	if (doc == NULL) {
+		return NULL;
 	}
+	xmlnode = lasso_xml_get_soap_content(xmlDocGetRootElement(doc));
+	if (xmlnode == NULL) {
+		return NULL;
+	}
+	node = lasso_node_new_from_xmlNode(xmlnode);
 
-	xmlXPathFreeContext(xpathCtx);
-	xmlXPathFreeObject(xpathObj);
 	lasso_release_doc(doc);
 
 	return node;
