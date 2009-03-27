@@ -13,6 +13,10 @@
 <!ENTITY LassoLibScoping SYSTEM "sgml/lib_scoping.xml">
 <!ENTITY LassoSamlAdvice SYSTEM "sgml/saml_advice.xml">
 <!ENTITY LassoSamlAssertion SYSTEM "sgml/saml_assertion.xml">
+<!ENTITY LassoSamlAttribute SYSTEM "sgml/saml_attribute.xml">
+<!ENTITY LassoSamlAttributeDesignator SYSTEM "sgml/saml_attribute_designator.xml">
+<!ENTITY LassoSamlAttributeValue SYSTEM "sgml/saml_attribute_value.xml">
+<!ENTITY LassoSamlAttributeStatement SYSTEM "sgml/saml_attribute_statement.xml">
 <!ENTITY LassoSamlAudienceRestrictionCondition SYSTEM "sgml/saml_audience_restriction_condition.xml">
 <!ENTITY LassoSamlAuthenticationStatement SYSTEM "sgml/saml_authentication_statement.xml">
 <!ENTITY LassoSamlAuthorityBinding SYSTEM "sgml/saml_authority_binding.xml">
@@ -67,6 +71,7 @@
 <!ENTITY LassoSaml2Advice SYSTEM "sgml/saml2_advice.xml">
 <!ENTITY LassoSaml2Assertion SYSTEM "sgml/saml2_assertion.xml">
 <!ENTITY LassoSaml2Attribute SYSTEM "sgml/saml2_attribute.xml">
+<!ENTITY LassoSaml2AttributeValue SYSTEM "sgml/saml2_attribute_value.xml">
 <!ENTITY LassoSaml2AttributeStatement SYSTEM "sgml/saml2_attribute_statement.xml">
 <!ENTITY LassoSaml2AudienceRestriction SYSTEM "sgml/saml2_audience_restriction.xml">
 <!ENTITY LassoSaml2AuthnContext SYSTEM "sgml/saml2_authn_context.xml">
@@ -282,6 +287,10 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     &LassoLibSubject;
     &LassoSamlAdvice;
     &LassoSamlAssertion;
+    &LassoSamlAttribute;
+    &LassoSamlAttributeDesignator;
+    &LassoSamlAttributeValue;
+    &LassoSamlAttributeStatement;
     &LassoSamlAudienceRestrictionCondition;
     &LassoSamlAuthenticationStatement;
     &LassoSamlAuthorityBinding;
@@ -308,6 +317,7 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     &LassoSaml2Advice;
     &LassoSaml2Assertion;
     &LassoSaml2Attribute;
+    &LassoSaml2AttributeValue;
     &LassoSaml2AttributeStatement;
     &LassoSaml2AudienceRestriction;
     &LassoSaml2AuthnContext;

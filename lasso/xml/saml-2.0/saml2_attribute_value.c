@@ -23,10 +23,24 @@
 #include "../private.h"
 #include <lasso/xml/saml-2.0/saml2_attribute_value.h>
 
-/*
- * The schema fragment (saml-schema-assertion-2.0.xsd):
+/**
+ * SECTION:saml2_attribute_value
+ * @short_description: value of an attribute in a SAML 2.0 assertion
+ * @see_also: #LassoSaml2Attribute, #LassoSaml2AttributeStatement, #LassoSaml2Assertion
+ *
+ * <figure><title>Schema fragment from saml-schema-assertion-2.0.xsd)</title>
+ * <programlisting><![CDATA[
  *
  * <element name="AttributeValue" type="anyType" nillable="true"/>
+ *
+ * ]]></programlisting>
+ * </figure>
+ *
+ * This object support a special of specifying its content. If the <structfield>any</structfield>
+ * attribute is %NULL, then you can attach an <type>xmlNode</type> using
+ * lasso_node_set_original_xmlnode() and it will be used to generate the content of the serialized
+ * <type>xmlNode</type> for this object. The content (attributes, childrent and namespaces) of the
+ * node will be copied to the result node created by a call to lasso_node_get_xmlNode().
  */
 
 /*****************************************************************************/

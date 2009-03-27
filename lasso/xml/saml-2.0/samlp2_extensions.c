@@ -39,6 +39,11 @@
  * </complexType>
  * ]]></programlisting>
  * </figure>
+ *
+ * To specify the content of this object you must attach an <type>xmlNode</type> to it using
+ * lasso_node_set_original_xmlnode(). The content (attributes, children and namespaces) of this node
+ * will be copied to the result node returned by calls to lasso_node_get_xmlNode().
+ *
  */
 
 /*****************************************************************************/
