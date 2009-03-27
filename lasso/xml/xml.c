@@ -1120,6 +1120,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		xmlNewNs(xmlnode, ns->href, ns->prefix);
 		t = g_list_next(t);
 	}
+	g_list_free(list_ns);
 
 	xmlSetNs(xmlnode, xmlnode->nsDef);
 
@@ -1130,6 +1131,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 				class->node_data->snippets, lasso_dump);
 		t = g_list_previous(t);
 	}
+	g_list_free(list_classes);
 
 	xmlCleanNs(xmlnode);
 

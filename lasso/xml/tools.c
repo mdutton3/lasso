@@ -363,6 +363,7 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 	}
 
 	g_io_channel_shutdown(gioc, TRUE, NULL);
+	g_io_channel_unref(gioc);
 
 	return keys_mngr;
 }
@@ -800,16 +801,11 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 		return critical_error(LASSO_DS_ERROR_SIGNATURE_FAILED);
 	}
 	xmlSecDSigCtxDestroy(dsig_ctx);
-	xmlUnlinkNode(xmlnode);
 	xmlRemoveID(doc, id_attr);
-
-	xmlnode->parent = old_parent;
-#if 0
-	/* memory leak since we don't free doc but it causes some little memory
-	 * corruption; probably caused by the direct manipulation of xmlnode
-	 * parent attribute. */
+	xmlUnlinkNode(xmlnode);
 	lasso_release_doc(doc);
-#endif
+	xmlnode->parent = old_parent;
+	xmlSetTreeDoc(xmlnode, NULL);
 
 	return 0;
 }
@@ -1091,6 +1087,7 @@ exit:
 	lasso_release_signature_context(dsigCtx);
 	if (free_the_doc) {
 		xmlUnlinkNode(signed_node);
+		xmlSetTreeDoc(signed_node, NULL);
 		lasso_release_doc(doc);
 	}
 	lasso_release_string(id);
