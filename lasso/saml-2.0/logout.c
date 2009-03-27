@@ -41,6 +41,7 @@
 #include <lasso/xml/saml-2.0/samlp2_logout_request.h>
 #include <lasso/xml/saml-2.0/samlp2_logout_response.h>
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
+#include "../utils.h"
 
 static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile *profile);
 
@@ -246,71 +247,31 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 int
 lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 {
-	LassoProfile *profile = LASSO_PROFILE(logout);
-	LassoProvider *remote_provider;
-	LassoMessageFormat format;
-	LassoSaml2NameID *name_id;
-	LassoSaml2EncryptedElement *encrypted_id;
-	LassoSaml2EncryptedElement* encrypted_element = NULL;
-	xmlSecKey *encryption_private_key = NULL;
+	LassoProfile *profile = NULL;
+	LassoSamlp2LogoutRequest *logout_request = NULL;
+	int rc1 = 0, rc2 = 0;
 
-	profile->request = lasso_samlp2_logout_request_new();
-	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	lasso_bad_param(LOGOUT, logout);
+	lasso_null_param(request_msg);
+
+	profile = LASSO_PROFILE(logout);
+	rc1 = lasso_saml20_profile_process_any_request(profile, lasso_samlp2_logout_request_new(),
+			request_msg);
+
+	logout_request = (LassoSamlp2LogoutRequest*)profile->request;
+	if (rc1 && ! logout_request) {
+		return rc1;
 	}
 
-	if (profile->remote_providerID) {
-		g_free(profile->remote_providerID);
+	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile,
+			&logout_request->NameID,
+			&logout_request->EncryptedID);
+
+	if (rc1) {
+		return rc1;
 	}
+	return rc2;
 
-	if (LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->relayState) {
-		profile->msg_relayState = g_strdup(
-				LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->relayState);
-	}
-
-	profile->remote_providerID = g_strdup(
-			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content);
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
-
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
-	/* verify signatures */
-	profile->signature_status = lasso_provider_verify_signature(
-			remote_provider, request_msg, "ID", format);
-
-	if (format == LASSO_MESSAGE_FORMAT_SOAP)
-		profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
-	if (format == LASSO_MESSAGE_FORMAT_QUERY)
-		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
-
-	name_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID;
-	encrypted_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->EncryptedID;
-
-	if (name_id == NULL && encrypted_id != NULL) {
-		encryption_private_key = profile->server->private_data->encryption_private_key;
-		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(encrypted_id);
-		if (encrypted_element != NULL && encryption_private_key == NULL) {
-			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
-		}
-		if (encrypted_element != NULL && encryption_private_key != NULL) {
-			profile->nameIdentifier = LASSO_NODE(lasso_node_decrypt(
-				encrypted_id, encryption_private_key));
-			LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID = LASSO_SAML2_NAME_ID(
-				profile->nameIdentifier);
-			g_object_unref(LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->EncryptedID);
-			LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->EncryptedID = NULL;
-
-		}
-	} else {
-		profile->nameIdentifier = g_object_ref(name_id);
-	}
-
-
-	return profile->signature_status;
 }
 
 int
@@ -594,10 +555,10 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 {
 	LassoProfile *profile = LASSO_PROFILE(logout);
 	LassoHttpMethod response_method;
-	LassoProvider *remote_provider;
-	LassoSamlp2StatusResponse *response;
+	LassoProvider *remote_provider = NULL;
+	LassoSamlp2StatusResponse *response = NULL;
 	LassoMessageFormat format;
-	char *status_code_value;
+	char *status_code_value = NULL;
 	int rc;
 
 	if (LASSO_IS_SAMLP2_LOGOUT_RESPONSE(profile->response) == TRUE) {
@@ -631,25 +592,17 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 
 	/* verify signature */
 	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ID", format);
-	if (rc == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
-		/* This message SHOULD be signed.
-		 *  -- draft-liberty-idff-protocols-schema-1.2-errata-v2.0.pdf - p38
-		 * XXX: is this also true for SAML 2.0?
-		 */
-		message(G_LOG_LEVEL_WARNING, "No signature on response");
-		rc = 0;
-	}
 
 	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
 
 	if (response->Status == NULL || response->Status->StatusCode == NULL
 			|| response->Status->StatusCode->Value == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "No Status in LogoutResponse !");
-		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+		rc = LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+	} else {
+		status_code_value = response->Status->StatusCode->Value;
 	}
-	status_code_value = response->Status->StatusCode->Value;
 
-	if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
+	if (status_code_value && strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
 		/* If at SP, if the request method was a SOAP type, then
 		 * rebuild the request message with HTTP method */
 		/* XXX is this still what to do for SAML 2.0? */
@@ -660,7 +613,7 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 				status_code_value = response->Status->StatusCode->StatusCode->Value;
 			}
 			if (status_code_value == NULL) {
-				return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+				rc = LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 			}
 		}
 		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED) == 0) {
@@ -668,13 +621,13 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 			 * too */
 			lasso_session_remove_assertion(
 					profile->session, profile->remote_providerID);
-			return LASSO_LOGOUT_ERROR_REQUEST_DENIED;
+			rc = LASSO_LOGOUT_ERROR_REQUEST_DENIED;
 		}
 		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
-			return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
+			rc = LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
 		}
 		message(G_LOG_LEVEL_CRITICAL, "Status code is not success: %s", status_code_value);
-		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
+		rc = LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 
 	/* LogoutResponse status code value is ok */
