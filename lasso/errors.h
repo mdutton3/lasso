@@ -64,7 +64,6 @@
 #define LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED        -202 /* Failed to add new provider. */
 #define LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH -203 /* Failed to add new provider (protocol mismatch). */
 #define LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED 204 /* Failed to load encryption private key. */
-#define LASSO_SERVER_ERROR_INVALID_XML                -205
 
 /* Single Logout */
 #define LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE        -301 /* Unsupported protocol profile */
@@ -109,8 +108,12 @@
 #define LASSO_PROFILE_ERROR_MISSING_SERVICE_INSTANCE  -434 /* Missing service instance */
 #define LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE -435 /* Missing endpoint reference */
 #define LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS -436 /* Missing endpoint reference address */
-#define LASSO_PROFILE_ERROR_INVALID_ISSUER            -437 /* Assertion issuer is not thesame as the requested issuer */
+#define LASSO_PROFILE_ERROR_INVALID_ISSUER            -437 /* Assertion issuer is not the same as the requested issuer */
 #define LASSO_PROFILE_ERROR_MISSING_SERVER            -438 /* No server object set in the profile */
+#define LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER           439 /* The issuer of the message is unknown to us */
+#define LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE    440 /* The profile cannot verify a signature on the message */
+#define LASSO_PROFILE_ERROR_CANNOT_FIND_A_PROVIDER    -441 /* Profile was called without a specific provider and we cannot find one */
+#define LASSO_PROFILE_ERROR_RESPONSE_DOES_NOT_MATCH_REQUEST -442 /* Received response does not refer to the request sent */
 
 /* functions/methods parameters checking */
 #define LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ        -501 /* An object type provided as parameter  */
@@ -177,3 +180,6 @@
 
 /* Lasso registry */
 #define LASSO_REGISTRY_ERROR_KEY_EXISTS                 -1400 /* Key alreadys exists in the registry */
+
+/* Lasso provider */
+#define LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY   -1500 /* The provider has no known public key */

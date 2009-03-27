@@ -55,6 +55,8 @@ lasso_strerror(int error_code)
 			return "Session not found";
 		case LASSO_PROFILE_ERROR_INVALID_SOAP_MSG:
 			return "Invalid SOAP message";
+		case LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY:
+			return "The provider has no known public key";
 		case LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY:
 			return "Found an encrypted element but encryption private key is not set";
 		case LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER:
@@ -101,12 +103,14 @@ lasso_strerror(int error_code)
 			return "Unable to get attribute value of element.";
 		case LASSO_DS_ERROR_CONTEXT_CREATION_FAILED:
 			return "Failed to create signature context.";
+		case LASSO_PROFILE_ERROR_RESPONSE_DOES_NOT_MATCH_REQUEST:
+			return "Received response does not refer to the request sent";
 		case LASSO_DS_ERROR_TOO_MUCH_REFERENCES:
 			return "SAML signature must contain only one reference";
-		case LASSO_SERVER_ERROR_INVALID_XML:
-			return "LASSO_SERVER_ERROR_INVALID_XML";
 		case LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE:
 			return "Missing service type";
+		case LASSO_PROFILE_ERROR_CANNOT_FIND_A_PROVIDER:
+			return "Profile was called without a specific provider and we cannot find one";
 		case LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML:
 			return "SAML signature reference must be to a Request, a Reponse or an Assertion ID attribute";
 		case LASSO_PROFILE_ERROR_MISSING_ARTIFACT:
@@ -177,6 +181,8 @@ lasso_strerror(int error_code)
 			return "LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED";
 		case LASSO_PROFILE_ERROR_MISSING_RESPONSE:
 			return "Missing response";
+		case LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER:
+			return "The issuer of the message is unknown to us";
 		case LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH:
 			return "Failed to add new provider (protocol mismatch).";
 		case LASSO_SOAP_ERROR_MISSING_ENVELOPE:
@@ -250,7 +256,7 @@ lasso_strerror(int error_code)
 		case LASSO_PROFILE_ERROR_MISSING_ISSUER:
 			return "Missing issuer";
 		case LASSO_PROFILE_ERROR_INVALID_ISSUER:
-			return "Assertion issuer is not thesame as the requested issuer";
+			return "Assertion issuer is not the same as the requested issuer";
 		case LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL:
 			return "Missing SOAP fault detail";
 		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE:
@@ -281,6 +287,8 @@ lasso_strerror(int error_code)
 			return "ProviderID not found";
 		case LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF:
 			return "WS-Security SAML Token secmech needs a CredentialRef";
+		case LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE:
+			return "The profile cannot verify a signature on the message";
 		default:
 			return "Unknown LASSO_ERROR, you should regenerate errors.c";
 	}
