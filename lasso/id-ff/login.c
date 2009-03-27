@@ -174,6 +174,7 @@
 #include "./loginprivate.h"
 #include "../saml-2.0/loginprivate.h"
 #include "../utils.h"
+#include "../debug.h"
 
 
 static void lasso_login_build_assertion_artifact(LassoLogin *login);
@@ -1912,6 +1913,26 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 	response = LASSO_SAMLP_RESPONSE(profile->response);
+
+	/* Validate RequestID and InResponseTo */
+	if (profile->request || lasso_flag_strict_checking) {
+		char *request_id = NULL;
+		char *response_to = NULL;
+
+		if (LASSO_IS_SAMLP_REQUEST(profile->request)) {
+			request_id = LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID;
+		}
+		response_to = LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->InResponseTo;
+
+		if ((! request_id && response_to) || /* response to an unknown request, only with
+							strict checking */
+		    (profile->request && ! response_to) || /* not a response to our request, because
+							     no ref */
+		    /* not a response to our request because of mismatch */
+		    (request_id && response_to && strcmp(request_id, response_to) != 0)) {
+			return critical_error(LASSO_PROFILE_ERROR_RESPONSE_DOES_NOT_MATCH_REQUEST);
+		} /* else no request and no inResponseTo, IDP initiated response, ok */
+	}
 
 	/* In the artifact profile we cannot verify the signature on the message, we must wait the
 	 * verification on the assertion, so for the moment the signature verification failed. */
