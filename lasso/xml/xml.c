@@ -1727,7 +1727,7 @@ cleanup:
  * type may be base64, SOAP, XML or query string, correct type is found
  * automatically.
  *
- * Return value: message format
+ * Return value: a #LassoMessageFormat value.
  **/
 LassoMessageFormat
 lasso_node_init_from_message(LassoNode *node, const char *message)
