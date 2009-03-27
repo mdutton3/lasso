@@ -36,6 +36,8 @@
 #include <lasso/xml/saml-2.0/samlp2_attribute_query.h>
 #include <lasso/xml/saml-2.0/samlp2_authz_decision_query.h>
 #include <lasso/xml/saml-2.0/samlp2_response.h>
+#include <lasso/xml/saml-2.0/samlp2_subject_query_abstract.h>
+#include "../utils.h"
 
 
 struct _LassoAssertionQueryPrivate
@@ -200,66 +202,32 @@ gint
 lasso_assertion_query_process_request_msg(LassoAssertionQuery *assertion_query,
 		char *request_msg)
 {
-	LassoProfile *profile;
-	LassoProvider *remote_provider;
-	LassoSaml2NameID *name_id = NULL;
-	LassoSaml2EncryptedElement *encrypted_id = NULL;
-	LassoSaml2EncryptedElement* encrypted_element = NULL;
-	xmlSecKey *encryption_private_key = NULL;
+	LassoProfile *profile = NULL;
+	LassoSamlp2SubjectQueryAbstract *subject_query = NULL;
+	LassoSaml2Subject *subject = NULL;
+	int rc = 0, rc1 = 0, rc2 = 0;
 
 	g_return_val_if_fail(LASSO_IS_ASSERTION_QUERY(assertion_query),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(assertion_query);
-	profile->request = lasso_node_new_from_soap(request_msg);
+	rc1 = lasso_saml20_profile_process_soap_request(profile, request_msg);
 
-	if (profile->remote_providerID) {
-		g_free(profile->remote_providerID);
-	}
+	lasso_extract_node_or_fail(subject_query, profile->request, SAMLP2_SUBJECT_QUERY_ABSTRACT,
+			LASSO_PROFILE_ERROR_INVALID_MSG);
+	lasso_extract_node_or_fail(subject, subject_query->Subject, SAML2_SUBJECT,
+			LASSO_PROFILE_ERROR_MISSING_SUBJECT);
 
-	profile->remote_providerID = g_strdup(
-			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content);
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile, &subject->NameID, &subject->EncryptedID);
 
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
+	rc = rc1;
+	if (rc == 0)
+		rc = rc2;
+	if (rc == 0)
+		rc = profile->signature_status;
+cleanup:
 
-	/* verify signatures */
-	profile->signature_status = lasso_provider_verify_signature(
-			remote_provider, request_msg, "ID", LASSO_MESSAGE_FORMAT_SOAP);
-	profile->signature_status = 0; /* XXX: signature check disabled for zxid */
-
-	profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
-
-	if (LASSO_IS_SAMLP2_SUBJECT_QUERY_ABSTRACT(profile->request)) {
-		LassoSamlp2SubjectQueryAbstract *subject_query;
-		subject_query = LASSO_SAMLP2_SUBJECT_QUERY_ABSTRACT(profile->request);
-		if (subject_query->Subject) {
-			name_id = subject_query->Subject->NameID;
-			encrypted_id = subject_query->Subject->EncryptedID;
-		}
-	}
-
-	if (name_id == NULL && encrypted_id != NULL) {
-		encryption_private_key = profile->server->private_data->encryption_private_key;
-		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(encrypted_id);
-		if (encrypted_element != NULL && encryption_private_key == NULL) {
-			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
-		}
-		if (encrypted_element != NULL && encryption_private_key != NULL) {
-			profile->nameIdentifier = LASSO_NODE(lasso_node_decrypt(
-				encrypted_id, encryption_private_key));
-			LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID = \
-				LASSO_SAML2_NAME_ID(profile->nameIdentifier);
-			LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->EncryptedID = NULL;
-		}
-	} else {
-		profile->nameIdentifier = g_object_ref(name_id);
-	}
-
-	return profile->signature_status;
+	return rc;
 }
 
 /**
