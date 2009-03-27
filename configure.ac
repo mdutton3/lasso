@@ -841,10 +841,9 @@ AC_ARG_ENABLE(debugging,   [  --enable-debugging      enable debuging optimizati
 if test "z$enable_debugging" = "zyes" ; then
     enable_debugging=yes
     LASSO_DEFINES="$LASSO_DEFINES -DLASSO_DEBUG"
-    AM_CFLAGS="$AM_CFLAGS -O0 -g"
+    CFLAGS="-O0 -g"
 else
     enable_debugging=no
-    AM_CFLAGS="$AM_CFLAGS -O2 -g"
 fi    
 AM_CONDITIONAL([DEBUGGING],[test "x$enable_debugging" = "xyes"])
 AC_MSG_RESULT($enable_debugging)
