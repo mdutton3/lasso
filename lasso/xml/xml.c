@@ -1051,6 +1051,7 @@ lasso_node_impl_destroy(LassoNode *node)
 	g_object_unref(G_OBJECT(node));
 }
 
+/** FIXME: return a real error code */
 static int
 lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
@@ -1066,8 +1067,15 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	class = LASSO_NODE_GET_CLASS(node);
 
-	if (class->node_data == NULL || xmlnode == NULL)
+	/* What do you want me to initialize ? */
+	if (! xmlnode)
+		return 1;
+
+	/* No node_data no initialization possible */
+	if (! class->node_data) {
+		message(G_LOG_LEVEL_WARNING, "Class %s has no node_data so no initialization is possible", G_OBJECT_CLASS_NAME(class));
 		return 0;
+	}
 
 	if (class->node_data->keep_xmlnode) {
 		lasso_node_set_original_xmlnode(node, xmlnode);
