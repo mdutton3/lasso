@@ -1072,8 +1072,8 @@ lasso_provider_verify_saml_signature(LassoProvider *provider,
 {
 	const char *id_attribute_name = NULL;
 	const xmlChar *node_ns = NULL;
-	xmlSecKey *public_key;
-	xmlSecKeysMngr *keys_manager;
+	xmlSecKey *public_key = NULL;
+	xmlSecKeysMngr *keys_manager = NULL;
 	int rc = 0;
 
 	lasso_bad_param(PROVIDER, provider);
