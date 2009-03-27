@@ -165,7 +165,6 @@
 #define lasso_assign_gobject(dest,src) \
 	{ \
 		GObject *__tmp = G_OBJECT(src); \
-		lasso_check_type_equality(dest, src); \
 		if (__tmp) \
 			g_object_ref(__tmp); \
 		lasso_release_gobject(dest); \
@@ -175,7 +174,6 @@
 #define lasso_assign_new_gobject(dest,src) \
 	{ \
 		GObject *__tmp = G_OBJECT(src); \
-		lasso_check_type_equality(dest, src); \
 		if (dest != (void*)__tmp) \
 			lasso_release_gobject(dest); \
 		dest = (void*)(__tmp); \
