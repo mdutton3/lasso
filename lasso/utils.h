@@ -292,6 +292,15 @@
 #define lasso_transfer_gobject(dest, src) \
 	lasso_transfer_full(dest, src, gobject)
 
+/* Node extraction */
+#define lasso_extract_node_or_fail(to, from, kind, error) \
+	if (LASSO_IS_##kind(from)) { \
+		to = LASSO_##kind(from); \
+	} else { \
+		rc = error; \
+		goto cleanup; \
+	}
+
 /* Bad param handling */
 #define lasso_return_val_if_invalid_param(kind, name, val) \
 	g_return_val_if_fail(LASSO_IS_##kind(name), val)
