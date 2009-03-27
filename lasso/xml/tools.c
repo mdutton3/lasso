@@ -944,7 +944,7 @@ lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string)
 }
 
 char*
-lasso_concat_url_query(char *url, char *query)
+lasso_concat_url_query(const char *url, const char *query)
 {
 	if (strchr(url, '?')) {
 		return g_strdup_printf("%s&%s", url, query);

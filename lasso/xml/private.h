@@ -157,7 +157,7 @@ int lasso_node_decrypt_xmlnode(xmlNode* encrypted_element, GList *encrypted_key,
 
 xmlDocPtr lasso_xml_parse_memory(const char *buffer, int size);
 
-char* lasso_concat_url_query(char *url, char *query);
+char* lasso_concat_url_query(const char *url, const char *query);
 
 xmlDocPtr lasso_xml_parse_memory(const char *buffer, int size);
 
