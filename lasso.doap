@@ -32,6 +32,12 @@
         <foaf:mbox rdf:resource="mailto:fpeters@entrouvert.com"/>
       </foaf:Person>
     </maintainer>
+    <developer>
+      <foaf:Person>
+        <foaf:name>Benjamin Dauvergne</foaf:name>
+        <foaf:mbox rdf:resource="mailto:bdauvergne@entrouvert.com"/>
+      </foaf:Person>
+    </developer>
     <repository>
       <SVNRepository>
         <location rdf:resource="svn://labs.libre-entreprise.org/svnroot/lasso" />
@@ -40,13 +46,19 @@
     </repository>
     <release>
       <Version>
-        <created>2009-07-22</created>
+        <created>2009-03-27</created>
+        <revision>2.2.2</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2008-07-22</created>
         <revision>2.2.1</revision>
       </Version>
     </release>
     <release>
       <Version>
-        <created>2009-05-28</created>
+        <created>2008-05-28</created>
         <revision>2.2.0</revision>
       </Version>
     </release>
