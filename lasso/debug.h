@@ -30,6 +30,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include <glib.h>
+#include "export.h"
 
 LASSO_EXPORT extern gboolean lasso_flag_verify_signature;
 LASSO_EXPORT extern gboolean lasso_flag_memory_debug;
