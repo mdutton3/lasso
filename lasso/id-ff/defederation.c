@@ -312,6 +312,11 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
+	if (format == LASSO_MESSAGE_FORMAT_QUERY) {
+		lasso_assign_new_string(profile->msg_relayState,
+				lasso_get_relaystate_from_query(request_msg));
+	}
+
 	profile->remote_providerID = g_strdup(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
 				profile->request)->ProviderID);
 	remote_provider = g_hash_table_lookup(profile->server->providers,
