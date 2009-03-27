@@ -34,6 +34,7 @@ static char*
 generateIdentityProviderContextDump()
 {
 	LassoServer *serverContext;
+	char *ret;
 
 	serverContext = lasso_server_new(
 			TESTSDATADIR "/idp1-la/metadata.xml",
@@ -46,13 +47,18 @@ generateIdentityProviderContextDump()
 			TESTSDATADIR "/sp1-la/metadata.xml",
 			TESTSDATADIR "/sp1-la/public-key.pem",
 			TESTSDATADIR "/ca1-la/certificate.pem");
-	return lasso_server_dump(serverContext);
+	ret = lasso_server_dump(serverContext);
+
+	g_object_unref(serverContext);
+
+	return ret;
 }
 
 static char*
 generateServiceProviderContextDump()
 {
 	LassoServer *serverContext;
+	char *ret;
 
 	serverContext = lasso_server_new(
 			TESTSDATADIR "/sp1-la/metadata.xml",
@@ -65,7 +71,10 @@ generateServiceProviderContextDump()
 			TESTSDATADIR "/idp1-la/metadata.xml",
 			TESTSDATADIR "/idp1-la/public-key.pem",
 			TESTSDATADIR "/ca1-la/certificate.pem");
-	return lasso_server_dump(serverContext);
+
+	ret = lasso_server_dump(serverContext);
+	g_object_unref(serverContext);
+	return ret;
 }
 
 static char*
@@ -76,6 +85,7 @@ generateIdentityProviderContextDumpMemory()
 	char *private_key;
 	char *certificate;
 	guint len;
+	char *ret;
 
 	g_file_get_contents(TESTSDATADIR "/idp1-la/metadata.xml", &metadata, &len, NULL);
 	g_file_get_contents(TESTSDATADIR "/idp1-la/private-key-raw.pem", &private_key, &len, NULL);
@@ -92,7 +102,12 @@ generateIdentityProviderContextDumpMemory()
 			TESTSDATADIR "/sp1-la/metadata.xml",
 			TESTSDATADIR "/sp1-la/public-key.pem",
 			TESTSDATADIR "/ca1-la/certificate.pem");
-	return lasso_server_dump(serverContext);
+	g_free(metadata);
+	g_free(private_key);
+	g_free(certificate);
+	ret = lasso_server_dump(serverContext);
+	g_object_unref(serverContext);
+	return ret;
 }
 
 
@@ -276,8 +291,14 @@ START_TEST(test02_serviceProviderLogin)
 	g_free(serviceProviderId);
 	g_free(serviceProviderContextDump);
 	g_free(identityProviderContextDump);
-	lasso_server_destroy(spContext);
-	lasso_server_destroy(idpContext);
+	g_free(idpSessionContextDump);
+	g_free(idpIdentityContextDump);
+	g_free(spIdentityContextDump);
+	g_free(spSessionDump);
+	g_object_unref(spContext);
+	g_object_unref(idpContext);
+	g_object_unref(spLoginContext);
+	g_object_unref(idpLoginContext);
 }
 END_TEST
 
@@ -413,8 +434,14 @@ START_TEST(test03_serviceProviderLogin)
 	g_free(serviceProviderId);
 	g_free(serviceProviderContextDump);
 	g_free(identityProviderContextDump);
-	lasso_server_destroy(spContext);
-	lasso_server_destroy(idpContext);
+	g_free(idpSessionContextDump);
+	g_free(idpIdentityContextDump);
+	g_free(spIdentityContextDump);
+	g_free(spSessionDump);
+	g_object_unref(spContext);
+	g_object_unref(idpContext);
+	g_object_unref(spLoginContext);
+	g_object_unref(idpLoginContext);
 }
 END_TEST
 Suite*

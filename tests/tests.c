@@ -80,6 +80,7 @@ main(int argc, char *argv[])
 	/*suite_free(s);  */
 	/* no longer available in check 0.9.0; it will leak a
 	 * bit with previous versions */
+	lasso_shutdown();
 
 	return (rc == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

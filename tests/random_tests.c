@@ -48,6 +48,7 @@ START_TEST(test01_provider_new)
 
 	dump = lasso_node_dump(LASSO_NODE(provider));
 	printf("dump:\n%s\n", dump);
+	g_object_unref(provider);
 }
 END_TEST
 
@@ -66,6 +67,8 @@ START_TEST(test02_provider_new_from_dump)
 	provider2 = lasso_provider_new_from_dump(dump);
 	dump = lasso_node_dump(LASSO_NODE(provider2));
 	printf("dump:\n%s\n", dump);
+	g_object_unref(provider1);
+	g_object_unref(provider2);
 }
 END_TEST
 
@@ -81,6 +84,8 @@ START_TEST(test01_server_new)
 			TESTSDATADIR "/idp1-la/certificate.pem");
 
 	dump = lasso_node_dump(LASSO_NODE(server));
+	printf("dump:%s\n", dump);
+	g_object_unref(server);
 }
 END_TEST
 
@@ -102,6 +107,7 @@ START_TEST(test02_server_add_provider)
 			TESTSDATADIR "/ca1-la/certificate.pem");
 
 	dump = lasso_node_dump(LASSO_NODE(server));
+	g_object_unref(server);
 }
 END_TEST
 
@@ -125,7 +131,11 @@ START_TEST(test03_server_new_from_dump)
 	dump = lasso_node_dump(LASSO_NODE(server1));
 
 	server2 = lasso_server_new_from_dump(dump);
+	g_free(dump);
 	dump = lasso_node_dump(LASSO_NODE(server2));
+	g_object_unref(server1);
+	g_object_unref(server2);
+	g_free(dump);
 }
 END_TEST
 
@@ -147,6 +157,7 @@ START_TEST(test04_node_new_from_dump)
 
 	node = lasso_node_new_from_dump(msg);
 	fail_unless(node != NULL, "new_from_dump failed");
+	g_object_unref(node);
 }
 END_TEST
 
@@ -160,24 +171,31 @@ START_TEST(test05_xsi_type)
 
 	LassoSamlAssertion *assertion;
 	LassoLibAuthenticationStatement *stmt;
+	LassoSamlNameIdentifier *name_identifier;
+	char *dump;
 
+	name_identifier = lasso_saml_name_identifier_new();
 	assertion = LASSO_SAML_ASSERTION(lasso_lib_assertion_new_full("", "", "", "", ""));
 
 	assertion->AuthenticationStatement = LASSO_SAML_AUTHENTICATION_STATEMENT(
 			lasso_lib_authentication_statement_new_full(
 			"toto", "toto", "toto",
 			NULL,
-			lasso_saml_name_identifier_new()));
+			name_identifier));
+	g_object_unref(name_identifier);
 	stmt = LASSO_LIB_AUTHENTICATION_STATEMENT(assertion->AuthenticationStatement);
 	stmt->AuthnContext = LASSO_LIB_AUTHN_CONTEXT(lasso_lib_authn_context_new());
 	stmt->AuthnContext->AuthnContextClassRef = g_strdup("urn:toto");
 
-	fail_unless(strstr(lasso_node_dump(LASSO_NODE(assertion)),
-				"xsi:type=\"lib:AuthnContextType\"") == NULL,
+	dump = lasso_node_dump(LASSO_NODE(assertion));
+	fail_unless(strstr(dump, "xsi:type=\"lib:AuthnContextType\"") == NULL,
 			"AuthnContext got a xsi:type");
-	fail_unless(strstr(lasso_node_dump(LASSO_NODE(assertion)),
-				"xsi:type=\"lib:AuthenticationStatementType\"") != NULL,
+	g_free(dump);
+	dump = lasso_node_dump(LASSO_NODE(assertion));
+	fail_unless(strstr(dump, "xsi:type=\"lib:AuthenticationStatementType\"") != NULL,
 			"AuthenticationStatement didn't get a xsi:type");
+	g_free(dump);
+	g_object_unref(assertion);
 }
 END_TEST
 
@@ -198,6 +216,7 @@ START_TEST(test06_lib_statuscode)
 			LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL);
 	fail_unless(strstr(lasso_node_dump(LASSO_NODE(response)), "xmlns:lib=") != NULL,
 			"liberty namespace should be defined");
+	g_object_unref(response);
 }
 END_TEST
 

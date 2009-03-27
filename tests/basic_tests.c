@@ -150,6 +150,7 @@ START_TEST(test08_test_new_from_xmlNode)
 	node = lasso_node_new_from_dump("<Test1 xmlns=\"http://example.com\"></Test1>");
 	fail_unless(node != NULL, "parsing <Test1/> should return an object");
 	fail_unless(strcmp(G_OBJECT_TYPE_NAME(node), "LassoTest") == 0, "node classname should be LassoTest");
+	g_object_unref(node);
 }
 END_TEST
 
