@@ -150,8 +150,8 @@ xmlNode* lasso_node_get_xmlnode_for_any_type(LassoNode *node, xmlNode *cur);
 LassoSaml2EncryptedElement* lasso_node_encrypt(LassoNode *lasso_node,
 	xmlSecKey *encryption_public_key, LassoEncryptionSymKeyType encryption_sym_key_type);
 
-LassoNode* lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
-	xmlSecKey *encryption_private_key);
+int lasso_node_decrypt_xmlnode(xmlNode* encrypted_element, GList *encrypted_key,
+		xmlSecKey *encryption_private_key, LassoNode **output);
 
 char* lasso_concat_url_query(char *url, char *query);
 

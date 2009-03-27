@@ -1218,3 +1218,170 @@ is_base64(const char *message)
 
 	return FALSE;
 }
+
+/**
+ * lasso_node_decrypt_xmlnode
+ * @encrypted_element: an EncrytpedData #xmlNode
+ * @encrypted_keys: a #GList of EncrytpedKey #xmlNode
+ * @encryption_private_key : a private key to decrypt the node
+ * @output: a pointer a #LassoNode variable to store the decrypted element
+ *
+ * Try to decrypt an encrypted element.
+ *
+ * Return value: 0 if successful,
+ * LASSO_DS_ERROR_DECRYPTION_FAILED if decrypted failed,
+ * LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED if construction of a #LassoNode from the decrypted
+ * content failed,
+ * LASSO_DS_ERROR_CONTEXT_CREATION_FAILED if some context initialization failed.
+ **/
+int
+lasso_node_decrypt_xmlnode(xmlNode* encrypted_element,
+		GList *encrypted_keys,
+		xmlSecKey *encryption_private_key,
+		LassoNode **output)
+{
+	xmlDocPtr doc = NULL;
+	xmlDocPtr doc2 = NULL;
+	xmlSecEncCtxPtr encCtx = NULL;
+	xmlSecKeyPtr sym_key = NULL;
+	xmlSecBufferPtr key_buffer = NULL;
+	LassoNode *decrypted_node = NULL;
+	xmlNodePtr encrypted_data_node = NULL;
+	xmlNodePtr encrypted_key_node = NULL;
+	xmlNodePtr encryption_method_node = NULL;
+	char *algorithm = NULL;
+	xmlSecKeyDataId key_type;
+	GList *i = NULL;
+	int rc = LASSO_DS_ERROR_DECRYPTION_FAILED;
+
+	if (encryption_private_key == NULL || !xmlSecKeyIsValid(encryption_private_key)) {
+		message(G_LOG_LEVEL_WARNING, "Invalid decryption key");
+		rc = LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+		goto cleanup;
+	}
+
+	/* Need to duplicate it because xmlSecEncCtxDestroy(encCtx); will destroy it */
+	encryption_private_key = xmlSecKeyDuplicate(encryption_private_key);
+
+	encrypted_data_node = xmlCopyNode(encrypted_element, 1);
+
+	/* Get the encryption algorithm for EncryptedData in its EncryptionMethod node */
+	encryption_method_node = xmlSecTmplEncDataGetEncMethodNode(encrypted_data_node);
+	if (encryption_method_node == NULL) {
+		message(G_LOG_LEVEL_WARNING, "No EncryptionMethod node in EncryptedData");
+		goto cleanup;
+	}
+	algorithm = (char*)xmlGetProp(encryption_method_node, (xmlChar *)"Algorithm");
+	if (algorithm == NULL) {
+		message(G_LOG_LEVEL_WARNING, "No EncryptionMethod");
+		goto cleanup;
+	}
+	if (strstr(algorithm , "#aes")) {
+		key_type = xmlSecKeyDataAesId;
+	} else if (strstr(algorithm , "des")) {
+		key_type = xmlSecKeyDataDesId;
+	} else {
+		message(G_LOG_LEVEL_WARNING, "Unknown EncryptionMethod");
+		goto cleanup;
+	}
+
+	/* Get the EncryptedKey */
+	if (encrypted_keys != NULL) {
+		for (i = encrypted_keys; i; i = g_list_next(i)) {
+			if (i->data == NULL)
+				continue;
+			if (strcmp((char*)((xmlNode*)i->data)->name, "EncryptedKey") == 0) {
+				encrypted_key_node = xmlCopyNode((xmlNode*)(i->data), 1);
+				break;
+			}
+		}
+	} else {
+		/* Look an EncryptedKey inside the EncryptedData */
+		encrypted_key_node = encrypted_data_node;
+		while (encrypted_key_node &&
+				strcmp((char*)encrypted_key_node->name, "EncryptedKey") != 0 ) {
+			if (strcmp((char*)encrypted_key_node->name, "EncryptedData") == 0 ||
+					strcmp((char*)encrypted_key_node->name, "KeyInfo") == 0) {
+				encrypted_key_node = xmlCopyNode(encrypted_key_node->children, 1);
+				break;
+			}
+			encrypted_key_node = encrypted_key_node->next;
+		}
+	}
+
+	if (encrypted_key_node == NULL) {
+		message(G_LOG_LEVEL_WARNING, "No EncryptedKey node");
+		goto cleanup;
+	}
+
+	/* Create a document to contain the node to decrypt */
+	doc = xmlNewDoc((xmlChar*)"1.0");
+	xmlDocSetRootElement(doc, encrypted_data_node);
+
+	doc2 = xmlNewDoc((xmlChar*)"1.0");
+	xmlDocSetRootElement(doc2, encrypted_key_node);
+
+	/* create encryption context to decrypt EncryptedKey */
+	encCtx = xmlSecEncCtxCreate(NULL);
+	if (encCtx == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to create encryption context");
+		rc = LASSO_DS_ERROR_CONTEXT_CREATION_FAILED;
+		goto cleanup;
+	}
+	encCtx->encKey = encryption_private_key;
+	encCtx->mode = xmlEncCtxModeEncryptedKey;
+
+	/* decrypt the EncryptedKey */
+	key_buffer = xmlSecEncCtxDecryptToBuffer(encCtx, encrypted_key_node);
+	if (key_buffer != NULL) {
+		sym_key = xmlSecKeyReadBuffer(key_type, key_buffer);
+	}
+	if (sym_key == NULL) {
+		message(G_LOG_LEVEL_WARNING, "EncryptedKey decryption failed");
+		goto cleanup;
+	}
+
+	/* create encryption context to decrypt EncryptedData */
+	xmlSecEncCtxDestroy(encCtx);
+	encCtx = xmlSecEncCtxCreate(NULL);
+	if (encCtx == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to create encryption context");
+		rc = LASSO_DS_ERROR_CONTEXT_CREATION_FAILED;
+		goto cleanup;
+	}
+	encCtx->encKey = sym_key;
+	encCtx->mode = xmlEncCtxModeEncryptedData;
+
+	/* decrypt the EncryptedData */
+	if ((xmlSecEncCtxDecrypt(encCtx, encrypted_data_node) < 0) || (encCtx->result == NULL)) {
+		message(G_LOG_LEVEL_WARNING, "EncryptedData decryption failed");
+		goto cleanup;
+	}
+
+	decrypted_node = lasso_node_new_from_xmlNode(doc->children);
+	if (decrypted_node) {
+		rc = 0;
+	} else {
+		rc = LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED;
+	}
+	if (output) {
+		lasso_assign_gobject(*output, decrypted_node);
+	}
+
+cleanup:
+	if (doc == NULL) {
+		if (encrypted_data_node) {
+			xmlFreeNode(encrypted_data_node);
+		}
+		if (encrypted_key_node) {
+			xmlFreeNode(encrypted_key_node);
+		}
+	}
+	if (encCtx) {
+		xmlSecEncCtxDestroy(encCtx);
+	}
+	lasso_release_doc(doc);
+	lasso_release_gobject(decrypted_node);
+
+	return rc;
+}
