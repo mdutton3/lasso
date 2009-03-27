@@ -367,6 +367,8 @@ def parse_header(header_file):
                 in_struct_private = True
             elif in_struct_private:
                 pass
+            elif 'DEPRECATED' in line:
+                pass
             else:
                 # TODO: Add parsing of OFTYPE
                 member_match = re.match('\s+(\w+)\s+(\*?\w+)', line)
