@@ -1262,3 +1262,29 @@ lasso_provider_set_encryption_sym_key_type(LassoProvider *provider,
 	g_return_if_fail(LASSO_IS_PROVIDER(provider));
 	provider->private_data->encryption_sym_key_type = encryption_sym_key_type;
 }
+
+/**
+ * lasso_provider_verify_query_signature:
+ * @provider: the #LassoProvider for the the provider issuing the query
+ * @message: the URL query string UTF-8 encoded
+ *
+ * Retrieve the public key of the given provider and verify the signature of the query string.
+ *
+ * Return value: 0 if succesfull,
+ * LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY if no public key is set for this provider,
+ * LASSO_DS_ERROR_INVALID_SIGNATURE if signature is invalid,
+ * LASSO_DS_ERROR_SIGNATURE_NOT_FOUND if no signature is found,
+ * LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED if the key cannot be loaded
+ */
+int
+lasso_provider_verify_query_signature(LassoProvider *provider, const char *message)
+{
+	const xmlSecKey *provider_public_key;
+
+	lasso_bad_param(PROVIDER, provider);
+	provider_public_key = lasso_provider_get_public_key(provider);
+	g_return_val_if_fail(provider_public_key, LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY);
+
+	return lasso_query_verify_signature(message, provider_public_key);
+}
+

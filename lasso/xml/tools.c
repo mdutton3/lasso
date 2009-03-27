@@ -999,18 +999,18 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
  */
 
 int
-lasso_verify_signature(xmlNode *signed_node, const char *id_attr_name,
+lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_name,
 		xmlSecKeysMngr *keys_manager, xmlSecKey *public_key,
 		SignatureVerificationOption signature_verification_option,
 		GList **uri_references)
 {
 	int rc = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
-	xmlDoc *doc = NULL;
 	xmlNodePtr signature = NULL;
 	xmlSecDSigCtx *dsigCtx = NULL;
 	xmlChar *id = NULL;
 	char *reference_uri = NULL;
 	xmlSecDSigReferenceCtx *dsig_reference_ctx = NULL;
+	gboolean free_the_doc = FALSE;
 
 	g_return_val_if_fail(signed_node && id_attr_name && (keys_manager || public_key),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -1022,10 +1022,13 @@ lasso_verify_signature(xmlNode *signed_node, const char *id_attr_name,
 	signature = xmlSecFindNode(signed_node, xmlSecNodeSignature, xmlSecDSigNs);
 	goto_exit_if_fail (signature, LASSO_DS_ERROR_SIGNATURE_NOT_FOUND);
 
-	/* Create a temporary doc */
-	doc = xmlNewDoc((xmlChar*)XML_DEFAULT_VERSION);
-	goto_exit_if_fail(doc, LASSO_ERROR_OUT_OF_MEMORY);
-	xmlDocSetRootElement(doc, signed_node);
+	/* Create a temporary doc, if needed */
+	if (doc == NULL) {
+		doc = xmlNewDoc((xmlChar*)XML_DEFAULT_VERSION);
+		goto_exit_if_fail(doc, LASSO_ERROR_OUT_OF_MEMORY);
+		xmlDocSetRootElement(doc, signed_node);
+		free_the_doc = TRUE;
+	}
 
 	/* Find ID */
 	id = xmlGetProp(signed_node, (xmlChar*)id_attr_name);
@@ -1083,8 +1086,10 @@ lasso_verify_signature(xmlNode *signed_node, const char *id_attr_name,
 exit:
 	lasso_release_string(reference_uri);
 	lasso_release_signature_context(dsigCtx);
-	xmlUnlinkNode(signed_node);
-	lasso_release_doc(doc);
+	if (free_the_doc) {
+		xmlUnlinkNode(signed_node);
+		lasso_release_doc(doc);
+	}
 	lasso_release_string(id);
 	return rc;
 }
