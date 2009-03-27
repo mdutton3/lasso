@@ -197,6 +197,12 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 parse_tuple_format.append('l')
                 parse_tuple_args.append('&%s' % arg_name)
                 print >> self.fd, '    %s %s;' % ('long', arg_name)
+            elif arg_type == 'xmlNode*':
+                parse_tuple_format.append('s!')
+                parse_tuple_args.append('&%s_str, &%s_len' % (arg_name, arg_name))
+                print >> self.fd, '    %s %s = NULL;' % ('xmlNode*', arg_name)
+                print >> self.fd, '    %s %s_str = NULL;'  % ('char*', arg_name)
+                print >> self.fd, '    %s %s_len = 0;' % ('int', arg_name)
             elif arg_type == 'GList*':
                 parse_tuple_format.append('a!')
                 parse_tuple_args.append('&zval_%s' % arg_name)
@@ -226,7 +232,10 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 ''' % (''.join(parse_tuple_format), parse_tuple_args)
 
         for f, arg in zip(parse_tuple_format, m.args):
-            if f.startswith('s'):
+            if arg[0] == 'xmlNode*':
+                print >> self.fd, '''\
+        %(name)s = get_xml_node_from_string(%(name)s_str);''' % {'name': arg[1]}
+            elif f.startswith('s'):
                 print >> self.fd, '''\
         %(name)s = %(name)s_str;''' % {'name': arg[1]}
             elif f.startswith('r'):
@@ -254,7 +263,10 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         # Free the converted arguments
 
         for f, arg in zip(parse_tuple_format, m.args):
-            if f.startswith('a'):
+            argtype, argname, argoptions = arg
+            if argtype == 'xmlNode*':
+                print >> self.fd, '    xmlFree(%s);' % argname
+            elif f.startswith('a'):
                 elem_type = arg[2].get('elem_type')
                 if elem_type == 'char*':
                     print >> self.fd, '    if (%(name)s) {' % { 'name': arg[1] }

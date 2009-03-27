@@ -365,7 +365,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
             elif type == '%': # %TRUE, %FALSE
                 if var in ('TRUE', 'FALSE'):
                     return var
-                print >> sys.stderr, 'W: unknown docstring thingie: %s' % s.group(1)
+                print >> sys.stderr, 'W: unknown docstring thingie \'%s\' in \'%s\'' % (s.group(1), func.docstring.orig_docstring)
             elif type == '@':
                 if var == first_arg_name:
                     return '$this'
