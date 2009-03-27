@@ -279,6 +279,7 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 	} else {
 		request->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 	}
+	lasso_assign_new_string(profile->msg_relayState, lasso_get_relaystate_from_query(msg));
 
 	return 0;
 }

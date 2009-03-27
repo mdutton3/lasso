@@ -210,12 +210,13 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 				format == LASSO_MESSAGE_FORMAT_ERROR) {
 			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
+		if (format == LASSO_MESSAGE_FORMAT_QUERY) {
+			lasso_assign_new_string(profile->msg_relayState,
+				lasso_get_relaystate_from_query(authn_request_msg));
+		}
 	}
 
 	authn_request = LASSO_SAMLP2_AUTHN_REQUEST(request);
-	if (authn_request->relayState) {
-		profile->msg_relayState = g_strdup(authn_request->relayState);
-	}
 
 	profile->request = request;
 	profile->remote_providerID = g_strdup(
