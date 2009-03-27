@@ -384,7 +384,7 @@ char*
 lasso_node_export_to_query(LassoNode *node,
 		LassoSignatureMethod sign_method, const char *private_key_file)
 {
-	char *unsigned_query, *query;
+	char *unsigned_query, *query = NULL;
 
 	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
@@ -392,9 +392,9 @@ lasso_node_export_to_query(LassoNode *node,
 	if (private_key_file) {
 		query = lasso_query_sign(unsigned_query, sign_method, private_key_file);
 	} else {
-		query = g_strdup(unsigned_query);
+		lasso_transfer_string(query, unsigned_query);
 	}
-	g_free(unsigned_query);
+	lasso_release(unsigned_query);
 
 	return query;
 }
