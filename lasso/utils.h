@@ -136,6 +136,9 @@
 	lasso_release_xpath_context(xpathContext); \
 	lasso_release_doc(xmlDocument)
 
+#define lasso_release_sec_key(dest) \
+	lasso_release_full2(dest, xmlSecKeyDestroy, xmlSecKeyPtr)
+
 /* Assignment and list appending */
 #define lasso_assign_string(dest,src) \
 	{ \
@@ -216,6 +219,23 @@
 			__iter_dest->data = g_strdup(__iter_dest->data); \
 		} \
 	}
+
+#define lasso_assign_new_sec_key(dest, src) \
+	{ \
+		xmlSecKey *__tmp = (src); \
+		if (dest) \
+			lasso_release_sec_key(dest); \
+		dest = __tmp; \
+	}
+
+#define lasso_assign_sec_key(dest, src) \
+	{ \
+		xmlSecKey *__tmp = xmlSecKeyDup(src); \
+		if (dest) \
+			lasso_release_sec_key(dest); \
+		dest = __tmp; \
+	}
+
 
 
 /* List appending */
