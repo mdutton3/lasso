@@ -753,7 +753,6 @@ lasso_saml20_profile_build_redirect_request_msg(LassoProfile *profile, LassoProv
 {
 	int rc = 0;
 	char *url = NULL;
-	char *query = NULL;
 	LassoSamlp2RequestAbstract *request_abstract;
 
 	lasso_bad_param(PROFILE, profile);
@@ -763,19 +762,12 @@ lasso_saml20_profile_build_redirect_request_msg(LassoProfile *profile, LassoProv
 	if (no_signature)
 		request_abstract->sign_type = LASSO_SIGNATURE_TYPE_NONE;
 	url = get_url(provider, service, "HTTP-Redirect");
-	if (! url) {
-		rc = critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
+	rc = lasso_saml20_profile_build_http_redirect(profile,
+			profile->request,
+			lasso_flag_add_signature,
+			url);
+	if (rc)
 		goto cleanup;
-	}
-	query = lasso_node_export_to_query(LASSO_NODE(request_abstract),
-			profile->server->signature_method,
-			profile->server->private_key);
-	if (! query) {
-		rc = critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
-		goto cleanup;
-	}
-	lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
-	lasso_release_string(profile->msg_body);
 
 cleanup:
 	lasso_release_string(url);
@@ -973,7 +965,7 @@ lasso_saml20_profile_build_redirect_response(LassoProfile *profile, LassoProvide
 		*service, gboolean no_signature)
 {
 	LassoSamlp2StatusResponse *status_response = NULL;
-	char *url = NULL, *query = NULL;
+	char *url = NULL;
 	int rc = 0;
 
 	lasso_bad_param(PROFILE, profile);
@@ -985,19 +977,10 @@ lasso_saml20_profile_build_redirect_response(LassoProfile *profile, LassoProvide
 		status_response->sign_type = LASSO_SIGNATURE_TYPE_NONE;
 	// get url
 	url = get_response_url(provider, service, "HTTP-Redirect");
-	if (! url) {
-		rc = critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
-		goto cleanup;
-	}
-	query = lasso_node_export_to_query(profile->response,
-			profile->server->signature_method,
-			profile->server->private_key);
-	if (! query) {
-		rc = critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
-		goto cleanup;
-	}
-	lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
-	lasso_release_string(profile->msg_body);
+	rc = lasso_saml20_profile_build_http_redirect(profile,
+			profile->response,
+			lasso_flag_add_signature,
+			url);
 
 cleanup:
 	lasso_release_string(url);
