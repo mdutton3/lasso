@@ -1402,11 +1402,12 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	if (response_http_method == LASSO_HTTP_METHOD_REDIRECT) {
 		query_fields = urlencoded_to_strings(response_msg);
 		for (i=0; query_fields[i]; i++) {
-			if (strncmp(query_fields[i], "SAMLart=", 8) != 0) {
-				xmlFree(query_fields[i]);
-				continue;
+			if (strncmp(query_fields[i], "SAMLart=", 8) == 0) {
+				lasso_assign_string(artifact_b64, query_fields[i]+8);
 			}
-			artifact_b64 = g_strdup(query_fields[i]+8);
+			if (strncmp(query_fields[i], "RelayState=", 11) == 0) {
+				lasso_assign_string(profile->msg_relayState, query_fields[i]+11);
+			}
 			xmlFree(query_fields[i]);
 		}
 		g_free(query_fields);
@@ -1696,9 +1697,11 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 		profile->request = LASSO_NODE(request);
 
 		/* get remote ProviderID */
-		profile->remote_providerID = g_strdup(
+		lasso_assign_string(profile->remote_providerID,
 				LASSO_LIB_AUTHN_REQUEST(profile->request)->ProviderID);
 
+		/* get RelayState */
+		lasso_assign_string(profile->msg_relayState, request->RelayState);
 	}
 
 
