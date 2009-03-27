@@ -153,7 +153,8 @@
 
 #define lasso_assign_new_string(dest,src) \
 	{ \
-		if (dest) g_free(dest); \
+		if (dest != src) \
+			lasso_release_string(dest); \
 		dest = src; \
 	}
 
@@ -170,7 +171,7 @@
 #define lasso_assign_new_gobject(dest,src) \
 	{ \
 		lasso_check_type_equality(dest, src); \
-		if (dest) \
+		if (dest != (void*)src) \
 			g_object_unref(dest); \
 		dest = (void*)(src); \
 	}
