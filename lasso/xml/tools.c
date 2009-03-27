@@ -298,7 +298,15 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 	GString *cert = NULL;
 	gint ret;
 
-	g_return_val_if_fail(pem_certs_chain_file != NULL, NULL);
+	/* No file just return NULL */
+	if (! pem_certs_chain_file || strlen(pem_certs_chain_file) == 0) {
+		return NULL;
+	}
+	gioc = g_io_channel_new_file(pem_certs_chain_file, "r", NULL);
+	if (! gioc) {
+		message(G_LOG_LEVEL_WARNING, "Cannot open chain file %s", pem_certs_chain_file);
+		return NULL;
+	}
 
 	/* create keys manager */
 	keys_mngr = xmlSecKeysMngrCreate();
@@ -315,7 +323,6 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 		return NULL;
 	}
 
-	gioc = g_io_channel_new_file(pem_certs_chain_file, "r", NULL);
 	while (g_io_channel_read_line(gioc, &line, &len, &pos, NULL) == G_IO_STATUS_NORMAL) {
 		if (g_strstr_len(line, 64, "BEGIN CERTIFICATE") != NULL) {
 			cert = g_string_new(line);
