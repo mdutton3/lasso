@@ -118,7 +118,7 @@ free_list(GList **a_list, GFunc free_help) {
 static void
 set_hashtable_of_pygobject(GHashTable *a_hash, PyObject *dict) {
 	PyObject *key, *value;
-	int i;
+	Py_ssize_t i;
 
 	if (! a_hash) {
 		 PyErr_SetString(PyExc_TypeError, "hashtable does not exist");

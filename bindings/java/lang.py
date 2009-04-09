@@ -535,7 +535,7 @@ protected static native void destroy(long cptr);
         # Return
         if m.return_type:
             if m.name.endswith('_new'):
-                print >> fd, '    ret = (jlong)(int) return_value;'
+                print >> fd, '    ret = (jlong)(ptrdiff_t) return_value;'
             else:
                 options = {}
                 if m.return_owner:
