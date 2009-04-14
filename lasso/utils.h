@@ -372,11 +372,4 @@
 /* Get a printable extract for error messages */
 char* lasso_safe_prefix_string(const char *str, gsize length);
 
-/* GLIB bacward-compatibility */
-#if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 16)
-int     g_strcmp0                       (const char     *str1,
-                                         const char     *str2);
-#endif
-
-
 #endif /* __LASSO_UTILS_H__ */

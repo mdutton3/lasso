@@ -37,6 +37,7 @@
 #include <config.h>
 #include "lasso.h"
 #include "debug.h"
+#include "./backward_comp.h"
 
 /* Set to true, it forces lasso_provider_verify_signature and lasso_query_verify_signature to always
  * return TRUE. */
@@ -75,21 +76,6 @@ DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 		g_hModule = hinstDLL;
 	}
 	return TRUE;
-}
-#endif
-
-#if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 16)
-static int g_strcmp0(const char *str1, const char *str2) {
-	if (str1 == NULL && str2 == NULL) {
-		return 0;
-	}
-	if (str1 == NULL) {
-		return -1;
-	}
-	if (str2 == NULL) {
-		return 1;
-	}
-	return strcmp(str1, str2);
 }
 #endif
 
