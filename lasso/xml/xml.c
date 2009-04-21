@@ -1554,8 +1554,9 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 			}
 		}
 	}
-
-	node = lasso_node_new_from_xmlNode_with_type(xmlnode, typename);
+	if (typename) {
+		node = lasso_node_new_from_xmlNode_with_type(xmlnode, typename);
+	}
 	lasso_release(typename);
 
 	return node;
