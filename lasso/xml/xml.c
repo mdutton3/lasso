@@ -1404,7 +1404,7 @@ lasso_node_new_from_soap(const char *soap)
 	return node;
 }
 
-static char *
+static const char *
 prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 	char *prefix = NULL;
 	char *tmp = NULL;
@@ -1476,7 +1476,7 @@ prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 	return prefix;
 }
 
-static char *
+static const char *
 prefix_from_node(xmlNode *xmlnode) {
 	return prefix_from_href_and_nodename(xmlnode->ns->href, xmlnode->name);
 
@@ -1493,7 +1493,7 @@ prefix_from_node(xmlNode *xmlnode) {
 LassoNode*
 lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 {
-	char *prefix = NULL;
+	const char *prefix = NULL;
 	char *typename = NULL;
 	char *node_name = NULL;
 	xmlChar *xsitype = NULL;
@@ -1521,7 +1521,10 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 				if (strcmp((char*)ns->href, LASSO_LASSO_HREF) == 0) {
 					typename = g_strdup((char*)(separator+1));
 				} else {
-					prefix = prefix_from_href_and_nodename(ns->href, separator+1);
+					const char *xsi_prefix = prefix_from_href_and_nodename(ns->href, separator+1);
+					if (xsi_prefix) {
+						prefix = xsi_prefix;
+					}
 				}
 			}
 			lasso_release(xmlPrefix);
