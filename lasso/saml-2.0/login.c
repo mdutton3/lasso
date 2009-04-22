@@ -912,6 +912,10 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	if (profile->remote_providerID == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 
+	if (http_method != LASSO_HTTP_METHOD_ARTIFACT_GET && http_method != LASSO_HTTP_METHOD_ARTIFACT_POST) {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
+	}
+
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
