@@ -1023,15 +1023,9 @@ lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int 
 	unsigned_query = lasso_node_build_query(msg);
 	if (profile->msg_relayState) {
 		char *query = unsigned_query;
-		xmlChar *encoded_relayState;
 		if (strlen(profile->msg_relayState) < 81) {
-			encoded_relayState = xmlURIEscape((xmlChar*)profile->msg_relayState);
-			if (encoded_relayState != NULL) {
-				unsigned_query = g_strdup_printf("%s&RelayState=%s", query,
-						(char*)encoded_relayState);
-				lasso_release_string(query);
-				lasso_release_xml_string(encoded_relayState);
-			}
+			unsigned_query = lasso_url_add_parameters(query, 1, "RelayState", profile->msg_relayState, NULL);
+			query = NULL;
 		} else {
 			g_warning("Refused to encode a RelayState of more than 80 bytes, #3.4.3 of"
 					" saml-bindings-2.0-os");

@@ -168,18 +168,23 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 		} else {
 			/* artifact method */
 			char *artifact = lasso_saml20_profile_generate_artifact(profile, 0);
-			char *url_artifact = (char*)xmlURIEscapeStr((xmlChar*)artifact, NULL);
 			url = lasso_provider_get_metadata_one(
 					remote_provider, "SingleSignOnService HTTP-Artifact");
 			if (login->http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
-				gchar *query = g_strdup_printf("SAMLart=%s", url_artifact);
+				gchar *query;
+
+				if (profile->msg_relayState) {
+					query = lasso_url_add_parameters(NULL, 0, "SAMLart", artifact, "RelayState",
+							profile->msg_relayState, NULL);
+				} else {
+					query = lasso_url_add_parameters(NULL, 0, "SAMLart", artifact, NULL);
+				}
 				profile->msg_url = lasso_concat_url_query(url, query);
-				g_free(query);
-				g_free(url);
+				lasso_release_string(query);
+				lasso_release_string(url);
 			} else {
 				/* TODO: ARTIFACT POST */
 			}
-			xmlFree(url_artifact);
 		}
 	}
 
@@ -932,21 +937,19 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	login->assertionArtifact = g_strdup(artifact);
 	if (http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
 		gchar *query;
-		char *url_artifact = (char*)xmlURIEscapeStr((xmlChar*)artifact, NULL);
 
 		if (profile->msg_relayState) {
-			query = g_strdup_printf("SAMLart=%s&RelayState=%s",
-					url_artifact, profile->msg_relayState);
+			query = lasso_url_add_parameters(NULL, 0, "SAMLart", artifact, "RelayState",
+					profile->msg_relayState, NULL);
 		} else {
-			query = g_strdup_printf("SAMLart=%s", url_artifact);
+			query = lasso_url_add_parameters(NULL, 0, "SAMLart", artifact, NULL);
 		}
 		profile->msg_url = lasso_concat_url_query(url, query);
-		g_free(query);
-		xmlFree(url_artifact);
+		lasso_release_string(query);
 	} else {
 		/* XXX: ARTIFACT POST */
 	}
-	g_free(url);
+	lasso_release_string(url);
 
 	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
 	if (response->Status == NULL || response->Status->StatusCode == NULL
