@@ -100,7 +100,7 @@ init_from_query(LassoNode *node, char **query_fields)
 
 	rc = parent_class->init_from_query(node, query_fields);
 	if (! rc)
-		goto exit;
+		goto cleanup;
 
 	if (request->ProviderID == NULL ||
 			request->NameIdentifier == NULL ||
@@ -113,7 +113,7 @@ init_from_query(LassoNode *node, char **query_fields)
 		lasso_assign_string(request->NameIdentifier->Format,
 				"LASSO_SAML2_NAME_IDENTIFIER_FORMAT_UNSPECIFIED");
 	}
- exit:
+cleanup:
 
 	return rc;
 }

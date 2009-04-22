@@ -498,17 +498,17 @@ xmlNode_to_base64(xmlNode *node) {
 
 	handler = xmlFindCharEncodingHandler("utf-8");
 	if (! handler)
-		goto exit;
+		goto cleanup;
 	buf = xmlAllocOutputBuffer(handler);
 	if (! buf)
-		goto exit;
+		goto cleanup;
 	xmlNodeDumpOutput(buf, NULL, node, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
 	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
 
 	ret = xmlSecBase64Encode(buffer, strlen((char*)buffer), 0);
 
-exit:
+cleanup:
 	if (buf)
 		xmlOutputBufferClose(buf);
 
@@ -607,15 +607,15 @@ base64_to_xmlNode(xmlChar *buffer) {
 	decoded = g_malloc(l1);
 	l2 = xmlSecBase64Decode(buffer, decoded, l1);
 	if (l2 < 0)
-		goto exit;
+		goto cleanup;
 	doc = xmlParseMemory((char*)decoded, l2);
 	if (doc == NULL)
-		goto exit;
+		goto cleanup;
 	ret = xmlDocGetRootElement(doc);
 	if (ret) {
 	ret = xmlCopyNode(ret, 1);
 	}
-exit:
+cleanup:
 	lasso_release(decoded);
 	lasso_release_doc(doc);
 

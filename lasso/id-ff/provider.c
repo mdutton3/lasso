@@ -703,9 +703,9 @@ lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *m
 		lasso_release(extract);
 		return FALSE;
 	}
-	goto_exit_if_fail (lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
+	goto_cleanup_if_fail_with_rc (lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
 	lasso_assign_string(provider->metadata_filename, metadata);
-exit:
+cleanup:
 	lasso_release_doc(doc);
 	return rc;
 
@@ -731,11 +731,11 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 		return FALSE;
 	}
 	doc = xmlParseFile(path);
-	goto_exit_if_fail(doc != NULL, FALSE);
-	goto_exit_if_fail(lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
+	goto_cleanup_if_fail_with_rc(doc != NULL, FALSE);
+	goto_cleanup_if_fail_with_rc(lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
 	/** Conserve metadata path for future dump/reload */
 	lasso_assign_string(provider->metadata_filename, path);
-exit:
+cleanup:
 	lasso_release_doc(doc);
 	return rc;
 }
@@ -1090,16 +1090,16 @@ lasso_provider_verify_saml_signature(LassoProvider *provider,
 			(strcmp((char*)node_ns, LASSO_SAML2_ASSERTION_HREF) == 0)) {
 		id_attribute_name = "ID";
 	}
-	goto_exit_if_fail(id_attribute_name, LASSO_PARAM_ERROR_INVALID_VALUE);
+	goto_cleanup_if_fail_with_rc(id_attribute_name, LASSO_PARAM_ERROR_INVALID_VALUE);
 	/* Get provider credentials */
 	public_key = lasso_provider_get_public_key(provider);
 	keys_manager = lasso_load_certs_from_pem_certs_chain_file(provider->ca_cert_chain);
-	goto_exit_if_fail_with_warning(public_key || keys_manager,
+	goto_cleanup_if_fail_with_rc_with_warning(public_key || keys_manager,
 			LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 	rc = lasso_verify_signature(signed_node, doc, id_attribute_name, keys_manager, public_key,
 			NO_OPTION, NULL);
 	lasso_release_key_manager(keys_manager);
-exit:
+cleanup:
 	lasso_release_key_manager(keys_manager);
 	return rc;
 }
@@ -1144,7 +1144,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 		msg = g_malloc(strlen(message));
 		len = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
 		if (len < 0) {
-			goto_exit_with_rc(LASSO_PROFILE_ERROR_INVALID_MSG);
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
 		doc = lasso_xml_parse_memory(msg, strlen(msg));
 	} else {
@@ -1159,7 +1159,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 		if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr ) {
 			xmlnode = xpathObj->nodesetval->nodeTab[0];
 		}
-		goto_exit_if_fail (xmlnode != NULL, LASSO_PROFILE_ERROR_INVALID_MSG);
+		goto_cleanup_if_fail_with_rc (xmlnode != NULL, LASSO_PROFILE_ERROR_INVALID_MSG);
 	} else {
 		xmlnode = xmlDocGetRootElement(doc);
 	}
@@ -1186,7 +1186,7 @@ lasso_provider_verify_signature(LassoProvider *provider,
 		}
 	}
 
-	goto_exit_if_fail (sign != NULL, LASSO_DS_ERROR_SIGNATURE_NOT_FOUND);
+	goto_cleanup_if_fail_with_rc (sign != NULL, LASSO_DS_ERROR_SIGNATURE_NOT_FOUND);
 
 	if (id_attr_name) {
 		xmlChar *id_value = xmlGetProp(xmlnode, (xmlChar*)id_attr_name);
@@ -1201,23 +1201,23 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	if (x509data != NULL && provider->ca_cert_chain != NULL) {
 		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
 				provider->ca_cert_chain);
-		goto_exit_if_fail (keys_mngr != NULL, LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED);
+		goto_cleanup_if_fail_with_rc (keys_mngr != NULL, LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED);
 	}
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
 	if (keys_mngr == NULL) {
 		dsigCtx->signKey = xmlSecKeyDuplicate(lasso_provider_get_public_key(provider));
-		goto_exit_if_fail (dsigCtx->signKey != NULL, LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
+		goto_cleanup_if_fail_with_rc (dsigCtx->signKey != NULL, LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 	}
 
-	goto_exit_if_fail (xmlSecDSigCtxVerify(dsigCtx, sign) >= 0, LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
+	goto_cleanup_if_fail_with_rc (xmlSecDSigCtxVerify(dsigCtx, sign) >= 0, LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
 
 	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
 		rc = LASSO_DS_ERROR_INVALID_SIGNATURE;
-		goto exit;
+		goto cleanup;
 	}
 
-exit:
+cleanup:
 	lasso_release_string(msg);
 	lasso_release_key_manager(keys_mngr);
 	lasso_release_signature_context(dsigCtx);

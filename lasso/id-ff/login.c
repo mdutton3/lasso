@@ -629,13 +629,13 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 
 			assertion_xmlnode = lasso_node_get_original_xmlnode(LASSO_NODE(assertion));
 			assertion_issuer = (gchar*)xmlGetProp(assertion_xmlnode, (xmlChar*)"Issuer");
-			goto_exit_if_fail(assertion_issuer, LASSO_PROFILE_ERROR_MISSING_ISSUER);
-			goto_exit_if_fail(strcmp(assertion_issuer, profile->remote_providerID) == 0,
+			goto_cleanup_if_fail_with_rc(assertion_issuer, LASSO_PROFILE_ERROR_MISSING_ISSUER);
+			goto_cleanup_if_fail_with_rc(strcmp(assertion_issuer, profile->remote_providerID) == 0,
 					LASSO_PROFILE_ERROR_INVALID_ISSUER);
 
 			if (assertion_xmlnode) {
 				profile->signature_status = lasso_provider_verify_saml_signature(idp, assertion_xmlnode, NULL);
-				goto_exit_if_fail(profile->signature_status == 0, profile->signature_status);
+				goto_cleanup_if_fail_with_rc(profile->signature_status == 0, profile->signature_status);
 			}
 		}
 
@@ -664,7 +664,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 		}
 
 	}
-exit:
+cleanup:
 
 	return rc;
 }

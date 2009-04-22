@@ -447,12 +447,12 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 	 * object with get getted resource offering.  get discovery service
 	 * resource id from principal assertion */
 	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
-	goto_exit_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(offering),
+	goto_cleanup_if_fail_with_rc(LASSO_IS_DISCO_RESOURCE_OFFERING(offering),
 		LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING);
 	lasso_wsf_profile_set_resource_offering(&discovery->parent, offering);
 	rc = lasso_wsf_profile_set_security_mech_id(&discovery->parent, security_mech_id);
 	if (rc)
-		goto exit;
+		goto cleanup;
 	/* Create SOAP envelope and set profile->request */
 	lasso_wsf_profile_init_soap_request(profile, LASSO_NODE(query));
 	assign_resource_id(offering, query);
@@ -463,7 +463,7 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 	} else {
 		rc = LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT;
 	}
-exit:
+cleanup:
 	lasso_release_gobject(query);
 	return rc;
 }
@@ -927,7 +927,7 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 	profile = LASSO_WSF_PROFILE(discovery);
 	rc = lasso_wsf_profile_process_soap_response_msg(profile, message);
 	if (rc)
-		goto exit;
+		goto cleanup;
 	response = LASSO_DISCO_QUERY_RESPONSE(profile->response);
 	if (strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_OK) != 0 &&
 			strcmp(response->Status->code, LASSO_DISCO_STATUS_CODE_DISCO_OK) != 0) {
@@ -948,11 +948,11 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 						assertion);
 			} else {
 				rc = LASSO_PROFILE_ERROR_SESSION_NOT_FOUND;
-				goto exit;
+				goto cleanup;
 			}
 		}
 	}
-exit:
+cleanup:
 	return rc;
 }
 

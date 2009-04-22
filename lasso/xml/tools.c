@@ -1020,12 +1020,12 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	}
 	/* Find signature */
 	signature = xmlSecFindNode(signed_node, xmlSecNodeSignature, xmlSecDSigNs);
-	goto_exit_if_fail (signature, LASSO_DS_ERROR_SIGNATURE_NOT_FOUND);
+	goto_cleanup_if_fail_with_rc (signature, LASSO_DS_ERROR_SIGNATURE_NOT_FOUND);
 
 	/* Create a temporary doc, if needed */
 	if (doc == NULL) {
 		doc = xmlNewDoc((xmlChar*)XML_DEFAULT_VERSION);
-		goto_exit_if_fail(doc, LASSO_ERROR_OUT_OF_MEMORY);
+		goto_cleanup_if_fail_with_rc(doc, LASSO_ERROR_OUT_OF_MEMORY);
 		xmlDocSetRootElement(doc, signed_node);
 		free_the_doc = TRUE;
 	}
@@ -1038,11 +1038,11 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 
 	/* Create DSig context */
 	dsigCtx = xmlSecDSigCtxCreate(keys_manager);
-	goto_exit_if_fail(doc, LASSO_DS_ERROR_CONTEXT_CREATION_FAILED);
+	goto_cleanup_if_fail_with_rc(doc, LASSO_DS_ERROR_CONTEXT_CREATION_FAILED);
 	/* XXX: Is xmlSecTransformUriTypeSameEmpty permitted ?
 	 * I would say yes only if signed_node == signature->parent. */
 	dsigCtx->enabledReferenceUris = xmlSecTransformUriTypeSameDocument;
-	goto_exit_if_fail(lasso_saml_constrain_dsigctxt(dsigCtx),
+	goto_cleanup_if_fail_with_rc(lasso_saml_constrain_dsigctxt(dsigCtx),
 			LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
 	/* Given a public key use it to validate the signature ! */
 	if (public_key) {
@@ -1050,18 +1050,18 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	}
 
 	/* Verify signature */
-	goto_exit_if_fail(xmlSecDSigCtxVerify(dsigCtx, signature) >= 0,
+	goto_cleanup_if_fail_with_rc(xmlSecDSigCtxVerify(dsigCtx, signature) >= 0,
 			LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
-	goto_exit_if_fail(dsigCtx->status == xmlSecDSigStatusSucceeded,
+	goto_cleanup_if_fail_with_rc(dsigCtx->status == xmlSecDSigStatusSucceeded,
 			LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
 
 	/* There should be only one reference */
-	goto_exit_if_fail(((signature_verification_option & NO_SINGLE_REFERENCE) == 0) &&
+	goto_cleanup_if_fail_with_rc(((signature_verification_option & NO_SINGLE_REFERENCE) == 0) &&
 			xmlSecPtrListGetSize(&(dsigCtx->signedInfoReferences)) == 1, LASSO_DS_ERROR_TOO_MUCH_REFERENCES);
 	/* The reference should be to the signed node */
 	reference_uri = g_strdup_printf("#%s", id);
 	dsig_reference_ctx = (xmlSecDSigReferenceCtx*)xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), 0);
-	goto_exit_if_fail(dsig_reference_ctx != 0 &&
+	goto_cleanup_if_fail_with_rc(dsig_reference_ctx != 0 &&
 			strcmp((char*)dsig_reference_ctx->uri, reference_uri) == 0,
 			LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML);
 	/* Keep URI of all nodes signed if asked */
@@ -1083,7 +1083,7 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 		rc = 0;
 	}
 
-exit:
+cleanup:
 	lasso_release_string(reference_uri);
 	lasso_release_signature_context(dsigCtx);
 	if (free_the_doc) {
@@ -1526,7 +1526,7 @@ lasso_url_add_parameters(char *url,
 			break;
 		}
 		encoded_key = xmlURIEscapeStr((xmlChar*)key, NULL);
-		goto_exit_if_fail(encoded_key, 0);
+		goto_cleanup_if_fail_with_rc(encoded_key, 0);
 
 		value = va_arg(ap, char*);
 		if (! value) {
@@ -1534,7 +1534,7 @@ lasso_url_add_parameters(char *url,
 			break;
 		}
 		encoded_value = xmlURIEscapeStr((xmlChar*)value, NULL);
-		goto_exit_if_fail(encoded_value, 0);
+		goto_cleanup_if_fail_with_rc(encoded_value, 0);
 
 		if (old_url) {
 			new_url = g_strdup_printf("%s&%s=%s", old_url, (char*)encoded_key, (char*)encoded_value);
@@ -1546,7 +1546,7 @@ lasso_url_add_parameters(char *url,
 		lasso_release_xml_string(encoded_key);
 		lasso_release_xml_string(encoded_value);
 	}
-exit:
+cleanup:
 	va_end(ap);
 	if (free && new_url != url) {
 		lasso_release(url);

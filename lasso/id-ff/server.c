@@ -321,10 +321,10 @@ lasso_server_load_affiliation(LassoServer *server, const gchar *filename)
 	int rc = 0;
 
 	doc = xmlParseFile(filename);
-	goto_exit_if_fail (doc != NULL, LASSO_XML_ERROR_INVALID_FILE);
+	goto_cleanup_if_fail_with_rc (doc != NULL, LASSO_XML_ERROR_INVALID_FILE);
 
 	node = xmlDocGetRootElement(doc);
-	goto_exit_if_fail (node != NULL && node->ns != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
+	goto_cleanup_if_fail_with_rc (node != NULL && node->ns != NULL, LASSO_XML_ERROR_NODE_NOT_FOUND);
 
 	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
 		rc = lasso_saml20_server_load_affiliation(server, node);
@@ -332,7 +332,7 @@ lasso_server_load_affiliation(LassoServer *server, const gchar *filename)
 		/* affiliations are not supported in ID-FF 1.2 mode */
 		rc = LASSO_ERROR_UNIMPLEMENTED;
 	}
-exit:
+cleanup:
 	lasso_release_doc(doc);
 	return rc;
 }
