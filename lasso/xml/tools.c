@@ -26,6 +26,7 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <stdarg.h>
 
 #include <libxml/uri.h>
 #include <libxml/parser.h>
@@ -1490,4 +1491,67 @@ lasso_get_relaystate_from_query(const char *query) {
 		}
 	}
 	return result;
+}
+
+/**
+ * lasso_url_add_parameters:
+ * @url: the original URL
+ * @free: whether to free the URL parameter
+ * @...: pairs of strings, key, value, followed by NULL
+ *
+ * Iterate over all pairs of key,value, and concatenate them to @url encoded as "&key=value", where
+ * key and value are url-encoded.
+ * If free is true and at least one pair was given, url is freed. If url is NULL, the first
+ * ampersand is omitted.
+ *
+ * Return value: a newly allocated string, or url.
+ */
+char*
+lasso_url_add_parameters(char *url,
+		gboolean free, ...)
+{
+	char *old_url = url, *new_url;
+	xmlChar *encoded_key, *encoded_value;
+	int rc = 0;
+	va_list ap;
+
+	va_start(ap, free);
+
+	while (1) {
+		char *key;
+		char *value;
+
+		key = va_arg(ap, char*);
+		if (! key) {
+			break;
+		}
+		encoded_key = xmlURIEscapeStr((xmlChar*)key, NULL);
+		goto_exit_if_fail(encoded_key, 0);
+
+		value = va_arg(ap, char*);
+		if (! value) {
+			message(G_LOG_LEVEL_CRITICAL, "lasso_url_add_parameter: key without a value !!");
+			break;
+		}
+		encoded_value = xmlURIEscapeStr((xmlChar*)value, NULL);
+		goto_exit_if_fail(encoded_value, 0);
+
+		if (old_url) {
+			new_url = g_strdup_printf("%s&%s=%s", old_url, (char*)encoded_key, (char*)encoded_value);
+		} else {
+			new_url = g_strdup_printf("%s=%s", (char*)encoded_key, (char*)encoded_value);
+		}
+		old_url = new_url;
+
+		lasso_release_xml_string(encoded_key);
+		lasso_release_xml_string(encoded_value);
+	}
+exit:
+	va_end(ap);
+	if (free && new_url != url) {
+		lasso_release(url);
+	}
+	lasso_release_xml_string(encoded_key);
+
+	return new_url;
 }

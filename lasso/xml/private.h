@@ -213,6 +213,7 @@ static inline void message(GLogLevelFlags level, const char *format, ...)
 			LASSO_PROTOCOL_SAML_2_0)
 
 char * lasso_get_relaystate_from_query(const char *query);
+char * lasso_url_add_parameters(char *url, gboolean free, ...);
 
 #ifdef __cplusplus
 }
