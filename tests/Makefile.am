@@ -13,7 +13,7 @@ INCLUDES = \
 	$(LASSO_CFLAGS) \
 	$(CHECK_CFLAGS)
 
-tests_SOURCES = tests.c login_tests.c basic_tests.c random_tests.c metadata_tests.c
+tests_SOURCES = tests.c login_tests.c basic_tests.c random_tests.c metadata_tests.c login_tests_saml2.c
 tests_LDADD = \
 	$(top_builddir)/lasso/liblasso.la \
 	$(LASSO_LIBS) \
