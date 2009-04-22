@@ -154,6 +154,20 @@ START_TEST(test08_test_new_from_xmlNode)
 }
 END_TEST
 
+START_TEST(test09_test_deserialization)
+{
+	char *content = NULL;
+	unsigned int len = 0;
+	LassoNode *node;
+
+	g_file_get_contents(TESTSDATADIR "/response-1", &content, &len, NULL);
+
+	fail_unless(content != NULL, "content should be read");
+	node = lasso_node_new_from_dump(content);
+	fail_unless(node != NULL, "node should be parsed");
+	g_object_unref(node);
+}
+END_TEST
 
 Suite*
 basic_suite()
@@ -167,6 +181,8 @@ basic_suite()
 	TCase *tc_registry_direct_mapping = tcase_create("Test QName registry with direct mapping");
 	TCase *tc_registry_functional_mapping = tcase_create("Test QName registry with functional mapping");
 	TCase *tc_registry_new_from_xmlNode = tcase_create("Test parsing a node that has a mapping to Lasso Object in the registry");
+	TCase *tc_response_new_from_xmlNode = tcase_create("Test parsing a message from Ping Federate");
+
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
 	suite_add_tcase(s, tc_server_load_dump_random_xml);
@@ -175,6 +191,8 @@ basic_suite()
 	suite_add_tcase(s, tc_registry_direct_mapping);
 	suite_add_tcase(s, tc_registry_functional_mapping);
 	suite_add_tcase(s, tc_registry_new_from_xmlNode);
+	suite_add_tcase(s, tc_response_new_from_xmlNode);
+
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
 	tcase_add_test(tc_server_load_dump_random_xml, test03_server_load_dump_random_xml);
@@ -183,6 +201,7 @@ basic_suite()
 	tcase_add_test(tc_registry_direct_mapping, test06_registry_direct_mapping);
 	tcase_add_test(tc_registry_functional_mapping, test07_registry_functional_mapping);
 	tcase_add_test(tc_registry_new_from_xmlNode, test08_test_new_from_xmlNode);
+	tcase_add_test(tc_response_new_from_xmlNode, test09_test_deserialization);
 	return s;
 }
 
