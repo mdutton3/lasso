@@ -1435,10 +1435,26 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
  * @response_http_method: the method used to receive the authentication
  *      response
  *
- * Initializes an artifact request.  @response_msg is either the query string
+ * Initializes an artifact request. @response_msg is either the query string
  * (in redirect mode) or the form LAREQ field (in browser-post mode).
+ * It should only be used if you received an artifact message, @response_msg must be content of the
+ * artifact field for the POST artifact binding of the query string for the REDIRECT artifact
+ * binding. You must set the @response_http_method argument according to the way you received the
+ * artifact message.
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or a
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * LASSO_PARAM_ERROR_INVALID_VALUE if @response_msg is NULL,
+ * LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD if the HTTP method is neither LASSO_HTTP_METHOD_REDIRECT
+ * or LASSO_HTTP_METHOD_POST (in the ID-FF 1.2 case) or neither LASSO_HTTP_METHOD_ARTIFACT_GET or
+ * LASSO_HTTP_METHOD_ARTIFACT_POST (in the SAML 2.0 case),
+ * LASSO_PROFILE_ERROR_MISSING_ARTIFACT if no artifact field was found in the query string (only
+ * possible for the LASSO_HTTP_METHOD_REDIRECT case),
+ * LASSO_PROFILE_ERROR_INVALID_ARTIFACT if decoding of the artifact failed -- whether because
+ * the base64 encoding is invalid or because the type code is wrong --,
+ * LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if no provider ID could be found corresponding to
+ * the hash contained in the artifact.
+ *
  **/
 gint
 lasso_login_init_request(LassoLogin *login, gchar *response_msg,
