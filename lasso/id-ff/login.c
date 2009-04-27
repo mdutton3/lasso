@@ -1078,7 +1078,15 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
  * The URL is set into the @msg_url member and the field value (LARES) is set
  * into the @msg_body member.
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE if the current protocol profile is not
+ * LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST or LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP,
+ * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the remote provider ID is not registered in the server
+ * object,
+ * LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL if the metadata of the remote provider does not contain
+ * an URL for the assertion consuming service.
+ *
  **/
 gint
 lasso_login_build_authn_response_msg(LassoLogin *login)
