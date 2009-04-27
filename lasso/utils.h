@@ -317,11 +317,14 @@
 
 /* Node extraction */
 #define lasso_extract_node_or_fail(to, from, kind, error) \
-	if (LASSO_IS_##kind(from)) { \
-		to = LASSO_##kind(from); \
-	} else { \
-		rc = error; \
-		goto cleanup; \
+	{\
+		void *__tmp = (from); \
+		if (LASSO_IS_##kind(__tmp)) { \
+			to = LASSO_##kind(__tmp); \
+		} else { \
+			rc = error; \
+			goto cleanup; \
+		}\
 	}
 
 /* Bad param handling */
