@@ -1323,6 +1323,8 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
  * @login: a #LassoLogin
  *
  * Destroys a #LassoLogin object.
+ *
+ * @Deprecated: Since #2.2.1, use g_object_unref() instead.
  **/
 void
 lasso_login_destroy(LassoLogin *login)
