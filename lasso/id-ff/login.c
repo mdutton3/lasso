@@ -1217,6 +1217,11 @@ lasso_login_build_request_msg(LassoLogin *login)
  * @msg_body member.
  *
  * Return value: 0 on success; or a negative value otherwise.
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * LASSO_PROFILE_ERROR_SESSION_NOT_FOUND if no session object was found in the login profile object
+ * -- it should be created by lasso_login_build_assertion() if you did not set it manually before
+ *  calling lasso_login_build_assertion().
+ *
  **/
 gint
 lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
