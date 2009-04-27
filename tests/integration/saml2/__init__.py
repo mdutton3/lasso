@@ -40,7 +40,7 @@ def setup():
             '--port', '10002', '--http', '--silent'])
     pids.append(sp.pid)
 
-    time.sleep(2) # let process bind ports
+    time.sleep(5) # let process bind ports
 
 
 def teardown():
