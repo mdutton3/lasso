@@ -401,7 +401,7 @@ lasso_login_build_assertion(LassoLogin *login,
  * Evaluates if it is necessary to ask the consent of the Principal.
  * This method doesn't take the isPassive value into account.
  *
- * Return value: TRUE or FALSE
+ * Return value: TRUE if consent should be asked, FALSE otherwise.
  **/
 static gboolean
 lasso_login_must_ask_for_consent_private(LassoLogin *login)
