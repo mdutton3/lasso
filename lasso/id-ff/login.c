@@ -1155,12 +1155,20 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
  * lasso_login_build_request_msg:
  * @login: a #LassoLogin
  *
- * Converts profile artifact request into a Liberty SOAP message.
+ * Produce a SOAP Artifact Resolve message. It must follows a call to
+ * lasso_login_init_request() on the artifact message.
+ * Converts  artifact request into a Liberty SOAP message.
  *
  * The URL is set into the @msg_url member and the SOAP message is set into the
- * @msg_body member.
+ * @msg_body member. You should POST the @msg_body to the @msg_url afterward.
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if not remote provider ID was setup -- it usually
+ * means that lasso_login_init_request was not called before,
+ * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the remote provider ID is not registered in the server
+ * object.
+ *
  **/
 gint
 lasso_login_build_request_msg(LassoLogin *login)
