@@ -793,7 +793,17 @@ lasso_login_build_assertion_artifact(LassoLogin *login)
  * the artifact are stored in @msg_url (REDIRECT) or @msg_url, @msg_body and
  * @msg_relayState (POST).
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if no remote provider ID was setup in the login
+ * profile object, it's usually done by lasso_login_process_authn_request_msg,
+ * LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD if the HTTP method is neither LASSO_HTTP_METHOD_REDIRECT
+ * or LASSO_HTTP_METHOD_POST (ID-FF 1.2 case) or neither LASSO_HTTP_METHOD_ARTIFACT_GET or
+ * LASSO_HTTP_METHOD_ARTIFACT_POST (SAML 2.0 case) for SAML 2.0),
+ * LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE if the current protocolProfile is not
+ * LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART (only for ID-FF 1.2),
+ * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the remote provider is not known to our server object.
+ *
  **/
 gint
 lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
