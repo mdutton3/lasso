@@ -820,7 +820,21 @@ gint lasso_logout_reset_providerID_index(LassoLogout *logout)
  * </para></listitem>
  * </itemizedlist>
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or
+ * LASSO_PROFILE_ERROR_MISSING_REQUEST if no request has been found -- usually means that
+ * lasso_logout_process_request_msg was not called,
+ * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the requesting provider is not known to the server object,
+ * LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED if creation of the response object failed,
+ * LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND if the request do not contain a NameID element,
+ * LASSO_PROFILE_ERROR_SESSION_NOT_FOUND if the logout profile object do not contain a session
+ * object,
+ * LASSO_PROFILE_ERROR_MISSING_ASSERTION if no assertion from the requesting provider was found,
+ * LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND if the logout profile object do not contain an identity
+ * object,
+ * LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND if no federation for the requesting provider was found,
+ * LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE if the requested HTTP method is not supported by all the
+ * remote provider of the current session.
+ *
  **/
 gint
 lasso_logout_validate_request(LassoLogout *logout)
