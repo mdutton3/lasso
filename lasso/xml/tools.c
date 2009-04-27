@@ -1018,8 +1018,8 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	if (lasso_flag_verify_signature == FALSE) {
 		return 0;
 	}
-	/* Find signature */
-	signature = xmlSecFindNode(signed_node, xmlSecNodeSignature, xmlSecDSigNs);
+	/* Find signature as direct child. */
+	signature = xmlSecFindChild(signed_node, xmlSecNodeSignature, xmlSecDSigNs);
 	goto_cleanup_if_fail_with_rc (signature, LASSO_DS_ERROR_SIGNATURE_NOT_FOUND);
 
 	/* Create a temporary doc, if needed */
