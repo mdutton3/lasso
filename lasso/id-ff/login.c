@@ -686,7 +686,15 @@ cleanup:
  * and adds it into the identity.
  * If the session or the identity are NULL, they are created.
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * LASSO_PROFILE_ERROR_MISSING_RESPONSE if no response is present in the login profile object --
+ * usually because no call to lasso_login_process_authn_response_msg was donne --,
+ * LASSO_PROFILE_ERROR_MISSING_ASSERTION if the response does not contain an assertion,
+ * LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND if the assertion does not contain a NameID element,
+ * LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER idem,
+ * LASSO_LOGIN_ERROR_ASSERTION_REPLAY if the assertion has already been used.
+ *
  **/
 gint
 lasso_login_accept_sso(LassoLogin *login)
