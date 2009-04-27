@@ -1367,7 +1367,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	} else {
 		profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
 		if (profile->remote_providerID == NULL) {
-			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+			return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 		}
 	}
 
