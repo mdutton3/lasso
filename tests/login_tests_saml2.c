@@ -266,7 +266,6 @@ START_TEST(test02_saml2_serviceProviderLogin)
 
 	/* Service provider assertion consumer (step 2: process SOAP response) */
 	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
-	printf("rc: %i %s\n", rc, soapResponseMsg);
 	fail_unless(rc == 0, "lasso_login_process_response_msg failed");
 	rc = lasso_login_accept_sso(spLoginContext);
 	fail_unless(rc == 0, "lasso_login_accept_sso failed");
@@ -351,7 +350,6 @@ START_TEST(test03_saml2_serviceProviderLogin)
 	fail_unless(idpLoginContext != NULL,
 			"lasso_login_new() shouldn't have returned NULL");
 	rc = lasso_login_process_authn_request_msg(idpLoginContext, authnRequestQuery);
-	printf("rc: %i %s\n", rc, authnRequestQuery);
 	fail_unless(rc == 0, "lasso_login_process_authn_request_msg failed");
 	fail_unless(lasso_login_must_authenticate(idpLoginContext),
 			"lasso_login_must_authenticate() should be TRUE");
