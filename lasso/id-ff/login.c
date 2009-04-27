@@ -1342,7 +1342,16 @@ lasso_login_destroy(LassoLogin *login)
  * identity provider specified in @remote_providerID (if NULL the first known
  * identity provider is used).
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if @remote_providerID is NULL and no default remote
+ * provider could be found from the server object -- usually the first one in the order of adding to
+ * the server object --,
+ * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the @remote_providerID is not known to our server object.
+ * LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD if the HTTP method is neither LASSO_HTTP_METHOD_REDIRECT
+ * or LASSO_HTTP_METHOD_POST,
+ * LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED if creation of the request object failed.
+ *
  **/
 gint
 lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID,
