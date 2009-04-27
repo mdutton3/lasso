@@ -184,6 +184,7 @@ class_init(LassoSamlp2StatusResponseClass *klass)
 			LassoSamlp2StatusResponse, sign_type);
 	nclass->node_data->sign_method_offset = G_STRUCT_OFFSET(
 			LassoSamlp2StatusResponse, sign_method);
+	nclass->node_data->keep_xmlnode = TRUE;
 }
 
 GType

@@ -125,6 +125,7 @@ class_init(LassoSamlp2ResponseClass *klass)
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	nclass->node_data->keep_xmlnode = TRUE;
 	lasso_node_class_set_nodename(nclass, "Response");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_PROTOCOL_HREF, LASSO_SAML2_PROTOCOL_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
