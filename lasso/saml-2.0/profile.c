@@ -232,8 +232,10 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 		if (artifact_b64 == NULL) {
 			return LASSO_PROFILE_ERROR_MISSING_ARTIFACT;
 		}
-	} else {
+	} else if (method == LASSO_HTTP_METHOD_ARTIFACT_POST) {
 		artifact_b64 = g_strdup(msg);
+	} else {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	i = xmlSecBase64Decode((xmlChar*)artifact_b64, (xmlChar*)artifact, 45);
