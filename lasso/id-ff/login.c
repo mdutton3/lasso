@@ -246,7 +246,11 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
  * @notOnOrAfter may be NULL.  If @authenticationInstant is NULL, the current
  * time will be used.  Time values must be encoded in UTC.
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND if no identity object was found in the login profile
+ * object.
+ *
  **/
 int
 lasso_login_build_assertion(LassoLogin *login,
