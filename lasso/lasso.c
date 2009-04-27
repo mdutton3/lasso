@@ -49,6 +49,8 @@ gboolean lasso_flag_strict_checking = FALSE;
 /* set to false, it do not sign messages */
 gboolean lasso_flag_add_signature = TRUE;
 static void lasso_flag_parse_environment_variable();
+/* do not sign messages */
+gboolean lasso_flag_sign_messages = TRUE;
 
 #ifndef LASSO_FLAG_ENV_VAR
 #define LASSO_FLAG_ENV_VAR "LASSO_FLAG"
@@ -262,6 +264,10 @@ void lasso_set_flag(char *flag) {
 		}
 		if (g_strcmp0(flag,"add-signature") == 0) {
 			lasso_flag_add_signature = value;
+			continue;
+		}
+		if (g_strcmp0(flag, "sign-messages") == 0) {
+			lasso_flag_sign_messages = value;
 			continue;
 		}
 	} while (FALSE);
