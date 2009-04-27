@@ -1284,7 +1284,11 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		LassoSaml2Assertion *assertion = samlp2_response->Assertion->data;
 		int rc2 = 0;
 
-		/* FIXME: verify assertion signature */
+		/* If no signature was validated on the response, check the signature at the
+		 * assertion level */
+		if (profile->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
+			rc2 = lasso_saml20_login_check_assertion_signature(login, assertion);
+		}
 
 		if (! LASSO_IS_SAML2_SUBJECT(assertion->Subject)) {
 			return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
