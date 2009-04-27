@@ -417,6 +417,32 @@ lasso_profile_set_artifact_message(LassoProfile *profile, char *message)
 	profile->private_data->artifact_message = g_strdup(message);
 }
 
+/**
+ * lasso_profile_get_server:
+ * @profile: a #LassoProfile object
+ *
+ * Return the #LassoServer linked to this profile object. A profile object should always contains
+ * one. It allows to find metadatas of other providers and to know our own metadatas.
+ *
+ * Return value: a #LassoServer or NULL if profile is not a #LassoProfile or no #LassoServer object
+ * was setup at the creation of this profile.
+ */
+LassoServer*
+lasso_profile_get_server(LassoProfile *profile)
+{
+	g_return_val_if_fail(LASSO_IS_PROFILE(profile), NULL);
+
+	if (profile->server) {
+		if (LASSO_IS_SERVER(profile->server)) {
+			return profile->server;
+		} else {
+			message(G_LOG_LEVEL_WARNING, "profile->server contains a non LassoServer object");
+		}
+	}
+
+	return NULL;
+}
+
 
 /*****************************************************************************/
 /* private methods                                                           */

@@ -24,6 +24,7 @@
   <!-- LassoProvider -->
   <func name="lasso_provider_get_metadata_list" return_owner="false"/>
   <!-- LassoProfile -->
+  <func name="lasso_profile_get_server" skip="true"/>
   <func name="lasso_profile_get_nameIdentifier"
   	rename="lasso_profile_get_federation_nameIdentifier"
 	return_owner="false" />
