@@ -146,6 +146,9 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile,
 			&request->NameID, &request->EncryptedID);
 
+	if (profile->signature_status) {
+		return profile->signature_status;
+	}
 	if (rc1)
 		return rc1;
 	if (rc2)
@@ -290,6 +293,9 @@ lasso_name_id_management_process_response_msg(
 	rc = lasso_saml20_profile_process_any_response(profile, response, response_msg);
 	if (rc)
 		goto cleanup;
+
+	/* Stop here if signature validation failed. */
+	goto_cleanup_if_fail_with_rc(profile->signature_status == 0, profile->signature_status);
 
 	if (LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->Terminate) {
 		lasso_identity_remove_federation(profile->identity, profile->remote_providerID);

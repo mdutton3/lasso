@@ -1088,11 +1088,23 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 	return rc2;
 }
 
+/**
+ * lasso_saml20_login_process_authn_response_msg:
+ * @login: a #LassoLogin profile object
+ * @authn_response_msg: a string containg a response msg to an #LassoSaml2AuthnRequest
+ *
+ * Parse a response made using binding HTTP-Redirect, HTTP-Post or HTTP-SOAP.  If a signature is
+ * missing on the message object, it accepts signatures coming from the first assertion as a
+ * sufficient proof. But if the signature verification failed on the message for any other reason
+ * than a missing Signature node, an error code is returned.
+ *
+ * Return value: 0 if succesfull, an error code otherwise.
+ */
 gint
 lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_msg)
 {
 	LassoProfile *profile = NULL;
-	int rc1, rc2;
+	int rc1, rc2, message_signature_status;
 
 	lasso_bad_param(LOGIN, login);
 	lasso_null_param(authn_response_msg);
@@ -1103,9 +1115,14 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 		(LassoSamlp2StatusResponse*)lasso_samlp2_response_new(),
 		authn_response_msg);
 
+	message_signature_status = profile->signature_status;
+
 	rc2 = lasso_saml20_login_process_response_status_and_assertion(login);
 
 	/** The more important signature errors */
+	if (message_signature_status) {
+		message(G_LOG_LEVEL_WARNING, "Validation of the AuthnResponse message signature failed: %s", lasso_strerror(message_signature_status));
+	}
 	if (profile->signature_status) {
 		return profile->signature_status;
 	}

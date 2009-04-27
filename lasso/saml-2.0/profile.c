@@ -489,6 +489,23 @@ cleanup:
 	return rc;
 }
 
+/**
+ * lasso_saml20_profile_process_any_request:
+ * @profile: a #LassoProfile object
+ * @request_node: a #LassoNode object which will be initialized with the content of @request_msg
+ * @request_msg: a string containing the request message as a SOAP XML message, a query string of
+ * the content of SAMLRequest POST field.
+ *
+ * Parse a request message, initialize the given node object with it, try to extract basic SAML
+ * profile information like the remote_provider_id or the name_id and validate the signature.
+ *
+ * Signature validation status is accessible in profile->signature_status, beware that if signature
+ * validation fails no error code will be returned, you must explicitely verify the
+ * profile->signature_status code.
+ *
+ * Return value: 0 if parsing is successfull (even if signature validation fails), and error code
+ * otherwise.
+ */
 int
 lasso_saml20_profile_process_any_request(LassoProfile *profile,
 		LassoNode *request_node,
@@ -549,13 +566,13 @@ lasso_saml20_profile_process_any_request(LassoProfile *profile,
 
 	/* verify the signature at the request level */
 	if (content && doc && format != LASSO_MESSAGE_FORMAT_QUERY) {
-		rc = profile->signature_status =
+		profile->signature_status =
 			lasso_provider_verify_saml_signature(remote_provider, content, doc);
 	} else if (format == LASSO_MESSAGE_FORMAT_QUERY) {
-		rc = profile->signature_status =
+		profile->signature_status =
 			lasso_provider_verify_query_signature(remote_provider, request_msg);
 	} else {
-		rc = LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
+		profile->signature_status = LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
 	}
 
 cleanup:
@@ -1157,6 +1174,11 @@ cleanup:
  *
  * Generic method for SAML 2.0 protocol message handling.
  *
+ * It tries to validate a signature on the response msg, the result of this operation is kept inside
+ * profile->signature_status. Use it afterward in your specific profile. Beware that it does not
+ * return an error code if signature validation failed. It let's specific profile accept unsigned
+ * messages.
+ *
  * Return value: 0 if successful, an error code otherwise.
  */
 int
@@ -1206,13 +1228,13 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 
 	/* verify the signature at the request level */
 	if (content && doc && format != LASSO_MESSAGE_FORMAT_QUERY) {
-		rc = profile->signature_status =
+		profile->signature_status =
 			lasso_provider_verify_saml_signature(remote_provider, content, doc);
 	} else if (format == LASSO_MESSAGE_FORMAT_QUERY) {
-		rc = profile->signature_status =
+		profile->signature_status =
 			lasso_provider_verify_query_signature(remote_provider, response_msg);
 	} else {
-		rc = LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
+		profile->signature_status = LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
 	}
 
 	/* verify status code */

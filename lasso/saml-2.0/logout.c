@@ -243,6 +243,10 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 			&logout_request->NameID,
 			&logout_request->EncryptedID);
 
+
+	if (profile->signature_status) {
+		return profile->signature_status;
+	}
 	if (rc1) {
 		return rc1;
 	}
