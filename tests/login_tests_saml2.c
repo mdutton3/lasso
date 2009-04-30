@@ -83,12 +83,12 @@ generateServiceProviderContextDump()
 static char*
 generateIdentityProviderContextDumpMemory()
 {
-	LassoServer *serverContext;
-	char *metadata;
-	char *private_key;
-	char *certificate;
+	LassoServer *serverContext = NULL;
+	char *metadata = NULL;
+	char *private_key = NULL;
+	char *certificate = NULL;
 	guint len;
-	char *ret;
+	char *ret = NULL;
 
 	g_file_get_contents(TESTSDATADIR "/idp5-saml2/metadata.xml", &metadata, &len, NULL);
 	g_file_get_contents(TESTSDATADIR "/idp5-saml2/private-key.pem", &private_key, &len, NULL);
@@ -132,20 +132,20 @@ END_TEST
 
 START_TEST(test02_saml2_serviceProviderLogin)
 {
-	char *serviceProviderContextDump, *identityProviderContextDump;
-	LassoServer *spContext, *idpContext;
-	LassoLogin *spLoginContext, *idpLoginContext;
-	LassoSamlp2AuthnRequest *request;
+	char *serviceProviderContextDump = NULL, *identityProviderContextDump = NULL;
+	LassoServer *spContext = NULL, *idpContext = NULL;
+	LassoLogin *spLoginContext = NULL, *idpLoginContext = NULL;
+	LassoSamlp2AuthnRequest *request = NULL;
 	int rc;
-	char *relayState;
-	char *authnRequestUrl, *authnRequestQuery;
-	char *responseUrl, *responseQuery;
-	char *idpIdentityContextDump, *idpSessionContextDump;
-	char *serviceProviderId, *soapRequestMsg, *soapResponseMsg;
-	char *spIdentityContextDump;
-	char *spSessionDump;
-	char *spLoginDump, *idpLoginDump;
-	char *found;
+	char *relayState = NULL;
+	char *authnRequestUrl = NULL, *authnRequestQuery = NULL;
+	char *responseUrl = NULL, *responseQuery = NULL;
+	char *idpIdentityContextDump = NULL, *idpSessionContextDump = NULL;
+	char *serviceProviderId = NULL, *soapRequestMsg = NULL, *soapResponseMsg = NULL;
+	char *spIdentityContextDump = NULL;
+	char *spSessionDump = NULL;
+	char *spLoginDump = NULL, *idpLoginDump = NULL;
+	char *found = NULL;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
@@ -158,10 +158,10 @@ START_TEST(test02_saml2_serviceProviderLogin)
 	request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(spLoginContext)->request);
 	fail_unless(LASSO_IS_SAMLP2_AUTHN_REQUEST(request), "request should be authn_request");
 	request->IsPassive = 0;
-	request->NameIDPolicy->Format = g_strdup(LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
+	lasso_assign_string(request->NameIDPolicy->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
 	request->NameIDPolicy->AllowCreate = 1;
 	relayState = "fake[]";
-	LASSO_PROFILE(spLoginContext)->msg_relayState = g_strdup(relayState);
+	lasso_assign_string(LASSO_PROFILE(spLoginContext)->msg_relayState, relayState);
 	rc = lasso_login_build_authn_request_msg(spLoginContext);
 	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
 	authnRequestUrl = LASSO_PROFILE(spLoginContext)->msg_url;
@@ -223,7 +223,7 @@ START_TEST(test02_saml2_serviceProviderLogin)
 			"responseQuery should contain a RelayState parameter");
 	fail_unless(strstr(responseQuery, "fake%5B%5D") != NULL,
 			"responseQuery RelayState parameter should be encoded");
-	serviceProviderId = g_strdup(LASSO_PROFILE(idpLoginContext)->remote_providerID);
+	lasso_assign_string(serviceProviderId, LASSO_PROFILE(idpLoginContext)->remote_providerID);
 	fail_unless(serviceProviderId != NULL,
 		    "lasso_profile_get_remote_providerID shouldn't return NULL");
 
@@ -296,6 +296,7 @@ START_TEST(test02_saml2_serviceProviderLogin)
 	g_free(idpIdentityContextDump);
 	g_free(spIdentityContextDump);
 	g_free(spSessionDump);
+	g_free(spLoginDump);
 	g_object_unref(spContext);
 	g_object_unref(idpContext);
 	g_object_unref(spLoginContext);
@@ -305,19 +306,19 @@ END_TEST
 
 START_TEST(test03_saml2_serviceProviderLogin)
 {
-	char *serviceProviderContextDump, *identityProviderContextDump;
-	LassoServer *spContext, *idpContext;
-	LassoLogin *spLoginContext, *idpLoginContext;
-	LassoSamlp2AuthnRequest *request;
+	char *serviceProviderContextDump = NULL, *identityProviderContextDump = NULL;
+	LassoServer *spContext = NULL, *idpContext = NULL;
+	LassoLogin *spLoginContext = NULL, *idpLoginContext = NULL;
+	LassoSamlp2AuthnRequest *request = NULL;
+	char *relayState = NULL;
+	char *authnRequestUrl = NULL, *authnRequestQuery = NULL;
+	char *responseUrl = NULL, *responseQuery = NULL;
+	char *idpIdentityContextDump = NULL, *idpSessionContextDump = NULL;
+	char *serviceProviderId = NULL, *soapRequestMsg = NULL, *soapResponseMsg = NULL;
+	char *spIdentityContextDump = NULL;
+	char *spSessionDump = NULL;
+	char *idpLoginDump = NULL;
 	int rc;
-	char *relayState;
-	char *authnRequestUrl, *authnRequestQuery;
-	char *responseUrl, *responseQuery;
-	char *idpIdentityContextDump, *idpSessionContextDump;
-	char *serviceProviderId, *soapRequestMsg, *soapResponseMsg;
-	char *spIdentityContextDump;
-	char *spSessionDump;
-	char *idpLoginDump;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
@@ -330,10 +331,10 @@ START_TEST(test03_saml2_serviceProviderLogin)
 	request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(spLoginContext)->request);
 	fail_unless(LASSO_IS_SAMLP2_AUTHN_REQUEST(request), "request should be authn_request");
 	request->IsPassive = 0;
-	request->NameIDPolicy->Format = g_strdup(LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
+	lasso_assign_string(request->NameIDPolicy->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
 	request->NameIDPolicy->AllowCreate = 1;
 	relayState = "fake";
-	LASSO_PROFILE(spLoginContext)->msg_relayState = g_strdup(relayState);
+	lasso_assign_string(LASSO_PROFILE(spLoginContext)->msg_relayState, relayState);
 	rc = lasso_login_build_authn_request_msg(spLoginContext);
 	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
 	authnRequestUrl = LASSO_PROFILE(spLoginContext)->msg_url;
@@ -382,7 +383,7 @@ START_TEST(test03_saml2_serviceProviderLogin)
 	responseQuery = strchr(responseUrl, '?')+1;
 	fail_unless(strlen(responseQuery) > 0,
 			"responseQuery shouldn't be an empty string");
-	serviceProviderId = g_strdup(LASSO_PROFILE(idpLoginContext)->remote_providerID);
+	lasso_assign_string(serviceProviderId, LASSO_PROFILE(idpLoginContext)->remote_providerID);
 	fail_unless(serviceProviderId != NULL,
 		    "lasso_profile_get_remote_providerID shouldn't return NULL");
 

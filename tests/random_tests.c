@@ -32,6 +32,7 @@
 #include <lasso/xml/lib_authentication_statement.h>
 #include <lasso/xml/saml_name_identifier.h>
 #include <lasso/xml/samlp_response.h>
+#include "../lasso/utils.h"
 
 
 Suite* random_suite();
@@ -49,6 +50,7 @@ START_TEST(test01_provider_new)
 	dump = lasso_node_dump(LASSO_NODE(provider));
 	printf("dump:\n%s\n", dump);
 	g_object_unref(provider);
+	lasso_release_string(dump);
 }
 END_TEST
 
@@ -63,12 +65,13 @@ START_TEST(test02_provider_new_from_dump)
 			TESTSDATADIR "/ca1-la/certificate.pem");
 
 	dump = lasso_node_dump(LASSO_NODE(provider1));
-
 	provider2 = lasso_provider_new_from_dump(dump);
+	lasso_release_string(dump);
 	dump = lasso_node_dump(LASSO_NODE(provider2));
 	printf("dump:\n%s\n", dump);
 	g_object_unref(provider1);
 	g_object_unref(provider2);
+	lasso_release_string(dump);
 }
 END_TEST
 
@@ -86,6 +89,7 @@ START_TEST(test01_server_new)
 	dump = lasso_node_dump(LASSO_NODE(server));
 	printf("dump:%s\n", dump);
 	g_object_unref(server);
+	lasso_release_string(dump);
 }
 END_TEST
 
@@ -108,6 +112,7 @@ START_TEST(test02_server_add_provider)
 
 	dump = lasso_node_dump(LASSO_NODE(server));
 	g_object_unref(server);
+	lasso_release_string(dump);
 }
 END_TEST
 
@@ -205,17 +210,22 @@ START_TEST(test06_lib_statuscode)
 	 * starts with lib:, that namespace must be defined.  (was bug#416)
 	 */
 	LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(lasso_samlp_response_new());
+	char *dump = NULL;
 
-	response->Status->StatusCode->Value = g_strdup(LASSO_SAML_STATUS_CODE_SUCCESS);
-	fail_unless(strstr(lasso_node_dump(LASSO_NODE(response)), "xmlns:lib=") == NULL,
+	lasso_assign_string(response->Status->StatusCode->Value, LASSO_SAML_STATUS_CODE_SUCCESS);
+	dump = lasso_node_dump(LASSO_NODE(response));
+	fail_unless(strstr(dump, "xmlns:lib=") == NULL,
 			"liberty namespace should not be defined");
+	lasso_release_string(dump);
 
-	response->Status->StatusCode->Value = g_strdup(LASSO_SAML_STATUS_CODE_RESPONDER);
+	lasso_assign_string(response->Status->StatusCode->Value, LASSO_SAML_STATUS_CODE_RESPONDER);
 	response->Status->StatusCode->StatusCode = lasso_samlp_status_code_new();
 	response->Status->StatusCode->StatusCode->Value = g_strdup(
 			LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL);
-	fail_unless(strstr(lasso_node_dump(LASSO_NODE(response)), "xmlns:lib=") != NULL,
+	dump = lasso_node_dump(LASSO_NODE(response));
+	fail_unless(strstr(dump, "xmlns:lib=") != NULL,
 			"liberty namespace should be defined");
+	lasso_release_string(dump);
 	g_object_unref(response);
 }
 END_TEST

@@ -290,6 +290,7 @@ START_TEST(test02_serviceProviderLogin)
 	rc = lasso_login_accept_sso(spLoginContext);
 	fail_unless(rc == 0, "lasso_login_accept_sso must fail");
 
+	g_free(spLoginDump);
 	g_free(serviceProviderId);
 	g_free(serviceProviderContextDump);
 	g_free(identityProviderContextDump);

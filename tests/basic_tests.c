@@ -166,6 +166,7 @@ START_TEST(test09_test_deserialization)
 	node = lasso_node_new_from_dump(content);
 	fail_unless(node != NULL, "node should be parsed");
 	g_object_unref(node);
+	g_free(content);
 }
 END_TEST
 
