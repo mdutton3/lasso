@@ -72,7 +72,7 @@ instance_init(LassoLibAuthenticationStatement *node)
 {
 	node->AuthnContext = NULL;
 	node->ReauthenticateOnOrAfter = NULL;
-	node->SessionIndex = g_strdup("1"); /* FIXME: proper SessionIndex usage */
+	node->SessionIndex = NULL;
 }
 
 static void

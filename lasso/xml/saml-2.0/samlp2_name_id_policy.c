@@ -66,8 +66,6 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoSamlp2NameIDPolicy *node)
 {
-	node->Format = NULL;
-	node->SPNameQualifier = NULL;
 	node->AllowCreate = FALSE;
 }
 
