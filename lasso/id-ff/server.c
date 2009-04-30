@@ -285,10 +285,7 @@ lasso_server_set_encryption_private_key(LassoServer *server, const gchar *filena
 {
 	LassoPemFileType file_type;
 
-	if (server->private_data->encryption_private_key != NULL) {
-		xmlSecKeyDestroy(server->private_data->encryption_private_key);
-		server->private_data->encryption_private_key = NULL;
-	}
+	lasso_release_sec_key(server->private_data->encryption_private_key);
 	file_type = lasso_get_pem_file_type(filename);
 	if (file_type == LASSO_PEM_FILE_TYPE_PRIVATE_KEY) {
 		server->private_data->encryption_private_key = xmlSecCryptoAppKeyLoad(filename,
@@ -626,16 +623,9 @@ dispose(GObject *object)
 	}
 	server->private_data->dispose_has_run = TRUE;
 
-	if (server->private_data->encryption_private_key != NULL) {
-		xmlSecKeyDestroy(server->private_data->encryption_private_key);
-		server->private_data->encryption_private_key = NULL;
-	}
+	lasso_release_sec_key(server->private_data->encryption_private_key);
 
-	if (server->private_data->svc_metadatas != NULL) {
-		g_list_foreach(server->private_data->svc_metadatas, (GFunc)g_object_unref, NULL);
-		g_list_free(server->private_data->svc_metadatas);
-		server->private_data->svc_metadatas = NULL;
-	}
+	lasso_release_list_of_gobjects(server->private_data->svc_metadatas);
 
 	if (server->services) {
 		g_hash_table_destroy(server->services);
@@ -644,8 +634,10 @@ dispose(GObject *object)
 
 	/* free allocated memory for hash tables */
 	lasso_mem_debug("LassoServer", "Providers", server->providers);
-	g_hash_table_destroy(server->providers);
-	server->providers = NULL;
+	if (server->providers) {
+		g_hash_table_destroy(server->providers);
+		server->providers = NULL;
+	}
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(server));
 }
@@ -771,9 +763,9 @@ lasso_server_new(const gchar *metadata,
 		}
 	}
 
-	server->private_key = g_strdup(private_key);
-	server->private_key_password = g_strdup(private_key_password);
-	server->certificate = g_strdup(certificate);
+	lasso_assign_string(server->private_key, private_key);
+	lasso_assign_string(server->private_key_password, private_key_password);
+	lasso_assign_string(server->certificate, certificate);
 
 	return server;
 }

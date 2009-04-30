@@ -104,13 +104,15 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	/* build the logout request message */
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		/* build the logout request message */
-		profile->msg_url = lasso_provider_get_metadata_one(
-				remote_provider, "SoapEndpoint");
-		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file =
-			profile->server->private_key;
-		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file =
-			profile->server->certificate;
-		profile->msg_body = lasso_node_export_to_soap(profile->request);
+		lasso_assign_new_string(profile->msg_url, lasso_provider_get_metadata_one(
+				remote_provider, "SoapEndpoint"));
+		/* FIXME: private key file is not owned by the request ? That is potentially a
+		 * problem if the server life does not exceed the request */
+		lasso_assign_new_string(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file,
+			profile->server->private_key);
+		lasso_assign_new_string(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file,
+			profile->server->certificate);
+		lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(profile->request));
 		return 0;
 	}
 
@@ -129,10 +131,10 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 		/* build the msg_url */
-		profile->msg_url = lasso_concat_url_query(url, query);
+		lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
 		g_free(url);
 		g_free(query);
-		profile->msg_body = NULL;
+		lasso_release_string(profile->msg_body);
 		return 0;
 	}
 
@@ -419,12 +421,12 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 		}
 		nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(name_identifier_n);
 		if (federation->local_nameIdentifier) {
-			profile->nameIdentifier = g_object_ref(federation->local_nameIdentifier);
+			lasso_assign_gobject(profile->nameIdentifier, federation->local_nameIdentifier);
 		} else {
-			profile->nameIdentifier = g_object_ref(nameIdentifier);
+			lasso_assign_gobject(profile->nameIdentifier, nameIdentifier);
 		}
 	} else {
-		profile->nameIdentifier = g_object_ref(nameIdentifier);
+		lasso_assign_gobject(profile->nameIdentifier, nameIdentifier);
 	}
 
 	/* get / verify http method */
@@ -448,42 +450,35 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 				lasso_session_remove_assertion(profile->session,
 						profile->remote_providerID);
 				if (logout->initial_remote_providerID && logout->initial_request) {
-					g_free(profile->remote_providerID);
-					profile->remote_providerID = g_strdup(
+					lasso_assign_string(profile->remote_providerID,
 							logout->initial_remote_providerID);
-					profile->response = lasso_lib_logout_response_new_full(
+					lasso_assign_new_gobject(profile->response, lasso_lib_logout_response_new_full(
 							LASSO_PROVIDER(profile->server)->ProviderID,
 							LASSO_SAML_STATUS_CODE_SUCCESS,
 							LASSO_LIB_LOGOUT_REQUEST(logout->initial_request),
 							LASSO_SIGNATURE_TYPE_NONE,
-							0);
+							0));
 				}
 			}
 			return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
 		}
 	}
 
-	/* before setting profile->request, verify it is not already set */
-	if (LASSO_IS_NODE(profile->request) == TRUE) {
-		lasso_node_destroy(LASSO_NODE(profile->request));
-		profile->request = NULL;
-	}
-
 	/* build a new request object from http method */
 	if (http_method == LASSO_HTTP_METHOD_SOAP) {
-		profile->request = lasso_lib_logout_request_new_full(
+		lasso_assign_new_gobject(profile->request, lasso_lib_logout_request_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				nameIdentifier,
 				profile->server->certificate ?
 				LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
-				LASSO_SIGNATURE_METHOD_RSA_SHA1);
+				LASSO_SIGNATURE_METHOD_RSA_SHA1));
 	} else { /* http_method == LASSO_HTTP_METHOD_REDIRECT */
 		is_http_redirect_get_method = TRUE;
-		profile->request = lasso_lib_logout_request_new_full(
+		lasso_assign_new_gobject(profile->request, lasso_lib_logout_request_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				nameIdentifier,
 				LASSO_SIGNATURE_TYPE_NONE,
-				0);
+				0));
 	}
 
 	/* FIXME: Should encrypt nameIdentifier in the request here */
@@ -759,10 +754,8 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 		if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
 			lasso_transfer_string(profile->remote_providerID,
 					logout->initial_remote_providerID);
-			lasso_assign_gobject(profile->request, logout->initial_request);
-			lasso_assign_gobject(profile->response, logout->initial_response);
-			lasso_release_gobject(logout->initial_request);
-			lasso_release_gobject(logout->initial_response);
+			lasso_transfer_gobject(profile->request, logout->initial_request);
+			lasso_transfer_gobject(profile->response, logout->initial_response);
 		}
 	}
 
@@ -874,7 +867,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 	/* Set LogoutResponse */
 	lasso_release_gobject(profile->response);
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
-		lasso_assign_gobject(profile->response, lasso_lib_logout_response_new_full(
+		lasso_assign_new_gobject(profile->response, lasso_lib_logout_response_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				LASSO_SAML_STATUS_CODE_SUCCESS,
 				logout_request,
@@ -883,7 +876,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 				LASSO_SIGNATURE_METHOD_RSA_SHA1));
 	}
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		lasso_assign_gobject(profile->response, lasso_lib_logout_response_new_full(
+		lasso_assign_new_gobject(profile->response, lasso_lib_logout_response_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				LASSO_SAML_STATUS_CODE_SUCCESS,
 				logout_request,
@@ -1152,7 +1145,7 @@ lasso_logout_new(LassoServer *server)
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	logout = g_object_new(LASSO_TYPE_LOGOUT, NULL);
-	LASSO_PROFILE(logout)->server = g_object_ref(server);
+	lasso_assign_gobject(LASSO_PROFILE(logout)->server, server);
 
 	return logout;
 }
@@ -1175,7 +1168,7 @@ lasso_logout_new_from_dump(LassoServer *server, const char *dump)
 	if (dump == NULL)
 		return NULL;
 
-	logout = lasso_logout_new(g_object_ref(server));
+	logout = lasso_logout_new(server);
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(logout), xmlDocGetRootElement(doc));
 	lasso_release_doc(doc);

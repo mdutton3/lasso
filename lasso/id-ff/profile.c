@@ -312,14 +312,12 @@ lasso_profile_set_response_status(LassoProfile *profile, const char *statusCodeV
 
 	if (LASSO_IS_SAMLP_RESPONSE(profile->response)) {
 		LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(profile->response);
-		if (response->Status) lasso_node_destroy(LASSO_NODE(response->Status));
-		response->Status = status;
+		lasso_assign_new_gobject(response->Status, status);
 		return;
 	}
 	if (LASSO_IS_LIB_STATUS_RESPONSE(profile->response)) {
 		LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(profile->response);
-		if (response->Status) lasso_node_destroy(LASSO_NODE(response->Status));
-		response->Status = status;
+		lasso_assign_new_gobject(response->Status, status);
 		return;
 	}
 
@@ -330,16 +328,9 @@ lasso_profile_set_response_status(LassoProfile *profile, const char *statusCodeV
 void
 lasso_profile_clean_msg_info(LassoProfile *profile)
 {
-	if (profile->msg_url) {
-		g_free(profile->msg_url);
-		profile->msg_url = NULL;
-	}
-	if (profile->msg_body) {
-		g_free(profile->msg_body);
-		profile->msg_body = NULL;
-	}
+	lasso_release_string(profile->msg_url);
+	lasso_release_string(profile->msg_body);
 }
-
 
 /**
  * lasso_profile_set_identity_from_dump:
@@ -355,12 +346,10 @@ lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump)
 {
 	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	if (profile->identity) {
-		g_object_unref(profile->identity);
-	}
-	profile->identity = lasso_identity_new_from_dump(dump);
-	if (profile->identity == NULL)
+	lasso_assign_new_gobject(profile->identity, lasso_identity_new_from_dump(dump));
+	if (profile->identity == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP);
+	}
 
 	return 0;
 }
@@ -380,10 +369,7 @@ lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump)
 {
 	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	if (profile->session) {
-		g_object_unref(profile->session);
-	}
-	profile->session = lasso_session_new_from_dump(dump);
+	lasso_assign_new_gobject(profile->session, lasso_session_new_from_dump(dump));
 	if (profile->session == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BAD_SESSION_DUMP);
 
@@ -411,10 +397,7 @@ lasso_profile_get_artifact_message(LassoProfile *profile)
 void
 lasso_profile_set_artifact_message(LassoProfile *profile, char *message)
 {
-	if (profile->private_data->artifact_message) {
-		g_free(profile->private_data->artifact_message);
-	}
-	profile->private_data->artifact_message = g_strdup(message);
+	lasso_assign_string(profile->private_data->artifact_message, message);
 }
 
 /**
@@ -508,11 +491,11 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 		if (strcmp((char*)t->name, "Artifact") == 0) {
 			s = xmlNodeGetContent(t);
-			profile->private_data->artifact = g_strdup((char*)s);
+			lasso_assign_string(profile->private_data->artifact, (char*)s);
 			xmlFree(s);
 		} else if (strcmp((char*)t->name, "ArtifactMessage") == 0) {
 			s = xmlNodeGetContent(t);
-			profile->private_data->artifact_message = g_strdup((char*)s);
+			lasso_assign_string(profile->private_data->artifact_message, (char*)s);
 			xmlFree(s);
 		}
 
@@ -540,22 +523,16 @@ dispose(GObject *object)
 
 
 	lasso_mem_debug("LassoProfile", "Server", profile->server);
-	lasso_server_destroy(profile->server);
-	profile->server = NULL;
+	lasso_release_gobject(profile->server);
 
 	lasso_mem_debug("LassoProfile", "Identity", profile->identity);
-	lasso_identity_destroy(profile->identity);
-	profile->identity = NULL;
+	lasso_release_gobject(profile->identity);
 
 	lasso_mem_debug("LassoProfile", "Session", profile->session);
-	lasso_session_destroy(profile->session);
-	profile->session = NULL;
+	lasso_release_gobject(profile->session);
 
-	g_free(profile->private_data->artifact);
-	profile->private_data->artifact = NULL;
-
-	g_free(profile->private_data->artifact_message);
-	profile->private_data->artifact_message = NULL;
+	lasso_release_string(profile->private_data->artifact);
+	lasso_release_string(profile->private_data->artifact_message);
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(profile));
 }
@@ -564,7 +541,7 @@ static void
 finalize(GObject *object)
 {
 	LassoProfile *profile = LASSO_PROFILE(object);
-	g_free(profile->private_data);
+	lasso_release(profile->private_data);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 

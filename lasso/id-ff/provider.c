@@ -414,8 +414,8 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			name = g_strdup_printf("%s %s", t->name, id);
 			if (isDefault) {
 				if (strcmp(isDefault, "true") == 0 || strcmp(isDefault, "1") == 0)
-					provider->private_data->default_assertion_consumer =
-						g_strdup(id);
+					lasso_assign_string(provider->private_data->default_assertion_consumer,
+						id);
 				xmlFree(isDefault);
 			}
 			xmlFree(id);
@@ -749,6 +749,7 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 	const char *xpath_idp = "/md:EntityDescriptor/md:IDPDescriptor";
 	const char *xpath_sp = "/md:EntityDescriptor/md:SPDescriptor";
 	const char *xpath_organization = "/md:EntityDescriptor/md:Organization";
+	xmlChar *providerID = NULL;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	if (doc == NULL) {
@@ -792,7 +793,9 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 		xpath_sp = "/md11:SPDescriptor";
 	}
 	node = xpathObj->nodesetval->nodeTab[0];
-	provider->ProviderID = (char*)xmlGetProp(node, (xmlChar*)"providerID");
+	providerID = xmlGetProp(node, (xmlChar*)"providerID");
+	lasso_assign_string(provider->ProviderID, (char*)providerID);
+	lasso_release_xml_string(providerID);
 	xmlXPathFreeObject(xpathObj);
 
 	xpathObj = xmlXPathEvalExpression((xmlChar*)xpath_idp, xpathCtx);
@@ -804,7 +807,9 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 			node = xpathObj->nodesetval->nodeTab[0]->children;
 			while (node) {
 				if (strcmp((char*)node->name, "ProviderID") == 0) {
-					provider->ProviderID = (char*)xmlNodeGetContent(node);
+					providerID = xmlNodeGetContent(node);
+					lasso_assign_string(provider->ProviderID, (char*)providerID);
+					lasso_release_xml_string(providerID);
 					break;
 				}
 				node = node->next;
@@ -822,7 +827,9 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 			node = xpathObj->nodesetval->nodeTab[0]->children;
 			while (node) {
 				if (strcmp((char*)node->name, "ProviderID") == 0) {
-					provider->ProviderID = (char*)xmlNodeGetContent(node);
+					providerID = xmlNodeGetContent(node);
+					lasso_assign_string(provider->ProviderID, (char*)providerID);
+					lasso_release_xml_string(providerID);
 					break;
 				}
 				node = node->next;

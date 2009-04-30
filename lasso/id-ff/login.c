@@ -210,22 +210,20 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 
 		resourceOffering = lasso_disco_resource_offering_new(newServiceInstance);
 		lasso_release_gobject(newServiceInstance);
-		resourceOffering->ResourceID = g_object_ref(login->private_data->resourceId);
+		lasso_assign_gobject(resourceOffering->ResourceID, login->private_data->resourceId);
 
 		attributeValue = lasso_saml_attribute_value_new();
-		attributeValue->any = g_list_append(attributeValue->any, resourceOffering);
+		lasso_list_add_new_gobject(attributeValue->any, resourceOffering);
 
 		attribute = lasso_saml_attribute_new();
-		attribute->attributeName = g_strdup("DiscoveryResourceOffering");
-		attribute->attributeNameSpace = g_strdup(LASSO_DISCO_HREF);
-		attribute->AttributeValue = g_list_append(attribute->AttributeValue,
-				attributeValue);
+		lasso_assign_string(attribute->attributeName, "DiscoveryResourceOffering");
+		lasso_assign_string(attribute->attributeNameSpace, LASSO_DISCO_HREF);
+		lasso_list_add_new_gobject(attribute->AttributeValue, attributeValue);
 
 		attributeStatement = lasso_saml_attribute_statement_new();
-		attributeStatement->Attribute = g_list_append(
-				attributeStatement->Attribute, attribute);
+		lasso_list_add_new_gobject(attributeStatement->Attribute, attribute);
 
-		assertion->AttributeStatement = attributeStatement;
+		lasso_assign_new_gobject(assertion->AttributeStatement, attributeStatement);
 
 		/* FIXME: Add CredentialsRef and saml:Advice Assertions */
 	}
@@ -294,15 +292,16 @@ lasso_login_build_assertion(LassoLogin *login,
 			federation == NULL) {
 		/* if NameIDPolicy is 'onetime', don't use a federation */
 		nameIdentifier = lasso_saml_name_identifier_new();
-		nameIdentifier->content = lasso_build_unique_id(32);
-		nameIdentifier->NameQualifier = g_strdup(
+		lasso_assign_new_string(nameIdentifier->content, lasso_build_unique_id(32));
+		lasso_assign_string(nameIdentifier->NameQualifier,
 				LASSO_PROVIDER(profile->server)->ProviderID);
-		nameIdentifier->Format = g_strdup(LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME);
+		lasso_assign_string(nameIdentifier->Format,
+				LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME);
 
 		as = lasso_lib_authentication_statement_new_full(authenticationMethod,
 				authenticationInstant, reauthenticateOnOrAfter,
 				NULL, nameIdentifier);
-		profile->nameIdentifier = LASSO_NODE(nameIdentifier);
+		lasso_assign_new_gobject(profile->nameIdentifier, LASSO_NODE(nameIdentifier));
 	} else {
 		as = lasso_lib_authentication_statement_new_full(authenticationMethod,
 				authenticationInstant, reauthenticateOnOrAfter,
@@ -320,8 +319,8 @@ lasso_login_build_assertion(LassoLogin *login,
 			provider->private_data->encryption_public_key,
 			provider->private_data->encryption_sym_key_type));
 		if (encrypted_element != NULL) {
-			ss->Subject->EncryptedNameIdentifier = encrypted_element;
-			ss->Subject->NameIdentifier = NULL;
+			lasso_assign_new_gobject(ss->Subject->EncryptedNameIdentifier, encrypted_element);
+			lasso_release_gobject(ss->Subject->NameIdentifier);
 		}
 	}
 
@@ -334,14 +333,14 @@ lasso_login_build_assertion(LassoLogin *login,
 		assertion->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 	}
 	assertion->sign_method = profile->server->signature_method;
-	assertion->private_key_file = g_strdup(profile->server->private_key);
-	assertion->certificate_file = g_strdup(profile->server->certificate);
+	lasso_assign_string(assertion->private_key_file, profile->server->private_key);
+	lasso_assign_string(assertion->certificate_file, profile->server->certificate);
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST || \
 			login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP) {
 		/* only add assertion if response is an AuthnResponse */
-		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = g_list_append(NULL,
-				g_object_ref(assertion));
+		lasso_list_add_gobject(LASSO_SAMLP_RESPONSE(profile->response)->Assertion,
+				assertion);
 	}
 
 #ifdef LASSO_WSF_ENABLED
@@ -352,9 +351,7 @@ lasso_login_build_assertion(LassoLogin *login,
 	if (profile->session == NULL) {
 		profile->session = lasso_session_new();
 	}
-	if (login->assertion)
-		lasso_node_destroy(LASSO_NODE(login->assertion));
-	login->assertion = LASSO_SAML_ASSERTION(assertion);
+	lasso_assign_new_gobject(login->assertion, LASSO_SAML_ASSERTION(assertion));
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			LASSO_NODE(assertion));
 
@@ -373,21 +370,19 @@ lasso_login_build_assertion(LassoLogin *login,
 		ss->Subject->SubjectConfirmation = lasso_saml_subject_confirmation_new();
 		if (ss->Subject->SubjectConfirmation->ConfirmationMethod) {
 			/* we know it will only have one element */
-			g_free(ss->Subject->SubjectConfirmation->ConfirmationMethod->data);
+			lasso_release_string(ss->Subject->SubjectConfirmation->ConfirmationMethod->data);
 			g_list_free(ss->Subject->SubjectConfirmation->ConfirmationMethod);
 		}
 		/* liberty-architecture-bindings-profiles-v1.1.pdf, page 24, line 729 */
-		ss->Subject->SubjectConfirmation->ConfirmationMethod = g_list_append(NULL,
-				g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01));
-		ss->Subject->SubjectConfirmation->SubjectConfirmationData =
-			g_strdup(login->assertionArtifact);
+		lasso_list_add_string(ss->Subject->SubjectConfirmation->ConfirmationMethod,
+			LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01);
+		lasso_assign_string(ss->Subject->SubjectConfirmation->SubjectConfirmationData,
+			login->assertionArtifact);
 
 		if (nameIdentifier) {
 			/* draft-liberty-idff-protocols-schemas-1.2-errata-v2.0.pdf */
-			g_free(nameIdentifier->NameQualifier);
-			nameIdentifier->NameQualifier = NULL;
-			g_free(nameIdentifier->Format);
-			nameIdentifier->Format = NULL;
+			lasso_release_string(nameIdentifier->NameQualifier);
+			lasso_release_string(nameIdentifier->Format);
 		}
 	}
 
@@ -487,7 +482,7 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 	nameIDPolicy = LASSO_LIB_AUTHN_REQUEST(profile->request)->NameIDPolicy;
 	if (nameIDPolicy == NULL)
 		nameIDPolicy = LASSO_LIB_NAMEID_POLICY_TYPE_NONE;
-	login->nameIDPolicy = g_strdup(nameIDPolicy);
+	lasso_assign_string(login->nameIDPolicy, nameIDPolicy);
 
 	/* if nameIDPolicy is 'onetime' => nothing to do */
 	if (strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME) == 0) {
@@ -509,7 +504,7 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 			return LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
 		}
 
-		LASSO_PROFILE(login)->nameIdentifier = g_object_ref(
+		lasso_assign_gobject(LASSO_PROFILE(login)->nameIdentifier,
 			LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
 		return 0;
 	}
@@ -528,8 +523,7 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 			 * for the Principal forbids federation, then evaluation
 			 * MAY proceed as if the value was 'onetime'.
 			 */
-			g_free(login->nameIDPolicy);
-			login->nameIDPolicy = g_strdup(LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME);
+			lasso_assign_string(login->nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME);
 			return 0;
 		}
 
@@ -551,8 +545,8 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 		lasso_identity_add_federation(LASSO_PROFILE(login)->identity, federation);
 	}
 
-	LASSO_PROFILE(login)->nameIdentifier =
-		g_object_ref(LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
+	lasso_assign_gobject(LASSO_PROFILE(login)->nameIdentifier,
+		LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
 
 	return ret;
 }
@@ -780,8 +774,8 @@ lasso_login_build_assertion_artifact(LassoLogin *login)
 	xmlFree(identityProviderSuccinctID);
 	b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
 
-	login->assertionArtifact = g_strdup((char*)b64_samlArt);
-	xmlFree(b64_samlArt);
+	lasso_assign_string(login->assertionArtifact, (char*)b64_samlArt);
+	lasso_release_xml_string(b64_samlArt);
 }
 
 /**
@@ -878,13 +872,11 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 		 */
 		if (ss->Subject != NULL && ss->Subject->SubjectConfirmation != NULL) {
 			if (assertion->MajorVersion == 1 && assertion->MinorVersion == 0) {
-				ss->Subject->SubjectConfirmation->ConfirmationMethod =
-					g_list_append(NULL,
-					g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01));
+				lasso_list_add_string(ss->Subject->SubjectConfirmation->ConfirmationMethod,
+					LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01);
 			} else {
-				ss->Subject->SubjectConfirmation->ConfirmationMethod =
-					g_list_append(NULL,
-						g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT));
+				lasso_list_add_string(ss->Subject->SubjectConfirmation->ConfirmationMethod,
+						LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT);
 			}
 		}
 	}
@@ -903,20 +895,20 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 			query = g_strdup_printf("SAMLart=%s&RelayState=%s",
 					escaped_artifact, relayState);
 		}
-		profile->msg_url = lasso_concat_url_query(url, query);
-		g_free(query);
+		lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
+		lasso_release_string(query);
 
 		xmlFree(escaped_artifact);
 	}
 
 	if (http_method == LASSO_HTTP_METHOD_POST) {
-		profile->msg_url = g_strdup(url);
-		profile->msg_body = g_strdup((char*)b64_samlArt);
+		lasso_assign_string(profile->msg_url, url);
+		lasso_assign_string(profile->msg_body, (char*)b64_samlArt);
 		if (relayState != NULL) {
-			profile->msg_relayState = g_strdup(relayState);
+			lasso_assign_string(profile->msg_relayState, relayState);
 		}
 	}
-	g_free(url);
+	lasso_release_string(url);
 	xmlFree(b64_samlArt);
 	xmlFree(relayState);
 
@@ -1008,7 +1000,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	/* check if authnRequest must be signed */
 	md_authnRequestsSigned = lasso_provider_get_metadata_one(provider, "AuthnRequestsSigned");
 	must_sign = (md_authnRequestsSigned && strcmp(md_authnRequestsSigned, "true") == 0);
-	g_free(md_authnRequestsSigned);
+	lasso_release_string(md_authnRequestsSigned);
 
 	/* restore original roles */
 	provider->role = role;
@@ -1038,10 +1030,10 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 
-		profile->msg_url = lasso_concat_url_query(url, query);
-		profile->msg_body = NULL;
-		g_free(query);
-		g_free(url);
+		lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
+		lasso_release_string(profile->msg_body);
+		lasso_release_string(query);
+		lasso_release_string(url);
 	}
 	if (login->http_method == LASSO_HTTP_METHOD_POST) {
 		if (must_sign) {
@@ -1060,9 +1052,9 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 
-		profile->msg_url = lasso_provider_get_metadata_one(
-				remote_provider, "SingleSignOnServiceURL");
-		profile->msg_body = lareq;
+		lasso_assign_new_string(profile->msg_url, lasso_provider_get_metadata_one(
+				remote_provider, "SingleSignOnServiceURL"));
+		lasso_assign_new_string(profile->msg_body, lareq);
 	}
 
 	return ret;
@@ -1114,8 +1106,8 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 		LassoSamlSubjectStatementAbstract *ss;
 		ss = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(assertion->AuthenticationStatement);
 		if (ss->Subject && ss->Subject->SubjectConfirmation) {
-			ss->Subject->SubjectConfirmation->ConfirmationMethod = g_list_append(NULL,
-					g_strdup(LASSO_SAML_CONFIRMATION_METHOD_BEARER));
+			lasso_list_add_string(ss->Subject->SubjectConfirmation->ConfirmationMethod,
+					LASSO_SAML_CONFIRMATION_METHOD_BEARER);
 		}
 	}
 
@@ -1136,14 +1128,14 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 		profile->server->certificate;
 
 	/* build an lib:AuthnResponse base64 encoded */
-	profile->msg_body = lasso_node_export_to_base64(LASSO_NODE(profile->response));
+	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_base64(LASSO_NODE(profile->response)));
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	profile->msg_url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
-			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
+	lasso_assign_new_string(profile->msg_url, lasso_provider_get_assertion_consumer_service_url(remote_provider,
+			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID));
 	if (profile->msg_url == NULL) {
 		return LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL;
 	}
@@ -1194,14 +1186,14 @@ lasso_login_build_request_msg(LassoLogin *login)
 		profile->server->private_key;
 	LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file =
 		profile->server->certificate;
-	profile->msg_body = lasso_node_export_to_soap(profile->request);
+	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(profile->request));
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
-	profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
+	lasso_assign_new_string(profile->msg_url, lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint"));
 	return 0;
 }
 
@@ -1238,9 +1230,9 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 		return lasso_saml20_login_build_response_msg(login);
 	}
 
-	profile->response = lasso_samlp_response_new();
-	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->InResponseTo =
-		g_strdup(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID);
+	lasso_assign_new_gobject(profile->response, lasso_samlp_response_new());
+	lasso_assign_string(LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->InResponseTo,
+		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID);
 	if (LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion == 1 &&
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MinorVersion == 0) {
 		/* this is a SAML 1.0 request, must create SAML 1.0 response */
@@ -1258,14 +1250,13 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 		LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
 	if (remote_providerID != NULL) {
-		profile->remote_providerID = g_strdup(remote_providerID);
+		lasso_assign_string(profile->remote_providerID, remote_providerID);
 		remote_provider = g_hash_table_lookup(profile->server->providers,
 				profile->remote_providerID);
 		ret = lasso_provider_verify_signature(remote_provider,
 				login->private_data->soap_request_msg,
 				"RequestID", LASSO_MESSAGE_FORMAT_SOAP);
-		g_free(login->private_data->soap_request_msg);
-		login->private_data->soap_request_msg = NULL;
+		lasso_release_string(login->private_data->soap_request_msg);
 
 		/* lasso_profile_set_session_from_dump has not been called */
 		if (profile->session == NULL) {
@@ -1293,13 +1284,13 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 			if (status) {
 				lasso_node_destroy(LASSO_NODE(LASSO_SAMLP_RESPONSE(
 								profile->response)->Status));
-				LASSO_SAMLP_RESPONSE(profile->response)->Status =
-					g_object_ref(status);
+				lasso_assign_gobject(LASSO_SAMLP_RESPONSE(profile->response)->Status,
+					status);
 				lasso_session_remove_status(profile->session,
 						remote_providerID);
 			} else if (assertion) {
-				LASSO_SAMLP_RESPONSE(profile->response)->Assertion =
-					g_list_append(NULL, g_object_ref(assertion));
+				lasso_list_add_gobject(LASSO_SAMLP_RESPONSE(profile->response)->Assertion,
+					assertion);
 				lasso_profile_set_response_status(profile,
 						LASSO_SAML_STATUS_CODE_SUCCESS);
 				lasso_session_remove_status(profile->session, remote_providerID);
@@ -1313,7 +1304,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 		profile->server->private_key;
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->certificate_file =
 		profile->server->certificate;
-	profile->msg_body = lasso_node_export_to_soap(profile->response);
+	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(profile->response));
 
 	return ret;
 }
@@ -1366,15 +1357,13 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	profile = LASSO_PROFILE(login);
 
 	/* clean state */
-	if (profile->remote_providerID)
-		g_free(profile->remote_providerID);
-	if (profile->request)
-		lasso_node_destroy(LASSO_NODE(profile->request));
+	lasso_release_string (profile->remote_providerID);
+	lasso_release_gobject (profile->request);
 
 	if (remote_providerID != NULL) {
-		profile->remote_providerID = g_strdup(remote_providerID);
+		lasso_assign_string(profile->remote_providerID, remote_providerID);
 	} else {
-		profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
+		lasso_assign_new_string(profile->remote_providerID, lasso_server_get_first_providerID(profile->server));
 		if (profile->remote_providerID == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 		}
@@ -1395,7 +1384,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 
 	login->http_method = http_method;
 
-	profile->request = LASSO_NODE(lasso_lib_authn_request_new());
+	lasso_assign_new_gobject(profile->request, LASSO_NODE(lasso_lib_authn_request_new()));
 	if (profile->request == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
@@ -1409,7 +1398,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 		request->MajorVersion = 1;
 		request->MinorVersion = 0;
 	}
-	request->IssueInstant = lasso_get_current_time();
+	lasso_assign_new_string(request->IssueInstant, lasso_get_current_time());
 	lasso_assign_string(LASSO_LIB_AUTHN_REQUEST(profile->request)->ProviderID,
 			LASSO_PROVIDER(profile->server)->ProviderID);
 	lasso_assign_string(LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState,
@@ -1494,23 +1483,23 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 			}
 			xmlFree(query_fields[i]);
 		}
-		g_free(query_fields);
+		lasso_release_string(query_fields);
 		if (artifact_b64 == NULL) {
 			return LASSO_PROFILE_ERROR_MISSING_ARTIFACT;
 		}
 	}
 	if (response_http_method == LASSO_HTTP_METHOD_POST) {
-		artifact_b64 = g_strdup(response_msg);
+		lasso_assign_string(artifact_b64, response_msg);
 	}
 
 	i = xmlSecBase64Decode((xmlChar*)artifact_b64, (xmlChar*)artifact, 43);
 	if (i < 0 || i > 42) {
-		g_free(artifact_b64);
+		lasso_release_string(artifact_b64);
 		return LASSO_PROFILE_ERROR_INVALID_ARTIFACT;
 	}
 
 	if (artifact[0] != 0 || artifact[1] != 3) { /* wrong type code */
-		g_free(artifact_b64);
+		lasso_release_string(artifact_b64);
 		return LASSO_PROFILE_ERROR_INVALID_ARTIFACT;
 	}
 
@@ -1519,8 +1508,8 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 
 	provider_succinct_id_b64 = (char*)xmlSecBase64Encode((xmlChar*)provider_succinct_id, 20, 0);
 
-	profile->remote_providerID = lasso_server_get_providerID_from_hash(
-			profile->server, provider_succinct_id_b64);
+	lasso_assign_new_string(profile->remote_providerID, lasso_server_get_providerID_from_hash(
+			profile->server, provider_succinct_id_b64));
 	xmlFree(provider_succinct_id_b64);
 	if (profile->remote_providerID == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
@@ -1530,7 +1519,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	request->RequestID = lasso_build_unique_id(32);
 	request->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;
 	request->MinorVersion = LASSO_SAML_MINOR_VERSION_N;
-	request->IssueInstant = lasso_get_current_time();
+	lasso_assign_new_string(request->IssueInstant, lasso_get_current_time());
 
 	LASSO_SAMLP_REQUEST(request)->AssertionArtifact = artifact_b64;
 	if (profile->server->certificate) {
@@ -1540,7 +1529,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	}
 	request->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
-	profile->request = LASSO_NODE(request);
+	lasso_assign_new_gobject(profile->request, LASSO_NODE(request));
 
 	return ret;
 }
@@ -1577,9 +1566,8 @@ lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
 		return rc;
 
 	/* no RequestID attribute or it would be used in response assertion */
-	g_free(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID);
-	LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID = NULL;
-	LASSO_LIB_AUTHN_REQUEST(profile->request)->NameIDPolicy = g_strdup(
+	lasso_release_string(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID);
+	lasso_assign_string(LASSO_LIB_AUTHN_REQUEST(profile->request)->NameIDPolicy,
 			LASSO_LIB_NAMEID_POLICY_TYPE_ANY);
 
 	return 0;
@@ -1778,7 +1766,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
 
-		profile->request = LASSO_NODE(request);
+		lasso_assign_new_gobject(profile->request, LASSO_NODE(request));
 
 		/* get remote ProviderID */
 		lasso_assign_string(profile->remote_providerID,
@@ -1824,7 +1812,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 					remote_provider, "AuthnRequestsSigned");
 			if (authnRequestSigned != NULL) {
 				must_verify_signature = strcmp(authnRequestSigned, "true") == 0;
-				g_free(authnRequestSigned);
+				lasso_release_string(authnRequestSigned);
 			} else {
 				/* missing element in metadata; shouldn't
 				 * happen, assume true */
@@ -1843,9 +1831,9 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	}
 
 	/* create LibAuthnResponse */
-	profile->response = lasso_lib_authn_response_new(
+	lasso_assign_new_gobject(profile->response, lasso_lib_authn_response_new(
 			LASSO_PROVIDER(profile->server)->ProviderID,
-			LASSO_LIB_AUTHN_REQUEST(profile->request));
+			LASSO_LIB_AUTHN_REQUEST(profile->request)));
 	if (LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion == 1 &&
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MinorVersion < 2) {
 		/* pre-id-ff 1.2, move accordingly */
@@ -1883,19 +1871,17 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	}
 
 	/* clean state */
-	if (profile->remote_providerID)
-		g_free(LASSO_PROFILE(login)->remote_providerID);
-	if (profile->response)
-		lasso_node_destroy(LASSO_NODE(profile->response));
+	lasso_release_string (profile->remote_providerID);
+	lasso_release_gobject(profile->response);
 
-	profile->response = lasso_lib_authn_response_new(NULL, NULL);
+	lasso_assign_new_gobject(profile->response, lasso_lib_authn_response_new(NULL, NULL));
 	format = lasso_node_init_from_message(
 			LASSO_NODE(profile->response), authn_response_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
-	profile->remote_providerID = g_strdup(
+	lasso_assign_string(profile->remote_providerID,
 			LASSO_LIB_AUTHN_RESPONSE(profile->response)->ProviderID);
 
 	if (profile->remote_providerID == NULL) {
@@ -1907,7 +1893,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
-	profile->msg_relayState = g_strdup(LASSO_LIB_AUTHN_RESPONSE(
+	lasso_assign_string(profile->msg_relayState, LASSO_LIB_AUTHN_RESPONSE(
 			profile->response)->RelayState);
 
 	profile->signature_status = lasso_provider_verify_signature(
@@ -1943,18 +1929,18 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 	}
 
 	/* rebuild samlp:Request with request_msg */
-	profile->request = lasso_node_new_from_soap(request_msg);
+	lasso_assign_new_gobject(profile->request, lasso_node_new_from_soap(request_msg));
 	if (profile->request == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 	/* get AssertionArtifact */
-	login->assertionArtifact = g_strdup(
+	lasso_assign_string(login->assertionArtifact,
 			LASSO_SAMLP_REQUEST(profile->request)->AssertionArtifact);
 
 	/* Keep a copy of request msg so signature can be verified when we get
 	 * the providerId in lasso_login_build_response_msg()
 	 */
-	login->private_data->soap_request_msg = g_strdup(request_msg);
+	lasso_assign_string(login->private_data->soap_request_msg, request_msg);
 
 	return ret;
 }
@@ -1986,12 +1972,9 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 
 
 	/* rebuild samlp:Response with response_msg */
-	profile->response = lasso_node_new_from_soap(response_msg);
+	lasso_assign_new_gobject(profile->response, lasso_node_new_from_soap(response_msg));
 	if (! LASSO_IS_SAMLP_RESPONSE(profile->response) ) {
-		if (profile->response) {
-			lasso_node_destroy(profile->response);
-		}
-		profile->response = NULL;
+		lasso_release_gobject(profile->response);
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 	response = LASSO_SAMLP_RESPONSE(profile->response);
@@ -2053,7 +2036,7 @@ lasso_login_set_encryptedResourceId(LassoLogin *login,
 	g_return_val_if_fail(LASSO_IS_DISCO_ENCRYPTED_RESOURCE_ID(encryptedResourceId),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	login->private_data->encryptedResourceId = g_object_ref(encryptedResourceId);
+	lasso_assign_gobject(login->private_data->encryptedResourceId, encryptedResourceId);
 
 	return 0;
 }
@@ -2076,7 +2059,7 @@ lasso_login_set_resourceId(LassoLogin *login, const char *content)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(content != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	login->private_data->resourceId = lasso_disco_resource_id_new(content);
+	lasso_assign_new_gobject(login->private_data->resourceId, lasso_disco_resource_id_new(content));
 	return 0;
 }
 #else
@@ -2165,19 +2148,12 @@ dispose(GObject *object)
 {
 	LassoLogin *login = LASSO_LOGIN(object);
 
-	g_free(login->private_data->soap_request_msg);
-	login->private_data->soap_request_msg = NULL;
-
-
-	lasso_node_destroy(LASSO_NODE(login->private_data->saml2_assertion));
-	login->private_data->saml2_assertion = NULL;
+	lasso_release_string(login->private_data->soap_request_msg);
+	lasso_release_gobject(login->private_data->saml2_assertion);
 
 #ifdef LASSO_WSF_ENABLED
-	lasso_node_destroy(LASSO_NODE(login->private_data->resourceId));
-	login->private_data->resourceId = NULL;
-
-	lasso_node_destroy(LASSO_NODE(login->private_data->encryptedResourceId));
-	login->private_data->encryptedResourceId = NULL;
+	lasso_release_gobject(login->private_data->resourceId);
+	lasso_release_gobject(login->private_data->encryptedResourceId);
 #endif
 	lasso_release_string(login->private_data->request_id);
 	G_OBJECT_CLASS(parent_class)->dispose(object);
@@ -2187,8 +2163,7 @@ static void
 finalize(GObject *object)
 {
 	LassoLogin *login = LASSO_LOGIN(object);
-	g_free(login->private_data);
-	login->private_data = NULL;
+	lasso_release(login->private_data);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
@@ -2265,7 +2240,7 @@ lasso_login_new(LassoServer *server)
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	login = g_object_new(LASSO_TYPE_LOGIN, NULL);
-	LASSO_PROFILE(login)->server = g_object_ref(server);
+	lasso_assign_gobject(LASSO_PROFILE(login)->server, server);
 
 	return login;
 }
@@ -2291,7 +2266,7 @@ lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
 	login = g_object_new(LASSO_TYPE_LOGIN, NULL);
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(login), xmlDocGetRootElement(doc));
-	LASSO_PROFILE(login)->server = g_object_ref(server);
+	lasso_assign_gobject(LASSO_PROFILE(login)->server, server);
 	lasso_release_doc(doc);
 
 	return login;
