@@ -133,19 +133,20 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 
 	/* Parsing */
 	profile = LASSO_PROFILE(name_id_management);
+	request = (LassoSamlp2ManageNameIDRequest*)lasso_samlp2_manage_name_id_request_new();
 	rc1 = lasso_saml20_profile_process_any_request(profile,
-			lasso_samlp2_manage_name_id_request_new(),
+			(LassoNode*)request,
 			request_msg);
 
 	if (! LASSO_IS_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)) {
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	}
-	request = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request);
 
 	/* NameID treatment */
 	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile,
 			&request->NameID, &request->EncryptedID);
 
+	lasso_release_gobject(request);
 	if (profile->signature_status) {
 		return profile->signature_status;
 	}
@@ -429,6 +430,7 @@ lasso_name_id_management_new(LassoServer *server)
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	name_id_management = g_object_new(LASSO_TYPE_NAME_ID_MANAGEMENT, NULL);
+	/* fresh object dont need to check previous value */
 	LASSO_PROFILE(name_id_management)->server = g_object_ref(server);
 
 	return name_id_management;
@@ -464,7 +466,7 @@ lasso_name_id_management_new_from_dump(LassoServer *server, const char *dump)
 	if (dump == NULL)
 		return NULL;
 
-	name_id_management = lasso_name_id_management_new(g_object_ref(server));
+	name_id_management = lasso_name_id_management_new(server);
 	doc = lasso_xml_parse_memory(dump, strlen(dump));
 	lasso_node_init_from_xml(LASSO_NODE(name_id_management), xmlDocGetRootElement(doc));
 	lasso_release_doc(doc);

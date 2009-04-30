@@ -27,6 +27,7 @@
 
 #include <lasso/saml-2.0/providerprivate.h>
 #include <lasso/id-ff/providerprivate.h>
+#include "../utils.h"
 
 const char *profile_names[] = {
 	"", /* No fedterm in SAML 2.0 */
@@ -152,6 +153,7 @@ gboolean
 lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 {
 	xmlNode *node, *descriptor_node;
+	xmlChar *providerID;
 
 	if (strcmp((char*)root_node->name, "EntityDescriptor") == 0) {
 		node = root_node;
@@ -172,7 +174,9 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 		return FALSE;
 	}
 
-	provider->ProviderID = (char*)xmlGetProp(node, (xmlChar*)"entityID");
+	providerID = xmlGetProp(node, (xmlChar*)"entityID");
+	lasso_assign_string(provider->ProviderID, (char*)providerID);
+	lasso_release_xml_string(providerID);
 	if (provider->ProviderID == NULL) {
 		message (G_LOG_LEVEL_CRITICAL, "lasso_saml20_provider_load_metadata_from_doc: no entityID attribute");
 		return FALSE;
@@ -379,8 +383,6 @@ lasso_saml20_provider_get_assertion_consumer_service_binding(LassoProvider *prov
 	return binding;
 }
 
-
-
 gboolean
 lasso_saml20_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote_provider,
 		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,
@@ -399,6 +401,7 @@ lasso_saml20_provider_accept_http_method(LassoProvider *provider, LassoProvider 
 		"HTTP-Artifact",
 		NULL
 	};
+	gboolean rc = FALSE;
 
 
 	initiating_role = remote_provider->role;
@@ -416,8 +419,8 @@ lasso_saml20_provider_accept_http_method(LassoProvider *provider, LassoProvider 
 
 	if (lasso_provider_get_metadata_list(provider, protocol_profile) &&
 			lasso_provider_get_metadata_list(remote_provider, protocol_profile)) {
-		return TRUE;
+		rc = TRUE;
 	}
-
-	return FALSE;
+	lasso_release_string(protocol_profile);
+	return rc;
 }
