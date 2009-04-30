@@ -40,6 +40,8 @@ struct _LassoRegistry {
 };
 
 LassoRegistry *lasso_registry_new();
+void lasso_registry_destroy();
+void lasso_registry_default_shutdown();
 gint lasso_registry_add_direct_mapping(LassoRegistry *registry, const char *from_namespace,
 		const char *from_name, const char *to_namespace, const char *to_name);
 gint lasso_registry_add_functional_mapping(LassoRegistry *registry, const char *from_namespace,

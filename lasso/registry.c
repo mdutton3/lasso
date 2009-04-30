@@ -64,12 +64,19 @@ struct _LassoRegistryFunctionalMappingRecord {
 	LassoRegistryTranslationFunction translation_function;
 };
 
+static LassoRegistry *default_registry = NULL;
+
 static LassoRegistry *lasso_registry_get_default() {
-	static LassoRegistry *default_registry = NULL;
 	if (default_registry == NULL) {
 		default_registry = lasso_registry_new();
 	}
 	return default_registry;
+}
+
+void lasso_registry_default_shutdown()
+{
+	lasso_registry_destroy(default_registry);
+	default_registry = NULL;
 }
 
 /**
@@ -143,15 +150,34 @@ LassoRegistry *lasso_registry_new()
 {
 	LassoRegistry *ret = g_new0(LassoRegistry, 1);
 
-	ret->direct_mapping = g_hash_table_new(
+	ret->direct_mapping = g_hash_table_new_full(
 			(GHashFunc) lasso_registry_direct_mapping_hash,
-			(GEqualFunc) lasso_registry_direct_mapping_equal);
+			(GEqualFunc) lasso_registry_direct_mapping_equal,
+			NULL,
+			g_free);
 
-	ret->functional_mapping = g_hash_table_new(
+	ret->functional_mapping = g_hash_table_new_full(
 			(GHashFunc) lasso_registry_functional_mapping_hash,
-			(GEqualFunc) lasso_registry_functional_mapping_equal);
+			(GEqualFunc) lasso_registry_functional_mapping_equal,
+			NULL,
+			g_free);
 
 	return ret;
+}
+
+/**
+ * lasso_registry_destroy:
+ * @registry: the #LassoRegistry object
+ *
+ * Destroy a #LassoRegistry.
+ */
+void lasso_registry_destroy(LassoRegistry *registry)
+{
+	g_hash_table_destroy(registry->direct_mapping);
+	registry->direct_mapping = NULL;
+	g_hash_table_destroy(registry->functional_mapping);
+	registry->functional_mapping = NULL;
+	g_free(registry);
 }
 
 static LassoRegistryTranslationFunction lasso_registry_get_translation_function(GHashTable *functional_mappings, GQuark from_ns_quark, GQuark to_ns_quark)

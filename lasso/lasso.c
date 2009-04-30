@@ -38,6 +38,7 @@
 #include "lasso.h"
 #include "debug.h"
 #include "./backward_comp.h"
+#include "./registry-private.h"
 
 /* Set to true, it forces lasso_provider_verify_signature and lasso_query_verify_signature to always
  * return TRUE. */
@@ -166,6 +167,10 @@ int lasso_shutdown()
 #endif /* XMLSEC_NO_XSLT */
 	/* Cleanup function for the XML library */
 	xmlCleanupParser();
+
+	/* Disallocate default registry */
+	lasso_registry_default_shutdown();
+
 	if (lasso_flag_memory_debug == TRUE) {
 	/* this is to debug memory for regression tests */
 		xmlMemoryDump();
