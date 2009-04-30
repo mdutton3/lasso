@@ -1541,6 +1541,9 @@ lasso_url_add_parameters(char *url,
 		} else {
 			new_url = g_strdup_printf("%s=%s", (char*)encoded_key, (char*)encoded_value);
 		}
+		if (old_url != url) {
+			lasso_release_string(old_url);
+		}
 		old_url = new_url;
 
 		lasso_release_xml_string(encoded_key);
