@@ -887,8 +887,14 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (class->node_data->keep_xmlnode) {
 		lasso_node_set_original_xmlnode(node, xmlnode);
 	}
+	if (lasso_flag_memory_debug == TRUE) {
+		fprintf(stderr, "Initializing %s (at %p)\n", G_OBJECT_TYPE_NAME(node), node);
+	}
 
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
+		if (lasso_flag_memory_debug == TRUE) {
+			fprintf(stderr, " initializing %s\n", G_OBJECT_CLASS_NAME(class));
+		}
 
 		for (t = xmlnode->children; t; t = t->next) {
 			if (t->type == XML_TEXT_NODE) {
@@ -1008,6 +1014,9 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					xmlFree(tmp);
 				} else {
 					(*(void**)value) = tmp;
+					if (lasso_flag_memory_debug == TRUE) {
+						fprintf(stderr, "   setting field %s/%s to value %p: %s\n", G_OBJECT_TYPE_NAME(node), snippet->name, *(void**)value, (char*)tmp);
+					}
 				}
 
 				break;
@@ -1051,6 +1060,10 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				(*(int*)value) = val;
 			} else {
 				lasso_assign_string((*(char**)value), tmp);
+				if (lasso_flag_memory_debug == TRUE) {
+					fprintf(stderr, "   setting prop %s/%s to value %p: %s\n",
+							G_OBJECT_TYPE_NAME(node), snippet->name, *(void**)value, (char*)tmp);
+				}
 			}
 			xmlFree(tmp);
 		}
