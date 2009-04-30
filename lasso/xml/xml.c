@@ -758,6 +758,18 @@ lasso_node_get_original_xmlnode(LassoNode *node)
 	return g_object_get_qdata(G_OBJECT(node), original_xmlnode_quark);
 }
 
+static void original_xmlnode_free(void *node) {
+	xmlNode *xnode = (xmlNode*)node;
+
+
+	if (node) {
+		if (lasso_flag_memory_debug) {
+			fprintf(stderr, "freeing original xmlnode %s (at %p)\n", xnode->name, xnode);
+		}
+		xmlFreeNode(xnode);
+	}
+}
+
 /**
  * lasso_node_set_original_xmlnode:
  * @node: the #LassoNode object
@@ -767,9 +779,22 @@ lasso_node_get_original_xmlnode(LassoNode *node)
  *
  */
 void
-lasso_node_set_original_xmlnode(LassoNode *node, xmlNode* xmlNode)
+lasso_node_set_original_xmlnode(LassoNode *node, xmlNode* xmlnode)
 {
-	g_object_set_qdata_full(G_OBJECT(node), original_xmlnode_quark, xmlCopyNode(xmlNode, 1), (GDestroyNotify)xmlFreeNode);
+	if (xmlnode) {
+		xmlNode *copy = NULL;
+
+		copy = xmlCopyNode(xmlnode, 1);
+		if (lasso_flag_memory_debug) {
+			fprintf(stderr, "setting original xmlnode (at %p) on node %s:%p\n", copy, G_OBJECT_TYPE_NAME (node), node);
+		}
+		g_object_set_qdata_full(G_OBJECT(node), original_xmlnode_quark, copy, (GDestroyNotify)original_xmlnode_free);
+	} else {
+		if (lasso_flag_memory_debug) {
+			fprintf(stderr, "clearing original xmlnode on node %p\n", node);
+		}
+		g_object_set_qdata_full(G_OBJECT(node), original_xmlnode_quark, NULL, (GDestroyNotify)original_xmlnode_free);
+	}
 }
 
 /*****************************************************************************/
