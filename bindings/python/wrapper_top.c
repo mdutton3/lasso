@@ -46,14 +46,14 @@ noneRef() {
 static PyObject*
 get_dict_from_hashtable_of_objects(GHashTable *value)
 {
-	GList *keys;
+	GList *keys, *begin;
 	PyObject *dict,*proxy;
 	GObject *item_value;
 	PyObject *item;
 
 	dict = PyDict_New();
 
-	keys = g_hash_table_get_keys(value);
+	begin = keys = g_hash_table_get_keys(value);
 	for (; keys; keys = g_list_next(keys)) {
 		item_value = g_hash_table_lookup(value, keys->data);
 		if (item_value) {
@@ -64,7 +64,7 @@ get_dict_from_hashtable_of_objects(GHashTable *value)
 			PyErr_Warn(PyExc_RuntimeWarning, "hashtable contains a null value");
 		}
 	}
-	g_list_free(keys);
+	g_list_free(begin);
 
 	proxy = PyDictProxy_New(dict);
 	Py_DECREF(dict);
