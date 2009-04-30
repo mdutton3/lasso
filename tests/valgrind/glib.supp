@@ -1,0 +1,408 @@
+{
+   suppression 0
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   fun:g_boxed_type_register_static
+}
+{
+   suppression 1
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   fun:g_signal_newv
+   fun:g_signal_new_valist
+   fun:g_signal_new
+   fun:g_object_do_class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 2
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_hash_table_new_full
+   fun:g_hash_table_new
+   fun:g_data_initialize
+   fun:g_datalist_id_set_data_full
+   fun:g_object_init
+   fun:g_type_create_instance
+}
+{
+   suppression 3
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_memdup
+   fun:g_signal_newv
+   fun:g_signal_new_valist
+   fun:g_signal_new
+   fun:g_object_do_class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 4
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:type_add_flags_W
+}
+{
+   suppression 5
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:g_realloc
+   fun:g_type_add_interface_check
+}
+{
+   suppression 6
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_signal_newv
+   fun:g_signal_new_valist
+   fun:g_signal_new
+   fun:g_object_do_class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 7
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_slice_alloc
+   fun:g_hash_table_new_full
+   fun:g_hash_table_new
+   fun:g_type_init_with_debug_flags
+}
+{
+   suppression 8
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_slice_init_nomessage
+   fun:g_slice_alloc
+   fun:g_hash_table_new_full
+   fun:g_hash_table_new
+   fun:g_quark_from_static_string
+   fun:g_type_init_with_debug_flags
+}
+{
+   suppression 9
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_slice_alloc
+   fun:g_hash_table_new_full
+   fun:g_hash_table_new
+   fun:g_param_spec_pool_new
+   fun:g_object_do_class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 10
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_hash_table_insert_internal
+   fun:type_node_any_new_W
+}
+{
+   suppression 11
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   fun:g_bsearch_array_grow
+   fun:g_bsearch_array_insert
+   fun:g_signal_newv
+   fun:g_signal_new_valist
+   fun:g_signal_new
+   fun:g_object_do_class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 12
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:g_realloc
+   fun:type_node_any_new_W
+}
+{
+   suppression 13
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_closure_new_simple
+   fun:g_signal_type_cclosure_new
+}
+{
+   suppression 17
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_strdup
+   fun:g_quark_from_string
+   fun:type_node_any_new_W
+}
+{
+   suppression 18
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_param_type_register_static
+}
+{
+   suppression 19
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:g_realloc
+   fun:type_add_flags_W
+}
+{
+   suppression 22
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   fun:g_value_register_transform_func
+   fun:g_value_transforms_init
+   fun:g_type_init_with_debug_flags
+}
+{
+   suppression 23
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   fun:type_node_any_new_W
+}
+{
+   suppression 24
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:type_data_make_W
+}
+{
+   suppression 25
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:g_realloc
+   fun:g_quark_from_static_string
+   fun:g_type_init_with_debug_flags
+}
+{
+   suppression 26
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   fun:g_bsearch_array_grow
+   fun:signal_add_class_closure
+   fun:g_signal_newv
+   fun:g_signal_new_valist
+   fun:g_signal_new
+   fun:g_object_do_class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 28
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_param_spec_pool_new
+   fun:g_object_do_class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 29
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_hash_table_new_full
+   fun:g_hash_table_new
+   fun:g_signal_init
+   fun:g_type_init_with_debug_flags
+}
+{
+   suppression 30
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_slice_alloc
+   fun:g_hash_table_new_full
+   fun:g_hash_table_new
+   fun:g_quark_from_static_string
+   fun:g_type_init_with_debug_flags
+}
+{
+   suppression 31
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_param_spec_types_init
+}
+{
+   suppression 32
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_hash_table_insert_internal
+   fun:g_quark_from_string
+   fun:type_node_any_new_W
+}
+{
+   suppression 33
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_slice_alloc
+   fun:g_hash_table_new_full
+   fun:g_hash_table_new
+   fun:g_signal_init
+   fun:g_type_init_with_debug_flags
+}
+{
+   suppression 34
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_slice_alloc
+   fun:g_hash_table_new_full
+   fun:g_hash_table_new
+   fun:g_data_initialize
+   fun:g_datalist_id_set_data_full
+   fun:g_object_init
+   fun:g_type_create_instance
+}
+{
+   suppression 35
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_type_class_ref
+}
+{
+   suppression 36
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:g_realloc
+   fun:g_closure_set_meta_marshal
+   fun:g_signal_type_cclosure_new
+}
+{
+   suppression 37
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_hash_table_new_full
+   fun:g_hash_table_new
+   fun:g_param_spec_pool_new
+   fun:g_object_do_class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 38
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 40
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_strdup
+   fun:g_quark_from_string
+}
+{
+   suppression 41
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_strdup
+   fun:g_get_filename_charsets
+   fun:g_filename_display_name
+   fun:g_file_get_contents
+}
+{
+   suppression 42
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_get_filename_charsets
+   fun:g_filename_display_name
+   fun:g_file_get_contents
+}
+{
+   suppression 42
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_get_charset
+   fun:g_log_default_handler
+}
+{
+   suppression 43
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_rand_new_with_seed_array
+   fun:g_rand_new
+   fun:g_random_int
+}
+{
+   suppression 44
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:g_realloc
+   fun:g_array_maybe_expand
+   fun:g_array_set_size
+   fun:g_static_private_set
+   fun:g_get_charset
+   fun:g_log_default_handler
+}
+{
+   suppression 45
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_strdup
+   fun:g_get_charset
+   fun:g_log_default_handler
+}
+{
+   suppression 46
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_strdup
+   fun:g_intern_string
+}
+{
+   suppression 47
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_thread_self
+   fun:g_static_private_get
+   fun:g_get_charset
+   fun:g_log_default_handler
+}
+{
+   suppression 48
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_slice_alloc
+   fun:g_array_sized_new
+   fun:g_array_new
+   fun:g_static_private_set
+   fun:g_get_charset
+   fun:g_log_default_handler
+}

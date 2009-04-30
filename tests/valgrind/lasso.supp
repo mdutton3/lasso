@@ -1,0 +1,60 @@
+{
+   suppression 27
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_hash_table_new_full
+   fun:get_constructors_registry
+   fun:lookup_registry
+   fun:lasso_discovery_register_constructor_for_service_type
+}
+{
+   suppression 21
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_slice_alloc
+   fun:g_hash_table_new_full
+   fun:get_constructors_registry
+   fun:lookup_registry
+   fun:lasso_discovery_register_constructor_for_service_type
+}
+{
+   suppression 20
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_strdup
+   fun:lasso_node_class_set_nodename
+   fun:class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 16
+   Memcheck:Leak
+   fun:malloc
+   fun:xmlStrndup
+   fun:xmlStrdup
+   fun:xmlNewNs
+   fun:lasso_node_class_set_ns
+   fun:class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 14
+   Memcheck:Leak
+   fun:malloc
+   fun:xmlNewNs
+   fun:lasso_node_class_set_ns
+   fun:class_init
+   fun:g_type_class_ref
+}
+{
+   suppression 15
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_strdup
+   fun:set_registry
+   fun:lasso_discovery_register_constructor_for_service_type
+}
