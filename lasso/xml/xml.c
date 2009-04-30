@@ -982,7 +982,8 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				} else if (type == SNIPPET_LIST_CONTENT) {
 					GList **location = value;
 					xmlChar *s = xmlNodeGetContent(t);
-					*location = g_list_append(*location, s);
+					lasso_list_add_string(*location, (char*)s);
+					lasso_release_xml_string(s);
 				} else if (type == SNIPPET_EXTENSION ||
 						type == SNIPPET_LIST_XMLNODES) {
 					GList **location = value;
@@ -993,16 +994,20 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				if (tmp == NULL)
 					break;
 
-				if (type == SNIPPET_NODE || type == SNIPPET_NODE_IN_CHILD || type ==
-						SNIPPET_NAME_IDENTIFIER) { if (snippet->type &
-							SNIPPET_KEEP_XMLNODE && !
+				if (type == SNIPPET_XMLNODE || type == SNIPPET_NODE || type == SNIPPET_NODE_IN_CHILD || type ==
+						SNIPPET_NAME_IDENTIFIER) {
+					if (snippet->type & SNIPPET_KEEP_XMLNODE && !
 							LASSO_NODE_GET_CLASS(tmp)->node_data->keep_xmlnode)
-						{ lasso_node_set_original_xmlnode(tmp, t); } }
-
-				if (snippet->type & SNIPPET_INTEGER) {
+					{
+						lasso_node_set_original_xmlnode(tmp, t);
+					}
+					*(void**)value = tmp;
+					tmp = NULL;
+				} else if (snippet->type & SNIPPET_INTEGER) {
 					int val = atoi(tmp);
 					(*(int*)value) = val;
 					xmlFree(tmp);
+					tmp = NULL;
 				} else if (snippet->type & SNIPPET_BOOLEAN) {
 					int val = 0;
 					if (strcmp((char*)tmp, "true") == 0) {
@@ -1012,11 +1017,15 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					}
 					(*(int*)value) = val;
 					xmlFree(tmp);
+					tmp = NULL;
 				} else {
-					(*(void**)value) = tmp;
+					lasso_release_string(*(char**)value);
+					*(char**)value = g_strdup(tmp);
 					if (lasso_flag_memory_debug == TRUE) {
 						fprintf(stderr, "   setting field %s/%s to value %p: %s\n", G_OBJECT_TYPE_NAME(node), snippet->name, *(void**)value, (char*)tmp);
 					}
+					lasso_release_xml_string((*(xmlChar**)&tmp));
+					tmp = NULL;
 				}
 
 				break;
@@ -1239,13 +1248,15 @@ lasso_node_dispose(GObject *object)
 				case SNIPPET_NODE:
 				case SNIPPET_NAME_IDENTIFIER:
 				case SNIPPET_NODE_IN_CHILD:
-					lasso_node_destroy(*value);
+					lasso_release_gobject(*value);
 					break;
 				case SNIPPET_XMLNODE:
 					xmlFreeNode(*value);
 					break;
-				case SNIPPET_EXTENSION:
 				case SNIPPET_LIST_NODES:
+					lasso_release_list_of_gobjects((*(GList**)value));
+					break;
+				case SNIPPET_EXTENSION:
 				case SNIPPET_LIST_CONTENT:
 				case SNIPPET_LIST_XMLNODES:
 					elem = (GList*)(*value);
@@ -1270,7 +1281,7 @@ lasso_node_dispose(GObject *object)
 										g_hash_table_destroy(*value);
 									}
 								} else {
-									g_free(*value);
+									lasso_release_string(*(char**)value);
 								}
 							} break;
 				case SNIPPET_SIGNATURE:
