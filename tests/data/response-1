@@ -1,0 +1,57 @@
+<samlp:Response IssueInstant="2009-04-20T14:31:31.917Z" ID="dzzfpt4zXBljkK2pummN8Ro2zo-" Version="2.0" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"><saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">gefssstg</saml:Issuer><samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status><saml:Assertion Version="2.0" IssueInstant="2009-04-20T14:31:31.972Z" ID="Zm9SHCgSkcP34HQTbn5ZOp6dQeB" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"><saml:Issuer>gefssstg</saml:Issuer><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<ds:Reference URI="#Zm9SHCgSkcP34HQTbn5ZOp6dQeB">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>AuvPOsEPfXxMD4Je7W3W9Qk34/g=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue>
+qO+/JLyIspZUvOCtp0tsf+8NTL9mSFZyhuzWnflQnG8MaGJ6RUwXtMeupfwsjmfJPJ7lMxV45abT
+TN1UWASzfhPWH+rWbi3lqzut3vPTxZyj8i+nGDdkIMpxLpf9WXT+LTLgiQZsK9IU27sJuM7CuyEN
+9Kyr2076DF6pz/w0/20=
+</ds:SignatureValue>
+<ds:KeyInfo>
+<ds:X509Data>
+<ds:X509Certificate>
+MIIE1DCCA7ygAwIBAgIRALvyUuiiVghKTPVWuO9rkJMwDQYJKoZIhvcNAQEFBQAwazELMAkGA1UE
+BhMCVVMxLTArBgNVBAoTJFRydXN0ZWQgU2VjdXJlIENlcnRpZmljYXRlIEF1dGhvcml0eTEtMCsG
+A1UEAxMkVHJ1c3RlZCBTZWN1cmUgQ2VydGlmaWNhdGUgQXV0aG9yaXR5MB4XDTA4MTEwNjAwMDAw
+MFoXDTEwMTEwNjIzNTk1OVowgdUxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDVDESMBAGA1UEBxMJ
+RmFpcmZpZWxkMSEwHwYDVQQKExhHZW5lcmFsIEVsZWN0cmljIENvbXBhbnkxGDAWBgNVBAsTD0dF
+IEdJUyBDb3JwdDUwODEtMCsGA1UECxMkUHJvdmlkZWQgYnkgR2VuZXJhbCBFbGVjdHJpYyBDb21w
+YW55MRcwFQYDVQQLEw5FbnRlcnByaXNlIFNTTDEgMB4GA1UEAxMXZnNzLnN0YWdlLmdlY29tcGFu
+eS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAM7CP9FlNdLPYof1BtyJ128uYeFHWc0P
+8eyXZe6AHO2nmL2ZqXpzpDt2xeLGqu+7jakE5Ijr9ePLgyQ+2Up7gUlMVmrklU/i5JU4V0HYFkdD
+FQQHzcAHI0Y/UStf4iZ1SEYVqPHJECyrXSn8a9N4UoZbvqCmD4ycaY+bCvYgeclvAgMBAAGjggGK
+MIIBhjAfBgNVHSMEGDAWgBQxlflM+yx445/iHjtrODIv/ZeZ5jAdBgNVHQ4EFgQUoFBIe8x/db40
+xTRYEEVO2z7gPO4wDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYB
+BQUHAwEGCCsGAQUFBwMCMBEGCWCGSAGG+EIBAQQEAwIGwDBLBgNVHSAERDBCMEAGCysGAQQBsjEB
+AgIIMDEwLwYIKwYBBQUHAgEWI2h0dHA6Ly93d3cuY3NjdHJ1c3RlZHNlY3VyZS5jb20vY3BzMIGm
+BgNVHR8EgZ4wgZswS6BJoEeGRWh0dHA6Ly9jcmwuY3NjdHJ1c3RlZHNlY3VyZS5jb20vVHJ1c3Rl
+ZFNlY3VyZUNlcnRpZmljYXRlQXV0aG9yaXR5LmNybDBMoEqgSIZGaHR0cDovL2NybDIuY3NjdHJ1
+c3RlZHNlY3VyZS5jb20vVHJ1c3RlZFNlY3VyZUNlcnRpZmljYXRlQXV0aG9yaXR5LmNybDANBgkq
+hkiG9w0BAQUFAAOCAQEAQBsHyu5MeDUwRU87H6olcF7M6WVa2y0YvqT858bI1fhPgg608agz2E/h
+6lKdKBnsw9T1IzdEAd61hSGggb+nN86gXTbAGtdYCC0f3J+5l19VqzMeHTyvfI2uMlE+2GXYqGjV
+Wan5r5CBuPYExJou4boigfhSVTPkjkNBSbVd5mby61XuULXQraozGwJouWG2m0292fQ8tiFcZZ6S
+Pt+GiSi4+PatACeb0wXK/lTeus3dWJ5m1pRYt6tGp5Q+h/uTA2094uKxEpjZ+TYFBadLxNvNcRQb
+/06AaxVLZFuFpJwfFzyQYE1CyRNgjl6prucUWQ1e/OMn15BGSnY4Ft3c8w==
+</ds:X509Certificate>
+</ds:X509Data>
+<ds:KeyValue>
+<ds:RSAKeyValue>
+<ds:Modulus>
+zsI/0WU10s9ih/UG3InXby5h4UdZzQ/x7Jdl7oAc7aeYvZmpenOkO3bF4saq77uNqQTkiOv148uD
+JD7ZSnuBSUxWauSVT+LklThXQdgWR0MVBAfNwAcjRj9RK1/iJnVIRhWo8ckQLKtdKfxr03hShlu+
+oKYPjJxpj5sK9iB5yW8=
+</ds:Modulus>
+<ds:Exponent>AQAB</ds:Exponent>
+</ds:RSAKeyValue>
+</ds:KeyValue>
+</ds:KeyInfo>
+</ds:Signature><saml:Subject><saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">999999500</saml:NameID><saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"><saml:SubjectConfirmationData NotOnOrAfter="2009-04-20T14:36:31.973Z" Recipient="https://wg.us.wrproxy.com/idpsso.php"/></saml:SubjectConfirmation></saml:Subject><saml:Conditions NotOnOrAfter="2009-04-20T14:36:31.972Z" NotBefore="2009-04-20T14:26:31.972Z"><saml:AudienceRestriction><saml:Audience>Webroot</saml:Audience></saml:AudienceRestriction></saml:Conditions><saml:AuthnStatement AuthnInstant="2009-04-20T14:31:31.971Z" SessionIndex="Zm9SHCgSkcP34HQTbn5ZOp6dQeB"><saml:AuthnContext><saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified</saml:AuthnContextClassRef></saml:AuthnContext></saml:AuthnStatement><saml:AttributeStatement xmlns:xs="http://www.w3.org/2001/XMLSchema"><saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" Name="lastname"><saml:AttributeValue xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">User</saml:AttributeValue></saml:Attribute><saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" Name="uid"><saml:AttributeValue xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">999999500</saml:AttributeValue></saml:Attribute><saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" Name="firstname"><saml:AttributeValue xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Test</saml:AttributeValue></saml:Attribute><saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" Name="mail"><saml:AttributeValue xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">999999500@apctest.ge.com</saml:AttributeValue></saml:Attribute></saml:AttributeStatement></saml:Assertion></samlp:Response>

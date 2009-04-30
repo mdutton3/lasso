@@ -1,0 +1,39 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><samlp:ArtifactResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_4CA30953B0EB4751E59BA239A1F58BEE" InResponseTo="_34B09583D8AD90E6B1345B27B2CA7DD2" Version="2.0" IssueInstant="2009-04-29T22:27:50Z"><saml:Issuer>http://idp5/metadata</saml:Issuer><Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+<SignedInfo>
+<CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<Reference URI="#_4CA30953B0EB4751E59BA239A1F58BEE">
+<Transforms>
+<Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+<Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+</Transforms>
+<DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<DigestValue>qMli6MfowrcVD5sX9qx5nvZe0lI=</DigestValue>
+</Reference>
+</SignedInfo>
+<SignatureValue>elUruTbgjvLHOWnIhphsVxBe2YS6I3+vfafeFYZuVFG0vTsllOlEA7wLx9KOL9mS
+6fH85wZX9MhjIInRvGYII8mF0/44Znzs2oja/Fya8RLSYGpLG+ApCycifOrDWzug
+JsA61l1KjQjb+FBjZDiUoQQPuIPGHjb37DPYo76VMsokmBiMxzmwzoDF9BPutOan
+86aKbnisJj1nJELI0ByNYHQ6S7sG37CqyQCOZS4ejLzKLZiabi1kprqvAUNWudJd
+823Z3aGeTmAfEqSaAQdN6Xe6Jm2yhKHQViAjWVUHNy3Sv+r8QUeZ2EyrMoLzSchf
+WbWtCZv1likzLE7wmk774A==</SignatureValue>
+</Signature><samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status><samlp:Response ID="_7B2794BBDB00FFF0AE081819A9885B21" InResponseTo="_419A9FE32E90F7708AB7A92C9ADD8D55" Version="2.0" IssueInstant="2009-04-29T22:27:48Z"><saml:Issuer>http://idp5/metadata</saml:Issuer><samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status><saml:Assertion Version="2.0" ID="_CE34ABBDD29EDCCE9052BAB4E7171900" IssueInstant="2009-04-29T22:27:48Z"><saml:Issuer>http://idp5/metadata</saml:Issuer><Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+<SignedInfo>
+<CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<Reference URI="#_CE34ABBDD29EDCCE9052BAB4E7171900">
+<Transforms>
+<Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+<Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+</Transforms>
+<DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<DigestValue>eybLGqaQGyA4dHn/XVeISNH+52A=</DigestValue>
+</Reference>
+</SignedInfo>
+<SignatureValue>sMhV5ZxdTWgIzEOAgUlh5T8vBJMmhDYBXqvDNgCZZ14mhn8ZZAnzmlzuXY6KycRm
+Ko8RPCcbhkVnTzhDG0osMe9NGhnRSJ0Ra1mO/6lyPJP62z+GSHkQvnkH944nqDEs
+wFp7NbqwccvbVslCQUf0Dm4leOhWZV6dZFBIR6W755W1nFpgM+AWiIBIUxu9k7TO
+kq7wXhaXZCKtzpvh60g17ezOR9XuovUf79igPbsR1d7cFaTbhfPknoC2/WDYS+dy
+JGqf73erEE/oEXCFuUYulZkcUAAtFa/T7CF2nQ2GM82F+p1gogOK3U3f11YZPovD
+ZBG6A4U7T+8RC3tTemLnWA==</SignatureValue>
+</Signature><saml:Subject><saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" NameQualifier="http://idp5/metadata" SPNameQualifier="http://sp5/metadata">_E7799BC7D0C299FABBB7367100656120</saml:NameID><saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"><saml:SubjectConfirmationData NotOnOrAfter="FIXME: notOnOrAfter" Recipient="http://sp5/singleSignOnArtifact" InResponseTo="_419A9FE32E90F7708AB7A92C9ADD8D55"/></saml:SubjectConfirmation></saml:Subject><saml:Conditions><saml:AudienceRestriction><saml:Audience>http://sp5/metadata</saml:Audience></saml:AudienceRestriction></saml:Conditions><saml:AuthnStatement AuthnInstant="FIXME: authenticationInstant" SessionNotOnOrAfter="FIXME: notOnOrAfter"><saml:AuthnContext><saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:1.0:am:password</saml:AuthnContextClassRef></saml:AuthnContext></saml:AuthnStatement></saml:Assertion></samlp:Response></samlp:ArtifactResponse></s:Body></s:Envelope>

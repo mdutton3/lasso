@@ -1,8 +1,8 @@
 MAINTAINERCLEANFILES = Makefile.in
 if WITH_TESTS
 
-TESTS = tests
-noinst_PROGRAMS = tests perfs
+TESTS = tests tests2
+noinst_PROGRAMS = tests perfs tests2
 
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
@@ -19,6 +19,13 @@ tests_LDADD = \
 	$(LASSO_LIBS) \
 	$(CHECK_LIBS)
 tests_LDFLAGS = -rpath `cd $(top_srcdir)/lasso/.libs/; pwd`
+
+tests2_SOURCES = tests2.c
+tests2_LDADD = \
+	$(top_builddir)/lasso/liblasso.la \
+	$(LASSO_LIBS) \
+	$(CHECK_LIBS)
+tests2_LDFLAGS = -rpath `cd $(top_srcdir)/lasso/.libs/; pwd`
 
 perfs_SOURCES = perfs.c
 perfs_LDADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
