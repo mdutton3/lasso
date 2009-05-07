@@ -49,6 +49,10 @@ gboolean lasso_flag_memory_debug = FALSE;
 gboolean lasso_flag_strict_checking = FALSE;
 /* set to false, it do not sign messages */
 gboolean lasso_flag_add_signature = TRUE;
+#ifdef LASSO_WSF_ENABLED
+/* set to false, it do not follow stupid id-wsf semantic */
+gboolean lasso_flag_follow_id_wsf_stupid_semantic = FALSE;
+#endif
 static void lasso_flag_parse_environment_variable();
 /* do not sign messages */
 gboolean lasso_flag_sign_messages = TRUE;
@@ -275,6 +279,12 @@ void lasso_set_flag(char *flag) {
 			lasso_flag_sign_messages = value;
 			continue;
 		}
+#ifdef LASSO_WSF_ENABLED
+		if (g_strcmp0(flag, "follow-stupid-id-wsf-semantic") == 0) {
+			lasso_flag_follow_id_wsf_stupid_semantic = value;
+			continue;
+		}
+#endif
 	} while (FALSE);
 }
 
