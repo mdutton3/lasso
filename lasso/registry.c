@@ -75,7 +75,8 @@ static LassoRegistry *lasso_registry_get_default() {
 
 void lasso_registry_default_shutdown()
 {
-	lasso_registry_destroy(default_registry);
+	if (default_registry)
+		lasso_registry_destroy(default_registry);
 	default_registry = NULL;
 }
 
@@ -173,6 +174,8 @@ LassoRegistry *lasso_registry_new()
  */
 void lasso_registry_destroy(LassoRegistry *registry)
 {
+	g_return_if_fail(registry);
+
 	g_hash_table_destroy(registry->direct_mapping);
 	registry->direct_mapping = NULL;
 	g_hash_table_destroy(registry->functional_mapping);
