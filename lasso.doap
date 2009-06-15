@@ -26,6 +26,16 @@
     <programming-language>Perl</programming-language>
     <license rdf:resource="http://usefulinc.com/doap/licenses/gpl"/>
     <download-page rdf:resource="http://lasso.entrouvert.org/download/"/>
+    <implements>
+      <Specification rdf:about="http://www.projectliberty.org/liberty/content/download/1266/8160/file/liberty-idff-1.2-20050520.zip">
+        <rdfs:label>Liberty Alliance ID-FF 1.2</rdfs:label>
+      </Specification
+    </implements>
+    <implements>
+      <Specification rdf:about="http://docs.oasis-open.org/security/saml/v2.0/saml-2.0-os.zip">
+        <rdfs:label>OASIS SAML 2.0</rdfs:label>
+      </Specification
+    </implements>
     <maintainer>
       <foaf:Person>
         <foaf:name>Frédéric Péters</foaf:name>
