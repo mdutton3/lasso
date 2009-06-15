@@ -47,7 +47,7 @@
 #include "../debug.h"
 
 static char* lasso_saml20_profile_build_artifact(LassoProvider *provider);
-static void remove_all_signatures(LassoNode *node);
+G_GNUC_UNUSED static void remove_all_signatures(LassoNode *node);
 static char * lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int sign);
 
 /*
@@ -1112,7 +1112,6 @@ lasso_saml20_profile_build_http_redirect(LassoProfile *profile,
 		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
 	/* No signature on the XML message */
-	remove_all_signatures(msg);
 	query = lasso_saml20_profile_export_to_query(profile, msg, must_sign);
 	lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
 	lasso_release(profile->msg_body);
