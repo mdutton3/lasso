@@ -141,14 +141,15 @@ set_hashtable_of_pygobject(GHashTable *a_hash, PyObject *dict) {
 		if (! PyString_Check(key) || ! PyObject_TypeCheck(value, &PyGObjectPtrType))
 		{
 			PyErr_SetString(PyExc_TypeError,
-					"value should be a dict,"
-					"with string keys"
+					"value should be a dict, "
+					"with string keys "
 					"and GObjectPtr values");
 			goto failure;
 		}
 		g_object_ref(((PyGObjectPtr*)value)->obj);
 	}
 	g_hash_table_remove_all (a_hash);
+	i = 0;
 	while (PyDict_Next(dict, &i, &key, &value)) {
 		char *ckey = g_strdup(PyString_AsString(key));
 		g_hash_table_replace (a_hash, ckey, ((PyGObjectPtr*)value)->obj);
