@@ -1,4 +1,7 @@
-SUBDIRS = xml id-ff id-wsf saml-2.0 id-wsf-2.0
+SUBDIRS = xml id-ff saml-2.0
+if WSF_ENABLED
+SUBDIRS +=  id-wsf-2.0 id-wsf
+endif
 
 liblassoincludedir = $(includedir)/lasso
 
