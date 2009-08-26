@@ -53,13 +53,16 @@ typedef struct _LassoAssertionQueryPrivate LassoAssertionQueryPrivate;
 
 /**
  * LassoAssertionQueryRequestType::
- * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_UNSET:
- * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_ASSERTION_ID:
- * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHN:
- * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_ATTRIBUTE:
- * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHZ_DECISION:
+ * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_UNSET: the unknown value
+ * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_ASSERTION_ID: an AssertionID request, to retrieve an
+ * assertion by its ID.
+ * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHN: an AuthnQuery request, which is used to request existing authentication assertions about a given subject from an Authentication Authority
+ * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_ATTRIBUTE: an AttributeQuery, which is used to retrieve
+ * attribute an a principal.
+ * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHZ_DECISION: an AuthzDecisionQuery, which is used to
+ * request authorisation to let a principal access a certain resource.
  *
- * Assertion Query or Request Type.
+ * Enumerate the existing kind of AssertionQuery requests.
  **/
 typedef enum {
 	LASSO_ASSERTION_QUERY_REQUEST_TYPE_UNSET = 0,

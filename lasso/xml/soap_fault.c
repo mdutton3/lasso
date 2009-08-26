@@ -25,8 +25,15 @@
 #include "private.h"
 #include "soap_fault.h"
 
-/*
+/**
+ * SECTION:soap_fault
+ * @short_description: object mapping for a soap11:Fault
+ * @stability: Stable
  *
+ * <figure>
+ * <title>Schema fragment for soap11:Fault</title>
+ * <programlisting>
+ * <![CDATA[
  * <xs: element name="Fault" type="tns: Fault"/>
  * <xs: complexType name="Fault" final="extension">
  *   <xs: annotation>
@@ -48,7 +55,9 @@
  *    </xs: sequence>
  *    <xs: anyAttribute namespace="##any" processContents="lax"/>
  *  </xs: complexType>
- *
+ * ]]>
+ * </programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

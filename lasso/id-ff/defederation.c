@@ -26,6 +26,10 @@
  * SECTION:defederation
  * @short_description: Federation Termination Notification Profile (ID-FF)
  *
+ * The Federation Termination Notification Profiles serves to suppress federations between identity
+ * providers and services providers. It can be initiated by any of the partners using Redirect
+ * or SOAP binding.
+ *
  **/
 
 #include "../xml/private.h"

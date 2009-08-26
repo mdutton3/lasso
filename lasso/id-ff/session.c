@@ -209,8 +209,7 @@ add_assertion_to_list(G_GNUC_UNUSED gchar *key, LassoLibAssertion *value, GList 
  *
  * Gets the assertions for the given @provider_id.
  *
- * Return value: a GList* of #LassoSamlAssertion.  Caller must free the GList
- *     but NOT the assertions it contains.
+ * Return value: (transfer container) (element-type LassoSamlAssertion): a list of #LassoSamlAssertion.
  **/
 GList*
 lasso_session_get_assertions(LassoSession *session, const char *provider_id)

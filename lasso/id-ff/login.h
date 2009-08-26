@@ -53,12 +53,15 @@ typedef struct _LassoLoginPrivate LassoLoginPrivate;
 
 /**
  * LassoLoginProtocolProfile:
- * @LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART:
- * @LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST:
- * @LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP:
- * @LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT:
+ * @LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART: response is transmitted through a redirect request with
+ * an artifact, followed by an artifact resolution request by the service provider.
+ * @LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST: response is transmitted through a POST.
+ * @LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP: response is transmitted in a PAOS response (see
+ * #LassoLecp).
+ * @LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT: response is transmitted through a redirect.
  *
- * Identifies the two possible profiles for Single Sign-On and Federation.
+ * Identifies the four possible profiles for Single Sign-On and Federation. It defined how the
+ * response to authentication request will transmitted to the service provider.
  */
 typedef enum {
 	LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART = 1,
@@ -69,9 +72,10 @@ typedef enum {
 
 /**
  * LassoLogin:
- * @protocolProfile:
- * @assertionArtifact:
- * @assertion:
+ * @protocolProfile: the kind of binding used for this authentication request.
+ * @assertionArtifact: a string representing the artifact received through an artifact resolution.
+ * request
+ * @assertion: after calling lasso_login_build_assertion, the assertion is stored here.
  *
  * Single sign-on profile for the current transaction; possibly an
  * assertionArtifact to be used by the service provider in its

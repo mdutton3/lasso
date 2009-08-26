@@ -75,8 +75,9 @@ typedef enum {
 /**
  * LassoSignatureType::
  * @LASSO_SIGNATURE_TYPE_NONE: no signature
- * @LASSO_SIGNATURE_TYPE_SIMPLE:
- * @LASSO_SIGNATURE_TYPE_WITHX509:
+ * @LASSO_SIGNATURE_TYPE_SIMPLE: sign with the private key, copy the public part in the signature.
+ * @LASSO_SIGNATURE_TYPE_WITHX509: sign with the private key, copy the associated certificat in the
+ * signature.
  *
  * Signature type.
  **/
@@ -89,8 +90,8 @@ typedef enum {
 
 /**
  * LassoSignatureMethod::
- * @LASSO_SIGNATURE_METHOD_RSA_SHA1:
- * @LASSO_SIGNATURE_METHOD_DSA_SHA1:
+ * @LASSO_SIGNATURE_METHOD_RSA_SHA1: sign using a RSA private key
+ * @LASSO_SIGNATURE_METHOD_DSA_SHA1: sign using a DSA private key
  *
  * Signature method.
  **/

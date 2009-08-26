@@ -26,6 +26,9 @@
  * SECTION:identity
  * @short_description: Principal identity
  *
+ * A #LassoIdentity object records the identifers that a principal use two federate pairs of
+ * providers.
+ *
  **/
 
 #include "../xml/private.h"

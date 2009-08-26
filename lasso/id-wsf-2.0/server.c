@@ -44,6 +44,12 @@ lasso_server_add_svc_metadata(LassoServer *server, LassoIdWsf2DiscoSvcMetadata *
 }
 
 
+/**
+ * lasso_server_get_svc_metadatas:
+ * @server: a #LassoServer object
+ *
+ * Return value: (element-type LassoIdWsf2DiscoSvcMetadata) (transfer none): a list of #LassoIdWsf2DiscoSvcMetadata
+ */
 const GList *
 lasso_server_get_svc_metadatas(LassoServer *server)
 {
@@ -53,6 +59,14 @@ lasso_server_get_svc_metadatas(LassoServer *server)
 }
 
 
+/**
+ * lasso_server_get_svc_metadatas_with_id_and_type:
+ * @server: a #LassoServer object
+ * @svcMDIDS: a list of service metadata IDs
+ * @service_type: a service type identifier
+ *
+ * Return value: (element-type LassoIdWsf2DiscoSvcMetadata) (transfer none): a list of #LassoIdWsf2DiscoSvcMetadata
+ */
 GList *
 lasso_server_get_svc_metadatas_with_id_and_type(LassoServer *server, GList *svcMDIDs,
 	const gchar *service_type)

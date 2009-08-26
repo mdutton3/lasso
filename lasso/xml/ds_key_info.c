@@ -25,7 +25,9 @@
 #include "private.h"
 #include "ds_key_info.h"
 
-/*
+/**
+ * SECTION:ds_key_info
+ * @short_description: object mapping for an XML DSIG KeyInfo element
  *
  */
 

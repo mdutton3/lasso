@@ -1,6 +1,4 @@
-/* $Id$
- *
- * Lasso - A free implementation of the Liberty Alliance specifications.
+/* $Id$ * * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004-2007 Entr'ouvert
  * http://lasso.entrouvert.org
@@ -25,6 +23,11 @@
 /**
  * SECTION:logout
  * @short_description: Single Logout Profile
+ *
+ * This profile Send logout notifications between providers. Any receiving provider must retransmit
+ * the notification to any other providers with which it shares the current identity by any means
+ * supported by the two, that is any provider federated with the current provider. There can be
+ * partial failures if no binding can be found to notify a federating partner.
  *
  */
 

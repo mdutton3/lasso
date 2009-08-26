@@ -26,8 +26,13 @@
 #include "saml_attribute.h"
 
 /*
- * The schema fragment (oasis-sstc-saml-schema-assertion-1.1.xsd):
+ * SECTION:saml_attribute
+ * @short_description: Mapping of the SAML element containing an attribute
+ * @stability: Stable
  *
+ * The schema fragment (oasis-sstc-saml-schema-assertion-1.1.xsd):
+ * <figure><title>Schema fragment for saml:Attribute</title>
+ * <programlisting><![CDATA[
  * <element name="Attribute" type="saml:AttributeType"/>
  * <complexType name="AttributeType">
  *   <complexContent>
@@ -58,6 +63,8 @@
  *   <attribute name="AttributeName" type="string" use="required"/>
  *   <attribute name="AttributeNamespace" type="anyURI" use="required"/>
  * </complexType>
+ * ]]></programlisting>
+ * </figure>
  *
  */
 

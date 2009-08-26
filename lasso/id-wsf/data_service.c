@@ -401,7 +401,7 @@ cleanup:
  * lasso_data_service_get_answers_by_select:
  * @service: a #LassoDataService
  * @select: resource selection string (typically a XPath query)
- * @output: a GList** to store a GList* containing the result, it must be freed.
+ * @output: (allow-none) (element-type xmlNode): a GList** to store a GList* containing the result, it must be freed.
  *
  * Returns the answers for the specified @select request.
  *
@@ -493,7 +493,7 @@ cleanup:
  * lasso_data_service_get_answer_for_item_id:
  * @service: a #LassoDataService
  * @item_id: query item identifier
- * @output: a GList** to store a GList* containing the result, it must be freed.
+ * @output: (allow-none) (element-type xmlNode): a GList** to store a GList* containing the result, it must be freed.
  *
  * Returns the answers for the specified @itemID request.
  *

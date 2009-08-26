@@ -767,18 +767,13 @@ fi
 AC_SUBST(LASSO_WSF_SUPPORT)
 
 
-dnl ==========================================================================
-dnl User specific option.
-dnl ==========================================================================
-dnl Where do we want to install docs
-AC_MSG_CHECKING(for docs folder) 
-AC_ARG_WITH(html-dir, [  --with-html-dir=PATH    path to installed docs ])
+dnl API Reference documentation support
+GTK_DOC_CHECK(1.9)
 if test "z$with_html_dir" != "z" ; then
     LASSO_DOCDIR=$with_html_dir
 else
     LASSO_DOCDIR='$(datadir)/doc/lasso'
 fi
-AC_MSG_RESULT($LASSO_DOCDIR)
 AC_SUBST(LASSO_DOCDIR)
 
 AC_ARG_WITH(html-dir, [  --with-html-dir=PATH path to installed docs ])
@@ -814,19 +809,6 @@ if test "x$enable_wsf" = "xyes"; then
 	LIBS="$saved_LIBS"
 	LASSO_LIBS="$LASSO_LIBS -lsasl2"
 fi
-
-dnl Let people disable the gtk-doc stuff.
-AC_ARG_ENABLE(gtk-doc, [  --disable-gtk-doc       disable documentation build],,
-              enable_gtk_doc="yes")
-
-if test "x$enable_gtk_doc" = "xyes" ; then
-    GTK_DOC_MIN_VERSION=1.0
-    PKG_CHECK_MODULES(GTK_DOC, gtk-doc >= $GTK_DOC_MIN_VERSION, enable_gtk_doc="yes",
-                      enable_gtk_doc="no")
-fi
-dnl Conditional docs sub dir test.
-AM_CONDITIONAL([GTK_DOC_ENABLED],[test "x$enable_gtk_doc" = "xyes"])
-
 
 AC_CHECK_PROGS(REST2HTML, rest2html rst2html)
 AM_CONDITIONAL(HAVE_REST2HTML, test -n "$ac_cv_prog_REST2HTML")
@@ -933,7 +915,8 @@ docs/Makefile
 docs/lasso-book/Makefile
 docs/lasso-book/figures/Makefile
 docs/reference/Makefile
-docs/reference/version.xml
+docs/reference/lasso/version.xml
+docs/reference/lasso/Makefile
 lasso/Makefile
 lasso/id-ff/Makefile
 lasso/id-wsf/Makefile

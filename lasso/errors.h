@@ -22,132 +22,633 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* Negative errors : programming or runtime recoverable errors */
-/* Positive errors : Liberty Alliance recoverable errors */
+/**
+ * SECTION:errors
+ * @short_description: Error codes returned by lasso functions
+ * @include: lasso/errors.h
+ *
+ * Most functions in lasso return signed integer error codes. The convention is to give:
+ * <itemizedlist>
+ * <listitem><para>a negative error code for programming or runtime recoverable errors,</para></listitem>
+ * <listitem><para>a positive error code for Liberty Alliance recoverable errors.</para></listitem>
+ * </itemizedlist>
+ *
+ * <para><emphasis>Beware that this convention is not always well followed.</emphasis></para>
+ */
 
-/* undefined */
-#define LASSO_ERROR_UNDEFINED                           -1 /* Undefined error case */
-#define LASSO_ERROR_UNIMPLEMENTED                       -2 /* Unimplemented part of Lasso */
-#define LASSO_ERROR_OUT_OF_MEMORY                       -3 /* Out of memory */
-#define LASSO_ERROR_CAST_FAILED                         -4 /* Expected GObject class was not found, cast failed */
+/**
+ * LASSO_ERROR_UNDEFINED:
+ *
+ * Undefined error.
+ */
+#define LASSO_ERROR_UNDEFINED -1
+/**
+ * LASSO_ERROR_UNIMPLEMENTED:
+ *
+ * Unimplemented part of Lasso.
+ */
+#define LASSO_ERROR_UNIMPLEMENTED -2
+/**
+ * LASSO_ERROR_OUT_OF_MEMORY:
+ *
+ * Out of memory
+ */
+#define LASSO_ERROR_OUT_OF_MEMORY -3
+/**
+ * LASSO_ERROR_CAST_FAILED:
+ *
+ * Expected GObject class was not found, cast failed
+ */
+#define LASSO_ERROR_CAST_FAILED -4
 
 /* generic XML */
-#define LASSO_XML_ERROR_NODE_NOT_FOUND                 -10 /* Unable to get child of element. */
-#define LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND         -11 /* Unable to get content of element. */
-#define LASSO_XML_ERROR_ATTR_NOT_FOUND                 -12 /* Unable to get attribute of element. */
-#define LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND           -13 /* Unable to get attribute value of element. */
-#define LASSO_XML_ERROR_INVALID_FILE                   -14 /* Invalid XML file */
+/**
+ * LASSO_XML_ERROR_NODE_NOT_FOUND:
+ *
+ * Unable to get child of element.
+ */
+#define LASSO_XML_ERROR_NODE_NOT_FOUND -10
+/**
+ * LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND:
+ *
+ * Unable to get content of element.
+ */
+#define LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND -11
+/**
+ * LASSO_XML_ERROR_ATTR_NOT_FOUND:
+ *
+ * Unable to get attribute of element.
+ */
+#define LASSO_XML_ERROR_ATTR_NOT_FOUND -12
+/**
+ * LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND:
+ *
+ * Unable to get attribute value of element.
+ */
+#define LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND -13
+/**
+ * LASSO_XML_ERROR_INVALID_FILE:
+ *
+ * Invalid XML file
+ */
+#define LASSO_XML_ERROR_INVALID_FILE -14
+/**
+ * LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED:
+ *
+ * Construction of an object from an XML document failed.
+ */
 #define LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED     -15
 #define LASSO_XML_ERROR_MISSING_NAMESPACE              -16
 
 /* XMLDSig */
-#define LASSO_DS_ERROR_SIGNATURE_NOT_FOUND             101 /* Signature element not found. */
-#define LASSO_DS_ERROR_INVALID_SIGNATURE               102 /* Invalid signature. */
+/**
+ * LASSO_DS_ERROR_SIGNATURE_NOT_FOUND:
+ *
+ * Signature element not found.
+ */
+#define LASSO_DS_ERROR_SIGNATURE_NOT_FOUND 101
+/**
+ * LASSO_DS_ERROR_INVALID_SIGNATURE:
+ *
+ * Invalid signature.
+ */
+#define LASSO_DS_ERROR_INVALID_SIGNATURE 102
 #define LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED -103
-#define LASSO_DS_ERROR_CONTEXT_CREATION_FAILED        -104 /* Failed to create signature context. */
-#define LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED         -105 /* Failed to load public key. */
-#define LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED        -106 /* Failed to load private key. */
-#define LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED        -107 /* Failed to load certificate. */
-#define LASSO_DS_ERROR_SIGNATURE_FAILED               -108 /* Failed to sign the node. */
-#define LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED      -109 /* Failed to create keys manager. */
-#define LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED          -110 /* Failed to initialize keys manager. */
-#define LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED  -111 /* Failed to verify signature. */
+/**
+ * LASSO_DS_ERROR_CONTEXT_CREATION_FAILED:
+ *
+ * Failed to create signature context.
+ */
+#define LASSO_DS_ERROR_CONTEXT_CREATION_FAILED -104
+/**
+ * LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED:
+ *
+ * Failed to load public key.
+ */
+#define LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED -105
+/**
+ * LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED:
+ *
+ * Failed to load private key.
+ */
+#define LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED -106
+/**
+ * LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED:
+ *
+ * Failed to load certificate.
+ */
+#define LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED -107
+/**
+ * LASSO_DS_ERROR_SIGNATURE_FAILED:
+ *
+ * Failed to sign the node.
+ */
+#define LASSO_DS_ERROR_SIGNATURE_FAILED -108
+/**
+ * LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED:
+ *
+ * Failed to create keys manager.
+ */
+#define LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED -109
+/**
+ * LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED:
+ *
+ * Failed to initialize keys manager.
+ */
+#define LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED -110
+/**
+ * LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED:
+ *
+ * Failed to verify signature.
+ */
+#define LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED -111
 #define LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED      -112
-#define LASSO_DS_ERROR_INVALID_SIGALG                 -113 /* Invalid signature algorithm. */
+/**
+ * LASSO_DS_ERROR_INVALID_SIGALG:
+ *
+ * Invalid signature algorithm.
+ */
+#define LASSO_DS_ERROR_INVALID_SIGALG -113
+/**
+ * LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED:
+ *
+ * Computation of an SHA1 digest failed.
+ */
 #define LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED          -114
-#define LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND   -115 /* Signature template has not been found. */
-#define LASSO_DS_ERROR_TOO_MUCH_REFERENCES            -116 /* SAML signature must contain only one reference */
-#define LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML     -117 /* SAML signature reference must be to a Request, a Reponse or an Assertion ID attribute */
-#define LASSO_DS_ERROR_DECRYPTION_FAILED              -118 /* Decryption of an encrypted node failed */
+/**
+ * LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND:
+ *
+ * Signature template has not been found.
+ */
+#define LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND -115
+/**
+ * LASSO_DS_ERROR_TOO_MUCH_REFERENCES:
+ *
+ * SAML signature must contain only one reference
+ */
+#define LASSO_DS_ERROR_TOO_MUCH_REFERENCES -116
+/**
+ * LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML:
+ *
+ * SAML signature reference must be to a Request, a Reponse or an Assertion ID attribute
+ */
+#define LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML -117
+/**
+ * LASSO_DS_ERROR_DECRYPTION_FAILED:
+ *
+ * Decryption of an encrypted node failed
+ */
+#define LASSO_DS_ERROR_DECRYPTION_FAILED -118
 
 /* Server */
-#define LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND         -201 /* ProviderID unknown to LassoServer. */
-#define LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED        -202 /* Failed to add new provider. */
-#define LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH -203 /* Failed to add new provider (protocol mismatch). */
-#define LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED 204 /* Failed to load encryption private key. */
+/**
+ * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
+ *
+ * ProviderID unknown to LassoServer.
+ */
+#define LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND -201
+/**
+ * LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED:
+ *
+ * Failed to add new provider.
+ */
+#define LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED -202
+/**
+ * LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH:
+ *
+ * Failed to add new provider (protocol mismatch).
+ */
+#define LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH -203
+/**
+ * LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED:
+ *
+ * Failed to load encryption private key.
+ */
+#define LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED 204
 
 /* Single Logout */
-#define LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE        -301 /* Unsupported protocol profile */
-#define LASSO_LOGOUT_ERROR_REQUEST_DENIED              302 /* Request denied by identity provider */
-#define LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND        303 /* Federation not found on logout */
-#define LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL           304 /* Unknown principal on logout */
+/**
+ * LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
+ *
+ * Unsupported protocol profile
+ */
+#define LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE -301
+/**
+ * LASSO_LOGOUT_ERROR_REQUEST_DENIED:
+ *
+ * Request denied by identity provider
+ */
+#define LASSO_LOGOUT_ERROR_REQUEST_DENIED 302
+/**
+ * LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND:
+ *
+ * Federation not found on logout
+ */
+#define LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND 303
+/**
+ * LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL:
+ *
+ * Unknown principal on logout
+ */
+#define LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL 304
 
 /* Profile */
-#define LASSO_PROFILE_ERROR_INVALID_QUERY             -401 /* Invalid URL query */
-#define LASSO_PROFILE_ERROR_INVALID_POST_MSG          -402 /* Invalid POST message */
-#define LASSO_PROFILE_ERROR_INVALID_SOAP_MSG          -403 /* Invalid SOAP message */
-#define LASSO_PROFILE_ERROR_MISSING_REQUEST           -404 /* Missing request */
-#define LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD       -405 /* Invalid HTTP method */
-#define LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE   -406 /* Invalid protocol profile */
-#define LASSO_PROFILE_ERROR_INVALID_MSG               -407 /* Invalid message */
-#define LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID -408 /* ProviderID not found */
-#define LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE       -409 /* Unsupported protocol profile */
-#define LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL       -410 /* Unable to find Profile URL in metadata */
-#define LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND        -411 /* Identity not found */
-#define LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND      -412 /* Federation not found */
-#define LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND -413 /* Name identifier not found */
-#define LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED     -414 /* Error building request QUERY url */
-#define LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED   -415 /* Error building request object */
-#define LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED   -416 /* Error building request message */
-#define LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED  -417 /* Error building response object */
-#define LASSO_PROFILE_ERROR_SESSION_NOT_FOUND         -418 /* Session not found */
-#define LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP         -419 /* Failed to create identity from dump */
-#define LASSO_PROFILE_ERROR_BAD_SESSION_DUMP          -420 /* Failed to create session from dump */
-#define LASSO_PROFILE_ERROR_MISSING_RESPONSE          -421 /* Missing response */
-#define LASSO_PROFILE_ERROR_MISSING_STATUS_CODE       -422 /* Missing status code */
-#define LASSO_PROFILE_ERROR_MISSING_ARTIFACT          -423 /* Missing SAML artifact */
-#define LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING      424 /* Missing ressource offering */
-#define LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION    425 /* Missing service description */
-#define LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE           426 /* Missing service type */
-#define LASSO_PROFILE_ERROR_MISSING_ASSERTION         -427 /* Missing assertion */
-#define LASSO_PROFILE_ERROR_MISSING_SUBJECT           -428 /* Missing subject */
-#define LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER   -429 /* Missing name identifier */
-#define LASSO_PROFILE_ERROR_INVALID_ARTIFACT          -430 /* Invalid artifact */
-#define LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY -431 /* Found an encrypted element but encryption private key is not set */
-#define LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS        -432 /* Status code is not success */
-#define LASSO_PROFILE_ERROR_MISSING_ISSUER            -433 /* Missing issuer */
-#define LASSO_PROFILE_ERROR_MISSING_SERVICE_INSTANCE  -434 /* Missing service instance */
-#define LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE -435 /* Missing endpoint reference */
-#define LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS -436 /* Missing endpoint reference address */
-#define LASSO_PROFILE_ERROR_INVALID_ISSUER            -437 /* Assertion issuer is not the same as the requested issuer */
-#define LASSO_PROFILE_ERROR_MISSING_SERVER            -438 /* No server object set in the profile */
-#define LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER           439 /* The issuer of the message is unknown to us */
-#define LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE    440 /* The profile cannot verify a signature on the message */
-#define LASSO_PROFILE_ERROR_CANNOT_FIND_A_PROVIDER    -441 /* Profile was called without a specific provider and we cannot find one */
-#define LASSO_PROFILE_ERROR_RESPONSE_DOES_NOT_MATCH_REQUEST -442 /* Received response does not refer to the request sent */
+/**
+ * LASSO_PROFILE_ERROR_INVALID_QUERY:
+ *
+ * Invalid URL query
+ */
+#define LASSO_PROFILE_ERROR_INVALID_QUERY -401
+/**
+ * LASSO_PROFILE_ERROR_INVALID_POST_MSG:
+ *
+ * Invalid POST message
+ */
+#define LASSO_PROFILE_ERROR_INVALID_POST_MSG -402
+/**
+ * LASSO_PROFILE_ERROR_INVALID_SOAP_MSG:
+ *
+ * Invalid SOAP message
+ */
+#define LASSO_PROFILE_ERROR_INVALID_SOAP_MSG -403
+/**
+ * LASSO_PROFILE_ERROR_MISSING_REQUEST:
+ *
+ * Missing request
+ */
+#define LASSO_PROFILE_ERROR_MISSING_REQUEST -404
+/**
+ * LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD:
+ *
+ * Invalid HTTP method
+ */
+#define LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD -405
+/**
+ * LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE:
+ *
+ * Invalid protocol profile
+ */
+#define LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE -406
+/**
+ * LASSO_PROFILE_ERROR_INVALID_MSG:
+ *
+ * Invalid message
+ */
+#define LASSO_PROFILE_ERROR_INVALID_MSG -407
+/**
+ * LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID:
+ *
+ * ProviderID not found
+ */
+#define LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID -408
+/**
+ * LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE:
+ *
+ * Unsupported protocol profile
+ */
+#define LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE -409
+/**
+ * LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL:
+ *
+ * Unable to find Profile URL in metadata
+ */
+#define LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL -410
+/**
+ * LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND:
+ *
+ * Identity not found
+ */
+#define LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND -411
+/**
+ * LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND:
+ *
+ * Federation not found
+ */
+#define LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND -412
+/**
+ * LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND:
+ *
+ * Name identifier not found
+ */
+#define LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND -413
+/**
+ * LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED:
+ *
+ * Error building request QUERY url
+ */
+#define LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED -414
+/**
+ * LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED:
+ *
+ * Error building request object
+ */
+#define LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED -415
+/**
+ * LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED:
+ *
+ * Error building request message
+ */
+#define LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED -416
+/**
+ * LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED:
+ *
+ * Error building response object
+ */
+#define LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED -417
+/**
+ * LASSO_PROFILE_ERROR_SESSION_NOT_FOUND:
+ *
+ * Session not found
+ */
+#define LASSO_PROFILE_ERROR_SESSION_NOT_FOUND -418
+/**
+ * LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP:
+ *
+ * Failed to create identity from dump
+ */
+#define LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP -419
+/**
+ * LASSO_PROFILE_ERROR_BAD_SESSION_DUMP:
+ *
+ * Failed to create session from dump
+ */
+#define LASSO_PROFILE_ERROR_BAD_SESSION_DUMP -420
+/**
+ * LASSO_PROFILE_ERROR_MISSING_RESPONSE:
+ *
+ * Missing response
+ */
+#define LASSO_PROFILE_ERROR_MISSING_RESPONSE -421
+/**
+ * LASSO_PROFILE_ERROR_MISSING_STATUS_CODE:
+ *
+ * Missing status code
+ */
+#define LASSO_PROFILE_ERROR_MISSING_STATUS_CODE -422
+/**
+ * LASSO_PROFILE_ERROR_MISSING_ARTIFACT:
+ *
+ * Missing SAML artifact
+ */
+#define LASSO_PROFILE_ERROR_MISSING_ARTIFACT -423
+/**
+ * LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING:
+ *
+ * Missing ressource offering
+ */
+#define LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING 424
+/**
+ * LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION:
+ *
+ * Missing service description
+ */
+#define LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION 425
+/**
+ * LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE:
+ *
+ * Missing service type
+ */
+#define LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE 426
+/**
+ * LASSO_PROFILE_ERROR_MISSING_ASSERTION:
+ *
+ * Missing assertion
+ */
+#define LASSO_PROFILE_ERROR_MISSING_ASSERTION -427
+/**
+ * LASSO_PROFILE_ERROR_MISSING_SUBJECT:
+ *
+ * Missing subject
+ */
+#define LASSO_PROFILE_ERROR_MISSING_SUBJECT -428
+/**
+ * LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER:
+ *
+ * Missing name identifier
+ */
+#define LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER -429
+/**
+ * LASSO_PROFILE_ERROR_INVALID_ARTIFACT:
+ *
+ * Invalid artifact
+ */
+#define LASSO_PROFILE_ERROR_INVALID_ARTIFACT -430
+/**
+ * LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY:
+ *
+ * Found an encrypted element but encryption private key is not set
+ */
+#define LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY -431
+/**
+ * LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS:
+ *
+ * Status code is not success
+ */
+#define LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS -432
+/**
+ * LASSO_PROFILE_ERROR_MISSING_ISSUER:
+ *
+ * Missing issuer
+ */
+#define LASSO_PROFILE_ERROR_MISSING_ISSUER -433
+/**
+ * LASSO_PROFILE_ERROR_MISSING_SERVICE_INSTANCE:
+ *
+ * Missing service instance
+ */
+#define LASSO_PROFILE_ERROR_MISSING_SERVICE_INSTANCE -434
+/**
+ * LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE:
+ *
+ * Missing endpoint reference
+ */
+#define LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE -435
+/**
+ * LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS:
+ *
+ * Missing endpoint reference address
+ */
+#define LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS -436
+/**
+ * LASSO_PROFILE_ERROR_INVALID_ISSUER:
+ *
+ * Assertion issuer is not the same as the requested issuer
+ */
+#define LASSO_PROFILE_ERROR_INVALID_ISSUER -437
+/**
+ * LASSO_PROFILE_ERROR_MISSING_SERVER:
+ *
+ * No server object set in the profile
+ */
+#define LASSO_PROFILE_ERROR_MISSING_SERVER -438
+/**
+ * LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER:
+ *
+ * The issuer of the message is unknown to us
+ */
+#define LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER 439
+/**
+ * LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE:
+ *
+ * The profile cannot verify a signature on the message
+ */
+#define LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE 440
+/**
+ * LASSO_PROFILE_ERROR_CANNOT_FIND_A_PROVIDER:
+ *
+ * Profile was called without a specific provider and we cannot find one.
+ */
+#define LASSO_PROFILE_ERROR_CANNOT_FIND_A_PROVIDER -441
+/**
+ * LASSO_PROFILE_ERROR_RESPONSE_DOES_NOT_MATCH_REQUEST:
+ *
+ * Received response does not refer to the request sent
+ */
+#define LASSO_PROFILE_ERROR_RESPONSE_DOES_NOT_MATCH_REQUEST -442
 
 /* functions/methods parameters checking */
-#define LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ        -501 /* An object type provided as parameter  */
-#define LASSO_PARAM_ERROR_INVALID_VALUE               -502 /* A parameter value is invalid. */
-#define LASSO_PARAM_ERROR_CHECK_FAILED                -503 /* The error return location should be  */
+/**
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
+ *
+ * An object type provided as parameter is invalid or object is NULL.
+ */
+#define LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ -501
+/**
+ * LASSO_PARAM_ERROR_INVALID_VALUE:
+ *
+ * A parameter value is invalid.
+ */
+#define LASSO_PARAM_ERROR_INVALID_VALUE -502
+/**
+ * LASSO_PARAM_ERROR_CHECK_FAILED:
+ *
+ * The error return location should be either NULL or contains a NULL error.
+ */
+#define LASSO_PARAM_ERROR_CHECK_FAILED -503
+/**
+ * LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT:
+ *
+ * The call failed because an argument is a partially-initialized object.
+ */
 #define LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT      -504
 
 /* Single Sign-On */
-#define LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND         601 /* Federation not found on login */
+/**
+ * LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND:
+ *
+ * Federation not found on login
+ */
+#define LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND 601
+/**
+ * LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED:
+ *
+ * Consent of the principal was not obtained.
+ */
 #define LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED         602
-#define LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY        -603 /* Invalid NameIDPolicy in lib:AuthnRequest */
-#define LASSO_LOGIN_ERROR_REQUEST_DENIED               604 /* Request denied */
+/**
+ * LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
+ *
+ * Invalid NameIDPolicy in lib:AuthnRequest
+ */
+#define LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY -603
+/**
+ * LASSO_LOGIN_ERROR_REQUEST_DENIED:
+ *
+ * Request denied.
+ */
+#define LASSO_LOGIN_ERROR_REQUEST_DENIED 604
+/**
+ * LASSO_LOGIN_ERROR_INVALID_SIGNATURE:
+ *
+ * The signature of a message or of an assertion is invalid. That is badly computed or with an
+ * unknown key.
+ */
 #define LASSO_LOGIN_ERROR_INVALID_SIGNATURE            605
+/**
+ * LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST:
+ *
+ * An unsigned authn request was received but the metadata specify that they must be signed.
+ */
 #define LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST       606
-#define LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS           607 /* Status code is not success */
-#define LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL            608 /* Unknown principal */
-#define LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT          609 /* No default endpoint */
-#define LASSO_LOGIN_ERROR_ASSERTION_REPLAY             610 /* Assertion replay */
-#define LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID    611 /* If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object */
+/**
+ * LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS:
+ *
+ * Status code is not success
+ */
+#define LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS 607
+/**
+ * LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL:
+ *
+ * Unknown principal
+ */
+#define LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL 608
+/**
+ * LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT:
+ *
+ * No default endpoint
+ */
+#define LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT 609
+/**
+ * LASSO_LOGIN_ERROR_ASSERTION_REPLAY:
+ *
+ * Assertion replay
+ */
+#define LASSO_LOGIN_ERROR_ASSERTION_REPLAY 610
+/**
+ * LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID:
+ *
+ * If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object
+ */
+#define LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID 611
 ;
 
 /* Federation Termination Notification */
-#define LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER -700 /* Name identifier not found in request */
+/**
+ * LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER:
+ *
+ * Name identifier not found in request
+ */
+#define LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER -700
 
 /* Soap */
-#define LASSO_SOAP_FAULT_REDIRECT_REQUEST              800 /* Redirect request from Attribute Provider */
-#define LASSO_SOAP_ERROR_MISSING_ENVELOPE             -801 /* Missing SOAP envelope */
-#define LASSO_SOAP_ERROR_MISSING_HEADER               -802 /* Missing SOAP header */
-#define LASSO_SOAP_ERROR_MISSING_BODY                 -803 /* Missing SOAP body */
-#define LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL    -804 /* Missing SOAP fault detail */
+/**
+ * LASSO_SOAP_FAULT_REDIRECT_REQUEST:
+ *
+ * Redirect request from Attribute Provider
+ */
+#define LASSO_SOAP_FAULT_REDIRECT_REQUEST 800
+/**
+ * LASSO_SOAP_ERROR_MISSING_ENVELOPE:
+ *
+ * Missing SOAP envelope
+ */
+#define LASSO_SOAP_ERROR_MISSING_ENVELOPE -801
+/**
+ * LASSO_SOAP_ERROR_MISSING_HEADER:
+ *
+ * Missing SOAP header
+ */
+#define LASSO_SOAP_ERROR_MISSING_HEADER -802
+/**
+ * LASSO_SOAP_ERROR_MISSING_BODY:
+ *
+ * Missing SOAP body
+ */
+#define LASSO_SOAP_ERROR_MISSING_BODY -803
+/**
+ * LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL:
+ *
+ * Missing SOAP fault detail
+ */
+#define LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL -804
 
 /* Name Identifier Mapping */
-#define LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE -900 /* Target name space not found */
+/**
+ * LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE:
+ *
+ * Target name space not found
+ */
+#define LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE -900
 #define LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE -901
 #define LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_IDENTIFIER -902
 
@@ -156,36 +657,161 @@
 #define LASSO_DATA_SERVICE_CANNOT_ADD_ITEM           -1001
 
 /* WSF Profile */
-#define LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION  -1100 /* Correlation SOAP Header is missing */
-#define LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY     -1101 /* Security SOAP Header is missing */
-#define LASSO_WSF_PROFILE_ERROR_MISSING_ASSERTION_ID -1102 /* AssertionID attribute is missing */
-#define LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT     -1103 /* Cannot find an WSP endpoint for the ID-WSF service */
-#define LASSO_WSF_PROFILE_ERROR_SOAP_FAULT            1104 /* SOAP ID-WSF binding returned a SOAP fault */
-#define LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM 1105 /* The specified security mechanism is not supported by lasso ID-WSF library */
-#define LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION     -1106 /* No ID-WSF web Service description could be found for the current security mechanism */
-#define LASSO_WSF_PROFILE_ERROR_MISSING_RESOURCE_ID  -1107 /* The necessary ResourceID or EncryptedResourceID for calling an ID-WSF service is missing. */
-#define LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF -1108 /* WS-Security SAML Token secmech needs a CredentialRef */
-#define LASSO_WSF_PROFILE_ERROR_INVALID_OR_MISSING_REFERENCE_TO_MESSAGE_ID -1109 /* refToMessageID attribute of the Corrrelation header does not match the SOAP request */
+/**
+ * LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION:
+ *
+ * Correlation SOAP Header is missing
+ */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION -1100
+/**
+ * LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY:
+ *
+ * Security SOAP Header is missing
+ */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY -1101
+/**
+ * LASSO_WSF_PROFILE_ERROR_MISSING_ASSERTION_ID:
+ *
+ * AssertionID attribute is missing
+ */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_ASSERTION_ID -1102
+/**
+ * LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT:
+ *
+ * Cannot find an WSP endpoint for the ID-WSF service
+ */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT -1103
+/**
+ * LASSO_WSF_PROFILE_ERROR_SOAP_FAULT:
+ *
+ * SOAP ID-WSF binding returned a SOAP fault
+ */
+#define LASSO_WSF_PROFILE_ERROR_SOAP_FAULT 1104
+/**
+ * LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM:
+ *
+ * The specified security mechanism is not supported by lasso ID-WSF library
+ */
+#define LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM 1105
+/**
+ * LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION:
+ *
+ * No ID-WSF web Service description could be found for the current security mechanism
+ */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION -1106
+/**
+ * LASSO_WSF_PROFILE_ERROR_MISSING_RESOURCE_ID:
+ *
+ * The necessary ResourceID or EncryptedResourceID for calling an ID-WSF service is missing.
+ */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_RESOURCE_ID -1107
+/**
+ * LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF:
+ *
+ * WS-Security SAML Token secmech needs a CredentialRef
+ */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF -1108
+/**
+ * LASSO_WSF_PROFILE_ERROR_INVALID_OR_MISSING_REFERENCE_TO_MESSAGE_ID:
+ *
+ * refToMessageID attribute of the Corrrelation header does not match the SOAP request
+ */
+#define LASSO_WSF_PROFILE_ERROR_INVALID_OR_MISSING_REFERENCE_TO_MESSAGE_ID -1109
 
 /* ID-WSF 2 Discovery */
-#define LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED        -1200 /* Service metadata registration failed */
-#define LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED -1201 /* Service metadata association failed */
-#define LASSO_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE           -1202 /* Missing requested service */
-#define LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE  -1203 /* Failed to build Endpoint Reference */
+/**
+ * LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED:
+ *
+ * Service metadata registration failed
+ */
+#define LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED -1200
+/**
+ * LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
+ *
+ * Service metadata association failed
+ */
+#define LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED -1201
+/**
+ * LASSO_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE:
+ *
+ * Missing requested service
+ */
+#define LASSO_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE -1202
+/**
+ * LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE:
+ *
+ * Failed to build Endpoint Reference
+ */
+#define LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE -1203
 
 /* ID-WSF 2 Data Service */
-#define LASSO_DST_ERROR_MISSING_SERVICE_DATA      -1300 /* Missing service data */
-#define LASSO_DST_ERROR_QUERY_FAILED              -1301 /* Query failed */
-#define LASSO_DST_ERROR_QUERY_PARTIALLY_FAILED    -1302 /* Query partially failed : some items were correctly processed */
-#define LASSO_DST_ERROR_MODIFY_FAILED             -1303 /* Modify failed */
-#define LASSO_DST_ERROR_MODIFY_PARTIALLY_FAILED   -1304 /* Modify partially failed : some items were correctly processed */
-#define LASSO_DST_ERROR_NEW_DATA_MISSING          -1305 /* Missing new data */
-#define LASSO_DST_ERROR_QUERY_NOT_FOUND           -1306 /* Looked query is not found */
-#define LASSO_DST_ERROR_NO_DATA                   -1307 /* No data or no data for the designated query item in the query response */
-#define LASSO_DST_ERROR_MALFORMED_QUERY                 -1308 /* QueryObject is malformed */
+/**
+ * LASSO_DST_ERROR_MISSING_SERVICE_DATA:
+ *
+ * Missing service data
+ */
+#define LASSO_DST_ERROR_MISSING_SERVICE_DATA -1300
+/**
+ * LASSO_DST_ERROR_QUERY_FAILED:
+ *
+ * Query failed
+ */
+#define LASSO_DST_ERROR_QUERY_FAILED -1301
+/**
+ * LASSO_DST_ERROR_QUERY_PARTIALLY_FAILED:
+ *
+ * Query partially failed : some items were correctly processed
+ */
+#define LASSO_DST_ERROR_QUERY_PARTIALLY_FAILED -1302
+/**
+ * LASSO_DST_ERROR_MODIFY_FAILED:
+ *
+ * Modify failed
+ */
+#define LASSO_DST_ERROR_MODIFY_FAILED -1303
+/**
+ * LASSO_DST_ERROR_MODIFY_PARTIALLY_FAILED:
+ *
+ * Modify partially failed : some items were correctly processed
+ */
+#define LASSO_DST_ERROR_MODIFY_PARTIALLY_FAILED -1304
+/**
+ * LASSO_DST_ERROR_NEW_DATA_MISSING:
+ *
+ * Missing new data
+ */
+#define LASSO_DST_ERROR_NEW_DATA_MISSING -1305
+/**
+ * LASSO_DST_ERROR_QUERY_NOT_FOUND:
+ *
+ * Looked query is not found
+ */
+#define LASSO_DST_ERROR_QUERY_NOT_FOUND -1306
+/**
+ * LASSO_DST_ERROR_NO_DATA:
+ *
+ * No data or no data for the designated query item in the query response
+ */
+#define LASSO_DST_ERROR_NO_DATA -1307
+/**
+ * LASSO_DST_ERROR_MALFORMED_QUERY:
+ *
+ * QueryObject is malformed
+ */
+#define LASSO_DST_ERROR_MALFORMED_QUERY -1308
 
 /* Lasso registry */
-#define LASSO_REGISTRY_ERROR_KEY_EXISTS                 -1400 /* Key alreadys exists in the registry */
+/**
+ * LASSO_REGISTRY_ERROR_KEY_EXISTS:
+ *
+ * Key alreadys exists in the registry
+ */
+#define LASSO_REGISTRY_ERROR_KEY_EXISTS -1400
 
 /* Lasso provider */
-#define LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY   -1500 /* The provider has no known public key */
+/**
+ * LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY:
+ *
+ * The provider has no known public key
+ */
+#define LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY -1500

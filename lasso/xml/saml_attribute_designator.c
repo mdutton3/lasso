@@ -25,14 +25,24 @@
 #include "private.h"
 #include "saml_attribute_designator.h"
 
-/*
- * The schema fragment (oasis-sstc-saml-schema-assertion-1.1.xsd):
+/**
+ * SECTION:saml_attribute_designator
+ * @short_description: object mapping for a saml:AttributeDesignator
  *
+ * The schema fragment (oasis-sstc-saml-schema-assertion-1.1.xsd) is:
+ *
+ * <figure>
+ * <title>Schema fragment for saml:AttributeDesignator</title>
+ * <programlisting>
+ * <![CDATA[
  * <element name="AttributeDesignator" type="saml:AttributeDesignatorType"/>
  * <complexType name="AttributeDesignatorType">
  *   <attribute name="AttributeName" type="string" use="required"/>
  *   <attribute name="AttributeNamespace" type="anyURI" use="required"/>
  * </complexType>
+ * ]]>
+ * </programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

@@ -25,9 +25,15 @@
 #include "private.h"
 #include "saml_attribute_statement.h"
 
-/*
- * The schema fragment (oasis-sstc-saml-schema-assertion-1.1.xsd):
+/**
+ * SECTION:saml_attribute_statement
+ * @short_description: object mapping for a saml:AttributeStatement
  *
+ * The schema fragment (oasis-sstc-saml-schema-assertion-1.1.xsd):
+ * <figure>
+ * <title>Schema fragment for saml:AttributeStatement</title>
+ * <programlisting>
+ * <![CDATA[
  * <element name="AttributeStatement" type="saml:AttributeStatementType"/>
  * <complexType name="AttributeStatementType">
  *   <complexContent>
@@ -38,6 +44,9 @@
  *     </extension>
  *   </complexContent>
  * </complexType>
+ * ]]>
+ * </programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/

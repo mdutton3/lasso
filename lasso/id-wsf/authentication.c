@@ -29,6 +29,15 @@
 #include "../xml/soap_binding_correlation.h"
 #include <xmlsec/base64.h>
 
+/**
+ * SECTION:idwsf_authentication
+ * @short_description: ID-WSF 1.0 Authentication service
+ * @stability: Unstable
+ *
+ * The authentication service allows to authenticate uniformly using a SOAP encapsulated SASL
+ * service. Ideally you can use any SASL profile.
+ */
+
 /* SASL client callbacks (for secret, login, password, ... ) */
 static sasl_callback_t lasso_sasl_callbacks[5];
 

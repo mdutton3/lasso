@@ -56,6 +56,12 @@
 #include "../debug.h"
 #include "../utils.h"
 
+/**
+ * SECTION:tools
+ * @short_description: Misc functions used inside Lasso
+ * @stability: Internal
+ */
+
 LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
 static xmlSecKeyPtr lasso_get_public_key_from_private_key_file(const char *private_key_file);
 static gboolean is_base64(const char *message);

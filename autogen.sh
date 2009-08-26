@@ -84,6 +84,9 @@ libtoolize --copy --force
 echo "* Running $AUTOMAKE"
 $AUTOMAKE --add-missing -Wno-portability $am_opt || exit $?
 
+echo "* Running gtkdocize"
+gtkdocize --flavour no-tmpl || exit $?
+
 cd "$THEDIR"
 
 $srcdir/configure --enable-maintainer-mode "$@" || exit $?

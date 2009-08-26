@@ -42,11 +42,11 @@ lasso_strerror(int error_code)
 {
 	switch (error_code) {
 		case LASSO_LOGIN_ERROR_REQUEST_DENIED:
-			return "Request denied";
+			return "Request denied.";
 		case LASSO_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE:
 			return "Missing requested service";
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
-			return "An object type provided as parameter";
+			return "An object type provided as parameter is invalid or object is NULL.";
 		case LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS:
 			return "Status code is not success";
 		case LASSO_LOGOUT_ERROR_REQUEST_DENIED:
@@ -112,7 +112,7 @@ lasso_strerror(int error_code)
 		case LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE:
 			return "Missing service type";
 		case LASSO_PROFILE_ERROR_CANNOT_FIND_A_PROVIDER:
-			return "Profile was called without a specific provider and we cannot find one";
+			return "Profile was called without a specific provider and we cannot find one.";
 		case LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML:
 			return "SAML signature reference must be to a Request, a Reponse or an Assertion ID attribute";
 		case LASSO_PROFILE_ERROR_MISSING_ARTIFACT:
@@ -128,7 +128,7 @@ lasso_strerror(int error_code)
 		case LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT:
 			return "No default endpoint";
 		case LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST:
-			return "LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST";
+			return "An unsigned authn request was received but the metadata specify that they must be signed.";
 		case LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM:
 			return "The specified security mechanism is not supported by lasso ID-WSF library";
 		case LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY:
@@ -172,9 +172,9 @@ lasso_strerror(int error_code)
 		case LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE:
 			return "Failed to build Endpoint Reference";
 		case LASSO_ERROR_UNDEFINED:
-			return "Undefined error case";
+			return "Undefined error.";
 		case LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED:
-			return "LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED";
+			return "Consent of the principal was not obtained.";
 		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_IDENTIFIER:
 			return "LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_IDENTIFIER";
 		case LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER:
@@ -202,7 +202,7 @@ lasso_strerror(int error_code)
 		case LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL:
 			return "Unknown principal";
 		case LASSO_LOGIN_ERROR_INVALID_SIGNATURE:
-			return "LASSO_LOGIN_ERROR_INVALID_SIGNATURE";
+			return "unknown key.";
 		case LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
 			return "Invalid NameIDPolicy in lib:AuthnRequest";
 		case LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
@@ -214,7 +214,7 @@ lasso_strerror(int error_code)
 		case LASSO_LOGIN_ERROR_ASSERTION_REPLAY:
 			return "Assertion replay";
 		case LASSO_PARAM_ERROR_CHECK_FAILED:
-			return "The error return location should be";
+			return "The error return location should be either NULL or contains a NULL error.";
 		case LASSO_SOAP_ERROR_MISSING_BODY:
 			return "Missing SOAP body";
 		case LASSO_XML_ERROR_INVALID_FILE:
@@ -226,7 +226,7 @@ lasso_strerror(int error_code)
 		case LASSO_XML_ERROR_NODE_NOT_FOUND:
 			return "Unable to get child of element.";
 		case LASSO_ERROR_UNIMPLEMENTED:
-			return "Unimplemented part of Lasso";
+			return "Unimplemented part of Lasso.";
 		case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
 			return "Redirect request from Attribute Provider";
 		case LASSO_PROFILE_ERROR_INVALID_MSG:
@@ -242,7 +242,7 @@ lasso_strerror(int error_code)
 		case LASSO_DST_ERROR_QUERY_NOT_FOUND:
 			return "Looked query is not found";
 		case LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED:
-			return "LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED";
+			return "Computation of an SHA1 digest failed.";
 		case LASSO_ERROR_CAST_FAILED:
 			return "Expected GObject class was not found, cast failed";
 		case LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION:
@@ -250,7 +250,7 @@ lasso_strerror(int error_code)
 		case LASSO_DST_ERROR_NEW_DATA_MISSING:
 			return "Missing new data";
 		case LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT:
-			return "LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT";
+			return "The call failed because an argument is a partially-initialized object.";
 		case LASSO_PROFILE_ERROR_MISSING_SUBJECT:
 			return "Missing subject";
 		case LASSO_DST_ERROR_MODIFY_FAILED:
@@ -274,7 +274,7 @@ lasso_strerror(int error_code)
 		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE:
 			return "LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE";
 		case LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED:
-			return "LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED";
+			return "Construction of an object from an XML document failed.";
 		case LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED:
 			return "Failed to verify signature.";
 		case LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED:

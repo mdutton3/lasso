@@ -28,6 +28,13 @@
 #include <glib.h>
 #include "./utils.h"
 
+/**
+ * SECTION:utilities
+ * @short_description: Misc functions used internally in Lasso
+ * @stability: Internal
+ * @include: utils.h
+ */
+
 gchar*
 lasso_safe_prefix_string(const gchar *str, gsize length)
 {

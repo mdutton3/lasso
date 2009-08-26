@@ -148,7 +148,7 @@ lasso_assertion_query_init_request(LassoAssertionQuery *assertion_query,
  * lasso_assertion_query_build_request_msg:
  * @assertion_query: a #LassoAssertionQuery
  *
- * Builds the Name Id Management request message.
+ * Build an Assertion Query profile request message.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/

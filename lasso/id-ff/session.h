@@ -31,10 +31,6 @@ extern "C" {
 
 #include "../xml/xml.h"
 
-#ifndef OFTYPE
-#define OFTYPE(x)
-#endif
-
 #define LASSO_TYPE_SESSION (lasso_session_get_type())
 #define LASSO_SESSION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SESSION, LassoSession))
 #define LASSO_SESSION_CLASS(klass) \
@@ -71,7 +67,7 @@ LASSO_EXPORT LassoSession* lasso_session_new_from_dump(const gchar *dump);
 LASSO_EXPORT gchar* lasso_session_dump(LassoSession *session);
 LASSO_EXPORT void lasso_session_destroy(LassoSession *session);
 
-LASSO_EXPORT GList* OFTYPE(LassoNode) lasso_session_get_assertions(
+LASSO_EXPORT GList* lasso_session_get_assertions(
 	LassoSession *session, const char* provider_id);
 LASSO_EXPORT gchar* lasso_session_get_provider_index(LassoSession *session, gint index);
 LASSO_EXPORT gboolean lasso_session_is_empty(LassoSession *session);

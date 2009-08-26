@@ -34,3 +34,4 @@ pkgconfigdir	= $(libdir)/pkgconfig
 clean-local:
 	-rm -f lasso.pc
 
+DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc

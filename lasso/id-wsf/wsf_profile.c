@@ -61,6 +61,14 @@
 #include "../id-ff/sessionprivate.h"
 #include "../xml/misc_text_node.h"
 
+/**
+ * SECTION:wsf_profile
+ * @short_description: Base class for ID-WSF 1.0 services
+ * @stability: Unstable
+ *
+ * Use this class to base your ID-WSF 1.0 services.
+ */
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/

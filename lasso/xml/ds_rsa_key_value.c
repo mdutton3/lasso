@@ -26,6 +26,8 @@
 #include "ds_rsa_key_value.h"
 
 /*
+ * SECTION:ds_rsa_key_value
+ * @short_description: Object representation of an XML DSIG element to hold an RSA key
  *
  */
 

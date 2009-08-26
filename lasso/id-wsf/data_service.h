@@ -97,10 +97,10 @@ LASSO_EXPORT gint lasso_data_service_get_answer(LassoDataService *service,
 LASSO_EXPORT gint lasso_data_service_get_answers(LassoDataService *service, GList **output);
 
 LASSO_EXPORT gint lasso_data_service_get_answers_by_select(LassoDataService *service,
-		const char *select, GList OFTYPE(xmlNode) **output);
+		const char *select, GList **output);
 
 LASSO_EXPORT gint lasso_data_service_get_answers_by_item_id(LassoDataService *service,
-		const char *item_id, GList OFTYPE(xmlNode) **output);
+		const char *item_id, GList **output);
 
 LASSO_EXPORT  gint lasso_data_service_init_modify(LassoDataService *service);
 

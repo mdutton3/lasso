@@ -26,6 +26,8 @@
  * SECTION:federation
  * @short_description: Principal federation between two providers
  *
+ * A #LassoFederation represents the an identifier shared by two provider, usually an identity
+ * provider and a service provider. Instance of this class are usually never accessed directly.
  **/
 
 #include "../xml/private.h"

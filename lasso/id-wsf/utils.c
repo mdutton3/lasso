@@ -23,6 +23,13 @@
  */
 
 /**
+ * SECTION:id_wsf_utils
+ * @short_description: Misc functions used in the implementation of ID-WSF 1.0
+ * @stability: Internal
+ */
+
+
+/**
  * lasso_security_mech_is_saml_authentication:
  * @security_mech_id: the URI of an authentication mechanism
  *

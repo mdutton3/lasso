@@ -29,6 +29,12 @@
 #include "./discovery.h"
 #include "../utils.h"
 
+/**
+ * SECTION:personal_profile_service
+ * @short_description: a subclass of LassoDataService to access Personal Profile datas
+ * @stability: Unstable
+ */
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/

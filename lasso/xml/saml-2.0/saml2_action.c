@@ -117,7 +117,7 @@ lasso_saml2_action_new()
 
 /**
  * lasso_saml2_action_new_with_string:
- * @content:
+ * @content: content of the new element
  *
  * Creates a new #LassoSaml2Action object and initializes it
  * with @content.

@@ -41,6 +41,13 @@
 #include "../id-wsf-2.0/server.h"
 
 /**
+ *
+ * Those functions are called from ID-FF part of lasso when ID-WSF support is enabled. They enable
+ * the boot-straping of the ID-WSF services, notably the access to the Discovery service (see
+ * #LassoDiscovery).
+ */
+
+/**
  * lasso_login_assertion_add_discovery:
  * @login: a #LassoLogin
  * @assertion:

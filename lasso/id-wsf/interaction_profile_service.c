@@ -27,8 +27,15 @@
 #include "../xml/soap_detail.h"
 #include "../xml/soap_fault.h"
 #include "../xml/is_redirect_request.h"
-//#include "../xml/private.h"
 #include "../utils.h"
+
+/**
+ * SECTION:interaction_profile_service
+ * @short_description: A service to request user interaction from a principal
+ * @stability: Unstable
+ *
+ */
+
 
 struct _LassoInteractionProfileServicePrivate
 {
