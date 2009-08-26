@@ -198,61 +198,77 @@ gint
 lasso_idwsf2_discovery_process_metadata_register_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
 {
-	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
-	LassoIdWsf2DiscoSvcMDRegister *request;
+	LassoIdWsf2Profile *profile;
 	LassoIdWsf2DiscoSvcMDRegisterResponse *response;
 	LassoSoapEnvelope *envelope;
-	char unique_id[33];
-	int res = 0;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	profile = LASSO_IDWSF2_PROFILE(discovery);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	/* Process request */
-	res = lasso_idwsf2_profile_process_soap_request_msg(profile, message);
-
+	rc = lasso_idwsf2_profile_process_soap_request_msg(profile, message);
 	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_PROFILE(profile)->request)) {
-		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+		rc = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}
 
-	/* If the request has been correctly processed, */
-	/* put interesting data into the discovery object */
-	if (res == 0) {
+	/* OK case */
+	if (rc == 0) {
+		LassoIdWsf2DiscoSvcMDRegister *request;
+		GList *SvcMD;
+
+		lasso_release_list_of_gobjects(discovery->metadatas);
+
 		request = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER(LASSO_PROFILE(profile)->request);
-		/* FIXME : foreach on the list instead */
-		if (request != NULL && request->SvcMD != NULL) {
-			lasso_assign_gobject(discovery->metadata,
-					LASSO_IDWSF2_DISCO_SVC_METADATA(request->SvcMD->data));
-			/* Build a unique SvcMDID */
-			lasso_build_random_sequence(unique_id, 32);
-			unique_id[32] = 0;
-			discovery->metadata->svcMDID = g_strdup(unique_id);
-			/* Add the metadata into the server object */
-			lasso_server_add_svc_metadata(LASSO_PROFILE(profile)->server,
-					discovery->metadata);
+		/* Allocate an ID and add the metadatas */
+		for (SvcMD = request->SvcMD; SvcMD != NULL; SvcMD = g_list_next(SvcMD)) {
+			if (LASSO_IS_IDWSF2_DISCO_SVC_METADATA(SvcMD->data)) {
+				lasso_list_add_gobject(discovery->metadatas, SvcMD->data);
+				lasso_assign_new_string(
+						LASSO_IDWSF2_DISCO_SVC_METADATA(
+							SvcMD->data)->svcMDID,
+						lasso_build_unique_id(32));
+				lasso_server_add_svc_metadata(LASSO_PROFILE(profile)->server,
+						LASSO_IDWSF2_DISCO_SVC_METADATA(SvcMD->data));
+			}
 		}
 	}
 
 	/* Build response */
 	response = lasso_idwsf2_disco_svc_md_register_response_new();
 
-	if (res == 0) {
-		response->Status = lasso_idwsf2_util_status_new();
-		response->Status->code = g_strdup(LASSO_DISCO_STATUS_CODE_OK);
-		/* FIXME : foreach here as well */
-		response->SvcMDID = g_list_append(response->SvcMDID,
-			g_strdup(discovery->metadata->svcMDID));
+	/* OK case */
+	if (rc == 0) {
+		GList *SvcMDs;
+		/* Return the allocated IDs */
+		response->Status =
+			lasso_idwsf2_util_status_new_with_code(LASSO_DISCO_STATUS_CODE_OK, NULL);
+		for (SvcMDs = discovery->metadatas; SvcMDs != NULL; SvcMDs = g_list_next(SvcMDs)) {
+			lasso_list_add_string(response->SvcMDID,
+					LASSO_IDWSF2_DISCO_SVC_METADATA(SvcMDs->data)->svcMDID);
+		}
+	/* KO case */
 	} else {
-		response->Status = lasso_idwsf2_util_status_new();
-		response->Status->code = g_strdup(LASSO_DISCO_STATUS_CODE_FAILED);
-		/* XXX : May add secondary status codes here */
+		/* Return a failed status, with a second level code for explanation */
+		response->Status =
+			lasso_idwsf2_util_status_new_with_code(LASSO_DISCO_STATUS_CODE_FAILED,
+					lasso_strerror(rc));
 	}
 
-	envelope = profile->soap_envelope_response;
-	envelope->Body->any = g_list_append(envelope->Body->any, response);
+	lasso_assign_new_gobject(profile->soap_envelope_response,
+			lasso_idwsf2_profile_build_soap_envelope(NULL,
+				LASSO_PROVIDER(LASSO_PROFILE(profile)->server)->ProviderID));
 
-	return res;
+	if (LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_response)) {
+		envelope = profile->soap_envelope_response;
+		envelope->Body->any = g_list_append(envelope->Body->any, response);
+	} else {
+		rc = LASSO_SOAP_ERROR_MISSING_ENVELOPE;
+		g_critical("soap_envelope_response is missing");
+	}
+
+	return rc;
 }
 
 /**

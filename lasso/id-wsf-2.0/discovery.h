@@ -57,8 +57,8 @@ struct _LassoIdWsf2Discovery {
 	LassoIdWsf2Profile parent;
 
 	/* FIXME : Both should be lists */
-	LassoIdWsf2DiscoSvcMetadata *metadata;
-	gchar *svcMDID;
+	GList *metadatas; /* of LassoIdWsf2DiscoSvcMetadata* */
+	GList *svcMDIDs; /* of char* */
 
 	/*< private >*/
 	LassoIdWsf2DiscoveryPrivate *private_data;
