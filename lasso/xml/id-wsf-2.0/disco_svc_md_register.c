@@ -123,6 +123,18 @@ lasso_idwsf2_disco_svc_md_register_new()
 }
 
 
+/**
+ * lasso_idwsf2_disco_svc_md_register_new_full:
+ * @service_type: the service type for the registered metadatas
+ * @abstract: the human description for the service
+ * @provider_id: the SAML provider id of the service
+ * @soap_endpoint: the SOAP endpoint URL for the service
+ *
+ * Create and initialize a complete message for registering new metadatas at a discovery service.
+ *
+ * Return value: a new filled and initialized #LassoIdWsf2DiscoSvcMDRegister if successfull, NULL
+ * otherwise.
+ */
 LassoIdWsf2DiscoSvcMDRegister*
 lasso_idwsf2_disco_svc_md_register_new_full(const gchar *service_type, const gchar *abstract,
 		const gchar *provider_id, const gchar *soap_endpoint)
