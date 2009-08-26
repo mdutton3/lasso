@@ -29,7 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
+#include <xmlsec/xmlsec.h>
 
 #define LASSO_TYPE_SAML2_ENCRYPTED_ELEMENT (lasso_saml2_encrypted_element_get_type())
 #define LASSO_SAML2_ENCRYPTED_ELEMENT(obj) \
