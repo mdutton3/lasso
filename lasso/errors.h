@@ -29,6 +29,7 @@
 #define LASSO_ERROR_UNDEFINED                           -1 /* Undefined error case */
 #define LASSO_ERROR_UNIMPLEMENTED                       -2 /* Unimplemented part of Lasso */
 #define LASSO_ERROR_OUT_OF_MEMORY                       -3 /* Out of memory */
+#define LASSO_ERROR_CAST_FAILED                         -4 /* Expected GObject class was not found, cast failed */
 
 /* generic XML */
 #define LASSO_XML_ERROR_NODE_NOT_FOUND                 -10 /* Unable to get child of element. */
@@ -152,6 +153,7 @@
 
 /* Data Service */
 #define LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST    -1000
+#define LASSO_DATA_SERVICE_CANNOT_ADD_ITEM           -1001
 
 /* WSF Profile */
 #define LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION  -1100 /* Correlation SOAP Header is missing */
@@ -163,6 +165,7 @@
 #define LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION     -1106 /* No ID-WSF web Service description could be found for the current security mechanism */
 #define LASSO_WSF_PROFILE_ERROR_MISSING_RESOURCE_ID  -1107 /* The necessary ResourceID or EncryptedResourceID for calling an ID-WSF service is missing. */
 #define LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF -1108 /* WS-Security SAML Token secmech needs a CredentialRef */
+#define LASSO_WSF_PROFILE_ERROR_INVALID_OR_MISSING_REFERENCE_TO_MESSAGE_ID -1109 /* refToMessageID attribute of the Corrrelation header does not match the SOAP request */
 
 /* ID-WSF 2 Discovery */
 #define LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED        -1200 /* Service metadata registration failed */
@@ -177,12 +180,12 @@
 #define LASSO_DST_ERROR_MODIFY_FAILED             -1303 /* Modify failed */
 #define LASSO_DST_ERROR_MODIFY_PARTIALLY_FAILED   -1304 /* Modify partially failed : some items were correctly processed */
 #define LASSO_DST_ERROR_NEW_DATA_MISSING          -1305 /* Missing new data */
+#define LASSO_DST_ERROR_QUERY_NOT_FOUND           -1306 /* Looked query is not found */
+#define LASSO_DST_ERROR_NO_DATA                   -1307 /* No data or no data for the designated query item in the query response */
+#define LASSO_DST_ERROR_MALFORMED_QUERY                 -1308 /* QueryObject is malformed */
 
 /* Lasso registry */
 #define LASSO_REGISTRY_ERROR_KEY_EXISTS                 -1400 /* Key alreadys exists in the registry */
 
 /* Lasso provider */
 #define LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY   -1500 /* The provider has no known public key */
-
-/* Lasso ID-WSF 1.0 Disco Service */
-#define LASSO_WSF_DISCO_ERROR_UNKNOWN_ENTRY        1600

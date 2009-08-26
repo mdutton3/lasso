@@ -89,6 +89,8 @@ lasso_strerror(int error_code)
 			return "Federation not found";
 		case LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL:
 			return "Unable to find Profile URL in metadata";
+		case LASSO_WSF_PROFILE_ERROR_INVALID_OR_MISSING_REFERENCE_TO_MESSAGE_ID:
+			return "refToMessageID attribute of the Corrrelation header does not match the SOAP request";
 		case LASSO_ERROR_OUT_OF_MEMORY:
 			return "Out of memory";
 		case LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND:
@@ -117,6 +119,8 @@ lasso_strerror(int error_code)
 			return "Missing SAML artifact";
 		case LASSO_DS_ERROR_INVALID_SIGALG:
 			return "Invalid signature algorithm.";
+		case LASSO_DATA_SERVICE_CANNOT_ADD_ITEM:
+			return "LASSO_DATA_SERVICE_CANNOT_ADD_ITEM";
 		case LASSO_REGISTRY_ERROR_KEY_EXISTS:
 			return "Key alreadys exists in the registry";
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
@@ -131,6 +135,8 @@ lasso_strerror(int error_code)
 			return "Security SOAP Header is missing";
 		case LASSO_XML_ERROR_MISSING_NAMESPACE:
 			return "LASSO_XML_ERROR_MISSING_NAMESPACE";
+		case LASSO_DST_ERROR_MALFORMED_QUERY:
+			return "QueryObject is malformed";
 		case LASSO_DS_ERROR_INVALID_SIGNATURE:
 			return "Invalid signature.";
 		case LASSO_DS_ERROR_DECRYPTION_FAILED:
@@ -201,8 +207,8 @@ lasso_strerror(int error_code)
 			return "Invalid NameIDPolicy in lib:AuthnRequest";
 		case LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
 			return "Service metadata association failed";
-		case LASSO_WSF_DISCO_ERROR_UNKNOWN_ENTRY:
-			return "LASSO_WSF_DISCO_ERROR_UNKNOWN_ENTRY";
+		case LASSO_DST_ERROR_NO_DATA:
+			return "No data or no data for the designated query item in the query response";
 		case LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED:
 			return "LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED";
 		case LASSO_LOGIN_ERROR_ASSERTION_REPLAY:
@@ -233,8 +239,12 @@ lasso_strerror(int error_code)
 			return "Unsupported protocol profile";
 		case LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED:
 			return "Error building request message";
+		case LASSO_DST_ERROR_QUERY_NOT_FOUND:
+			return "Looked query is not found";
 		case LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED:
 			return "LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED";
+		case LASSO_ERROR_CAST_FAILED:
+			return "Expected GObject class was not found, cast failed";
 		case LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION:
 			return "Missing service description";
 		case LASSO_DST_ERROR_NEW_DATA_MISSING:
