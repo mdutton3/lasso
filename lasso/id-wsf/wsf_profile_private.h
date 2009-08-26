@@ -30,7 +30,7 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include <lasso/xml/soap_fault.h>
+#include "../xml/soap_fault.h"
 
 struct _LassoWsfProfilePrivate
 {
@@ -38,16 +38,18 @@ struct _LassoWsfProfilePrivate
 	char *security_mech_id;
 	LassoDiscoResourceOffering *offering;
 	LassoDiscoDescription *description;
-	LassoSoapFault *fault;
+	char *remote_provider_id;
+	LassoSoapFault *soap_fault;
+	char *status_code;
 };
 
 LassoSoapFault* lasso_wsf_profile_get_fault(const LassoWsfProfile *profile);
-
 LassoDiscoDescription* lasso_wsf_profile_get_description_auto(const LassoDiscoServiceInstance *si,
 	const gchar *security_mech_id);
-
 void lasso_wsf_profile_set_resource_offering(LassoWsfProfile *profile,
 	LassoDiscoResourceOffering *offering);
+gint lasso_wsf_profile_set_msg_url_from_description(LassoWsfProfile *wsf_profile);
+gint lasso_wsf_profile_build_soap_fault_response_msg(LassoWsfProfile *profile, gint rc);
 
 #ifdef __cplusplus
 }

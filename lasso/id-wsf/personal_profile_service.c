@@ -23,10 +23,11 @@
  */
 
 #include "../xml/private.h"
-#include <lasso/id-wsf/personal_profile_service.h>
-#include <lasso/id-wsf/data_service_private.h>
-#include <lasso/id-wsf/discovery.h>
-
+#include "./personal_profile_service.h"
+#include "./data_service.h"
+#include "./wsf_profile_private.h"
+#include "./discovery.h"
+#include "../utils.h"
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -38,41 +39,51 @@ lasso_personal_profile_service_get_email(LassoPersonalProfileService *service)
 	xmlNode *xmlnode, *child;
 	xmlChar *msgAccount = NULL, *msgProvider = NULL;
 	char *email;
+	GList *answers = NULL;
+	gint rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(service) == TRUE, NULL);
 
-	xmlnode = lasso_data_service_get_answer(LASSO_DATA_SERVICE(service),
-			"/pp:PP/pp:MsgContact");
+	rc = lasso_data_service_get_answers_by_select(LASSO_DATA_SERVICE(service),
+			"/pp:PP/pp:MsgContact", &answers);
 
-	child = xmlnode->children;
-	while (child != NULL) {
-		if (child->type != XML_ELEMENT_NODE) {
+	lasso_foreach(answers, answers)
+	{
+		xmlnode = (xmlNode*)answers->data;
+		child = xmlnode->children;
+		while (child != NULL) {
+			if (child->type != XML_ELEMENT_NODE) {
+				child = child->next;
+				continue;
+			}
+
+			if (strcmp((char *)child->name, "MsgAccount") == 0) {
+				msgAccount = xmlNodeGetContent(child);
+			} else if (strcmp((char *)child->name, "MsgProvider") == 0) {
+				msgProvider = xmlNodeGetContent(child);
+			}
+
+			if (msgAccount != NULL && msgProvider != NULL) {
+				break;
+			}
+
 			child = child->next;
-			continue;
 		}
 
-		if (strcmp((char *)child->name, "MsgAccount") == 0) {
-			msgAccount = xmlNodeGetContent(child);
-		} else if (strcmp((char *)child->name, "MsgProvider") == 0) {
-			msgProvider = xmlNodeGetContent(child);
-		}
-
-		if (msgAccount != NULL && msgProvider != NULL) {
+		if (msgAccount && msgProvider) {
+			email = g_strdup_printf("%s@%s", msgAccount, msgProvider);
 			break;
+		} else {
+			email = NULL;
 		}
-
-		child = child->next;
+		lasso_release_xml_string(msgAccount);
+		lasso_release_xml_string(msgProvider);
+		lasso_release_xml_node(xmlnode);
 	}
 
-	if (msgAccount && msgProvider) {
-		email = g_strdup_printf("%s@%s", msgAccount, msgProvider);
-	} else {
-		email = NULL;
-	}
-	xmlFree(msgAccount);
-	xmlFree(msgProvider);
-	xmlFreeNode(xmlnode);
-
+	lasso_release_xml_string(msgAccount);
+	lasso_release_xml_string(msgProvider);
+	lasso_release_xml_node(xmlnode);
 	return email;
 }
 
@@ -131,7 +142,7 @@ lasso_personal_profile_service_new_full(LassoServer *server, LassoDiscoResourceO
 		return NULL;
 	}
 
-	lasso_data_service_set_offering(LASSO_DATA_SERVICE(service), offering);
+	lasso_wsf_profile_set_resource_offering(&service->parent.parent, offering);
 
 	return service;
 }

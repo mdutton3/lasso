@@ -182,12 +182,16 @@ LassoDstModify*
 lasso_dst_modify_new(LassoDstModification *modification)
 {
 	LassoDstModify *modify;
+	/* Force a warning */
+	LassoDstModification *_modification = LASSO_DST_MODIFICATION(modification);
 
 	g_return_val_if_fail(LASSO_IS_DST_MODIFICATION(modification) == TRUE, NULL);
 
 	modify = g_object_new(LASSO_TYPE_DST_MODIFY, NULL);
 
-	modify->Modification = g_list_append(modify->Modification, modification);
+	if (LASSO_IS_DST_MODIFICATION(_modification)) {
+		modify->Modification = g_list_append(modify->Modification, _modification);
+	}
 
 	return modify;
 }

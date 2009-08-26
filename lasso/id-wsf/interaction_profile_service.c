@@ -22,8 +22,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "../xml/private.h"
-#include <lasso/id-wsf/interaction_profile_service.h>
+#include "./interaction_profile_service.h"
+#include "./wsf_profile.h"
+#include "../xml/soap_detail.h"
+#include "../xml/soap_fault.h"
+#include "../xml/is_redirect_request.h"
+//#include "../xml/private.h"
+#include "../utils.h"
 
 struct _LassoInteractionProfileServicePrivate
 {
@@ -72,6 +77,33 @@ lasso_interaction_profile_service_process_response_msg(LassoInteractionProfileSe
 	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(response);
 
 	return 0;
+}
+
+/**
+ * lasso_interaction_profile_service_build_redirect_response_msg:
+ * @profile: a #LassoWsfProfile
+ * @redirect_url: an #xmlChar string containing an HTTP url for interaction with the user
+ *
+ * The redirect_url must contain a way for the interaction service to link this interaction with the
+ * current request, usually it is the xml:id of the original request.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+gint
+lasso_interaction_profile_service_build_redirect_response_msg(LassoWsfProfile *profile, char *redirect_url)
+{
+	LassoSoapDetail *detail = NULL;
+	LassoSoapFault *fault = NULL;
+
+	lasso_bad_param(WSF_PROFILE, profile);
+
+	detail = lasso_soap_detail_new();
+	fault = lasso_soap_fault_new();
+	lasso_assign_new_gobject(fault->Detail, detail);
+	lasso_assign_string(fault->faultcode, LASSO_SOAP_FAULT_CODE_SERVER);
+	lasso_list_add_new_gobject(detail->any, lasso_is_redirect_request_new(redirect_url));
+
+	return lasso_wsf_profile_init_soap_response(profile, &fault->parent);
 }
 
 

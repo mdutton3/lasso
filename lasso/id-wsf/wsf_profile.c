@@ -34,37 +34,42 @@
 
 #include "../utils.h"
 
-#include <lasso/id-wsf/wsf_profile.h>
-#include <lasso/id-wsf/wsf_profile_private.h>
-#include <lasso/id-wsf/discovery.h>
-#include <lasso/id-wsf/utils.h>
-#include <lasso/xml/disco_modify.h>
-#include <lasso/xml/soap_fault.h>
-#include <lasso/xml/soap_binding_correlation.h>
-#include <lasso/xml/soap_binding_provider.h>
-#include <lasso/xml/soap_binding_processing_context.h>
-#include <lasso/xml/wsse_security.h>
-#include <lasso/xml/saml_assertion.h>
-#include <lasso/xml/saml_authentication_statement.h>
-#include <lasso/xml/saml_subject_statement_abstract.h>
-#include <lasso/xml/saml_subject.h>
-#include <lasso/xml/ds_key_info.h>
-#include <lasso/xml/ds_key_value.h>
-#include <lasso/xml/ds_rsa_key_value.h>
-#include <lasso/xml/soap_fault.h>
-#include <lasso/xml/soap_detail.h>
-#include <lasso/xml/is_redirect_request.h>
+#include "wsf_profile.h"
+#include "wsf_profile_private.h"
+#include "discovery.h"
+#include "utils.h"
+#include "../xml/disco_modify.h"
+#include "../xml/soap_fault.h"
+#include "../xml/soap_binding_correlation.h"
+#include "../xml/soap_binding_provider.h"
+#include "../xml/soap_binding_processing_context.h"
+#include "../xml/wsse_security.h"
+#include "../xml/saml_assertion.h"
+#include "../xml/saml_authentication_statement.h"
+#include "../xml/saml_subject_statement_abstract.h"
+#include "../xml/saml_subject.h"
+#include "../xml/ds_key_info.h"
+#include "../xml/ds_key_value.h"
+#include "../xml/ds_rsa_key_value.h"
+#include "../xml/soap_fault.h"
+#include "../xml/soap_detail.h"
+#include "../xml/is_redirect_request.h"
 
 
-#include <lasso/id-ff/server.h>
-#include <lasso/id-ff/providerprivate.h>
-#include <lasso/id-ff/sessionprivate.h>
+#include "../id-ff/server.h"
+#include "../id-ff/providerprivate.h"
+#include "../id-ff/sessionprivate.h"
+#include "../xml/misc_text_node.h"
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
 static gint lasso_wsf_profile_add_saml_signature(LassoWsfProfile *wsf_profile, xmlDoc *doc);
+static LassoSoapBindingCorrelation* lasso_wsf_profile_utils_get_header_correlation(LassoSoapEnvelope
+		*envelope);
+static char* lasso_wsf_profile_utils_get_message_id(LassoSoapEnvelope *envelope);
+static char* lasso_wsf_profile_utils_get_ref_message_id(LassoSoapEnvelope *envelope);
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Server", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoWsfProfile, server), NULL, NULL, NULL},
@@ -81,18 +86,110 @@ static struct XmlSnippet schema_snippets[] = {
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
-/*
- * lasso_wsf_profile_get_fault:
- * @profile: a #LassoWsfProfile
- *
- * Get the current fault present in profile private datas
- */
-LassoSoapFault*
-lasso_wsf_profile_get_fault(const LassoWsfProfile *profile)
+static LassoSoapBindingCorrelation*
+lasso_wsf_profile_utils_get_header_correlation(LassoSoapEnvelope *envelope)
 {
-	return profile->private_data->fault;
+	LassoSoapHeader *header;
+	GList *header_list;
+
+	if (LASSO_IS_SOAP_HEADER(envelope->Header)) {
+		header = envelope->Header;
+	} else {
+		goto cleanup;
+	}
+	lasso_foreach(header_list, header->Other)
+	{
+		if (LASSO_IS_SOAP_BINDING_CORRELATION(header_list->data)) {
+			return (LassoSoapBindingCorrelation*)header_list->data;
+		}
+	}
+cleanup:
+	return NULL;
 }
 
+static char*
+lasso_wsf_profile_utils_get_ref_message_id(LassoSoapEnvelope *envelope)
+{
+	LassoSoapBindingCorrelation *correlation_header;
+
+	correlation_header = lasso_wsf_profile_utils_get_header_correlation(envelope);
+	if (! correlation_header) {
+		return NULL;
+	}
+	return correlation_header->refToMessageID;
+}
+
+static char*
+lasso_wsf_profile_utils_get_message_id(LassoSoapEnvelope *envelope)
+{
+	LassoSoapBindingCorrelation *correlation_header;
+
+	correlation_header = lasso_wsf_profile_utils_get_header_correlation(envelope);
+	if (! correlation_header) {
+		return NULL;
+	}
+	return correlation_header->messageID;
+}
+/**
+ * lasso_wsf_profile_build_soap_fault_response_msg:
+ * @profile: a #LassoWsfProfile
+ * @rc: an error code from Lasso
+ *
+ * Build a new SOAP fault, eventually fill it with the given rc code
+ */
+gint
+lasso_wsf_profile_build_soap_fault_response_msg(LassoWsfProfile *profile, gint rc)
+{
+	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	lasso_assign_new_gobject(profile->response, lasso_soap_fault_new());
+	if (rc) {
+		LassoMiscTextNode *node;
+
+		if (rc == LASSO_PROFILE_ERROR_INVALID_MSG) {
+			lasso_assign_string(LASSO_SOAP_FAULT(profile->response)->faultcode,
+					LASSO_SOAP_ENV_PREFIX ":" LASSO_SOAP_FAULT_CODE_CLIENT);
+		} else {
+			lasso_assign_string(LASSO_SOAP_FAULT(profile->response)->faultcode,
+					LASSO_SOAP_ENV_PREFIX ":" LASSO_SOAP_FAULT_CODE_SERVER);
+		}
+		lasso_assign_string(LASSO_SOAP_FAULT(profile->response)->faultstring,
+				LASSO_SOAP_FAULT_STRING_SERVER);
+		lasso_assign_new_gobject(LASSO_SOAP_FAULT(profile->response)->Detail, lasso_soap_detail_new());
+		node = (LassoMiscTextNode*)lasso_misc_text_node_new();
+		lasso_assign_string(node->content, lasso_strerror(rc));
+		node->name = "LassoError";
+		node->ns_href = LASSO_LASSO_HREF;
+		node->ns_prefix = LASSO_LASSO_PREFIX;
+	}
+	return rc;
+}
+
+/**
+ * lasso_wsf_set_msg_url_from_description:
+ * @profile: the #LassoWsfProfile object
+ *
+ * Initialize the @msgUrl attribute of the #LassoWsfProfile to the URL of the targetted web service.
+ *
+ * Return value: 0 if successful
+ */
+gint
+lasso_wsf_profile_set_msg_url_from_description(LassoWsfProfile *wsf_profile)
+{
+	const LassoDiscoDescription *description = NULL;
+	int rc = 0;
+
+	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(wsf_profile),
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	description = lasso_wsf_profile_get_description(wsf_profile);
+	if (description->Endpoint != NULL) {
+		lasso_assign_string(wsf_profile->msg_url, description->Endpoint);
+	} else {
+		rc = LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT;
+	}
+	return rc;
+}
 
 /* Documentation of g_list_find_custom say that list element is the first pointer,
  * and user_data the second */
@@ -119,7 +216,7 @@ static gint
 lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 {
 	LassoSoapEnvelope *soap = NULL;
-	LassoSoapHeader *header; = NULL
+	LassoSoapHeader *header = NULL;
 	LassoWsseSecurity *wsse_security = NULL;
 	LassoSession *session = NULL;
 	const LassoDiscoDescription *description = NULL;
@@ -132,7 +229,8 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 	description = lasso_wsf_profile_get_description(profile);
 	/* Lookup in the session the credential ref from the description and
 	 * add them to the SOAP header wsse:Security. */
-	/* FIXME: should we really add every credentials to the message ? */
+	/* FIXME: should we really add every credentials to the message, or only the one identifying
+	 * us? */
 	goto_cleanup_if_fail_with_rc(description != NULL, LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION);
 	credentialRefs = description->CredentialRef;
 	goto_cleanup_if_fail_with_rc(credentialRefs != NULL, LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF);
@@ -149,7 +247,7 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 	while (credentialRefs) {
 		char *ref = (char*)credentialRefs->data;
 		xmlNode *assertion = lasso_session_get_assertion_by_id(session, ref);
-		goto_cleanup_if_fail(assertion != NULL, LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF);
+		goto_cleanup_if_fail_with_rc(assertion != NULL, LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF);
 		lasso_list_add_xml_node(wsse_security->any, assertion);
 		credentialRefs = g_list_next(credentialRefs);
 	}
@@ -180,6 +278,10 @@ lasso_wsf_profile_comply_with_security_mechanism(LassoWsfProfile *profile)
 
 	sec_mech_id = profile->private_data->security_mech_id;
 	if (lasso_security_mech_id_is_saml_authentication(sec_mech_id)) {
+		return lasso_wsf_profile_comply_with_saml_authentication(profile);
+	}
+	if (lasso_security_mech_id_is_bearer_authentication(sec_mech_id)) {
+		/* Same as SAML auth, add the tokens to wss:Security header */
 		return lasso_wsf_profile_comply_with_saml_authentication(profile);
 	}
 	if (lasso_security_mech_id_is_null_authentication(sec_mech_id)) {
@@ -259,7 +361,7 @@ lasso_wsf_profile_add_credential(G_GNUC_UNUSED LassoWsfProfile *profile, G_GNUC_
 }
 
 /*
- * lasso_wsf_profile_get_description_autos:
+ * lasso_wsf_profile_get_description_auto:
  * @si: a #LassoDiscoServiceInstance
  * @security_mech_id: the URI of a liberty security mechanism
  *
@@ -326,8 +428,8 @@ lasso_wsf_profile_set_description_from_offering(
 					offering->ServiceInstance->Description->data);
 		}
 	} else {
-		description = lasso_discovery_get_description_auto(
-				offering, security_mech_id);
+		description = lasso_wsf_profile_get_description_auto(offering->ServiceInstance,
+				security_mech_id);
 	}
 	if (description == NULL) {
 		return LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION;
@@ -339,10 +441,10 @@ lasso_wsf_profile_set_description_from_offering(
 /**
  * lasso_wsf_profile_set_security_mech_id:
  * @profile: the #LassoWsfProfile object
- * @securit_mech_id: a char* string representing the chosen security mech id.
+ * @security_mech_id: a char* string representing the chosen security mech id.
  *
  * Set the security mechanism to use. Currently only SAML and NULL mechanism
- * are supported for authentication. Transposrt is not handled by lasso so all
+ * are supported for authentication. Transport is not handled by lasso so all
  * are supported.
  *
  * List of supported mechanism ids:
@@ -587,7 +689,7 @@ lasso_wsf_profile_is_identity_dirty(const LassoWsfProfile *profile)
 gboolean
 lasso_wsf_profile_is_session_dirty(const LassoWsfProfile *profile)
 {
-	return (profile->session && profile->session->is_dirty);
+	return (profile->session && lasso_session_is_dirty(profile->session));
 }
 
 
@@ -630,7 +732,6 @@ lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile, const gchar  *
 	profile->session = lasso_session_new_from_dump(dump);
 	if (profile->session == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BAD_SESSION_DUMP);
-	profile->session->is_dirty = FALSE;
 
 	return 0;
 }
@@ -662,7 +763,34 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
 	lasso_assign_new_gobject(profile->soap_envelope_request, envelope);
 	lasso_list_add_gobject(envelope->Body->any, request);
 	lasso_assign_gobject(profile->request, request);
-	return lasso_wsf_profile_comply_with_security_mechanism(profile);
+	return 0;
+}
+
+/**
+ * lasso_wsf_profile_init_soap_response:
+ * @profile: a #LassoWsfProfile object
+ * @response: a #LassoNode object
+ *
+ * Build a new SOAP envelope containing response to current SOAP request
+ */
+gint
+lasso_wsf_profile_init_soap_response(LassoWsfProfile *profile, LassoNode *response)
+{
+	char *providerID = NULL;
+	LassoSoapEnvelope *envelope = NULL;
+
+	lasso_return_val_if_invalid_param(WSF_PROFILE, profile,
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	if (profile->server) {
+		providerID = profile->server->parent.ProviderID;
+	}
+	envelope = lasso_wsf_profile_build_soap_envelope_internal(lasso_wsf_profile_utils_get_message_id(profile->soap_envelope_request),
+			providerID);
+	lasso_assign_new_gobject(profile->soap_envelope_response, envelope);
+	lasso_list_add_gobject(envelope->Body->any, response);
+	lasso_assign_gobject(profile->response, response);
+	return 0;
 }
 
 /**
@@ -676,7 +804,7 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
  * Return value: 0 if construction is successfull.
  **/
 gint
-lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
+lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *wsf_profile)
 {
 	LassoSoapEnvelope *envelope;
 	xmlOutputBuffer *buf;
@@ -686,33 +814,39 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	char *sec_mech_id = NULL;
 	int rc = 0;
 
-	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request),
-		LASSO_SOAP_ERROR_MISSING_ENVELOPE);
+	lasso_bad_param(WSF_PROFILE, wsf_profile);
+	lasso_return_val_if_invalid_param(SOAP_ENVELOPE, wsf_profile->soap_envelope_request,
+			LASSO_SOAP_ERROR_MISSING_ENVELOPE);
 
-	envelope = profile->soap_envelope_request;
+	rc = lasso_wsf_profile_comply_with_security_mechanism(wsf_profile);
+	goto_cleanup_if_fail(rc == 0);
+	envelope = wsf_profile->soap_envelope_request;
 	doc = xmlNewDoc((xmlChar*)"1.0");
 	envelope_node = lasso_node_get_xmlNode(LASSO_NODE(envelope), FALSE);
 	xmlDocSetRootElement(doc, envelope_node);
 	/* Sign request if necessary */
-	sec_mech_id = profile->private_data->security_mech_id;
+	sec_mech_id = wsf_profile->private_data->security_mech_id;
 	if (lasso_security_mech_id_is_saml_authentication(sec_mech_id)) {
-		rc = lasso_wsf_profile_add_saml_signature(profile, doc);
+		rc = lasso_wsf_profile_add_saml_signature(wsf_profile, doc);
 		if (rc != 0) {
 			goto cleanup;
 		}
+	} else if (lasso_security_mech_id_is_bearer_authentication(sec_mech_id)) {
+		// Nothing to do
 	} else if (lasso_security_mech_id_is_null_authentication(sec_mech_id) == FALSE) {
 		rc = LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM;
 		goto cleanup;
 	}
+
 	/* Dump soap request */
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
 	xmlNodeDumpOutput(buf, NULL, envelope_node, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
-	profile->msg_body = g_strdup(
+	wsf_profile->msg_body = g_strdup(
 		(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	lasso_release_output_buffer(buf);
+	rc = lasso_wsf_profile_set_msg_url_from_description(wsf_profile);
 
 cleanup:
 	lasso_release_doc(doc);
@@ -721,65 +855,78 @@ cleanup:
 
 /**
  * lasso_wsf_profile_build_soap_response_msg:
- * @profile: the #LassoWsfProfile object
+ * @wsf_profile: a #LassoWsfProfile object
  *
  * Create the char* string containing XML document for the SOAP ID-WSF
  * response.
  *
  * Return value: 0 if construction is successfull.
  **/
-int
-lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
+gint
+lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *wsf_profile)
 {
-	LassoSoapEnvelope *envelope;
-	xmlNode *soap_envelope;
-	xmlDoc *doc;
-	xmlOutputBuffer *buf;
-	xmlCharEncodingHandler *handler;
+	LassoSoapEnvelope *envelope = NULL;
+	LassoSoapFault *soap_fault = NULL;
+	int rc = 0;
 
-	lasso_return_val_if_invalid_param(WSF_PROFILE, profile,
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	lasso_bad_param(WSF_PROFILE, wsf_profile);
+	envelope = wsf_profile->soap_envelope_response;
+	if (! LASSO_IS_SOAP_ENVELOPE(envelope)) {
+		return LASSO_SOAP_ERROR_MISSING_ENVELOPE;
+	}
 
-	envelope = profile->soap_envelope_response;
-	doc = xmlNewDoc((xmlChar*)"1.0");
-	soap_envelope = lasso_node_get_xmlNode(LASSO_NODE(envelope), TRUE);
-	xmlDocSetRootElement(doc, soap_envelope);
-	/* FIXME: does we need signature ? */
-	/* Dump soap response */
-	handler = xmlFindCharEncodingHandler("utf-8");
-	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, soap_envelope, 0, 0, "utf-8");
-	xmlOutputBufferFlush(buf);
-	profile->msg_body = g_strdup(
-		(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
-	xmlOutputBufferClose(buf);
-	lasso_release_doc(doc);
+	/* If SOAP fault replace response by the SOAP fault */
+	if ((soap_fault = lasso_wsf_profile_get_soap_fault(wsf_profile))) {
+		LassoSoapBody *body = NULL;
+		lasso_extract_node_or_fail(body, envelope->Body, SOAP_BODY, LASSO_SOAP_ERROR_MISSING_BODY);
+		lasso_release_list_of_gobjects(body->any);
+		lasso_list_add_gobject(body->any, soap_fault);
+	}
 
-	return 0;
+	lasso_assign_new_string(wsf_profile->msg_body,
+			lasso_node_export_to_xml((LassoNode*)envelope));
+cleanup:
+	return rc;
 }
 
+/** FIXME: add support for security mechanisms SAML and Bearer. */
+/**
+ * lasso_wsf_profile_process_soap_request_msg:
+ * @profile: a #LassoWsfProfile object
+ * @message: a SOAP request message string
+ * @security_mech_id: the security mechanism to apply
+ *
+ * Process an ID-WSF SOAP request, extract headers information, and check compliance with the
+ * security mechanism.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
 gint
 lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar *message,
-	G_GNUC_UNUSED const gchar *service_type, const gchar *security_mech_id)
+	const gchar *security_mech_id)
 {
 	LassoSoapBindingCorrelation *correlation = NULL;
 	LassoSoapEnvelope *envelope = NULL;
-	gchar *messageId;
+	gchar *messageId = NULL;
 	int rc = 0;
-	xmlDoc *doc;
+	xmlDoc *doc = NULL;
 	GList *iter = NULL;
+	GList *node_list = NULL;
 
-	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	lasso_bad_param(WSF_PROFILE, profile);
+	lasso_null_param(message);
+
+	g_return_val_if_fail(profile->private_data, LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT);
+	lasso_wsf_profile_set_soap_fault(profile, NULL);
 
 	doc = lasso_xml_parse_memory(message, strlen(message));
 	goto_cleanup_if_fail_with_rc (doc != NULL, critical_error(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG));
 	/* Get soap request and his message id */
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
 	if (LASSO_IS_SOAP_ENVELOPE(envelope)) {
-		lasso_assign_gobject(profile->soap_envelope_request, LASSO_SOAP_ENVELOPE(envelope));
+		lasso_assign_gobject(profile->soap_envelope_request, envelope);
 	} else {
-		goto_cleanup_if_fail_with_rc(FALSE, LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
 	}
 	goto_cleanup_if_fail_with_rc(envelope != NULL, LASSO_SOAP_ERROR_MISSING_ENVELOPE);
 	goto_cleanup_if_fail_with_rc(envelope->Body != NULL, LASSO_SOAP_ERROR_MISSING_BODY);
@@ -803,26 +950,30 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	messageId = correlation->messageID;
 	/* Comply with security mechanism */
 	if (lasso_security_mech_id_is_null_authentication(security_mech_id) == FALSE) {
-		/** FIXME: add security mechanisms */
 		goto_cleanup_if_fail_with_rc(FALSE, LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM);
 	}
 
-	/* Set soap response */
-	lasso_release_gobject(envelope);
-	envelope = lasso_wsf_profile_build_soap_envelope_internal(messageId,
-		LASSO_PROVIDER(profile->server)->ProviderID);
-	lasso_assign_gobject(LASSO_WSF_PROFILE(profile)->soap_envelope_response, envelope);
+	/* Extract the remote provider ID if present */
+	if (LASSO_IS_SOAP_HEADER(envelope->Header)) {
+		for (node_list = envelope->Header->Other;
+				node_list; node_list = g_list_next(node_list)) {
+			LassoSoapBindingProvider *node = node_list->data;
+
+			if (LASSO_IS_SOAP_BINDING_PROVIDER(node)) {
+				lasso_assign_string(profile->private_data->remote_provider_id,
+						node->providerID);
+				break; /* Only treat the first one */
+			}
+		}
+	}
 
 cleanup:
-	if (envelope) {
-		lasso_release_gobject(envelope);
-	}
-	if (doc) {
-		lasso_release_doc(doc);
-	}
+	lasso_release_gobject(envelope);
+	lasso_release_doc(doc);
 
 	return rc;
 }
+
 
 /**
  * lasso_wsf_profile_process_soap_response_msg:
@@ -838,34 +989,45 @@ gint
 lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gchar *message)
 {
 	xmlDoc *doc = NULL;
-	xmlNode *root = NULL;
 	LassoSoapEnvelope *envelope = NULL;
 	gint rc = 0;
 
-	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(message != NULL,
-			LASSO_PARAM_ERROR_INVALID_VALUE);
+	lasso_bad_param(WSF_PROFILE, profile);
+	lasso_null_param(message);
+
+	g_return_val_if_fail(profile->private_data, LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT);
+	lasso_wsf_profile_set_soap_fault(profile, NULL);
 
 	doc = lasso_xml_parse_memory(message, strlen(message));
 	goto_cleanup_if_fail_with_rc (doc != NULL, critical_error(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG));
-	root = xmlDocGetRootElement(doc);
-	/* Parse the message */
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(root));
+	envelope = (LassoSoapEnvelope*)lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc));
 	if (LASSO_IS_SOAP_ENVELOPE(envelope)) {
-		lasso_assign_gobject(profile->soap_envelope_response, LASSO_SOAP_ENVELOPE(envelope));
+		lasso_assign_gobject(profile->soap_envelope_response, envelope);
 	} else {
-		goto_cleanup_if_fail_with_rc(FALSE, LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
 	}
-	goto_cleanup_if_fail_with_rc(envelope != NULL, LASSO_SOAP_ERROR_MISSING_ENVELOPE);
 	goto_cleanup_if_fail_with_rc(envelope->Body != NULL, LASSO_SOAP_ERROR_MISSING_BODY);
-	if (envelope->Body->any) {
-		lasso_assign_gobject(profile->response, LASSO_NODE(envelope->Body->any->data));
+	if (envelope->Body->any && LASSO_IS_NODE(envelope->Body->any->data)) {
+		lasso_assign_gobject(profile->response, envelope->Body->any->data);
 	} else {
-		profile->response = NULL;
-		rc = LASSO_PROFILE_ERROR_MISSING_RESPONSE;
+		lasso_release_gobject(profile->response);
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_RESPONSE);
 	}
-	/* XXX: Validate MessageID */
+
+	/* Check correlation header */
+	goto_cleanup_if_fail_with_rc(
+			lasso_wsf_profile_utils_get_header_correlation(
+				profile->soap_envelope_response),
+			LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION);
+
+	/* Check message ID */
+	goto_cleanup_if_fail_with_rc(
+			g_strcmp0(lasso_wsf_profile_utils_get_message_id(
+					profile->soap_envelope_request),
+				lasso_wsf_profile_utils_get_ref_message_id(
+					profile->soap_envelope_response)) == 0,
+			LASSO_WSF_PROFILE_ERROR_INVALID_OR_MISSING_REFERENCE_TO_MESSAGE_ID);
+
 	/* Signal soap fault specifically,
 	 * find soap redirects. */
 	if (LASSO_IS_SOAP_FAULT(profile->response)) {
@@ -887,12 +1049,8 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 		}
 	}
 cleanup:
-	if (envelope) {
-		lasso_release_gobject(envelope);
-	}
-	if (doc) {
-		lasso_release_doc(doc);
-	}
+	lasso_release_gobject(envelope);
+	lasso_release_doc(doc);
 	return rc;
 }
 
@@ -923,6 +1081,12 @@ dispose(GObject *object)
 
 	if (profile->private_data->dispose_has_run == TRUE)
 		return;
+	lasso_release_string(profile->private_data->security_mech_id);
+	lasso_release_gobject(profile->private_data->offering);
+	lasso_release_gobject(profile->private_data->description);
+	lasso_release_string(profile->private_data->remote_provider_id);
+	lasso_release_gobject(profile->private_data->soap_fault);
+	lasso_release_string(profile->private_data->status_code);
 	profile->private_data->dispose_has_run = TRUE;
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
@@ -1191,6 +1355,7 @@ add_key_info_security_token_reference(xmlDocPtr doc, xmlNode *signature, xmlChar
 	xmlSetProp(reference, (xmlChar*) "URI", value);
 	lasso_release(value);
 }
+
 /**
  * lasso_wsf_profile_add_saml_signature:
  * @wsf_profile: a #LassoWsfProfile
@@ -1305,4 +1470,130 @@ cleanup:
 	lasso_release_xml_string(body_id);
 	lasso_release_xml_string(assertion_id);
 	return rc;
+}
+
+/**
+ * lasso_wsf_profile_get_remote_provider_id:
+ * @wsf_profile: a #LassoWsfProfile object
+ *
+ * Return the remote provider id parsed in the last processing of a SOAP request or a SOAP response.
+ *
+ * Return value: the provider id string or NULL.
+ */
+const char*
+lasso_wsf_profile_get_remote_provider_id(LassoWsfProfile *wsf_profile)
+{
+	lasso_return_val_if_invalid_param(WSF_PROFILE, wsf_profile, NULL);
+
+	return wsf_profile->private_data->remote_provider_id;
+}
+
+/**
+ * lasso_wsf_profile_get_remote_provider:
+ * @wsf_profile: a #LassoWsfProfile object
+ * @provider_ref: an output pointer to #LassoProvider object variable.
+ *
+ * Return the remote provider parsed in the last processing of a SOAP request or a SOAP response.
+ *
+ * Return value: 0 if successfull, LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if no provider id
+ * is present in the SOAP headers, or LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER if the provider is
+ * unknown to us.
+ */
+gint
+lasso_wsf_profile_get_remote_provider(LassoWsfProfile *wsf_profile, LassoProvider **provider)
+{
+	LassoProvider *_provider = NULL;
+
+	lasso_bad_param(WSF_PROFILE, wsf_profile);
+
+	if (! wsf_profile->private_data->remote_provider_id)
+		return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
+
+	if (! LASSO_IS_SERVER(wsf_profile->server))
+		return LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
+
+	_provider = lasso_server_get_provider(wsf_profile->server, wsf_profile->private_data->remote_provider_id);
+	if (! _provider)
+		return LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
+
+	if (provider) {
+		lasso_assign_gobject(*provider, _provider);
+	}
+	return 0;
+}
+
+/**
+ * lasso_wsf_profile_get_fault:
+ * @wsf_profile: a #LassoWsfProfile object
+ *
+ * If a fault is going to be returned as next response, return it.
+ *
+ * Return value: a #LassoSoapFault, or NULL if none is currently present in the object.
+ */
+LassoSoapFault*
+lasso_wsf_profile_get_soap_fault(LassoWsfProfile *wsf_profile)
+{
+	lasso_return_val_if_invalid_param(WSF_PROFILE, wsf_profile, NULL);
+
+	if (wsf_profile->private_data)
+		return wsf_profile->private_data->soap_fault;
+	return NULL;
+}
+
+/**
+ * lasso_wsf_profile_set_soap_fault:
+ * @wsf_profile: a #LassoWsfProfile object
+ * @soap_fault: a #LassoSoapFault object
+ *
+ * Set a SOAP fault to be returned in next SOAP response message. The SOAP fault is removed by
+ * lasso_wsf_profile_init_soap_request.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+gint
+lasso_wsf_profile_set_soap_fault(LassoWsfProfile *wsf_profile, LassoSoapFault *soap_fault)
+{
+	lasso_bad_param(WSF_PROFILE, wsf_profile);
+	if (! LASSO_IS_SOAP_FAULT(soap_fault) && soap_fault)
+		return LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ;
+	if (! wsf_profile->private_data)
+		return LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT;
+	lasso_assign_gobject(wsf_profile->private_data->soap_fault, soap_fault);
+	return 0;
+}
+
+/**
+ * lasso_wsf_profile_set_status_code:
+ * @wsf_profile: a #LassoWsfProfile
+ * @status_code: a string representing the status code
+ *
+ * Set the status code to set in the next built response.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+gint
+lasso_wsf_profile_set_status_code(LassoWsfProfile *wsf_profile, const char *status_code)
+{
+	lasso_bad_param(WSF_PROFILE, wsf_profile);
+	if (! wsf_profile->private_data)
+		return LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT;
+	lasso_assign_string(wsf_profile->private_data->status_code, status_code);
+	return 0;
+}
+
+/**
+ * lasso_wsf_profile_get_status_code:
+ * @wsf_profile: a #LassoWsfProfile object
+ *
+ * Return the actual status code for this protocol object.
+ *
+ * Return value: a string owned by the profile object or NULL.
+ */
+const char*
+lasso_wsf_profile_get_status_code(LassoWsfProfile *wsf_profile) {
+	lasso_return_val_if_invalid_param(WSF_PROFILE, wsf_profile, NULL);
+
+	if (wsf_profile->private_data)
+		return wsf_profile->private_data->status_code;
+	return NULL;
 }

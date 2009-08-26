@@ -59,14 +59,6 @@ typedef struct _LassoDataServicePrivate LassoDataServicePrivate;
 struct _LassoDataService {
 	LassoWsfProfile parent;
 
-	/*< public >*/
-	LassoDiscoResourceID *resource_id;
-	LassoDiscoEncryptedResourceID *encrypted_resource_id;
-	xmlNode *resource_data;
-
-	gchar *provider_id;
-	gchar *abstract_description;
-
 	/*< private >*/
 	LassoDataServicePrivate *private_data;
 };
@@ -86,7 +78,7 @@ LASSO_EXPORT LassoDataService* lasso_data_service_new_full(LassoServer *server,
 LASSO_EXPORT gint lasso_data_service_init_query(LassoDataService *service,
 		const char *select, const char *item_id, const char *security_mech_id);
 
-LASSO_EXPORT LassoDstQueryItem* lasso_data_service_add_query_item(LassoDataService *service,
+LASSO_EXPORT gint lasso_data_service_add_query_item(LassoDataService *service,
 		const char *select, const char *item_id);
 
 LASSO_EXPORT gint lasso_data_service_process_query_msg(LassoDataService *service,
@@ -99,26 +91,28 @@ LASSO_EXPORT gint lasso_data_service_build_response_msg(LassoDataService *servic
 LASSO_EXPORT gint lasso_data_service_process_query_response_msg(LassoDataService *service,
 		const char *message);
 
-LASSO_EXPORT xmlNode* lasso_data_service_get_answer(LassoDataService *service,
-		const char *select);
+LASSO_EXPORT gint lasso_data_service_get_answer(LassoDataService *service,
+		xmlNode **output);
 
-LASSO_EXPORT xmlNode* lasso_data_service_get_answer_for_item_id(LassoDataService *service,
-		const char *item_id);
+LASSO_EXPORT gint lasso_data_service_get_answers(LassoDataService *service, GList **output);
 
-LASSO_EXPORT  gint lasso_data_service_init_modify(LassoDataService *service,
-	const gchar *select, xmlNode *newData);
+LASSO_EXPORT gint lasso_data_service_get_answers_by_select(LassoDataService *service,
+		const char *select, GList OFTYPE(xmlNode) **output);
 
-LASSO_EXPORT LassoDstModification* lasso_data_service_add_modification(
-	LassoDataService *service, const gchar *select);
+LASSO_EXPORT gint lasso_data_service_get_answers_by_item_id(LassoDataService *service,
+		const char *item_id, GList OFTYPE(xmlNode) **output);
+
+LASSO_EXPORT  gint lasso_data_service_init_modify(LassoDataService *service);
+
+LASSO_EXPORT gint lasso_data_service_add_modification(LassoDataService *service,
+		const gchar *select, xmlNode *xmlData, gboolean overrideAllowed,
+		time_t *notChangedSince, LassoDstModification **output);
 
 LASSO_EXPORT gint lasso_data_service_process_modify_msg(LassoDataService *service,
 	const gchar *soap_msg, const gchar *security_mech_id);
 
 LASSO_EXPORT gint lasso_data_service_process_modify_response_msg(LassoDataService *service,
 		const gchar *soap_msg);
-
-LASSO_EXPORT gboolean lasso_data_service_need_redirect_user(LassoDataService *service,
-							    const char *redirectUrl);
 
 LASSO_EXPORT  gchar* lasso_data_service_get_redirect_request_url(LassoDataService *service);
 

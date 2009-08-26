@@ -30,15 +30,16 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/server.h>
-#include <lasso/id-ff/identity.h>
-#include <lasso/id-ff/session.h>
-#include <lasso/xml/soap_envelope.h>
-#include <lasso/xml/soap_binding_provider.h>
-#include <lasso/xml/saml_assertion.h>
-#include <lasso/xml/disco_description.h>
-#include <lasso/xml/disco_resource_offering.h>
-#include <lasso/xml/disco_description.h>
+#include <../id-ff/server.h>
+#include <../id-ff/identity.h>
+#include <../id-ff/session.h>
+#include <../xml/soap_envelope.h>
+#include <../xml/soap_binding_provider.h>
+#include <../xml/soap_fault.h>
+#include <../xml/saml_assertion.h>
+#include <../xml/disco_description.h>
+#include <../xml/disco_resource_offering.h>
+#include <../xml/disco_description.h>
 
 #define LASSO_TYPE_WSF_PROFILE (lasso_wsf_profile_get_type())
 #define LASSO_WSF_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -102,11 +103,13 @@ LASSO_EXPORT gint lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *prof
 
 LASSO_EXPORT gint lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile);
 
-LASSO_EXPORT gint lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile,
-	LassoNode *request);
+LASSO_EXPORT gint lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request);
+
+LASSO_EXPORT gint lasso_wsf_profile_init_soap_response(LassoWsfProfile *profile, LassoNode
+		*response);
 
 LASSO_EXPORT gint lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
-	const gchar *message, const gchar *service_type, const gchar *security_mech_id);
+	const gchar *message, const gchar *security_mech_id);
 
 LASSO_EXPORT gint lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile,
 	const gchar *message);
@@ -155,6 +158,31 @@ G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_offline(
 
 LASSO_EXPORT gint lasso_wsf_profile_init(LassoWsfProfile *profile, LassoServer *server,
 	LassoDiscoResourceOffering *offering);
+
+LASSO_EXPORT gint lasso_wsf_profile_get_remote_provider(LassoWsfProfile *wsf_profile,
+		LassoProvider **provider);
+
+LASSO_EXPORT const char* lasso_wsf_profile_get_remote_provider_id(LassoWsfProfile *wsf_profile);
+
+LASSO_EXPORT LassoSoapFault* lasso_wsf_profile_get_soap_fault(LassoWsfProfile *wsf_profile);
+
+LASSO_EXPORT gint lasso_wsf_profile_set_soap_fault(LassoWsfProfile *wsf_profile, LassoSoapFault *soap_fault);
+
+LASSO_EXPORT gint lasso_wsf_profile_set_status_code(LassoWsfProfile *wsf_profile, const char *code);
+
+LASSO_EXPORT const char* lasso_wsf_profile_get_status_code(LassoWsfProfile *wsf_profile);
+
+#define lasso_wsf_profile_helper_assign_resource_id(from,to) \
+	if ((from)->ResourceID) {\
+		lasso_assign_gobject((to)->ResourceID, (from)->ResourceID); \
+	} else if ((from)->EncryptedResourceID) {\
+		lasso_assign_gobject((to)->EncryptedResourceID, (from)->EncryptedResourceID); \
+	}
+
+#define lasso_wsf_profile_helper_set_status(message, code) \
+	{ \
+		lasso_assign_new_gobject(message->Status, lasso_utility_status_new(code)); \
+	}
 
 #ifdef __cplusplus
 }
