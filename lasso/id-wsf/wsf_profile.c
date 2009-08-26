@@ -93,6 +93,20 @@ lasso_wsf_profile_get_fault(const LassoWsfProfile *profile)
 	return profile->private_data->fault;
 }
 
+
+/* Documentation of g_list_find_custom say that list element is the first pointer,
+ * and user_data the second */
+static gboolean
+is_of_type(gconstpointer a, gconstpointer b)
+{
+	GType typeid = (GType)b;
+
+	if (a && G_IS_OBJECT(a)) {
+		return G_OBJECT_TYPE(G_OBJECT(a)) == typeid;
+	}
+	return FALSE;
+}
+
 /**
  * lasso_wsf_profile_comply_with_saml_authentication:
  * @profile: a #LassoWsfProfile
@@ -104,16 +118,17 @@ lasso_wsf_profile_get_fault(const LassoWsfProfile *profile)
 static gint
 lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 {
-	LassoSoapEnvelope *soap;
-	LassoSoapHeader *header;
-	LassoWsseSecurity *wsse_security;
-	LassoSession *session;
-	const LassoDiscoDescription *description;
-	GList *credentialRefs;
+	LassoSoapEnvelope *soap = NULL;
+	LassoSoapHeader *header; = NULL
+	LassoWsseSecurity *wsse_security = NULL;
+	LassoSession *session = NULL;
+	const LassoDiscoDescription *description = NULL;
+	GList *credentialRefs = NULL;
 	gint rc = 0;
+	GList *needle = NULL;
 
-	wsse_security = lasso_wsse_security_new();
-	session = profile->session;
+	lasso_bad_param(WSF_PROFILE, profile);
+	lasso_extract_node_or_fail(session, profile->session, SESSION, LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 	description = lasso_wsf_profile_get_description(profile);
 	/* Lookup in the session the credential ref from the description and
 	 * add them to the SOAP header wsse:Security. */
@@ -121,22 +136,28 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 	goto_cleanup_if_fail_with_rc(description != NULL, LASSO_WSF_PROFILE_ERROR_MISSING_DESCRIPTION);
 	credentialRefs = description->CredentialRef;
 	goto_cleanup_if_fail_with_rc(credentialRefs != NULL, LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF);
+	lasso_extract_node_or_fail(soap, profile->soap_envelope_request, SOAP_ENVELOPE, LASSO_SOAP_ERROR_MISSING_ENVELOPE);
+	lasso_extract_node_or_fail(header, soap->Header, SOAP_HEADER, LASSO_SOAP_ERROR_MISSING_HEADER);
+	needle = g_list_find_custom(header->Other, (gconstpointer)LASSO_TYPE_WSSE_SECURITY,
+			(GCompareFunc)is_of_type);
+	if (needle) {
+		lasso_assign_gobject(wsse_security, LASSO_WSSE_SECURITY(needle->data));
+	} else {
+		wsse_security = lasso_wsse_security_new();
+	}
+
 	while (credentialRefs) {
 		char *ref = (char*)credentialRefs->data;
 		xmlNode *assertion = lasso_session_get_assertion_by_id(session, ref);
-		if (assertion) {
-			lasso_list_add_xml_node(wsse_security->any, assertion);
-		}
+		goto_cleanup_if_fail(assertion != NULL, LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF);
+		lasso_list_add_xml_node(wsse_security->any, assertion);
 		credentialRefs = g_list_next(credentialRefs);
 	}
-	soap = profile->soap_envelope_request;
-	header = soap->Header;
-	lasso_list_add_gobject(header->Other, wsse_security);
-	wsse_security = NULL;
-cleanup:
-	if (wsse_security) {
-		lasso_release_gobject(wsse_security);
+	if (needle == NULL) {
+		lasso_list_add_gobject(header->Other, wsse_security);
 	}
+cleanup:
+	lasso_release_gobject(wsse_security);
 	return rc;
 }
 
