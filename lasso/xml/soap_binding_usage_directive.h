@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_SOAP_BINDING_USAGE_DIRECTIVE (lasso_soap_binding_usage_directive_get_type())
 #define LASSO_SOAP_BINDING_USAGE_DIRECTIVE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

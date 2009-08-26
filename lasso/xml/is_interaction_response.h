@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/utility_status.h>
-#include <lasso/xml/xml.h>
+#include "utility_status.h"
+#include "xml.h"
 
 #define LASSO_TYPE_IS_INTERACTION_RESPONSE (lasso_is_interaction_response_get_type())
 #define LASSO_IS_INTERACTION_RESPONSE(obj) \

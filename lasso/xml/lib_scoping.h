@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/lib_idp_list.h>
+#include "xml.h"
+#include "lib_idp_list.h"
 
 #define LASSO_TYPE_LIB_SCOPING (lasso_lib_scoping_get_type())
 #define LASSO_LIB_SCOPING(obj) \

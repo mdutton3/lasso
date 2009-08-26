@@ -29,6 +29,18 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include "config.h"
+
+struct _LassoIdentityPrivate
+{
+	gboolean dispose_has_run;
+#ifdef LASSO_WSF_ENABLED
+	guint last_entry_id;
+	GHashTable *resource_offerings_map; /* of LassoDiscoResourceOffering */
+	GList *svcMDID; /* of char* */
+#endif
+};
+
 gint lasso_identity_add_federation(LassoIdentity *identity, LassoFederation *federation);
 gint lasso_identity_remove_federation(LassoIdentity *identity, const char *providerID);
 

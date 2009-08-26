@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_WSSE_SECURITY_TOKEN_REFERENCE \
 	(lasso_wsse_security_token_reference_get_type())

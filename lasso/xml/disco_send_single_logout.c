@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_send_single_logout.h>
+#include "disco_send_single_logout.h"
 
 /**
  * SECTION:disco_send_single_logout

@@ -30,9 +30,9 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include <lasso/xml/is_interaction_request.h>
-#include <lasso/xml/is_interaction_response.h>
-#include <lasso/id-wsf/wsf_profile.h>
+#include "../xml/is_interaction_request.h"
+#include "../xml/is_interaction_response.h"
+#include "wsf_profile.h"
 
 #define LASSO_TYPE_INTERACTION_PROFILE_SERVICE (lasso_interaction_profile_service_get_type())
 #define LASSO_INTERACTION_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

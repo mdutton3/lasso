@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_federation_termination_notification.h>
+#include "lib_federation_termination_notification.h"
 #include <libxml/uri.h>
 
 /**

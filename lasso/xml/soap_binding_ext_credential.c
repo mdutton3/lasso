@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_binding_ext_credential.h>
+#include "soap_binding_ext_credential.h"
 
 /**
  * SECTION:soap_binding_ext_credential

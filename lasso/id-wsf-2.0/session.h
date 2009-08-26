@@ -1,4 +1,4 @@
-/* $Id: session.h 2633 2005-09-05 10:00:07Z dlaniel $
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/saml-2.0/saml2_assertion.h>
-
-#include <lasso/xml/ws/wsa_endpoint_reference.h>
+#include "../id-ff/session.h"
+#include "../xml/saml-2.0/saml2_assertion.h"
+#include "../xml/ws/wsa_endpoint_reference.h"
 
 LASSO_EXPORT gint lasso_session_add_endpoint_reference(LassoSession *session,
 	LassoWsAddrEndpointReference *epr);

@@ -31,7 +31,7 @@ extern "C" {
 
 #include <xmlsec/xmlenc.h>
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 /**
  * LassoEncryptionSymKeyType:

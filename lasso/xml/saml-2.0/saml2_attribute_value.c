@@ -21,7 +21,7 @@
  */
 
 #include "../private.h"
-#include <lasso/xml/saml-2.0/saml2_attribute_value.h>
+#include "saml2_attribute_value.h"
 
 /**
  * SECTION:saml2_attribute_value

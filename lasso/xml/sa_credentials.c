@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/sa_credentials.h>
+#include "sa_credentials.h"
 
 /**
  * SECTION:sa_credentials

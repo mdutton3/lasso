@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/xml_enc.h>
+#include "../xml/xml.h"
+#include "../xml/xml_enc.h"
 
 #define LASSO_TYPE_PROVIDER (lasso_provider_get_type())
 #define LASSO_PROVIDER(obj) \

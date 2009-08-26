@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_envelope.h>
+#include "soap_envelope.h"
 #include "../utils.h"
 
 /**

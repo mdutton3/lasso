@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/saml_authentication_statement.h>
+#include "saml_authentication_statement.h"
 
 /**
  * SECTION:saml_authentication_statement

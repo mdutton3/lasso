@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_SAMLP2_TERMINATE (lasso_samlp2_terminate_get_type())
 #define LASSO_SAMLP2_TERMINATE(obj) \

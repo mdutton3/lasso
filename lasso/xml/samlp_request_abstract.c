@@ -27,7 +27,7 @@
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 
-#include <lasso/xml/samlp_request_abstract.h>
+#include "samlp_request_abstract.h"
 
 /**
  * SECTION:samlp_request_abstract

@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #ifndef __LASSO_SAML2_ASSERTION_H__
 /* to avoid circular inclusion of saml2_assertion.h */

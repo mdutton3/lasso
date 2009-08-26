@@ -36,7 +36,7 @@
 #include <glib.h>
 #include <string.h>
 
-#include <lasso/xml/strings.h>
+#include "../xml/strings.h"
 
 /**
  * lasso_security_mech_id_is_null_authentication:

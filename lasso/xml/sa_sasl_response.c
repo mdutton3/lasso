@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/sa_sasl_response.h>
+#include "sa_sasl_response.h"
 
 /**
  * SECTION:sa_sasl_response

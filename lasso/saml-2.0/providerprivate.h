@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/id-ff/provider.h>
+#include "../xml/xml.h"
+#include "../id-ff/provider.h"
 
 gboolean lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node);
 

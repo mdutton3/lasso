@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_options.h>
+#include "disco_options.h"
 
 /**
  * SECTION:disco_options

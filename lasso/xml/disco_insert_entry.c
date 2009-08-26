@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_insert_entry.h>
+#include "disco_insert_entry.h"
 #include "../utils.h"
 
 /**

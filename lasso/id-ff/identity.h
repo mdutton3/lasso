@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/id-ff/federation.h>
+#include "../xml/xml.h"
+#include "federation.h"
 
 #define LASSO_TYPE_IDENTITY (lasso_identity_get_type())
 #define LASSO_IDENTITY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDENTITY, LassoIdentity))

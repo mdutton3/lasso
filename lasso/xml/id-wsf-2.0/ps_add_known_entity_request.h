@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "sec_token_policy.h"
 #include "sec_token.h"
 #include "ps_object.h"

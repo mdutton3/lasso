@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "ims_mapping_input.h"
 
 #define LASSO_TYPE_IDWSF2_PS_RESOLVE_INPUT (lasso_idwsf2_ps_resolve_input_get_type())

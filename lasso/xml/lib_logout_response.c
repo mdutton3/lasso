@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_logout_response.h>
+#include "lib_logout_response.h"
 
 /**
  * SECTION:lib_logout_response

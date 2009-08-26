@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_IS_USER_INTERACTION (lasso_is_user_interaction_get_type())
 #define LASSO_IS_USER_INTERACTION(obj) \

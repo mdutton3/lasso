@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_query.h>
+#include "disco_query.h"
 
 /**
  * SECTION:disco_query

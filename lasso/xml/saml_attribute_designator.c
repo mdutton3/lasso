@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/saml_attribute_designator.h>
+#include "saml_attribute_designator.h"
 
 /*
  * The schema fragment (oasis-sstc-saml-schema-assertion-1.1.xsd):

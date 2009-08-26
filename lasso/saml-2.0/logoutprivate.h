@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/logout.h>
+#include "../id-ff/logout.h"
 
 int lasso_saml20_logout_init_request(LassoLogout *logout,
 		LassoProvider *remote_provider, LassoHttpMethod http_method);

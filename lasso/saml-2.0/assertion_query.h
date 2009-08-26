@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/profile.h>
-#include <lasso/xml/saml-2.0/samlp2_manage_name_id_request.h>
-#include <lasso/xml/saml-2.0/samlp2_manage_name_id_response.h>
+#include "../id-ff/profile.h"
+#include "../xml/saml-2.0/samlp2_manage_name_id_request.h"
+#include "../xml/saml-2.0/samlp2_manage_name_id_response.h"
 
 #define LASSO_TYPE_ASSERTION_QUERY (lasso_assertion_query_get_type())
 #define LASSO_ASSERTION_QUERY(obj) \

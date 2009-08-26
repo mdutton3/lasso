@@ -29,13 +29,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/saml_advice.h>
-#include <lasso/xml/saml_authentication_statement.h>
-#include <lasso/xml/saml_conditions.h>
-#include <lasso/xml/saml_statement_abstract.h>
-#include <lasso/xml/saml_subject_statement.h>
-#include <lasso/xml/saml_attribute_statement.h>
+#include "xml.h"
+#include "saml_advice.h"
+#include "saml_authentication_statement.h"
+#include "saml_conditions.h"
+#include "saml_statement_abstract.h"
+#include "saml_subject_statement.h"
+#include "saml_attribute_statement.h"
 
 #define LASSO_TYPE_SAML_ASSERTION (lasso_saml_assertion_get_type())
 #define LASSO_SAML_ASSERTION(obj) \

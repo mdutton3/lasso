@@ -36,16 +36,16 @@ extern "C" {
 #include <glib.h>
 #include <glib-object.h>
 
-#include <lasso/export.h>
+#include "export.h"
 
-#include <lasso/id-ff/defederation.h>
-#include <lasso/id-ff/lecp.h>
-#include <lasso/id-ff/login.h>
-#include <lasso/id-ff/logout.h>
-#include <lasso/id-ff/name_identifier_mapping.h>
-#include <lasso/id-ff/name_registration.h>
-#include <lasso/saml-2.0/name_id_management.h>
-#include <lasso/saml-2.0/ecp.h>
+#include "id-ff/defederation.h"
+#include "id-ff/lecp.h"
+#include "id-ff/login.h"
+#include "id-ff/logout.h"
+#include "id-ff/name_identifier_mapping.h"
+#include "id-ff/name_registration.h"
+#include "saml-2.0/name_id_management.h"
+#include "saml-2.0/ecp.h"
 
 LASSO_EXPORT int lasso_init(void);
 LASSO_EXPORT int lasso_shutdown(void);

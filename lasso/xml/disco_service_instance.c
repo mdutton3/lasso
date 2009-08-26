@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_service_instance.h>
+#include "disco_service_instance.h"
 
 /**
  * SECTION:disco_service_instance

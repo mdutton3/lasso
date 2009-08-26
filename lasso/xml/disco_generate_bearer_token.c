@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_generate_bearer_token.h>
+#include "disco_generate_bearer_token.h"
 
 /**
  * SECTION:disco_generate_bearer_token

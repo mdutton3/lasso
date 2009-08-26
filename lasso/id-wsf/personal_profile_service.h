@@ -30,13 +30,13 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include <lasso/id-wsf/data_service.h>
-#include <lasso/xml/disco_resource_id.h>
-#include <lasso/xml/disco_encrypted_resource_id.h>
-#include <lasso/xml/dst_data.h>
-#include <lasso/xml/dst_modification.h>
-#include <lasso/xml/dst_query_item.h>
-#include <lasso/xml/disco_resource_offering.h>
+#include "data_service.h"
+#include "../xml/disco_resource_id.h"
+#include "../xml/disco_encrypted_resource_id.h"
+#include "../xml/dst_data.h"
+#include "../xml/dst_modification.h"
+#include "../xml/dst_query_item.h"
+#include "../xml/disco_resource_offering.h"
 
 #define LASSO_TYPE_PERSONAL_PROFILE_SERVICE (lasso_personal_profile_service_get_type())
 #define LASSO_PERSONAL_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

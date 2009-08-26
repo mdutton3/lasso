@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/disco_resource_offering.h>
+#include "xml.h"
+#include "disco_resource_offering.h"
 
 #define LASSO_TYPE_DISCO_INSERT_ENTRY (lasso_disco_insert_entry_get_type())
 #define LASSO_DISCO_INSERT_ENTRY(obj) \

@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_SAMLP2_NAME_ID_POLICY (lasso_samlp2_name_id_policy_get_type())
 #define LASSO_SAMLP2_NAME_ID_POLICY(obj) \

@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_IDWSF2_SEC_TRANSITED_PROVIDER_PATH \
 	(lasso_idwsf2_sec_transited_provider_path_get_type())

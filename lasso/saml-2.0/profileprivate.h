@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/profile.h>
-#include <lasso/xml/saml-2.0/saml2_name_id.h>
-#include <lasso/xml/saml-2.0/saml2_encrypted_element.h>
+#include "../id-ff/profile.h"
+#include "../xml/saml-2.0/saml2_name_id.h"
+#include "../xml/saml-2.0/saml2_encrypted_element.h"
 #include "../xml/saml-2.0/samlp2_status_response.h"
 #include "../xml/saml-2.0/samlp2_request_abstract.h"
 #include "../id-ff/provider.h"

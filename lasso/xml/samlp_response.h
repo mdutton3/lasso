@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/samlp_response_abstract.h>
-#include <lasso/xml/samlp_status.h>
-#include <lasso/xml/saml_assertion.h>
+#include "samlp_response_abstract.h"
+#include "samlp_status.h"
+#include "saml_assertion.h"
 
 #define LASSO_TYPE_SAMLP_RESPONSE (lasso_samlp_response_get_type())
 #define LASSO_SAMLP_RESPONSE(obj) \

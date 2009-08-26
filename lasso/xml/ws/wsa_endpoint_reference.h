@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "wsa_attributed_uri.h"
 #include "wsa_metadata.h"
 #include "wsa_reference_parameters.h"

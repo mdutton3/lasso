@@ -29,11 +29,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/disco_resource_id.h>
-#include <lasso/xml/disco_encrypted_resource_id.h>
-#include <lasso/xml/disco_service_instance.h>
-#include <lasso/xml/disco_options.h>
+#include "xml.h"
+#include "disco_resource_id.h"
+#include "disco_encrypted_resource_id.h"
+#include "disco_service_instance.h"
+#include "disco_options.h"
 
 #define LASSO_TYPE_DISCO_RESOURCE_OFFERING (lasso_disco_resource_offering_get_type())
 #define LASSO_DISCO_RESOURCE_OFFERING(obj) \

@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/saml_subject.h>
-#include <lasso/xml/saml_name_identifier.h>
+#include "saml_subject.h"
+#include "saml_name_identifier.h"
 
 #define LASSO_TYPE_LIB_SUBJECT (lasso_lib_subject_get_type())
 #define LASSO_LIB_SUBJECT(obj) \

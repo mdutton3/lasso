@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_resource_offering.h>
+#include "disco_resource_offering.h"
 #include "../utils.h"
 
 /**

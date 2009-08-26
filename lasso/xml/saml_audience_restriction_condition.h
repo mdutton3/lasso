@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/saml_condition_abstract.h>
+#include "saml_condition_abstract.h"
 
 #define LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION \
 	(lasso_saml_audience_restriction_condition_get_type())

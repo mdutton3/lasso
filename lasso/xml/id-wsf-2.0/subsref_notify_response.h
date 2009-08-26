@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "subs_notify_response.h"
 
 #define LASSO_TYPE_IDWSF2_SUBSREF_NOTIFY_RESPONSE \

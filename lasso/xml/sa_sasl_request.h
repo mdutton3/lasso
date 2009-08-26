@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/lib_request_authn_context.h>
-#include <lasso/xml/xml.h>
+#include "lib_request_authn_context.h"
+#include "xml.h"
 
 #define LASSO_TYPE_SA_SASL_REQUEST (lasso_sa_sasl_request_get_type())
 #define LASSO_SA_SASL_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

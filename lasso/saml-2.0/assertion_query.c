@@ -23,20 +23,20 @@
  */
 
 #include "../xml/private.h"
-#include <lasso/saml-2.0/assertion_query.h>
-#include <lasso/saml-2.0/providerprivate.h>
-#include <lasso/saml-2.0/profileprivate.h>
-#include <lasso/id-ff/providerprivate.h>
-#include <lasso/id-ff/profileprivate.h>
-#include <lasso/id-ff/identityprivate.h>
-#include <lasso/id-ff/serverprivate.h>
-#include <lasso/xml/xml_enc.h>
-#include <lasso/xml/saml-2.0/samlp2_assertion_id_request.h>
-#include <lasso/xml/saml-2.0/samlp2_authn_query.h>
-#include <lasso/xml/saml-2.0/samlp2_attribute_query.h>
-#include <lasso/xml/saml-2.0/samlp2_authz_decision_query.h>
-#include <lasso/xml/saml-2.0/samlp2_response.h>
-#include <lasso/xml/saml-2.0/samlp2_subject_query_abstract.h>
+#include "assertion_query.h"
+#include "providerprivate.h"
+#include "profileprivate.h"
+#include "../id-ff/providerprivate.h"
+#include "../id-ff/profileprivate.h"
+#include "../id-ff/identityprivate.h"
+#include "../id-ff/serverprivate.h"
+#include "../xml/xml_enc.h"
+#include "../xml/saml-2.0/samlp2_assertion_id_request.h"
+#include "../xml/saml-2.0/samlp2_authn_query.h"
+#include "../xml/saml-2.0/samlp2_attribute_query.h"
+#include "../xml/saml-2.0/samlp2_authz_decision_query.h"
+#include "../xml/saml-2.0/samlp2_response.h"
+#include "../xml/saml-2.0/samlp2_subject_query_abstract.h"
 #include "../utils.h"
 
 

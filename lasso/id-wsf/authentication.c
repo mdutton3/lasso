@@ -23,10 +23,10 @@
  */
 
 #include "../xml/private.h"
-#include <lasso/id-wsf/authentication.h>
-#include <lasso/xml/sa_sasl_request.h>
-#include <lasso/xml/sa_sasl_response.h>
-#include <lasso/xml/soap_binding_correlation.h>
+#include "authentication.h"
+#include "../xml/sa_sasl_request.h"
+#include "../xml/sa_sasl_response.h"
+#include "../xml/soap_binding_correlation.h"
 #include <xmlsec/base64.h>
 
 /* SASL client callbacks (for secret, login, password, ... ) */

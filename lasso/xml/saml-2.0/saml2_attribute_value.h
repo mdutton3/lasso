@@ -27,7 +27,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_SAML2_ATTRIBUTE_VALUE (lasso_saml2_attribute_value_get_type())
 #define LASSO_SAML2_ATTRIBUTE_VALUE(obj) \

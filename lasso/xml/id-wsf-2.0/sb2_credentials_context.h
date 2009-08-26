@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/saml-2.0/samlp2_requested_authn_context.h>
+#include "../xml.h"
+#include "../saml-2.0/samlp2_requested_authn_context.h"
 
 #define LASSO_TYPE_IDWSF2_SB2_CREDENTIALS_CONTEXT (lasso_idwsf2_sb2_credentials_context_get_type())
 #define LASSO_IDWSF2_SB2_CREDENTIALS_CONTEXT(obj) \

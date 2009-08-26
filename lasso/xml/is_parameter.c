@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/is_parameter.h>
+#include "is_parameter.h"
 
 /**
  * SECTION:is_parameter

@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/saml_name_identifier.h>
+#include "saml_name_identifier.h"
 #include <libxml/uri.h>
 
 /**

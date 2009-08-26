@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/is_item.h>
-#include <lasso/xml/xml.h>
+#include "is_item.h"
+#include "xml.h"
 
 #define LASSO_TYPE_IS_SELECT (lasso_is_select_get_type())
 #define LASSO_IS_SELECT(obj) \

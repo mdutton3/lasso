@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/utility_status.h>
+#include "utility_status.h"
 
 /**
  * SECTION:utility_status

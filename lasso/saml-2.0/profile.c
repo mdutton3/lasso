@@ -26,24 +26,24 @@
 #include <xmlsec/base64.h>
 
 #include "../utils.h"
-#include <lasso/saml-2.0/providerprivate.h>
-#include <lasso/saml-2.0/profileprivate.h>
-#include <lasso/saml-2.0/profile.h>
+#include "providerprivate.h"
+#include "profileprivate.h"
+#include "profile.h"
 
-#include <lasso/id-ff/providerprivate.h>
-#include <lasso/id-ff/profile.h>
-#include <lasso/id-ff/profileprivate.h>
-#include <lasso/id-ff/serverprivate.h>
+#include "../id-ff/providerprivate.h"
+#include "../id-ff/profile.h"
+#include "../id-ff/profileprivate.h"
+#include "../id-ff/serverprivate.h"
 #include <../id-ff/sessionprivate.h>
 
-#include <lasso/xml/private.h>
-#include <lasso/xml/saml-2.0/samlp2_request_abstract.h>
-#include <lasso/xml/saml-2.0/samlp2_artifact_resolve.h>
-#include <lasso/xml/saml-2.0/samlp2_artifact_response.h>
-#include <lasso/xml/saml-2.0/samlp2_name_id_mapping_response.h>
-#include <lasso/xml/saml-2.0/samlp2_status_response.h>
-#include <lasso/xml/saml-2.0/samlp2_response.h>
-#include <lasso/xml/saml-2.0/saml2_assertion.h>
+#include "../xml/private.h"
+#include "../xml/saml-2.0/samlp2_request_abstract.h"
+#include "../xml/saml-2.0/samlp2_artifact_resolve.h"
+#include "../xml/saml-2.0/samlp2_artifact_response.h"
+#include "../xml/saml-2.0/samlp2_name_id_mapping_response.h"
+#include "../xml/saml-2.0/samlp2_status_response.h"
+#include "../xml/saml-2.0/samlp2_response.h"
+#include "../xml/saml-2.0/saml2_assertion.h"
 #include "../utils.h"
 #include "../debug.h"
 

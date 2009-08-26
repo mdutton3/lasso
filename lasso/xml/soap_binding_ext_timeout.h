@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_SOAP_BINDING_EXT_TIMEOUT (lasso_soap_binding_ext_timeout_get_type())
 #define LASSO_SOAP_BINDING_EXT_TIMEOUT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

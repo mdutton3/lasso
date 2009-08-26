@@ -22,14 +22,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_WSF_IDENTITY_H__
-#define __LASSO_WSF_IDENTITY_H__
+#ifndef __LASSO_WSF_ID_FF_EXTENSIONS_H__
+#define __LASSO_WSF_ID_FF_EXTENSIONS_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/disco_resource_offering.h>
+#include "../id-ff/login.h"
+#include "../id-ff/server.h"
+#include "../xml/disco_encrypted_resource_id.h"
+#include "../xml/disco_service_instance.h"
+#include "../xml/disco_resource_offering.h"
+
+LASSO_EXPORT int lasso_login_set_encryptedResourceId(
+		LassoLogin *login, LassoDiscoEncryptedResourceID *encryptedResourceId);
+
+LASSO_EXPORT int lasso_login_set_resourceId(LassoLogin *login, const char *content);
+
+LASSO_EXPORT LassoDiscoServiceInstance* lasso_server_get_service(LassoServer *server,
+		const gchar *serviceType);
+
+LASSO_EXPORT gint lasso_server_add_service(LassoServer *server, LassoNode *service);
+
+LASSO_EXPORT gint lasso_server_add_service_from_dump(LassoServer *server, const gchar *dump);
 
 LASSO_EXPORT gint lasso_identity_add_resource_offering(LassoIdentity *identity,
 		LassoDiscoResourceOffering *offering);
@@ -44,4 +60,4 @@ LASSO_EXPORT LassoDiscoResourceOffering* lasso_identity_get_resource_offering(
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_WSF_IDENTITY_H__ */
+#endif /* __LASSO_WSF_ID_FF_EXTENSIONS_H__ */

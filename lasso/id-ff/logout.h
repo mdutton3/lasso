@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/profile.h>
-#include <lasso/xml/lib_logout_request.h>
-#include <lasso/xml/lib_logout_response.h>
+#include "profile.h"
+#include "../xml/lib_logout_request.h"
+#include "../xml/lib_logout_response.h"
 
 #define LASSO_TYPE_LOGOUT (lasso_logout_get_type())
 #define LASSO_LOGOUT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LOGOUT, LassoLogout))

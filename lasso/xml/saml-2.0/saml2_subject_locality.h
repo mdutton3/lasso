@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_SAML2_SUBJECT_LOCALITY (lasso_saml2_subject_locality_get_type())
 #define LASSO_SAML2_SUBJECT_LOCALITY(obj) \

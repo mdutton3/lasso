@@ -29,11 +29,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/disco_resource_offering.h>
-#include <lasso/xml/utility_status.h>
-#include <lasso/xml/sa_credentials.h>
-#include <lasso/xml/sa_password_transforms.h>
-#include <lasso/xml/xml.h>
+#include "disco_resource_offering.h"
+#include "utility_status.h"
+#include "sa_credentials.h"
+#include "sa_password_transforms.h"
+#include "xml.h"
 
 #define LASSO_TYPE_SA_SASL_RESPONSE (lasso_sa_sasl_response_get_type())
 #define LASSO_SA_SASL_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

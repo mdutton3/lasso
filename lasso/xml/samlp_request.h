@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/samlp_request_abstract.h>
+#include "samlp_request_abstract.h"
 
 #define LASSO_TYPE_SAMLP_REQUEST (lasso_samlp_request_get_type())
 #define LASSO_SAMLP_REQUEST(obj) \

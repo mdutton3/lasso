@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/is_user_interaction.h>
+#include "is_user_interaction.h"
 
 /**
  * SECTION:is_user_interaction

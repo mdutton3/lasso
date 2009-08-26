@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/lib_status_response.h>
-#include <lasso/xml/lib_logout_request.h>
+#include "lib_status_response.h"
+#include "lib_logout_request.h"
 
 #define LASSO_TYPE_LIB_LOGOUT_RESPONSE (lasso_lib_logout_response_get_type())
 #define LASSO_LIB_LOGOUT_RESPONSE(obj) \

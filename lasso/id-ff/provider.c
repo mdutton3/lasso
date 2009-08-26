@@ -39,10 +39,10 @@
 #include <xmlsec/xmltree.h>
 #include <xmlsec/templates.h>
 
-#include <lasso/id-ff/provider.h>
-#include <lasso/id-ff/providerprivate.h>
+#include "provider.h"
+#include "providerprivate.h"
 
-#include <lasso/saml-2.0/providerprivate.h>
+#include "../saml-2.0/providerprivate.h"
 #include <unistd.h>
 #include "../utils.h"
 #include "../debug.h"

@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_credentials.h>
+#include "disco_credentials.h"
 
 /**
  * SECTION:disco_credentials

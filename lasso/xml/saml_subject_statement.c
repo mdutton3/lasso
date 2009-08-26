@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/saml_subject_statement.h>
+#include "saml_subject_statement.h"
 
 /*
 The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):

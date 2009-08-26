@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "ps_object.h"
 #include "ps_request_abstract.h"
 #include "subs_subscription.h"

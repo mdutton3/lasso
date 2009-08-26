@@ -29,10 +29,10 @@
  **/
 
 #include "../xml/private.h"
-#include <lasso/id-ff/federation.h>
-#include <lasso/id-ff/provider.h>
+#include "federation.h"
+#include "provider.h"
 
-#include <lasso/xml/saml-2.0/saml2_name_id.h>
+#include "../xml/saml-2.0/saml2_name_id.h"
 
 struct _LassoFederationPrivate
 {

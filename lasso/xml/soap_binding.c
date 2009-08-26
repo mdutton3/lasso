@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_binding.h>
+#include "soap_binding.h"
 
 #define find_node_type_in_list(iter, check) \
 	{\

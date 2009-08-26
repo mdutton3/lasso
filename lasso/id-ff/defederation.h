@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/profile.h>
-#include <lasso/xml/lib_federation_termination_notification.h>
+#include "profile.h"
+#include "../xml/lib_federation_termination_notification.h"
 
 #define LASSO_TYPE_DEFEDERATION (lasso_defederation_get_type())
 #define LASSO_DEFEDERATION(obj) \

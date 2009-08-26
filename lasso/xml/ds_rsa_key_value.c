@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/ds_rsa_key_value.h>
+#include "ds_rsa_key_value.h"
 
 /*
  *

@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/saml_subject.h>
+#include "saml_subject.h"
 
 /**
  * SECTION:saml_subject

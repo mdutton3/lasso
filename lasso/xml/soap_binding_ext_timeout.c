@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_binding_ext_timeout.h>
+#include "soap_binding_ext_timeout.h"
 
 /**
  * SECTION:soap_binding_ext_timeout

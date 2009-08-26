@@ -23,8 +23,8 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_body.h>
-#include <lasso/xml/private.h>
+#include "soap_body.h"
+#include "private.h"
 
 /**
  * SECTION:soap_body

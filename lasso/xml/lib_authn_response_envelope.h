@@ -28,7 +28,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/lib_authn_response.h>
+#include "lib_authn_response.h"
 
 #define LASSO_TYPE_LIB_AUTHN_RESPONSE_ENVELOPE (lasso_lib_authn_response_envelope_get_type())
 #define LASSO_LIB_AUTHN_RESPONSE_ENVELOPE(obj) \

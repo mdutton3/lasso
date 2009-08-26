@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/is_help.h>
+#include "is_help.h"
 
 /**
  * SECTION:is_help

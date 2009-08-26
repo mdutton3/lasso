@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/disco_options.h>
+#include "xml.h"
+#include "disco_options.h"
 
 #define LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE (lasso_disco_requested_service_type_get_type())
 #define LASSO_DISCO_REQUESTED_SERVICE_TYPE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

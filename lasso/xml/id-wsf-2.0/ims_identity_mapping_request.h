@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_IDWSF2_IMS_IDENTITY_MAPPING_REQUEST \
 	(lasso_idwsf2_ims_identity_mapping_request_get_type())

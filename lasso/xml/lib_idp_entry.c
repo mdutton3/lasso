@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_idp_entry.h>
+#include "lib_idp_entry.h"
 
 /**
  * SECTION:lib_idp_entry

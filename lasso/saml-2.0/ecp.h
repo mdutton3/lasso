@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml/xml.h"
 
-#include <lasso/id-ff/profile.h>
+#include "../id-ff/profile.h"
 
 #define LASSO_TYPE_ECP (lasso_ecp_get_type())
 #define LASSO_ECP(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_ECP, LassoEcp))

@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/login.h>
+#include "../id-ff/login.h"
 
 gint lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_method);
 gint lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *remote_provider);

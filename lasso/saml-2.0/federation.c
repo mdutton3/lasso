@@ -24,10 +24,10 @@
 
 
 #include "../xml/private.h"
-#include <lasso/id-ff/federation.h>
+#include "../id-ff/federation.h"
 #include "federationprivate.h"
 
-#include <lasso/xml/saml-2.0/saml2_name_id.h>
+#include "../xml/saml-2.0/saml2_name_id.h"
 
 
 static LassoNode*

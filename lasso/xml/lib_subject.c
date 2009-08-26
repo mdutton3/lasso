@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_subject.h>
+#include "lib_subject.h"
 
 /**
  * SECTION:lib_subject

@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/profile.h>
-#include <lasso/xml/soap_envelope.h>
+#include "../id-ff/profile.h"
+#include "../xml/soap_envelope.h"
 
 #define LASSO_TYPE_IDWSF2_PROFILE (lasso_idwsf2_profile_get_type())
 #define LASSO_IDWSF2_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

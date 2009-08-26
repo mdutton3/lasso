@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/utility_status.h>
+#include "xml.h"
+#include "utility_status.h"
 
 #define LASSO_TYPE_DISCO_MODIFY_RESPONSE (lasso_disco_modify_response_get_type())
 #define LASSO_DISCO_MODIFY_RESPONSE(obj) \

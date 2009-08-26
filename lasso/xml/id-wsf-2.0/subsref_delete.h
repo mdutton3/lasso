@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "dst_request.h"
 
 #define LASSO_TYPE_IDWSF2_SUBSREF_DELETE (lasso_idwsf2_subsref_delete_get_type())

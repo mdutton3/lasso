@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_authn_request.h>
+#include "lib_authn_request.h"
 #include <libxml/uri.h>
 #include "../utils.h"
 

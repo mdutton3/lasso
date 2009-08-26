@@ -49,9 +49,9 @@
 #include <zlib.h>
 
 #include <glib.h>
-#include <lasso/xml/xml.h>
-#include <lasso/xml/xml_enc.h>
-#include <lasso/xml/saml-2.0/saml2_assertion.h>
+#include "xml.h"
+#include "xml_enc.h"
+#include "saml-2.0/saml2_assertion.h"
 #include <unistd.h>
 #include "../debug.h"
 #include "../utils.h"

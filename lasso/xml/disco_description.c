@@ -23,9 +23,9 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_description.h>
-#include <lasso/id-wsf/utils.h>
-#include <lasso/utils.h>
+#include "disco_description.h"
+#include "../id-wsf/utils.h"
+#include "..//utils.h"
 
 /**
  * SECTION:disco_description

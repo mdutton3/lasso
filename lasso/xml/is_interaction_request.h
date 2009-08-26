@@ -29,10 +29,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/disco_encrypted_resource_id.h>
-#include <lasso/xml/disco_resource_id.h>
-#include <lasso/xml/is_inquiry.h>
-#include <lasso/xml/xml.h>
+#include "disco_encrypted_resource_id.h"
+#include "disco_resource_id.h"
+#include "is_inquiry.h"
+#include "xml.h"
 
 
 #define LASSO_TYPE_IS_INTERACTION_REQUEST (lasso_is_interaction_request_get_type())

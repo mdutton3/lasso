@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "util_response.h"
 
 #define LASSO_TYPE_IDWSF2_DST_DATA_RESPONSE_BASE (lasso_idwsf2_dst_data_response_base_get_type())

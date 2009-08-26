@@ -30,21 +30,13 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include <lasso/lasso_config.h>
 
-#ifdef LASSO_WSF_ENABLED
-#include <lasso/xml/disco_encrypted_resource_id.h>
-#else
-typedef void LassoDiscoEncryptedResourceID;
-typedef void LassoDiscoResourceID;
-#endif
+#include "../xml/lib_authn_request.h"
+#include "../xml/lib_authn_response.h"
+#include "../xml/samlp_request.h"
+#include "../xml/samlp_response.h"
 
-#include <lasso/xml/lib_authn_request.h>
-#include <lasso/xml/lib_authn_response.h>
-#include <lasso/xml/samlp_request.h>
-#include <lasso/xml/samlp_response.h>
-
-#include <lasso/id-ff/profile.h>
+#include "profile.h"
 
 #define LASSO_TYPE_LOGIN (lasso_login_get_type())
 #define LASSO_LOGIN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LOGIN, LassoLogin))
@@ -145,11 +137,6 @@ LASSO_EXPORT gint lasso_login_process_authn_response_msg(LassoLogin *login,
 
 LASSO_EXPORT gint lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg);
 LASSO_EXPORT gint lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg);
-
-LASSO_EXPORT int lasso_login_set_encryptedResourceId(
-		LassoLogin *login, LassoDiscoEncryptedResourceID *encryptedResourceId);
-
-LASSO_EXPORT int lasso_login_set_resourceId(LassoLogin *login, const char *content);
 
 LASSO_EXPORT int lasso_login_validate_request_msg(LassoLogin *login,
 		gboolean authentication_result, gboolean is_consent_obtained);

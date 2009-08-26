@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "is_inquiry_element.h"
 
 #define LASSO_TYPE_IDWSF2_IS_SELECT (lasso_idwsf2_is_select_get_type())

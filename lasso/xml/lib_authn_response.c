@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_authn_response.h>
+#include "lib_authn_response.h"
 
 /**
  * SECTION:lib_authn_response

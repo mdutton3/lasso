@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_modify.h>
+#include "disco_modify.h"
 
 /**
  * SECTION:disco_modify

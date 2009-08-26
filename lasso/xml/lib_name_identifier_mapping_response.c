@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_name_identifier_mapping_response.h>
+#include "lib_name_identifier_mapping_response.h"
 
 /**
  * SECTION:lib_name_identifier_mapping_response

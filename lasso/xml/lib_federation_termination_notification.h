@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/saml_name_identifier.h>
-#include <lasso/xml/samlp_request_abstract.h>
+#include "saml_name_identifier.h"
+#include "samlp_request_abstract.h"
 
 #define LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION \
 	(lasso_lib_federation_termination_notification_get_type())

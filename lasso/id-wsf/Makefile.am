@@ -8,7 +8,8 @@ INCLUDES = \
 	-DG_LOG_DOMAIN=\"lasso\"
 
 lasso_private_h_sources = \
-	wsf_profile_private.h
+	wsf_profile_private.h \
+	id_ff_extensions_private.h
 
 if WSF_ENABLED
 noinst_LTLIBRARIES = liblasso-id-wsf.la
@@ -19,17 +20,19 @@ WSF_C_FILES = \
 	personal_profile_service.c \
 	data_service.c \
 	wsf_profile.c \
-	utils.c
+	utils.c \
+	id_ff_extensions.c
 
 WSF_H_FILES = \
+	id_wsf.h \
 	authentication.h \
 	discovery.h \
-	identity.h \
 	interaction_profile_service.h \
 	personal_profile_service.h \
 	data_service.h \
 	wsf_profile.h \
-	utils.h
+	utils.h \
+	id_ff_extensions.h
 endif
 
 liblasso_id_wsf_la_SOURCES = $(WSF_C_FILES)

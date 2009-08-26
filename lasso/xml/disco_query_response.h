@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/disco_credentials.h>
-#include <lasso/xml/utility_status.h>
+#include "xml.h"
+#include "disco_credentials.h"
+#include "utility_status.h"
 
 #define LASSO_TYPE_DISCO_QUERY_RESPONSE (lasso_disco_query_response_get_type())
 #define LASSO_DISCO_QUERY_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

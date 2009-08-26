@@ -23,8 +23,8 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_authentication_statement.h>
-#include <lasso/xml/lib_subject.h>
+#include "lib_authentication_statement.h"
+#include "lib_subject.h"
 
 /**
  * SECTION:lib_authentication_statement

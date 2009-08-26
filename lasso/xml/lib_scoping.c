@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_scoping.h>
+#include "lib_scoping.h"
 
 /**
  * SECTION:lib_scoping

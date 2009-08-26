@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_DISCO_AUTHENTICATE_REQUESTER (lasso_disco_authenticate_requester_get_type())
 #define LASSO_DISCO_AUTHENTICATE_REQUESTER(obj) \

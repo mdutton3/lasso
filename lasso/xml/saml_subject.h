@@ -29,10 +29,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/saml_name_identifier.h>
-#include <lasso/xml/saml_subject_confirmation.h>
-#include <lasso/xml/saml-2.0/saml2_encrypted_element.h>
+#include "xml.h"
+#include "saml_name_identifier.h"
+#include "saml_subject_confirmation.h"
+#include "saml-2.0/saml2_encrypted_element.h"
 
 #define LASSO_TYPE_SAML_SUBJECT (lasso_saml_subject_get_type())
 #define LASSO_SAML_SUBJECT(obj) \

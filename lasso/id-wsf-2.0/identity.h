@@ -29,6 +29,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include "../id-ff/identity.h"
+#include "../export.h"
+#include <glib.h>
+
 LASSO_EXPORT gint lasso_identity_add_svc_md_id(LassoIdentity *identity, gchar *svcMDID);
 
 LASSO_EXPORT GList* lasso_identity_get_svc_md_ids(LassoIdentity *identity);

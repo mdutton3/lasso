@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/samlp_request.h>
+#include "samlp_request.h"
 
 /**
  * SECTION:samlp_request

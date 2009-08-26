@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/lib_register_name_identifier_request.h>
-#include <lasso/xml/lib_status_response.h>
+#include "lib_register_name_identifier_request.h"
+#include "lib_status_response.h"
 
 #define LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE \
 	(lasso_lib_register_name_identifier_response_get_type())

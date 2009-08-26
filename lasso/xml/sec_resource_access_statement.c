@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/sec_resource_access_statement.h>
+#include "sec_resource_access_statement.h"
 
 /*
  * <xs: element name="ResourceAccessStatement"

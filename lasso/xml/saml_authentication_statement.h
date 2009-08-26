@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/saml_authority_binding.h>
-#include <lasso/xml/saml_subject_locality.h>
-#include <lasso/xml/saml_subject_statement_abstract.h>
+#include "saml_authority_binding.h"
+#include "saml_subject_locality.h"
+#include "saml_subject_statement_abstract.h"
 
 #define LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT (lasso_saml_authentication_statement_get_type())
 #define LASSO_SAML_AUTHENTICATION_STATEMENT(obj) \

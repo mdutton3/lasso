@@ -26,43 +26,33 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include <lasso/saml-2.0/providerprivate.h>
-#include <lasso/saml-2.0/loginprivate.h>
-#include <lasso/saml-2.0/profileprivate.h>
-#include <lasso/saml-2.0/federationprivate.h>
+#include "providerprivate.h"
+#include "loginprivate.h"
+#include "profileprivate.h"
+#include "federationprivate.h"
 
-#include <lasso/id-ff/providerprivate.h>
-#include <lasso/id-ff/serverprivate.h>
-#include <lasso/id-ff/login.h>
-#include <lasso/id-ff/identityprivate.h>
-#include <lasso/id-ff/sessionprivate.h>
-#include <lasso/id-ff/loginprivate.h>
+#include "../id-ff/providerprivate.h"
+#include "../id-ff/serverprivate.h"
+#include "../id-ff/login.h"
+#include "../id-ff/identityprivate.h"
+#include "../id-ff/sessionprivate.h"
+#include "../id-ff/loginprivate.h"
 
-#include <lasso/xml/xml_enc.h>
+#include "../xml/xml_enc.h"
 
-#include <lasso/xml/saml-2.0/samlp2_authn_request.h>
-#include <lasso/xml/saml-2.0/samlp2_response.h>
-#include <lasso/xml/saml-2.0/saml2_assertion.h>
-#include <lasso/xml/saml-2.0/saml2_audience_restriction.h>
-#include <lasso/xml/saml-2.0/saml2_authn_statement.h>
-#include <lasso/xml/saml-2.0/saml2_encrypted_element.h>
-#include <lasso/xml/saml-2.0/saml2_attribute.h>
-#include <lasso/xml/saml-2.0/saml2_attribute_statement.h>
-#include <lasso/xml/saml-2.0/saml2_attribute_value.h>
-#include <lasso/xml/saml-2.0/saml2_name_id.h>
+#include "../xml/saml-2.0/samlp2_authn_request.h"
+#include "../xml/saml-2.0/samlp2_response.h"
+#include "../xml/saml-2.0/saml2_assertion.h"
+#include "../xml/saml-2.0/saml2_audience_restriction.h"
+#include "../xml/saml-2.0/saml2_authn_statement.h"
+#include "../xml/saml-2.0/saml2_encrypted_element.h"
+#include "../xml/saml-2.0/saml2_attribute.h"
+#include "../xml/saml-2.0/saml2_attribute_statement.h"
+#include "../xml/saml-2.0/saml2_attribute_value.h"
+#include "../xml/saml-2.0/saml2_name_id.h"
 
 #ifdef LASSO_WSF_ENABLED
-#include <lasso/id-wsf-2.0/identity.h>
-#include <lasso/id-wsf-2.0/server.h>
-#include <lasso/id-wsf-2.0/session.h>
-#include <lasso/xml/ws/wsa_endpoint_reference.h>
-#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
-#include <lasso/xml/id-wsf-2.0/disco_abstract.h>
-#include <lasso/xml/id-wsf-2.0/disco_provider_id.h>
-#include <lasso/xml/id-wsf-2.0/disco_service_type.h>
-#include <lasso/xml/id-wsf-2.0/disco_service_context.h>
-#include <lasso/xml/id-wsf-2.0/disco_security_context.h>
-#include <lasso/xml/id-wsf-2.0/sec_token.h>
+#include "../id-wsf-2.0/saml2_login_private.h"
 #endif
 
 #include "../utils.h"
@@ -612,123 +602,6 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 }
 
 
-#ifdef LASSO_WSF_ENABLED
-static void
-lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertion *assertion)
-{
-	GList *svcMDIDs;
-	GList *svcMDs;
-	LassoIdWsf2DiscoSvcMetadata *svcMD;
-	LassoWsAddrEndpointReference *epr;
-	LassoWsAddrMetadata *metadata;
-	LassoSaml2AttributeStatement *attributeStatement;
-	LassoSaml2Attribute *attribute;
-	LassoSaml2AttributeValue *attributeValue;
-	LassoIdWsf2DiscoSecurityContext *security_context;
-	LassoIdWsf2SecToken *sec_token;
-	LassoSaml2Assertion *assertion_identity_token;
-	LassoIdWsf2DiscoServiceContext *service_context;
-	LassoIdWsf2DiscoEndpointContext *endpoint_context;
-
-	/* Get metadatas ids to which the user is associated */
-	svcMDIDs = lasso_identity_get_svc_md_ids(LASSO_PROFILE(login)->identity);
-	/* Get the metadatas of type discovery to which the user is associated */
-	svcMDs = lasso_server_get_svc_metadatas_with_id_and_type(LASSO_PROFILE(login)->server,
-		svcMDIDs, LASSO_IDWSF2_DISCO_HREF);
-	if (svcMDs == NULL) {
-		/* If the user hasn't been associated to any discovery metadatas, */
-		/* get a default one */
-		svcMDs = lasso_server_get_svc_metadatas_with_id_and_type(
-			LASSO_PROFILE(login)->server, NULL, LASSO_IDWSF2_DISCO_HREF);
-		if (svcMDs != NULL && LASSO_IS_IDWSF2_DISCO_SVC_METADATA(svcMDs->data)) {
-			/* Then associate the user to these metadatas for later use */
-			lasso_identity_add_svc_md_id(LASSO_PROFILE(login)->identity,
-				LASSO_IDWSF2_DISCO_SVC_METADATA(svcMDs->data)->svcMDID);
-		} else {
-			return;
-		}
-	}
-
-	/* FIXME : foreach on the whole list and build on epr for each svcMD */
-	svcMD = svcMDs->data;
-
-	/* Check the metadatas contain the infos needed to build an EPR */
-	if (svcMD == NULL || svcMD->ServiceContext == NULL || svcMD->ServiceContext->data == NULL) {
-		g_list_foreach(svcMDs, (GFunc)lasso_node_destroy, NULL);
-		g_list_free(svcMDs);
-		return;
-	}
-
-	/* Build EndpointReference */
-
-	epr = lasso_wsa_endpoint_reference_new();
-	service_context = svcMD->ServiceContext->data;
-	endpoint_context = service_context->EndpointContext->data;
-
-	epr->Address = lasso_wsa_attributed_uri_new_with_string(
-		(gchar*)endpoint_context->Address->data);
-
-	metadata = lasso_wsa_metadata_new();
-
-	/* Abstract */
-	metadata->any = g_list_append(metadata->any,
-			lasso_idwsf2_disco_abstract_new_with_string(svcMD->Abstract));
-	/* ProviderID */
-	metadata->any = g_list_append(metadata->any,
-			lasso_idwsf2_disco_provider_id_new_with_string(svcMD->ProviderID));
-	/* ServiceType */
-	metadata->any = g_list_append(metadata->any,
-			lasso_idwsf2_disco_service_type_new_with_string(
-				(char*)service_context->ServiceType->data));
-	/* Framework */
-	if (endpoint_context->Framework != NULL) {
-		metadata->any = g_list_append(metadata->any,
-			g_object_ref(endpoint_context->Framework->data));
-	}
-
-	/* Identity token */
-	assertion_identity_token = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
-	assertion_identity_token->Subject = g_object_ref(assertion->Subject);
-
-	sec_token = lasso_idwsf2_sec_token_new();
-	sec_token->any = LASSO_NODE(assertion_identity_token);
-
-	security_context = lasso_idwsf2_disco_security_context_new();
-	security_context->SecurityMechID = g_list_append(
-		security_context->SecurityMechID, g_strdup(LASSO_SECURITY_MECH_TLS_BEARER));
-	security_context->Token = g_list_append(security_context->Token, sec_token);
-
-	metadata->any = g_list_append(metadata->any, security_context);
-
-	/* End of metadata construction */
-	epr->Metadata = metadata;
-
-	/* Add the EPR to the assertion as a SAML attribute */
-	attributeValue = lasso_saml2_attribute_value_new();
-	attributeValue->any = g_list_append(attributeValue->any, epr);
-
-	attribute = LASSO_SAML2_ATTRIBUTE(lasso_saml2_attribute_new());
-	attribute->Name = g_strdup(LASSO_SAML2_ATTRIBUTE_NAME_EPR);
-	attribute->NameFormat = g_strdup(LASSO_SAML2_ATTRIBUTE_NAME_FORMAT_URI);
-	attribute->AttributeValue = g_list_append(attribute->AttributeValue, attributeValue);
-
-	attributeStatement = LASSO_SAML2_ATTRIBUTE_STATEMENT(lasso_saml2_attribute_statement_new());
-	attributeStatement->Attribute = g_list_append(attributeStatement->Attribute, attribute);
-
-	assertion->AttributeStatement = g_list_append(assertion->AttributeStatement,
-		attributeStatement);
-
-	/* Free resources */
-	g_list_foreach(svcMDs, (GFunc)lasso_node_destroy, NULL);
-	g_list_free(svcMDs);
-}
-#else
-static void
-lasso_saml20_login_assertion_add_discovery(G_GNUC_UNUSED LassoLogin *login, G_GNUC_UNUSED LassoSaml2Assertion *assertion)
-{
-}
-#endif
-
 int
 lasso_saml20_login_build_assertion(LassoLogin *login,
 		const char *authenticationMethod,
@@ -889,7 +762,9 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 			provider->private_data->encryption_sym_key_type;
 	}
 
+#ifdef LASSO_WSF_ENABLED
 	lasso_saml20_login_assertion_add_discovery(login, assertion);
+#endif
 
 	/* store assertion in session object */
 	if (profile->session == NULL) {
@@ -1348,67 +1223,6 @@ cleanup:
 	return rc;
 }
 
-#ifdef LASSO_WSF_ENABLED
-static gint
-lasso_saml20_login_copy_assertion_epr(LassoLogin *login)
-{
-	LassoProfile *profile = LASSO_PROFILE(login);
-	LassoSession *session = profile->session;
-	LassoSaml2Assertion *assertion;
-	LassoSaml2AttributeStatement *attribute_statement;
-	LassoSaml2Attribute *attribute;
-	LassoSaml2AttributeValue *attribute_value;
-	LassoWsAddrEndpointReference *epr;
-	GList *i;
-
-	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
-
-	assertion = LASSO_SAML2_ASSERTION(
-		LASSO_SAMLP2_RESPONSE(profile->response)->Assertion->data);
-
-	for (i = g_list_first(assertion->AttributeStatement); i; i = g_list_next(i)) {
-		GList *j;
-		attribute_statement = LASSO_SAML2_ATTRIBUTE_STATEMENT(i->data);
-		if (attribute_statement == NULL) {
-			continue;
-		}
-
-		for (j = g_list_first(attribute_statement->Attribute); j; j = g_list_next(j)) {
-			GList *k;
-			attribute = LASSO_SAML2_ATTRIBUTE(j->data);
-			if (attribute == NULL || attribute->Name == NULL) {
-				continue;
-			}
-			if (strcmp(attribute->Name, LASSO_SAML2_ATTRIBUTE_NAME_EPR) != 0) {
-				continue;
-			}
-			for (k = g_list_first(attribute->AttributeValue); k; k = g_list_next(k)) {
-				GList *l;
-				attribute_value = LASSO_SAML2_ATTRIBUTE_VALUE(k->data);
-				if (attribute_value == NULL) {
-					continue;
-				}
-				for (l = g_list_first(attribute_value->any);
-						l; l = g_list_next(l)) {
-					if (LASSO_IS_WSA_ENDPOINT_REFERENCE(l->data)) {
-						epr = LASSO_WSA_ENDPOINT_REFERENCE(l->data);
-						lasso_session_add_endpoint_reference(session, epr);
-						return 0;
-					}
-				}
-			}
-		}
-	}
-
-	return 0;
-}
-#else
-static gint
-lasso_saml20_login_copy_assertion_epr(G_GNUC_UNUSED LassoLogin *login)
-{
-	return LASSO_ERROR_UNIMPLEMENTED;
-}
-#endif
 
 gint
 lasso_saml20_login_accept_sso(LassoLogin *login)
@@ -1467,7 +1281,9 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 		lasso_identity_add_federation(LASSO_PROFILE(login)->identity, federation);
 	}
 
+#ifdef LASSO_WSF_ENABLED
 	lasso_saml20_login_copy_assertion_epr(login);
+#endif
 
 	return 0;
 }

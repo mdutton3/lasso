@@ -61,15 +61,15 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include <lasso/id-wsf/discovery.h>
-#include <lasso/id-wsf/data_service.h>
-#include <lasso/xml/dst_query.h>
-#include <lasso/xml/dst_query_response.h>
-#include <lasso/xml/dst_modify.h>
-#include <lasso/xml/dst_modify_response.h>
-#include <lasso/xml/soap_binding_correlation.h>
-#include <lasso/xml/soap_fault.h>
-#include <lasso/xml/is_redirect_request.h>
+#include "discovery.h"
+#include "data_service.h"
+#include "../xml/dst_query.h"
+#include "../xml/dst_query_response.h"
+#include "../xml/dst_modify.h"
+#include "../xml/dst_modify_response.h"
+#include "../xml/soap_binding_correlation.h"
+#include "../xml/soap_fault.h"
+#include "../xml/is_redirect_request.h"
 
 #include <xmlsec/xmltree.h>
 #include <xmlsec/xmldsig.h>

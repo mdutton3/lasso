@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "dstref_app_data.h"
 
 #define LASSO_TYPE_IDWSF2_DSTREF_MODIFY_ITEM (lasso_idwsf2_dstref_modify_item_get_type())

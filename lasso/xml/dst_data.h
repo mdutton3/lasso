@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_DST_DATA (lasso_dst_data_get_type())
 #define LASSO_DST_DATA(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DST_DATA, LassoDstData))

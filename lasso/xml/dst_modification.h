@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/dst_new_data.h>
-#include <lasso/xml/xml.h>
+#include "dst_new_data.h"
+#include "xml.h"
 
 #define LASSO_TYPE_DST_MODIFICATION (lasso_dst_modification_get_type())
 #define LASSO_DST_MODIFICATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

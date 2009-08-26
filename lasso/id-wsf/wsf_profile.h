@@ -30,16 +30,16 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include <../id-ff/server.h>
-#include <../id-ff/identity.h>
-#include <../id-ff/session.h>
-#include <../xml/soap_envelope.h>
-#include <../xml/soap_binding_provider.h>
-#include <../xml/soap_fault.h>
-#include <../xml/saml_assertion.h>
-#include <../xml/disco_description.h>
-#include <../xml/disco_resource_offering.h>
-#include <../xml/disco_description.h>
+#include "../id-ff/server.h"
+#include "../id-ff/identity.h"
+#include "../id-ff/session.h"
+#include "../xml/soap_envelope.h"
+#include "../xml/soap_binding_provider.h"
+#include "../xml/soap_fault.h"
+#include "../xml/saml_assertion.h"
+#include "../xml/disco_description.h"
+#include "../xml/disco_resource_offering.h"
+#include "../xml/disco_description.h"
 
 #define LASSO_TYPE_WSF_PROFILE (lasso_wsf_profile_get_type())
 #define LASSO_WSF_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -105,8 +105,8 @@ LASSO_EXPORT gint lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *pro
 
 LASSO_EXPORT gint lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request);
 
-LASSO_EXPORT gint lasso_wsf_profile_init_soap_response(LassoWsfProfile *profile, LassoNode
-		*response);
+LASSO_EXPORT gint lasso_wsf_profile_init_soap_response(LassoWsfProfile *profile,
+		LassoNode *response);
 
 LASSO_EXPORT gint lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
 	const gchar *message, const gchar *security_mech_id);

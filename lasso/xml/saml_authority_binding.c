@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/saml_authority_binding.h>
+#include "saml_authority_binding.h"
 
 /**
  * SECTION:saml_authority_binding

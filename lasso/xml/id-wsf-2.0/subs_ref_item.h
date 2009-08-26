@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_IDWSF2_SUBS_REF_ITEM (lasso_idwsf2_subs_ref_item_get_type())
 #define LASSO_IDWSF2_SUBS_REF_ITEM(obj) \

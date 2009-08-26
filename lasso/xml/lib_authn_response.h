@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/samlp_response.h>
-#include <lasso/xml/lib_authn_request.h>
+#include "samlp_response.h"
+#include "lib_authn_request.h"
 
 #define LASSO_TYPE_LIB_AUTHN_RESPONSE (lasso_lib_authn_response_get_type())
 #define LASSO_LIB_AUTHN_RESPONSE(obj) \

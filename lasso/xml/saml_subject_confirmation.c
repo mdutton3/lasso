@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/saml_subject_confirmation.h>
+#include "saml_subject_confirmation.h"
 
 /**
  * SECTION:saml_subject_confirmation

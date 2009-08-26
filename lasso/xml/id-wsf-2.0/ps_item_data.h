@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "ps_object.h"
 
 #define LASSO_TYPE_IDWSF2_PS_ITEM_DATA (lasso_idwsf2_ps_item_data_get_type())

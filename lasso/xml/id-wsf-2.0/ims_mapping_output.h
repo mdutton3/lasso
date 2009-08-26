@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "sec_token.h"
 
 #define LASSO_TYPE_IDWSF2_IMS_MAPPING_OUTPUT (lasso_idwsf2_ims_mapping_output_get_type())

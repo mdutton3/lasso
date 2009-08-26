@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_binding_consent.h>
+#include "soap_binding_consent.h"
 
 /**
  * SECTION:soap_binding_consent

@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/sa_transform.h>
+#include "sa_transform.h"
 
 /**
  * SECTION:sa_transform

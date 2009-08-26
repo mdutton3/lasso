@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_status_response.h>
+#include "lib_status_response.h"
 #include <libxml/uri.h>
 #include "../utils.h"
 

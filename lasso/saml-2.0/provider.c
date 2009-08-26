@@ -25,8 +25,8 @@
 #include "../xml/private.h"
 #include <xmlsec/base64.h>
 
-#include <lasso/saml-2.0/providerprivate.h>
-#include <lasso/id-ff/providerprivate.h>
+#include "providerprivate.h"
+#include "../id-ff/providerprivate.h"
 #include "../utils.h"
 
 const char *profile_names[] = {

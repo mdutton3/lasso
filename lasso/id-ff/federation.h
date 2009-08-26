@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/saml_name_identifier.h>
+#include "../xml/xml.h"
+#include "../xml/saml_name_identifier.h"
 
 #define LASSO_TYPE_FEDERATION (lasso_federation_get_type())
 #define LASSO_FEDERATION(obj) \

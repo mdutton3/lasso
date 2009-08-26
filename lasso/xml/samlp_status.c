@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/samlp_status.h>
+#include "samlp_status.h"
 
 /**
  * SECTION:samlp_status

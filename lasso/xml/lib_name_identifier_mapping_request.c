@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_name_identifier_mapping_request.h>
+#include "lib_name_identifier_mapping_request.h"
 
 /**
  * SECTION:lib_name_identifier_mapping_request

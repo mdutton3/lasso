@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_modify_response.h>
+#include "disco_modify_response.h"
 
 /**
  * SECTION:disco_modify_response

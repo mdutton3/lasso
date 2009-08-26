@@ -26,8 +26,8 @@
 
 #include <check.h>
 
-#include <lasso/lasso.h>
-#include <lasso/id-ff/provider.h>
+#include <../lasso/lasso.h>
+#include <../lasso/id-ff/provider.h>
 
 START_TEST(test01_metadata_load_der_certificate_from_x509_cert)
 {

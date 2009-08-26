@@ -42,9 +42,9 @@
 #include <xmlsec/crypto.h>
 #include <xmlsec/xmlenc.h>
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/xml_enc.h>
-#include <lasso/xml/saml_name_identifier.h>
+#include "xml.h"
+#include "xml_enc.h"
+#include "saml_name_identifier.h"
 #include "../utils.h"
 #include "../registry.h"
 #include "../debug.h"

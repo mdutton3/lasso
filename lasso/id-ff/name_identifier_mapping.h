@@ -29,10 +29,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/profile.h>
+#include "profile.h"
 
-#include <lasso/xml/lib_name_identifier_mapping_request.h>
-#include <lasso/xml/lib_name_identifier_mapping_response.h>
+#include "../xml/lib_name_identifier_mapping_request.h"
+#include "../xml/lib_name_identifier_mapping_response.h"
 
 #define LASSO_TYPE_NAME_IDENTIFIER_MAPPING (lasso_name_identifier_mapping_get_type())
 #define LASSO_NAME_IDENTIFIER_MAPPING(obj) \

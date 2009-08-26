@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_IS_TEXT (lasso_is_text_get_type())
 #define LASSO_IS_TEXT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IS_TEXT, LassoIsText))

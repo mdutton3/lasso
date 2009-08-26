@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_SOAP_BINDING_EXT_CREDENTIAL \
 			(lasso_soap_binding_ext_credential_get_type())

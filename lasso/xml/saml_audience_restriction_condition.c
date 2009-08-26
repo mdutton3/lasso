@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/saml_audience_restriction_condition.h>
+#include "saml_audience_restriction_condition.h"
 
 /*
  * schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):

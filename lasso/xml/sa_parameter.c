@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/sa_parameter.h>
+#include "sa_parameter.h"
 
 /**
  * SECTION:sa_parameter

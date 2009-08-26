@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_IDWSF2_DISCO_PROVIDER_ID (lasso_idwsf2_disco_provider_id_get_type())
 #define LASSO_IDWSF2_DISCO_PROVIDER_ID(obj) \

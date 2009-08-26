@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/samlp_response_abstract.h>
-#include <lasso/xml/samlp_status.h>
+#include "samlp_response_abstract.h"
+#include "samlp_status.h"
 
 #define LASSO_TYPE_LIB_STATUS_RESPONSE (lasso_lib_status_response_get_type())
 #define LASSO_LIB_STATUS_RESPONSE(obj) \

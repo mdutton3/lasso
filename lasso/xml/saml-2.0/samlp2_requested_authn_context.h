@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_SAMLP2_REQUESTED_AUTHN_CONTEXT (lasso_samlp2_requested_authn_context_get_type())
 #define LASSO_SAMLP2_REQUESTED_AUTHN_CONTEXT(obj) \

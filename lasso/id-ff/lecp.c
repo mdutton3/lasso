@@ -32,8 +32,8 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include <lasso/id-ff/lecp.h>
-#include <lasso/id-ff/profileprivate.h>
+#include "lecp.h"
+#include "profileprivate.h"
 #include "../utils.h"
 
 #include "../utils.h"

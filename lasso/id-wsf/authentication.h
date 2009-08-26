@@ -32,8 +32,8 @@ extern "C" {
 
 #include <sasl/sasl.h>
 
-#include <lasso/id-wsf/wsf_profile.h>
-#include <lasso/xml/disco_description.h>
+#include "wsf_profile.h"
+#include "../xml/disco_description.h"
 
 #define LASSO_TYPE_AUTHENTICATION (lasso_authentication_get_type())
 #define LASSO_AUTHENTICATION(obj) \

@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_remove_entry.h>
+#include "disco_remove_entry.h"
 
 /**
  * SECTION:disco_remove_entry

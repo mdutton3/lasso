@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_binding_correlation.h>
+#include "soap_binding_correlation.h"
 
 /**
  * SECTION:soap_binding_correlation

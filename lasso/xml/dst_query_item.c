@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/dst_query_item.h>
+#include "dst_query_item.h"
 
 /**
  * SECTION:dst_query_item

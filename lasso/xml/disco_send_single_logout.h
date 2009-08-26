@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_DISCO_SEND_SINGLE_LOGOUT (lasso_disco_send_single_logout_get_type())
 #define LASSO_DISCO_SEND_SINGLE_LOGOUT(obj) \

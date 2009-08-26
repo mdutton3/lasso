@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_WSA_ATTRIBUTED_UNSIGNED_LONG \
 	(lasso_wsa_attributed_unsigned_long_get_type())

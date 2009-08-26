@@ -143,38 +143,37 @@
  * </example>
  */
 
-#include "../xml/private.h"
 #include <xmlsec/base64.h>
 
 #include <config.h>
-#include <lasso/xml/lib_authentication_statement.h>
-#include <lasso/xml/lib_subject.h>
-#include <lasso/xml/saml_advice.h>
-#include <lasso/xml/saml_attribute.h>
-#include <lasso/xml/saml_attribute_value.h>
-#include <lasso/xml/saml_audience_restriction_condition.h>
-#include <lasso/xml/saml_conditions.h>
-#include <lasso/xml/samlp_response.h>
-#include <lasso/xml/saml-2.0/saml2_encrypted_element.h>
-
-#ifdef LASSO_WSF_ENABLED
-#include <lasso/xml/disco_description.h>
-#include <lasso/xml/disco_resource_offering.h>
-#include <lasso/xml/disco_service_instance.h>
-#endif
-
-#include <lasso/id-ff/login.h>
-#include <lasso/id-ff/provider.h>
-
-#include "./profileprivate.h"
-#include "./providerprivate.h"
-#include "./serverprivate.h"
-#include "./sessionprivate.h"
-#include "./identityprivate.h"
-#include "./loginprivate.h"
-#include "../saml-2.0/loginprivate.h"
+#include "lasso_config.h"
 #include "../utils.h"
 #include "../debug.h"
+#include "login.h"
+#include "provider.h"
+#include "../xml/private.h"
+#include "../xml/lib_authentication_statement.h"
+#include "../xml/lib_subject.h"
+#include "../xml/saml_advice.h"
+#include "../xml/saml_attribute.h"
+#include "../xml/saml_attribute_value.h"
+#include "../xml/saml_audience_restriction_condition.h"
+#include "../xml/saml_conditions.h"
+#include "../xml/samlp_response.h"
+#include "../xml/saml-2.0/saml2_encrypted_element.h"
+
+
+#include "profileprivate.h"
+#include "providerprivate.h"
+#include "serverprivate.h"
+#include "sessionprivate.h"
+#include "identityprivate.h"
+#include "loginprivate.h"
+#include "../saml-2.0/loginprivate.h"
+
+#ifdef LASSO_WSF_ENABLED
+#include "../id-wsf/id_ff_extensions_private.h"
+#endif
 
 
 static void lasso_login_build_assertion_artifact(LassoLogin *login);
@@ -183,52 +182,6 @@ static void lasso_login_build_assertion_artifact(LassoLogin *login);
 /* static methods/functions */
 /*****************************************************************************/
 
-
-#ifdef LASSO_WSF_ENABLED
-/**
- * lasso_login_assertion_add_discovery:
- * @login: a #LassoLogin
- * @assertion:
- *
- * Adds AttributeStatement and ResourceOffering attributes to assertion if
- * there is a discovery service.
- **/
-static void
-lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion)
-{
-	LassoProfile *profile = LASSO_PROFILE(login);
-	LassoDiscoResourceOffering *resourceOffering;
-	LassoDiscoServiceInstance *serviceInstance, *newServiceInstance;
-	LassoSamlAttributeStatement *attributeStatement;
-	LassoSamlAttribute *attribute;
-	LassoSamlAttributeValue *attributeValue;
-
-	serviceInstance = lasso_server_get_service(profile->server, LASSO_DISCO_HREF);
-	if (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance) &&
-			login->private_data->resourceId) {
-		newServiceInstance = lasso_disco_service_instance_copy(serviceInstance);
-
-		resourceOffering = lasso_disco_resource_offering_new(newServiceInstance);
-		lasso_release_gobject(newServiceInstance);
-		lasso_assign_gobject(resourceOffering->ResourceID, login->private_data->resourceId);
-
-		attributeValue = lasso_saml_attribute_value_new();
-		lasso_list_add_new_gobject(attributeValue->any, resourceOffering);
-
-		attribute = lasso_saml_attribute_new();
-		lasso_assign_string(attribute->attributeName, "DiscoveryResourceOffering");
-		lasso_assign_string(attribute->attributeNameSpace, LASSO_DISCO_HREF);
-		lasso_list_add_new_gobject(attribute->AttributeValue, attributeValue);
-
-		attributeStatement = lasso_saml_attribute_statement_new();
-		lasso_list_add_new_gobject(attributeStatement->Attribute, attribute);
-
-		lasso_assign_new_gobject(assertion->AttributeStatement, attributeStatement);
-
-		/* FIXME: Add CredentialsRef and saml:Advice Assertions */
-	}
-}
-#endif
 
 
 /**
@@ -2018,57 +1971,6 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 }
 
 
-#ifdef LASSO_WSF_ENABLED
-/**
- * lasso_login_set_encryptedResourceId:
- * @login: a #LassoLogin
- * @encryptedResourceId:
- *
- * ...
- *
- * Return value: 0 on success; or a negative value otherwise.
- **/
-int
-lasso_login_set_encryptedResourceId(LassoLogin *login,
-		LassoDiscoEncryptedResourceID *encryptedResourceId)
-{
-	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_DISCO_ENCRYPTED_RESOURCE_ID(encryptedResourceId),
-			LASSO_PARAM_ERROR_INVALID_VALUE);
-
-	lasso_assign_gobject(login->private_data->encryptedResourceId, encryptedResourceId);
-
-	return 0;
-}
-#endif
-
-
-#ifdef LASSO_WSF_ENABLED
-/**
- * lasso_login_set_resourceId:
- * @login: a #LassoLogin
- * @content:
- *
- * ...
- *
- * Return value: 0 on success; or a negative value otherwise.
- **/
-int
-lasso_login_set_resourceId(LassoLogin *login, const char *content)
-{
-	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(content != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
-	lasso_assign_new_gobject(login->private_data->resourceId, lasso_disco_resource_id_new(content));
-	return 0;
-}
-#else
-int
-lasso_login_set_resourceId(G_GNUC_UNUSED LassoLogin *login, G_GNUC_UNUSED const char *content)
-{
-	return LASSO_ERROR_UNIMPLEMENTED;
-}
-#endif
 
 /*****************************************************************************/
 /* private methods                                                           */

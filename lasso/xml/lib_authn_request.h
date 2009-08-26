@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/samlp_request_abstract.h>
-#include <lasso/xml/lib_request_authn_context.h>
-#include <lasso/xml/lib_scoping.h>
+#include "samlp_request_abstract.h"
+#include "lib_request_authn_context.h"
+#include "lib_scoping.h"
 
 #define LASSO_TYPE_LIB_AUTHN_REQUEST (lasso_lib_authn_request_get_type())
 #define LASSO_LIB_AUTHN_REQUEST(obj) \

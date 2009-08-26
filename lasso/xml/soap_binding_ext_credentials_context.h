@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/lib_request_authn_context.h>
+#include "xml.h"
+#include "lib_request_authn_context.h"
 
 #define LASSO_TYPE_SOAP_BINDING_EXT_CREDENTIALS_CONTEXT \
 			(lasso_soap_binding_ext_credentials_context_get_type())

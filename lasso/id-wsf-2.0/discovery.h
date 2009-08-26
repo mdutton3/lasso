@@ -30,12 +30,12 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include <lasso/id-wsf-2.0/profile.h>
-#include <lasso/id-wsf-2.0/data_service.h>
+#include "profile.h"
+#include "data_service.h"
 
-#include <lasso/xml/id-wsf-2.0/disco_query.h>
-#include <lasso/xml/id-wsf-2.0/disco_query_response.h>
-#include <lasso/xml/id-wsf-2.0/disco_svc_metadata.h>
+#include "../xml/id-wsf-2.0/disco_query.h"
+#include "../xml/id-wsf-2.0/disco_query_response.h"
+#include "../xml/id-wsf-2.0/disco_svc_metadata.h"
 
 #define LASSO_TYPE_IDWSF2_DISCOVERY (lasso_idwsf2_discovery_get_type())
 #define LASSO_IDWSF2_DISCOVERY(obj) \

@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_DISCO_CREDENTIALS (lasso_disco_credentials_get_type())
 #define LASSO_DISCO_CREDENTIALS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

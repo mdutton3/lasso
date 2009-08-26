@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_idp_list.h>
+#include "lib_idp_list.h"
 
 /**
  * SECTION:lib_idp_list

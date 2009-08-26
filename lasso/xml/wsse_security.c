@@ -22,7 +22,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/wsse_security.h>
+#include "wsse_security.h"
 
 /*
  *

@@ -34,20 +34,20 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include <lasso/id-wsf-2.0/discovery.h>
-#include <lasso/id-wsf-2.0/data_service.h>
+#include "discovery.h"
+#include "data_service.h"
 
-#include <lasso/xml/id-wsf-2.0/disco_service_type.h>
-#include <lasso/xml/id-wsf-2.0/dstref_query.h>
-#include <lasso/xml/id-wsf-2.0/dstref_query_response.h>
-#include <lasso/xml/id-wsf-2.0/dstref_data.h>
-#include <lasso/xml/id-wsf-2.0/util_status.h>
-#include <lasso/xml/id-wsf-2.0/sb2_redirect_request.h>
-#include <lasso/xml/id-wsf-2.0/dstref_modify.h>
-#include <lasso/xml/id-wsf-2.0/dstref_modify_item.h>
-#include <lasso/xml/id-wsf-2.0/dstref_modify_response.h>
+#include "../xml/id-wsf-2.0/disco_service_type.h"
+#include "../xml/id-wsf-2.0/dstref_query.h"
+#include "../xml/id-wsf-2.0/dstref_query_response.h"
+#include "../xml/id-wsf-2.0/dstref_data.h"
+#include "../xml/id-wsf-2.0/util_status.h"
+#include "../xml/id-wsf-2.0/sb2_redirect_request.h"
+#include "../xml/id-wsf-2.0/dstref_modify.h"
+#include "../xml/id-wsf-2.0/dstref_modify_item.h"
+#include "../xml/id-wsf-2.0/dstref_modify_response.h"
 
-#include <lasso/xml/soap_fault.h>
+#include "../xml/soap_fault.h"
 #include "../utils.h"
 #include "./private.h"
 

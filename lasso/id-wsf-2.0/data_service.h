@@ -30,10 +30,10 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include <lasso/id-wsf-2.0/profile.h>
-#include <lasso/xml/xml.h>
-#include <lasso/xml/id-wsf-2.0/dstref_query_item.h>
-#include <lasso/xml/ws/wsa_endpoint_reference.h>
+#include "profile.h"
+#include "../xml/xml.h"
+#include "../xml/id-wsf-2.0/dstref_query_item.h"
+#include "../xml/ws/wsa_endpoint_reference.h"
 
 
 #define LASSO_TYPE_IDWSF2_DATA_SERVICE (lasso_idwsf2_data_service_get_type())

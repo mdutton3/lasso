@@ -30,12 +30,12 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/identity.h>
-#include <lasso/id-ff/server.h>
-#include <lasso/id-ff/session.h>
+#include "identity.h"
+#include "server.h"
+#include "session.h"
 
-#include <lasso/xml/samlp_request_abstract.h>
-#include <lasso/xml/samlp_response_abstract.h>
+#include "../xml/samlp_request_abstract.h"
+#include "../xml/samlp_response_abstract.h"
 
 #define LASSO_TYPE_PROFILE (lasso_profile_get_type())
 #define LASSO_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_PROFILE, LassoProfile))

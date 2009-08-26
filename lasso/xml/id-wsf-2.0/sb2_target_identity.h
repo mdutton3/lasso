@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_IDWSF2_SB2_TARGET_IDENTITY (lasso_idwsf2_sb2_target_identity_get_type())
 #define LASSO_IDWSF2_SB2_TARGET_IDENTITY(obj) \

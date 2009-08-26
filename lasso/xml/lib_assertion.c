@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_assertion.h>
+#include "lib_assertion.h"
 
 /**
  * SECTION:lib_assertion

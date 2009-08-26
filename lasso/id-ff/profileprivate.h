@@ -30,9 +30,9 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/profile.h>
+#include "profile.h"
 
-#include <lasso/xml/soap_envelope.h>
+#include "../xml/soap_envelope.h"
 
 struct _LassoProfilePrivate
 {

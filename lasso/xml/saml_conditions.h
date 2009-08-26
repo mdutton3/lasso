@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/saml_audience_restriction_condition.h>
-#include <lasso/xml/saml_condition_abstract.h>
+#include "xml.h"
+#include "saml_audience_restriction_condition.h"
+#include "saml_condition_abstract.h"
 
 #define LASSO_TYPE_SAML_CONDITIONS (lasso_saml_conditions_get_type())
 #define LASSO_SAML_CONDITIONS(obj) \

@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_SAML2_ACTION (lasso_saml2_action_get_type())
 #define LASSO_SAML2_ACTION(obj) \

@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/dst_modify.h>
+#include "dst_modify.h"
 
 /**
  * SECTION:dst_modify

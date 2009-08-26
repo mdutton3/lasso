@@ -26,8 +26,8 @@
 
 #include <check.h>
 
-#include <lasso/lasso.h>
-#include <lasso/xml/strings.h>
+#include "../lasso/lasso.h"
+#include "../lasso/xml/strings.h"
 
 
 START_TEST(test01_server_load_dump_empty_string)
@@ -76,7 +76,7 @@ START_TEST(test05_identity_load_dump_empty)
 }
 END_TEST
 
-#include <lasso/registry.h>
+#include "../lasso/registry.h"
 
 START_TEST(test06_registry_direct_mapping)
 {

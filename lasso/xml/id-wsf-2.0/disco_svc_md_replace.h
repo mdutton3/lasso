@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_IDWSF2_DISCO_SVC_MD_REPLACE (lasso_idwsf2_disco_svc_md_replace_get_type())
 #define LASSO_IDWSF2_DISCO_SVC_MD_REPLACE(obj) \

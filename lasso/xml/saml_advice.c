@@ -23,8 +23,8 @@
  */
 
 #include "private.h"
-#include <lasso/xml/saml_advice.h>
-#include <lasso/xml/saml_assertion.h>
+#include "saml_advice.h"
+#include "saml_assertion.h"
 
 /**
  * SECTION:saml_advice

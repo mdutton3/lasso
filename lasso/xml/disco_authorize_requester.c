@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_authorize_requester.h>
+#include "disco_authorize_requester.h"
 
 /**
  * SECTION:disco_authorize_requester

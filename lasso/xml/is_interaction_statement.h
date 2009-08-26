@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/is_inquiry.h>
-#include <lasso/xml/xml.h>
+#include "is_inquiry.h"
+#include "xml.h"
 
 #define LASSO_TYPE_IS_INTERACTION_STATEMENT (lasso_is_interaction_statement_get_type())
 #define LASSO_IS_INTERACTION_STATEMENT(obj) \

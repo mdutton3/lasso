@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/sa_password_transforms.h>
+#include "sa_password_transforms.h"
 
 /**
  * SECTION:sa_password_transforms

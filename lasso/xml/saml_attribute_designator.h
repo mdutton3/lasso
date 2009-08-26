@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_SAML_ATTRIBUTE_DESIGNATOR (lasso_saml_attribute_designator_get_type())
 #define LASSO_SAML_ATTRIBUTE_DESIGNATOR(obj) \

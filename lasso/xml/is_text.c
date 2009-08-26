@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/is_text.h>
+#include "is_text.h"
 
 /**
  * SECTION:is_text

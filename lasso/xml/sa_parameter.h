@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_SA_PARAMETER (lasso_sa_parameter_get_type())
 #define LASSO_SA_PARAMETER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

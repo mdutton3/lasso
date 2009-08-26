@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_header.h>
+#include "soap_header.h"
 
 /**
  * SECTION:soap_header

@@ -26,7 +26,7 @@
 
 #include <check.h>
 
-#include <lasso/lasso.h>
+#include <../lasso/lasso.h>
 #include <glib.h>
 #include "utils.h"
 #include "../lasso/backward_comp.h"

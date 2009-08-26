@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/saml_assertion.h>
+#include "saml_assertion.h"
 
 #define LASSO_TYPE_LIB_ASSERTION (lasso_lib_assertion_get_type())
 #define LASSO_LIB_ASSERTION(obj) \

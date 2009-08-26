@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/soap_binding_ext_credential.h>
+#include "xml.h"
+#include "soap_binding_ext_credential.h"
 
 #define LASSO_TYPE_SOAP_BINDING_EXT_SERVICE_INSTANCE_UPDATE \
 			(lasso_soap_binding_ext_service_instance_update_get_type())

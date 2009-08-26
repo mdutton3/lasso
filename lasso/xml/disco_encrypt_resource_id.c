@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_encrypt_resource_id.h>
+#include "disco_encrypt_resource_id.h"
 
 /**
  * SECTION:disco_encrypt_resource_id

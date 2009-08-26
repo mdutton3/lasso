@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/is_inquiry.h>
+#include "is_inquiry.h"
 
 /**
  * SECTION:is_inquiry

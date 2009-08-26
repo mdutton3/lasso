@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/is_select.h>
+#include "is_select.h"
 
 /**
  * SECTION:is_select

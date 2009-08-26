@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_IDWSF2_IS_INTERACTION_STATEMENT \
 	(lasso_idwsf2_is_interaction_statement_get_type())

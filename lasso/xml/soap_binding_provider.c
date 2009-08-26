@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_binding_provider.h>
+#include "soap_binding_provider.h"
 
 /**
  * SECTION:soap_binding_provider

@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/saml_assertion.h>
+#include "xml.h"
+#include "saml_assertion.h"
 
 #define LASSO_TYPE_SA_CREDENTIALS (lasso_sa_credentials_get_type())
 #define LASSO_SA_CREDENTIALS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

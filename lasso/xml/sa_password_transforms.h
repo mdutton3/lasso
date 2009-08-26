@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_SA_PASSWORD_TRANSFORMS (lasso_sa_password_transforms_get_type())
 #define LASSO_SA_PASSWORD_TRANSFORMS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

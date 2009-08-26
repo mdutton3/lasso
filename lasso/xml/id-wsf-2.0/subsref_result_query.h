@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "dst_result_query_base.h"
 
 #define LASSO_TYPE_IDWSF2_SUBSREF_RESULT_QUERY \

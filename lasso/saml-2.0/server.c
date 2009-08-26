@@ -23,9 +23,9 @@
  */
 
 #include "../xml/private.h"
-#include <lasso/saml-2.0/serverprivate.h>
-#include <lasso/id-ff/serverprivate.h>
-#include <lasso/id-ff/providerprivate.h>
+#include "serverprivate.h"
+#include "../id-ff/serverprivate.h"
+#include "../id-ff/providerprivate.h"
 
 
 int

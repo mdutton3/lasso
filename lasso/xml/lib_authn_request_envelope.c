@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_authn_request_envelope.h>
+#include "lib_authn_request_envelope.h"
 
 /**
  * SECTION:lib_authn_request_envelope

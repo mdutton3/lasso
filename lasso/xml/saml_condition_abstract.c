@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/saml_condition_abstract.h>
+#include "saml_condition_abstract.h"
 
 /**
  * SECTION:saml_condition_abstract

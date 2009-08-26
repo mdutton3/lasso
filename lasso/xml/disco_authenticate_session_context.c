@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/disco_authenticate_session_context.h>
+#include "disco_authenticate_session_context.h"
 
 /**
  * SECTION:disco_authenticate_session_context

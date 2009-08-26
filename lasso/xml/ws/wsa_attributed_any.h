@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_WSA_ATTRIBUTED_ANY (lasso_wsa_attributed_any_get_type())
 #define LASSO_WSA_ATTRIBUTED_ANY(obj) \

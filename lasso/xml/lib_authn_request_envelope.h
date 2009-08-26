@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/lib_idp_list.h>
-#include <lasso/xml/lib_authn_request.h>
+#include "xml.h"
+#include "lib_idp_list.h"
+#include "lib_authn_request.h"
 
 #define LASSO_TYPE_LIB_AUTHN_REQUEST_ENVELOPE (lasso_lib_authn_request_envelope_get_type())
 #define LASSO_LIB_AUTHN_REQUEST_ENVELOPE(obj) \

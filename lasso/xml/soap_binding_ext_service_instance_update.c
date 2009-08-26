@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_binding_ext_service_instance_update.h>
+#include "soap_binding_ext_service_instance_update.h"
 
 /**
  * SECTION:soap_binding_ext_service_instance_update

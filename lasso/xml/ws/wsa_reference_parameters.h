@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_WSA_REFERENCE_PARAMETERS (lasso_wsa_reference_parameters_get_type())
 #define LASSO_WSA_REFERENCE_PARAMETERS(obj) \

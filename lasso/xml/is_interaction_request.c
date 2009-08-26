@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/is_interaction_request.h>
+#include "is_interaction_request.h"
 
 /**
  * SECTION:is_interaction_request

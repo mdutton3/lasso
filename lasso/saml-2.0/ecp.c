@@ -32,15 +32,15 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include <lasso/saml-2.0/providerprivate.h>
-#include <lasso/saml-2.0/profileprivate.h>
-#include <lasso/id-ff/providerprivate.h>
-#include <lasso/id-ff/identityprivate.h>
-#include <lasso/id-ff/serverprivate.h>
+#include "providerprivate.h"
+#include "profileprivate.h"
+#include "../id-ff/providerprivate.h"
+#include "../id-ff/identityprivate.h"
+#include "../id-ff/serverprivate.h"
 
-#include <lasso/saml-2.0/ecpprivate.h>
+#include "ecpprivate.h"
 
-#include <lasso/saml-2.0/ecp.h>
+#include "ecp.h"
 #include "../utils.h"
 
 /*****************************************************************************/

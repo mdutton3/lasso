@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_IDWSF2_DISCO_SVC_MD_ASSOCIATION_DELETE \
 	(lasso_idwsf2_disco_svc_md_association_delete_get_type())

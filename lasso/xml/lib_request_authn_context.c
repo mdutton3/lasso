@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_request_authn_context.h>
+#include "lib_request_authn_context.h"
 
 /**
  * SECTION:lib_request_authn_context

@@ -28,7 +28,7 @@
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 
-#include <lasso/xml/saml_assertion.h>
+#include "saml_assertion.h"
 
 /**
  * SECTION:saml_assertion

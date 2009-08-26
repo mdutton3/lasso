@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_IDWSF2_SEC_TOKEN (lasso_idwsf2_sec_token_get_type())
 #define LASSO_IDWSF2_SEC_TOKEN(obj) \

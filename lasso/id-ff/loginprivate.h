@@ -30,16 +30,13 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-#include <config.h>
-#include <lasso/xml/saml-2.0/saml2_assertion.h>
+#include "config.h"
+#include "../xml/saml-2.0/saml2_assertion.h"
 
 #ifdef LASSO_WSF_ENABLED
-#include <lasso/xml/disco_description.h>
-#include <lasso/xml/disco_resource_offering.h>
-#include <lasso/xml/disco_service_instance.h>
+#include "../xml/disco_resource_id.h"
+#include "../xml/disco_encrypted_resource_id.h"
 #endif
-
-
 
 struct _LassoLoginPrivate
 {

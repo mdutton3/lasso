@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_DISCO_AUTHENTICATE_SESSION_CONTEXT \
 	(lasso_disco_authenticate_session_context_get_type())

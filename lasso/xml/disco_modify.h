@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/disco_resource_id.h>
-#include <lasso/xml/disco_encrypted_resource_id.h>
+#include "xml.h"
+#include "disco_resource_id.h"
+#include "disco_encrypted_resource_id.h"
 
 #define LASSO_TYPE_DISCO_MODIFY (lasso_disco_modify_get_type())
 #define LASSO_DISCO_MODIFY(obj) \

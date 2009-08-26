@@ -23,17 +23,17 @@
  */
 
 #include "../xml/private.h"
-#include <../saml-2.0/name_id_management.h>
-#include <../saml-2.0/providerprivate.h>
-#include <../saml-2.0/profileprivate.h>
-#include <../saml-2.0/serverprivate.h>
-#include <../id-ff/providerprivate.h>
-#include <../id-ff/profileprivate.h>
-#include <../id-ff/identityprivate.h>
-#include <../id-ff/serverprivate.h>
-#include <../xml/xml_enc.h>
+#include "name_id_management.h"
+#include "providerprivate.h"
+#include "profileprivate.h"
+#include "serverprivate.h"
+#include "../id-ff/providerprivate.h"
+#include "../id-ff/profileprivate.h"
+#include "../id-ff/identityprivate.h"
+#include "../id-ff/serverprivate.h"
+#include "../xml/xml_enc.h"
 #include "../utils.h"
-#include <../xml/saml-2.0/samlp2_manage_name_id_request.h>
+#include "../xml/saml-2.0/samlp2_manage_name_id_request.h"
 
 /**
  * SECTION:name_id_management

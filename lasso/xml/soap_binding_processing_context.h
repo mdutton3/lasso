@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "xml.h"
 
 #define LASSO_TYPE_SOAP_BINDING_PROCESSING_CONTEXT \
 	(lasso_soap_binding_processing_context_get_type())

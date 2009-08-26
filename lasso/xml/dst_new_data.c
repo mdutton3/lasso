@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/dst_new_data.h>
+#include "dst_new_data.h"
 
 /**
  * SECTION:dst_new_data

@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_WSSE_EMBEDDED (lasso_wsse_embedded_get_type())
 #define LASSO_WSSE_EMBEDDED(obj) \

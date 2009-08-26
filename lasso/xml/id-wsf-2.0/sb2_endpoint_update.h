@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/ws/wsa_endpoint_reference.h>
+#include "../xml.h"
+#include "../ws/wsa_endpoint_reference.h"
 
 #define LASSO_TYPE_IDWSF2_SB2_ENDPOINT_UPDATE (lasso_idwsf2_sb2_endpoint_update_get_type())
 #define LASSO_IDWSF2_SB2_ENDPOINT_UPDATE(obj) \

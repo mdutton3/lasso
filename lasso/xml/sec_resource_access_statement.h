@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/saml_subject_statement_abstract.h>
+#include "xml.h"
+#include "saml_subject_statement_abstract.h"
 
 #define LASSO_TYPE_SEC_RESOURCE_ACCESS_STATEMENT (lasso_sec_resource_access_statement_get_type())
 #define LASSO_SEC_RESOURCE_ACCESS_STATEMENT(obj) \

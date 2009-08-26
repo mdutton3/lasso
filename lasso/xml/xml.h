@@ -38,9 +38,9 @@ extern "C" {
 #include <libxml/uri.h>
 #include <libxml/tree.h>
 
-#include <lasso/export.h>
-#include <lasso/errors.h>
-#include <lasso/xml/strings.h>
+#include "../export.h"
+#include "../errors.h"
+#include "strings.h"
 
 #define LASSO_TYPE_NODE (lasso_node_get_type())
 #define LASSO_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_NODE, LassoNode))

@@ -32,17 +32,17 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include <lasso/xml/samlp_response.h>
-#include <lasso/xml/samlp_request.h>
-#include <lasso/xml/lib_authn_response.h>
-#include <lasso/xml/lib_status_response.h>
+#include "../xml/samlp_response.h"
+#include "../xml/samlp_request.h"
+#include "../xml/lib_authn_response.h"
+#include "../xml/lib_status_response.h"
 
-#include <lasso/id-ff/profile.h>
-#include <lasso/id-ff/profileprivate.h>
-#include <lasso/id-ff/providerprivate.h>
+#include "profile.h"
+#include "profileprivate.h"
+#include "providerprivate.h"
 #include "./sessionprivate.h"
 
-#include <lasso/saml-2.0/profileprivate.h>
+#include "../saml-2.0/profileprivate.h"
 #include "../utils.h"
 #include "../debug.h"
 

@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/saml_statement_abstract.h>
-#include <lasso/xml/saml_subject.h>
+#include "saml_statement_abstract.h"
+#include "saml_subject.h"
 
 #define LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT \
 	(lasso_saml_subject_statement_abstract_get_type())

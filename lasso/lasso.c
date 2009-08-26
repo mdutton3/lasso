@@ -28,7 +28,6 @@
  *
  **/
 
-#include "xml/private.h"
 #include <stdlib.h> /* getenv */
 #include <string.h> /* strcmp */
 #include <xmlsec/xmlsec.h>
@@ -36,9 +35,11 @@
 #include <libxslt/xslt.h>
 #include <config.h>
 #include "lasso.h"
+#include "lasso_config.h"
 #include "debug.h"
-#include "./backward_comp.h"
-#include "./registry-private.h"
+#include "backward_comp.h"
+#include "registry-private.h"
+#include "xml/private.h"
 
 /* Set to true, it forces lasso_provider_verify_signature and lasso_query_verify_signature to always
  * return TRUE. */

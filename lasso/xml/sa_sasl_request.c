@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/sa_sasl_request.h>
+#include "sa_sasl_request.h"
 
 /**
  * SECTION:sa_sasl_request

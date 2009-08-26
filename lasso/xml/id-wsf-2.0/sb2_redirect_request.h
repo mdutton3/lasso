@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_IDWSF2_SB2_REDIRECT_REQUEST (lasso_idwsf2_sb2_redirect_request_get_type())
 #define LASSO_IDWSF2_SB2_REDIRECT_REQUEST(obj) \

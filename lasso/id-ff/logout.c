@@ -29,16 +29,16 @@
  */
 
 #include "../xml/private.h"
-#include <lasso/xml/lib_authentication_statement.h>
+#include "../xml/lib_authentication_statement.h"
 
-#include <lasso/id-ff/logout.h>
-#include <lasso/id-ff/logoutprivate.h>
+#include "logout.h"
+#include "logoutprivate.h"
 
-#include <lasso/id-ff/profileprivate.h>
-#include <lasso/id-ff/providerprivate.h>
-#include <lasso/id-ff/sessionprivate.h>
+#include "profileprivate.h"
+#include "providerprivate.h"
+#include "sessionprivate.h"
 
-#include <lasso/saml-2.0/logoutprivate.h>
+#include "../saml-2.0/logoutprivate.h"
 #include "../utils.h"
 
 static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile *profile);

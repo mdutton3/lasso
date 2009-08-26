@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/is_redirect_request.h>
+#include "is_redirect_request.h"
 
 /**
  * SECTION:is_redirect_request

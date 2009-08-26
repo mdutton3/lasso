@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/soap_binding_usage_directive.h>
+#include "soap_binding_usage_directive.h"
 
 /**
  * SECTION:soap_binding_usage_directive

@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/lib_idp_entries.h>
+#include "xml.h"
+#include "lib_idp_entries.h"
 
 #define LASSO_TYPE_LIB_IDP_LIST (lasso_lib_idp_list_get_type())
 #define LASSO_LIB_IDP_LIST(obj) \

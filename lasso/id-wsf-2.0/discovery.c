@@ -38,38 +38,38 @@
 
 #include <xmlsec/xmltree.h>
 
-#include <lasso/xml/saml_attribute_value.h>
-#include <lasso/xml/xml_enc.h>
+#include "../xml/saml_attribute_value.h"
+#include "../xml/xml_enc.h"
 
-#include <lasso/xml/saml-2.0/saml2_assertion.h>
-#include <lasso/xml/saml-2.0/samlp2_name_id_policy.h>
+#include "../xml/saml-2.0/saml2_assertion.h"
+#include "../xml/saml-2.0/samlp2_name_id_policy.h"
 
-#include <lasso/xml/id-wsf-2.0/disco_query.h>
-#include <lasso/xml/id-wsf-2.0/disco_requested_service.h>
-#include <lasso/xml/id-wsf-2.0/disco_svc_md_register.h>
-#include <lasso/xml/id-wsf-2.0/disco_svc_md_register_response.h>
-#include <lasso/xml/id-wsf-2.0/disco_svc_md_association_add.h>
-#include <lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.h>
-#include <lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.h>
-#include <lasso/xml/id-wsf-2.0/disco_abstract.h>
-#include <lasso/xml/id-wsf-2.0/disco_provider_id.h>
-#include <lasso/xml/id-wsf-2.0/disco_service_type.h>
-#include <lasso/xml/id-wsf-2.0/disco_security_context.h>
-#include <lasso/xml/id-wsf-2.0/disco_service_context.h>
-#include <lasso/xml/id-wsf-2.0/disco_endpoint_context.h>
-#include <lasso/xml/id-wsf-2.0/sec_token.h>
+#include "../xml/id-wsf-2.0/disco_query.h"
+#include "../xml/id-wsf-2.0/disco_requested_service.h"
+#include "../xml/id-wsf-2.0/disco_svc_md_register.h"
+#include "../xml/id-wsf-2.0/disco_svc_md_register_response.h"
+#include "../xml/id-wsf-2.0/disco_svc_md_association_add.h"
+#include "../xml/id-wsf-2.0/disco_svc_md_association_add_response.h"
+#include "../xml/id-wsf-2.0/disco_svc_md_association_add_response.h"
+#include "../xml/id-wsf-2.0/disco_abstract.h"
+#include "../xml/id-wsf-2.0/disco_provider_id.h"
+#include "../xml/id-wsf-2.0/disco_service_type.h"
+#include "../xml/id-wsf-2.0/disco_security_context.h"
+#include "../xml/id-wsf-2.0/disco_service_context.h"
+#include "../xml/id-wsf-2.0/disco_endpoint_context.h"
+#include "../xml/id-wsf-2.0/sec_token.h"
 
-#include <lasso/xml/ws/wsa_endpoint_reference.h>
+#include "../xml/ws/wsa_endpoint_reference.h"
 
-#include <lasso/id-ff/server.h>
-#include <lasso/id-ff/provider.h>
-#include <lasso/id-ff/providerprivate.h>
+#include "../id-ff/server.h"
+#include "../id-ff/provider.h"
+#include "../id-ff/providerprivate.h"
 
-#include <lasso/id-wsf-2.0/discovery.h>
-#include <lasso/id-wsf-2.0/profile.h>
-#include <lasso/id-wsf-2.0/identity.h>
-#include <lasso/id-wsf-2.0/server.h>
-#include <lasso/id-wsf-2.0/session.h>
+#include "discovery.h"
+#include "profile.h"
+#include "identity.h"
+#include "server.h"
+#include "session.h"
 #include "../utils.h"
 
 struct _LassoIdWsf2DiscoveryPrivate

@@ -29,10 +29,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/lib_assertion.h>
-#include <lasso/xml/samlp_status.h>
-#include <lasso/id-ff/session.h>
-#include <lasso/xml/xml.h>
+#include "../xml/lib_assertion.h"
+#include "../xml/samlp_status.h"
+#include "session.h"
+#include "../xml/xml.h"
+#include "lasso/lasso_config.h"
 
 struct _LassoSessionPrivate
 {

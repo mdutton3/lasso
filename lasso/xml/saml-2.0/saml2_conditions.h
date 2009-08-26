@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_SAML2_CONDITIONS (lasso_saml2_conditions_get_type())
 #define LASSO_SAML2_CONDITIONS(obj) \

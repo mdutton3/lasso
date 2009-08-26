@@ -25,11 +25,11 @@
 #include <string.h>
 
 #include <check.h>
-
-#include <lasso/lasso.h>
-#include <lasso/xml/saml-2.0/samlp2_authn_request.h>
 #include <glib.h>
-#include "utils.h"
+
+#include "../lasso/lasso.h"
+#include "../lasso/xml/saml-2.0/samlp2_authn_request.h"
+#include "../lasso/utils.h"
 #include "../lasso/backward_comp.h"
 
 

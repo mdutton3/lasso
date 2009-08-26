@@ -27,7 +27,7 @@
 #define __REGISTRY_H__
 
 #include <glib.h>
-#include <lasso/lasso.h>
+#include "lasso.h"
 
 #ifdef __cplusplus
 extern "C" {

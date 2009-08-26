@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/lib_register_name_identifier_response.h>
+#include "lib_register_name_identifier_response.h"
 
 /**
  * SECTION:lib_register_name_identifier_response

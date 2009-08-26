@@ -53,7 +53,7 @@ typedef struct _LassoSaml2AssertionClass LassoSaml2AssertionClass;
 #include "saml2_subject.h"
 #include "saml2_name_id.h"
 
-#include <lasso/xml/xml_enc.h>
+#include "../xml_enc.h"
 
 struct _LassoSaml2Assertion {
 	LassoNode parent;

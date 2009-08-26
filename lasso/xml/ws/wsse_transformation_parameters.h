@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_WSSE_TRANSFORMATION_PARAMETERS \
 	(lasso_wsse_transformation_parameters_get_type())

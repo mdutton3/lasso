@@ -29,8 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/lasso_config.h>
-#include <lasso/xml/xml.h>
+#include "../xml/xml.h"
 
 #ifndef OFTYPE
 #define OFTYPE(x)

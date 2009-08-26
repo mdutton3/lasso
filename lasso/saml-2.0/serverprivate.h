@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/id-ff/server.h>
+#include "../xml/xml.h"
+#include "../id-ff/server.h"
 
 int lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node);
 

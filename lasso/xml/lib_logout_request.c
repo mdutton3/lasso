@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include <libxml/uri.h>
-#include <lasso/xml/lib_logout_request.h>
+#include "lib_logout_request.h"
 #include "../utils.h"
 
 /**

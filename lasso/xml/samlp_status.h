@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/samlp_status_code.h>
+#include "xml.h"
+#include "samlp_status_code.h"
 
 #define LASSO_TYPE_SAMLP_STATUS (lasso_samlp_status_get_type())
 #define LASSO_SAMLP_STATUS(obj) \

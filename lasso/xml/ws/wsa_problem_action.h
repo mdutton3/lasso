@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 #include "wsa_attributed_uri.h"
 
 #define LASSO_TYPE_WSA_PROBLEM_ACTION (lasso_wsa_problem_action_get_type())

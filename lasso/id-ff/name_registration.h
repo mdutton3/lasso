@@ -29,10 +29,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/id-ff/profile.h>
+#include "profile.h"
 
-#include <lasso/xml/lib_register_name_identifier_request.h>
-#include <lasso/xml/lib_register_name_identifier_response.h>
+#include "../xml/lib_register_name_identifier_request.h"
+#include "../xml/lib_register_name_identifier_response.h"
 
 #define LASSO_TYPE_NAME_REGISTRATION (lasso_name_registration_get_type())
 #define LASSO_NAME_REGISTRATION(obj) \

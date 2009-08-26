@@ -29,10 +29,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/disco_encrypted_resource_id.h>
-#include <lasso/xml/disco_resource_id.h>
-#include <lasso/xml/dst_query_item.h>
-#include <lasso/xml/xml.h>
+#include "disco_encrypted_resource_id.h"
+#include "disco_resource_id.h"
+#include "dst_query_item.h"
+#include "xml.h"
 
 #define LASSO_TYPE_DST_QUERY (lasso_dst_query_get_type())
 #define LASSO_DST_QUERY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

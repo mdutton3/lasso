@@ -29,13 +29,13 @@
  **/
 
 #include "../xml/private.h"
-#include <lasso/id-ff/defederation.h>
+#include "defederation.h"
 
-#include <lasso/id-ff/providerprivate.h>
-#include <lasso/id-ff/sessionprivate.h>
-#include <lasso/id-ff/identityprivate.h>
-#include <lasso/id-ff/profileprivate.h>
-#include <lasso/id-ff/serverprivate.h>
+#include "providerprivate.h"
+#include "sessionprivate.h"
+#include "identityprivate.h"
+#include "profileprivate.h"
+#include "serverprivate.h"
 #include "../xml/private.h"
 #include "../utils.h"
 

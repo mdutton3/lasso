@@ -31,22 +31,22 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
-#include <lasso/id-ff/server.h>
-#include <lasso/id-ff/serverprivate.h>
-#include <lasso/id-ff/providerprivate.h>
+#include "../id-ff/server.h"
+#include "../id-ff/serverprivate.h"
+#include "../id-ff/providerprivate.h"
 
-#include <lasso/id-wsf-2.0/profile.h>
-#include <lasso/id-wsf-2.0/session.h>
+#include "profile.h"
+#include "session.h"
 
-#include <lasso/xml/soap_fault.h>
-#include <lasso/xml/soap_binding_correlation.h>
-#include <lasso/xml/soap_binding_provider.h>
-#include <lasso/xml/soap_binding_processing_context.h>
-#include <lasso/xml/xml_enc.h>
+#include "../xml/soap_fault.h"
+#include "../xml/soap_binding_correlation.h"
+#include "../xml/soap_binding_provider.h"
+#include "../xml/soap_binding_processing_context.h"
+#include "../xml/xml_enc.h"
 
-#include <lasso/xml/ws/wsse_security_header.h>
+#include "../xml/ws/wsse_security_header.h"
 
-#include <lasso/xml/saml-2.0/saml2_assertion.h>
+#include "../xml/saml-2.0/saml2_assertion.h"
 #include "../utils.h"
 
 /*****************************************************************************/

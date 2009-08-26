@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/dst_data.h>
-#include <lasso/xml/utility_status.h>
-#include <lasso/xml/xml.h>
+#include "dst_data.h"
+#include "utility_status.h"
+#include "xml.h"
 
 #define LASSO_TYPE_DST_QUERY_RESPONSE (lasso_dst_query_response_get_type())
 #define LASSO_DST_QUERY_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/saml_authentication_statement.h>
-#include <lasso/xml/lib_authn_context.h>
+#include "saml_authentication_statement.h"
+#include "lib_authn_context.h"
 
 #define LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT (lasso_lib_authentication_statement_get_type())
 #define LASSO_LIB_AUTHENTICATION_STATEMENT(obj) \

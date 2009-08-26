@@ -29,9 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
-#include <lasso/xml/soap_body.h>
-#include <lasso/xml/soap_header.h>
+#include "xml.h"
+#include "soap_body.h"
+#include "soap_header.h"
 
 #define LASSO_TYPE_SOAP_ENVELOPE (lasso_soap_envelope_get_type())
 #define LASSO_SOAP_ENVELOPE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \

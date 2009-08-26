@@ -23,7 +23,7 @@
  */
 
 #include "private.h"
-#include <lasso/xml/samlp_response.h>
+#include "samlp_response.h"
 #include <libxml/tree.h>
 
 /**

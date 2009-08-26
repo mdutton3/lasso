@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/xml.h>
+#include "../xml.h"
 
 #define LASSO_TYPE_SAML2_SUBJECT_CONFIRMATION_DATA \
 	(lasso_saml2_subject_confirmation_data_get_type())

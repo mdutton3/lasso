@@ -23,8 +23,8 @@
  */
 
 #include <glib/gstrfuncs.h>
-#include <lasso/errors.h>
-#include <lasso/xml/xml.h>
+#include "errors.h"
+#include "xml/xml.h"
 
 /* WARNING!!!: This is a generated file do not modify it, add new error message
  * a comments inside errors.h */
