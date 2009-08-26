@@ -120,6 +120,26 @@ lasso_build_unique_id(unsigned int size)
 }
 
 /**
+ * lasso_time_to_iso_8601_gmt:
+ * @now: a #time_t value
+ *
+ * Format the given time as an ISO 8601 date-time value in UTC.
+ *
+ * Return value: an ISO 9601 formatted string.
+ */
+char*
+lasso_time_to_iso_8601_gmt(time_t now)
+{
+	struct tm *tm;
+	char *ret;
+
+	ret = g_malloc(21);
+	tm = gmtime(&now);
+	strftime(ret, 21, "%Y-%m-%dT%H:%M:%SZ", tm);
+
+	return ret;
+}
+/**
  * lasso_get_current_time:
  *
  * Returns the current time, format is "yyyy-mm-ddThh:mm:ssZ".
@@ -129,16 +149,7 @@ lasso_build_unique_id(unsigned int size)
 char*
 lasso_get_current_time()
 {
-	time_t now;
-	struct tm *tm;
-	char *ret;
-
-	ret = g_malloc(21);
-	now = time(NULL);
-	tm = gmtime(&now);
-	strftime(ret, 21, "%Y-%m-%dT%H:%M:%SZ", tm);
-
-	return ret;
+	return lasso_time_to_iso_8601_gmt(time(NULL));
 }
 
 /**
