@@ -287,35 +287,35 @@ gint
 lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discovery *discovery,
 	const gchar *message)
 {
-	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
+	LassoIdWsf2Profile *profile;
 	LassoIdWsf2DiscoSvcMDRegisterResponse *response;
-	int res = 0;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery),
 		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	profile  = LASSO_IDWSF2_PROFILE(discovery);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	/* Process request */
-	res = lasso_idwsf2_profile_process_soap_response_msg(profile, message);
+	/* Process response */
+	rc = lasso_idwsf2_profile_process_soap_response_msg(profile, message);
 
 	if (! LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(LASSO_PROFILE(profile)->response)) {
-		res = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+		rc = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 	}
 
 	/* If the response has been correctly processed, */
 	/* put interesting data into the discovery object */
-	if (res == 0) {
+	if (rc == 0) {
 		response = LASSO_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(
 				LASSO_PROFILE(profile)->response);
-		/* FIXME : foreach on the list instead */
 		if (response->SvcMDID != NULL) {
-			discovery->svcMDID = g_strdup(response->SvcMDID->data);
+			lasso_assign_list_of_strings(discovery->svcMDIDs, response->SvcMDID);
 		} else {
-			res = LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED;
+			rc = LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED;
 		}
 	}
 
-	return res;
+	return rc;
 }
 
 /**
