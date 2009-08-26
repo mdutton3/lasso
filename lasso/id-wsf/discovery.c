@@ -219,7 +219,6 @@ lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
 	modify = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
 
 	/* ResourceOffering elements being inserted MUST NOT contain entryID attributes. */
-	serviceInstance = serviceInstance ? g_object_ref(serviceInstance) : serviceInstance;
 	resourceOffering = lasso_disco_resource_offering_new(serviceInstance);
 	lasso_assign_gobject(resourceOffering->ResourceID, resourceId);
 
