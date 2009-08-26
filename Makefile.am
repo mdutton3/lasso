@@ -1,3 +1,4 @@
+ACLOCAL_AMFLAGS = -I m4
 if PHP4_ENABLED
     PHP4_SD = php
 endif

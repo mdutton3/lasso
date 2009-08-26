@@ -83,8 +83,8 @@ GTKDOC_LIBS = 	\
 	$(LASSO_LIBS) \
 	$(top_builddir)/lasso/liblasso.la
 
-GTKDOC_CC = $(LIBTOOL) --mode=compile $(CC)
-GTKDOC_LD = $(LIBTOOL) --mode=link $(CC)
+GTKDOC_CC = $(LIBTOOL) --tag=CC --mode=compile $(CC)
+GTKDOC_LD = $(LIBTOOL) --tag=CC --mode=link $(CC)
 
 scan: doc_sources lasso.types
 	test -d build || mkdir build

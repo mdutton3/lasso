@@ -15,9 +15,10 @@ dnl - Second number is the number of supported API versions where API version >
 dnl   first number.
 dnl - Third number is the current API version implementation version number.
 dnl See libtool explanations about current, age and release, later in this file.
-AC_INIT([Liberty Alliance Single Sign On], 2.2.2, lasso-devel@lists.labs.libre-entreprise.org)
+AC_INIT([lasso], 2.2.2, lasso-devel@lists.labs.libre-entreprise.org)
 dnl Check if autoconf ver > 2.53
 AC_PREREQ(2.53)
+AC_CONFIG_MACRO_DIR([m4])
 dnl Perform only subset commands and variable relevant to the host type.
 AC_CANONICAL_HOST
 AC_CANONICAL_SYSTEM
@@ -27,7 +28,9 @@ dnl Copy stamp REVISIO-INFO in the configure script.
 AC_REVISION($Revision$)
 
 dnl Run many macros mostly needed by configure.ac.
-AM_INIT_AUTOMAKE(lasso, 2.2.2)
+AM_INIT_AUTOMAKE([foreign])
+dnl Support automake 1.11 silent mode
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 dnl Create rules to automaticaly regenerate the config header.
 AM_CONFIG_HEADER([config.h lasso/lasso_config.h])
 dnl Add --enable-maintainer-mode option to configure.

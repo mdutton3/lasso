@@ -40,7 +40,7 @@ MAINTAINERCLEANFILES = \
 	lasso_config.h.in
 
 clean-local:
-	-rm types.c symbols.sym errors.c
+	-rm -f types.c symbols.sym errors.c
 
 EXTRA_DIST = utils.h extract_types.py extract_symbols.py build_strerror.py \
 	     registry-private.h errors.c.in backward_comp.h
