@@ -367,16 +367,16 @@ typedef struct {
 /* Attributes */
 
 /* EncryptedResourceID */
-#define LassoDiscovery_get_encryptedResourceId(self) get_node((self)->encrypted_resource_id)
-#define LassoDiscovery_encryptedResourceId_get(self) get_node((self)->encrypted_resource_id)
-#define LassoDiscovery_set_encryptedResourceId(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
-#define LassoDiscovery_encryptedResourceId_set(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
+#define LassoDiscovery_get_encryptedResourceId(self) get_node((self)->EncryptedResourceID)
+#define LassoDiscovery_encryptedResourceId_get(self) get_node((self)->EncryptedResourceID)
+#define LassoDiscovery_set_encryptedResourceId(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+#define LassoDiscovery_encryptedResourceId_set(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
 
 /* ResourceID */
-#define LassoDiscovery_get_resourceId(self) get_node((self)->resource_id)
-#define LassoDiscovery_resourceId_get(self) get_node((self)->resource_id)
-#define LassoDiscovery_set_resourceId(self, value) set_node((gpointer *) &(self)->resource_id, (value))
-#define LassoDiscovery_resourceId_set(self, value) set_node((gpointer *) &(self)->resource_id, (value))
+#define LassoDiscovery_get_resourceId(self) get_node((self)->ResourceID)
+#define LassoDiscovery_resourceId_get(self) get_node((self)->ResourceID)
+#define LassoDiscovery_set_resourceId(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+#define LassoDiscovery_resourceId_set(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -558,15 +558,6 @@ typedef struct {
 	LassoServer *server;
 
 	/* Attributes inherited from ProfileService */
-	%newobject resourceId_get;
-	LassoDiscoResourceID *resourceId;
-
-	%newobject encryptedResourceId_get;
-	LassoDiscoEncryptedResourceID *encryptedResourceId;
-
-	%newobject resourceData_get;
-	char *resourceData;
-
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -656,16 +647,16 @@ typedef struct {
 /* Attributes from ProfileService*/
 
 /* EncryptedResourceID */
-#define LassoPersonalProfileService_get_encryptedResourceId(self) get_node(LASSO_DATA_SERVICE(self)->encrypted_resource_id)
-#define LassoPersonalProfileService_encryptedResourceId_get(self) get_node(LASSO_DATA_SERVICE(self)->encrypted_resource_id)
-#define LassoPersonalProfileService_set_encryptedResourceId(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->encrypted_resource_id, (value))
-#define LassoPersonalProfileService_encryptedResourceId_set(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->encrypted_resource_id, (value))
+#define LassoPersonalProfileService_get_encryptedResourceId(self) get_node(LASSO_DATA_SERVICE(self)->EncryptedResourceID)
+#define LassoPersonalProfileService_encryptedResourceId_get(self) get_node(LASSO_DATA_SERVICE(self)->EncryptedResourceID)
+#define LassoPersonalProfileService_set_encryptedResourceId(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->EncryptedResourceID, (value))
+#define LassoPersonalProfileService_encryptedResourceId_set(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->EncryptedResourceID, (value))
 
 /* ResourceID */
-#define LassoPersonalProfileService_get_resourceId(self) get_node(LASSO_DATA_SERVICE(self)->resource_id)
-#define LassoPersonalProfileService_resourceId_get(self) get_node(LASSO_DATA_SERVICE(self)->resource_id)
-#define LassoPersonalProfileService_set_resourceId(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->resource_id, (value))
-#define LassoPersonalProfileService_resourceId_set(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->resource_id, (value))
+#define LassoPersonalProfileService_get_resourceId(self) get_node(LASSO_DATA_SERVICE(self)->ResourceID)
+#define LassoPersonalProfileService_resourceId_get(self) get_node(LASSO_DATA_SERVICE(self)->ResourceID)
+#define LassoPersonalProfileService_set_resourceId(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->ResourceID, (value))
+#define LassoPersonalProfileService_resourceId_set(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->ResourceID, (value))
 
 /* resourceData */
 #define LassoPersonalProfileService_get_resourceData(self) get_xml_string(xmlCopyNode(LASSO_DATA_SERVICE(self)->resource_data, 1))
@@ -742,12 +733,6 @@ typedef struct {
 	LassoServer *server;
 
 	/* Attributes */
-	%newobject resourceId_get;
-	LassoDiscoResourceID *resourceId;
-
-	%newobject encryptedResourceId_get;
-	LassoDiscoEncryptedResourceID *encryptedResourceId;
-
 	%newobject resourceData_get;
 	char *resourceData;
 
@@ -872,16 +857,16 @@ typedef struct {
 #define LassoDataService_abstractDescription_get(self) self->abstract_description
 
 /* EncryptedResourceID */
-#define LassoDataService_get_encryptedResourceId(self) get_node((self)->encrypted_resource_id)
-#define LassoDataService_encryptedResourceId_get(self) get_node((self)->encrypted_resource_id)
-#define LassoDataService_set_encryptedResourceId(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
-#define LassoDataService_encryptedResourceId_set(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
+#define LassoDataService_get_encryptedResourceId(self) get_node((self)->EncryptedResourceID)
+#define LassoDataService_encryptedResourceId_get(self) get_node((self)->EncryptedResourceID)
+#define LassoDataService_set_encryptedResourceId(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+#define LassoDataService_encryptedResourceId_set(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
 
 /* ResourceID */
-#define LassoDataService_get_resourceId(self) get_node((self)->resource_id)
-#define LassoDataService_resourceId_get(self) get_node((self)->resource_id)
-#define LassoDataService_set_resourceId(self, value) set_node((gpointer *) &(self)->resource_id, (value))
-#define LassoDataService_resourceId_set(self, value) set_node((gpointer *) &(self)->resource_id, (value))
+#define LassoDataService_get_resourceId(self) get_node((self)->ResourceID)
+#define LassoDataService_resourceId_get(self) get_node((self)->ResourceID)
+#define LassoDataService_set_resourceId(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+#define LassoDataService_resourceId_set(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
 
 /* resourceData */
 #define LassoDataService_get_resourceData(self) get_xml_string(xmlCopyNode(self->resource_data, 1))

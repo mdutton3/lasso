@@ -42,7 +42,7 @@
 %include wsf-support.i
 
 #if LASSO_WSF_SUPPORT == 1
-#define LASSO_WSF_ENABLED
+/* #define LASSO_WSF_ENABLED */
 #endif
 
 #ifndef SWIG_PHP_RENAMES
@@ -60,15 +60,19 @@
 #undef PACKAGE_BUGREPORT
 #endif
 
+#include "config.h"
 #include <lasso/lasso_config.h>
 #include <lasso/lasso.h>
 #include <lasso/xml/lib_assertion.h>
 #include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/misc_text_node.h>
+#undef LASSO_WSF_ENABLED
 
 #ifdef LASSO_WSF_ENABLED
 #include <lasso/xml/disco_resource_id.h>
 #include <lasso/xml/disco_encrypted_resource_id.h>
+#include <lasso/id-wsf/id_wsf.h>
+#include <lasso/id-wsf-2.0/id_wsf_2.h>
 #endif
 
 #include "../lasso/utils.h"
@@ -5642,8 +5646,6 @@ LassoStringList *LassoIdentity_providerIds_get(LassoIdentity *self) {
 
 #ifdef LASSO_WSF_ENABLED
 
-#include <lasso/id-wsf/identity.h>
-
 #define LassoIdentity_addResourceOffering lasso_identity_add_resource_offering
 #define LassoIdentity_removeResourceOffering lasso_identity_remove_resource_offering
 
@@ -7128,12 +7130,12 @@ typedef struct {
 
 %}
 
-#ifdef LASSO_WSF_ENABLED
+/* #ifdef LASSO_WSF_ENABLED
 %include Lasso-wsf.i
 %include Lasso-wsf2.i
 %include id-wsf-2.0/main.h
 %include ws/main.h
-#endif
+#endif */
 
 %include Lasso-saml2.i
 %include saml-2.0/main.h
