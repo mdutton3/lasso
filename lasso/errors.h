@@ -600,7 +600,6 @@
  * If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object
  */
 #define LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID 611
-;
 
 /* Federation Termination Notification */
 /**
