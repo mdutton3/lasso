@@ -1338,9 +1338,11 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 		lasso_assign_new_string(profile->msg_body, lasso_node_export_to_base64(LASSO_NODE(profile->response)));
 	} else {
 		int rc;
+		char *acsUrl;
 
-		lasso_release_string(profile->msg_url);
-		rc = lasso_saml20_profile_build_http_redirect(profile, profile->response, 1, profile->msg_url);
+		acsUrl = profile->msg_url;
+		rc = lasso_saml20_profile_build_http_redirect(profile, profile->response, 1, acsUrl);
+		lasso_release_string(acsUrl);
 		if (rc != 0) {
 			return rc;
 		}
