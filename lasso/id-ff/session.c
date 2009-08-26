@@ -456,7 +456,7 @@ lasso_session_get_assertion_identity_token(LassoSession *session, const gchar *s
 			if (security_context->Token != NULL) {
 				sec_token = security_context->Token->data;
 				if (LASSO_IS_SAML2_ASSERTION(sec_token->any)) {
-					lasso_assign_gobject(assertion, sec_token->any);
+					lasso_assign_new_gobject(assertion, sec_token->any);
 					break;
 				}
 			}

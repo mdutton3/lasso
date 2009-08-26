@@ -102,15 +102,15 @@ lasso_idwsf2_profile_init_soap_request(LassoIdWsf2Profile *profile, LassoNode *r
 	/* Add identity token (if it exists in the session) in soap header */
 	assertion = lasso_session_get_assertion_identity_token(session, service_type);
 
+	/* FIXME: use sb2:TargetIdentity if security mech is :null */
 	if (assertion != NULL) {
 		wsse_security = lasso_wsse_security_header_new();
 		lasso_list_add_new_gobject(wsse_security->any, assertion);
-
-		envelope->Header->Other = g_list_append(envelope->Header->Other, wsse_security);
+		lasso_list_add_new_gobject(envelope->Header->Other, wsse_security);
 	}
 
 	/* Add the given request in soap body */
-	envelope->Body->any = g_list_append(envelope->Body->any, request);
+	lasso_list_add_gobject(envelope->Body->any, request);
 
 	return 0;
 }

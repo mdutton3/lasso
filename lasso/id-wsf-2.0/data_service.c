@@ -345,7 +345,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 		LassoIdWsf2UtilStatus *status;
 		status = lasso_idwsf2_util_status_new();
 
-		lasso_list_add_gobject(response2->Status->Status, status);
+		lasso_list_add_new_gobject(response2->Status->Status, status);
 		status->code = g_strdup_printf("LIBXML_XPATH_ERROR_%d", error_code);
 	}
 cleanup:
