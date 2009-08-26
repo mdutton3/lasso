@@ -46,6 +46,7 @@ extern "C" {
 #include "id-ff/name_registration.h"
 #include "saml-2.0/name_id_management.h"
 #include "saml-2.0/ecp.h"
+#include "saml-2.0/assertion_query.h"
 
 LASSO_EXPORT int lasso_init(void);
 LASSO_EXPORT int lasso_shutdown(void);
