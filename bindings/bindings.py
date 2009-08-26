@@ -54,6 +54,11 @@ class BindingData:
         self.enums = []
         self.options = options
         self.overrides = ET.parse(os.path.join(self.src_dir, 'overrides.xml'))
+        self.functions_toskip = dict()
+
+        for func in self.overrides.findall('func'):
+            if func.attrib.get('skip') == 'true':
+                self.functions_toskip[func.attrib.get('name')] = 1
 
     def match_tag_language(self,tag):
         if self.options and self.options.language:
@@ -167,6 +172,8 @@ class Struct:
             print '  ', m
         for m in self.methods:
             print '  ', m
+
+toskip = None
 
 
 class Function:
@@ -400,33 +407,34 @@ def parse_header(header_file):
                 if function_name[0] == '*':
                     return_type += '*'
                     function_name = function_name[1:]
-                if return_type != 'void':
-                    f.return_type = return_type
-                if return_type.startswith('const'):
-                    f.return_owner = False
-                if oftype:
-                        oftype_parse = re.match(r'OFTYPE\((.*)\)', oftype)
-                        if oftype_parse:
-                                f.return_type_qualifier = oftype_parse.group(1)
-                if function_name.endswith('_destroy'):
-                    # skip the _destroy functions, they are just wrapper over
-                    # g_object_unref
-                    pass
-                else:
-                    f.name = function_name
-                    f.args = []
-                    for arg in [x.strip() for x in args.split(',')]:
-                        if arg == 'void' or arg == '':
-                            continue
-                        m = re.match(r'((const\s+)?\w+\*?)\s+(\*?\w+)', arg)
-                        # TODO: Add parsing of OFTYPE
-                        if m:
-                            f.args.append(list(normalise_var(m.group(1), m.group(3))) + [{}])
-                        else:
-                            print >>sys.stderr, 'failed to process:', arg, 'in line:', line
-                    f.apply_overrides()
-                    if not f.skip:
-                        binding.functions.append(f)
+                if binding.functions_toskip.get(function_name) != 1:
+                    if return_type != 'void':
+                        f.return_type = return_type
+                    if return_type.startswith('const'):
+                        f.return_owner = False
+                    if oftype:
+                            oftype_parse = re.match(r'OFTYPE\((.*)\)', oftype)
+                            if oftype_parse:
+                                    f.return_type_qualifier = oftype_parse.group(1)
+                    if function_name.endswith('_destroy'):
+                        # skip the _destroy functions, they are just wrapper over
+                        # g_object_unref
+                        pass
+                    else:
+                        f.name = function_name
+                        f.args = []
+                        for arg in [x.strip() for x in args.split(',')]:
+                            if arg == 'void' or arg == '':
+                                continue
+                            m = re.match(r'((const\s+)?\w+\*?)\s+(\*?\w+)', arg)
+                            # TODO: Add parsing of OFTYPE
+                            if m:
+                                f.args.append(list(normalise_var(m.group(1), m.group(3))) + [{}])
+                            else:
+                                print >>sys.stderr, 'failed to process:', arg, 'in line:', line
+                        f.apply_overrides()
+                        if not f.skip:
+                            binding.functions.append(f)
 
         i += 1
 
