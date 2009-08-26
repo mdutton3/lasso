@@ -950,6 +950,20 @@ lasso_concat_url_query(const char *url, const char *query)
 	}
 }
 
+/**
+ * lasso_eval_xpath_expression:
+ * @xpath_ctx: the XPath context object
+ * @expression: a string containg the XPath expression to evaluate
+ * @xpath_object_ptr: pointer to an output variable to store the resulting XPath object, can be
+ * NULL.
+ * @xpath_error_code: pointer to an output variable to store an eventual XPath error code, can be
+ * NULL.
+ *
+ * Evaluates a given XPath expression in the given XPath context. Eventually return an XPath object
+ * and/or an error code.
+ *
+ * Return value: TRUE if no error occurred during evaluation, FALSE otherwise.
+ */
 gboolean
 lasso_eval_xpath_expression(xmlXPathContextPtr xpath_ctx, const char *expression,
 		xmlXPathObjectPtr *xpath_object_ptr, int *xpath_error_code)
