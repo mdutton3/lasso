@@ -832,7 +832,7 @@ lasso_idwsf2_data_service_parse_one_modify_item(LassoIdWsf2DstRefModifyItem *ite
 		if (item->overrideAllowed == TRUE) {
 			new_node = NULL;
 		} else {
-			goto_exit_with_rc(LASSO_DST_ERROR_NEW_DATA_MISSING);
+			goto_cleanup_with_rc(LASSO_DST_ERROR_NEW_DATA_MISSING);
 		}
 	} else {
 		new_node = (xmlNode*)item->NewData->any->data;
@@ -852,13 +852,13 @@ lasso_idwsf2_data_service_parse_one_modify_item(LassoIdWsf2DstRefModifyItem *ite
 				/* Replace old node with new data */
 				cur_node = xmlReplaceNode(cur_node, xmlCopyNode(new_node, 1));
 			}
-			lasso_release_node(cur_node);
+			lasso_release_xml_node(cur_node);
 		} else {
 			rc = LASSO_DST_ERROR_MODIFY_FAILED;
 		}
 		lasso_release_xpath_object(cur_xpathObj);
 	}
-exit:
+cleanup:
 	return rc;
 }
 
