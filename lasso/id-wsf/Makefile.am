@@ -8,7 +8,6 @@ INCLUDES = \
 	-DG_LOG_DOMAIN=\"lasso\"
 
 lasso_private_h_sources = \
-	data_service_private.h \
 	wsf_profile_private.h
 
 if WSF_ENABLED
