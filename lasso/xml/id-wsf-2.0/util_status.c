@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "util_status.h"
+#include "../../utils.h"
 
 /**
  * SECTION:util_status
@@ -131,4 +132,30 @@ LassoIdWsf2UtilStatus*
 lasso_idwsf2_util_status_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_UTIL_STATUS, NULL);
+}
+
+
+/**
+ * lasso_idwsf2_util_status_new_with_code:
+ * @code1: first level code
+ * @code2: second level code
+ *
+ * Creates a new #LassoIdWsf2UtilStatus containing code1 and if code2 is not-NULL a nested
+ * #LassoIdWsf2UtilStatus containing code2.
+ *
+ * Return value: a newly created #LassoIdWsf2UtilStatus object
+ **/
+LassoIdWsf2UtilStatus*
+lasso_idwsf2_util_status_new_with_code(const gchar *code1, const gchar *code2)
+{
+	LassoIdWsf2UtilStatus *status1 = lasso_idwsf2_util_status_new();
+
+	lasso_assign_string(status1->code, code1);
+	if (code2 != NULL) {
+		LassoIdWsf2UtilStatus *status2 = lasso_idwsf2_util_status_new();
+		lasso_assign_string(status2->code, code2);
+		lasso_list_add_gobject(status1->Status, status2);
+	}
+
+	return status1;
 }

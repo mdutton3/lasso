@@ -75,6 +75,7 @@ struct _LassoIdWsf2UtilStatusClass {
 
 LASSO_EXPORT GType lasso_idwsf2_util_status_get_type(void);
 LASSO_EXPORT LassoIdWsf2UtilStatus* lasso_idwsf2_util_status_new(void);
+LASSO_EXPORT LassoIdWsf2UtilStatus* lasso_idwsf2_util_status_new_with_code(const gchar *code1, const gchar *code2);
 
 
 
