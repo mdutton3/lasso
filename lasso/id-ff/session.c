@@ -54,13 +54,15 @@
 /*****************************************************************************/
 
 static gint
-lasso_session_add_assertion_simple(LassoSession *session, const char *providerID, LassoNode *assertion)
+lasso_session_add_assertion_simple(LassoSession *session, const char *providerID, LassoNode
+		*assertion)
 {
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	g_hash_table_insert(session->assertions, g_strdup(providerID), g_object_ref(assertion));
+	g_hash_table_insert(lasso_private_data(session)->assertions, g_strdup(providerID),
+			g_object_ref(assertion));
 
     return 0;
 }
@@ -103,7 +105,7 @@ lasso_session_add_assertion(LassoSession *session, const char *providerID, Lasso
 		}
 	}
 
-	session->is_dirty = TRUE;
+	lasso_private_data(session)->is_dirty = TRUE;
 
 	return ret;
 }
@@ -131,7 +133,7 @@ lasso_session_add_assertion_with_id(LassoSession *session, const char *assertion
 			g_strdup(assertionID),
 			xmlCopyNode(assertion, 1));
 
-	session->is_dirty = TRUE;
+	lasso_private_data(session)->is_dirty = TRUE;
 
 	return 0;
 }
@@ -155,7 +157,7 @@ lasso_session_add_status(LassoSession *session, const char *providerID, LassoNod
 
 	g_hash_table_insert(session->private_data->status, g_strdup(providerID), status);
 
-	session->is_dirty = TRUE;
+	lasso_private_data(session)->is_dirty = TRUE;
 
 	return 0;
 }
@@ -177,7 +179,7 @@ lasso_session_get_assertion(LassoSession *session, const gchar *providerID)
 {
 	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
 
-	return g_hash_table_lookup(session->assertions, providerID);
+	return g_hash_table_lookup(lasso_private_data(session)->assertions, providerID);
 }
 
 /**
@@ -226,9 +228,9 @@ lasso_session_get_assertions(LassoSession *session, const char *provider_id)
 	}
 
 	if (provider_id == NULL) {
-		g_hash_table_foreach(session->assertions, (GHFunc)add_assertion_to_list, &r);
+		g_hash_table_foreach(lasso_private_data(session)->assertions, (GHFunc)add_assertion_to_list, &r);
 	} else {
-		assertion = g_hash_table_lookup(session->assertions, provider_id);
+		assertion = g_hash_table_lookup(lasso_private_data(session)->assertions, provider_id);
 		if (assertion)
 			r = g_list_append(r, assertion);
 	}
@@ -282,13 +284,13 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 		return NULL;
 	}
 
-	length = g_hash_table_size(session->assertions);
+	length = g_hash_table_size(lasso_private_data(session)->assertions);
 
 	if (length == 0)
 		return NULL;
 
 	if (session->private_data->providerIDs == NULL) {
-		g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
+		g_hash_table_foreach(lasso_private_data(session)->assertions, (GHFunc)add_providerID, session);
 	}
 
 	element = g_list_nth(session->private_data->providerIDs, index);
@@ -317,7 +319,7 @@ lasso_session_init_provider_ids(LassoSession *session)
 		g_list_free(session->private_data->providerIDs);
 		session->private_data->providerIDs = NULL;
 	}
-	g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
+	g_hash_table_foreach(lasso_private_data(session)->assertions, (GHFunc)add_providerID, session);
 }
 
 
@@ -336,7 +338,7 @@ lasso_session_is_empty(LassoSession *session)
 		return TRUE;
 	}
 
-	if (g_hash_table_size(session->assertions)) {
+	if (g_hash_table_size(lasso_private_data(session)->assertions)) {
 		return FALSE;
 	}
 	if (g_hash_table_size(session->private_data->status)) {
@@ -344,6 +346,34 @@ lasso_session_is_empty(LassoSession *session)
 	}
 
 	return TRUE;
+}
+
+/**
+ * lasso_session_count_assertions:
+ * @session: a #LassoSession object
+ *
+ * Return the number of assertion currently recored in the session.
+ *
+ * Return value: a positive value or -1 if session is an invalid #LassoSession object, or -2 if the
+ * number is unknown.
+ */
+gint
+lasso_session_count_assertions(LassoSession *session)
+{
+	GHashTable *hashtable;
+
+	lasso_return_val_if_invalid_param(SESSION, session, -1);
+	hashtable = lasso_private_data(session)->assertions;
+
+	return hashtable ? g_hash_table_size(hashtable) : 0;
+}
+
+gboolean
+lasso_session_is_dirty(LassoSession *session)
+{
+	lasso_return_val_if_invalid_param(SESSION, session, TRUE);
+
+	return lasso_private_data(session)->is_dirty;
 }
 
 /**
@@ -361,8 +391,8 @@ lasso_session_remove_assertion(LassoSession *session, const gchar *providerID)
 	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	if (g_hash_table_remove(session->assertions, providerID)) {
-		session->is_dirty = TRUE;
+	if (g_hash_table_remove(lasso_private_data(session)->assertions, providerID)) {
+		lasso_private_data(session)->is_dirty = TRUE;
 		return 0;
 	}
 
@@ -385,7 +415,7 @@ lasso_session_remove_status(LassoSession *session, const gchar *providerID)
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	if (g_hash_table_remove(session->private_data->status, providerID)) {
-		session->is_dirty = TRUE;
+		lasso_private_data(session)->is_dirty = TRUE;
 		return 0;
 	}
 
@@ -406,7 +436,7 @@ lasso_session_add_endpoint_reference(LassoSession *session, LassoWsAddrEndpointR
 			g_hash_table_insert(session->private_data->eprs,
 				g_strdup(LASSO_IDWSF2_DISCO_SERVICE_TYPE(i->data)->content),
 				g_object_ref(epr));
-			session->is_dirty = TRUE;
+			lasso_private_data(session)->is_dirty = TRUE;
 			break;
 		}
 	}
@@ -571,8 +601,8 @@ get_xmlNode(LassoNode *node, G_GNUC_UNUSED gboolean lasso_dump)
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, (xmlChar*)LASSO_LASSO_HREF, NULL));
 	xmlSetProp(xmlnode, (xmlChar*)"Version", (xmlChar*)"2");
 
-	if (g_hash_table_size(session->assertions))
-		g_hash_table_foreach(session->assertions,
+	if (g_hash_table_size(lasso_private_data(session)->assertions))
+		g_hash_table_foreach(lasso_private_data(session)->assertions,
 				(GHFunc)add_assertion_childnode, &context);
 	if (g_hash_table_size(session->private_data->status))
 		g_hash_table_foreach(session->private_data->status,
@@ -725,8 +755,8 @@ dispose(GObject *object)
 		return;
 	session->private_data->dispose_has_run = TRUE;
 
-	g_hash_table_destroy(session->assertions);
-	session->assertions = NULL;
+	g_hash_table_destroy(lasso_private_data(session)->assertions);
+	lasso_private_data(session)->assertions = NULL;
 
 	g_hash_table_destroy(session->private_data->status);
 	session->private_data->status = NULL;
@@ -778,10 +808,9 @@ instance_init(LassoSession *session)
 			(GDestroyNotify)g_free,
 			(GDestroyNotify)lasso_node_destroy);
 #endif
-	session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
-			(GDestroyNotify)g_free,
-			(GDestroyNotify)lasso_node_destroy);
-	session->is_dirty = FALSE;
+	lasso_private_data(session)->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
+			(GDestroyNotify)g_free, (GDestroyNotify)lasso_node_destroy);
+	lasso_private_data(session)->is_dirty = FALSE;
 }
 
 static void

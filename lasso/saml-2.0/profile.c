@@ -34,6 +34,7 @@
 #include <lasso/id-ff/profile.h>
 #include <lasso/id-ff/profileprivate.h>
 #include <lasso/id-ff/serverprivate.h>
+#include <../id-ff/sessionprivate.h>
 
 #include <lasso/xml/private.h>
 #include <lasso/xml/saml-2.0/samlp2_request_abstract.h>
@@ -400,7 +401,7 @@ lasso_profile_is_saml_query(const gchar *query)
 
 
 static void
-lasso_saml20_profile_set_session_from_dump_decrypt(G_GNUC_UNUSED gpointer key,
+lasso_saml20_profile_set_session_from_dump_decrypt(
 		LassoSaml2Assertion *assertion, G_GNUC_UNUSED gpointer data)
 {
 	if (LASSO_IS_SAML2_ASSERTION(assertion) == FALSE) {
@@ -417,10 +418,17 @@ lasso_saml20_profile_set_session_from_dump_decrypt(G_GNUC_UNUSED gpointer key,
 gint
 lasso_saml20_profile_set_session_from_dump(LassoProfile *profile)
 {
-	if (profile->session != NULL && profile->session->assertions != NULL) {
-		g_hash_table_foreach(profile->session->assertions,
-				(GHFunc)lasso_saml20_profile_set_session_from_dump_decrypt,
+	GList *assertions = NULL;
+
+	lasso_bad_param(PROFILE, profile);
+
+	if (lasso_session_count_assertions(profile->session) > 0) {
+		assertions = lasso_session_get_assertions(profile->session, NULL);
+
+		g_list_foreach(assertions,
+				(GFunc)lasso_saml20_profile_set_session_from_dump_decrypt,
 				NULL);
+		lasso_release_list(assertions);
 	}
 
 	return 0;

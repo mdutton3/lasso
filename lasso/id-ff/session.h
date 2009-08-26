@@ -54,8 +54,8 @@ struct _LassoSession {
 
 	/*< public >*/
 	/* Can actually contain LassoSamlAssertion or LassoSaml2Assertion */
-	GHashTable *assertions; /* of LassoSamlAssertion */
-	gboolean is_dirty;
+	GHashTable *_assertions; /* of LassoSamlAssertion */
+	gboolean _is_dirty;
 
 	/*< private >*/
 	LassoSessionPrivate *private_data;

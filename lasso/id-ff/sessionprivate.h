@@ -40,6 +40,8 @@ struct _LassoSessionPrivate
 	GList *providerIDs;
 	GHashTable *status; /* hold temporary response status for sso-art */
 	GHashTable *assertions_by_id;
+	GHashTable *assertions; /* of LassoSamlAssertion */
+	gboolean is_dirty;
 #ifdef LASSO_WSF_ENABLED
 	GHashTable *eprs;
 #endif
@@ -61,6 +63,8 @@ LassoNode* lasso_session_get_status(
 
 gint lasso_session_remove_status(LassoSession *session, const gchar *providerID);
 gint lasso_session_remove_assertion(LassoSession *session, const gchar *providerID);
+gint lasso_session_count_assertions(LassoSession *session);
+gboolean lasso_session_is_dirty(LassoSession *session);
 
 void lasso_session_init_provider_ids(LassoSession *session);
 

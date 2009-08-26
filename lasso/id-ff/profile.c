@@ -40,6 +40,7 @@
 #include <lasso/id-ff/profile.h>
 #include <lasso/id-ff/profileprivate.h>
 #include <lasso/id-ff/providerprivate.h>
+#include "./sessionprivate.h"
 
 #include <lasso/saml-2.0/profileprivate.h>
 #include "../utils.h"
@@ -277,7 +278,7 @@ lasso_profile_is_identity_dirty(LassoProfile *profile)
 gboolean
 lasso_profile_is_session_dirty(LassoProfile *profile)
 {
-	return (profile->session && profile->session->is_dirty);
+	return lasso_session_is_dirty(profile->session);
 }
 
 
@@ -376,8 +377,6 @@ lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump)
 	IF_SAML2(profile) {
 		lasso_saml20_profile_set_session_from_dump(profile);
 	}
-
-	profile->session->is_dirty = FALSE;
 
 	return 0;
 }

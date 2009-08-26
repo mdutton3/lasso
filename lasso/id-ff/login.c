@@ -1696,7 +1696,7 @@ lasso_login_must_authenticate(LassoLogin *login)
 		 * particular assertions, one is enough
 		 */
 		matched = (profile->session != NULL && \
-				g_hash_table_size(profile->session->assertions) > 0);
+				lasso_session_count_assertions(profile->session) > 0);
 	}
 	g_list_free(assertions);
 

@@ -390,7 +390,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	 * request and response
 	 */
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP &&
-			g_hash_table_size(profile->session->assertions) >= 1) {
+			lasso_session_count_assertions(profile->session) >= 1) {
 		lasso_transfer_string(logout->initial_remote_providerID,
 				profile->remote_providerID);
 		lasso_transfer_gobject(logout->initial_request, profile->request);
@@ -575,7 +575,7 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 	 * provider instead.
 	 */
 	if (logout->initial_remote_providerID &&
-			g_hash_table_size(profile->session->assertions) == 0) {
+			lasso_session_count_assertions(profile->session) == 0) {
 		remote_provider = g_hash_table_lookup(profile->server->providers,
 				logout->initial_remote_providerID);
 		if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {

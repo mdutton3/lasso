@@ -50,6 +50,8 @@
 #define lasso_check_type_equality2(a,b,c)
 #endif
 
+#define lasso_private_data(object) ((object)->private_data)
+
 /* Freeing */
 #define lasso_release(dest) \
 	{ \
