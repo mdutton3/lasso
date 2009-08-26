@@ -85,7 +85,7 @@ liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@  \
 endif
 
 errors.c: $(srcdir)/errors.h
-	python $(srcdir)/build_strerror.py $(srcdir) >$(srcdir)/.errors.c.new 
-	if ! cmp -s $(srcdir)/errors.c $(srcdir)/.errors.c.new; then \
-	mv -f $(srcdir)/.errors.c.new $(srcdir)/errors.c; else \
-	rm $(srcdir)/.errors.c.new; fi
+	python $(srcdir)/build_strerror.py $(srcdir) >.errors.c.new
+	if ! cmp -s $(srcdir)/errors.c .errors.c.new; then \
+	mv -f .errors.c.new errors.c; else \
+	rm .errors.c.new; fi
