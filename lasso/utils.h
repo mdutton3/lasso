@@ -102,7 +102,7 @@
 #define lasso_release_list_of_gobjects(dest) \
 	lasso_release_list_of_full(dest, g_object_unref)
 
-#define lasso_unlink_and_release_node(node) \
+#define lasso_release_list_of_xml_node(dest) \
 	lasso_release_list_of_full(dest, xmlFreeNode)
 
 #define lasso_release_xml_node(node) \
@@ -412,6 +412,9 @@
 		if (lasso_flag_memory_debug) \
 		fprintf(stderr, "  freeing %s/%s (at %p)\n", who, what, (void*)where); \
 	}
+
+#define lasso_foreach(_iter, _list) \
+	for (_iter = (_list); _iter; _iter = g_list_next(_iter))
 
 /* Declare type of element in a container */
 #ifndef OFTYPE
