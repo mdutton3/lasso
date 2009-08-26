@@ -1,4 +1,4 @@
-<samlp:ArtifactResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_4CA30953B0EB4751E59BA239A1F58BEE" InResponseTo="_34B09583D8AD90E6B1345B27B2CA7DD2" Version="2.0" IssueInstant="2009-04-29T22:27:50Z" SignType="1" SignMethod="1">
+<samlp:ArtifactResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_4CA30953B0EB4751E59BA239A1F58BEE" InResponseTo="_34B09583D8AD90E6B1345B27B2CA7DD2" Version="2.0" IssueInstant="2009-04-29T22:27:50Z">
   <saml:Issuer>http://idp5/metadata</saml:Issuer>
   <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
 <SignedInfo>
@@ -18,13 +18,12 @@
   <samlp:Status>
     <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
   </samlp:Status>
-  <samlp:PrivateKeyFile>./data//idp5-saml2/private-key.pem</samlp:PrivateKeyFile>
-  <samlp:Response ID="_7B2794BBDB00FFF0AE081819A9885B21" InResponseTo="_419A9FE32E90F7708AB7A92C9ADD8D55" Version="2.0" IssueInstant="2009-04-29T22:27:48Z" SignType="0" SignMethod="0">
+  <samlp:Response ID="_7B2794BBDB00FFF0AE081819A9885B21" InResponseTo="_419A9FE32E90F7708AB7A92C9ADD8D55" Version="2.0" IssueInstant="2009-04-29T22:27:48Z">
     <saml:Issuer>http://idp5/metadata</saml:Issuer>
     <samlp:Status>
       <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
     </samlp:Status>
-    <saml:Assertion Version="2.0" ID="_CE34ABBDD29EDCCE9052BAB4E7171900" IssueInstant="2009-04-29T22:27:48Z" SignType="1" SignMethod="1" EncryptionActivated="false" EncryptionSymKeyType="0">
+    <saml:Assertion Version="2.0" ID="_CE34ABBDD29EDCCE9052BAB4E7171900" IssueInstant="2009-04-29T22:27:48Z" EncryptionActivated="false" EncryptionSymKeyType="0">
       <saml:Issuer>http://idp5/metadata</saml:Issuer>
       <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
 <SignedInfo>
@@ -57,7 +56,6 @@
           <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:1.0:am:password</saml:AuthnContextClassRef>
         </saml:AuthnContext>
       </saml:AuthnStatement>
-      <saml:PrivateKeyFile>./data//idp5-saml2/private-key.pem</saml:PrivateKeyFile>
     </saml:Assertion>
   </samlp:Response>
 </samlp:ArtifactResponse>
