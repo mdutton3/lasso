@@ -91,11 +91,11 @@ typedef struct {
 	
 	/* Attributes */
 
-	%newobject metadata_get;
-	LassoIdWsf2DiscoSvcMetadata *metadata;
+	%newobject metadatas_get;
+	GList *metadatas;
 
 	%immutable svcMDID;
-	char *svcMDID;
+	GList *svcMDIDs;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -241,14 +241,14 @@ typedef struct {
 /* Attributes */
 
 /* metadata */
-#define LassoIdWsf2Discovery_get_metadata(self) get_node(self->metadata)
-#define LassoIdWsf2Discovery_metadata_get(self) get_node(self->metadata)
-#define LassoIdWsf2Discovery_set_metadata(self, value) set_node((gpointer *) &self->metadata, value)
-#define LassoIdWsf2Discovery_metadata_set(self, value) set_node((gpointer *) &self->metadata, value)
+#define LassoIdWsf2Discovery_get_metadatas(self) get_node_list(self->metadatas)
+#define LassoIdWsf2Discovery_metadatas_get(self) get_node_list(self->metadatas)
+#define LassoIdWsf2Discovery_set_metadatas(self, value) set_node_list(&self->metadatas, value)
+#define LassoIdWsf2Discovery_metadatas_set(self, value) set_node_list(&self->metadatas, value)
 
 /* svcMDID */
-#define LassoIdWsf2Discovery_get_svcMDID(self) self->svcMDID
-#define LassoIdWsf2Discovery_svcMDID_get(self) self->svcMDID
+#define LassoIdWsf2Discovery_get_svcMDIDs(self) get_string_list(self->svcMDIDs)
+#define LassoIdWsf2Discovery_svcMDIDs_get(self) get_string_list(self->svcMDIDs)
 
 /* Constructors, destructors & static methods implementations */
 
