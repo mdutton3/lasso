@@ -27,14 +27,11 @@
 #define __REGISTRY_H__
 
 #include <glib.h>
-#include "lasso.h"
+#include "./export.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-#define LASSO_GOBJECT_NAMESPACE "http://lasso.entrouvert.org/ns/GObject"
-#define LASSO_PYTHON_NAMESPACE "http://lasso.entrouvert.org/ns/python"
 
 typedef const char *(*LassoRegistryTranslationFunction)(const char *from_namespace, const char *from_name, const char *to_namespace);
 
