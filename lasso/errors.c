@@ -201,6 +201,8 @@ lasso_strerror(int error_code)
 			return "Invalid NameIDPolicy in lib:AuthnRequest";
 		case LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
 			return "Service metadata association failed";
+		case LASSO_WSF_DISCO_ERROR_UNKNOWN_ENTRY:
+			return "LASSO_WSF_DISCO_ERROR_UNKNOWN_ENTRY";
 		case LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED:
 			return "LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED";
 		case LASSO_LOGIN_ERROR_ASSERTION_REPLAY:

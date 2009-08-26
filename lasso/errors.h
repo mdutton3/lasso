@@ -183,3 +183,6 @@
 
 /* Lasso provider */
 #define LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY   -1500 /* The provider has no known public key */
+
+/* Lasso ID-WSF 1.0 Disco Service */
+#define LASSO_WSF_DISCO_ERROR_UNKNOWN_ENTRY        1600
