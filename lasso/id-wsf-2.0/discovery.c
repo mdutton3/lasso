@@ -143,7 +143,7 @@ lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
  * Initialise a ID-WSF service metadata registration request to a Discovery service
  * specified by disco_provider_id.
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; an error code otherwise.
  **/
 gint
 lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
@@ -178,8 +178,8 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 	lasso_idwsf2_profile_init_soap_request(profile, LASSO_NODE(metadata_register),
 		LASSO_IDWSF2_DISCO_HREF);
 
-	/* FIXME : Get the url of the disco service where we must send the soap request */
-	/* profile->msg_url = g_strdup(disco_provider_id); */
+	/* Get the url of the disco service where we must send the soap request */
+	lasso_idwsf2_profile_set_endpoint_for_action(LASSO_IDWSF2_DS_REGISTER_ACTION);
 
 	return 0;
 }
