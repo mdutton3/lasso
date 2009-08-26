@@ -43,7 +43,6 @@ def setup():
     if os.path.exists('/usr/bin/valgrind'):
         base = ['./valgrind-wrapper.sh', 'python']
 
-    os.environ['PYTHONPATH'] = '../../bindings/python:../../bindings/python/.libs'
     os.mkdir('/tmp/.tests')
     authentic_command = base + [AUTHENTICCTL, 'start',
             '--app-dir', '/tmp/.tests/authentictests',
