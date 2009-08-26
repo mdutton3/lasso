@@ -78,6 +78,10 @@ LASSO_EXPORT gint lasso_idwsf2_profile_build_response_msg(LassoIdWsf2Profile *pr
 LASSO_EXPORT gint lasso_idwsf2_profile_process_soap_response_msg(LassoIdWsf2Profile *profile,
 	const gchar *message);
 
+LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_build_soap_envelope(
+		const char *refToMessageId,
+		const char *providerId);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

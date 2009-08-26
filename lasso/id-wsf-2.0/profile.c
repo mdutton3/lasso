@@ -53,10 +53,9 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-static LassoSoapEnvelope*
+LassoSoapEnvelope*
 lasso_idwsf2_profile_build_soap_envelope(G_GNUC_UNUSED const char *refToMessageId, G_GNUC_UNUSED const char *providerId)
 {
-	/* FIXME: add support for sb:Correlation header, and refToMessageId parameter */
 	LassoSoapEnvelope *envelope;
 	LassoSoapHeader *header;
 	LassoSoapBody *body;
@@ -69,14 +68,6 @@ lasso_idwsf2_profile_build_soap_envelope(G_GNUC_UNUSED const char *refToMessageI
 	/* Header */
 	header = lasso_soap_header_new();
 	envelope->Header = header;
-
-	/* FIXME : May be integrated later when we implement id-wsf 2.0 soap headers */
-	/* Provider */
-/* 	if (providerId) { */
-/* 		LassoSoapBindingProvider *provider = lasso_soap_binding_provider_new(providerId); */
-/* 		provider->id = lasso_build_unique_id(32); */
-/* 		header->Other = g_list_append(header->Other, provider); */
-/* 	} */
 
 	return envelope;
 }
