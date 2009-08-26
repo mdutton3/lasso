@@ -908,17 +908,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	return xmlnode;
 }
 
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	int rc;
-
-	rc = parent_class->init_from_xml(node, xmlnode);
-	if (rc) return rc;
-
-	return 0;
-}
-
 /*****************************************************************************/
 /* overrided parent class methods */
 /*****************************************************************************/
@@ -951,8 +940,6 @@ finalize(GObject *object)
 static void
 instance_init(LassoIdWsf2Discovery *discovery)
 {
-	discovery->metadata = NULL;
-	discovery->svcMDID = NULL;
 	discovery->private_data = g_new0(LassoIdWsf2DiscoveryPrivate, 1);
 	discovery->private_data->dispose_has_run = FALSE;
 }
@@ -961,10 +948,7 @@ static void
 class_init(LassoIdWsf2DiscoveryClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
-
 	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
-
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
