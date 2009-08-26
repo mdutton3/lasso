@@ -84,8 +84,8 @@ liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@  \
 	-export-symbols symbols.sym
 endif
 
-errors.c: $(srcdir)/errors.h
+$(srcdir)/errors.c: $(srcdir)/errors.h
 	python $(srcdir)/build_strerror.py $(srcdir) >.errors.c.new
 	if ! cmp -s $(srcdir)/errors.c .errors.c.new; then \
-	mv -f .errors.c.new errors.c; else \
+	mv -f .errors.c.new $@; else \
 	rm .errors.c.new; fi
