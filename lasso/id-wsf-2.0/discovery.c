@@ -95,14 +95,15 @@ struct _LassoIdWsf2DiscoveryPrivate
  * Register metadata service on itself as an ID-WSF Provider (WSP).
  * Typically used for an IdP to register itself as Discovery service.
  * 
- * Return value: the svcMDID of the registered service metadata.
+ * Return value: the svcMDID of the new metadata object if the call is successfull, NULL otherwise. These
+ * value must be freed using g_free.
  **/
 gchar*
 lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	const gchar *service_type, const gchar *abstract,
 	const gchar *soap_endpoint, const gchar *svcMDID)
 {
-	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(discovery);
+	LassoIdWsf2Profile *profile;
 	LassoProvider *provider;
 	gchar *provider_id;
 	LassoIdWsf2DiscoSvcMetadata *metadata;
@@ -114,24 +115,17 @@ lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	g_return_val_if_fail(abstract != NULL && abstract[0] != '\0', NULL);
 	g_return_val_if_fail(soap_endpoint != NULL && soap_endpoint[0] != '\0', NULL);
 
+	profile = LASSO_IDWSF2_PROFILE(discovery);
 	provider = LASSO_PROVIDER(LASSO_PROFILE(profile)->server);
 	provider_id = provider->ProviderID;
-
 	metadata = lasso_idwsf2_disco_svc_metadata_new_full(
 		service_type, abstract, provider_id, soap_endpoint);
-
 	if (svcMDID != NULL) {
 		metadata->svcMDID = g_strdup(svcMDID);
 	} else {
-		/* Build a unique SvcMDID */
-		lasso_build_random_sequence(unique_id, 32);
-		unique_id[32] = 0;
-		metadata->svcMDID = g_strdup(unique_id);
+		metadata->svcMDID = lasso_build_unique_id(32);
 	}
-
-	/* Add the metadata into the server object */
 	lasso_server_add_svc_metadata(LASSO_PROFILE(profile)->server, metadata);
-
 	new_svcMDID = g_strdup(metadata->svcMDID);
 	g_object_unref(metadata);
 
