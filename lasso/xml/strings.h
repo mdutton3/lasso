@@ -400,6 +400,8 @@
 
 #define LASSO_SOAP_FAULT_CODE_SERVER "S:server"
 
+#define LASSO_SOAP_FAULT_CODE_CLIENT "Client"
+
 #define LASSO_SOAP_FAULT_STRING_SERVER "Server Error"
 #define LASSO_SOAP_FAULT_STRING_IDENTITY_NOT_FOUND "Identity not found"
 
