@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="_9270c6fdd18a7ad3fbbf6fe546c0fff1a55027e82e" InResponseTo="_CA5A095CAAA14C86CF3438AD2FADA3F7" Version="2.0" IssueInstant="2009-05-13T13:08:05Z" Destination="https://bacasable.net.espci.fr/mellon/endpoint/postResponse">			<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">https://vip.espci.fr/saml2/idp/metadata.php</saml:Issuer>			<samlp:Status>
+<samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+</samlp:Status>
+<saml:Assertion Version="2.0" ID="pfx26ddb02c-b2e2-abdd-cd1a-4858ba53e174" IssueInstant="2009-05-13T13:08:05Z">		<saml:Issuer>https://vip.espci.fr/saml2/idp/metadata.php</saml:Issuer>		<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+  <ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+    <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+  <ds:Reference URI="#pfx26ddb02c-b2e2-abdd-cd1a-4858ba53e174">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>l0FLnXbJqY6azSX8I4s6CEJsYKE=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue>XdSCHxHEA0hkqnK3exyVq6Md0+VQa9ZGDtBuKIOVJVkScAYvJBzG2b7o3B1pBbYQNrsOvXcXg/JdWmCfA1EucAnj5Fopxk2oyNRKuMUb00igX/ftFTou5mszletZ2Nwx8urasklEh/LKXSIQLx5nA2tfpuQqC5u+GXCKccGQBIQ=</ds:SignatureValue>
+<ds:KeyInfo>
+<ds:X509Data>
+<ds:X509Certificate>MIIEcDCCA1igAwIBAgILAQAAAAABIK/C9AowDQYJKoZIhvcNAQEFBQAwXzELMAkGA1UEBhMCQkUxEzARBgNVBAoTCkN5YmVydHJ1c3QxFzAVBgNVBAsTDkVkdWNhdGlvbmFsIENBMSIwIAYDVQQDExlDeWJlcnRydXN0IEVkdWNhdGlvbmFsIENBMB4XDTA5MDQxNjE1MzIwNloXDTEyMDQxNjE1MzIwNlowgaIxCzAJBgNVBAYTAkZSMQ8wDQYDVQQIEwZGcmFuY2UxDjAMBgNVBAcTBVBhcmlzMTwwOgYDVQQKEzNFY29sZSBTdXBlcmlldXJlIGRlIFBoeXNpcXVlIGV0IENoaW1pZSBJbmR1c3RyaWVsbGUxHTAbBgNVBAsTFFNlcnZpY2UgSW5mb3JtYXRpcXVlMRUwEwYDVQQDEwx2aXAuZXNwY2kuZnIwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALqHqDC01AANSoDkkuOh4DvNpVJCit7gEobYXJZ4Q5LHRFgfgkJktae1Rkjp0M/uaDtWK0SDUxXbsmup2qDByV2mTB77np5Z7CfR9TomZrmkEu+I/yehD4YQK54gyClpd54KcM2wecpmI9zaSF0U2PYvK1QopOx4IntT+sYGiIexAgMBAAGjggFrMIIBZzBQBgNVHSAESTBHMEUGByqGSLE+AQAwOjA4BggrBgEFBQcCARYsaHR0cDovL3d3dy5nbG9iYWxzaWduLm5ldC9yZXBvc2l0b3J5L2Nwcy5jZm0wDgYDVR0PAQH/BAQDAgWgMB8GA1UdIwQYMBaAFGVloz3XOxGjCgclN8lCSlt2d1DhMB0GA1UdDgQWBBTLgGQdwBQK2JvSL8jCOrgDydwvpDA6BgNVHR8EMzAxMC+gLaArhilodHRwOi8vY3JsLmdsb2JhbHNpZ24ubmV0L2VkdWNhdGlvbmFsLmNybDBPBggrBgEFBQcBAQRDMEEwPwYIKwYBBQUHMAKGM2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5uZXQvY2FjZXJ0L2VkdWNhdGlvbmFsLmNydDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwFwYDVR0RBBAwDoIMdmlwLmVzcGNpLmZyMA0GCSqGSIb3DQEBBQUAA4IBAQBOR9nk7v34geZVHbzGT3DDLD/Lg40y6WvsjZVCxw3TtWxCzX0yQzS0Rp4LGIq0Y7lrafsPm8O0mjONGTQl804kjpKQseRBmpbo1hD4W3fWjMTXgmrdeGzhCFS0UclpmL8RCmMOcIe1EqqDX5y1My5ux2OU59YF73N746jCW1SdDfa5AXVwFpVrMvkRWgwNw3aTgigy+wZYXTK5Sdv8KORbzFBA5K9alU9pb2rreN2mKvTxsETWty5R/B8LmP/MTaeA4iDzKUyo/jpZYhkAtEPCzCYftdYV/hSnaw+ZSlJ5Av79EX4lyZjajsILOlHp4w2iExbolx4m5iT49GAabLj0</ds:X509Certificate>
+</ds:X509Data>
+</ds:KeyInfo>
+</ds:Signature>
+<saml:Subject>			<saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" SPNameQualifier="https://bacasable.net.espci.fr/mellon/endpoint/metadata">_eda702125448e7e9c6b903eadb06c18dd6f3777131</saml:NameID> 			<saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">				<saml:SubjectConfirmationData NotOnOrAfter="2009-05-13T13:13:05Z" InResponseTo="_CA5A095CAAA14C86CF3438AD2FADA3F7" Recipient="https://bacasable.net.espci.fr/mellon/endpoint/postResponse"/>			</saml:SubjectConfirmation>		</saml:Subject>		<saml:Conditions NotBefore="2009-05-13T13:07:35Z" NotOnOrAfter="2009-05-13T21:08:05Z">            <saml:AudienceRestriction>                <saml:Audience>https://bacasable.net.espci.fr/mellon/endpoint/metadata</saml:Audience>            </saml:AudienceRestriction>		</saml:Conditions> 		<saml:AuthnStatement AuthnInstant="2009-05-13T13:08:05Z" SessionIndex="_2bc5f7299fdd7315b5ff694a715d975027f480bb78">			<saml:AuthnContext>				<saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>			</saml:AuthnContext>        </saml:AuthnStatement>        <saml:AttributeStatement>
+<saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" Name="cn">
+<saml:AttributeValue xsi:type="xs:string">Emmanuel Dreyfus</saml:AttributeValue>
+</saml:Attribute>
+<saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" Name="ou">
+<saml:AttributeValue xsi:type="xs:string">info</saml:AttributeValue>
+</saml:Attribute>
+<saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" Name="uid">
+<saml:AttributeValue xsi:type="xs:string">edreyfus</saml:AttributeValue>
+</saml:Attribute>
+<saml:Attribute NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic" Name="authorizedService">
+<saml:AttributeValue xsi:type="xs:string">ciril</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">crunch-ssh</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">espci-mail</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">gs-admin</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">info-ssh</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">linux-adm</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">mail-ssh</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">ras</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">test</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">vpn</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">wifi</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">wikifondation</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">wikisg</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">www</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">www-ssh</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">www0-admin</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">wwwloa</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">wwwmmn-ssh</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">wwwnbp</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">wwwnbp-ssh</saml:AttributeValue>
+<saml:AttributeValue xsi:type="xs:string">wwwppmd</saml:AttributeValue>
+</saml:Attribute>
+</saml:AttributeStatement>    </saml:Assertion>
+</samlp:Response>

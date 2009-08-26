@@ -27,6 +27,7 @@ int main(G_GNUC_UNUSED int argc, G_GNUC_UNUSED char **argv) {
 	load("data/response-1");
 	load("data/response-2");
 	load("data/response-3");
+	load("data/response-4");
 	lasso_shutdown();
 
 	return 0;
