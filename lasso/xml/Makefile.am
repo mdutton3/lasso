@@ -1,5 +1,8 @@
 MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = saml-2.0 id-wsf-2.0 ws
+SUBDIRS = saml-2.0
+if WSF_ENABLED
+SUBDIRS += id-wsf-2.0 ws
+endif
 
 liblassoincludedir = $(includedir)/lasso/xml
 
