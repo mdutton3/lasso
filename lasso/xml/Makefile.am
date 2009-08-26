@@ -260,4 +260,4 @@ liblassoinclude_HEADERS = \
 lasso_private_h_sources = \
 	private.h
 
-EXTRA_DIST = $(lasso_private_h_sources)
+EXTRA_DIST = $(lasso_private_h_sources) xml_idff.h xml_idwsf.h

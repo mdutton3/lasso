@@ -1,3 +1,4 @@
+EXTRA_DIST = xml_saml2.h
 MAINTAINERCLEANFILES = Makefile.in
 liblassoincludedir = $(includedir)/lasso/xml/saml-2.0
 

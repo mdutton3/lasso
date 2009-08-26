@@ -458,6 +458,8 @@ def parse_headers(srcdir):
         makefile_am = open(os.path.join(base, 'Makefile.am')).read()
         filenames = [x for x in filenames if x.endswith('.h') if x in makefile_am]
         for filename in filenames:
+            if filename in ('xml_idff.h', 'xml_idwsf.h', 'xml_saml2.h'):
+                continue
             if filename == 'lasso_config.h' or 'private' in filename:
                 continue
             if not binding.options.idwsf and filename.split('_')[0] in wsf_prefixes:
