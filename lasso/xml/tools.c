@@ -950,6 +950,45 @@ lasso_concat_url_query(const char *url, const char *query)
 	}
 }
 
+gboolean
+lasso_eval_xpath_expression(xmlXPathContextPtr xpath_ctx, const char *expression,
+		xmlXPathObjectPtr *xpath_object_ptr, int *xpath_error_code)
+{
+	xmlXPathObject *xpath_object = NULL;
+	int errorCode = 0;
+	xmlStructuredErrorFunc oldStructuredErrorFunc;
+	gboolean rc = TRUE;
+
+	void structuredErrorFunc (G_GNUC_UNUSED void *userData, xmlErrorPtr error) {
+		errorCode = error->code;
+	}
+
+	g_return_val_if_fail(xpath_ctx != NULL && expression != NULL, FALSE);
+
+	if (xpath_error_code) { /* reset */
+		*xpath_error_code = 0;
+	}
+	oldStructuredErrorFunc = xpath_ctx->error;
+	xpath_ctx->error = structuredErrorFunc;
+	xpath_object = xmlXPathEvalExpression((xmlChar*)expression, xpath_ctx);
+	xpath_ctx->error = oldStructuredErrorFunc;
+
+	if (xpath_object && xpath_object->nodesetval && xpath_object->nodesetval->nodeNr) {
+		if (xpath_object_ptr) {
+			lasso_transfer_xpath_object(*xpath_object_ptr, xpath_object);
+		}
+	} else {
+		rc = FALSE;
+	}
+
+	if (xpath_error_code && errorCode) {
+		*xpath_error_code = errorCode;
+	}
+	lasso_release_xpath_object(xpath_object);
+
+	return rc;
+}
+
 static gboolean
 lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 	/* Limit allowed transforms for signature and reference processing */

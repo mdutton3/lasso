@@ -170,6 +170,9 @@ void _debug(GLogLevelFlags level, const char *filename, int line,
 
 int error_code(GLogLevelFlags level, int error, ...);
 
+gboolean lasso_eval_xpath_expression(xmlXPathContextPtr xpath_ctx, const char *expression,
+		xmlXPathObjectPtr *xpath_object_ptr, int *xpath_error_code);
+
 #if defined(LASSO_DEBUG) && defined(__GNUC__)
 #  define debug(format, args...) \
 	_debug(G_LOG_LEVEL_DEBUG, __FILE__, __LINE__,__FUNCTION__, format, ##args)
