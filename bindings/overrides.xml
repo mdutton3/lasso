@@ -37,6 +37,12 @@
   <!-- LassoWsfProfile -->
   <func name="lasso_wsf_profile_get_identity" return_owner="false" />
   <func name="lasso_wsf_profile_get_session" return_owner="false" />
+  <func name="lasso_wsf_profile_get_remote_provider" skip="true"/>
+  <func name="lasso_data_service_get_answer" skip="true"/>
+  <func name="lasso_data_service_add_modification" skip="true"/>
+  <func name="lasso_saml2_encrypted_element_decrypt" skip="true"/>
+  <func name="lasso_data_service_get_answers_by_select" skip="true"/>
+  <func name="lasso_data_service_get_answers_by_item_id" skip="true"/>
   <!-- LassoIdentity -->
   <func name="lasso_identity_get_federation" return_owner="false" />
   <func name="lasso_identity_get_svc_md_ids" return_type_qualifier="char*"/>
@@ -168,9 +174,6 @@
   <func name="lasso_data_service_process_query_msg">
     <param name="message"/>
     <param name="security_mech_id" optional="true"/>
-  </func>
-  <func name="lasso_data_service_get_answer">
-    <param name="select" optional="true"/>
   </func>
   <func name="lasso_data_service_process_modify_msg">
     <param name="soap_msg"/>
