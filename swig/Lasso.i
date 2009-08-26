@@ -5692,11 +5692,6 @@ LassoStringList* LassoIdentity_getSvcMDIDs(LassoIdentity *self) {
 typedef struct {
 	/* Attributes */
 
-#ifndef SWIG_PHP_RENAMES
-	%rename(isDirty) is_dirty;
-#endif
-	%immutable is_dirty;
-	gboolean is_dirty;
 } LassoSession;
 %extend LassoSession {
 	/* Attributes */
@@ -5731,8 +5726,11 @@ typedef struct {
 #define LassoSession_get_providerIds LassoSession_providerIds_get
 LassoStringList *LassoSession_providerIds_get(LassoSession *self);
 LassoStringList *LassoSession_providerIds_get(LassoSession *self) {
-	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->assertions));
-	g_hash_table_foreach(self->assertions, (GHFunc) add_key_to_array, providerIds);
+        int i = 0, l = lasso_session_count_assertions(self);
+	GPtrArray *providerIds = g_ptr_array_sized_new(l);
+        for (i = 0; i < l; ++i) {
+                add_key_to_array(lasso_session_get_provider_index(self, i), NULL, providerIds);
+        }
 	return providerIds;
 }
 
