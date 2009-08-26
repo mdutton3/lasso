@@ -58,12 +58,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoLibIDPList *node)
-{
-	node->IDPEntries = NULL;
-	node->GetComplete = NULL;
-}
 
 static void
 class_init(LassoLibIDPListClass *klass)
@@ -91,7 +85,7 @@ lasso_lib_idp_list_get_type()
 			NULL,
 			sizeof(LassoLibIDPList),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

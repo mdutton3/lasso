@@ -71,14 +71,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2DiscoSvcMetadata *node)
-{
-	node->Abstract = NULL;
-	node->ProviderID = NULL;
-	node->ServiceContext = NULL;
-	node->svcMDID = NULL;
-}
 
 static void
 class_init(LassoIdWsf2DiscoSvcMetadataClass *klass)
@@ -107,7 +99,7 @@ lasso_idwsf2_disco_svc_metadata_get_type()
 			NULL,
 			sizeof(LassoIdWsf2DiscoSvcMetadata),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -136,15 +136,6 @@ init_from_query(LassoNode *node, char **query_fields)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoLibRegisterNameIdentifierRequest *node)
-{
-	node->ProviderID = NULL;
-	node->IDPProvidedNameIdentifier = NULL;
-	node->SPProvidedNameIdentifier = NULL;
-	node->OldProvidedNameIdentifier = NULL;
-	node->RelayState = NULL;
-}
 
 static void
 class_init(LassoLibRegisterNameIdentifierRequestClass *klass)
@@ -175,7 +166,7 @@ lasso_lib_register_name_identifier_request_get_type()
 			NULL,
 			sizeof(LassoLibRegisterNameIdentifierRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

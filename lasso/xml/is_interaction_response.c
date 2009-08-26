@@ -65,13 +65,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIsInteractionResponse *node)
-{
-	node->Status = NULL;
-	node->InteractionStatement = NULL;
-	node->Parameter = NULL;
-}
 
 static void
 class_init(LassoIsInteractionResponseClass *klass)
@@ -99,7 +92,7 @@ lasso_is_interaction_response_get_type()
 			NULL,
 			sizeof(LassoIsInteractionResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -63,11 +63,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlp2AttributeQuery *node)
-{
-	node->Attribute = NULL;
-}
 
 static void
 class_init(LassoSamlp2AttributeQueryClass *klass)
@@ -96,7 +91,7 @@ lasso_samlp2_attribute_query_get_type()
 			NULL,
 			sizeof(LassoSamlp2AttributeQuery),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

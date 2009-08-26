@@ -77,11 +77,6 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2SecTokenPolicy *node)
 {
-	node->any = NULL;
-	node->validUntil = NULL;
-	node->issueTo = NULL;
-	node->type = NULL;
-	node->wantDSEPR = FALSE;
 	node->attributes = g_hash_table_new_full(
 		g_str_hash, g_str_equal, g_free, g_free);
 }

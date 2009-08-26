@@ -73,12 +73,7 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoIsUserInteraction *node)
 {
-	node->InteractionService = NULL;
-	node->id = NULL;
 	node->interact = g_strdup(LASSO_IS_INTERACT_ATTR_INTERACT_IF_NEEDED);
-	node->language = NULL;
-	node->redirect = FALSE;
-	node->maxInteractTime = 0;
 }
 
 static void

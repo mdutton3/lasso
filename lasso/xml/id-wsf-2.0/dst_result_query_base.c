@@ -80,18 +80,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2DstResultQueryBase *node)
-{
-	node->ChangeFormat = NULL;
-	node->itemIDRef = NULL;
-	node->contingency = FALSE;
-	node->includeCommonAttributes = FALSE;
-	node->changedSince = NULL;
-	node->itemID = NULL;
-	node->objectType = NULL;
-	node->predefined = NULL;
-}
 
 static void
 class_init(LassoIdWsf2DstResultQueryBaseClass *klass)
@@ -120,7 +108,7 @@ lasso_idwsf2_dst_result_query_base_get_type()
 			NULL,
 			sizeof(LassoIdWsf2DstResultQueryBase),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

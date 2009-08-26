@@ -93,17 +93,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoLibAuthnRequestEnvelope *node)
-{
-	node->Extension = NULL;
-	node->AuthnRequest = NULL;
-	node->ProviderID = NULL;
-	node->ProviderName = NULL;
-	node->AssertionConsumerServiceURL = NULL;
-	node->IDPList = NULL;
-	node->IsPassive = FALSE;
-}
 
 static void
 class_init(LassoLibAuthnRequestEnvelopeClass *klass)
@@ -131,7 +120,7 @@ lasso_lib_authn_request_envelope_get_type()
 			NULL,
 			sizeof(LassoLibAuthnRequestEnvelope),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -92,19 +92,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2SubsSubscription *node)
-{
-	node->RefItem = NULL;
-	node->Extension = NULL;
-	node->subscriptionID = NULL;
-	node->notifyToRef = NULL;
-	node->adminNotifyToRef = NULL;
-	node->starts = NULL;
-	node->expires = NULL;
-	node->id = NULL;
-	node->includeData = NULL;
-}
 
 static void
 class_init(LassoIdWsf2SubsSubscriptionClass *klass)
@@ -133,7 +120,7 @@ lasso_idwsf2_subs_subscription_get_type()
 			NULL,
 			sizeof(LassoIdWsf2SubsSubscription),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

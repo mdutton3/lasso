@@ -69,13 +69,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2PsAddKnownEntityResponse *node)
-{
-	node->Object = NULL;
-	node->SPtoPSRedirectURL = NULL;
-	node->QueryString = NULL;
-}
 
 static void
 class_init(LassoIdWsf2PsAddKnownEntityResponseClass *klass)
@@ -104,7 +97,7 @@ lasso_idwsf2_ps_add_known_entity_response_get_type()
 			NULL,
 			sizeof(LassoIdWsf2PsAddKnownEntityResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -65,12 +65,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static xmlNode* get_xmlNode(LassoNode *node, gboolean lasso_dump);
 
-static void
-instance_init(LassoSoapBody *node)
-{
-	node->any = NULL;
-	node->Id = NULL;
-}
 
 static LassoNodeClass *parent_class = NULL;
 
@@ -118,7 +112,7 @@ lasso_soap_body_get_type()
 			NULL,
 			sizeof(LassoSoapBody),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

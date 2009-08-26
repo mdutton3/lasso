@@ -66,12 +66,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2SubsRefNotify *node)
-{
-	node->Notification = NULL;
-	node->timeStamp = NULL;
-}
 
 static void
 class_init(LassoIdWsf2SubsRefNotifyClass *klass)
@@ -100,7 +94,7 @@ lasso_idwsf2_subsref_notify_get_type()
 			NULL,
 			sizeof(LassoIdWsf2SubsRefNotify),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

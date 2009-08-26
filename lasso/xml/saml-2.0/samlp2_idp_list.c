@@ -62,12 +62,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlp2IDPList *node)
-{
-	node->IDPEntry = NULL;
-	node->GetComplete = NULL;
-}
 
 static void
 class_init(LassoSamlp2IDPListClass *klass)
@@ -96,7 +90,7 @@ lasso_samlp2_idp_list_get_type()
 			NULL,
 			sizeof(LassoSamlp2IDPList),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

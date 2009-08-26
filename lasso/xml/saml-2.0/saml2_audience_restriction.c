@@ -63,11 +63,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2AudienceRestriction *node)
-{
-	node->Audience = NULL;
-}
 
 static void
 class_init(LassoSaml2AudienceRestrictionClass *klass)
@@ -96,7 +91,7 @@ lasso_saml2_audience_restriction_get_type()
 			NULL,
 			sizeof(LassoSaml2AudienceRestriction),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

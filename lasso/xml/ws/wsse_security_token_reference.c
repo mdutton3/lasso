@@ -66,8 +66,6 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoWsSec1SecurityTokenReference *node)
 {
-	node->Id = NULL;
-	node->Usage = NULL;
 	node->attributes = g_hash_table_new_full(
 		g_str_hash, g_str_equal, g_free, g_free);
 }

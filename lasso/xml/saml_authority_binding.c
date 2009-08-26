@@ -60,13 +60,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlAuthorityBinding *node)
-{
-	node->AuthorityKind = NULL;
-	node->Location = NULL;
-	node->Binding = NULL;
-}
 
 static void
 class_init(LassoSamlAuthorityBindingClass *klass)
@@ -94,7 +87,7 @@ lasso_saml_authority_binding_get_type()
 			NULL,
 			sizeof(LassoSamlAuthorityBinding),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

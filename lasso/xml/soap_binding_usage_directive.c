@@ -66,15 +66,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSoapBindingUsageDirective *node)
-{
-	node->other = NULL;
-	node->ref = 0;
-	node->id = NULL;
-	node->mustUnderstand = NULL;
-	node->actor = NULL;
-}
 
 static void
 class_init(LassoSoapBindingUsageDirectiveClass *klass)
@@ -102,7 +93,7 @@ lasso_soap_binding_usage_directive_get_type()
 			NULL,
 			sizeof(LassoSoapBindingUsageDirective),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

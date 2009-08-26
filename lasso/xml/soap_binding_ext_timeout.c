@@ -62,14 +62,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSoapBindingExtTimeout *node)
-{
-	node->maxProcessingTime = 0;
-	node->id = NULL;
-	node->mustUnderstand = NULL;
-	node->actor = NULL;
-}
 
 static void
 class_init(LassoSoapBindingExtTimeoutClass *klass)
@@ -97,7 +89,7 @@ lasso_soap_binding_ext_timeout_get_type()
 			NULL,
 			sizeof(LassoSoapBindingExtTimeout),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

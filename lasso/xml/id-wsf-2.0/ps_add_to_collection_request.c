@@ -69,13 +69,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2PsAddToCollectionRequest *node)
-{
-	node->TargetObjectID = NULL;
-	node->ObjectID = NULL;
-	node->Subscription = NULL;
-}
 
 static void
 class_init(LassoIdWsf2PsAddToCollectionRequestClass *klass)
@@ -104,7 +97,7 @@ lasso_idwsf2_ps_add_to_collection_request_get_type()
 			NULL,
 			sizeof(LassoIdWsf2PsAddToCollectionRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

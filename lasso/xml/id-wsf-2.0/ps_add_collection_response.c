@@ -63,11 +63,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2PsAddCollectionResponse *node)
-{
-	node->Object = NULL;
-}
 
 static void
 class_init(LassoIdWsf2PsAddCollectionResponseClass *klass)
@@ -96,7 +91,7 @@ lasso_idwsf2_ps_add_collection_response_get_type()
 			NULL,
 			sizeof(LassoIdWsf2PsAddCollectionResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -41,11 +41,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoWsseSecurity *node)
-{
-	node->any = NULL;
-}
 
 static void
 class_init(LassoWsseSecurityClass *klass)
@@ -73,7 +68,7 @@ lasso_wsse_security_get_type()
 			NULL,
 			sizeof(LassoWsseSecurity),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

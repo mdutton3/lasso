@@ -72,13 +72,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2AuthzDecisionStatement *node)
-{
-	node->Action = NULL;
-	node->Evidence = NULL;
-	node->Resource = NULL;
-}
 
 static void
 class_init(LassoSaml2AuthzDecisionStatementClass *klass)
@@ -107,7 +100,7 @@ lasso_saml2_authz_decision_statement_get_type()
 			NULL,
 			sizeof(LassoSaml2AuthzDecisionStatement),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

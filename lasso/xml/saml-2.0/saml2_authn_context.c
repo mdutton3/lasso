@@ -78,14 +78,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2AuthnContext *node)
-{
-	node->AuthnContextClassRef = NULL;
-	node->AuthnContextDecl = NULL;
-	node->AuthnContextDeclRef = NULL;
-	node->AuthenticatingAuthority = NULL;
-}
 
 static void
 class_init(LassoSaml2AuthnContextClass *klass)
@@ -114,7 +106,7 @@ lasso_saml2_authn_context_get_type()
 			NULL,
 			sizeof(LassoSaml2AuthnContext),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

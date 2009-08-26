@@ -71,15 +71,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2IsInquiryElement *node)
-{
-	node->Help = NULL;
-	node->Hint = NULL;
-	node->Label = NULL;
-	node->Value = NULL;
-	node->name = NULL;
-}
 
 static void
 class_init(LassoIdWsf2IsInquiryElementClass *klass)
@@ -108,7 +99,7 @@ lasso_idwsf2_is_inquiry_element_get_type()
 			NULL,
 			sizeof(LassoIdWsf2IsInquiryElement),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

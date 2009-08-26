@@ -68,9 +68,7 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2SubsRefData *node)
 {
-	node->remaining = 0;
 	node->nextOffset = -1;
-	node->setID = NULL;
 }
 
 static void

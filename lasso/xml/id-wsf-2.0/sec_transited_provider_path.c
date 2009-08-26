@@ -60,11 +60,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2SecTransitedProviderPath *node)
-{
-	node->TransitedProvider = NULL;
-}
 
 static void
 class_init(LassoIdWsf2SecTransitedProviderPathClass *klass)
@@ -93,7 +88,7 @@ lasso_idwsf2_sec_transited_provider_path_get_type()
 			NULL,
 			sizeof(LassoIdWsf2SecTransitedProviderPath),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

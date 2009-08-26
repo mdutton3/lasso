@@ -77,16 +77,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2IsInquiry *node)
-{
-	node->Help = NULL;
-	node->Select = NULL;
-	node->Confirm = NULL;
-	node->Text = NULL;
-	node->id = NULL;
-	node->title = NULL;
-}
 
 static void
 class_init(LassoIdWsf2IsInquiryClass *klass)
@@ -115,7 +105,7 @@ lasso_idwsf2_is_inquiry_get_type()
 			NULL,
 			sizeof(LassoIdWsf2IsInquiry),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -58,11 +58,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoDstNewData *node)
-{
-	node->any = NULL;
-}
 
 static void
 class_init(LassoDstNewDataClass *klass)
@@ -90,7 +85,7 @@ lasso_dst_new_data_get_type()
 			NULL,
 			sizeof(LassoDstNewData),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

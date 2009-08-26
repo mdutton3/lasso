@@ -148,16 +148,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 static void
 instance_init(LassoSamlp2RequestAbstract *node)
 {
-	node->Issuer = NULL;
-	node->Extensions = NULL;
-	node->ID = NULL;
-	node->Version = NULL;
-	node->IssueInstant = NULL;
-	node->Destination = NULL;
-	node->Consent = NULL;
 	node->sign_type = LASSO_SIGNATURE_TYPE_NONE;
-	node->private_key_file = NULL;
-	node->certificate_file = NULL;
 }
 
 static void

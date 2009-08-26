@@ -167,17 +167,7 @@ init_from_query(LassoNode *node, char **query_fields)
 static void
 instance_init(LassoLibAuthnRequest *node)
 {
-	node->ProviderID = NULL;
-	node->AffiliationID = NULL;
-	node->NameIDPolicy = NULL;
-	node->ForceAuthn = FALSE;
 	node->IsPassive = TRUE;
-	node->ProtocolProfile = NULL;
-	node->AssertionConsumerServiceID = NULL;
-	node->RequestAuthnContext = NULL;
-	node->RelayState = NULL;
-	node->Scoping = NULL;
-	node->consent = NULL;
 }
 
 static void

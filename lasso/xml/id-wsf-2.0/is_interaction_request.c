@@ -74,16 +74,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2IsInteractionRequest *node)
-{
-	node->Inquiry = NULL;
-	node->KeyInfo = NULL;
-	node->id = NULL;
-	node->language = NULL;
-	node->maxInteractTime = 0;
-	node->signed_ = NULL;
-}
 
 static void
 class_init(LassoIdWsf2IsInteractionRequestClass *klass)
@@ -112,7 +102,7 @@ lasso_idwsf2_is_interaction_request_get_type()
 			NULL,
 			sizeof(LassoIdWsf2IsInteractionRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

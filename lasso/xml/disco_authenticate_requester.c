@@ -56,12 +56,6 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoDiscoAuthenticateRequester *node)
-{
-	node->descriptionIDRefs = NULL;
-}
-
-static void
 class_init(LassoDiscoAuthenticateRequesterClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -87,7 +81,7 @@ lasso_disco_authenticate_requester_get_type()
 			NULL,
 			sizeof(LassoDiscoAuthenticateRequester),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

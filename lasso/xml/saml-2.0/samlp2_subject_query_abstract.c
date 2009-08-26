@@ -60,11 +60,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlp2SubjectQueryAbstract *node)
-{
-	node->Subject = NULL;
-}
 
 static void
 class_init(LassoSamlp2SubjectQueryAbstractClass *klass)
@@ -92,7 +87,7 @@ lasso_samlp2_subject_query_abstract_get_type()
 			NULL,
 			sizeof(LassoSamlp2SubjectQueryAbstract),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -79,7 +79,6 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2IsInteractionStatement *node)
 {
-	node->Inquiry = NULL;
 	node->sign_type = LASSO_SIGNATURE_TYPE_NONE;
 }
 

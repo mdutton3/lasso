@@ -70,14 +70,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2DiscoEndpointContext *node)
-{
-	node->Address = NULL;
-	node->Framework = NULL;
-	node->SecurityMechID = NULL;
-	node->Action = NULL;
-}
 
 static void
 class_init(LassoIdWsf2DiscoEndpointContextClass *klass)
@@ -106,7 +98,7 @@ lasso_idwsf2_disco_endpoint_context_get_type()
 			NULL,
 			sizeof(LassoIdWsf2DiscoEndpointContext),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

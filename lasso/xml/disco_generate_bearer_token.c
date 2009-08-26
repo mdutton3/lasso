@@ -56,12 +56,6 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoDiscoGenerateBearerToken *node)
-{
-	node->descriptionIDRefs = NULL;
-}
-
-static void
 class_init(LassoDiscoGenerateBearerTokenClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -87,7 +81,7 @@ lasso_disco_generate_bearer_token_get_type()
 			NULL,
 			sizeof(LassoDiscoGenerateBearerToken),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

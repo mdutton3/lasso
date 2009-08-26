@@ -81,18 +81,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2PsObject *node)
-{
-	node->ObjectID = NULL;
-	node->DisplayName = NULL;
-	node->Tag = NULL;
-	node->Object = NULL;
-	node->ObjectRef = NULL;
-	node->NodeType = NULL;
-	node->CreatedDateTime = NULL;
-	node->ModifiedDateTime = NULL;
-}
 
 static void
 class_init(LassoIdWsf2PsObjectClass *klass)
@@ -121,7 +109,7 @@ lasso_idwsf2_ps_object_get_type()
 			NULL,
 			sizeof(LassoIdWsf2PsObject),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

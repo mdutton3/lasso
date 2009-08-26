@@ -59,12 +59,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2BaseIDAbstract *node)
-{
-	node->NameQualifier = NULL;
-	node->SPNameQualifier = NULL;
-}
 
 static void
 class_init(LassoSaml2BaseIDAbstractClass *klass)
@@ -93,7 +87,7 @@ lasso_saml2_base_idabstract_get_type()
 			NULL,
 			sizeof(LassoSaml2BaseIDAbstract),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -75,15 +75,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2AuthnStatement *node)
-{
-	node->SubjectLocality = NULL;
-	node->AuthnContext = NULL;
-	node->AuthnInstant = NULL;
-	node->SessionIndex = NULL;
-	node->SessionNotOnOrAfter = NULL;
-}
 
 static void
 class_init(LassoSaml2AuthnStatementClass *klass)
@@ -112,7 +103,7 @@ lasso_saml2_authn_statement_get_type()
 			NULL,
 			sizeof(LassoSaml2AuthnStatement),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

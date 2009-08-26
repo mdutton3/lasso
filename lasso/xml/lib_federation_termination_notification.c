@@ -134,14 +134,6 @@ init_from_query(LassoNode *node, char **query_fields)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoLibFederationTerminationNotification *node)
-{
-	node->ProviderID = NULL;
-	node->NameIdentifier = NULL;
-	node->consent = NULL;
-	node->RelayState = NULL;
-}
 
 static void
 class_init(LassoLibFederationTerminationNotificationClass *klass)
@@ -173,7 +165,7 @@ lasso_lib_federation_termination_notification_get_type()
 			NULL,
 			sizeof(LassoLibFederationTerminationNotification),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

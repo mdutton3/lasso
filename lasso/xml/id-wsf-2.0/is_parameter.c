@@ -60,12 +60,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2IsParameter *node)
-{
-	node->name = NULL;
-	node->value = NULL;
-}
 
 static void
 class_init(LassoIdWsf2IsParameterClass *klass)
@@ -94,7 +88,7 @@ lasso_idwsf2_is_parameter_get_type()
 			NULL,
 			sizeof(LassoIdWsf2IsParameter),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

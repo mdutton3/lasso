@@ -56,11 +56,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlAudienceRestrictionCondition *node)
-{
-	node->Audience = NULL;
-}
 
 static void
 class_init(LassoSamlAudienceRestrictionConditionClass *klass)
@@ -88,7 +83,7 @@ lasso_saml_audience_restriction_condition_get_type()
 			NULL,
 			sizeof(LassoSamlAudienceRestrictionCondition),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

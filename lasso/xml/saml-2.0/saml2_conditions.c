@@ -74,16 +74,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2Conditions *node)
-{
-	node->Condition = NULL;
-	node->AudienceRestriction = NULL;
-	node->OneTimeUse = NULL;
-	node->ProxyRestriction = NULL;
-	node->NotBefore = NULL;
-	node->NotOnOrAfter = NULL;
-}
 
 static void
 class_init(LassoSaml2ConditionsClass *klass)
@@ -112,7 +102,7 @@ lasso_saml2_conditions_get_type()
 			NULL,
 			sizeof(LassoSaml2Conditions),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

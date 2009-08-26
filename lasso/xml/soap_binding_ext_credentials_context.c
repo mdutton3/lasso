@@ -68,15 +68,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSoapBindingExtCredentialsContext *node)
-{
-	node->RequestAuthnContext = NULL;
-	node->SecurityMechID = NULL;
-	node->id = NULL;
-	node->mustUnderstand = NULL;
-	node->actor = NULL;
-}
 
 static void
 class_init(LassoSoapBindingExtCredentialsContextClass *klass)
@@ -104,7 +95,7 @@ lasso_soap_binding_ext_credentials_context_get_type()
 			NULL,
 			sizeof(LassoSoapBindingExtCredentialsContext),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

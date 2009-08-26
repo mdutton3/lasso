@@ -72,8 +72,6 @@ instance_init(LassoIdWsf2DstRefQueryItem *node)
 {
 	node->count = -1;
 	node->offset = -1;
-	node->setID = NULL;
-	node->setReq = NULL;
 }
 
 static void

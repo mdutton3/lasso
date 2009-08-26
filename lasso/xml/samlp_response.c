@@ -106,12 +106,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlpResponse *node)
-{
-	node->Assertion = NULL;
-	node->Status = NULL;
-}
 
 static void
 class_init(LassoSamlpResponseClass *klass)
@@ -142,7 +136,7 @@ lasso_samlp_response_get_type()
 			NULL,
 			sizeof(LassoSamlpResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

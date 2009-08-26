@@ -57,11 +57,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2Sb2RedirectRequest *node)
-{
-	node->redirectURL = NULL;
-}
 
 static void
 class_init(LassoIdWsf2Sb2RedirectRequestClass *klass)
@@ -90,7 +85,7 @@ lasso_idwsf2_sb2_redirect_request_get_type()
 			NULL,
 			sizeof(LassoIdWsf2Sb2RedirectRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

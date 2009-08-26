@@ -60,12 +60,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2SubjectLocality *node)
-{
-	node->Address = NULL;
-	node->DNSName = NULL;
-}
 
 static void
 class_init(LassoSaml2SubjectLocalityClass *klass)
@@ -94,7 +88,7 @@ lasso_saml2_subject_locality_get_type()
 			NULL,
 			sizeof(LassoSaml2SubjectLocality),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

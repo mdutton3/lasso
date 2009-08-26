@@ -58,11 +58,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoDiscoRemoveEntry *node)
-{
-	node->entryID = NULL;
-}
 
 static void
 class_init(LassoDiscoRemoveEntryClass *klass)
@@ -90,7 +85,7 @@ lasso_disco_remove_entry_get_type()
 			NULL,
 			sizeof(LassoDiscoRemoveEntry),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

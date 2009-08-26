@@ -48,29 +48,16 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-#if 0
-	{ "EncryptedData", SNIPPET_NODE,
+	{ "EncryptedData", SNIPPET_XMLNODE,
 		G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedData), NULL, NULL, NULL},
-	{ "EncryptedKey", SNIPPET_NODE,
+	{ "EncryptedKey", SNIPPET_LIST_XMLNODES,
 		G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, EncryptedKey), NULL, NULL, NULL},
-#endif
-	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDiscoEncryptedResourceID, any), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 /*****************************************************************************/
 /* instance and class init functions	                                 */
 /*****************************************************************************/
-
-static void
-instance_init(LassoDiscoEncryptedResourceID *node)
-{
-	node->any = NULL;
-#if 0
-	node->EncryptedData = NULL;
-	node->EncryptedKey = NULL;
-#endif
-}
 
 static void
 class_init(LassoDiscoEncryptedResourceIDClass *klass)
@@ -98,7 +85,7 @@ lasso_disco_encrypted_resource_id_get_type()
 			NULL,
 			sizeof(LassoDiscoEncryptedResourceID),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

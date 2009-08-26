@@ -61,11 +61,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlp2AssertionIDRequest *node)
-{
-	node->AssertionIDRef = NULL;
-}
 
 static void
 class_init(LassoSamlp2AssertionIDRequestClass *klass)
@@ -94,7 +89,7 @@ lasso_samlp2_assertion_id_request_get_type()
 			NULL,
 			sizeof(LassoSamlp2AssertionIDRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

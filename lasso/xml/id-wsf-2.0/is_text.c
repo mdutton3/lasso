@@ -67,13 +67,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2IsText *node)
-{
-	node->minChars = 0;
-	node->maxChars = 0;
-	node->format = NULL;
-}
 
 static void
 class_init(LassoIdWsf2IsTextClass *klass)
@@ -102,7 +95,7 @@ lasso_idwsf2_is_text_get_type()
 			NULL,
 			sizeof(LassoIdWsf2IsText),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

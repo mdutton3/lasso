@@ -110,16 +110,6 @@ finalize(GObject *object)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoMiscTextNode *node)
-{
-	node->content = NULL;
-
-	node->name = NULL;
-	node->ns_href = NULL;
-	node->ns_prefix = NULL;
-	node->text_child = FALSE;
-}
 
 static void
 class_init(LassoMiscTextNodeClass *klass)
@@ -152,7 +142,7 @@ lasso_misc_text_node_get_type()
 			NULL,
 			sizeof(LassoMiscTextNode),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -63,11 +63,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2KeyInfoConfirmationData *node)
-{
-	node->KeyInfo = NULL;
-}
 
 static void
 class_init(LassoSaml2KeyInfoConfirmationDataClass *klass)
@@ -96,7 +91,7 @@ lasso_saml2_key_info_confirmation_data_get_type()
 			NULL,
 			sizeof(LassoSaml2KeyInfoConfirmationData),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

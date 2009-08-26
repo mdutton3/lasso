@@ -69,14 +69,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2SecToken *node)
-{
-	node->any = NULL;
-	node->id = NULL;
-	node->ref = NULL;
-	node->usage = NULL;
-}
 
 static void
 class_init(LassoIdWsf2SecTokenClass *klass)
@@ -105,7 +97,7 @@ lasso_idwsf2_sec_token_get_type()
 			NULL,
 			sizeof(LassoIdWsf2SecToken),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

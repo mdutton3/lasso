@@ -63,11 +63,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlp2NameIDPolicy *node)
-{
-	node->AllowCreate = FALSE;
-}
 
 static void
 class_init(LassoSamlp2NameIDPolicyClass *klass)
@@ -96,7 +91,7 @@ lasso_samlp2_name_id_policy_get_type()
 			NULL,
 			sizeof(LassoSamlp2NameIDPolicy),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

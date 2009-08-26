@@ -61,11 +61,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2DiscoKeys *node)
-{
-	node->KeyDescriptor = NULL;
-}
 
 static void
 class_init(LassoIdWsf2DiscoKeysClass *klass)
@@ -94,7 +89,7 @@ lasso_idwsf2_disco_keys_get_type()
 			NULL,
 			sizeof(LassoIdWsf2DiscoKeys),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

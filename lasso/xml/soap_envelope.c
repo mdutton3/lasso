@@ -46,12 +46,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSoapEnvelope *node)
-{
-	node->Body = NULL;
-	node->Header = NULL;
-}
 
 static void
 class_init(LassoSoapEnvelopeClass *klass)
@@ -79,7 +73,7 @@ lasso_soap_envelope_get_type()
 			NULL,
 			sizeof(LassoSoapEnvelope),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

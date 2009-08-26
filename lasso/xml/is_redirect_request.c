@@ -54,11 +54,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIsRedirectRequest *node)
-{
-	node->redirectURL = NULL;
-}
 
 static void
 class_init(LassoIsRedirectRequestClass *klass)
@@ -86,7 +81,7 @@ lasso_is_redirect_request_get_type()
 			NULL,
 			sizeof(LassoIsRedirectRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

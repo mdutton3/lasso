@@ -78,15 +78,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlp2ManageNameIDRequest *node)
-{
-	node->NameID = NULL;
-	node->EncryptedID = NULL;
-	node->NewID = NULL;
-	node->NewEncryptedID = NULL;
-	node->Terminate = NULL;
-}
 
 static void
 class_init(LassoSamlp2ManageNameIDRequestClass *klass)
@@ -114,7 +105,7 @@ lasso_samlp2_manage_name_id_request_get_type()
 			NULL,
 			sizeof(LassoSamlp2ManageNameIDRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

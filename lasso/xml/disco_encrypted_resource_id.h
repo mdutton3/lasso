@@ -51,11 +51,8 @@ typedef struct _LassoDiscoEncryptedResourceIDClass LassoDiscoEncryptedResourceID
 struct _LassoDiscoEncryptedResourceID {
 	LassoNode parent;
 
-#if 0 /* missing from lasso */
-	LassoXencEncryptedData *EncryptedData;
-	LassoXencEncryptedKey  *EncryptedKey;
-#endif
-	GList *any; /* of xmlNode */
+	xmlNode *EncryptedData;
+	GList *EncryptedKey;
 };
 
 struct _LassoDiscoEncryptedResourceIDClass {

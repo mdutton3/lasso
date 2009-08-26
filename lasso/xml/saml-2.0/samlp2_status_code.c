@@ -62,12 +62,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlp2StatusCode *node)
-{
-	node->StatusCode = NULL;
-	node->Value = NULL;
-}
 
 static void
 class_init(LassoSamlp2StatusCodeClass *klass)
@@ -96,7 +90,7 @@ lasso_samlp2_status_code_get_type()
 			NULL,
 			sizeof(LassoSamlp2StatusCode),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

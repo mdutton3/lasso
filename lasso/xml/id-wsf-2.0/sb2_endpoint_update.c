@@ -61,11 +61,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2Sb2EndpointUpdate *node)
-{
-	node->updateType = NULL;
-}
 
 static void
 class_init(LassoIdWsf2Sb2EndpointUpdateClass *klass)
@@ -94,7 +89,7 @@ lasso_idwsf2_sb2_endpoint_update_get_type()
 			NULL,
 			sizeof(LassoIdWsf2Sb2EndpointUpdate),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

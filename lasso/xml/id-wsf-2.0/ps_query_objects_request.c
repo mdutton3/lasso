@@ -75,8 +75,6 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2PsQueryObjectsRequest *node)
 {
-	node->Filter = NULL;
-	node->Subscription = NULL;
 	node->Count = -1;
 	node->Offset = -1;
 }

@@ -79,16 +79,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoDstQueryItem *node)
-{
-	node->Select = NULL;
-
-	node->id = NULL;
-	node->includeCommonAttributes = FALSE;
-	node->itemID = NULL;
-	node->changedSince = NULL;
-}
 
 static void
 class_init(LassoDstQueryItemClass *klass)
@@ -116,7 +106,7 @@ lasso_dst_query_item_get_type()
 			NULL,
 			sizeof(LassoDstQueryItem),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

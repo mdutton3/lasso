@@ -67,13 +67,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2IsItem *node)
-{
-	node->Hint = NULL;
-	node->label = NULL;
-	node->value = NULL;
-}
 
 static void
 class_init(LassoIdWsf2IsItemClass *klass)
@@ -102,7 +95,7 @@ lasso_idwsf2_is_item_get_type()
 			NULL,
 			sizeof(LassoIdWsf2IsItem),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

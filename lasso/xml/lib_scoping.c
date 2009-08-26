@@ -61,7 +61,6 @@ static void
 instance_init(LassoLibScoping *node)
 {
 	node->ProxyCount = -1;
-	node->IDPList = NULL;
 }
 
 static void

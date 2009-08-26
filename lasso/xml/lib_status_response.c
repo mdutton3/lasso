@@ -108,13 +108,6 @@ init_from_query(LassoNode *node, char **query_fields)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoLibStatusResponse *node)
-{
-	node->ProviderID = NULL;
-	node->Status = NULL;
-	node->RelayState = NULL;
-}
 
 static void
 class_init(LassoLibStatusResponseClass *klass)
@@ -145,7 +138,7 @@ lasso_lib_status_response_get_type()
 			NULL,
 			sizeof(LassoLibStatusResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

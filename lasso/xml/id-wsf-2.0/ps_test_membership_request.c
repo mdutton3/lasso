@@ -69,13 +69,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2PsTestMembershipRequest *node)
-{
-	node->TargetObjectID = NULL;
-	node->Token = NULL;
-	node->Subscription = NULL;
-}
 
 static void
 class_init(LassoIdWsf2PsTestMembershipRequestClass *klass)
@@ -104,7 +97,7 @@ lasso_idwsf2_ps_test_membership_request_get_type()
 			NULL,
 			sizeof(LassoIdWsf2PsTestMembershipRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

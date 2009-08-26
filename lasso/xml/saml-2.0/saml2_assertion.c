@@ -150,22 +150,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 static void
 instance_init(LassoSaml2Assertion *node)
 {
-	node->Issuer = NULL;
-	node->Subject = NULL;
-	node->Conditions = NULL;
-	node->Advice = NULL;
-	node->Statement = NULL;
-	node->AuthnStatement = NULL;
-	node->AuthzDecisionStatement = NULL;
-	node->AttributeStatement = NULL;
-	node->Version = NULL;
-	node->ID = NULL;
-	node->IssueInstant = NULL;
 	node->sign_type = LASSO_SIGNATURE_TYPE_NONE;
-	node->private_key_file = NULL;
-	node->certificate_file = NULL;
-	node->encryption_activated = FALSE;
-	node->encryption_public_key_str = NULL;
 	node->encryption_sym_key_type = LASSO_ENCRYPTION_SYM_KEY_TYPE_DEFAULT;
 }
 

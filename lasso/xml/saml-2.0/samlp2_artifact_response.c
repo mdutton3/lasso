@@ -63,11 +63,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlp2ArtifactResponse *node)
-{
-	node->any = NULL;
-}
 
 static void
 class_init(LassoSamlp2ArtifactResponseClass *klass)
@@ -96,7 +91,7 @@ lasso_samlp2_artifact_response_get_type()
 			NULL,
 			sizeof(LassoSamlp2ArtifactResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

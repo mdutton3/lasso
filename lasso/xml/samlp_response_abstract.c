@@ -117,12 +117,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 static void
 instance_init(LassoSamlpResponseAbstract *node)
 {
-	node->ResponseID = NULL;
-	node->MajorVersion = 0;
-	node->MinorVersion = 0;
-	node->IssueInstant = NULL;
-	node->InResponseTo = NULL;
-	node->Recipient = NULL;
 	node->sign_type = LASSO_SIGNATURE_TYPE_NONE;
 }
 

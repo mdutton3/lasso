@@ -75,15 +75,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoDstModification *node)
-{
-	node->Select = NULL;
-	node->NewData = NULL;
-	node->id = NULL;
-	node->notChangedSince = NULL;
-	node->overrideAllowed = FALSE;
-}
 
 static void
 class_init(LassoDstModificationClass *klass)
@@ -111,7 +102,7 @@ lasso_dst_modification_get_type()
 			NULL,
 			sizeof(LassoDstModification),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

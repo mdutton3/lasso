@@ -66,12 +66,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2PsGetObjectInfoRequest *node)
-{
-	node->TargetObjectID = NULL;
-	node->Subscription = NULL;
-}
 
 static void
 class_init(LassoIdWsf2PsGetObjectInfoRequestClass *klass)
@@ -100,7 +94,7 @@ lasso_idwsf2_ps_get_object_info_request_get_type()
 			NULL,
 			sizeof(LassoIdWsf2PsGetObjectInfoRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

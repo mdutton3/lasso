@@ -74,18 +74,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIsInteractionRequest *node)
-{
-	node->ResourceID = NULL;
-	node->EncryptedResourceID = NULL;
-	node->Inquiry = NULL;
-	/* TODO : KeyInfo */
-	node->id = NULL;
-	node->language = NULL;
-	node->maxInteractTime = 0;
-	/* TODO : signed */
-}
 
 static void
 class_init(LassoIsInteractionRequestClass *klass)
@@ -113,7 +101,7 @@ lasso_is_interaction_request_get_type()
 			NULL,
 			sizeof(LassoIsInteractionRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -75,15 +75,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2PsAddEntityRequest *node)
-{
-	node->Object = NULL;
-	node->PStoSPRedirectURL = NULL;
-	node->CreatePSObject = NULL;
-	node->Subscription = NULL;
-	node->TokenPolicy = NULL;
-}
 
 static void
 class_init(LassoIdWsf2PsAddEntityRequestClass *klass)
@@ -112,7 +103,7 @@ lasso_idwsf2_ps_add_entity_request_get_type()
 			NULL,
 			sizeof(LassoIdWsf2PsAddEntityRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

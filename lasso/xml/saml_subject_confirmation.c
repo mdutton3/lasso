@@ -65,13 +65,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlSubjectConfirmation *node)
-{
-	node->ConfirmationMethod = NULL;
-	node->SubjectConfirmationData = NULL;
-	node->KeyInfo = NULL;
-}
 
 static void
 class_init(LassoSamlSubjectConfirmationClass *klass)
@@ -99,7 +92,7 @@ lasso_saml_subject_confirmation_get_type()
 			NULL,
 			sizeof(LassoSamlSubjectConfirmation),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

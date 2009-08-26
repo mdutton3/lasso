@@ -75,14 +75,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2UtilStatus *node)
-{
-	node->Status = NULL;
-	node->code = NULL;
-	node->ref = NULL;
-	node->comment = NULL;
-}
 
 static void
 class_init(LassoIdWsf2UtilStatusClass *klass)
@@ -111,7 +103,7 @@ lasso_idwsf2_util_status_get_type()
 			NULL,
 			sizeof(LassoIdWsf2UtilStatus),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

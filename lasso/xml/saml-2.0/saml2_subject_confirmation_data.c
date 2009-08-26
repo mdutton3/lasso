@@ -77,15 +77,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2SubjectConfirmationData *node)
-{
-	node->NotBefore = NULL;
-	node->NotOnOrAfter = NULL;
-	node->Recipient = NULL;
-	node->InResponseTo = NULL;
-	node->Address = NULL;
-}
 
 static void
 class_init(LassoSaml2SubjectConfirmationDataClass *klass)
@@ -114,7 +105,7 @@ lasso_saml2_subject_confirmation_data_get_type()
 			NULL,
 			sizeof(LassoSaml2SubjectConfirmationData),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

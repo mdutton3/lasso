@@ -76,11 +76,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaPasswordTransforms *node)
-{
-	node->Transform = NULL;
-}
 
 static void
 class_init(LassoSaPasswordTransformsClass *klass)
@@ -108,7 +103,7 @@ lasso_sa_password_transforms_get_type()
 			NULL,
 			sizeof(LassoSaPasswordTransforms),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

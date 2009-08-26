@@ -55,12 +55,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlSubjectLocality *node)
-{
-	node->IPAddress = NULL;
-	node->DNSAddress = NULL;
-}
 
 static void
 class_init(LassoSamlSubjectLocalityClass *klass)
@@ -88,7 +82,7 @@ lasso_saml_subject_locality_get_type()
 			NULL,
 			sizeof(LassoSamlSubjectLocality),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

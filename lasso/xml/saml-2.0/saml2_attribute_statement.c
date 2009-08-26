@@ -66,12 +66,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2AttributeStatement *node)
-{
-	node->Attribute = NULL;
-	node->EncryptedAttribute = NULL;
-}
 
 static void
 class_init(LassoSaml2AttributeStatementClass *klass)
@@ -100,7 +94,7 @@ lasso_saml2_attribute_statement_get_type()
 			NULL,
 			sizeof(LassoSaml2AttributeStatement),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -114,18 +114,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaSASLResponse *node)
-{
-	node->Status = NULL;
-	node->PasswordTransforms = NULL;
-	node->Data = NULL;
-	node->ResourceOffering = NULL;
-	node->Credentials = NULL;
-	node->any = NULL;
-	node->serverMechanism = NULL;
-	node->id = NULL;
-}
 
 static void
 class_init(LassoSaSASLResponseClass *klass)
@@ -154,7 +142,7 @@ lasso_sa_sasl_response_get_type()
 			NULL,
 			sizeof(LassoSaSASLResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

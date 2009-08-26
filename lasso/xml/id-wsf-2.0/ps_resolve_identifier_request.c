@@ -63,11 +63,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2PsResolveIdentifierRequest *node)
-{
-	node->ResolveInput = NULL;
-}
 
 static void
 class_init(LassoIdWsf2PsResolveIdentifierRequestClass *klass)
@@ -96,7 +91,7 @@ lasso_idwsf2_ps_resolve_identifier_request_get_type()
 			NULL,
 			sizeof(LassoIdWsf2PsResolveIdentifierRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

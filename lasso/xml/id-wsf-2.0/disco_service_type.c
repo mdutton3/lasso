@@ -55,11 +55,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2DiscoServiceType *node)
-{
-	node->content = NULL;
-}
 
 static void
 class_init(LassoIdWsf2DiscoServiceTypeClass *klass)
@@ -88,7 +83,7 @@ lasso_idwsf2_disco_service_type_get_type()
 			NULL,
 			sizeof(LassoIdWsf2DiscoServiceType),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

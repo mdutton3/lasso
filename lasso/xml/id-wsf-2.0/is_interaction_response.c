@@ -69,13 +69,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2IsInteractionResponse *node)
-{
-	node->Status = NULL;
-	node->InteractionStatement = NULL;
-	node->Parameter = NULL;
-}
 
 static void
 class_init(LassoIdWsf2IsInteractionResponseClass *klass)
@@ -104,7 +97,7 @@ lasso_idwsf2_is_interaction_response_get_type()
 			NULL,
 			sizeof(LassoIdWsf2IsInteractionResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -122,15 +122,6 @@ cleanup:
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoLibLogoutRequest *node)
-{
-	node->ProviderID = NULL;
-	node->NameIdentifier = NULL;
-	node->SessionIndex = NULL;
-	node->RelayState = NULL;
-	node->consent = NULL;
-}
 
 static void
 class_init(LassoLibLogoutRequestClass *klass)
@@ -161,7 +152,7 @@ lasso_lib_logout_request_get_type()
 			NULL,
 			sizeof(LassoLibLogoutRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

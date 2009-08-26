@@ -72,14 +72,6 @@ static LassoNodeClass *parent_class = NULL;
 /*****************************************************************************/
 
 static void
-instance_init(LassoSaml2EncryptedElement *node)
-{
-	node->EncryptedData = NULL;
-	node->EncryptedKey = NULL;
-	node->original_data = NULL;
-}
-
-static void
 class_init(LassoSaml2EncryptedElementClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -107,7 +99,7 @@ lasso_saml2_encrypted_element_get_type()
 			NULL,
 			sizeof(LassoSaml2EncryptedElement),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

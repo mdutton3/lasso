@@ -67,13 +67,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoLibAuthenticationStatement *node)
-{
-	node->AuthnContext = NULL;
-	node->ReauthenticateOnOrAfter = NULL;
-	node->SessionIndex = NULL;
-}
 
 static void
 class_init(LassoLibAuthenticationStatementClass *klass)
@@ -101,7 +94,7 @@ lasso_lib_authentication_statement_get_type()
 			NULL,
 			sizeof(LassoLibAuthenticationStatement),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

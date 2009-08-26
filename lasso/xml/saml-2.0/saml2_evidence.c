@@ -68,14 +68,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2Evidence *node)
-{
-	node->AssertionIDRef = NULL;
-	node->AssertionURIRef = NULL;
-	node->Assertion = NULL;
-	node->EncryptedAssertion = NULL;
-}
 
 static void
 class_init(LassoSaml2EvidenceClass *klass)
@@ -104,7 +96,7 @@ lasso_saml2_evidence_get_type()
 			NULL,
 			sizeof(LassoSaml2Evidence),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

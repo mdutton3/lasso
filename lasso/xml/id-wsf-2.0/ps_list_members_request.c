@@ -78,9 +78,6 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2PsListMembersRequest *node)
 {
-	node->TargetObjectID = NULL;
-	node->Subscription = NULL;
-	node->Structured = NULL;
 	node->Count = -1;
 	node->Offset = -1;
 }

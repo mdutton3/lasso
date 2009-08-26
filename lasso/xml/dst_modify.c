@@ -133,12 +133,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoDstModify *node)
-{
-	node->prefixServiceType = NULL;
-	node->hrefServiceType = NULL;
-}
 
 static void
 class_init(LassoDstModifyClass *klass)
@@ -168,7 +162,7 @@ lasso_dst_modify_get_type()
 			NULL,
 			sizeof(LassoDstModify),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

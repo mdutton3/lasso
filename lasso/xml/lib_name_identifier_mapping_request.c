@@ -73,15 +73,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoLibNameIdentifierMappingRequest *node)
-{
-	node->Extension = NULL;
-	node->ProviderID = NULL;
-	node->NameIdentifier = NULL;
-	node->TargetNamespace = NULL;
-	node->consent = NULL;
-}
 
 static void
 class_init(LassoLibNameIdentifierMappingRequestClass *klass)
@@ -109,7 +100,7 @@ lasso_lib_name_identifier_mapping_request_get_type()
 			NULL,
 			sizeof(LassoLibNameIdentifierMappingRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

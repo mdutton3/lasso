@@ -61,11 +61,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2DstDataResponseBase *node)
-{
-	node->timeStamp = NULL;
-}
 
 static void
 class_init(LassoIdWsf2DstDataResponseBaseClass *klass)
@@ -94,7 +89,7 @@ lasso_idwsf2_dst_data_response_base_get_type()
 			NULL,
 			sizeof(LassoIdWsf2DstDataResponseBase),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

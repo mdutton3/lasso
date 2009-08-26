@@ -56,12 +56,6 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoDiscoSendSingleLogout *node)
-{
-	node->descriptionIDRefs = NULL;
-}
-
-static void
 class_init(LassoDiscoSendSingleLogoutClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -87,7 +81,7 @@ lasso_disco_send_single_logout_get_type()
 			NULL,
 			sizeof(LassoDiscoSendSingleLogout),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

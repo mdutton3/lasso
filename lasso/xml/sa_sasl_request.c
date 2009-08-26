@@ -78,17 +78,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaSASLRequest *node)
-{
-	node->Data = NULL;
-	node->RequestAuthnContext = NULL;
-
-	node->mechanism = NULL;
-	node->authzID = NULL;
-	node->advisoryAuthnID = NULL;
-	node->id = NULL;
-}
 
 static void
 class_init(LassoSaSASLRequestClass *klass)
@@ -116,7 +105,7 @@ lasso_sa_sasl_request_get_type()
 			NULL,
 			sizeof(LassoSaSASLRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

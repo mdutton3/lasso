@@ -63,11 +63,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2SubsRefDeleteItem *node)
-{
-	node->Select = NULL;
-}
 
 static void
 class_init(LassoIdWsf2SubsRefDeleteItemClass *klass)
@@ -96,7 +91,7 @@ lasso_idwsf2_subsref_delete_item_get_type()
 			NULL,
 			sizeof(LassoIdWsf2SubsRefDeleteItem),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

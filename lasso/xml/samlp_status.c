@@ -102,12 +102,6 @@ init_from_query(LassoNode *node, char **query_fields)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlpStatus *node)
-{
-	node->StatusCode = NULL;
-	node->StatusMessage = NULL;
-}
 
 static void
 class_init(LassoSamlpStatusClass *klass)
@@ -137,7 +131,7 @@ lasso_samlp_status_get_type()
 			NULL,
 			sizeof(LassoSamlpStatus),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

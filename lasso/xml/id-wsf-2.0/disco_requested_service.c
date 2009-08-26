@@ -96,19 +96,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2DiscoRequestedService *node)
-{
-	node->ServiceType = NULL;
-	node->ProviderID = NULL;
-	node->Options = NULL;
-	node->SecurityMechID = NULL;
-	node->Framework = NULL;
-	node->Action = NULL;
-	node->any = NULL;
-	node->reqID = NULL;
-	node->resultsType = NULL;
-}
 
 static void
 class_init(LassoIdWsf2DiscoRequestedServiceClass *klass)
@@ -137,7 +124,7 @@ lasso_idwsf2_disco_requested_service_get_type()
 			NULL,
 			sizeof(LassoIdWsf2DiscoRequestedService),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

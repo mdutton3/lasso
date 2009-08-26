@@ -63,14 +63,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlConditions *node)
-{
-	node->Condition = NULL;
-	node->AudienceRestrictionCondition = NULL;
-	node->NotBefore = NULL;
-	node->NotOnOrAfter = NULL;
-}
 
 static void
 class_init(LassoSamlConditionsClass *klass)
@@ -98,7 +90,7 @@ lasso_saml_conditions_get_type()
 			NULL,
 			sizeof(LassoSamlConditions),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

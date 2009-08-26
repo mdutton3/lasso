@@ -72,16 +72,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2DstRefModifyItem *node)
-{
-	node->Select = NULL;
-	node->NewData = NULL;
-	node->notChangedSince = NULL;
-	node->overrideAllowed = FALSE;
-	node->id = NULL;
-	node->itemID = NULL;
-}
 
 static void
 class_init(LassoIdWsf2DstRefModifyItemClass *klass)
@@ -110,7 +100,7 @@ lasso_idwsf2_dstref_modify_item_get_type()
 			NULL,
 			sizeof(LassoIdWsf2DstRefModifyItem),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

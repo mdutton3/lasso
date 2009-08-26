@@ -104,14 +104,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 /*****************************************************************************/
 
 static void
-instance_init(LassoDiscoModifyResponse *node)
-{
-	node->Status = NULL;
-	node->id = NULL;
-	node->newEntryIDs = NULL;
-}
-
-static void
 class_init(LassoDiscoModifyResponseClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
@@ -138,7 +130,7 @@ lasso_disco_modify_response_get_type()
 			NULL,
 			sizeof(LassoDiscoModifyResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

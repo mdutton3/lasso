@@ -103,14 +103,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2DstRefQuery *node)
-{
-	node->TestItem = NULL;
-	node->QueryItem = NULL;
-	node->prefixServiceType = NULL;
-	node->hrefServiceType = NULL;
-}
 
 static void
 class_init(LassoIdWsf2DstRefQueryClass *klass)
@@ -141,7 +133,7 @@ lasso_idwsf2_dstref_query_get_type()
 			NULL,
 			sizeof(LassoIdWsf2DstRefQuery),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

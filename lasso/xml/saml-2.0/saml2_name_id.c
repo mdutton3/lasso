@@ -71,15 +71,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSaml2NameID *node)
-{
-	node->content = NULL;
-	node->Format = NULL;
-	node->SPProvidedID = NULL;
-	node->NameQualifier = NULL;
-	node->SPNameQualifier = NULL;
-}
 
 static void
 class_init(LassoSaml2NameIDClass *klass)
@@ -108,7 +99,7 @@ lasso_saml2_name_id_get_type()
 			NULL,
 			sizeof(LassoSaml2NameID),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -44,11 +44,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSoapHeader *node)
-{
-	node->Other = NULL;
-}
 
 static void
 class_init(LassoSoapHeaderClass *klass)
@@ -76,7 +71,7 @@ lasso_soap_header_get_type()
 			NULL,
 			sizeof(LassoSoapHeader),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

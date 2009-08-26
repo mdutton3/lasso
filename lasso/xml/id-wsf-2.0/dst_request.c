@@ -69,8 +69,6 @@ static LassoNodeClass *parent_class = NULL;
 static void
 instance_init(LassoIdWsf2DstRequest *node)
 {
-	node->Extension = NULL;
-	node->itemID = NULL;
 	node->attributes = g_hash_table_new_full(
 		g_str_hash, g_str_equal, g_free, g_free);
 }

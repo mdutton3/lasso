@@ -124,17 +124,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoDstQuery *node)
-{
-	node->ResourceID = NULL;
-	node->EncryptedResourceID = NULL;
-	node->QueryItem = NULL;
-	node->id = NULL;
-	node->itemID = NULL;
-	node->prefixServiceType = NULL;
-	node->hrefServiceType = NULL;
-}
 
 static void
 class_init(LassoDstQueryClass *klass)
@@ -164,7 +153,7 @@ lasso_dst_query_get_type()
 			NULL,
 			sizeof(LassoDstQuery),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

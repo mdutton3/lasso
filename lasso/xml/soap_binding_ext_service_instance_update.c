@@ -77,16 +77,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSoapBindingExtServiceInstanceUpdate *node)
-{
-	node->SecurityMechID = NULL;
-	node->Credential = NULL;
-	node->Endpoint = NULL;
-	node->id = NULL;
-	node->mustUnderstand = NULL;
-	node->actor = NULL;
-}
 
 static void
 class_init(LassoSoapBindingExtServiceInstanceUpdateClass *klass)
@@ -114,7 +104,7 @@ lasso_soap_binding_ext_service_instance_update_get_type()
 			NULL,
 			sizeof(LassoSoapBindingExtServiceInstanceUpdate),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

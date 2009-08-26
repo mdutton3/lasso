@@ -43,12 +43,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoDsRsaKeyValue *node)
-{
-	node->Modulus = NULL;
-	node->Exponent = NULL;
-}
 
 static void
 class_init(LassoDsRsaKeyValueClass *klass)
@@ -76,7 +70,7 @@ lasso_ds_rsa_key_value_get_type()
 			NULL,
 			sizeof(LassoDsRsaKeyValue),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

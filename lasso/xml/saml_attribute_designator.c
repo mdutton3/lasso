@@ -51,12 +51,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSamlAttributeDesignator *node)
-{
-	node->AttributeName = NULL;
-	node->AttributeNamespace = NULL;
-}
 
 static void
 class_init(LassoSamlAttributeDesignatorClass *klass)
@@ -84,7 +78,7 @@ lasso_saml_attribute_designator_get_type()
 			NULL,
 			sizeof(LassoSamlAttributeDesignator),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

@@ -65,13 +65,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2ImsMappingInput *node)
-{
-	node->TokenPolicy = NULL;
-	node->Token = NULL;
-	node->reqID = NULL;
-}
 
 static void
 class_init(LassoIdWsf2ImsMappingInputClass *klass)
@@ -100,7 +93,7 @@ lasso_idwsf2_ims_mapping_input_get_type()
 			NULL,
 			sizeof(LassoIdWsf2ImsMappingInput),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

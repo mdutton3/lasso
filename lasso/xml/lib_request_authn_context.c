@@ -68,13 +68,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoLibRequestAuthnContext *node)
-{
-	node->AuthnContextClassRef = NULL;
-	node->AuthnContextStatementRef = NULL;
-	node->AuthnContextComparison = NULL;
-}
 
 static void
 class_init(LassoLibRequestAuthnContextClass *klass)
@@ -102,7 +95,7 @@ lasso_lib_request_authn_context_get_type()
 			NULL,
 			sizeof(LassoLibRequestAuthnContext),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

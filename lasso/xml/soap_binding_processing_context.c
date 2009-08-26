@@ -64,14 +64,6 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoSoapBindingProcessingContext *node)
-{
-	node->id = NULL;
-	node->mustUnderstand = NULL;
-	node->actor = NULL;
-	node->content = NULL;
-}
 
 static void
 class_init(LassoSoapBindingProcessingContextClass *klass)
@@ -99,7 +91,7 @@ lasso_soap_binding_processing_context_get_type()
 			NULL,
 			sizeof(LassoSoapBindingProcessingContext),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

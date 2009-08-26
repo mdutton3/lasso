@@ -63,11 +63,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2SubsRefDataResponse *node)
-{
-	node->ItemData = NULL;
-}
 
 static void
 class_init(LassoIdWsf2SubsRefDataResponseClass *klass)
@@ -96,7 +91,7 @@ lasso_idwsf2_subsref_data_response_get_type()
 			NULL,
 			sizeof(LassoIdWsf2SubsRefDataResponse),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 

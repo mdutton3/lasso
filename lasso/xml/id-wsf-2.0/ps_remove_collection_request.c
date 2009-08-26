@@ -63,11 +63,6 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-instance_init(LassoIdWsf2PsRemoveCollectionRequest *node)
-{
-	node->TargetObjectID = NULL;
-}
 
 static void
 class_init(LassoIdWsf2PsRemoveCollectionRequestClass *klass)
@@ -96,7 +91,7 @@ lasso_idwsf2_ps_remove_collection_request_get_type()
 			NULL,
 			sizeof(LassoIdWsf2PsRemoveCollectionRequest),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 			NULL
 		};
 
