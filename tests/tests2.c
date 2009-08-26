@@ -1,5 +1,5 @@
-#include <lasso/lasso.h>
-#include <lasso/xml/xml.h>
+#include "../lasso/lasso.h"
+#include "../lasso/xml/xml.h"
 #include <glib.h>
 #include <libxml/tree.h>
 
@@ -24,10 +24,10 @@ void load(char *file) {
 
 int main(G_GNUC_UNUSED int argc, G_GNUC_UNUSED char **argv) {
 	lasso_init();
-	load("data/response-1");
-	load("data/response-2");
-	load("data/response-3");
-	load("data/response-4");
+	load(SRCDIR "/data/response-1");
+	load(SRCDIR "/data/response-2");
+	load(SRCDIR "/data/response-3");
+	load(SRCDIR "/data/response-4");
 	lasso_shutdown();
 
 	return 0;

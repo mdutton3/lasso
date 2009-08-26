@@ -6,8 +6,6 @@ noinst_PROGRAMS = tests perfs tests2
 
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
-	-I$(top_builddir) \
-	-I$(top_srcdir) \
 	-DTESTSDATADIR=\"$(srcdir)/data/\" \
 	-DTESTSMETADATADIR=\"$(srcdir)/metadata/\" \
 	$(LASSO_CFLAGS) \
@@ -26,6 +24,7 @@ tests2_LDADD = \
 	$(LASSO_LIBS) \
 	$(CHECK_LIBS)
 tests2_LDFLAGS = -rpath `cd $(top_srcdir)/lasso/.libs/; pwd`
+tests2_CFLAGS = -DSRCDIR=\"$(srcdir)\"
 
 perfs_SOURCES = perfs.c
 perfs_LDADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
