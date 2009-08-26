@@ -31,11 +31,6 @@ extern "C" {
 
 #include "../xml.h"
 
-#ifndef __LASSO_SAML2_ASSERTION_H__
-/* to avoid circular inclusion of saml2_assertion.h */
-typedef struct _LassoSaml2Assertion LassoSaml2Assertion;
-#endif
-
 
 #define LASSO_TYPE_SAML2_ADVICE (lasso_saml2_advice_get_type())
 #define LASSO_SAML2_ADVICE(obj) \
