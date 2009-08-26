@@ -659,7 +659,7 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
 		providerID = profile->server->parent.ProviderID;
 	}
 	envelope = lasso_wsf_profile_build_soap_envelope_internal(NULL, providerID);
-	profile->soap_envelope_request = envelope;
+	lasso_assign_new_gobject(profile->soap_envelope_request, envelope);
 	lasso_list_add_gobject(envelope->Body->any, request);
 	lasso_assign_gobject(profile->request, request);
 	return lasso_wsf_profile_comply_with_security_mechanism(profile);
