@@ -107,7 +107,6 @@ lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
 	LassoProvider *provider;
 	gchar *provider_id;
 	LassoIdWsf2DiscoSvcMetadata *metadata;
-	char unique_id[33];
 	char *new_svcMDID;
 
 	g_return_val_if_fail(LASSO_IS_IDWSF2_DISCOVERY(discovery), NULL);
@@ -177,9 +176,6 @@ lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
 	/* Create a request with this xml node */
 	lasso_idwsf2_profile_init_soap_request(profile, LASSO_NODE(metadata_register),
 		LASSO_IDWSF2_DISCO_HREF);
-
-	/* Get the url of the disco service where we must send the soap request */
-	lasso_idwsf2_profile_set_endpoint_for_action(LASSO_IDWSF2_DS_REGISTER_ACTION);
 
 	return 0;
 }
