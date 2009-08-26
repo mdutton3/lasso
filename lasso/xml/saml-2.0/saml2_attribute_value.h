@@ -52,6 +52,7 @@ struct _LassoSaml2AttributeValue {
 
 	/*< public >*/
 	GList *any;
+	GHashTable *attributes;
 };
 
 struct _LassoSaml2AttributeValueClass {
