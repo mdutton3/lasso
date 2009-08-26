@@ -62,6 +62,7 @@ struct _LassoIdWsf2Sb2TargetIdentity {
 	/*< public >*/
 	/* attributes */
 	GHashTable *attributes;
+	GList *any;
 };
 
 
