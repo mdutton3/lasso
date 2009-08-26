@@ -64,6 +64,8 @@ static void lasso_register_idwsf2_xpath_namespaces(xmlXPathContext *xpathCtx);
 
 static GList* duplicate_glist_of_xmlnodes(GList*);
 
+static gint lasso_idwsf2_data_service_parse_one_modify_item(LassoIdWsf2DstRefModifyItem *item,
+		xmlDoc *cur_doc, xmlXPathContext *cur_xpathCtx, int *error_code_ptr);
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -249,6 +251,7 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	/* How much query did succeed */
 	int successful = 0;
 	int rc = 0;
+	int error_code = 0;
 
 	lasso_bad_param(IDWSF2_DATA_SERVICE, service);
 	lasso_extract_node_or_fail(request, LASSO_PROFILE(profile)->request, IDWSF2_DSTREF_QUERY, LASSO_PROFILE_ERROR_MISSING_REQUEST);
@@ -281,8 +284,8 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 		item = iter->data;
 		item_result_query = LASSO_IDWSF2_DSTREF_RESULT_QUERY(item);
 		item_result_query_base = LASSO_IDWSF2_DST_RESULT_QUERY_BASE(item);
-		xpathObj = xmlXPathEvalExpression((xmlChar*)item_result_query->Select, xpathCtx);
-		if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		if (lasso_eval_xpath_expression(xpathCtx, item_result_query->Select, &xpathObj,
+					&error_code)) {
 			/* XXX: assuming there is only one matching node */
 			data = lasso_idwsf2_dstref_data_new();
 			data_item = LASSO_IDWSF2_DSTREF_ITEM_DATA(data);
@@ -337,6 +340,13 @@ lasso_idwsf2_data_service_parse_query_items(LassoIdWsf2DataService *service)
 	} else {
 		lasso_assign_string(response2->Status->code, LASSO_DST_STATUS_CODE_PARTIAL);
 		rc = LASSO_DST_ERROR_QUERY_PARTIALLY_FAILED;
+	}
+	if (error_code) {
+		LassoIdWsf2UtilStatus *status;
+		status = lasso_idwsf2_util_status_new();
+
+		lasso_list_add_gobject(response2->Status->Status, status);
+		status->code = g_strdup_printf("LIBXML_XPATH_ERROR_%d", error_code);
 	}
 cleanup:
 
@@ -807,16 +817,14 @@ lasso_idwsf2_data_service_process_modify_msg(LassoIdWsf2DataService *service, co
 
 static gint
 lasso_idwsf2_data_service_parse_one_modify_item(LassoIdWsf2DstRefModifyItem *item, xmlDoc *cur_doc,
-		xmlXPathContext *cur_xpathCtx)
+		xmlXPathContext *cur_xpathCtx, int *error_code_ptr)
 {
-	xmlXPathObject *cur_xpathObj;
-	xmlNode *new_node;
-	xmlNode *cur_node;
-	int res = 0;
+	xmlXPathObject *cur_xpathObj = NULL;
+	xmlNode *new_node = NULL;
+	xmlNode *cur_node = NULL;
+	gint rc = 0;
 
-	if (item == NULL) {
-		return LASSO_DST_ERROR_MODIFY_FAILED;
-	}
+	g_return_val_if_fail(item != NULL && cur_doc != NULL && cur_xpathCtx != NULL, LASSO_DST_ERROR_MODIFY_FAILED);
 
 	/* Check NewData existence */
 	if (item->NewData == NULL || item->NewData->any == NULL
@@ -824,7 +832,7 @@ lasso_idwsf2_data_service_parse_one_modify_item(LassoIdWsf2DstRefModifyItem *ite
 		if (item->overrideAllowed == TRUE) {
 			new_node = NULL;
 		} else {
-			return LASSO_DST_ERROR_NEW_DATA_MISSING;
+			goto_exit_with_rc(LASSO_DST_ERROR_NEW_DATA_MISSING);
 		}
 	} else {
 		new_node = (xmlNode*)item->NewData->any->data;
@@ -837,25 +845,21 @@ lasso_idwsf2_data_service_parse_one_modify_item(LassoIdWsf2DstRefModifyItem *ite
 		xmlAddChild(xmlDocGetRootElement(cur_doc), xmlCopyNode(new_node, 1));
 	} else {
 		/* Modify an existing node */
-		cur_xpathObj = xmlXPathEvalExpression((xmlChar*)item->Select, cur_xpathCtx);
-		if (cur_xpathObj && cur_xpathObj->nodesetval && cur_xpathObj->nodesetval->nodeNr) {
+		if (lasso_eval_xpath_expression(cur_xpathCtx, item->Select, &cur_xpathObj, error_code_ptr)) {
 			/* XXX: assuming there is only one matching node */
 			cur_node = cur_xpathObj->nodesetval->nodeTab[0];
 			if (new_node != NULL) {
 				/* Replace old node with new data */
-				xmlReplaceNode(cur_node, xmlCopyNode(new_node, 1));
-			} else {
-				/* Remove old node as new data is empty */
-				xmlUnlinkNode(cur_node);
-				xmlFreeNode(cur_node);
+				cur_node = xmlReplaceNode(cur_node, xmlCopyNode(new_node, 1));
 			}
+			lasso_release_node(cur_node);
 		} else {
-			res = LASSO_DST_ERROR_MODIFY_FAILED;
+			rc = LASSO_DST_ERROR_MODIFY_FAILED;
 		}
-		xmlXPathFreeObject(cur_xpathObj);
+		lasso_release_xpath_object(cur_xpathObj);
 	}
-
-	return res;
+exit:
+	return rc;
 }
 
 /**
@@ -910,7 +914,7 @@ lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
 	response2 = LASSO_IDWSF2_UTIL_RESPONSE(response);
 	response2->Status = lasso_idwsf2_util_status_new();
 
-	/* Initialise XML parsing */
+	/* Initialize XML parsing */
 	cur_doc = xmlNewDoc((xmlChar*)"1.0");
 	xmlDocSetRootElement(cur_doc, cur_data);
 	cur_xpathCtx = xmlXPathNewContext(cur_doc);
@@ -919,9 +923,11 @@ lasso_idwsf2_data_service_parse_modify_items(LassoIdWsf2DataService *service)
 	/* Parse request ModifyItems and modify user current data accordingly */
 	/* XXX: needs another level, since there may be more than one <dst:Modify> */
 	for (iter = g_list_first(request->ModifyItem); iter != NULL; iter = g_list_next(iter)) {
+		int errorCode;
+
 		item = iter->data;
 		res = lasso_idwsf2_data_service_parse_one_modify_item(
-			item, cur_doc, cur_xpathCtx);
+			item, cur_doc, cur_xpathCtx, &errorCode);
 		if (res != 0) {
 			/* If one item fails, stop and roll back */
 			break;
