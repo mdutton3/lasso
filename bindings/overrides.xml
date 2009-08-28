@@ -39,6 +39,7 @@
   <func name="lasso_wsf_profile_get_session" return_owner="false" />
   <func name="lasso_wsf_profile_get_remote_provider" skip="true"/>
   <func name="lasso_data_service_get_answer" skip="true"/>
+  <func name="lasso_data_service_get_query_item" skip="true"/>
   <func name="lasso_data_service_add_modification" skip="true"/>
   <func name="lasso_saml2_encrypted_element_decrypt" skip="true"/>
   <func name="lasso_data_service_get_answers" skip="true"/>
