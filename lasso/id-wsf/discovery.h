@@ -75,7 +75,8 @@ LASSO_EXPORT GType lasso_discovery_get_type(void);
 
 LASSO_EXPORT LassoDiscovery* lasso_discovery_new(LassoServer *server);
 
-LASSO_EXPORT void lasso_discovery_destroy(LassoDiscovery *discovery);
+LASSO_EXPORT LassoDiscovery* lasso_discovery_new_full(LassoServer *server,
+		LassoDiscoResourceOffering *offering);
 
 LASSO_EXPORT gint lasso_discovery_init_modify(LassoDiscovery *discovery,
 	const char *security_mech_id);

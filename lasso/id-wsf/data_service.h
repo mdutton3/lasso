@@ -84,9 +84,9 @@ LASSO_EXPORT gint lasso_data_service_add_query_item(LassoDataService *service,
 LASSO_EXPORT gint lasso_data_service_process_query_msg(LassoDataService *service,
 		const char *message, const char *security_mech_id);
 
-LASSO_EXPORT gint lasso_data_service_build_modify_response_msg(LassoDataService *service);
+LASSO_EXPORT gint lasso_data_service_build_query_response_msg(LassoDataService *service);
 
-LASSO_EXPORT gint lasso_data_service_build_response_msg(LassoDataService *service);
+LASSO_EXPORT gint lasso_data_service_build_modify_response_msg(LassoDataService *service);
 
 LASSO_EXPORT gint lasso_data_service_process_query_response_msg(LassoDataService *service,
 		const char *message);
@@ -116,9 +116,8 @@ LASSO_EXPORT gint lasso_data_service_process_modify_response_msg(LassoDataServic
 
 LASSO_EXPORT  gchar* lasso_data_service_get_redirect_request_url(LassoDataService *service);
 
-LASSO_EXPORT LassoDiscoResourceOffering* lasso_data_service_get_resource_offering(
-		LassoDataService *service);
-
+LASSO_EXPORT gint lasso_data_service_get_query_item(LassoDataService *service, const char *select,
+		const char *item_id, LassoDstQueryItem **output);
 
 #ifdef __cplusplus
 }

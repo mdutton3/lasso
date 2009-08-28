@@ -34,10 +34,10 @@
 
 #include "../utils.h"
 
-#include "wsf_profile.h"
-#include "wsf_profile_private.h"
-#include "discovery.h"
-#include "utils.h"
+#include "./wsf_profile.h"
+#include "./wsf_profile_private.h"
+#include "./discovery.h"
+#include "./utils.h"
 #include "../xml/disco_modify.h"
 #include "../xml/soap_fault.h"
 #include "../xml/soap_binding_correlation.h"
@@ -73,9 +73,11 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+static LassoDiscoDescription* lasso_wsf_profile_get_description_auto(
+		const LassoDiscoServiceInstance *si, const gchar *security_mech_id);
 static gint lasso_wsf_profile_add_saml_signature(LassoWsfProfile *wsf_profile, xmlDoc *doc);
-static LassoSoapBindingCorrelation* lasso_wsf_profile_utils_get_header_correlation(LassoSoapEnvelope
-		*envelope);
+static LassoSoapBindingCorrelation* lasso_wsf_profile_utils_get_header_correlation(
+		LassoSoapEnvelope *envelope);
 static char* lasso_wsf_profile_utils_get_message_id(LassoSoapEnvelope *envelope);
 static char* lasso_wsf_profile_utils_get_ref_message_id(LassoSoapEnvelope *envelope);
 
@@ -379,7 +381,7 @@ lasso_wsf_profile_add_credential(G_GNUC_UNUSED LassoWsfProfile *profile, G_GNUC_
  * Return value: a #LassoDiscoDescription that supports security_mech_id, NULL
  * otherwise.
  */
-LassoDiscoDescription*
+static LassoDiscoDescription*
 lasso_wsf_profile_get_description_auto(const LassoDiscoServiceInstance *si,
 	const gchar *security_mech_id)
 {
@@ -579,57 +581,6 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *pr
 	return lasso_wsf_profile_build_soap_envelope_internal(refToMessageId, providerId);
 }
 
-
-/**
- * lasso_wsf_profile_is_principal_online():
- * @profile: a #LassoWsfProfile
- *
- * @Deprecated: Since 2.2.1
- *
- * Return value: FALSE.
- **/
-gboolean
-lasso_wsf_profile_principal_is_online(G_GNUC_UNUSED LassoWsfProfile *profile)
-{
-	return FALSE;
-}
-
-/**
- * lasso_wsf_profile_set_principal_online():
- * @profile: a #LassoWsfProfile
- * @status : a char* representing status of principal.
- *
- * @Deprecated: Since 2.2.1
- *
- **/
-void
-lasso_wsf_profile_set_principal_status(G_GNUC_UNUSED LassoWsfProfile *profile, G_GNUC_UNUSED const char *status)
-{
-}
-
-/**
- * lasso_wsf_profile_set_principal_online():
- * @profile: a #LassoWsfProfile
- *
- * @Deprecated: Since 2.2.1
- *
- **/
-void
-lasso_wsf_profile_set_principal_online(G_GNUC_UNUSED LassoWsfProfile *profile)
-{
-}
-
-/**
- * lasso_wsf_profile_set_principal_offline():
- * @profile: a #LassoWsfProfile
- *
- * Set the principal status as offline.
- *
- **/
-void
-lasso_wsf_profile_set_principal_offline(G_GNUC_UNUSED LassoWsfProfile *profile)
-{
-}
 
 /**
  * lasso_wsf_profile_get_identity:

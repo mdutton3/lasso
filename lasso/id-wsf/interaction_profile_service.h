@@ -76,6 +76,9 @@ LASSO_EXPORT gint lasso_interaction_profile_service_process_response_msg(
 	LassoInteractionProfileService *service,
 	const gchar *response_msg);
 
+LASSO_EXPORT gint lasso_interaction_profile_service_build_redirect_response_msg(
+		LassoWsfProfile *profile, char *redirect_url);
+
 
 #ifdef __cplusplus
 }

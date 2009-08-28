@@ -28,7 +28,7 @@
 LASSO_EXPORT gboolean lasso_security_mech_id_is_null_authentication(const gchar *security_mech_id);
 LASSO_EXPORT gboolean lasso_security_mech_id_is_x509_authentication(const gchar *security_mech_id);
 LASSO_EXPORT gboolean lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id);
-LASSO_EXPORT
-    gboolean lasso_security_mech_id_is_bearer_authentication(const gchar *security_mech_id);
+LASSO_EXPORT gboolean lasso_security_mech_id_is_bearer_authentication(
+		const gchar *security_mech_id);
 
 #endif

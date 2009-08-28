@@ -147,15 +147,6 @@ LASSO_EXPORT gint lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profil
 
 LASSO_EXPORT const char *lasso_wsf_profile_get_security_mech_id(LassoWsfProfile *profile);
 
-G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile,
-							 const char *status);
-
-G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_online(
-	LassoWsfProfile *profile);
-
-G_GNUC_DEPRECATED LASSO_EXPORT void lasso_wsf_profile_set_principal_offline(
-	LassoWsfProfile *profile);
-
 LASSO_EXPORT gint lasso_wsf_profile_init(LassoWsfProfile *profile, LassoServer *server,
 	LassoDiscoResourceOffering *offering);
 
@@ -171,6 +162,11 @@ LASSO_EXPORT gint lasso_wsf_profile_set_soap_fault(LassoWsfProfile *wsf_profile,
 LASSO_EXPORT gint lasso_wsf_profile_set_status_code(LassoWsfProfile *wsf_profile, const char *code);
 
 LASSO_EXPORT const char* lasso_wsf_profile_get_status_code(LassoWsfProfile *wsf_profile);
+
+LASSO_EXPORT gint lasso_wsf_profile_set_msg_url_from_description(LassoWsfProfile *wsf_profile);
+
+LASSO_EXPORT void lasso_wsf_profile_set_resource_offering(LassoWsfProfile *profile,
+		LassoDiscoResourceOffering *offering);
 
 #define lasso_wsf_profile_helper_assign_resource_id(from,to) \
 	if ((from)->ResourceID) {\
