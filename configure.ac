@@ -28,7 +28,7 @@ dnl Copy stamp REVISIO-INFO in the configure script.
 AC_REVISION($Revision$)
 
 dnl Run many macros mostly needed by configure.ac.
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign tar-pax])
 dnl Support automake 1.11 silent mode
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 dnl Create rules to automaticaly regenerate the config header.
