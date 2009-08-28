@@ -133,7 +133,7 @@ WSF_H_FILES = \
 	soap_binding_ext_credentials_context.h \
 	soap_binding_ext_service_instance_update.h \
 	soap_binding_ext_timeout.h \
-	soap_binding.c \
+	soap_binding.h \
 	utility_status.h \
 	wsse_security.h
 endif
