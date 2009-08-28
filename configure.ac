@@ -741,6 +741,10 @@ AC_ARG_ENABLE(wsf, [  --enable-wsf            enable experimental ID-WSF],
 
 AM_CONDITIONAL([WSF_ENABLED],[test "x$enable_wsf" = "xyes"])
 LASSO_WSF_SUPPORT=0
+if test "x$enable_wsf" = "xyes"; then
+	AC_DEFINE(LASSO_WSF_ENABLED, [], [Define if ID-WSF support is enabled])
+	LASSO_WSF_SUPPORT=1
+fi
 AC_SUBST(LASSO_WSF_SUPPORT)
 
 
