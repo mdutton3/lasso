@@ -56,7 +56,6 @@ typedef struct _LassoIdWsf2DiscoveryPrivate LassoIdWsf2DiscoveryPrivate;
 struct _LassoIdWsf2Discovery {
 	LassoIdWsf2Profile parent;
 
-	/* FIXME : Both should be lists */
 	GList *metadatas; /* of LassoIdWsf2DiscoSvcMetadata* */
 	GList *svcMDIDs; /* of char* */
 
