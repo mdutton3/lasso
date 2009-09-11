@@ -743,6 +743,7 @@ lasso_node_cleanup_original_xmlnodes(LassoNode *node)
 }
 
 static GQuark original_xmlnode_quark;
+static GQuark custom_namespace_quark;
 
 /**
  * lasso_node_get_original_xmlnode:
@@ -795,6 +796,63 @@ lasso_node_set_original_xmlnode(LassoNode *node, xmlNode* xmlnode)
 		}
 		g_object_set_qdata_full(G_OBJECT(node), original_xmlnode_quark, NULL, (GDestroyNotify)original_xmlnode_free);
 	}
+}
+
+struct _CustomNamespace {
+	char *prefix;
+	char *href;
+};
+
+static struct _CustomNamespace *
+_lasso_node_new_custom_namespace(char *prefix, char *href)
+{
+	struct _CustomNamespace *ret = g_new(struct _CustomNamespace, 1);
+	lasso_assign_string(ret->prefix, prefix);
+	lasso_assign_string(ret->href, href);
+	return ret;
+}
+
+static void
+_lasso_node_free_custom_namespace(struct _CustomNamespace *custom_namespace)
+{
+	lasso_release_string(custom_namespace->prefix);
+	lasso_release_string(custom_namespace->href);
+	lasso_release(custom_namespace);
+}
+
+/**
+ * _lasso_node_get_custom_namespace:
+ * @node: a #LassoNode object
+ *
+ * Return the eventually attached custom namespace object
+ *
+ * Return value: NULL or an #_CustomNamespace structure.
+ */
+static struct _CustomNamespace*
+_lasso_node_get_custom_namespace(LassoNode *node)
+{
+	if (! LASSO_NODE(node))
+		return NULL;
+	return g_object_get_qdata((GObject*)node, custom_namespace_quark);
+}
+
+/**
+ * lasso_node_set_custom_namespace:
+ * @node: a #LassoNode object
+ * @prefix: the prefix to use for the definition
+ * @href: the URI of the namespace
+ *
+ * Set a custom namespace for an object instance, use it with object existing a lot of revision of
+ * the nearly same namespace.
+ */
+void
+lasso_node_set_custom_namespace(LassoNode *node, char *prefix, char *href)
+{
+	if (! LASSO_IS_NODE(node) || ! prefix || ! href)
+		return;
+	g_object_set_qdata_full((GObject*)node, custom_namespace_quark,
+			_lasso_node_new_custom_namespace(prefix, href),
+			(GDestroyNotify)_lasso_node_free_custom_namespace);
 }
 
 /*****************************************************************************/
@@ -1149,11 +1207,22 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	GList *list_ns = NULL, *list_classes = NULL, *t;
 	LassoNode *value_node;
 	struct XmlSnippet *version_snippet;
+	struct _CustomNamespace *custom_namespace;
 
 	if (class->node_data == NULL)
 		return NULL;
 
 	xmlnode = xmlNewNode(NULL, (xmlChar*)class->node_data->node_name);
+	/* set a custom namespace if one is found */
+	custom_namespace = _lasso_node_get_custom_namespace(node);
+	if (custom_namespace) {
+		xmlNewNs(xmlnode, (xmlChar*)custom_namespace->href,
+				(xmlChar*)custom_namespace->prefix);
+		/* skip the base class namespace, it is replaced by the custom one */
+		class = g_type_class_peek_parent(class);
+	}
+
+	/* collect namespaces in the order of ancestor classes, nearer first */
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 		if (class->node_data->ns)
 			list_ns = g_list_append(list_ns, class->node_data->ns);
@@ -1161,6 +1230,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		class = g_type_class_peek_parent(class);
 	}
 
+	/* create the namespaces */
 	t = g_list_first(list_ns);
 	while (t) {
 		ns = t->data;
@@ -1168,7 +1238,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		t = g_list_next(t);
 	}
 	g_list_free(list_ns);
-
+	/* first NS defined is the namespace of the element */
 	xmlSetNs(xmlnode, xmlnode->nsDef);
 
 	t = g_list_last(list_classes);
@@ -1339,6 +1409,7 @@ class_init(LassoNodeClass *class)
 	gobject_class->finalize = lasso_node_finalize;
 
 	original_xmlnode_quark = g_quark_from_static_string("lasso_original_xmlnode");
+	custom_namespace_quark = g_quark_from_static_string("lasso_custom_namespace");
 	class->node_data = NULL;
 }
 
