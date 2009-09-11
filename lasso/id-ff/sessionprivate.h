@@ -41,8 +41,6 @@ struct _LassoSessionPrivate
 	GList *providerIDs;
 	GHashTable *status; /* hold temporary response status for sso-art */
 	GHashTable *assertions_by_id;
-	GHashTable *assertions; /* of LassoSamlAssertion */
-	gboolean is_dirty;
 #ifdef LASSO_WSF_ENABLED
 	GHashTable *eprs;
 #endif

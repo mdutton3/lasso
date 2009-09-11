@@ -47,12 +47,11 @@ typedef struct _LassoSessionPrivate LassoSessionPrivate;
 struct _LassoSession {
 	LassoNode parent;
 
-	/*< public >*/
-	/* Can actually contain LassoSamlAssertion or LassoSaml2Assertion */
-	GHashTable *_assertions; /* of LassoSamlAssertion */
-	gboolean _is_dirty;
-
 	/*< private >*/
+	/* Can actually contain LassoSamlAssertion or LassoSaml2Assertion */
+	GHashTable *assertions; /* of LassoSamlAssertion */
+	gboolean is_dirty;
+
 	LassoSessionPrivate *private_data;
 };
 
