@@ -65,6 +65,8 @@ LASSO_EXPORT LassoSoapFault* lasso_soap_fault_new(void);
 
 LASSO_EXPORT LassoSoapFault* lasso_soap_fault_new_from_message(const gchar *message);
 
+LASSO_EXPORT LassoSoapFault* lasso_soap_fault_new_full(const char *faultcode, const char *faultstring);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

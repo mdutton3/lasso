@@ -22,8 +22,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "private.h"
-#include "soap_fault.h"
+#include "./private.h"
+#include "./soap_fault.h"
+#include "../utils.h"
 
 /**
  * SECTION:soap_fault
@@ -134,3 +135,18 @@ lasso_soap_fault_new_from_message(const gchar *message)
 
 	return node;
 }
+
+LassoSoapFault*
+lasso_soap_fault_new_full(const char *faultcode, const char *faultstring)
+{
+	LassoSoapFault *soap_fault;
+
+	if (! faultcode && ! faultstring)
+		return NULL;
+	soap_fault = g_object_new(LASSO_TYPE_SOAP_FAULT, NULL);
+	lasso_assign_string(soap_fault->faultcode, faultcode);
+	lasso_assign_string(soap_fault->faultstring, faultstring);
+
+	return soap_fault;
+}
+
