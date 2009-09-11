@@ -1432,7 +1432,7 @@
 /**
  * LASSO_WSSE1_HREF:
  *
- * Namespace for FIXME
+ * Namespace for WS-Security 1.0
  *
  */
 #define LASSO_WSSE1_HREF \
@@ -1440,10 +1440,81 @@
 /**
  * LASSO_WSSE1_PREFIX:
  *
- * Preferred prefix for namespace of FIXME
+ * Preferred prefix for namespace of WS-Security 1.0
  *
  */
 #define LASSO_WSSE1_PREFIX "wsse"
+
+/**
+ * LASSO_WSSE11_HREF:
+ *
+ * Namespace for WS-Security 1.1
+ */
+#define LASSO_WSSE11_HREF \
+	"http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd"
+
+/* LASSO_WSSE11_PREFIX:
+ *
+ * Preferred prefix for namespace of WS-Security 1.1
+ *
+ */
+#define LASSO_WSSE11_PREFIX "wsse"
+
+/**
+ * LASSO_WSSE_SECEXT_FAULT_CODE_UNSUPPORTED_SECURITY_TOKEN:
+ *
+ * Fault code for WS-Security tokens handling
+ */
+#define LASSO_WSSE_SECEXT_FAULT_CODE_Unsupported_Security_Token \
+	"wsse:UnsupportedSecurityToken"
+
+/**
+ * LASSO_WSSE_SECEXT_FAULT_CODE_UNSUPPORTED_ALGORITHM:
+ *
+ * Fault code for WS-Security tokens handling
+ */
+#define LASSO_WSSE_SECEXT_FAULT_CODE_Unsupported_Algorithm \
+	"wsse:UnsupportedAlgorithm"
+
+/**
+ * LASSO_WSSE_SECEXT_FAULT_CODE_INVALID_SECURITY:
+ *
+ * Fault code for WS-Security tokens handling
+ */
+#define LASSO_WSSE_SECEXT_FAULT_CODE_Invalid_Security \
+	"wsse:InvalidSecurity"
+
+/**
+ * LASSO_WSSE_SECEXT_FAULT_CODE_INVALID_SECURITY_TOKEN:
+ *
+ * Fault code for WS-Security tokens handling
+ */
+#define LASSO_WSSE_SECEXT_FAULT_CODE_Invalid_Security_Token \
+	"wsse:InvalidSecurityToken"
+
+/**
+ * LASSO_WSSE_SECEXT_FAULT_CODE_FAILED_AUTHENTICATION:
+ *
+ * Fault code for WS-Security tokens handling
+ */
+#define LASSO_WSSE_SECEXT_FAULT_CODE_FAILED_AUTHENTICATION \
+	"wsse:FailedAuthentication"
+
+/**
+ * LASSO_WSSE_SECEXT_FAULT_CODE_FAILED_CHECK:
+ *
+ * Fault code for WS-Security tokens handling
+ */
+#define LASSO_WSSE_SECEXT_FAULT_CODE_FAILED_CHECK \
+	"wsse:FailedCheck"
+
+/**
+ * LASSO_WSSE_SECEXT_FAULT_CODE_SECURITY_TOKEN_UNAVAILABLE:
+ *
+ * Fault code for WS-Security tokens handling
+ */
+#define LASSO_WSSE_SECEXT_FAULT_CODE_SECURITY_TOKEN_UNAVAILABLE \
+	"wsse:SecurityTokenUnavailable"
 
 /**
  * LASSO_WSUTIL1_HREF:
@@ -1476,23 +1547,6 @@
  *
  */
 #define LASSO_WSA_PREFIX "wsa"
-
-/* WS-Security - 2004/01 */
-/**
- * LASSO_WSSE_200401_HREF:
- *
- * Namespace for FIXME
- *
- */
-#define LASSO_WSSE_200401_HREF \
-	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
-/**
- * LASSO_WSSE_200401_PREFIX:
- *
- * Preferred prefix for namespace of FIXME
- *
- */
-#define LASSO_WSSE_200401_PREFIX "wsse"
 
 /* WS-Utility */
 /**
