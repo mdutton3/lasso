@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "sb2_user_interaction_header.h"
+#include "../../registry.h"
 
 /**
  * SECTION:sb2_user_interaction_header
@@ -93,6 +94,8 @@ class_init(LassoIdWsf2Sb2UserInteractionHeaderClass *klass)
 	lasso_node_class_set_nodename(nclass, "UserInteraction");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_SB2_HREF, LASSO_IDWSF2_SB2_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	lasso_registry_default_add_direct_mapping(LASSO_IDWSF2_SB2_HREF, "UserInteraction", LASSO_LASSO_HREF, "LassoIdWsf2Sb2UserInteractionHeader");
+
 }
 
 GType

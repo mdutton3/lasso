@@ -1545,6 +1545,8 @@ prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 		prefix = "Soap";
 	else if (strcmp((char*)href, LASSO_SOAP_BINDING_HREF) == 0)
 		prefix = "SoapBinding";
+	else if (strcmp((char*)href, LASSO_SOAP_BINDING_EXT_HREF) == 0)
+		prefix = "SoapBindingExt";
 	else if (strcmp((char*)href, LASSO_DISCO_HREF) == 0)
 		prefix = "Disco";
 	else if (strcmp((char*)href, LASSO_DS_HREF) == 0)
@@ -1567,6 +1569,16 @@ prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 		prefix = "IdWsf2Util";
 	else if (strcmp((char*)href, LASSO_IDWSF2_SEC_HREF) == 0)
 		prefix = "IdWsf2Sec";
+	else if (strcmp((char*)href, LASSO_IDWSF2_IMS_HREF) == 0)
+		prefix = "IdWsf2Ims";
+	else if (strcmp((char*)href, LASSO_IDWSF2_IS_HREF) == 0)
+		prefix = "IdWsf2Is";
+	else if (strcmp((char*)href, LASSO_IDWSF2_PS_HREF) == 0)
+		prefix = "IdWsf2Ps";
+	else if (strcmp((char*)href, LASSO_IDWSF2_SUBS_HREF) == 0)
+		prefix = "IdWsf2Subs";
+	else if (strcmp((char*)href, LASSO_IDWSF2_SUBSREF_HREF) == 0)
+		prefix = "IdWsf2SubsRef";
 	else if (strcmp((char*)href, LASSO_WSA_HREF) == 0)
 		prefix = "WsAddr";
 #if 0 /* Desactivate DGME lib special casing */
@@ -1665,15 +1677,16 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		} else if (prefix != NULL && strcmp(prefix, "Soap") == 0 && strcmp(node_name, "detail") == 0) { /* FIXME */
 			typename = g_strdup("LassoSoapDetail");
 		} else {
-			if (prefix != NULL) {
-				typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
-			} else {
-				if (xmlnode->ns != NULL && xmlnode->ns->href != NULL) {
-					const char *ctypename = lasso_registry_default_get_mapping((char*)xmlnode->ns->href, node_name, LASSO_LASSO_HREF);
-					if (ctypename) {
-						typename = g_strdup(ctypename);
-					}
+			/* first try with registered mappings */
+			if (xmlnode->ns != NULL && xmlnode->ns->href != NULL) {
+				const char *ctypename = lasso_registry_default_get_mapping((char*)xmlnode->ns->href, node_name, LASSO_LASSO_HREF);
+				if (ctypename) {
+					typename = g_strdup(ctypename);
 				}
+			}
+			/* finally try the default behaviour */
+			if (prefix != NULL && typename == NULL) {
+				typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
 			}
 		}
 	}
