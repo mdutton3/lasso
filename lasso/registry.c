@@ -215,7 +215,8 @@ static const char *lasso_registry_get_direct_mapping(GHashTable *direct_mappings
 	GQuark from_name_quark = g_quark_try_string(from_name);
 	LassoRegistryDirectMappingRecord record, *found;
 
-	g_return_val_if_fail(from_name_quark != 0, NULL);
+	if (from_name_quark == 0)
+		return NULL;
 
 	record.from_namespace = from_ns_quark;
 	record.from_name = from_name_quark;
