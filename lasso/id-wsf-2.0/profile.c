@@ -189,6 +189,38 @@ lasso_idwsf2_profile_process_soap_response_msg(LassoIdWsf2Profile *profile, cons
 
 	return res;
 }
+
+/**
+ * lasso_idwsf2_profile_get_soap_envelope_request:
+ * @idwsf2_profile: a #LassoIdWsf2Profile object
+ *
+ * Return the last parsed SOAP request object.
+ *
+ * Return value: a #LassoSoapEnvelope object or NULL if no request as ever been parsed with this
+ * object. You must free this object.
+ */
+LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_request(LassoIdWsf2Profile *idwsf2_profile)
+{
+	return g_object_ref(idwsf2_profile->soap_envelope_request);
+
+}
+
+/**
+ * lasso_idwsf2_profile_get_soap_envelope_response:
+ * @idwsf2_profile: a #LassoIdWsf2Profile object
+ *
+ * Return the last parsed SOAP response object.
+ *
+ * Return value: a #LassoSoapEnvelope object or NULL if no response as ever been parsed with this
+ * object. You must free this object.
+ */
+LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_response(LassoIdWsf2Profile *idwsf2_profile)
+{
+	return g_object_ref(idwsf2_profile->soap_envelope_response);
+
+}
+
+
 /*****************************************************************************/
 /* overridden parent class methods                                           */
 /*****************************************************************************/

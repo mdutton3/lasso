@@ -82,6 +82,11 @@ LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_build_soap_envelope(
 		const char *refToMessageId,
 		const char *providerId);
 
+LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_request(LassoIdWsf2Profile *idwsf2_profile);
+
+LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_response(LassoIdWsf2Profile *idwsf2_profile);
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
