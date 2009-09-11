@@ -73,8 +73,7 @@ WSF_C_FILES = \
 	soap_binding_ext_service_instance_update.c \
 	soap_binding_ext_timeout.c \
 	soap_binding.c \
-	utility_status.c \
-	wsse_security.c
+	utility_status.c
 
 WSF_H_FILES = \
 	disco_authenticate_requester.h \
@@ -134,8 +133,7 @@ WSF_H_FILES = \
 	soap_binding_ext_service_instance_update.h \
 	soap_binding_ext_timeout.h \
 	soap_binding.h \
-	utility_status.h \
-	wsse_security.h
+	utility_status.h
 endif
 
 liblasso_xml_la_SOURCES = \

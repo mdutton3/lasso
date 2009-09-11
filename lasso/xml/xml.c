@@ -1554,7 +1554,7 @@ prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 	else if (strcmp((char*)href, LASSO_SA_HREF) == 0)
 		prefix = "Sa";
 	else if (strcmp((char*)href, LASSO_WSSE_HREF) == 0)
-		prefix = "Wsse";
+		prefix = "WsSec1";
 	else if (strcmp((char*)href, LASSO_WSSE1_HREF) == 0)
 		prefix = "WsSec1";
 	else if (strcmp((char*)href, LASSO_IDWSF2_DISCO_HREF) == 0)
