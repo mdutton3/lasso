@@ -231,7 +231,7 @@ lasso_misc_text_node_new_with_string(char *content)
 	LassoMiscTextNode *object;
 	object = g_object_new(LASSO_TYPE_MISC_TEXT_NODE, NULL);
 	object->content = g_strdup(content);
-	return LASSO_NODE(object);
+	return (LassoMiscTextNode*)LASSO_NODE(object);
 }
 
 /**
@@ -246,7 +246,7 @@ LassoMiscTextNode*
 lasso_misc_text_node_new_with_xml_node(xmlNode *xml_node)
 {
 	LassoMiscTextNode *object;
-	object = g_object_new(LASSO_TYPE_MISC_TEXT_NODE, NULL);
+	object = (LassoMiscTextNode*)g_object_new(LASSO_TYPE_MISC_TEXT_NODE, NULL);
 	lasso_misc_text_node_set_xml_content(object, xml_node);
-	return (LassoNode*)object;
+	return object;
 }
