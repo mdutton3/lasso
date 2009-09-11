@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "wsse_security_header.h"
+#include "../../registry.h"
 
 /*
  * Schema fragment (oasis-200401-wss-wssecurity-secext-1.0.xsd):
@@ -76,12 +77,25 @@ static void
 class_init(LassoWsSec1SecurityHeaderClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+	guint i;
+	const char *namespaces[] = {
+		"http://schemas.xmlsoap.org/ws/2002/04/secext",
+		"http://schemas.xmlsoap.org/ws/2002/07/secext",
+		"http://schemas.xmlsoap.org/ws/2002/12/secext",
+		"http://schemas.xmlsoap.org/ws/2003/06/secext",
+		"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd",
+		"http://www.docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+	};
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Security");
 	lasso_node_class_set_ns(nclass, LASSO_WSSE1_HREF, LASSO_WSSE1_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	/* Wsse has lots of namespaces defined */
+	for (i=0; i < G_N_ELEMENTS(namespaces); i++) {
+		lasso_registry_default_add_direct_mapping(namespaces[i], "Security", LASSO_LASSO_HREF, "LassoWsSec1SecurityHeader");
+	}
 }
 
 GType
