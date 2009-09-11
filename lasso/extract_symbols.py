@@ -14,7 +14,7 @@ if len(sys.argv) == 2+enable_wsf:
 else:
     srcdir = '.'
 
-regex = re.compile('LASSO_EXPORT.*(lasso_[a-zA-Z0-9_]+)[ \t]*[\(;]')
+regex = re.compile('LASSO_EXPORT[^;(]*(lasso_[a-zA-Z0-9_]+)', re.MULTILINE)
 
 symbols = []
 for header_file in glob.glob('%s/*/*.h' % srcdir) + glob.glob('%s/*.h' % srcdir) + \
