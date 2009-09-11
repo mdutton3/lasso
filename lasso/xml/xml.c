@@ -2604,12 +2604,20 @@ lasso_node_get_xmlnode_for_any_type(LassoNode *node, xmlNode *cur)
 	xmlNode *original_xmlnode;
 
 	original_xmlnode = lasso_node_get_original_xmlnode(node);
-	if (original_xmlnode) {
-		return xmlCopyNode(original_xmlnode, 1);
+	if (cur) {
+		if (original_xmlnode) {
+			xmlNode *children = xmlCopyNodeList(original_xmlnode->children);
+			xmlCopyPropList(cur, original_xmlnode->properties);
+			xmlAddChildList(cur, children);
+			return cur;
+		} else {
+			return cur;
+		}
 	} else {
-		xmlNode *children = xmlCopyNodeList(original_xmlnode->children);
-		xmlCopyPropList(cur, original_xmlnode->properties);
-		xmlAddChildList(cur, children);
-		return cur;
+		if (original_xmlnode) {
+			return xmlCopyNode(original_xmlnode, 1);
+		} else {
+			return cur;
+		}
 	}
 }
