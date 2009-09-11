@@ -418,6 +418,26 @@
 #define lasso_foreach(_iter, _list) \
 	for (_iter = (_list); _iter; _iter = g_list_next(_iter))
 
+/**
+ * lasso_foreach_full_begin:
+ * @_type: the type of the variable @_data
+ * @_data: the name of the variable to define to store data values
+ * @_iter: the name of the variable to define to store the iterator
+ * @_list: the GList* to iterate
+ *
+ * Traverse a GList* @_list, using @_iter as iteration variable extract data field to variable
+ * @_data of type @_type.
+ */
+#define lasso_foreach_full_begin(_type, _data, _iter, _list) \
+	{ \
+		_type _data = NULL; \
+		GList *_iter = NULL; \
+		for (_iter = (_list); _iter && ((_data = _iter->data), 1); _iter = g_list_next(_iter)) \
+		{
+
+#define lasso_foreach_full_end() \
+				} }
+
 /* Declare type of element in a container */
 #ifndef OFTYPE
 #define OFTYPE(x)
