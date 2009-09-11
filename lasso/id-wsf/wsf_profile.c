@@ -43,7 +43,6 @@
 #include "../xml/soap_binding_correlation.h"
 #include "../xml/soap_binding_provider.h"
 #include "../xml/soap_binding_processing_context.h"
-#include "../xml/wsse_security.h"
 #include "../xml/saml_assertion.h"
 #include "../xml/saml_authentication_statement.h"
 #include "../xml/saml_subject_statement_abstract.h"
@@ -54,6 +53,7 @@
 #include "../xml/soap_fault.h"
 #include "../xml/soap_detail.h"
 #include "../xml/is_redirect_request.h"
+#include "../xml/ws/wsse_security_header.h"
 
 
 #include "../id-ff/server.h"
@@ -227,7 +227,7 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 {
 	LassoSoapEnvelope *soap = NULL;
 	LassoSoapHeader *header = NULL;
-	LassoWsseSecurity *wsse_security = NULL;
+	LassoWsSec1SecurityHeader *wsse_security = NULL;
 	LassoSession *session = NULL;
 	const LassoDiscoDescription *description = NULL;
 	GList *credentialRefs = NULL;
@@ -246,20 +246,25 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 	goto_cleanup_if_fail_with_rc(credentialRefs != NULL, LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF);
 	lasso_extract_node_or_fail(soap, profile->soap_envelope_request, SOAP_ENVELOPE, LASSO_SOAP_ERROR_MISSING_ENVELOPE);
 	lasso_extract_node_or_fail(header, soap->Header, SOAP_HEADER, LASSO_SOAP_ERROR_MISSING_HEADER);
-	needle = g_list_find_custom(header->Other, (gconstpointer)LASSO_TYPE_WSSE_SECURITY,
+	needle = g_list_find_custom(header->Other, (gconstpointer)LASSO_TYPE_WSSE_SECURITY_HEADER,
 			(GCompareFunc)is_of_type);
 	if (needle) {
-		lasso_assign_gobject(wsse_security, LASSO_WSSE_SECURITY(needle->data));
+		lasso_assign_gobject(wsse_security, LASSO_WSSE_SECURITY_HEADER(needle->data));
 	} else {
-		wsse_security = lasso_wsse_security_new();
+		wsse_security = lasso_wsse_security_header_new();
 	}
+	/* Comply with ID-WSF 1.0 specification */
+	lasso_node_set_custom_namespace(LASSO_NODE(wsse_security), LASSO_WSSE_PREFIX,
+			LASSO_WSSE_HREF);
 
 	while (credentialRefs) {
 		char *ref = (char*)credentialRefs->data;
 		xmlNode *assertion = lasso_session_get_assertion_by_id(session, ref);
 		goto_cleanup_if_fail_with_rc(assertion != NULL, LASSO_WSF_PROFILE_ERROR_MISSING_CREDENTIAL_REF);
-		lasso_list_add_xml_node(wsse_security->any, assertion);
+		/* add an exact copy of the assertion in order to keep the IdP signature valid */
+		lasso_list_add_new_gobject(wsse_security->any, lasso_misc_text_node_new_with_xml_node(assertion));
 		credentialRefs = g_list_next(credentialRefs);
+		lasso_release_xml_node(assertion);
 	}
 	if (needle == NULL) {
 		lasso_list_add_gobject(header->Other, wsse_security);
@@ -291,7 +296,8 @@ lasso_wsf_profile_comply_with_security_mechanism(LassoWsfProfile *profile)
 		return lasso_wsf_profile_comply_with_saml_authentication(profile);
 	}
 	if (lasso_security_mech_id_is_bearer_authentication(sec_mech_id)) {
-		/* Same as SAML auth, add the tokens to wss:Security header */
+		/* Same as SAML auth, add the tokens to wss:Security header, the difference is that
+		 * later we won't add our own signature to the header */
 		return lasso_wsf_profile_comply_with_saml_authentication(profile);
 	}
 	if (lasso_security_mech_id_is_null_authentication(sec_mech_id)) {
