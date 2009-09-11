@@ -22,13 +22,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "private.h"
-#include "misc_text_node.h"
+#include <libxml/tree.h>
+#include "../utils.h"
+#include "./private.h"
+#include "./misc_text_node.h"
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
+typedef struct {
+	xmlNode *xml_content;
+} LassoMiscTextNodePrivate;
+
+#define LASSO_MISC_TEXT_NODE_GET_PRIVATE(o) \
+	   (G_TYPE_INSTANCE_GET_PRIVATE ((o), LASSO_TYPE_MISC_TEXT_NODE, LassoMiscTextNodePrivate))
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "content", SNIPPET_TEXT_CHILD,
@@ -57,6 +65,12 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	xmlNs *ns;
+	LassoMiscTextNodePrivate *private;
+
+	private = LASSO_MISC_TEXT_NODE_GET_PRIVATE(node);
+	if (private->xml_content) {
+		return xmlCopyNode(private->xml_content, 1);
+	}
 
 	if (LASSO_MISC_TEXT_NODE(node)->text_child) {
 		return xmlNewText((xmlChar*)(LASSO_MISC_TEXT_NODE(node)->content));
@@ -97,10 +111,13 @@ static void
 finalize(GObject *object)
 {
 	LassoMiscTextNode *t = LASSO_MISC_TEXT_NODE(object);
+	LassoMiscTextNodePrivate *private;
 
-	g_free(t->name);
-	g_free(t->ns_href);
-	g_free(t->ns_prefix);
+	private = LASSO_MISC_TEXT_NODE_GET_PRIVATE(object);
+	lasso_release_xml_node(private->xml_content);
+	lasso_release_string(t->name);
+	lasso_release_string(t->ns_href);
+	lasso_release_string(t->ns_prefix);
 
 	G_OBJECT_CLASS(parent_class)->finalize(G_OBJECT(t));
 }
@@ -125,6 +142,7 @@ class_init(LassoMiscTextNodeClass *klass)
 
 	lasso_node_class_set_nodename(nclass, "XXX");
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	g_type_class_add_private(klass, sizeof(LassoMiscTextNodePrivate));
 }
 
 GType
@@ -153,6 +171,38 @@ lasso_misc_text_node_get_type()
 }
 
 /**
+ * lasso_misc_text_node_get_xml_content:
+ * @misc_text_node: a #LassoMiscTextNode
+ *
+ * Return the xml content in this node.
+ *
+ * Return value: an #xmlNode or NULL.
+ */
+xmlNode*
+lasso_misc_text_node_get_xml_content(LassoMiscTextNode *misc_text_node)
+{
+	LassoMiscTextNodePrivate *private_data;
+
+	private_data = LASSO_MISC_TEXT_NODE_GET_PRIVATE(misc_text_node);
+	return private_data->xml_content;
+}
+
+/**
+ * lasso_misc_text_node_set_xml_content:
+ * @misc_text_node: a #LassoMiscTextNode
+ *
+ * Set the xml content of this #LassoMiscTextNode
+ */
+void
+lasso_misc_text_node_set_xml_content(LassoMiscTextNode *misc_text_node, xmlNode *node)
+{
+	LassoMiscTextNodePrivate *private_data;
+
+	private_data = LASSO_MISC_TEXT_NODE_GET_PRIVATE(misc_text_node);
+	lasso_assign_xml_node(private_data->xml_content, node);
+}
+
+/**
  * lasso_misc_text_node_new:
  *
  * Creates a new #LassoMiscTextNode object.
@@ -175,7 +225,7 @@ lasso_misc_text_node_new()
  *
  * Return value: a newly created #LassoMiscTextNode object
  **/
-LassoNode*
+LassoMiscTextNode*
 lasso_misc_text_node_new_with_string(char *content)
 {
 	LassoMiscTextNode *object;
@@ -184,3 +234,19 @@ lasso_misc_text_node_new_with_string(char *content)
 	return LASSO_NODE(object);
 }
 
+/**
+ * lasso_misc_text_node_new_with_xml_node:
+ * @xml_node: an #xmlNode
+ *
+ * Creates a new #LassoMiscTextNode object and initialize it with @xml_node.
+ *
+ * Return value: a newly created #LassoMiscTextNode object
+ */
+LassoMiscTextNode*
+lasso_misc_text_node_new_with_xml_node(xmlNode *xml_node)
+{
+	LassoMiscTextNode *object;
+	object = g_object_new(LASSO_TYPE_MISC_TEXT_NODE, NULL);
+	lasso_misc_text_node_set_xml_content(object, xml_node);
+	return (LassoNode*)object;
+}

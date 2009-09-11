@@ -68,10 +68,18 @@ struct _LassoMiscTextNodeClass {
 	LassoNodeClass parent;
 };
 
+LASSO_EXPORT void lasso_misc_text_node_set_xml_content(LassoMiscTextNode *misc_text_node,
+		xmlNode *node);
+
+LASSO_EXPORT xmlNode* lasso_misc_text_node_get_xml_content(LassoMiscTextNode *misc_text_node);
+
 LASSO_EXPORT GType lasso_misc_text_node_get_type(void);
+
 LASSO_EXPORT LassoNode* lasso_misc_text_node_new(void);
 
-LASSO_EXPORT LassoNode* lasso_misc_text_node_new_with_string(char *content);
+LASSO_EXPORT LassoMiscTextNode* lasso_misc_text_node_new_with_string(char *content);
+
+LASSO_EXPORT LassoMiscTextNode* lasso_misc_text_node_new_with_xml_node(xmlNode *xml_node);
 
 
 #ifdef __cplusplus
