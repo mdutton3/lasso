@@ -46,9 +46,10 @@ START_TEST(test01_provider_new)
 			TESTSDATADIR "/sp1-la/metadata.xml",
 			TESTSDATADIR "/sp1-la/public-key.pem",
 			TESTSDATADIR "/ca1-la/certificate.pem");
+	fail_unless(LASSO_IS_PROVIDER(provider));
 
 	dump = lasso_node_dump(LASSO_NODE(provider));
-	printf("dump:\n%s\n", dump);
+	fail_unless(dump != NULL);
 	g_object_unref(provider);
 	lasso_release_string(dump);
 }
@@ -63,12 +64,15 @@ START_TEST(test02_provider_new_from_dump)
 			TESTSDATADIR "/sp1-la/metadata.xml",
 			TESTSDATADIR "/sp1-la/public-key.pem",
 			TESTSDATADIR "/ca1-la/certificate.pem");
+	fail_unless(LASSO_IS_PROVIDER(provider1));
 
 	dump = lasso_node_dump(LASSO_NODE(provider1));
+	fail_unless(dump != NULL);
 	provider2 = lasso_provider_new_from_dump(dump);
+	fail_unless(LASSO_IS_PROVIDER(provider2));
 	lasso_release_string(dump);
 	dump = lasso_node_dump(LASSO_NODE(provider2));
-	printf("dump:\n%s\n", dump);
+	fail_unless(dump != NULL);
 	g_object_unref(provider1);
 	g_object_unref(provider2);
 	lasso_release_string(dump);
@@ -78,6 +82,7 @@ END_TEST
 START_TEST(test01_server_new)
 {
 	LassoServer *server;
+	LassoProvider *provider;
 	char *dump;
 
 	server = lasso_server_new(
@@ -85,9 +90,34 @@ START_TEST(test01_server_new)
 			TESTSDATADIR "/idp1-la/private-key-raw.pem",
 			NULL, /* Secret key to unlock private key */
 			TESTSDATADIR "/idp1-la/certificate.pem");
+	fail_unless(LASSO_IS_SERVER(server));
+	provider = LASSO_PROVIDER(server);
+	fail_unless(server->private_key != NULL);
+	fail_unless(server->private_key_password == NULL);
+	fail_unless(server->certificate != NULL);
+	fail_unless(server->signature_method == LASSO_SIGNATURE_METHOD_RSA_SHA1);
+	fail_unless(provider->ProviderID != NULL);
+	fail_unless(provider->role == 0);
+	fail_unless(strcmp(provider->metadata_filename, TESTSDATADIR "/idp1-la/metadata.xml") == 0);
+	fail_unless(provider->public_key == NULL);
+	fail_unless(provider->ca_cert_chain == NULL);
 
 	dump = lasso_node_dump(LASSO_NODE(server));
-	printf("dump:%s\n", dump);
+	fail_unless(dump != NULL);
+	g_object_unref(server);
+	server = lasso_server_new_from_dump(dump);
+	fail_unless(LASSO_IS_SERVER(server));
+	provider = LASSO_PROVIDER(server);
+	fail_unless(server->private_key != NULL);
+	fail_unless(server->private_key_password == NULL);
+	fail_unless(server->certificate != NULL);
+	fail_unless(server->signature_method == LASSO_SIGNATURE_METHOD_RSA_SHA1);
+	fail_unless(server->providers != NULL);
+	fail_unless(provider->ProviderID != NULL);
+	fail_unless(provider->role == 0, "provider->role != 0 => provider :=  %d", provider->role);
+	fail_unless(strcmp(provider->metadata_filename, TESTSDATADIR "/idp1-la/metadata.xml") == 0);
+	fail_unless(provider->public_key == NULL);
+	fail_unless(provider->ca_cert_chain == NULL);
 	g_object_unref(server);
 	lasso_release_string(dump);
 }
@@ -103,12 +133,20 @@ START_TEST(test02_server_add_provider)
 			TESTSDATADIR "/idp1-la/private-key-raw.pem",
 			NULL, /* Secret key to unlock private key */
 			TESTSDATADIR "/idp1-la/certificate.pem");
+	fail_unless(LASSO_IS_SERVER(server));
+	fail_unless(server->private_key != NULL);
+	fail_unless(! server->private_key_password);
+	fail_unless(server->certificate != NULL);
+	fail_unless(server->signature_method == LASSO_SIGNATURE_METHOD_RSA_SHA1);
+	fail_unless(server->providers != NULL);
 	lasso_server_add_provider(
 			server,
 			LASSO_PROVIDER_ROLE_SP,
 			TESTSDATADIR "/sp1-la/metadata.xml",
 			TESTSDATADIR "/sp1-la/public-key.pem",
 			TESTSDATADIR "/ca1-la/certificate.pem");
+	fail_unless(g_hash_table_size(server->providers) == 1);
+
 
 	dump = lasso_node_dump(LASSO_NODE(server));
 	g_object_unref(server);
@@ -159,9 +197,12 @@ START_TEST(test04_node_new_from_dump)
 	  "Format=\"urn:liberty:iff:nameid:federated\">_AF452F97C9E1590DDEB91D5BA6AA48ED"\
 	  "</saml:NameIdentifier>"\
 	  "</lib:LogoutRequest>";
+	char *dump;
 
 	node = lasso_node_new_from_dump(msg);
 	fail_unless(node != NULL, "new_from_dump failed");
+	dump = lasso_node_dump(node);
+	fail_unless(dump != NULL, "node_dump failed");
 	g_object_unref(node);
 }
 END_TEST
