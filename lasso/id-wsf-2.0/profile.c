@@ -220,7 +220,47 @@ LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_response(LassoIdWsf2Pr
 
 }
 
+/**
+ * lasso_idwsf2_profile_set_response:
+ * @idwsf2_profile: a #LassoIdWsf2Profile object
+ * @response: (transfer full) (allow-none): a #LassoNode to set as the new content of the SOAP
+ * response
+ *
+ * Replace the current content of the response with node.
+ *
+ */
+void
+lasso_idwsf2_profile_set_response(LassoIdWsf2Profile *idwsf2_profile, LassoNode *response)
+{
+	if (! LASSO_IDWSF2_PROFILE(idwsf2_profile) || !idwsf2_profile->soap_envelope_response ||
+		!  idwsf2_profile->soap_envelope_response->Body)
+		return;
+	lasso_assign_new_gobject(((LassoProfile*)idwsf2_profile)->response, response);
+	lasso_release_list_of_gobjects(idwsf2_profile->soap_envelope_response->Body->any);
+	lasso_list_add_gobject(idwsf2_profile->soap_envelope_response->Body->any, response);
+	return;
+}
 
+/**
+ * lasso_idwsf2_profile_set_request:
+ * @idwsf2_profile: a #LassoIdWsf2Profile object
+ * @request: (transfer full) (allow-none): a #LassoNode to set as the new content of the SOAP
+ * request.
+ *
+ * Replace the current content of the request with node.
+ *
+ */
+void
+lasso_idwsf2_profile_set_request(LassoIdWsf2Profile *idwsf2_profile, LassoNode *request)
+{
+	if (! LASSO_IDWSF2_PROFILE(idwsf2_profile) || !idwsf2_profile->soap_envelope_request ||
+		!  idwsf2_profile->soap_envelope_request->Body)
+		return;
+	lasso_assign_new_gobject(((LassoProfile*)idwsf2_profile)->request, request);
+	lasso_release_list_of_gobjects(idwsf2_profile->soap_envelope_request->Body->any);
+	lasso_list_add_gobject(idwsf2_profile->soap_envelope_request->Body->any, request);
+	return;
+}
 /*****************************************************************************/
 /* overridden parent class methods                                           */
 /*****************************************************************************/

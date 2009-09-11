@@ -86,6 +86,9 @@ LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_request(L
 
 LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_response(LassoIdWsf2Profile *idwsf2_profile);
 
+LASSO_EXPORT void lasso_idwsf2_profile_set_response(LassoIdWsf2Profile *idwsf2_profile, LassoNode *response);
+
+LASSO_EXPORT void lasso_idwsf2_profile_set_request(LassoIdWsf2Profile *idwsf2_profile, LassoNode *request);
 
 #ifdef __cplusplus
 }
