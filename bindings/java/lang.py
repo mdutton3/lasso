@@ -59,7 +59,7 @@ def mangle_name(name):
     return s
 
 def jni_elem_type(type):
-    if type in ('char*', 'gchar*', 'const char*', 'const gchar*'):
+    if type in ('char*',  'guchar*', 'const guchar*', 'gchar*', 'const char*', 'const gchar*'):
         return 'jstring'
     elif type == 'xmlNode*':
         return 'jstring'
@@ -242,7 +242,7 @@ protected static native void destroy(long cptr);
             return 'boolean'
         elif vtype in ['int','gint'] + self.binding_data.enums:
             return 'int'
-        elif vtype in ('char*', 'gchar*'):
+        elif vtype in ('guchar*', 'char*', 'gchar*'):
             return 'String'
         elif vtype in ('const GList*','GList*','GHashTable*'):
             return 'Object[]'

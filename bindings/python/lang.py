@@ -34,7 +34,7 @@ class Binding:
         if t:
             m = re.match(r'(?:const\s*)?(.*)',t) # Remove const modifier
             t = m.group(1)
-            return t not in ['char*', 'gchar*',
+            return t not in ['guchar*', 'guchar*', 'char*', 'gchar*',
                 'GList*', 'GHashTable*',
                 'int', 'gint', 'gboolean', 'xmlNode*'] + self.binding_data.enums
         else:
@@ -429,7 +429,7 @@ if WSF_SUPPORT:
                         py_args.append('%s = None' % arg_name)
                 else:
                     py_args.append(arg_name)
-                if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*', 'xmlNode*') or \
+                if arg_type in ('char*', 'const char*', 'guchar*', 'const guchar*', 'gchar*', 'const gchar*', 'xmlNode*') or \
                         arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] or \
                         arg_type in self.binding_data.enums:
                     c_args.append(arg_name)
@@ -635,7 +635,7 @@ register_constants(PyObject *d)
             self.wrapper_list.append('%s_%s_get' % (klassname[5:], mname))
 
             ftype = m[0]
-            if ftype in ('char*', 'const char*', 'gchar*', 'const gchar*'):
+            if ftype in ('char*', 'const char*', 'guchar*', 'const guchar*', 'gchar*', 'const gchar*'):
                 ftype = 'char*'
             print >> fd, '    %s return_value;' % ftype
             print >> fd, '    PyObject* return_pyvalue;'
@@ -668,7 +668,7 @@ register_constants(PyObject *d)
             print >> fd, '    %s* this;' % klassname
             arg_type = m[0]
             # Determine type class
-            if m[0] in ('char*', 'const char*', 'gchar*', 'const gchar*'):
+            if m[0] in ('char*', 'const char*', 'guchar*', 'const guchar*', 'gchar*', 'const gchar*'):
                 arg_type = arg_type.replace('const ', '')
                 parse_format = 'z'
                 parse_arg = '&value'
@@ -726,7 +726,7 @@ register_constants(PyObject *d)
             print >> fd, '    }'
         elif vtype in ['int', 'gint'] + self.binding_data.enums:
             print >> fd, '    return_pyvalue = PyInt_FromLong(return_value);'
-        elif vtype in ('char*', 'gchar*'):
+        elif vtype in ('char*', 'guchar*', 'const guchar*', 'gchar*'):
             print >> fd, '    if (return_value) {'
             print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
             print >> fd, '        g_free(return_value);'
