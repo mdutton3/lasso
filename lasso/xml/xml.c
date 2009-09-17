@@ -874,8 +874,11 @@ lasso_node_traversal(LassoNode *node, void (*do_to_node)(LassoNode *node, Snippe
 	LassoNodeClass *class;
 	struct XmlSnippet *snippet;
 
+	if (node == NULL) {
+		return;
+	}
 	class = LASSO_NODE_GET_CLASS(node);
-	if (class->node_data == NULL || node == NULL || do_to_node == NULL) {
+	if (class == NULL || class->node_data == NULL || do_to_node == NULL) {
 		return;
 	}
 	do_to_node(node, type);

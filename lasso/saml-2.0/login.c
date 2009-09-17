@@ -708,13 +708,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED) == 0) {
 			provider->private_data->encryption_mode |= LASSO_ENCRYPTION_MODE_NAMEID;
 		}
-		if (federation->remote_nameIdentifier) {
-			assertion->Subject->NameID = g_object_ref(
-					federation->remote_nameIdentifier);
-		} else {
-			assertion->Subject->NameID = g_object_ref(
-					federation->local_nameIdentifier);
-		}
+		lasso_assign_gobject(assertion->Subject->NameID,
+				federation->local_nameIdentifier);
 	}
 
 	/* Encrypt NameID */
@@ -1230,7 +1225,7 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	LassoProfile *profile;
 	LassoSaml2Assertion *assertion;
 	GList *previous_assertions, *t;
-	LassoSaml2NameID *ni, *idp_ni = NULL;
+	LassoSaml2NameID *ni;
 	LassoFederation *federation;
 
 	profile = LASSO_PROFILE(login);
@@ -1269,14 +1264,10 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	}
 
 	/* create federation, only if nameidentifier format is Federated */
-	if (strcmp(ni->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0) {
+	if (ni && ni->Format && strcmp(ni->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0) {
 		federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
-		if (ni != NULL && idp_ni != NULL) {
-			federation->local_nameIdentifier = g_object_ref(ni);
-			federation->remote_nameIdentifier = g_object_ref(idp_ni);
-		} else {
-			federation->remote_nameIdentifier = g_object_ref(ni);
-		}
+
+		lasso_assign_gobject(federation->local_nameIdentifier, ni);
 		/* add federation in identity */
 		lasso_identity_add_federation(LASSO_PROFILE(login)->identity, federation);
 	}

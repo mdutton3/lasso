@@ -173,9 +173,9 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 {
 	LassoProfile *profile = NULL;
 	LassoProvider *remote_provider = NULL;
-	LassoFederation *federation = NULL;
 	LassoSamlp2StatusResponse *response = NULL;
 	LassoSaml2NameID *name_id = NULL;
+	LassoFederation *federation = NULL;
 	int rc = 0;
 
 	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
@@ -186,24 +186,43 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 	if (rc)
 		goto cleanup;
 
+	/* Get the federation */
+	federation = lasso_identity_get_federation(profile->identity,
+			remote_provider->ProviderID);
+	if (LASSO_IS_FEDERATION(federation) == FALSE) {
+		rc = critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
+		goto cleanup;
+	}
 
 	/* Get the name identifier */
 	name_id = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID;
-	if (name_id == NULL) {
+	if (! LASSO_IS_SAML2_NAME_ID(name_id)) {
 		message(G_LOG_LEVEL_CRITICAL,
 				"Name identifier not found in name id management request");
 		lasso_saml20_profile_set_response_status(
 				profile,
 				LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
-		return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
+		rc = LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
+		goto cleanup;
 	}
 
+	/* Check it matches */
+	if (! lasso_federation_verify_name_identifier(federation, (LassoNode*)name_id)) {
+		lasso_saml20_profile_set_response_status(
+				profile,
+				LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
+		rc = LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND;
+		goto cleanup;
+	}
+
+	/* Ok it matches, now apply modifications */
 	if (LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->Terminate) {
 		/* defederation */
-		lasso_identity_remove_federation(profile->identity, profile->remote_providerID);
+		lasso_identity_remove_federation(profile->identity, remote_provider->ProviderID);
 	} else {
 		/* name registration */
 		LassoSaml2NameID *new_name_id;
+
 		new_name_id = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new());
 		new_name_id->Format = g_strdup(name_id->Format);
 		new_name_id->NameQualifier = g_strdup(name_id->NameQualifier);
@@ -226,11 +245,10 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 			new_name_id->content = g_strdup(
 				LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NewID);
 		}
-
-		if (federation->local_nameIdentifier)
-			lasso_node_destroy(LASSO_NODE(federation->local_nameIdentifier));
-		federation->local_nameIdentifier = g_object_ref(new_name_id);
-		profile->identity->is_dirty = TRUE;
+		/* Get federation */
+		lasso_assign_gobject(federation->local_nameIdentifier, new_name_id);
+		/* Set identity is_dirty */
+		lasso_identity_add_federation(profile->identity, federation);
 	}
 cleanup:
 	lasso_release_gobject(response);

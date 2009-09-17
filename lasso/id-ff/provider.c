@@ -179,7 +179,7 @@ lasso_provider_get_first_http_method(LassoProvider *provider,
 	char *protocol_profile_prefix;
 	GList *local_supported_profiles;
 	GList *remote_supported_profiles;
-	GList *t1, *t2 = NULL;
+	GList *t1 = NULL, *t2 = NULL;
 	gboolean found;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_HTTP_METHOD_NONE);
@@ -221,7 +221,7 @@ lasso_provider_get_first_http_method(LassoProvider *provider,
 	if (found) {
 		if (g_str_has_suffix(t2->data, "http"))
 			return LASSO_HTTP_METHOD_REDIRECT;
-		if (t2 && g_str_has_suffix(t2->data, "soap"))
+		if (g_str_has_suffix(t2->data, "soap"))
 			return LASSO_HTTP_METHOD_SOAP;
 		g_assert_not_reached();
 	}

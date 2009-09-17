@@ -360,7 +360,7 @@ lasso_idwsf2_data_service_process_query_response_soap_fault_msg(LassoIdWsf2DataS
 	LassoSoapFault *fault;
 	LassoIdWsf2Sb2RedirectRequest *redirect_request = NULL;
 	GList *iter;
-	int res;
+	int res = 0;
 
 	if (! LASSO_IS_SOAP_FAULT(LASSO_PROFILE(profile)->response)) {
 		/* Should not happen as it should be checked in caller */

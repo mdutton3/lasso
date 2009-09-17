@@ -315,73 +315,72 @@ lasso_get_public_key_from_private_key_file(const char *private_key_file)
 xmlSecKeysMngrPtr
 lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 {
-	xmlSecKeysMngrPtr keys_mngr;
-	GIOChannel *gioc;
-	gchar *line;
+	xmlSecKeysMngrPtr keys_mngr = NULL;
+	GIOChannel *gioc = NULL;
+	gchar *line = NULL;
 	gsize len, pos;
 	GString *cert = NULL;
 	gint ret;
+	gint certificates = 0;
 
 	/* No file just return NULL */
-	if (! pem_certs_chain_file || strlen(pem_certs_chain_file) == 0) {
-		return NULL;
-	}
+	goto_cleanup_if_fail (pem_certs_chain_file && strlen(pem_certs_chain_file) != 0);
 	gioc = g_io_channel_new_file(pem_certs_chain_file, "r", NULL);
 	if (! gioc) {
 		message(G_LOG_LEVEL_WARNING, "Cannot open chain file %s", pem_certs_chain_file);
-		return NULL;
+		goto cleanup;
 	}
 
-	/* create keys manager */
 	keys_mngr = xmlSecKeysMngrCreate();
 	if (keys_mngr == NULL) {
 		message(G_LOG_LEVEL_CRITICAL,
 				lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED));
-		return NULL;
+		goto cleanup;
 	}
+
 	/* initialize keys manager */
 	if (xmlSecCryptoAppDefaultKeysMngrInit(keys_mngr) < 0) {
 		message(G_LOG_LEVEL_CRITICAL,
 				lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED));
 		xmlSecKeysMngrDestroy(keys_mngr);
-		return NULL;
+		goto cleanup;
 	}
 
 	while (g_io_channel_read_line(gioc, &line, &len, &pos, NULL) == G_IO_STATUS_NORMAL) {
-		if (g_strstr_len(line, 64, "BEGIN CERTIFICATE") != NULL) {
+		if (line != NULL && g_strstr_len(line, 64, "BEGIN CERTIFICATE") != NULL) {
 			cert = g_string_new(line);
-		} else if (g_strstr_len(line, 64, "END CERTIFICATE") != NULL) {
+		} else if (cert != NULL && line != NULL && g_strstr_len(line, 64, "END CERTIFICATE") != NULL) {
 			g_string_append(cert, line);
 			/* load the new certificate found in the keys manager */
+			/* create keys manager */
 			ret = xmlSecCryptoAppKeysMngrCertLoadMemory(keys_mngr,
 					(const xmlSecByte*) cert->str,
 					(xmlSecSize) cert->len,
 					xmlSecKeyDataFormatPem,
 					xmlSecKeyDataTypeTrusted);
+			if (ret < 0) {
+				goto cleanup;
+			}
+			certificates++;
 			g_string_free(cert, TRUE);
 			cert = NULL;
-			if (ret < 0) {
-				if (line) {
-					g_free(line);
-					xmlSecKeysMngrDestroy(keys_mngr);
-				}
-				g_io_channel_shutdown(gioc, TRUE, NULL);
-				return NULL;
-			}
 		} else if (cert != NULL && line != NULL && line[0] != '\0') {
 			g_string_append(cert, line);
-		} else {
-			debug("Empty line found in the CA certificate chain file");
 		}
 		/* free last line read */
-		if (line != NULL) {
-			g_free(line);
-			line = NULL;
-		}
+		lasso_release_string(line);
 	}
 
-	g_io_channel_shutdown(gioc, TRUE, NULL);
-	g_io_channel_unref(gioc);
+cleanup:
+	if (gioc) {
+		g_io_channel_shutdown(gioc, TRUE, NULL);
+		g_io_channel_unref(gioc);
+	}
+	if (cert)
+		g_string_free(cert, TRUE);
+	if (certificates == 0)
+		lasso_release_key_manager(keys_mngr);
+	lasso_release_string(line);
 
 	return keys_mngr;
 }
@@ -591,7 +590,7 @@ lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_k
 	 * covered by the signature */
 
 	str_split = g_strsplit(query, "&Signature=", 0);
-	if (str_split[1] == NULL) {
+	if (str_split[0] == NULL || str_split[1] == NULL) {
 		g_strfreev(str_split);
 		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
 	}
@@ -644,7 +643,10 @@ lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_k
 	/* get signature (unescape + base64 decode) */
 	signature = xmlMalloc(key_size+1);
 	b64_signature = (char*)xmlURIUnescapeString(str_split[1], 0, NULL);
-	xmlSecBase64Decode((xmlChar*)b64_signature, signature, key_size+1);
+	if (b64_signature == NULL || xmlSecBase64Decode((xmlChar*)b64_signature, signature, key_size+1) < 0) {
+		ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
+		goto done;
+	}
 
 	/* compute signature digest */
 	digest = lasso_sha1(str_split[0]);
@@ -760,6 +762,21 @@ error_code(G_GNUC_UNUSED GLogLevelFlags level, int error, ...)
 }
 
 
+/**
+ * lasso_sign_node:
+ * @xmlnode: the xmlnode to sign
+ * @id_attr_name: (allow-none): an ID attribute to reference the xmlnode in the signature
+ * @id_value: (allow-none): value of the ID attribute
+ * @private_key_file: the path to a key file, or the key itself PEM encoded.
+ * @certificate_file: (allow-none): the path to a certificate file to place in the KeyInfo, or the certificate
+ * itself PEM encoded.
+ *
+ * Sign an xmlnode, use the given attribute to reference or create an envelopped signature,
+ * eventually place a certificate in the KeyInfo node. The signature template must already be
+ * present on the xmlnode.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
 int
 lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value,
 		const char *private_key_file, const char *certificate_file)
@@ -768,6 +785,9 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	xmlNode *sign_tmpl, *old_parent;
 	xmlSecDSigCtx *dsig_ctx;
 	xmlAttr *id_attr = NULL;
+
+	if (private_key_file == NULL || xmlnode == NULL)
+		return LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ;
 
 	sign_tmpl = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
 	if (sign_tmpl == NULL)

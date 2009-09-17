@@ -119,7 +119,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoSaml2Assertion *assertion = LASSO_SAML2_ASSERTION(node);
 	xmlNode *xmlnode;
-	int rc;
+	int rc = 0;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 
