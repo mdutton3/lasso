@@ -64,7 +64,7 @@ lasso_session_add_endpoint_reference(LassoSession *session, LassoWsAddrEndpointR
 			g_hash_table_insert(session->private_data->eprs,
 				g_strdup(LASSO_IDWSF2_DISCO_SERVICE_TYPE(i->data)->content),
 				g_object_ref(epr));
-			lasso_private_data(session)->is_dirty = TRUE;
+			session->is_dirty = TRUE;
 			break;
 		}
 	}
