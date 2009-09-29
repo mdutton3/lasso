@@ -202,6 +202,8 @@ LASSO_EXPORT void lasso_provider_set_encryption_mode(LassoProvider *provider,
 LASSO_EXPORT void lasso_provider_set_encryption_sym_key_type(LassoProvider *provider,
 		LassoEncryptionSymKeyType encryption_sym_key_type);
 
+LASSO_EXPORT gchar* lasso_provider_get_default_name_id_format(const LassoProvider *provider);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

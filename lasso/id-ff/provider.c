@@ -1290,3 +1290,16 @@ lasso_provider_verify_query_signature(LassoProvider *provider, const char *messa
 	return lasso_query_verify_signature(message, provider_public_key);
 }
 
+/**
+ * lasso_provider_get_default_name_id_format:
+ * @provider: a #LassoProvider object
+ *
+ * If the provider has a list of supported name id formats in its metadatas, return the first one.
+ *
+ * Return value: a NameIDFormat URI or NULL, the returned value must be freed by the caller.
+ */
+gchar*
+lasso_provider_get_default_name_id_format(const LassoProvider *provider)
+{
+	return lasso_provider_get_metadata_one(provider, "NameIDFormat");
+}
