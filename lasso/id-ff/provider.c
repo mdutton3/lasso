@@ -81,7 +81,7 @@ static gboolean lasso_provider_load_metadata_from_doc(LassoProvider *provider, x
  *      string must be freed by the caller.
  **/
 gchar*
-lasso_provider_get_assertion_consumer_service_url(LassoProvider *provider, const char *service_id)
+lasso_provider_get_assertion_consumer_service_url(const LassoProvider *provider, const char *service_id)
 {
 	GHashTable *descriptor;
 	GList *l;
@@ -116,7 +116,7 @@ lasso_provider_get_assertion_consumer_service_url(LassoProvider *provider, const
  *      string must be freed by the caller.
  **/
 gchar*
-lasso_provider_get_metadata_one(LassoProvider *provider, const char *name)
+lasso_provider_get_metadata_one(const LassoProvider *provider, const char *name)
 {
 	GList *l;
 	GHashTable *descriptor;
@@ -148,7 +148,7 @@ lasso_provider_get_metadata_one(LassoProvider *provider, const char *name)
  *      not be freed, modified or stored.
  **/
 GList*
-lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
+lasso_provider_get_metadata_list(const LassoProvider *provider, const char *name)
 {
 	GHashTable *descriptor;
 
@@ -163,7 +163,7 @@ lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
 
 /**
  * lasso_provider_get_first_http_method:
- * @provider: a #LassoProvider
+ * @provider: (transfer none): a #LassoProvider
  * @remote_provider: a #LassoProvider depicting the remote provider
  * @protocol_type: a Liberty profile
  *
@@ -174,7 +174,7 @@ lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
  **/
 LassoHttpMethod
 lasso_provider_get_first_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, LassoMdProtocolType protocol_type)
+		const LassoProvider *remote_provider, const LassoMdProtocolType protocol_type)
 {
 	char *protocol_profile_prefix;
 	GList *local_supported_profiles;
@@ -243,7 +243,7 @@ lasso_provider_get_first_http_method(LassoProvider *provider,
  * Return value: %TRUE if it is appropriate
  **/
 gboolean
-lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote_provider,
+lasso_provider_accept_http_method(LassoProvider *provider, const LassoProvider *remote_provider,
 		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,
 		gboolean initiate_profile)
 {
@@ -300,7 +300,7 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
  * Return value: %TRUE if it is supported
  **/
 gboolean
-lasso_provider_has_protocol_profile(LassoProvider *provider,
+lasso_provider_has_protocol_profile(const LassoProvider *provider,
 		LassoMdProtocolType protocol_type, const char *protocol_profile)
 {
 	GList *supported;
@@ -324,7 +324,7 @@ lasso_provider_has_protocol_profile(LassoProvider *provider,
  *      caller.
  **/
 char*
-lasso_provider_get_base64_succinct_id(LassoProvider *provider)
+lasso_provider_get_base64_succinct_id(const LassoProvider *provider)
 {
 	char *succinct_id, *base64_succinct_id;
 
@@ -346,7 +346,7 @@ lasso_provider_get_base64_succinct_id(LassoProvider *provider)
  *      not found.  This xmlnode must be freed by the caller.
  **/
 xmlNode*
-lasso_provider_get_organization(LassoProvider *provider)
+lasso_provider_get_organization(const LassoProvider *provider)
 {
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	if (provider->private_data->organization) {
@@ -673,7 +673,7 @@ lasso_provider_get_type()
 }
 
 LassoProtocolConformance
-lasso_provider_get_protocol_conformance(LassoProvider *provider)
+lasso_provider_get_protocol_conformance(const LassoProvider *provider)
 {
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_PROTOCOL_NONE);
 	return provider->private_data->conformance;

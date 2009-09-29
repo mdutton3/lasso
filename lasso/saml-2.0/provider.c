@@ -215,7 +215,7 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 
 LassoHttpMethod
 lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, LassoMdProtocolType protocol_type)
+		const LassoProvider *remote_provider, LassoMdProtocolType protocol_type)
 {
 	LassoHttpMethod method = LASSO_HTTP_METHOD_NONE;
 	int i;
@@ -247,7 +247,7 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 }
 
 gchar*
-lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider,
+lasso_saml20_provider_get_assertion_consumer_service_url(const LassoProvider *provider,
 		int service_id)
 {
 	GHashTable *descriptor;
@@ -293,7 +293,7 @@ add_assertion_consumer_url_to_list(gchar *key, G_GNUC_UNUSED gpointer value, GLi
 
 
 gchar*
-lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvider *provider,
+lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(const LassoProvider *provider,
 		gchar *binding)
 {
 	GHashTable *descriptor;
@@ -346,7 +346,7 @@ lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvide
 
 
 gchar*
-lasso_saml20_provider_get_assertion_consumer_service_binding(LassoProvider *provider,
+lasso_saml20_provider_get_assertion_consumer_service_binding(const LassoProvider *provider,
 		int service_id)
 {
 	GHashTable *descriptor;
@@ -384,7 +384,7 @@ lasso_saml20_provider_get_assertion_consumer_service_binding(LassoProvider *prov
 }
 
 gboolean
-lasso_saml20_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote_provider,
+lasso_saml20_provider_accept_http_method(LassoProvider *provider, const LassoProvider *remote_provider,
 		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,
 		gboolean initiate_profile)
 {

@@ -172,29 +172,29 @@ LASSO_EXPORT LassoProvider* lasso_provider_new(LassoProviderRole role, const cha
 		const char *public_key, const char *ca_cert_chain);
 LASSO_EXPORT LassoProvider* lasso_provider_new_from_buffer(LassoProviderRole role,
 		const char *metadata, const char *public_key, const char *ca_cert_chain);
-LASSO_EXPORT gchar* lasso_provider_get_assertion_consumer_service_url(LassoProvider *provider,
+LASSO_EXPORT gchar* lasso_provider_get_assertion_consumer_service_url(const LassoProvider *provider,
 		const char *service_id);
-LASSO_EXPORT gchar* lasso_provider_get_metadata_one(LassoProvider *provider, const char *name);
-LASSO_EXPORT GList* lasso_provider_get_metadata_list(LassoProvider *provider, const char *name);
+LASSO_EXPORT gchar* lasso_provider_get_metadata_one(const LassoProvider *provider, const char *name);
+LASSO_EXPORT GList* lasso_provider_get_metadata_list(const LassoProvider *provider, const char *name);
 
 LASSO_EXPORT LassoProvider* lasso_provider_new_from_dump(const gchar *dump);
 
 LASSO_EXPORT LassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
+		const LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
 
 LASSO_EXPORT gboolean lasso_provider_accept_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
+		const LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
 		LassoHttpMethod http_method, gboolean initiate_profile);
 
-LASSO_EXPORT gboolean lasso_provider_has_protocol_profile(LassoProvider *provider,
+LASSO_EXPORT gboolean lasso_provider_has_protocol_profile(const LassoProvider *provider,
 		LassoMdProtocolType protocol_type, const char *protocol_profile);
 
-LASSO_EXPORT gchar* lasso_provider_get_base64_succinct_id(LassoProvider *provider);
+LASSO_EXPORT gchar* lasso_provider_get_base64_succinct_id(const LassoProvider *provider);
 
-LASSO_EXPORT xmlNode* lasso_provider_get_organization(LassoProvider *provider);
+LASSO_EXPORT xmlNode* lasso_provider_get_organization(const LassoProvider *provider);
 
 LASSO_EXPORT LassoProtocolConformance lasso_provider_get_protocol_conformance(
-		LassoProvider *provider);
+		const LassoProvider *provider);
 
 LASSO_EXPORT void lasso_provider_set_encryption_mode(LassoProvider *provider,
 		LassoEncryptionMode encryption_mode);

@@ -35,19 +35,19 @@ extern "C" {
 gboolean lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node);
 
 LassoHttpMethod lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
+		const LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
 
 gboolean lasso_saml20_provider_accept_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
+		const LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
 		LassoHttpMethod http_method, gboolean initiate_profile);
 
-char* lasso_saml20_provider_build_artifact(LassoProvider *provider);
+char* lasso_saml20_provider_build_artifact(const LassoProvider *provider);
 
-gchar* lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider,
+gchar* lasso_saml20_provider_get_assertion_consumer_service_url(const LassoProvider *provider,
 		int service_id);
-gchar* lasso_saml20_provider_get_assertion_consumer_service_binding(LassoProvider *provider,
+gchar* lasso_saml20_provider_get_assertion_consumer_service_binding(const LassoProvider *provider,
 		int service_id);
-gchar* lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvider *provider,
+gchar* lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(const LassoProvider *provider,
 		gchar *binding);
 
 #ifdef __cplusplus
