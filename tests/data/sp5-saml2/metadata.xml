@@ -87,6 +87,7 @@ LlTxKnCrWAXftSm1rNtewTsF
     <AssertionConsumerService index="2"
       Binding="urn:oasis:names:tc:SAML:2.0:bindings:PAOS"
       Location="http://sp5/singleSignOnSOAP" />
+    <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</NameIDFormat>
   </SPSSODescriptor>
   <Organization>
      <OrganizationName xml:lang="en">Example SAML 2.0 metadatas</OrganizationName>

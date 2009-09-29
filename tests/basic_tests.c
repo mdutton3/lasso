@@ -1844,6 +1844,28 @@ START_TEST(test10_test_alldumps)
 }
 END_TEST
 
+/* test NameIDFormat extraction */
+START_TEST(test11_get_default_name_id_format)
+{
+	LassoProvider *provider;
+	char *name_id_format;
+	const GList *name_id_formats;
+
+	provider = lasso_provider_new(LASSO_PROVIDER_ROLE_SP, TESTSDATADIR "/sp5-saml2/metadata.xml", NULL, NULL);
+	fail_unless(provider != NULL, "lasso_provider_new failed on metadata file: %s", TESTSDATADIR "/sp5-saml2/metadata.xml");
+	name_id_format = lasso_provider_get_default_name_id_format(provider);
+	fail_unless(name_id_format != NULL, "no default name id format found!");
+	fail_unless(strcmp(name_id_format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_EMAIL) == 0, "default name id format is not email, it is: %s", name_id_format);
+	lasso_release_string(name_id_format);
+	name_id_formats = lasso_provider_get_metadata_list(provider, "NameIDFormat");
+	fail_unless(g_list_length((GList*)name_id_formats) == 1, "lasso_provider_get_metadata_list returned more or less than 1 NameIDFormat: %u", g_list_length((GList*)name_id_formats));
+	fail_unless(name_id_formats->data != NULL, "first name id format is NULL");
+	fail_unless(strcmp((char*)name_id_formats->data, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_EMAIL) == 0, "first name id format is not email, it is %s", (char*)name_id_formats->data);
+	/* cleanup */
+	lasso_release_gobject(provider);
+}
+END_TEST
+
 Suite*
 basic_suite()
 {
@@ -1878,6 +1900,7 @@ basic_suite()
 	tcase_add_test(tc_registry_new_from_xmlNode, test08_test_new_from_xmlNode);
 	tcase_add_test(tc_response_new_from_xmlNode, test09_test_deserialization);
 	tcase_add_test(tc_response_new_from_xmlNode, test10_test_alldumps);
+	tcase_add_test(tc_response_new_from_xmlNode, test11_get_default_name_id_format);
 	return s;
 }
 
