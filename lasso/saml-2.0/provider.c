@@ -233,7 +233,7 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 
 	for (i=0; possible_bindings[i] && method == LASSO_HTTP_METHOD_NONE; i++) {
 		char *s;
-		GList *l1, *l2;
+		const GList *l1, *l2;
 
 		s = g_strdup_printf("%s %s", profile_names[protocol_type], possible_bindings[i]);
 		l1 = lasso_provider_get_metadata_list(provider, s);

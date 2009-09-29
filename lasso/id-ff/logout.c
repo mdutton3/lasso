@@ -1010,7 +1010,7 @@ static LassoNodeClass *parent_class = NULL;
 static void
 check_soap_support(G_GNUC_UNUSED gchar *key, LassoProvider *provider, LassoProfile *profile)
 {
-	GList *supported_profiles;
+	const GList *supported_profiles;
 	LassoSamlAssertion *assertion;
 	LassoNode *assertion_n;
 

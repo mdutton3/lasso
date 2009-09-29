@@ -175,7 +175,7 @@ LASSO_EXPORT LassoProvider* lasso_provider_new_from_buffer(LassoProviderRole rol
 LASSO_EXPORT gchar* lasso_provider_get_assertion_consumer_service_url(const LassoProvider *provider,
 		const char *service_id);
 LASSO_EXPORT gchar* lasso_provider_get_metadata_one(const LassoProvider *provider, const char *name);
-LASSO_EXPORT GList* lasso_provider_get_metadata_list(const LassoProvider *provider, const char *name);
+LASSO_EXPORT const GList* lasso_provider_get_metadata_list(const LassoProvider *provider, const char *name);
 
 LASSO_EXPORT LassoProvider* lasso_provider_new_from_dump(const gchar *dump);
 

@@ -147,7 +147,7 @@ lasso_provider_get_metadata_one(const LassoProvider *provider, const char *name)
  *      allocated and points to internally allocated strings.  It must
  *      not be freed, modified or stored.
  **/
-GList*
+const GList*
 lasso_provider_get_metadata_list(const LassoProvider *provider, const char *name)
 {
 	GHashTable *descriptor;
@@ -177,9 +177,9 @@ lasso_provider_get_first_http_method(LassoProvider *provider,
 		const LassoProvider *remote_provider, const LassoMdProtocolType protocol_type)
 {
 	char *protocol_profile_prefix;
-	GList *local_supported_profiles;
-	GList *remote_supported_profiles;
-	GList *t1 = NULL, *t2 = NULL;
+	const GList *local_supported_profiles;
+	const GList *remote_supported_profiles;
+	const GList *t1, *t2 = NULL;
 	gboolean found;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_HTTP_METHOD_NONE);
@@ -303,13 +303,13 @@ gboolean
 lasso_provider_has_protocol_profile(const LassoProvider *provider,
 		LassoMdProtocolType protocol_type, const char *protocol_profile)
 {
-	GList *supported;
+	const GList *supported;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE); /* Be conservative */
 	supported = lasso_provider_get_metadata_list(
 			provider, protocol_md_nodename[protocol_type]);
 
-	if (g_list_find_custom(supported, protocol_profile, (GCompareFunc)strcmp) == NULL)
+	if (g_list_find_custom((GList*)supported, protocol_profile, (GCompareFunc)strcmp) == NULL)
 		return FALSE;
 	return TRUE;
 }
