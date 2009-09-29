@@ -1282,19 +1282,25 @@ lasso_login_destroy(LassoLogin *login)
  * @remote_providerID: the providerID of the identity provider (may be NULL)
  * @http_method: HTTP method to use for request transmission
  *
- * Initializes a new AuthnRequest from current service provider to remote
+ * <para>Initializes a new AuthnRequest from current service provider to remote
  * identity provider specified in @remote_providerID (if NULL the first known
- * identity provider is used).
+ * identity provider is used).</para>
  *
- * Return value: 0 on success; or
- * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
- * LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if @remote_providerID is NULL and no default remote
+ * <para>For ID-FF 1.2 the default NameIDPolicy in an AuthnRequest is None, which imply that a
+ * federation must already exist on the IdP side.</para>
+ *
+ * <para>For SAML 2.0 the default NameIDPolicy is Transient, which ask the IdP to give a one-time federation</para>
+ *
+ * Return value: 0 on success; or <itemizedlist>
+ * <listitem><para>LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,</para></listitem>
+ * <listitem><para>LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if @remote_providerID is NULL and no default remote
  * provider could be found from the server object -- usually the first one in the order of adding to
- * the server object --,
- * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the @remote_providerID is not known to our server object.
- * LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD if the HTTP method is neither LASSO_HTTP_METHOD_REDIRECT
- * or LASSO_HTTP_METHOD_POST,
- * LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED if creation of the request object failed.
+ * the server object --,</para></listitem>
+ * <listitem><para>LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the @remote_providerID is not known to our server object.</para></listitem>
+ * <listitem><para>LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD if the HTTP method is neither LASSO_HTTP_METHOD_REDIRECT
+ * or LASSO_HTTP_METHOD_POST,</para></listitem>
+ * <listitem><para>LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED if creation of the request object failed.</para></listitem>
+ * </itemizedlist>
  *
  **/
 gint
