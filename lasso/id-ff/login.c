@@ -1289,7 +1289,9 @@ lasso_login_destroy(LassoLogin *login)
  * <para>For ID-FF 1.2 the default NameIDPolicy in an AuthnRequest is None, which imply that a
  * federation must already exist on the IdP side.</para>
  *
- * <para>For SAML 2.0 the default NameIDPolicy is Transient, which ask the IdP to give a one-time federation</para>
+ * <para>For SAML 2.0 the default NameIDPolicy is the first listed in the metadatas of the current
+ * provider, or if none is specified, Transient, which ask the IdP to give a one-time
+ * federation</para>
  *
  * Return value: 0 on success; or <itemizedlist>
  * <listitem><para>LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,</para></listitem>
@@ -1499,12 +1501,16 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
  * @remote_providerID: the providerID of the remote service provider (may be
  *      NULL)
  *
- * Generates an authentication response without matching authentication
- * request.
+ * <para>Generates an authentication response without matching authentication
+ * request.</para>
  *
- * If @remote_providerID is NULL, the first known provider is used.
+ * <para>The choice of NameIDFormat is the same as for lasso_login_init_authn_request() but with the
+ * target @remote_providerID as the current provider</para>
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * <para>If @remote_providerID is NULL, the first known provider is used.</para>
+ *
+ * Return value: 0 on success; or a negative value otherwise. Error codes are the same as
+ * lasso_login_init_authn_request().
  **/
 gint
 lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
