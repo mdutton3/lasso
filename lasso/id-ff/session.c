@@ -673,7 +673,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoSession *session)
 {
-	session->private_data = g_new (LassoSessionPrivate, 1);
+	session->private_data = g_new0 (LassoSessionPrivate, 1);
 	session->private_data->dispose_has_run = FALSE;
 	session->private_data->providerIDs = NULL;
 	session->private_data->status = g_hash_table_new_full(g_str_hash, g_str_equal,

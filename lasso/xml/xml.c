@@ -806,7 +806,7 @@ struct _CustomNamespace {
 static struct _CustomNamespace *
 _lasso_node_new_custom_namespace(char *prefix, char *href)
 {
-	struct _CustomNamespace *ret = g_new(struct _CustomNamespace, 1);
+	struct _CustomNamespace *ret = g_new0(struct _CustomNamespace, 1);
 	lasso_assign_string(ret->prefix, prefix);
 	lasso_assign_string(ret->href, href);
 	return ret;

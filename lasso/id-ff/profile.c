@@ -551,7 +551,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoProfile *profile)
 {
-	profile->private_data = g_new(LassoProfilePrivate, 1);
+	profile->private_data = g_new0(LassoProfilePrivate, 1);
 	profile->private_data->dispose_has_run = FALSE;
 	profile->private_data->artifact = NULL;
 	profile->private_data->artifact_message = NULL;

@@ -105,7 +105,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoEcp *ecp)
 {
-	ecp->private_data = g_new(LassoEcpPrivate, 1);
+	ecp->private_data = g_new0(LassoEcpPrivate, 1);
 	ecp->private_data->messageID = NULL;
 	ecp->private_data->relay_state = NULL;
 

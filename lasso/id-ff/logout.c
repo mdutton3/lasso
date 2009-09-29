@@ -1086,7 +1086,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoLogout *logout)
 {
-	logout->private_data = g_new(LassoLogoutPrivate, 1);
+	logout->private_data = g_new0(LassoLogoutPrivate, 1);
 	logout->private_data->dispose_has_run = FALSE;
 }
 

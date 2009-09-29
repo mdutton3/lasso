@@ -609,7 +609,7 @@ instance_init(LassoProvider *provider)
 	provider->metadata_filename = NULL;
 	provider->public_key = NULL;
 	provider->ca_cert_chain = NULL;
-	provider->private_data = g_new(LassoProviderPrivate, 1);
+	provider->private_data = g_new0(LassoProviderPrivate, 1);
 	provider->private_data->dispose_has_run = FALSE;
 	provider->private_data->default_assertion_consumer = NULL;
 	provider->private_data->affiliation_id = NULL;

@@ -219,7 +219,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoFederation *federation)
 {
-	federation->private_data = g_new(LassoFederationPrivate, 1);
+	federation->private_data = g_new0(LassoFederationPrivate, 1);
 	federation->private_data->dispose_has_run = FALSE;
 
 	federation->remote_providerID  = NULL;

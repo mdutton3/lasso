@@ -463,7 +463,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoServer *server)
 {
-	server->private_data = g_new(LassoServerPrivate, 1);
+	server->private_data = g_new0(LassoServerPrivate, 1);
 	server->private_data->dispose_has_run = FALSE;
 	server->private_data->encryption_private_key = NULL;
 	server->private_data->svc_metadatas = NULL;
