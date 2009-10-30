@@ -252,8 +252,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		LassoProvider *remote_provider;
 		int service_index = authn_request->AssertionConsumerServiceIndex;
 
-		remote_provider = g_hash_table_lookup(profile->server->providers,
-				profile->remote_providerID);
+		remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 		if (remote_provider == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 		}
@@ -432,8 +431,7 @@ lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login)
 		}
 	}
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (remote_provider->private_data->affiliation_id) {
 		name_id_sp_name_qualifier = remote_provider->private_data->affiliation_id;
 	} else {
@@ -561,8 +559,7 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 		return 0;
 	}
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (remote_provider->private_data->affiliation_id) {
 		name_id_sp_name_qualifier = remote_provider->private_data->affiliation_id;
 	} else {
@@ -637,7 +634,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	LassoSamlp2Response *response = NULL;
 	LassoSamlp2RequestAbstract *request_abstract = NULL;
 
-	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
+	provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 
 	if (profile->request && LASSO_IS_SAMLP2_REQUEST_ABSTRACT(profile->request)) {
 		request_abstract = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request);
@@ -812,8 +809,7 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
@@ -887,8 +883,7 @@ lasso_saml20_login_build_request_msg(LassoLogin *login)
 		profile->server->certificate);
 	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(profile->request));
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -937,8 +932,7 @@ lasso_saml20_login_build_response_msg(LassoLogin *login)
 		lasso_assign_string(LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file,
 			profile->server->certificate);
 
-		remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
-			LASSO_PROFILE(login)->remote_providerID);
+		remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 		if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
@@ -1322,8 +1316,7 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 	lasso_assign_string(LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file,
 		profile->server->certificate);
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 

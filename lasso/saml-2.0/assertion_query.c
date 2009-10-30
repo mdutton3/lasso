@@ -87,8 +87,7 @@ lasso_assertion_query_init_request(LassoAssertionQuery *assertion_query,
 	/* set the remote provider id */
 	profile->remote_providerID = g_strdup(remote_provider_id);
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -164,8 +163,7 @@ lasso_assertion_query_build_request_msg(LassoAssertionQuery *assertion_query)
 	profile = LASSO_PROFILE(assertion_query);
 	lasso_profile_clean_msg_info(profile);
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -259,8 +257,7 @@ lasso_assertion_query_validate_request(LassoAssertionQuery *assertion_query)
 			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content);
 
 	/* get the provider */
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -419,8 +416,7 @@ lasso_assertion_query_process_response_msg(
 			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->Issuer->content);
 
 	/* get the provider */
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}

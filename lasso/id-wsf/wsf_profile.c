@@ -1461,7 +1461,7 @@ lasso_wsf_profile_get_remote_provider_id(LassoWsfProfile *wsf_profile)
  * Return the remote provider parsed in the last processing of a SOAP request or a SOAP response.
  *
  * Return value: 0 if successfull, LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if no provider id
- * is present in the SOAP headers, or LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER if the provider is
+ * is present in the SOAP headers, or LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the provider is
  * unknown to us.
  */
 gint
@@ -1475,11 +1475,11 @@ lasso_wsf_profile_get_remote_provider(LassoWsfProfile *wsf_profile, LassoProvide
 		return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
 
 	if (! LASSO_IS_SERVER(wsf_profile->server))
-		return LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
+		return LASSO_PROFILE_ERROR_MISSING_SERVER;
 
 	_provider = lasso_server_get_provider(wsf_profile->server, wsf_profile->private_data->remote_provider_id);
 	if (! _provider)
-		return LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
+		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 
 	if (provider) {
 		lasso_assign_gobject(*provider, _provider);

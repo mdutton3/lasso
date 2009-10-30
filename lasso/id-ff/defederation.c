@@ -91,13 +91,10 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 	}
 
 	/* get the remote provider object */
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
-
-	/* get the protocol profile type */
 
 	/* build the federation termination notification message (SOAP or HTTP-Redirect) */
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
@@ -192,8 +189,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 		}
 	}
 
-	remote_provider = g_hash_table_lookup(
-			profile->server->providers, profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -323,8 +319,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 
 	lasso_assign_string(profile->remote_providerID, LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
 				profile->request)->ProviderID);
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -383,7 +378,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 	lasso_release(profile->msg_body)
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		remote_provider = g_hash_table_lookup(profile->server->providers,
+		remote_provider = lasso_server_get_provider(profile->server,
 				profile->remote_providerID);
 		if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);

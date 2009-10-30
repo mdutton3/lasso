@@ -483,6 +483,7 @@
 #define LASSO_PROFILE_ERROR_MISSING_SERVER -438
 /**
  * LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER:
+ * @Deprecated: Since 2.2.3
  *
  * The issuer of the message is unknown to us
  */

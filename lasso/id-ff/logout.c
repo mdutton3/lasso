@@ -94,8 +94,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	}
 
 	/* get remote provider */
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -237,8 +236,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* get the provider */
-		provider = g_hash_table_lookup(profile->server->providers,
-				profile->remote_providerID);
+		provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 		if (provider == NULL) {
 			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 		}
@@ -365,8 +363,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	}
 
 	/* get the provider */
-	remote_provider = g_hash_table_lookup(
-			profile->server->providers, profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -552,8 +549,7 @@ lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	lasso_assign_string(profile->remote_providerID,
 			logout_request->ProviderID);
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -646,8 +642,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -752,8 +747,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	 */
 	if (logout->initial_remote_providerID &&
 			lasso_session_count_assertions(profile->session) <= 0) {
-		remote_provider = g_hash_table_lookup(profile->server->providers,
-				logout->initial_remote_providerID);
+		remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 		if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
 			lasso_transfer_string(profile->remote_providerID,
 					logout->initial_remote_providerID);
@@ -861,8 +855,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 			logout_request->ProviderID);
 
 	/* get the provider */
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}

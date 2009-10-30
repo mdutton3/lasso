@@ -299,8 +299,7 @@ lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char 
 
 	lasso_assign_string(profile->remote_providerID, LASSO_SAMLP2_REQUEST_ABSTRACT(
 			profile->request)->Issuer->content);
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 
 	rc = lasso_provider_verify_signature(remote_provider, msg, "ID", LASSO_MESSAGE_FORMAT_SOAP);
 
@@ -559,7 +558,7 @@ lasso_saml20_profile_process_any_request(LassoProfile *profile,
 
 	remote_provider = lasso_server_get_provider(server, profile->remote_providerID);
 	if (remote_provider == NULL) {
-		rc = LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
+		rc = LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 		goto cleanup;
 	}
 
@@ -606,7 +605,7 @@ lasso_saml20_profile_process_soap_request(LassoProfile *profile,
 
 	remote_provider = lasso_server_get_provider(server, profile->remote_providerID);
 	if (remote_provider == NULL) {
-		rc = LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
+		rc = LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 		goto cleanup;
 	}
 
@@ -1220,7 +1219,7 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 
 	remote_provider = lasso_server_get_provider(server, profile->remote_providerID);
 	if (remote_provider == NULL) {
-		rc = LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
+		rc = LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 		goto cleanup;
 	}
 
@@ -1298,7 +1297,7 @@ lasso_saml20_profile_process_soap_response(LassoProfile *profile,
 
 	remote_provider = lasso_server_get_provider(server, profile->remote_providerID);
 	if (remote_provider == NULL) {
-		rc = LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
+		rc = LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 		goto cleanup;
 	}
 
@@ -1319,10 +1318,15 @@ lasso_saml20_build_http_redirect_query_simple(LassoProfile *profile,
 	char *idx = NULL;
 	char *url = NULL;
 	LassoProvider *remote_provider = NULL;
-	int rc;
+	int rc = 0;
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+
+	goto_cleanup_if_fail_with_rc(profile->remote_providerID != NULL,
+			LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	remote_provider = lasso_server_get_provider(profile->server,
+				profile->remote_providerID);
+	goto_cleanup_if_fail_with_rc(LASSO_IS_PROVIDER(remote_provider),
+			LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	if (is_response) {
 		idx = g_strdup_printf("%s HTTP-Redirect ResponseLocation", profile_name);
 		url = lasso_provider_get_metadata_one(remote_provider, idx);
@@ -1334,6 +1338,7 @@ lasso_saml20_build_http_redirect_query_simple(LassoProfile *profile,
 		lasso_release(idx);
 	}
 	rc = lasso_saml20_profile_build_http_redirect(profile, msg, must_sign, url);
+cleanup:
 	lasso_release(url);
 	return rc;
 }

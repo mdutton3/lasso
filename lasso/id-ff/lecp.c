@@ -127,12 +127,13 @@ lasso_lecp_build_authn_request_msg(LassoLecp *lecp)
 	profile = LASSO_PROFILE(lecp);
 
 	if (profile->remote_providerID == NULL) {
-		/* this means lasso_logout_init_request was not called before */
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+	if (remote_provider == NULL) {
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+	}
 
 	lasso_assign_new_string(profile->msg_url, lasso_provider_get_metadata_one(
 			remote_provider, "SingleSignOnServiceURL"));
@@ -201,7 +202,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 		return LASSO_PROFILE_ERROR_MISSING_RESPONSE;
 	}
 
-	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
+	provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (provider == NULL) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
