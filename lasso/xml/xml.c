@@ -1763,7 +1763,7 @@ lasso_node_init_from_message_with_format(LassoNode *node, const char *message, L
 {
 	char *msg = NULL;
 	gboolean b64 = FALSE;
-	LassoMessageFormat rc = LASSO_MESSAGE_FORMAT_UNKNOWN;
+	LassoMessageFormat rc = LASSO_MESSAGE_FORMAT_ERROR;
 	xmlDoc *doc = NULL;
 	xmlNode *root = NULL;
 	gboolean any = constraint == LASSO_MESSAGE_FORMAT_UNKNOWN;
@@ -1773,6 +1773,8 @@ lasso_node_init_from_message_with_format(LassoNode *node, const char *message, L
 	/* BASE64 case */
 	if (any || constraint == LASSO_MESSAGE_FORMAT_BASE64) {
 		if (message[0] != 0 && is_base64(message)) {
+			int rc;
+
 			msg = g_malloc(strlen(message));
 			rc = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
 			if (rc >= 0) {
@@ -1829,7 +1831,6 @@ lasso_node_init_from_message_with_format(LassoNode *node, const char *message, L
 		if (strchr(msg, '&') || strchr(msg, '=')) {
 			/* XXX: detect SAML artifact messages to return a different status code ? */
 			if (lasso_node_init_from_query(node, msg) == FALSE) {
-				rc = LASSO_MESSAGE_FORMAT_ERROR;
 				goto cleanup;
 			}
 			rc = LASSO_MESSAGE_FORMAT_QUERY;
