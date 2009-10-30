@@ -401,7 +401,7 @@ AC_SUBST(PYTHON_VERSION)
 
 dnl Check if php is explicitly disabled.
 AC_ARG_ENABLE(php4, [  --disable-php4          disable the PHP 4 binding],,
-              enable_php4="yes")
+              enable_php4="no")
 
 AC_ARG_ENABLE(php4-force, [  --enable-php4-force     always enable of the PHP 4 binding (win32)],
               [ENABLE_PHP4_FORCE="yes"],
@@ -643,7 +643,7 @@ AM_CONDITIONAL([CSHARP_ENABLED], [test "x$enable_csharp" = "xyes"])
 # ------------
 
 AC_ARG_ENABLE(perl, [  --disable-perl          disable the Perl binding],,
-              enable_perl="yes")
+              enable_perl="no")
 
 if test "X$PERL" != "X"; then
   PERLINSTALLSITEARCH=`$PERL -MConfig -e 'print $Config{installsitearch};'`
