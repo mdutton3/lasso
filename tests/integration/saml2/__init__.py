@@ -30,7 +30,7 @@ LCSCTL = CONFIG.get('LCSCTL') or '/usr/sbin/lcsctl.py'
 LCS_DATADIR = CONFIG.get('LCS_DATADIR') or '/usr/share/lcs/'
 LASSO_BUILDDIR = os.environ.get('LASSO_BUILDDIR') or \
     CONFIG.get('LASSO_BUILDDIR') or \
-    os.path.realpath(os.path.join(os.path.dirname(__FILE__), "..", "..", ".."))
+    os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 os.environ['LD_LIBRARY_PATH'] = os.path.join(LASSO_BUILDDIR, "lasso", ".libs") + ":" + \
         os.environ.get('LD_LIBRARY_PATH', '')
