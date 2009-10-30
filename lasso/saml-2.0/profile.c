@@ -512,7 +512,6 @@ lasso_saml20_profile_process_any_request(LassoProfile *profile,
 	int rc = 0;
 	LassoSaml2NameID *name_id = NULL;
 	LassoProvider *remote_provider = NULL;
-	LassoServer *server = NULL;
 	LassoSamlp2RequestAbstract *request_abstract = NULL;
 	LassoMessageFormat format;
 	xmlDoc *doc = NULL;
@@ -550,17 +549,12 @@ lasso_saml20_profile_process_any_request(LassoProfile *profile,
 
 	lasso_extract_node_or_fail(request_abstract, profile->request, SAMLP2_REQUEST_ABSTRACT,
 			LASSO_PROFILE_ERROR_INVALID_MSG);
-	lasso_extract_node_or_fail(server, profile->server, SERVER,
-			LASSO_PROFILE_ERROR_MISSING_SERVER);
 	lasso_extract_node_or_fail(name_id, request_abstract->Issuer, SAML2_NAME_ID,
 			LASSO_PROFILE_ERROR_MISSING_ISSUER);
 	lasso_assign_string(profile->remote_providerID, request_abstract->Issuer->content);
 
-	remote_provider = lasso_server_get_provider(server, profile->remote_providerID);
-	if (remote_provider == NULL) {
-		rc = LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
-		goto cleanup;
-	}
+	rc = get_provider(profile, &remote_provider);
+	goto_cleanup_if_fail(rc == 0);
 
 	/* verify the signature at the request level */
 	if (content && doc && format != LASSO_MESSAGE_FORMAT_QUERY) {
@@ -587,7 +581,6 @@ lasso_saml20_profile_process_soap_request(LassoProfile *profile,
 	int rc = 0;
 	LassoSaml2NameID *issuer = NULL;
 	LassoProvider *remote_provider = NULL;
-	LassoServer *server = NULL;
 	LassoSamlp2RequestAbstract *request_abstract = NULL;
 
 	lasso_bad_param(PROFILE, profile);
@@ -597,17 +590,12 @@ lasso_saml20_profile_process_soap_request(LassoProfile *profile,
 	profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
 	lasso_extract_node_or_fail(request_abstract, profile->request, SAMLP2_REQUEST_ABSTRACT,
 			LASSO_PROFILE_ERROR_INVALID_MSG);
-	lasso_extract_node_or_fail(server, profile->server, SERVER,
-			LASSO_PROFILE_ERROR_MISSING_SERVER);
 	lasso_extract_node_or_fail(issuer, request_abstract->Issuer, SAML2_NAME_ID,
 			LASSO_PROFILE_ERROR_MISSING_ISSUER);
 	lasso_assign_string(profile->remote_providerID, issuer->content);
 
-	remote_provider = lasso_server_get_provider(server, profile->remote_providerID);
-	if (remote_provider == NULL) {
-		rc = LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
-		goto cleanup;
-	}
+	rc = get_provider(profile, &remote_provider);
+	goto_cleanup_if_fail(rc == 0);
 
 	rc = profile->signature_status = lasso_provider_verify_signature(
 			remote_provider, request_msg, "ID", LASSO_MESSAGE_FORMAT_SOAP);
