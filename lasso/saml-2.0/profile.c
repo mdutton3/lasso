@@ -155,8 +155,8 @@ lasso_saml20_profile_build_artifact(LassoProvider *provider)
 	return ret;
 }
 
-static int
-lasso_saml20_profile_set_response_status2(LassoProfile *profile,
+int
+lasso_saml20_profile_set_response_status(LassoProfile *profile,
 		const char *code1, const char *code2)
 {
 	LassoSamlp2StatusResponse *status_response = NULL;
@@ -193,19 +193,6 @@ lasso_saml20_profile_set_response_status2(LassoProfile *profile,
 
 cleanup:
 	return rc;
-}
-
-void
-lasso_saml20_profile_set_response_status(LassoProfile *profile, const char *status_code_value)
-{
-	if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0 &&
-			strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_VERSION_MISMATCH) != 0 &&
-			strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_REQUESTER) != 0) {
-		lasso_saml20_profile_set_response_status2(profile,
-				LASSO_SAML2_STATUS_CODE_RESPONDER, status_code_value);
-	} else {
-		lasso_saml20_profile_set_response_status2(profile, status_code_value, NULL);
-	}
 }
 
 int
@@ -339,10 +326,10 @@ lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 
 	if (resp == NULL) {
 		lasso_saml20_profile_set_response_status(profile,
-				LASSO_SAML2_STATUS_CODE_REQUESTER);
+				LASSO_SAML2_STATUS_CODE_REQUESTER, NULL);
 	} else {
 		lasso_saml20_profile_set_response_status(profile,
-				LASSO_SAML2_STATUS_CODE_SUCCESS);
+				LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
 	}
 	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(profile->response));
 	return 0;
@@ -847,7 +834,7 @@ cleanup:
 }
 
 int
-lasso_saml20_profile_init_response(LassoProfile *profile, const char *status_code)
+lasso_saml20_profile_init_response(LassoProfile *profile, const char *status_code1, const char *status_code2)
 {
 	LassoSamlp2StatusResponse *status_response = NULL;
 	LassoSamlp2RequestAbstract *request_abstract = NULL;
@@ -869,9 +856,9 @@ lasso_saml20_profile_init_response(LassoProfile *profile, const char *status_cod
 					server->parent.ProviderID)));
 	lasso_assign_new_string(status_response->IssueInstant, lasso_get_current_time());
 	lasso_assign_string(status_response->InResponseTo, request_abstract->ID);
-	if (status_code)
+	if (status_code1)
 		lasso_saml20_profile_set_response_status(profile,
-				status_code);
+				status_code1, status_code2);
 
 cleanup:
 	return rc;
@@ -908,11 +895,11 @@ lasso_saml20_profile_validate_request(LassoProfile *profile, gboolean needs_iden
 
 	/* init the response */
 	lasso_assign_gobject(profile->response, &status_response->parent);
-	lasso_saml20_profile_init_response(profile, LASSO_SAML2_STATUS_CODE_SUCCESS);
+	lasso_saml20_profile_init_response(profile, LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
 
 	if (profile->signature_status) {
 		message(G_LOG_LEVEL_WARNING, "Request signature is invalid");
-		lasso_saml20_profile_set_response_status2(profile,
+		lasso_saml20_profile_set_response_status(profile,
 				LASSO_SAML2_STATUS_CODE_REQUESTER,
 				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
 		return profile->signature_status;

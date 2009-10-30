@@ -280,7 +280,7 @@ lasso_assertion_query_validate_request(LassoAssertionQuery *assertion_query)
 			LASSO_PROVIDER(profile->server)->ProviderID));
 	response->IssueInstant = lasso_get_current_time();
 	response->InResponseTo = g_strdup(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS);
+	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
 
 	response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 	if (profile->server->certificate) {
@@ -293,8 +293,7 @@ lasso_assertion_query_validate_request(LassoAssertionQuery *assertion_query)
 
 	/* verify signature status */
 	if (profile->signature_status != 0) {
-		/* XXX: which SAML2 Status Code ? */
-		lasso_saml20_profile_set_response_status(profile,
+		lasso_saml20_profile_set_response_status_requester(profile,
 				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
 		return profile->signature_status;
 	}
@@ -333,7 +332,7 @@ lasso_assertion_query_build_response_msg(LassoAssertionQuery *assertion_query)
 		response->IssueInstant = lasso_get_current_time();
 		response->InResponseTo = g_strdup(
 				LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-		lasso_saml20_profile_set_response_status(profile,
+		lasso_saml20_profile_set_response_status_responder(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 
 		response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;

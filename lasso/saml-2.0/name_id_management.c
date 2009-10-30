@@ -199,7 +199,7 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 	if (! LASSO_IS_SAML2_NAME_ID(name_id)) {
 		message(G_LOG_LEVEL_CRITICAL,
 				"Name identifier not found in name id management request");
-		lasso_saml20_profile_set_response_status(
+		lasso_saml20_profile_set_response_status_responder(
 				profile,
 				LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
 		rc = LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
@@ -275,7 +275,8 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 	/* no response set here means request denied */
 	if (! profile->response) {
 		profile->response = lasso_samlp2_manage_name_id_response_new();
-		lasso_saml20_profile_init_response(profile, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
+		lasso_saml20_profile_init_response(profile, LASSO_SAML2_STATUS_CODE_RESPONDER,
+				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 	}
 
 	rc = lasso_saml20_profile_build_response(profile, "ManageNameIDService", FALSE, profile->http_request_method);

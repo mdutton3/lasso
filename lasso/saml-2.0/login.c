@@ -400,7 +400,7 @@ lasso_saml20_login_must_authenticate(LassoLogin *login)
 		return TRUE;
 
 	if (profile->identity == NULL && request->IsPassive) {
-		lasso_saml20_profile_set_response_status(LASSO_PROFILE(login),
+		lasso_saml20_profile_set_response_status_responder(LASSO_PROFILE(login),
 				LASSO_SAML2_STATUS_CODE_NO_PASSIVE);
 		return FALSE;
 	}
@@ -493,19 +493,19 @@ lasso_saml20_login_validate_request_msg(LassoLogin *login, gboolean authenticati
 	profile = LASSO_PROFILE(login);
 
 	if (authentication_result == FALSE) {
-		lasso_saml20_profile_set_response_status(profile,
+		lasso_saml20_profile_set_response_status_responder(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 		return LASSO_LOGIN_ERROR_REQUEST_DENIED;
 	}
 
 	if (profile->signature_status == LASSO_DS_ERROR_INVALID_SIGNATURE) {
-		lasso_saml20_profile_set_response_status(profile,
+		lasso_saml20_profile_set_response_status_responder(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 		return LASSO_LOGIN_ERROR_INVALID_SIGNATURE;
 	}
 
 	if (profile->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
-		lasso_saml20_profile_set_response_status(profile,
+		lasso_saml20_profile_set_response_status_responder(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 		return LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST;
 	}
@@ -513,19 +513,19 @@ lasso_saml20_login_validate_request_msg(LassoLogin *login, gboolean authenticati
 	if (profile->signature_status == 0 && authentication_result == TRUE) {
 		ret = lasso_saml20_login_process_federation(login, is_consent_obtained);
 		if (ret == LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND) {
-			lasso_saml20_profile_set_response_status(profile,
+			lasso_saml20_profile_set_response_status_requester(profile,
 				LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 			return ret;
 		}
 		/* Only possibility, consent not obtained. */
 		if (ret) {
-			lasso_saml20_profile_set_response_status(profile,
+			lasso_saml20_profile_set_response_status_responder(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 			return ret;
 		}
 	}
 
-	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS);
+	lasso_saml20_profile_set_response_status_success(profile, NULL);
 
 	return ret;
 }

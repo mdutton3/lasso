@@ -40,7 +40,15 @@ int lasso_saml20_init_request(LassoProfile *profile, char *remote_provider_id,
 		gboolean first_in_session, LassoSamlp2RequestAbstract *request_abstract,
 		LassoHttpMethod http_method, LassoMdProtocolType protocol_type);
 char* lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part);
-void lasso_saml20_profile_set_response_status(LassoProfile *profile, const char *status_code_value);
+#define lasso_saml20_profile_set_response_status_success(profile, code2) \
+	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS, code2)
+#define lasso_saml20_profile_set_response_status_responder(profile, code2) \
+	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_RESPONDER, code2)
+#define lasso_saml20_profile_set_response_status_requester(profile, code2) \
+	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_REQUESTER, code2)
+
+int lasso_saml20_profile_set_response_status(LassoProfile *profile, const char *code1, const char
+		*code2);
 int lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 		const char *msg, LassoHttpMethod method);
 int lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char *msg);
@@ -57,7 +65,8 @@ int lasso_saml20_profile_process_any_response(LassoProfile *profile, LassoSamlp2
 int lasso_saml20_profile_setup_request_signing(LassoProfile *profile);
 int lasso_saml20_profile_build_request_msg(LassoProfile *profile, char *service, gboolean no_signature);
 int lasso_saml20_profile_build_response(LassoProfile *profile, char *service, gboolean no_signature, LassoHttpMethod method);
-int lasso_saml20_profile_init_response(LassoProfile *profile, const char *status_code);
+int lasso_saml20_profile_init_response(LassoProfile *profile, const char *status_code1,
+		const char *status_code2);
 int lasso_saml20_profile_validate_request(LassoProfile *profile, gboolean needs_identity, LassoSamlp2StatusResponse *status_response, LassoProvider **provider_out);
 gint lasso_saml20_build_http_redirect_query_simple(LassoProfile *profile, LassoNode *msg,
 		gboolean must_sign, const char *profile_name, gboolean is_response);

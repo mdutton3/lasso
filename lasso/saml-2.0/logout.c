@@ -31,7 +31,6 @@
 #include "../id-ff/providerprivate.h"
 #include "../id-ff/logout.h"
 #include "../id-ff/logoutprivate.h"
-#include "../id-ff/identityprivate.h"
 #include "../id-ff/sessionprivate.h"
 #include "../id-ff/profileprivate.h"
 #include "../id-ff/serverprivate.h"
@@ -41,6 +40,7 @@
 #include "../xml/saml-2.0/samlp2_logout_request.h"
 #include "../xml/saml-2.0/samlp2_logout_response.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
+#include "../xml/saml-2.0/saml2_authn_statement.h"
 #include "../utils.h"
 
 static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile *profile);
@@ -50,10 +50,9 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 		LassoHttpMethod http_method)
 {
 	LassoProfile *profile = LASSO_PROFILE(logout);
-	LassoNode *assertion_n, *name_id_n;
+	LassoNode *assertion_n;
 	LassoSaml2Assertion *assertion;
 	LassoSaml2NameID *name_id;
-	LassoFederation *federation;
 	LassoSession *session;
 	LassoSamlp2RequestAbstract *request;
 	LassoSaml2EncryptedElement *encrypted_element = NULL;
@@ -77,39 +76,8 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	}
 
 	name_id = assertion->Subject->NameID;
-	if (name_id->Format && strcmp(name_id->Format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0) {
-		char *name_id_sp_name_qualifier = NULL;
-
-		if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
-			return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
-		}
-
-		if (remote_provider->private_data->affiliation_id) {
-			name_id_sp_name_qualifier = remote_provider->private_data->affiliation_id;
-		} else {
-			name_id_sp_name_qualifier = profile->remote_providerID;
-		}
-
-		federation = g_hash_table_lookup(profile->identity->federations,
-				name_id_sp_name_qualifier);
-		if (federation == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
-		}
-
-		name_id_n = lasso_profile_get_nameIdentifier(profile);
-		if (name_id_n == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
-		}
-		if (federation->local_nameIdentifier) {
-			lasso_assign_gobject(profile->nameIdentifier, federation->local_nameIdentifier);
-		} else {
-			lasso_assign_gobject(profile->nameIdentifier, name_id_n);
-		}
-
-	} else {
-		lasso_assign_gobject(profile->nameIdentifier, name_id);
-	}
+	/* Just send back the NameID from the assertion. */
+	lasso_assign_gobject(profile->nameIdentifier, name_id);
 
 	if (http_method == LASSO_HTTP_METHOD_ANY) {
 		http_method = lasso_provider_get_first_http_method(
@@ -259,10 +227,13 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	LassoSaml2NameID *name_id;
 	LassoNode *assertion_n;
 	LassoSaml2Assertion *assertion;
-	LassoFederation *federation;
+	LassoSamlp2LogoutRequest *logout_request;
+	char *assertion_SessionIndex = NULL;
 
 	if (LASSO_IS_SAMLP2_LOGOUT_REQUEST(profile->request) == FALSE)
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+
+	logout_request = (LassoSamlp2LogoutRequest*)profile->request;
 
 	lasso_assign_string(profile->remote_providerID,
 			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content);
@@ -283,7 +254,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	lasso_assign_new_string(response->IssueInstant, lasso_get_current_time());
 	lasso_assign_string(response->InResponseTo,
 			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS);
+	lasso_saml20_profile_set_response_status_success(profile, NULL);
 
 	response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 	if (profile->server->certificate) {
@@ -296,8 +267,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 
 	/* verify signature status */
 	if (profile->signature_status != 0) {
-		/* XXX: which SAML2 Status Code ? */
-		lasso_saml20_profile_set_response_status(profile,
+		lasso_saml20_profile_set_response_status_requester(profile,
 				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
 		return profile->signature_status;
 	}
@@ -305,15 +275,13 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	/* Get the name identifier */
 	name_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID;
 	if (name_id == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in logout request");
-		/* XXX: which status code in SAML 2.0 ? */
-		lasso_saml20_profile_set_response_status(
+		lasso_saml20_profile_set_response_status_responder(
 				profile, LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 		return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 	}
 
 	if (profile->session == NULL) {
-		lasso_saml20_profile_set_response_status(profile,
+		lasso_saml20_profile_set_response_status_responder(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 		return critical_error(LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 	}
@@ -321,53 +289,45 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	/* verify authentication */
 	assertion_n = lasso_session_get_assertion(profile->session, profile->remote_providerID);
 	if (LASSO_IS_SAML2_ASSERTION(assertion_n) == FALSE) {
-		message(G_LOG_LEVEL_WARNING, "%s has no assertion", profile->remote_providerID);
-		lasso_saml20_profile_set_response_status(profile,
+		lasso_saml20_profile_set_response_status_responder(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 	}
-
 	assertion = LASSO_SAML2_ASSERTION(assertion_n);
 
-	/* If name identifier is federated, then verify federation */
-	if (strcmp(name_id->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0) {
-		char *name_id_sp_name_qualifier = NULL;
-		if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
-			/* XXX: which SAML 2 status code ? */
-			lasso_saml20_profile_set_response_status(profile,
-					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-			return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
-		}
+	/* Verify name identifier and session matching */
+	if (assertion->Subject == NULL) {
+		lasso_saml20_profile_set_response_status(profile,
+				LASSO_SAML2_STATUS_CODE_RESPONDER, "http://lasso.entrouvert.org/error/MalformedAssertion");
+		return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
+	}
 
-		if (remote_provider->private_data->affiliation_id) {
-			name_id_sp_name_qualifier = remote_provider->private_data->affiliation_id;
-		} else {
-			name_id_sp_name_qualifier = profile->remote_providerID;
-		}
+	if (lasso_saml2_name_id_equals(name_id, assertion->Subject->NameID) != TRUE) {
+		lasso_saml20_profile_set_response_status_responder(profile,
+				LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
+		return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
+	}
 
-		federation = g_hash_table_lookup(profile->identity->federations,
-				name_id_sp_name_qualifier);
-		if (LASSO_IS_FEDERATION(federation) == FALSE) {
-			/* XXX: which status code in SAML 2 ? */
-			lasso_saml20_profile_set_response_status(profile,
-					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-			return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
-		}
+	/* verify session index */
+	if (assertion->AuthnStatement) {
+		if (! LASSO_IS_SAML2_AUTHN_STATEMENT(assertion->AuthnStatement->data)) {
 
-		if (lasso_federation_verify_name_identifier(federation,
-					LASSO_NODE(name_id)) == FALSE) {
-			message(G_LOG_LEVEL_WARNING, "No name identifier for %s",
-					profile->remote_providerID);
 			lasso_saml20_profile_set_response_status(profile,
-					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-			return LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND;
+					LASSO_SAML2_STATUS_CODE_RESPONDER, "http://lasso.entrouvert.org/error/MalformedAssertion");
+			return LASSO_PROFILE_ERROR_BAD_SESSION_DUMP;
+		}
+		assertion_SessionIndex =
+			((LassoSaml2AuthnStatement*)assertion->AuthnStatement->data)->SessionIndex;
+		if (g_strcmp0(logout_request->SessionIndex, assertion_SessionIndex) != 0) {
+			lasso_saml20_profile_set_response_status_responder(profile,
+					LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
+			return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
 		}
 	}
 
 	/* if SOAP request method at IDP then verify all the remote service providers support
-	   SOAP protocol profile.
-	   If one remote authenticated principal service provider doesn't support SOAP
-	   then return UnsupportedProfile to original service provider */
+	   SOAP protocol profile.  If one remote authenticated principal service provider doesn't
+	   support SOAP then return UnsupportedProfile to original service provider */
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP &&
 			profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 
@@ -376,7 +336,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 				(GHFunc)check_soap_support, profile);
 
 		if (logout->private_data->all_soap == FALSE) {
-			lasso_saml20_profile_set_response_status(profile,
+			lasso_saml20_profile_set_response_status_responder(profile,
 					LASSO_LIB_STATUS_CODE_UNSUPPORTED_PROFILE);
 			return LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
 		}
@@ -446,7 +406,7 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 			lasso_assign_string(response->InResponseTo,
 					LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
 		}
-		lasso_saml20_profile_set_response_status(profile,
+		lasso_saml20_profile_set_response_status_responder(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 
 		response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
@@ -523,6 +483,7 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 		/* If at SP, if the request method was a SOAP type, then
 		 * rebuild the request message with HTTP method */
 		/* XXX is this still what to do for SAML 2.0? */
+		logout->private_data->partial_logout = TRUE;
 
 		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_RESPONDER) == 0) {
 			/* Responder -> look inside */
@@ -543,7 +504,6 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
 			rc = LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
 		}
-		message(G_LOG_LEVEL_CRITICAL, "Status code is not success: %s", status_code_value);
 		rc = LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 
@@ -573,6 +533,14 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 					logout->initial_remote_providerID);
 			lasso_transfer_gobject(profile->request, logout->initial_request);
 			lasso_transfer_gobject(profile->response, logout->initial_response);
+			/* if some of the logout failed, set a partial logout status code */
+			if (logout->private_data->partial_logout) {
+				/* reset the partial logout status */
+				logout->private_data->partial_logout = FALSE;
+				lasso_saml20_profile_set_response_status(profile,
+						LASSO_SAML2_STATUS_CODE_SUCCESS,
+						LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT);
+			}
 		}
 	}
 
