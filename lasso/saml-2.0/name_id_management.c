@@ -199,16 +199,16 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 	if (! LASSO_IS_SAML2_NAME_ID(name_id)) {
 		message(G_LOG_LEVEL_CRITICAL,
 				"Name identifier not found in name id management request");
-		lasso_saml20_profile_set_response_status_responder(
+		lasso_saml20_profile_set_response_status_requester(
 				profile,
-				LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
+				"MissingNameID");
 		rc = LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 		goto cleanup;
 	}
 
 	/* Check it matches */
 	if (! lasso_federation_verify_name_identifier(federation, (LassoNode*)name_id)) {
-		lasso_saml20_profile_set_response_status(
+		lasso_saml20_profile_set_response_status_responder(
 				profile,
 				LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
 		rc = LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND;
