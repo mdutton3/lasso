@@ -74,8 +74,7 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
 	g_return_val_if_fail(LASSO_IS_IDENTITY(profile->identity), NULL);
 	g_return_val_if_fail(profile->remote_providerID != NULL, NULL);
 
-	remote_provider = g_hash_table_lookup(
-			profile->server->providers, profile->remote_providerID);
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (remote_provider == NULL)
 		return NULL;
 
@@ -84,6 +83,9 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
 	} else {
 		name_id_sp_name_qualifier = profile->remote_providerID;
 	}
+
+	if (name_id_sp_name_qualifier == NULL)
+		return NULL;
 
 	federation = g_hash_table_lookup(
 			profile->identity->federations,
