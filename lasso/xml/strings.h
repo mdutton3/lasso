@@ -1251,6 +1251,9 @@
 	"urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken"
 #define LASSO_SAML2_AUTHN_CONTEXT_XMLDSIG \
 	"urn:oasis:names:tc:SAML:2.0:ac:classes:XMLDSig"
+#define LASSO_SAML2_AUTHN_CONTEXT_UNSPECIFIED \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified"
+
 
 /* Confirmation methods */
 
