@@ -459,13 +459,6 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 		lasso_assign_string(response->certificate_file, profile->server->certificate);
 	}
 
-	if (profile->remote_providerID == NULL || profile->response == NULL) {
-		/* no remote provider id set or no response set, this means
-		 * this function got called before validate_request, probably
-		 * because there were no active session */
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
 	/* build logout response message */
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		lasso_release_string(profile->msg_url);
