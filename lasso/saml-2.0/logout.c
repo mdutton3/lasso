@@ -56,6 +56,7 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	LassoSession *session;
 	LassoSamlp2RequestAbstract *request;
 	LassoSaml2EncryptedElement *encrypted_element = NULL;
+	char *assertion_SessionIndex = NULL;
 
 	/* session existence has been checked in id-ff/ */
 	session = lasso_profile_get_session(profile);
@@ -124,6 +125,20 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	lasso_assign_new_string(request->IssueInstant, lasso_get_current_time());
 
 	lasso_assign_gobject(LASSO_SAMLP2_LOGOUT_REQUEST(request)->NameID, profile->nameIdentifier);
+
+	/* set the session index */
+	if (assertion->AuthnStatement) {
+		if (! LASSO_IS_SAML2_AUTHN_STATEMENT(assertion->AuthnStatement->data)) {
+
+			return LASSO_PROFILE_ERROR_BAD_SESSION_DUMP;
+		}
+		assertion_SessionIndex =
+			((LassoSaml2AuthnStatement*)assertion->AuthnStatement->data)->SessionIndex;
+		if (assertion_SessionIndex) {
+			lasso_assign_string(LASSO_SAMLP2_LOGOUT_REQUEST(request)->SessionIndex, assertion_SessionIndex);
+		}
+	}
+
 
 	/* Encrypt NameID */
 	if (remote_provider &&
