@@ -72,6 +72,7 @@ LASSO_EXPORT GType lasso_saml2_name_id_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml2_name_id_new(void);
 
 LASSO_EXPORT LassoNode* lasso_saml2_name_id_new_with_string(char *content);
+LASSO_EXPORT gboolean lasso_saml2_name_id_equals(LassoSaml2NameID *name_id, LassoSaml2NameID *other_name_id);
 
 
 #ifdef __cplusplus

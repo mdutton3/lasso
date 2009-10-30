@@ -140,3 +140,36 @@ lasso_saml2_name_id_new_with_string(char *content)
 	object->content = g_strdup(content);
 	return LASSO_NODE(object);
 }
+
+/**
+ * lasso_saml2_name_id_equals:
+ * @name_id: a #LassoSaml2NameID object
+ * @other_name_id: another #LassoSaml2NameID object
+ *
+ * Return TRUE if @name_id equals @other_name_id.
+ *
+ * Return value: TRUE if the two NameID are equal and are #LassoSaml2NameID objects, FALSE
+ * otherwise.
+ */
+gboolean
+lasso_saml2_name_id_equals(LassoSaml2NameID *name_id, LassoSaml2NameID *other_name_id)
+{
+	if (! LASSO_IS_SAML2_NAME_ID(name_id) || ! LASSO_IS_SAML2_NAME_ID(other_name_id))
+		return FALSE;
+
+	/* check obligatory content */
+	if (!name_id->content || !other_name_id->content || strcmp(name_id->content, other_name_id->content) != 0)
+		return FALSE;
+
+	/* check optional content */
+	if (g_strcmp0(name_id->Format, other_name_id->Format) != 0)
+		return FALSE;
+	if (g_strcmp0(name_id->SPProvidedID, other_name_id->SPProvidedID) != 0)
+		return FALSE;
+	if (g_strcmp0(name_id->NameQualifier, other_name_id->NameQualifier) != 0)
+		return FALSE;
+	if (g_strcmp0(name_id->SPNameQualifier, other_name_id->SPNameQualifier) != 0)
+		return FALSE;
+
+	return TRUE;
+}
