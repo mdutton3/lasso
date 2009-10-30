@@ -1303,3 +1303,34 @@ lasso_provider_get_default_name_id_format(const LassoProvider *provider)
 {
 	return lasso_provider_get_metadata_one(provider, "NameIDFormat");
 }
+
+/**
+ * lasso_provider_get_sp_name_qualifier:
+ * @provider: a #LassoPRovider object
+ *
+ * Return the entityID to use for qualifying NameIdentifier.
+ *
+ * Return value:(transfer none): a private string or NULL. Do not keep a reference on this string or
+ * free it.
+ */
+char*
+lasso_provider_get_sp_name_qualifier(LassoProvider *provider)
+{
+	char *sp_name_qualifier;
+
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+	/* should not happen ! */
+	g_return_val_if_fail(provider->private_data != NULL, NULL);
+
+	if (provider->private_data->affiliation_id) {
+		sp_name_qualifier = provider->private_data->affiliation_id;
+	} else {
+		sp_name_qualifier = provider->ProviderID;
+	}
+
+	if (sp_name_qualifier) {
+		return g_strdup(sp_name_qualifier);
+	} else {
+		return NULL;
+	}
+}

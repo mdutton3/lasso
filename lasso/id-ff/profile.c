@@ -78,12 +78,7 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
 	if (remote_provider == NULL)
 		return NULL;
 
-	if (remote_provider->private_data->affiliation_id) {
-		name_id_sp_name_qualifier = remote_provider->private_data->affiliation_id;
-	} else {
-		name_id_sp_name_qualifier = profile->remote_providerID;
-	}
-
+	name_id_sp_name_qualifier = lasso_provider_get_sp_name_qualifier(remote_provider);
 	if (name_id_sp_name_qualifier == NULL)
 		return NULL;
 
