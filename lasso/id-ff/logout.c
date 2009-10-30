@@ -1027,6 +1027,7 @@ check_soap_support(G_GNUC_UNUSED gchar *key, LassoProvider *provider, LassoProfi
 
 
 	LASSO_LOGOUT(profile)->private_data->all_soap = FALSE;
+	LASSO_LOGOUT(profile)->private_data->partial_logout = FALSE;
 }
 
 
@@ -1034,10 +1035,19 @@ static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
+	LassoLogout *logout;
+
+	if (! LASSO_IS_LOGOUT(node)) {
+		return NULL;
+	}
+	logout = (LassoLogout*)node;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlNodeSetName(xmlnode, (xmlChar*)"Logout");
 	xmlSetProp(xmlnode, (xmlChar*)"LogoutDumpVersion", (xmlChar*)"2");
+	if (logout->private_data->partial_logout) {
+		xmlSetProp(xmlnode, (xmlChar*)"PartialLogout", (xmlChar*)"true");
+	}
 
 	return xmlnode;
 }
@@ -1045,7 +1055,18 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	return parent_class->init_from_xml(node, xmlnode);
+	int rc;
+
+	rc = parent_class->init_from_xml(node, xmlnode);
+	if (rc == 0) {
+		xmlChar *tmp;
+		tmp = xmlGetProp(xmlnode, (xmlChar*)"PartiaLogout");
+		if (tmp && strcmp((char*)tmp, "true") == 0) {
+			((LassoLogout*)node)->private_data->partial_logout = TRUE;
+		}
+		lasso_release_xml_string(tmp);
+	}
+	return rc;
 }
 
 /*****************************************************************************/

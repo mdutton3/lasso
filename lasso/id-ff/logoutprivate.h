@@ -34,6 +34,7 @@ struct _LassoLogoutPrivate
 {
 	gboolean dispose_has_run;
 	gboolean all_soap;
+	gboolean partial_logout;
 };
 
 #ifdef __cplusplus
