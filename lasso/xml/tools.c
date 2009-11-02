@@ -1553,6 +1553,15 @@ xmlDetectSAX2(xmlParserCtxtPtr ctxt) {
 	}
 }
 
+/**
+ * lasso_get_relaystate_from_query:
+ * @query: a C-string containing the query part of an URL
+ *
+ * Extracts the relaystate argument contained in an URL query string.
+ *
+ * Return value: NULL if not relaystate is present in the URL, the RelayState decoded value
+ * otherwise.
+ */
 char *
 lasso_get_relaystate_from_query(const char *query) {
 	char *start, *end;
