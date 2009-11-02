@@ -62,6 +62,9 @@
  * @stability: Internal
  */
 
+/* A query string can be 3 times larger than the byte string value, because of the octet encoding
+ * %xx */
+const int query_string_attribute_length_limit = 8192 * 3;
 LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
 static xmlSecKeyPtr lasso_get_public_key_from_private_key_file(const char *private_key_file);
 static gboolean is_base64(const char *message);
@@ -1583,8 +1586,8 @@ lasso_get_relaystate_from_query(const char *query) {
 		} else {
 			length = strlen(start);
 		}
-		if (length > 240) {
-			g_warning("Refused to parse a RelayState of size %ti > 240", length);
+		if (length > query_string_attribute_length_limit) {
+			g_warning("Refused to parse a RelayState of size %ti > %u", length, query_string_attribute_length_limit);
 		} else {
 			result = xmlURIUnescapeString(start, length, NULL);
 		}
