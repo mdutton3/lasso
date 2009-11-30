@@ -275,7 +275,7 @@ lasso_profile_is_identity_dirty(LassoProfile *profile)
 gboolean
 lasso_profile_is_session_dirty(LassoProfile *profile)
 {
-	return lasso_session_is_dirty(profile->session);
+	return LASSO_IS_SESSION(profile->session) && lasso_session_is_dirty(profile->session);
 }
 
 
