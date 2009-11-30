@@ -75,8 +75,7 @@ $ACLOCAL $ACLOCAL_FLAGS -I m4 || exit $?
 
 echo "* Running autoconf"
 autoconf || exit $?
-# optionally feature autoheader
-#(autoheader --version)  < /dev/null > /dev/null 2>&1 && autoheader
+(autoheader --version)  < /dev/null > /dev/null 2>&1 && autoheader
 
 echo "* Running libtoolize"
 libtoolize --copy --force
@@ -89,7 +88,9 @@ $AUTOMAKE --add-missing -Wno-portability $am_opt || exit $?
 
 cd "$THEDIR"
 
+if [ "$1" != "noconfig" ]; then
 $srcdir/configure --enable-maintainer-mode "$@" || exit $?
+fi
 
 echo
 echo "Now type 'make install' to install $PROJECT."
