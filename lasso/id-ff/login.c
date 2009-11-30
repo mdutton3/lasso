@@ -1230,8 +1230,6 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 					lasso_session_get_assertion(profile->session,
 						profile->remote_providerID));
 			if (status) {
-				lasso_node_destroy(LASSO_NODE(LASSO_SAMLP_RESPONSE(
-								profile->response)->Status));
 				lasso_assign_gobject(LASSO_SAMLP_RESPONSE(profile->response)->Status,
 					status);
 				lasso_session_remove_status(profile->session,
