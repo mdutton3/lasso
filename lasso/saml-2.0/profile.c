@@ -1040,7 +1040,7 @@ remove_signature(LassoNode *node) {
 	if (node == NULL)
 		return;
 	klass = LASSO_NODE_GET_CLASS(node);
-	if (klass->node_data->sign_type_offset != 0) {
+	if (klass && klass->node_data && klass->node_data->sign_type_offset != 0) {
 		G_STRUCT_MEMBER(LassoSignatureType, node,klass->node_data->sign_type_offset) =
 			LASSO_SIGNATURE_TYPE_NONE;
 	}
