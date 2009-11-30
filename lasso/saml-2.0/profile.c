@@ -49,7 +49,7 @@
 
 static char* lasso_saml20_profile_build_artifact(LassoProvider *provider);
 G_GNUC_UNUSED static void remove_all_signatures(LassoNode *node);
-static char * lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int sign);
+static int lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int sign, char **query);
 
 /*
  * Helper functions
@@ -1005,32 +1005,42 @@ lasso_saml20_profile_build_soap_response(LassoProfile *profile)
  *
  * Return value: a newly allocated string containing the query string if successfull, NULL otherwise.
  */
-static char *
-lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int sign) {
+static int
+lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int sign, char **query) {
 	char *unsigned_query = NULL;
 	char *result = NULL;
+	int rc = 0;
 
-	g_return_val_if_fail(LASSO_IS_NODE(msg), NULL);
+	lasso_bad_param(PROFILE, profile);
+	lasso_bad_param(NODE, msg);
 
 	unsigned_query = lasso_node_build_query(msg);
 	if (profile->msg_relayState) {
-		char *query = unsigned_query;
-		if (strlen(profile->msg_relayState) < 81) {
-			unsigned_query = lasso_url_add_parameters(query, 1, "RelayState", profile->msg_relayState, NULL);
-			query = NULL;
-		} else {
-			g_warning("Refused to encode a RelayState of more than 80 bytes, #3.4.3 of"
+		unsigned_query = lasso_url_add_parameters(unsigned_query, 1, "RelayState", profile->msg_relayState, NULL);
+
+		if (strlen(profile->msg_relayState) > 80) {
+			g_warning("Encoded a RelayState of more than 80 bytes, see #3.4.3 of"
 					" saml-bindings-2.0-os");
 		}
 	}
 	if (sign && lasso_flag_add_signature) {
+		LassoServer *server = profile->server;
+		goto_cleanup_if_fail_with_rc (LASSO_IS_SERVER(server),
+				LASSO_PROFILE_ERROR_MISSING_SERVER);
+		goto_cleanup_if_fail_with_rc (
+				profile->server->signature_method != LASSO_SIGNATURE_TYPE_NONE &&
+				profile->server->private_key,
+				LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED);
 		result = lasso_query_sign(unsigned_query, profile->server->signature_method,
 				profile->server->private_key);
-		lasso_release_string(unsigned_query);
+		lasso_transfer_string(*query, result);
 	} else {
-		result = unsigned_query;
+		lasso_transfer_string(*query, unsigned_query);
 	}
-	return result;
+cleanup:
+	lasso_release_string(unsigned_query);
+	lasso_release_string(result);
+	return rc;
 }
 
 static void
@@ -1039,10 +1049,15 @@ remove_signature(LassoNode *node) {
 
 	if (node == NULL)
 		return;
+
 	klass = LASSO_NODE_GET_CLASS(node);
-	if (klass && klass->node_data && klass->node_data->sign_type_offset != 0) {
-		G_STRUCT_MEMBER(LassoSignatureType, node,klass->node_data->sign_type_offset) =
-			LASSO_SIGNATURE_TYPE_NONE;
+	/* follow the class parenting chain */
+	while (klass && LASSO_IS_NODE_CLASS(klass)) {
+		if (klass && klass->node_data && klass->node_data->sign_type_offset != 0) {
+			G_STRUCT_MEMBER(LassoSignatureType, node, klass->node_data->sign_type_offset) =
+				LASSO_SIGNATURE_TYPE_NONE;
+		}
+		klass = g_type_class_peek_parent(klass);
 	}
 }
 
@@ -1082,19 +1097,37 @@ remove_all_signatures(LassoNode *node) {
 	}
 }
 
+/**
+ * lasso_saml20_profile_build_http_redirect:
+ * @profile: a #LassoProfile object
+ * @msg: a #LassoNode object representing a SAML 2.0 message
+ * @must_sign: wheter to sign the query message using query signatures
+ * @url: the URL where the query is targeted
+ *
+ * Build an HTTP URL with a query-string following the SAML 2.0 HTTP-Redirect binding rules,
+ * eventually sign it. Any signature at the message level is removed.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
 gint
 lasso_saml20_profile_build_http_redirect(LassoProfile *profile,
 	LassoNode *msg,
 	gboolean must_sign,
 	const char *url)
 {
-	char *query;
+	char *query = NULL;
+	int rc = 0;
 
 	if (url == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
+	/* remove XML signature */
+	remove_signature(msg);
 	/* No signature on the XML message */
-	query = lasso_saml20_profile_export_to_query(profile, msg, must_sign);
+	rc = lasso_saml20_profile_export_to_query(profile, msg, must_sign, &query);
+	if (rc)
+		return rc;
+
 	lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
 	lasso_release(profile->msg_body);
 	lasso_release(query);
@@ -1312,6 +1345,7 @@ lasso_saml20_build_http_redirect_query_simple(LassoProfile *profile,
 		url = lasso_provider_get_metadata_one(remote_provider, idx);
 		lasso_release(idx);
 	}
+	/* remove signature at the message level */
 	rc = lasso_saml20_profile_build_http_redirect(profile, msg, must_sign, url);
 cleanup:
 	lasso_release(url);
