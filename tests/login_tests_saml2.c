@@ -32,6 +32,7 @@
 #include "../lasso/utils.h"
 #include "../lasso/backward_comp.h"
 
+#include "./tests.h"
 
 static char*
 generateIdentityProviderContextDump()
@@ -135,10 +136,13 @@ START_TEST(test02_saml2_serviceProviderLogin)
 	char *serviceProviderContextDump = NULL, *identityProviderContextDump = NULL;
 	LassoServer *spContext = NULL, *idpContext = NULL;
 	LassoLogin *spLoginContext = NULL, *idpLoginContext = NULL;
+	LassoLogout *spLogoutContext = NULL, *idpLogoutContext = NULL;
 	LassoSamlp2AuthnRequest *request = NULL;
 	int rc;
 	char *relayState = NULL;
 	char *authnRequestUrl = NULL, *authnRequestQuery = NULL;
+	char *logoutRequestUrl = NULL, *logoutRequestQuery = NULL;
+	char *logoutResponseUrl = NULL, *logoutResponseQuery = NULL;
 	char *responseUrl = NULL, *responseQuery = NULL;
 	char *idpIdentityContextDump = NULL, *idpSessionContextDump = NULL;
 	char *serviceProviderId = NULL, *soapRequestMsg = NULL, *soapResponseMsg = NULL;
@@ -287,6 +291,43 @@ START_TEST(test02_saml2_serviceProviderLogin)
 	fail_unless(rc != 0, "lasso_login_process_response_msg must fail");
 	rc = lasso_login_accept_sso(spLoginContext);
 	fail_unless(rc != 0, "lasso_login_accept_sso must fail");
+
+	/* logout test */
+	/* generate a logout request */
+	check_not_null(idpLogoutContext = lasso_logout_new(idpContext));
+	check_good_rc(lasso_profile_set_session_from_dump(&idpLogoutContext->parent, idpSessionContextDump));
+	check_good_rc(lasso_logout_init_request(idpLogoutContext, NULL, LASSO_HTTP_METHOD_REDIRECT));
+	check_good_rc(lasso_logout_build_request_msg(idpLogoutContext));
+	check_not_null(idpLogoutContext->parent.msg_url);
+	check_null(idpLogoutContext->parent.msg_body);
+	check_null(idpLogoutContext->parent.msg_relayState);
+	lasso_assign_string(logoutRequestUrl, idpLogoutContext->parent.msg_url);
+	lasso_release_gobject(idpLogoutContext);
+	logoutRequestQuery = strchr(logoutRequestUrl, '?');
+	logoutRequestQuery += 1; /* keep only the query */
+	check_not_null(logoutRequestQuery);
+
+	/* process the logout request */
+	check_not_null(spLogoutContext = lasso_logout_new(spContext));
+	check_good_rc(rc = lasso_profile_set_session_from_dump(&spLogoutContext->parent, spSessionDump));
+	check_good_rc(rc = lasso_logout_process_request_msg(spLogoutContext, logoutRequestQuery));
+	check_good_rc(rc = lasso_logout_validate_request(spLogoutContext));
+	check_good_rc(rc = lasso_logout_build_response_msg(spLogoutContext));
+	check_not_null(spLogoutContext->parent.msg_url);
+	check_null(spLogoutContext->parent.msg_body);
+	check_null(spLogoutContext->parent.msg_relayState);
+	lasso_assign_string(logoutResponseUrl, spLogoutContext->parent.msg_url);
+	check_not_null(logoutResponseQuery = strchr(logoutResponseUrl, '?'));
+	logoutResponseQuery += 1; /* keep only the query */
+	lasso_release_gobject(spLogoutContext);
+
+	/* process the response */
+	check_not_null(idpLogoutContext = lasso_logout_new(idpContext));
+	check_good_rc(lasso_profile_set_session_from_dump(&idpLogoutContext->parent, idpSessionContextDump));
+	check_good_rc(lasso_logout_process_response_msg(idpLogoutContext, logoutResponseQuery));
+	lasso_release_gobject(idpLogoutContext);
+	lasso_release_string(logoutRequestUrl);
+	lasso_release_string(logoutResponseUrl);
 
 	g_free(idpLoginDump);
 	g_free(serviceProviderId);

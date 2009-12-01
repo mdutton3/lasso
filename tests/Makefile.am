@@ -32,7 +32,7 @@ perfs_LDFLAGS = -rpath `cd $(top_builddir)/lasso/.libs/; pwd`
 
 endif
 
-EXTRA_DIST = tests.c login_tests.c basic_tests.c random_tests.c metadata_tests.c integration
+EXTRA_DIST = tests.c login_tests.c basic_tests.c random_tests.c metadata_tests.c integration tests.h
 
 SUBDIRS = data metadata
 
