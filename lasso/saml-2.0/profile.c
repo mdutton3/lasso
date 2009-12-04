@@ -1015,6 +1015,8 @@ lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int 
 	lasso_bad_param(NODE, msg);
 
 	unsigned_query = lasso_node_build_query(msg);
+	goto_cleanup_if_fail_with_rc(unsigned_query != NULL,
+			LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 	if (profile->msg_relayState) {
 		unsigned_query = lasso_url_add_parameters(unsigned_query, 1, "RelayState", profile->msg_relayState, NULL);
 
@@ -1033,6 +1035,7 @@ lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int 
 				LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED);
 		result = lasso_query_sign(unsigned_query, profile->server->signature_method,
 				profile->server->private_key);
+		goto_cleanup_if_fail_with_rc(result != NULL, LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		lasso_transfer_string(*query, result);
 	} else {
 		lasso_transfer_string(*query, unsigned_query);
