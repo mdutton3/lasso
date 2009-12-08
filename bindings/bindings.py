@@ -494,11 +494,6 @@ def main():
 
         python_binding = lang.Binding(binding)
         python_binding.generate()
-    elif options.language == 'php4':
-        from php4 import lang
-
-        php4_binding = lang.Binding(binding)
-        php4_binding.generate()
     elif options.language == 'php5':
         from php5 import lang
 
