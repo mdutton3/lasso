@@ -24,20 +24,26 @@
 #define __TESTS_H__
 
 #define check_not_null(what) \
-	fail_unless((what) != NULL, #what " returned NULL");
+	fail_unless((what) != NULL, "%s:%i: " #what " returned NULL", __func__, __LINE__);
 
 #define check_null(what) \
-	fail_unless((what) == NULL, #what " returned NULL");
+	fail_unless((what) == NULL, "%s:%i: "#what " returned NULL", __func__, __LINE__);
+
+#define check_true(what) \
+	fail_unless((what), "%s:%i: " #what " is not TRUE", __func__, __LINE__);
+
+#define check_false(what) \
+	fail_unless(! (what), "%s:%i: " #what " is not FALSE", __func__, __LINE__);
 
 
 #define check_good_rc(what) \
 { 	int __rc = (what); \
-	fail_unless(__rc == 0, #what " failed, rc = %s", lasso_strerror(__rc)); \
+	fail_unless(__rc == 0, "%s:%i: " #what " failed, rc = %s(%i)", __func__, __LINE__, lasso_strerror(__rc), __rc); \
 }
 
 #define check_bad_rc(what, how) \
 { 	int __rc = (what); \
-	fail_unless(__rc == how, #what " is not %s, rc = %s", lasso_strerror(how), lasso_strerror(__rc)); \
+	fail_unless(__rc == how, "%s:%i: " #what " is not %s(%i), rc = %s(%i)", __func__, __LINE__, lasso_strerror(how), how, lasso_strerror(__rc), __rc); \
 }
 
 #endif /*__TESTS_H__ */
