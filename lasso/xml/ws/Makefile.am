@@ -43,5 +43,6 @@ liblassoinclude_HEADERS = \
 	wsse_security_token_reference.h \
 	wsse_transformation_parameters.h \
 	wsse_username_token.h \
-	wsu_timestamp.h
+	wsu_timestamp.h \
+	xml_ws.h
 
