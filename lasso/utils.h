@@ -27,6 +27,7 @@
 
 #include <glib.h>
 #include "debug.h"
+#include "./backward_comp.h"
 
 #ifdef LASSO_DEBUG
 #ifdef __GNUC__
@@ -403,7 +404,7 @@
 #define goto_cleanup_if_fail_with_rc_with_warning(condition, rc_value) \
 	{\
 		if (! (condition) ) {\
-			g_warning("%s failed, returning %s", __STRING(condition), __STRING(rc_value));\
+			g_warning("%s failed, returning %s", #condition, #rc_value);\
 			rc = (rc_value); \
 			goto cleanup; \
 		} \
