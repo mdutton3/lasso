@@ -743,7 +743,7 @@ lasso_node_cleanup_original_xmlnodes(LassoNode *node)
 }
 
 static GQuark original_xmlnode_quark;
-static GQuark custom_namespace_quark;
+static GQuark custom_element_quark;
 
 /**
  * lasso_node_get_original_xmlnode:
@@ -774,7 +774,7 @@ static void original_xmlnode_free(void *node) {
 /**
  * lasso_node_set_original_xmlnode:
  * @node: the #LassoNode object
- * @xmlNode: an #xmlNode
+ * @xmlnode: an #xmlNode
  *
  * Set the underlying XML representation of the object.
  *
@@ -798,43 +798,61 @@ lasso_node_set_original_xmlnode(LassoNode *node, xmlNode* xmlnode)
 	}
 }
 
-struct _CustomNamespace {
+struct _CustomElement {
 	char *prefix;
 	char *href;
+	char *nodename;
 };
 
-static struct _CustomNamespace *
-_lasso_node_new_custom_namespace(char *prefix, char *href)
+static struct _CustomElement *
+_lasso_node_new_custom_element()
 {
-	struct _CustomNamespace *ret = g_new0(struct _CustomNamespace, 1);
-	lasso_assign_string(ret->prefix, prefix);
-	lasso_assign_string(ret->href, href);
+	struct _CustomElement *ret = g_new0(struct _CustomElement, 1);
 	return ret;
 }
 
 static void
-_lasso_node_free_custom_namespace(struct _CustomNamespace *custom_namespace)
+_lasso_node_free_custom_element(struct _CustomElement *custom_element)
 {
-	lasso_release_string(custom_namespace->prefix);
-	lasso_release_string(custom_namespace->href);
-	lasso_release(custom_namespace);
+	lasso_release_string(custom_element->prefix);
+	lasso_release_string(custom_element->href);
+	lasso_release(custom_element);
 }
 
 /**
- * _lasso_node_get_custom_namespace:
+ * _lasso_node_get_custom_element:
  * @node: a #LassoNode object
  *
  * Return the eventually attached custom namespace object
  *
- * Return value: NULL or an #_CustomNamespace structure.
+ * Return value: NULL or an #_CustomElement structure.
  */
-static struct _CustomNamespace*
-_lasso_node_get_custom_namespace(LassoNode *node)
+static struct _CustomElement*
+_lasso_node_get_custom_element(LassoNode *node)
 {
 	if (! LASSO_NODE(node))
 		return NULL;
-	return g_object_get_qdata((GObject*)node, custom_namespace_quark);
+	return g_object_get_qdata((GObject*)node, custom_element_quark);
 }
+
+static struct _CustomElement*
+_lasso_node_get_custom_element_or_create(LassoNode *node)
+{
+	struct _CustomElement *custom_element;
+
+	if (! LASSO_IS_NODE(node))
+		return NULL;
+
+	custom_element = _lasso_node_get_custom_element(node);
+	if (! custom_element) {
+		custom_element = _lasso_node_new_custom_element();
+		g_object_set_qdata_full((GObject*)node, custom_element_quark,
+				custom_element,
+				(GDestroyNotify)_lasso_node_free_custom_element);
+	}
+	return custom_element;
+}
+
 
 /**
  * lasso_node_set_custom_namespace:
@@ -848,11 +866,32 @@ _lasso_node_get_custom_namespace(LassoNode *node)
 void
 lasso_node_set_custom_namespace(LassoNode *node, char *prefix, char *href)
 {
-	if (! LASSO_IS_NODE(node) || ! prefix || ! href)
-		return;
-	g_object_set_qdata_full((GObject*)node, custom_namespace_quark,
-			_lasso_node_new_custom_namespace(prefix, href),
-			(GDestroyNotify)_lasso_node_free_custom_namespace);
+	struct _CustomElement *custom_element;
+
+	custom_element = _lasso_node_get_custom_element_or_create(node);
+	g_return_if_fail (custom_element != NULL);
+
+	lasso_assign_string(custom_element->prefix, prefix);
+	lasso_assign_string(custom_element->href, href);
+}
+
+/**
+ * lasso_node_set_custom_nodename:
+ * @node: a #LassoNode object
+ * @nodename: the name to use for the node
+ *
+ * Set a custom nodename for an object instance, use it with object implement a schema type and not
+ * a real element.
+ */
+void
+lasso_node_set_custom_nodename(LassoNode *node, char *nodename)
+{
+	struct _CustomElement *custom_element;
+
+	custom_element = _lasso_node_get_custom_element_or_create(node);
+	g_return_if_fail (custom_element != NULL);
+
+	lasso_assign_string(custom_element->nodename, nodename);
 }
 
 /*****************************************************************************/
@@ -1210,24 +1249,16 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	GList *list_ns = NULL, *list_classes = NULL, *t;
 	LassoNode *value_node;
 	struct XmlSnippet *version_snippet;
-	struct _CustomNamespace *custom_namespace;
+	struct _CustomElement *custom_element;
 
 	if (class->node_data == NULL)
 		return NULL;
 
 	xmlnode = xmlNewNode(NULL, (xmlChar*)class->node_data->node_name);
-	/* set a custom namespace if one is found */
-	custom_namespace = _lasso_node_get_custom_namespace(node);
-	if (custom_namespace) {
-		xmlNewNs(xmlnode, (xmlChar*)custom_namespace->href,
-				(xmlChar*)custom_namespace->prefix);
-		/* skip the base class namespace, it is replaced by the custom one */
-		class = g_type_class_peek_parent(class);
-	}
-
+	custom_element = _lasso_node_get_custom_element(node);
 	/* collect namespaces in the order of ancestor classes, nearer first */
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
-		if (class->node_data->ns)
+		if (class->node_data->ns && (! custom_element || ! custom_element->href || class != LASSO_NODE_GET_CLASS(node)))
 			list_ns = g_list_append(list_ns, class->node_data->ns);
 		list_classes = g_list_append(list_classes, class);
 		class = g_type_class_peek_parent(class);
@@ -1243,6 +1274,43 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	g_list_free(list_ns);
 	/* first NS defined is the namespace of the element */
 	xmlSetNs(xmlnode, xmlnode->nsDef);
+
+	/* set a custom namespace if one is found */
+	if (custom_element != NULL) {
+		if (custom_element->href) {
+			xmlChar *prefix = BAD_CAST (custom_element->prefix);
+			xmlNs *ns = NULL, *oldns = NULL;
+
+			oldns = xmlSearchNs(NULL, xmlnode, prefix);
+			if (prefix && oldns) {
+				prefix = NULL;
+			}
+			// remove existing default namespace
+			if (prefix == NULL) {
+				xmlNs *cur = xmlnode->nsDef, *last = NULL;
+				while (cur) {
+					if (cur->prefix == NULL) {
+						if (last) {
+							last->next = cur->next;
+						} else {
+							xmlnode->nsDef = cur->next;
+						}
+						xmlFreeNs(cur);
+					}
+					last = cur;
+					cur = cur->next;
+				}
+			}
+			ns = xmlNewNs(xmlnode, (xmlChar*)custom_element->href,
+					(xmlChar*)custom_element->prefix);
+			/* skip the base class namespace, it is replaced by the custom one */
+			xmlSetNs(xmlnode, ns);
+		}
+		if (custom_element->nodename) {
+			xmlNodeSetName(xmlnode, BAD_CAST (custom_element->nodename));
+		}
+	}
+
 
 	t = g_list_last(list_classes);
 	while (t) {
@@ -1412,7 +1480,7 @@ class_init(LassoNodeClass *class)
 	gobject_class->finalize = lasso_node_finalize;
 
 	original_xmlnode_quark = g_quark_from_static_string("lasso_original_xmlnode");
-	custom_namespace_quark = g_quark_from_static_string("lasso_custom_namespace");
+	custom_element_quark = g_quark_from_static_string("lasso_custom_element");
 	class->node_data = NULL;
 }
 
@@ -1429,6 +1497,7 @@ base_class_finalize(LassoNodeClass *class)
 			g_free(data->node_name);
 		}
 		g_free(class->node_data);
+		class->node_data = NULL;
 	}
 }
 
@@ -1527,6 +1596,22 @@ lasso_node_new_from_soap(const char *soap)
 	return node;
 }
 
+/* How finding a typename from an xmlNode works ?
+ *
+ * There is three way to get to a typename:
+ * 1. by an xsi:type QName attribute, that we resolve
+ * 2. by constructing a QName from the namespace of the xsi:type and the name of the node
+ * 3. by resolving the QName of the node
+ *
+ * To resolve a typename you must map the QName using the default registry object, or use
+ * prefix_from_href_and_nodename() to mat the QName to a prefix used to build the typename with this
+ * template: typename = "Lasso" + prefix + name_part(QName).
+ *
+ * The resolving algorithm is in the function _type_name_from_href_and_nodename().
+ *
+ * The prefix extraction in prefix_from_href_and_nodename().
+ *
+ */
 static const char *
 prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 	char *prefix = NULL;
@@ -1611,10 +1696,48 @@ prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 	return prefix;
 }
 
-static const char *
-prefix_from_node(xmlNode *xmlnode) {
-	return prefix_from_href_and_nodename(xmlnode->ns->href, xmlnode->name);
+/**
+ * _type_name_from_href_and_nodename:
+ * @href: the href part of a QName
+ * @nodename: the name part of a QName
+ *
+ * Return value: a typename string if one if found that exists, NULL otherwise.
+ */
+static char*
+_type_name_from_href_and_nodename(char *href, char *nodename) {
+	const char *prefix = prefix_from_href_and_nodename(BAD_CAST (href), BAD_CAST (nodename));
+	char *typename = NULL;
 
+	if (!href || !nodename)
+		return NULL;
+
+	/* FIXME: hardcoded mappings */
+	if (strcmp(nodename, "SvcMD") == 0) {
+		typename = g_strdup("LassoIdWsf2DiscoSvcMetadata");
+	} else if (prefix != NULL && strcmp(prefix, "IdWsf2DstRef") == 0 && strcmp(nodename, "Status") == 0) {
+		typename = g_strdup("LassoIdWsf2UtilStatus");
+	} else if (prefix != NULL && strcmp(prefix, "WsSec1") == 0 && strcmp(nodename, "Security") == 0) {
+		typename = g_strdup("LassoWsSec1SecurityHeader");
+	} else if (prefix != NULL && strcmp(prefix, "Soap") == 0 && strcmp(nodename, "detail") == 0) {
+		typename = g_strdup("LassoSoapDetail");
+	} else {
+		/* first try with registered mappings */
+		const char *ctypename = lasso_registry_default_get_mapping(href, nodename, LASSO_LASSO_HREF);
+		if (ctypename) {
+			typename = g_strdup(ctypename);
+		}
+		/* finally try the default behaviour */
+		if (prefix != NULL && typename == NULL) {
+			typename = g_strdup_printf("Lasso%s%s", prefix, nodename);
+		}
+	}
+
+	/* Does it really exist ? */
+	if (typename && g_type_from_name (typename) == 0) {
+		lasso_release_string(typename);
+	}
+
+	return typename;
 }
 
 /**
@@ -1628,73 +1751,74 @@ prefix_from_node(xmlNode *xmlnode) {
 LassoNode*
 lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 {
-	const char *prefix = NULL;
 	char *typename = NULL;
-	char *node_name = NULL;
 	xmlChar *xsitype = NULL;
 	LassoNode *node = NULL;
+	gboolean fromXsi = FALSE;
 
 	if (xmlnode == NULL || xmlnode->ns == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Impossible to build LassoNode from xml node");
+		message(G_LOG_LEVEL_CRITICAL, "Unable to build a LassoNode from a xmlNode");
 		return NULL;
 	}
 
-	prefix = prefix_from_node(xmlnode);
-
 	xsitype = xmlGetNsProp(xmlnode, (xmlChar*)"type", (xmlChar*)LASSO_XSI_HREF);
 	if (xsitype) {
-		xmlNsPtr ns;
 		xmlChar *xmlPrefix, *separator;
+		xmlNsPtr xsiNs = NULL;
+		char *xsiNodeName = NULL;
 
 		/** Honor xsi:type  */
 		xmlPrefix = (xmlChar*)xsitype;
 		separator = (xmlChar*)strchr((char*)xsitype, ':');
 		if (separator != NULL) {
 			xmlPrefix = (xmlChar*)g_strndup((char*)xmlPrefix, (size_t)(separator - xmlPrefix));
-			ns = xmlSearchNs(NULL, xmlnode, xmlPrefix);
-			if (ns != NULL) {
-				if (strcmp((char*)ns->href, LASSO_LASSO_HREF) == 0) {
-					typename = g_strdup((char*)(separator+1));
-				} else {
-					const char *xsi_prefix = prefix_from_href_and_nodename(ns->href, separator+1);
-					if (xsi_prefix) {
-						prefix = xsi_prefix;
-					}
+			xsiNs = xmlSearchNs(NULL, xmlnode, xmlPrefix);
+			if (xsiNs != NULL) {
+				xsiNodeName = g_strdup((char*)(separator+1));
+				if (strcmp((char*)xsiNs->href, LASSO_LASSO_HREF) == 0) {
+					typename = g_strdup(xsiNodeName);
 				}
 			}
 			lasso_release(xmlPrefix);
 		}
+		if (! typename && xsiNs && xsiNodeName) {
+			typename = _type_name_from_href_and_nodename ((char*)xsiNs->href, xsiNodeName);
+		}
+		if (! typename && xsiNs) {
+			typename = _type_name_from_href_and_nodename ((char*)xsiNs->href, (char*)xmlnode->name);
+		}
 		lasso_release_xml_string(xsitype);
+		if (xsiNodeName)
+			lasso_release_string(xsiNodeName);
+		if (typename)
+			fromXsi = TRUE;
 	}
 
 	if (typename == NULL) {
-		node_name = (char*)xmlnode->name;
-		if (strcmp(node_name, "EncryptedAssertion") == 0) {
-			typename = g_strdup("LassoSaml2EncryptedElement");
-		} else if (strcmp(node_name, "SvcMD") == 0) {
-			typename = g_strdup("LassoIdWsf2DiscoSvcMetadata");
-		} else if (prefix != NULL && strcmp(prefix, "IdWsf2DstRef") == 0 && strcmp(node_name, "Status") == 0) {
-			typename = g_strdup("LassoIdWsf2UtilStatus");
-		} else if (prefix != NULL && strcmp(prefix, "WsSec1") == 0 && strcmp(node_name, "Security") == 0) {
-			typename = g_strdup("LassoWsSec1SecurityHeader");
-		} else if (prefix != NULL && strcmp(prefix, "Soap") == 0 && strcmp(node_name, "detail") == 0) { /* FIXME */
-			typename = g_strdup("LassoSoapDetail");
-		} else {
-			/* first try with registered mappings */
-			if (xmlnode->ns != NULL && xmlnode->ns->href != NULL) {
-				const char *ctypename = lasso_registry_default_get_mapping((char*)xmlnode->ns->href, node_name, LASSO_LASSO_HREF);
-				if (ctypename) {
-					typename = g_strdup(ctypename);
-				}
-			}
-			/* finally try the default behaviour */
-			if (prefix != NULL && typename == NULL) {
-				typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
-			}
-		}
+		typename = _type_name_from_href_and_nodename ((char*)xmlnode->ns->href, (char*)xmlnode->name);
 	}
+
 	if (typename) {
 		node = lasso_node_new_from_xmlNode_with_type(xmlnode, typename);
+	}
+	if (! fromXsi) {
+		/* if the typename was not obtained via xsi:type but through mapping of the element
+		 * name then keep the element name */
+		if (LASSO_NODE_GET_CLASS(node)->node_data && LASSO_NODE_GET_CLASS(node)->node_data->node_name && g_strcmp0((char*)xmlnode->name,
+					LASSO_NODE_GET_CLASS(node)->node_data->node_name) != 0) {
+			lasso_node_set_custom_nodename(node, (char*)xmlnode->name);
+		}
+
+		if (xmlnode->ns && (LASSO_NODE_GET_CLASS(node)->node_data == NULL ||
+					LASSO_NODE_GET_CLASS(node)->node_data->ns == NULL ||
+					g_strcmp0((char*)xmlnode->ns->href,
+						(char*)LASSO_NODE_GET_CLASS(node)->node_data->ns->href)
+					!= 0)) {
+			lasso_node_set_custom_namespace(node, (char*)xmlnode->ns->prefix,
+					(char*)xmlnode->ns->href);
+		}
+
+
 	}
 	lasso_release(typename);
 
