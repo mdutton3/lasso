@@ -65,7 +65,7 @@ lasso_server_get_svc_metadatas(LassoServer *server)
  * @svcMDIDS: a list of service metadata IDs
  * @service_type: a service type identifier
  *
- * Return value: (element-type LassoIdWsf2DiscoSvcMetadata) (transfer none): a list of #LassoIdWsf2DiscoSvcMetadata
+ * Return value: (element-type LassoIdWsf2DiscoSvcMetadata) (transfer full): a list of #LassoIdWsf2DiscoSvcMetadata
  */
 GList *
 lasso_server_get_svc_metadatas_with_id_and_type(LassoServer *server, GList *svcMDIDs,
