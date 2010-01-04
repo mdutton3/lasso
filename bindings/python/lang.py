@@ -275,7 +275,7 @@ if WSF_SUPPORT:
                     py_args.append(get_python_arg_decl(o))
 
                     if self.is_pygobject(arg_type):
-                        c_args.append('%s._cptr' % arg_name)
+                        c_args.append('%s and %s._cptr' % (arg_name, arg_name))
                     else:
                         c_args.append(arg_name)
 
@@ -300,7 +300,7 @@ if WSF_SUPPORT:
                     py_args.append(get_python_arg_decl(o))
 
                     if self.is_pygobject(arg_type):
-                        c_args.append('%s._cptr' % arg_name)
+                        c_args.append('%s and %s._cptr' % (arg_name, arg_name))
                     else:
                         c_args.append(arg_name)
                 c_args = ', '.join(c_args)
@@ -323,7 +323,7 @@ if WSF_SUPPORT:
                 print >> fd, '        t = _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
                 print >> fd, '        return cptrToPy(t)'
-            elif m[0] == 'GList*' and options.get('elem_type') not in ('char*', 'xmlNode*'):
+            elif m[0] == 'GList*' and options.get('element-type') not in ('char*', 'xmlNode*'):
                 print >> fd, '        l = _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
                 print >> fd, '        if not l: return l'
@@ -332,7 +332,7 @@ if WSF_SUPPORT:
                 print >> fd, '        d = _lasso.%s_%s_get(self._cptr)' % (
                         klassname, mname)
                 print >> fd, '        if not d: return d'
-                if options.get('elem_type') != 'char*':
+                if options.get('element-type') != 'char*':
                     print >> fd, '        d2 = {}'
                     print >> fd, '        for k, v in d.items():'
                     print >> fd, '            d2[k] = cptrToPy(v)'
@@ -345,8 +345,8 @@ if WSF_SUPPORT:
             print >> fd, '    def set_%s(self, value):' % mname
             if self.is_pygobject(m[0]):
                 print >> fd, '        if value is not None:'
-                print >> fd, '            value = value._cptr'
-            elif m[0] == 'GList*' and options.get('elem_type') not in ('char*', 'xmlNode*'):
+                print >> fd, '            value = value and value._cptr'
+            elif m[0] == 'GList*' and options.get('element-type') not in ('char*', 'xmlNode*'):
                 print >> fd, '        if value is not None:'
                 print >> fd, '            value = tuple([x._cptr for x in value])'
             print >> fd, '        _lasso.%s_%s_set(self._cptr, value)' % (
@@ -376,7 +376,10 @@ if WSF_SUPPORT:
                     function_name = function_name[6:]
             else:
                 mname = m.name
-                mname = re.match(r'lasso_.*_get_(\w+)', mname).group(1)
+                try:
+                    mname = re.match(r'lasso_.*_get_(\w+)', mname).group(1)
+                except:
+                    raise
                 mname = format_underscore_as_camelcase(mname)
                 print >> fd, '    def get_%s(self):' % mname
                 function_name = m.name[6:]
@@ -430,12 +433,17 @@ if WSF_SUPPORT:
 
                 if is_out(o):
                     c_args.append(outvar)
-                elif arg_type in ('char*', 'const char*', 'guchar*', 'const guchar*', 'gchar*', 'const gchar*', 'xmlNode*') or \
-                        arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] or \
-                        arg_type in self.binding_data.enums or is_time_t_pointer(o):
+                elif not self.is_pygobject(arg_type):
                     c_args.append(arg_name)
                 else:
-                    c_args.append('%s._cptr' % arg_name)
+                    c_args.append('%s and %s._cptr' % (arg_name, arg_name))
+            # check py_args
+            opt = False
+            for x in py_args:
+                if '=' in x:
+                    opt = True
+                elif opt:
+                    print 'W: non-optional follow optional,', m
 
             if py_args:
                 py_args = ', ' + ', '.join(py_args)
@@ -567,7 +575,8 @@ if WSF_SUPPORT:
                 s.append('\n')
 
 
-        s[-1] = s[-1].rstrip() # remove trailing newline from last line
+        if s:
+            s[-1] = s[-1].rstrip() # remove trailing newline from last line
 
         return '\n'.join([(indent*' ')+x for x in ''.join(s).splitlines()])
 
@@ -704,10 +713,10 @@ register_constants(PyObject *d)
                 print >> fd, '    if (this->%s) g_free(this->%s);' % (m[1], m[1])
                 print >> fd, '    this->%s = g_strdup(value);' % m[1]
             elif parse_format == 'O' and arg_type == 'GList*':
-                elem_type = m[2].get('elem_type')
-                if elem_type == 'char*':
+                element_type = m[2].get('element-type')
+                if element_type == 'char*':
                     print >> fd, '    set_list_of_strings(&this->%s, cvt_value);' % m[1]
-                elif elem_type == 'xmlNode*':
+                elif element_type == 'xmlNode*':
                     print >> fd, '    set_list_of_xml_nodes(&this->%s, cvt_value);' % m[1]
                 else:
                     print >> fd, '    set_list_of_pygobject(&this->%s, cvt_value);' % m[1]
@@ -748,18 +757,18 @@ register_constants(PyObject *d)
             print >> fd, '        %s = noneRef();' % return_pyvar_name
             print >> fd, '    }'
         elif vtype in ('const GList*', 'GList*',):
-            elem_type = options.get('elem_type')
-            if not elem_type or self.is_pygobject(elem_type):
+            element_type = options.get('element-type')
+            if not element_type or self.is_pygobject(element_type):
                 print >> fd, '    %s = get_list_of_pygobject(%s);' % (return_pyvar_name, return_var_name)
-            elif elem_type == 'char*':
+            elif element_type == 'char*':
                 print >> fd, '    %s = get_list_of_strings(%s);' % (return_pyvar_name, return_var_name)
-            elif elem_type.startswith('xmlNode'):
+            elif element_type.startswith('xmlNode'):
                 print >> fd, '    %s = get_list_of_xml_nodes(%s);' % (return_pyvar_name, return_var_name)
             else:
                 raise Exception('Should not happen: %s %s ' % (repr(options), vtype))
         elif vtype in ('GHashTable*',):
-            elem_type = options.get('elem_type')
-            if elem_type == 'char*':
+            element_type = options.get('element-type')
+            if element_type == 'char*':
                 print >> fd, '    %s = get_dict_from_hashtable_of_strings(%s);' % (return_pyvar_name, return_var_name)
             else:
                 print >> fd, '    %s = get_dict_from_hashtable_of_objects(%s);' % (return_pyvar_name, return_var_name)
@@ -798,20 +807,18 @@ register_constants(PyObject *d)
             arg_def = None
             python_cvt_def = None
             defval = None
+            if arg_options.get('optional'):
+                if not '|' in parse_tuple_format:
+                    parse_tuple_format.append('|')
             if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
                 arg_type = arg_type.replace('const ', '')
                 if arg_options.get('optional'):
-                    if not '|' in parse_tuple_format:
-                        parse_tuple_format.append('|')
                     parse_tuple_format.append('z')
                 else:
                     parse_tuple_format.append('s')
                 parse_tuple_args.append('&%s' % arg_name)
                 arg_def = '    %s %s = NULL;' % (arg[0], arg[1])
-            elif arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
-                if arg_options.get('optional'):
-                    if not '|' in parse_tuple_format:
-                        parse_tuple_format.append('|')
+            elif arg_type in ['GType', 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
                 parse_tuple_format.append('i')
                 parse_tuple_args.append('&%s' % arg_name)
                 if arg_options.get('default'):
@@ -857,25 +864,38 @@ register_constants(PyObject *d)
         print >> fd, '    if (! PyArg_ParseTuple(args, "%s"%s)) return NULL;' % (
                 ''.join(parse_tuple_format), parse_tuple_args)
 
-        for f, arg in zip(parse_tuple_format, m.args):
+        for f, arg in zip([ x for x in parse_tuple_format if x != '|'], m.args):
             if is_out(arg):
                 continue
             if is_list(arg):
-                qualifier = arg[2].get('elem_type')
-                if qualifier == 'char*':
+                qualifier = element_type(arg)
+                if qualifier == 'char*' or qualifier == 'utf8':
                     print >> fd, '    set_list_of_strings(&%s, cvt_%s);' % (arg[1], arg[1])
                 elif qualifier == 'xmlNode*':
                     print >> fd, '    set_list_of_xml_nodes(&%s, cvt_%s);' % (arg[1], arg[1])
-                elif qualifier == 'LassoNode':
+                elif isinstance(qualifier, basestring) and qualifier.startswith('Lasso'):
                     print >> fd, '    set_list_of_pygobject(&%s, cvt_%s);' % (arg[1], arg[1])
                 else:
-                    print >> sys.stderr, 'E: unqualified GList argument in', name
+                    print >> sys.stderr, 'E: unqualified GList argument in', name, qualifier, arg
             elif is_xml_node(arg):
                 print >> fd, '    %s = get_xml_node_from_pystring(cvt_%s);' % (arg[1], arg[1])
             elif is_time_t_pointer(arg):
                 print >> fd, '    %s = get_time_t(cvt_%s);' % (arg[1], arg[1])
             elif f == 'O':
-                print >> fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
+                if is_optional(arg):
+                    print >> fd, '    if (PyObject_TypeCheck((PyObject*)cvt_%s, &PyGObjectPtrType)) {' % arg[1]
+                    print >> fd, '        %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
+                    print >> fd, '    } else {'
+                    print >> fd, '        %s = NULL;' % arg[1]
+                    print >> fd, '    }'
+                else:
+                    print >> fd, '    if (PyObject_TypeCheck((PyObject*)cvt_%s, &PyGObjectPtrType)) {' % arg[1]
+                    print >> fd, '        %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
+                    print >> fd, '    } else {'
+                    print >> fd, '        PyErr_SetString(PyExc_TypeError, "value should be a PyGObject");'
+                    print >> fd, '        return NULL;'
+                    print >> fd, '    }'
+
 
         if m.return_type:
             print >> fd, '    return_value =',
@@ -887,10 +907,10 @@ register_constants(PyObject *d)
 
         for f, arg in zip(parse_tuple_format, m.args):
             if is_out(arg):
-                self.return_value(fd, var_type(arg), {'elem_type': element_type(arg)}, return_var_name = arg[1], return_pyvar_name = 'out_pyvalue')
+                self.return_value(fd, var_type(arg), {'element-type': element_type(arg)}, return_var_name = arg[1], return_pyvar_name = 'out_pyvalue')
                 print >> fd, '    PyList_SetItem(cvt_%s_out, 0, out_pyvalue);' % arg[1]
             elif arg[0] == 'GList*':
-                qualifier = arg[2].get('elem_type')
+                qualifier = arg[2].get('element-type')
                 if qualifier == 'char*':
                     print >> fd, '    free_list(&%s, (GFunc)g_free);' % arg[1]
                 elif qualifier == 'xmlNode*':
@@ -905,7 +925,7 @@ register_constants(PyObject *d)
         else:
             # Constructor so decrease refcount (it was incremented by PyGObjectPtr_New called
             # in self.return_value
-            self.return_value(fd, m.return_type, {'elem_type': m.return_type_qualifier})
+            self.return_value(fd, m.return_type, {'element-type': m.return_type_qualifier})
             if m.return_owner and self.is_pygobject(m.return_type):
                 print >> fd, '    if (return_value) g_object_unref(return_value);'
             print >> fd, '    return return_pyvalue;'

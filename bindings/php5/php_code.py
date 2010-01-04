@@ -196,7 +196,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
                         klass.name, mname)
             elif mtype in ('GList*', 'GHashTable*'):
                 print >> self.fd, '        $array = %s_%s_get($this->_cptr);' % (klass.name, mname)
-                if self.is_object(options.get('elem_type')):
+                if self.is_object(options.get('element-type')):
                     print >> self.fd, '        $obj_array = array();'
                     if mtype == 'GList*':
                         print >> self.fd, '        foreach ($array as $item) {'
@@ -215,7 +215,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
             print >> self.fd, '    protected function set_%s($value) {' % mname
             if self.is_object(mtype):
                 print >> self.fd, '        %s_%s_set($this->_cptr, $value->_cptr);' % (klass.name, mname)
-            elif mtype in ('GList*', 'GHashTable*') and self.is_object(options.get('elem_type')):
+            elif mtype in ('GList*', 'GHashTable*') and self.is_object(options.get('element-type')):
                 print >> self.fd, '        $array = array();'
                 # FIXME: setting an array to NULL should really set it to NULL and not to an empty array
                 print >> self.fd, '        if (!is_null($value)) {'

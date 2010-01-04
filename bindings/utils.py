@@ -23,7 +23,7 @@ import re
 import string
 
 _mapping_convert_type_from_gobject_annotation = {
-        'utf8': 'char8'
+        'utf8': 'char*'
 }
 
 def convert_type_from_gobject_annotation(type):

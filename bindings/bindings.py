@@ -146,7 +146,7 @@ class BindingData:
                     func = getfunc(function_name)
                     if not func:
                         continue
-                    func.docstring = DocString(func, docstring)
+                    func.docstring = DocString(func, docstring, self)
         if exception_doc:
             lines = os.popen('perl ../utility-scripts/error-analyzer.pl %s' % srcdir, 'r').readlines()
             for line in lines:
@@ -211,7 +211,7 @@ class Function:
                 if param.attrib.get('type'):
                     arg[0] = param.attrib.get('type')
                 if param.attrib.get('elem_type'):
-                    arg[2]['elem_type'] = param.attrib.get('elem_type')
+                    arg[2]['element-type'] = param.attrib.get('elem_type')
             if func.attrib.get('rename'):
                 self.rename = func.attrib.get('rename')
             if func.attrib.get('return_owner'):
@@ -236,6 +236,7 @@ class Function:
             if arg_name and arg_sub:
                 args = [ x for x in self.args if x[1] == arg_name]
                 for arg in args:
+                    arg[2]['original-name'] = arg[1]
                     arg[1] = arg_sub
 
 
@@ -245,7 +246,8 @@ class DocString:
     return_value = None
     description = None
 
-    def __init__(self, function, docstring):
+    def __init__(self, function, docstring, binding_data):
+        self.binding_data = binding_data
         self.orig_docstring = docstring
         self.parameters = []
         self.params = {}
@@ -271,7 +273,7 @@ class DocString:
                     self.parameters.append([param_name, param_desc, param_options])
                     self.params[param_name] = { 'desc': param_desc, 'options': param_options }
                     for a in function.args:
-                        if a[1] == param_name:
+                        if a[1] == param_name or a[2].get('original-name') == param_name:
                             arg = a
                             break
                     else:
@@ -327,7 +329,7 @@ class DocString:
                 prefix = ''
                 if is_boolean(arg):
                     prefix = 'b:'
-                elif is_int(arg):
+                elif is_int(arg, self.binding_data):
                     prefix = 'c:'
                 else:
                     raise Exception('should not happen: could not found type for default: ' + annotation)
@@ -445,14 +447,14 @@ def parse_header(header_file):
                             of_type = line[line.index('/* of')+6:].split()[0]
                             if of_type == 'strings':
                                 of_type = 'char*'
-                            options['elem_type'] = of_type
+                            options['element-type'] = of_type
         elif line.startswith('LASSO_EXPORT '):
             while not line.strip().endswith(';'):
                 i += 1
-                line = line[:-1] + lines[i].lstrip()
+                line = line[:-1] + ' ' + lines[i].lstrip()
 
             # parse the type, then the name, then argument list
-            m = re.match(r'LASSO_EXPORT\s+(.*(?:\s|\*))(\w+)\s*\(\s*(.*?)\s*\)\s*;', line)
+            m = re.match(r'LASSO_EXPORT\s+([^(]*(?:\s|\*))(\w+)\s*\(\s*(.*?)\s*\)\s*;', line)
             if m and not m.group(2).endswith('_get_type'):
                 return_type, function_name, args = m.groups()
                 return_type = return_type.strip()

@@ -265,7 +265,7 @@ protected static native void destroy(long cptr);
     def JNI_member_type(self,member):
         type, name, options = member
         if type in ('const GList*','GList*','GHashTable*'):
-            return self.JNI_arg_type(options.get('elem_type'))
+            return self.JNI_arg_type(options.get('element-type'))
         else:
             return self.JNI_arg_type(type)
 
@@ -302,7 +302,7 @@ protected static native void destroy(long cptr);
                 print >> fd, '   public static native void %s(GObject obj, %s[] value);' % (name,jtype)
                 name = '%s_add' % prefix
                 print >> fd, '   public static native void %s(GObject obj, %s value);' % (name,jtype)
-                if not m[2].get('elem_type') in ('xmlNode*',):
+                if not m[2].get('element-type') in ('xmlNode*',):
                     name = '%s_remove' % prefix
                     print >> fd, '   public static native void %s(GObject obj, %s value);' % (name,jtype)
             elif mtype == 'GHashTable*':
@@ -409,16 +409,16 @@ protected static native void destroy(long cptr);
         elif is_string_type(type):
             return 'string_to_jstring(env, %s, &%s)' % (right, left)
         elif type in ('const GList*','GList*',):
-            elem_type = options.get('elem_type')
-            if elem_type == 'char*':
+            element_type = options.get('element-type')
+            if element_type == 'char*':
                 return 'get_list_of_strings(env, %s, &%s)' % (right, left)
-            elif elem_type == 'xmlNode*':
+            elif element_type == 'xmlNode*':
                 return 'get_list_of_xml_nodes(env, %s, &%s)' % (right, left)
             else:
                 return 'get_list_of_objects(env, %s, &%s)' % (right, left)
         elif type in ('GHashTable*',):
-            elem_type = options.get('elem_type')
-            if elem_type == 'char*':
+            element_type = options.get('element-type')
+            if element_type == 'char*':
                 return 'get_hash_of_strings(env, %s, &%s)' % (right, left)
             else:
                 return 'get_hash_of_objects(env, %s, &%s)' % (right, left)
@@ -436,16 +436,16 @@ protected static native void destroy(long cptr);
         elif is_string_type(type):
             return 'jstring_to_string(env, %s, (char**)&%s);' % (right,left)
         elif type in ('const GList*','GList*',):
-            elem_type = options.get('elem_type')
-            if elem_type == 'char*':
+            element_type = options.get('element-type')
+            if element_type == 'char*':
                 return 'set_list_of_strings(env, &%s,%s);' % (left,right)
-            elif elem_type == 'xmlNode*':
+            elif element_type == 'xmlNode*':
                 return 'set_list_of_xml_nodes(env, &%s, %s);' % (left, right)
             else:
                 return 'set_list_of_objects(env, &%s, %s);' % (left, right)
         elif type in ('GHashTable*',):
-            elem_type = options.get('elem_type')
-            if elem_type == 'char*':
+            element_type = options.get('element-type')
+            if element_type == 'char*':
                 return 'set_hash_of_strings(env, %s, %s);' % (left,right)
             else:
                 return 'set_hash_of_objects(env, %s, %s);' % (left,right)
@@ -538,10 +538,12 @@ protected static native void destroy(long cptr);
                 print >> fd, '    if (%s)' % arg_name
                 print >> fd, '        g_free(%s);' % arg_name
             elif arg_type == 'GList*' or arg_type == 'const GList*':
-                if arg_options.get('elem_type') == 'char*':
+                if arg_options.get('element-type') == 'char*':
                     print >> fd, '    free_glist(&%s, (GFunc)free);' % arg_name
+                elif is_object(element_type(arg)):
+                    print >> fd, '    free_glist(&%s, (GFunc)g_object_unref);' % arg_name
                 else:
-                    raise Exception('Freeing args of type list of \'%s\' not supported.' % arg_options.get('elem_type'))
+                    raise Exception('Freeing args of type list of \'%s\' not supported.' % arg_options.get('element-type'))
 
         # Return
         if m.return_type:
@@ -612,26 +614,26 @@ protected static native void destroy(long cptr);
             if mtype in ('const GList*','GList*', ):
                 # add
                 print >> fd,'/* Adder for %s %s.%s */' % (mtype,klassname,m[1])
-                elem_type = m[2].get('elem_type')
+                element_type = m[2].get('element-type')
                 wrapper_decl("%s_add" % prefix, 'void', fd)
-                print >> fd, ', jobject jobj, %s value)\n  {' % jni_elem_type(elem_type)
+                print >> fd, ', jobject jobj, %s value)\n  {' % jni_elem_type(element_type)
                 print >> fd, '    %s *gobj;' % klassname
                 print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
-                if is_string_type(elem_type):
+                if is_string_type(element_type):
                     print >> fd, '    add_to_list_of_strings(env, &gobj->%s,value);' % m[1]
-                elif elem_type in ('xmlNode*',):
+                elif element_type in ('xmlNode*',):
                     print >> fd, '    add_to_list_of_xml_nodes(env, &gobj->%s,value);' % m[1]
                 else:
                     print >> fd, '    add_to_list_of_objects(env, &gobj->%s,value);' % m[1]
                 print >> fd, '}'
                 # remove
-                if elem_type not in ('xmlNode*',):
+                if element_type not in ('xmlNode*',):
                     print >> fd,'/* Remover for %s %s.%s */' % (mtype,klassname,m[1])
                     wrapper_decl("%s_remove" % prefix, 'void', fd)
-                    print >> fd, ', jobject jobj, %s value)\n  {' % jni_elem_type(elem_type)
+                    print >> fd, ', jobject jobj, %s value)\n  {' % jni_elem_type(element_type)
                     print >> fd, '    %s *gobj;' % klassname
                     print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
-                    if elem_type in ('char*','gchar*'):
+                    if element_type in ('char*','gchar*'):
                         print >> fd, '    remove_from_list_of_strings(env, &gobj->%s,value);' % m[1]
                     else:
                         print >> fd, '    remove_from_list_of_objects(env, &gobj->%s,value);' % m[1]
@@ -640,12 +642,12 @@ protected static native void destroy(long cptr);
             if mtype in ('GHashTable*',):
                 # add
                 print >> fd,'/* Adder for %s %s.%s */' % (mtype,klassname,m[1])
-                elem_type = m[2].get('elem_type')
+                element_type = m[2].get('element-type')
                 wrapper_decl("%s_add" % prefix, 'void', fd)
-                print >> fd, ', jobject jobj, jstring key, %s value)\n  {' % jni_elem_type(elem_type)
+                print >> fd, ', jobject jobj, jstring key, %s value)\n  {' % jni_elem_type(element_type)
                 print >> fd, '    %s *gobj;' % klassname
                 print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
-                if elem_type in ('char*','gchar*'):
+                if element_type in ('char*','gchar*'):
                     print >> fd, '    add_to_hash_of_strings(env, gobj->%s,value,key);' % m[1]
                 else:
                     print >> fd, '    add_to_hash_of_objects(env, gobj->%s,value,key);' % m[1]
@@ -656,18 +658,18 @@ protected static native void destroy(long cptr);
 #                print >> fd, ', jobject jobj, jstring key)\n  {'
 #                print >> fd, '    %s *gobj;' % klassname
 #                print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
-#                if elem_type in ('char*','gchar*'):
+#                if element_type in ('char*','gchar*'):
 #                    print >> fd, '    remove_from_hash_of_strings(env, gobj->%s,key);' % m[1]
 #                else:
 #                    print >> fd, '    remove_from_hash_of_objects(env, gobj->%s,key);' % m[1]
 #                print >> fd, '}'
 #                # get by name
 #                print >> fd,'/* Get by name for %s %s.%s */' % (mtype,klassname,m[1])
-#                wrapper_decl("%s_get_by_name" % prefix, jni_elem_type(elem_type) , fd)
+#                wrapper_decl("%s_get_by_name" % prefix, jni_elem_type(element_type) , fd)
 #                print >> fd, ', jobject jobj, jstring key)\n  {'
 #                print >> fd, '    %s *gobj;' % klassname
 #                print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
-#                if elem_type in ('char*','gchar*'):
+#                if element_type in ('char*','gchar*'):
 #                    print >> fd, '    return get_hash_of_strings_by_name(env, gobj->%s,key);' % m[1]
 #                else:
 #                    print >> fd, '    return get_hash_of_objects_by_name(env, gobj->%s,key);' % m[1]
@@ -808,7 +810,7 @@ protected static native void destroy(long cptr);
                     print >> fd, '    public void addTo%s(%s value) {' % (jname,jtype)
                     print >> fd, '        LassoJNI.%s_add(this, value);' % prefix
                     print >> fd, '    }'
-                    if m[2].get('elem_type') not in ('xmlNode*',):
+                    if m[2].get('element-type') not in ('xmlNode*',):
                         print >> fd, '    public void removeFrom%s(%s value) {' % (jname,jtype)
                         print >> fd, '        LassoJNI.%s_remove(this, value);' % prefix
                         print >> fd, '    }'
