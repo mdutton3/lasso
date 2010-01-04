@@ -232,7 +232,7 @@ cleanup:
 /**
  * lasso_discovery_init_query
  * @discovery: a #LassoDiscovery
- * @security_mech_id: identifier of a wished security mechanism, or NULL if any is ok
+ * @security_mech_id: (allow-none): identifier of a wished security mechanism, or NULL if any is ok
  *
  * Initializes a disco:Query message.
  *
@@ -266,7 +266,7 @@ cleanup:
 /**
  * lasso_discovery_init_modify:
  * @discovery: a #LassoDiscovery
- * @security_mech_id: the security mechanism identifier
+ * @security_mech_id: (allow-none): the security mechanism identifier
  *
  * Initializes a disco Modify/InsertEntry
  *
@@ -301,7 +301,7 @@ cleanup:
  * lasso_discovery_process_request_msg:
  * @discovery: a #LassoDiscovery object
  * @message: a serialized SOAP message
- * @security_mech_id: the security mech id to use for validating authorizations
+ * @security_mech_id: (allow-none): the security mech id to use for validating authorizations
  *
  * Process a received SOAP message for the discovery service.
  *
@@ -355,7 +355,6 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 	LassoWsfProfile *profile = NULL;
 	LassoDiscoModify *request = NULL;
 	LassoDiscoModifyResponse *response = NULL;
-	LassoSoapEnvelope *envelope = NULL;
 	LassoUtilityStatus *status = NULL;
 	LassoDiscoRemoveEntry *remove_entry = NULL;
 	LassoDiscoInsertEntry *insert_entry = NULL;
@@ -369,17 +368,11 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 
 	profile = LASSO_WSF_PROFILE(discovery);
 	request = LASSO_DISCO_MODIFY(profile->request);
+	response = LASSO_DISCO_MODIFY_RESPONSE(profile->response);
 
 	if (profile->identity == NULL) {
 		return LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND;
 	}
-
-	/* build response */
-	status = lasso_utility_status_new(LASSO_DISCO_STATUS_CODE_OK);
-	response = lasso_disco_modify_response_new(status);
-	profile->response = LASSO_NODE(response);
-	envelope = profile->soap_envelope_response;
-	lasso_list_add_gobject(envelope->Body->any, response);
 
 	/* First verify remove entries are all ok */
 	for (iter = request->RemoveEntry; iter != NULL; iter = g_list_next(iter)) {
@@ -549,6 +542,7 @@ lasso_discovery_build_query_response_msg(LassoDiscovery *discovery)
 	profile = LASSO_WSF_PROFILE(discovery);
 	request = LASSO_DISCO_QUERY(profile->request);
 	envelope = profile->soap_envelope_response;
+	response = LASSO_DISCO_QUERY_RESPONSE(profile->response);
 
 	if (profile->identity == NULL) {
 		fault = lasso_soap_fault_new();
@@ -568,11 +562,7 @@ lasso_discovery_build_query_response_msg(LassoDiscovery *discovery)
 	}
 
 	/* build response */
-	response = lasso_disco_query_response_new(
-			lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
 	response->ResourceOffering = offerings;
-	profile->response = LASSO_NODE(response);
-	lasso_list_add_gobject(envelope->Body->any, response);
 
 	/* Add needed credentials for offerings */
 	iter = offerings;
@@ -684,9 +674,8 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 	LassoWsfProfile *service = NULL;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
-	g_return_val_if_fail(LASSO_IS_DISCO_QUERY_RESPONSE(profile->response), NULL);
-
 	profile = LASSO_WSF_PROFILE(discovery);
+	g_return_val_if_fail(LASSO_IS_DISCO_QUERY_RESPONSE(profile->response), NULL);
 	response = LASSO_DISCO_QUERY_RESPONSE(profile->response);
 
 	iter = response->ResourceOffering;
@@ -822,6 +811,7 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery)
 {
 	LassoWsfProfile *profile = NULL;
 	LassoDiscoModify *request = NULL;
+	LassoDiscoModifyResponse *response = NULL;
 	gint rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -831,7 +821,11 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery)
 	profile = LASSO_WSF_PROFILE(discovery);
 	request = LASSO_DISCO_MODIFY(profile->request);
 	assign_resource_id(request, discovery);
+	response = lasso_disco_modify_response_new(
+			lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
+	rc = lasso_wsf_profile_init_soap_response(profile, LASSO_NODE(response));
 cleanup:
+	lasso_release_gobject(response);
 	return rc;
 }
 
@@ -849,16 +843,21 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery)
 {
 	LassoWsfProfile *profile = NULL;
 	LassoDiscoQuery *request = NULL;
+	LassoDiscoQueryResponse *response = NULL;
 	gint rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request),
+	g_return_val_if_fail(LASSO_IS_DISCO_QUERY(LASSO_WSF_PROFILE(discovery)->request),
 				LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_WSF_PROFILE(discovery);
 	request = LASSO_DISCO_QUERY(profile->request);
 	assign_resource_id(request, discovery);
+	response = lasso_disco_query_response_new(
+			lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
+	rc = lasso_wsf_profile_init_soap_response(profile, LASSO_NODE(response));
 cleanup:
+	lasso_release_gobject(response);
 	return rc;
 }
 
