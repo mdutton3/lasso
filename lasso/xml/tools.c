@@ -1027,7 +1027,7 @@ lasso_eval_xpath_expression(xmlXPathContextPtr xpath_ctx, const char *expression
 	xpath_object = xmlXPathEvalExpression((xmlChar*)expression, xpath_ctx);
 	xpath_ctx->error = oldStructuredErrorFunc;
 
-	if (xpath_object && xpath_object->nodesetval && xpath_object->nodesetval->nodeNr) {
+	if (xpath_object) {
 		if (xpath_object_ptr) {
 			lasso_transfer_xpath_object(*xpath_object_ptr, xpath_object);
 		}
