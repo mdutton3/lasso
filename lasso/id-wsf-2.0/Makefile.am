@@ -13,7 +13,8 @@ lasso_private_h_sources = \
 	private.h \
 	serverprivate.h \
 	sessionprivate.h \
-	saml2_login_private.h
+	saml2_login_private.h \
+	idwsf2_helper.h
 
 liblasso_id_wsf2_la_SOURCES = \
 	server.c \
@@ -23,7 +24,8 @@ liblasso_id_wsf2_la_SOURCES = \
 	data_service.c \
 	profile.c \
 	saml2_login.c \
-	soap_binding.c
+	soap_binding.c \
+	idwsf2_helper.c
 
 liblassoinclude_HEADERS = \
 	id_wsf_2.h \
