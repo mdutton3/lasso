@@ -206,6 +206,9 @@ LASSO_EXPORT gchar* lasso_provider_get_default_name_id_format(const LassoProvide
 
 LASSO_EXPORT char* lasso_provider_get_sp_name_qualifier(LassoProvider *provider);
 
+LASSO_EXPORT int lasso_provider_verify_single_node_signature (LassoProvider *provider,
+		LassoNode *node, const char *id_attr_name);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -1371,3 +1371,31 @@ lasso_provider_get_sp_name_qualifier(LassoProvider *provider)
 		return NULL;
 	}
 }
+
+/**
+ * lasso_provider_verify_single_node_signature:
+ * @provider: a #LassoProvider object
+ * @node: a #LassoNode object, still having its originalXmlnode content, and containing an XML
+ * signature.
+ * @id_attr_name: the name of the ID attribute to lookup.
+ *
+ * Return wheter the provider signed this node.
+ *
+ * Return value: 0 if the node is signed by this provider, an error code otherwise.
+ */
+int
+lasso_provider_verify_single_node_signature (LassoProvider *provider, LassoNode *node, const char *id_attr_name)
+{
+	xmlNode *xmlnode = NULL;
+	xmlSecKey *xmlseckey = NULL;
+
+	xmlnode = lasso_node_get_original_xmlnode (node);
+	if (xmlnode == NULL) {
+		return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
+	}
+	xmlseckey = lasso_provider_get_public_key (provider);
+	if (xmlseckey == NULL) {
+		return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+	}
+	return lasso_verify_signature(xmlnode, NULL, id_attr_name, NULL, xmlseckey, NO_SINGLE_REFERENCE, NULL);
+}
