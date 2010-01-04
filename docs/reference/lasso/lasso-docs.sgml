@@ -110,8 +110,8 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
 
   </chapter>
 
-  <index/>
-
+  <reference label="I">
+  <title>Application Programming Interface</title>
   <chapter id="architecture">
     <title>Lasso Architecture</title>
     <xi:include href="xml/init.xml"/>
@@ -531,5 +531,14 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     <xi:include href="xml/wsu_timestamp.xml"/>
     <xi:include href="xml/ws_strings.xml"/>
   </chapter>
-
+  </reference>
+  <part label="II">
+  <title>Appendix</title>
+  <index id="api-index">
+  <title>API Index</title>
+  </index>
+  <xi:include href="xml/annotation-glossary.xml">
+    <xi:fallback/>
+  </xi:include>
+  </part>
 </book>
