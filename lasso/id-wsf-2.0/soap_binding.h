@@ -35,6 +35,13 @@ extern "C" {
 #include "../xml/ws/wsse_security_header.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
 
+typedef enum {
+	LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_NONE,
+	LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_INTERACT_IF_NEEDED,
+	LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_DO_NOT_INTERACT,
+	LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_DO_NOT_INTERACT_FOR_DATA
+} LassoIdWsf2Sb2UserInteractionHint;
+
 LASSO_EXPORT char* lasso_soap_envelope_sb2_get_provider_id(LassoSoapEnvelope *soap_envelope);
 
 LASSO_EXPORT char* lasso_soap_envelope_sb2_get_redirect_request_url(
@@ -53,6 +60,28 @@ LASSO_EXPORT LassoSaml2Assertion *lasso_soap_envelope_get_saml2_security_token(
 		LassoSoapEnvelope *soap_envelope);
 
 LASSO_EXPORT const char* lasso_soap_envelope_get_action(LassoSoapEnvelope *soap_envelope);
+
+LASSO_EXPORT void lasso_soap_envelope_add_to_body(LassoSoapEnvelope *soap_envelope,
+		LassoNode *content);
+
+LASSO_EXPORT char* lasso_soap_envelope_get_message_id(LassoSoapEnvelope *soap_envelope);
+
+LASSO_EXPORT GList* lasso_soap_envelope_get_body_content(LassoSoapEnvelope *soap_envelope);
+
+LASSO_EXPORT void lasso_soap_fault_add_to_detail(LassoSoapFault *soap_fault,
+		LassoNode *node);
+
+LASSO_EXPORT LassoIdWsf2Sb2UserInteractionHint
+		lasso_soap_envelope_get_sb2_user_interaction_hint( LassoSoapEnvelope *soap_envelope);
+
+LASSO_EXPORT void lasso_soap_envelope_set_sb2_user_interaction_hint(
+		LassoSoapEnvelope *soap_envelope, LassoIdWsf2Sb2UserInteractionHint hint);
+
+LASSO_EXPORT void lasso_soap_envelope_add_action(LassoSoapEnvelope *soap_envelope,
+		const char *action);
+
+LASSO_EXPORT LassoSoapDetail *lasso_soap_fault_get_detail(LassoSoapFault *soap_fault,
+		gboolean create);
 
 #ifdef __cplusplus
 }
