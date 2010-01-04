@@ -1965,7 +1965,14 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 
 		switch (type) {
 			case SNIPPET_ATTRIBUTE:
-				xmlSetProp(xmlnode, (xmlChar*)snippet->name, (xmlChar*)str);
+				if (snippet->ns_name) {
+					xmlNsPtr ns;
+
+					ns = xmlNewNs(xmlnode, (xmlChar*)snippet->ns_uri, (xmlChar*)snippet->ns_name);
+					xmlSetNsProp(xmlnode, ns, (xmlChar*)snippet->name, (xmlChar*)str);
+				} else {
+					xmlSetProp(xmlnode, (xmlChar*)snippet->name, (xmlChar*)str);
+				}
 				break;
 			case SNIPPET_TEXT_CHILD:
 				xmlAddChild(xmlnode, xmlNewText((xmlChar*)str));
