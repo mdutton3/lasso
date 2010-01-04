@@ -27,6 +27,8 @@ endif
 
 BUILT_SOURCES = _lasso.c
 
+_lasso.c lasso.py: $(top_srcdir)/lasso/*.h $(top_srcdir)/lasso/*.c $(top_srcdir)/lasso/*/*.h $(top_srcdir)/lasso/*/*.c $(top_srcdir)/lasso/*/*/*.h $(top_srcdir)/lasso/*/*/*.c
+
 EXTRA_DIST=lang.py wrapper_bottom.c wrapper_top.c __init__.py
 
 if WSF_ENABLED
