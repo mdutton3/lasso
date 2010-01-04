@@ -507,6 +507,20 @@
  */
 #define LASSO_PROFILE_ERROR_RESPONSE_DOES_NOT_MATCH_REQUEST -442
 
+/**
+ * LASSO_PROFILE_ERROR_INVALID_REQUEST:
+ *
+ * Received request is not of the expected type.
+ */
+#define LASSO_PROFILE_ERROR_INVALID_REQUEST 443
+
+/*
+ * LASSO_PROFILE_ERROR_INVALID_REQUEST:
+ *
+ * Received request is not of the expected type.
+ */
+#define LASSO_PROFILE_ERROR_INVALID_RESPONSE 444
+
 /* functions/methods parameters checking */
 /**
  * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
@@ -654,7 +668,7 @@
 
 /* Data Service */
 #define LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST    -1000
-#define LASSO_DATA_SERVICE_CANNOT_ADD_ITEM           -1001
+#define LASSO_DATA_SERVICE_ERROR_CANNOT_ADD_ITEM           -1001
 
 /* WSF Profile */
 /**

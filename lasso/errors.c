@@ -119,8 +119,6 @@ lasso_strerror(int error_code)
 			return "Missing SAML artifact";
 		case LASSO_DS_ERROR_INVALID_SIGALG:
 			return "Invalid signature algorithm.";
-		case LASSO_DATA_SERVICE_CANNOT_ADD_ITEM:
-			return "LASSO_DATA_SERVICE_CANNOT_ADD_ITEM";
 		case LASSO_REGISTRY_ERROR_KEY_EXISTS:
 			return "Key alreadys exists in the registry";
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
@@ -129,6 +127,8 @@ lasso_strerror(int error_code)
 			return "No default endpoint";
 		case LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST:
 			return "An unsigned authn request was received but the metadata specify that they must be signed.";
+		case LASSO_DATA_SERVICE_ERROR_CANNOT_ADD_ITEM:
+			return "LASSO_DATA_SERVICE_ERROR_CANNOT_ADD_ITEM";
 		case LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM:
 			return "The specified security mechanism is not supported by lasso ID-WSF library";
 		case LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY:
@@ -169,8 +169,8 @@ lasso_strerror(int error_code)
 			return "Failed to create identity from dump";
 		case LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED:
 			return "Failed to load private key.";
-		case LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE:
-			return "Failed to build Endpoint Reference";
+		case LASSO_PROFILE_ERROR_INVALID_RESPONSE:
+			return "Received request is not of the expected type.";
 		case LASSO_ERROR_UNDEFINED:
 			return "Undefined error.";
 		case LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED:
@@ -203,6 +203,8 @@ lasso_strerror(int error_code)
 			return "Unknown principal";
 		case LASSO_LOGIN_ERROR_INVALID_SIGNATURE:
 			return "unknown key.";
+		case LASSO_PROFILE_ERROR_INVALID_REQUEST:
+			return "Received request is not of the expected type.";
 		case LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
 			return "Invalid NameIDPolicy in lib:AuthnRequest";
 		case LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
@@ -283,6 +285,8 @@ lasso_strerror(int error_code)
 			return "AssertionID attribute is missing";
 		case LASSO_XML_ERROR_ATTR_NOT_FOUND:
 			return "Unable to get attribute of element.";
+		case LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE:
+			return "Failed to build Endpoint Reference";
 		case LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED:
 			return "Failed to create keys manager.";
 		case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND:
