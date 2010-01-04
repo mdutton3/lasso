@@ -27,12 +27,16 @@
 
 #include <check.h>
 #include "../lasso/lasso.h"
+#include "lasso_config.h"
 
 extern Suite* basic_suite();
 extern Suite* login_suite();
 extern Suite* login_saml2_suite();
 extern Suite* random_suite();
 extern Suite* metadata_suite();
+#ifdef LASSO_WSF_ENABLED
+extern Suite* idwsf2_suite();
+#endif
 
 typedef Suite* (*SuiteFunction) ();
 
@@ -42,6 +46,9 @@ SuiteFunction suites[] = {
 	login_saml2_suite,
 	random_suite,
 	metadata_suite,
+#ifdef LASSO_WSF_ENABLED
+	idwsf2_suite,
+#endif
 	NULL
 };
 

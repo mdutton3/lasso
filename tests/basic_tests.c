@@ -33,6 +33,7 @@
 #include "../lasso/xml/xml_idwsf.h"
 #include "../lasso/xml/id-wsf-2.0/xml_idwsf2.h"
 #include "../lasso/xml/ws/xml_ws.h"
+#include "../lasso/xml/soap-1.1/xml_soap11.h"
 #include "../lasso/utils.h"
 #include "../lasso/xml/private.h"
 #include <libxml/tree.h>
