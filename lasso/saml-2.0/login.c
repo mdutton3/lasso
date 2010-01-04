@@ -414,16 +414,17 @@ lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login)
 	LassoFederation *federation;
 	char *name_id_sp_name_qualifier = NULL;
 	LassoProvider *remote_provider;
+	gboolean rc = TRUE;
 
 	name_id_policy = LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy;
 
 	if (name_id_policy) {
 		char *format = name_id_policy->Format;
 		if (strcmp(format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
-			return FALSE;
+			goto_cleanup_with_rc (FALSE)
 		}
 		if (name_id_policy->AllowCreate == FALSE) {
-			return FALSE;
+			goto_cleanup_with_rc (FALSE)
 		}
 	}
 
@@ -432,39 +433,41 @@ lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login)
 
 	/* if something goes wrong better to ask thant to let go */
 	if (name_id_sp_name_qualifier == NULL)
-		return TRUE;
+		goto_cleanup_with_rc (TRUE)
 
 	if (profile->identity && profile->identity->federations) {
 		federation = g_hash_table_lookup(profile->identity->federations,
 				name_id_sp_name_qualifier);
 		if (federation) {
-			return FALSE;
+			goto_cleanup_with_rc (FALSE)
 		}
 	}
 
 	consent = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Consent;
 	if (consent == NULL)
-		return FALSE;
+		goto_cleanup_with_rc (FALSE)
 
 	if (strcmp(consent, LASSO_SAML2_CONSENT_OBTAINED) == 0)
-		return FALSE;
+		goto_cleanup_with_rc (FALSE)
 
 	if (strcmp(consent, LASSO_SAML2_CONSENT_PRIOR) == 0)
-		return FALSE;
+		goto_cleanup_with_rc (FALSE)
 
 	if (strcmp(consent, LASSO_SAML2_CONSENT_IMPLICIT) == 0)
-		return FALSE;
+		goto_cleanup_with_rc (FALSE)
 
 	if (strcmp(consent, LASSO_SAML2_CONSENT_EXPLICIT) == 0)
-		return FALSE;
+		goto_cleanup_with_rc (FALSE)
 
 	if (strcmp(consent, LASSO_SAML2_CONSENT_UNAVAILABLE) == 0)
-		return TRUE;
+		goto_cleanup_with_rc (TRUE)
 
 	if (strcmp(consent, LASSO_SAML2_CONSENT_INAPPLICABLE) == 0)
-		return TRUE;
+		goto_cleanup_with_rc (TRUE)
 
-	return TRUE;
+cleanup:
+	lasso_release_string (name_id_sp_name_qualifier);
+	return rc;
 }
 
 gboolean
@@ -534,6 +537,7 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 	LassoFederation *federation;
 	char *name_id_sp_name_qualifier = NULL;
 	LassoProvider *remote_provider;
+	int rc = 0;
 
 	/* verify if identity already exists else create it */
 	if (profile->identity == NULL) {
@@ -551,16 +555,16 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 
 	if (name_id_policy_format && strcmp(name_id_policy_format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
-		return 0;
+		goto_cleanup_with_rc (0)
 	}
 
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (! LASSO_IS_PROVIDER(remote_provider)) {
-		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
+		goto_cleanup_with_rc (LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND)
 	}
 	name_id_sp_name_qualifier = lasso_provider_get_sp_name_qualifier(remote_provider);
 	if (name_id_sp_name_qualifier == NULL) {
-		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
+		goto_cleanup_with_rc (LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND)
 	}
 
 	/* search a federation in the identity */
@@ -569,11 +573,11 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 		if (LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy == NULL) {
 			/* it tried to get a federation, it failed, this is not
 			 * a problem */
-			return 0;
+			goto_cleanup_with_rc (0)
 		}
 		/* a federation MUST exist */
 		if (federation == NULL) {
-			return LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
+			goto_cleanup_with_rc (LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND)
 		}
 	}
 
@@ -581,7 +585,7 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 			LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy == NULL) {
 		/* it didn't find a federation, and name id policy was not
 		 * specified, don't create a federation */
-		return 0;
+		goto_cleanup_with_rc (0)
 	}
 
 	if (federation && LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy == NULL) {
@@ -592,7 +596,7 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 	}
 
 	if (lasso_saml20_login_must_ask_for_consent_private(login) && !is_consent_obtained) {
-		return LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED;
+		goto_cleanup_with_rc (LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED)
 	}
 
 	if (federation == NULL) {
@@ -608,7 +612,9 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 
 	lasso_assign_gobject(profile->nameIdentifier, federation->local_nameIdentifier);
 
-	return 0;
+cleanup:
+	lasso_release_string (name_id_sp_name_qualifier);
+	return rc;
 }
 
 
@@ -1186,7 +1192,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		LassoSaml2Assertion *assertion = samlp2_response->Assertion->data;
 		int rc2 = 0;
 
-		lasso_assign_gobject (profile->private_data->saml2_assertion, assertion);
+		lasso_assign_gobject (login->private_data->saml2_assertion, assertion);
 
 		/* If no signature was validated on the response, check the signature at the
 		 * assertion level */
