@@ -22,12 +22,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "private.h"
-#include "soap_header.h"
+#include "./soap_detail.h"
+#include "../private.h"
 
-/**
- * SECTION:soap_header
- * @short_description: &lt;soap:Header&gt;
+/*
+ *
+ * <xs: element name="Fault" type="tns: Fault"/>
+ * <xs: complexType name="Fault" final="extension">
+ *   <xs: annotation>
+ *     <xs: documentation>
+ *       Fault reporting structure
+ *     </xs: documentation>
+ *   </xs: annotation>
+ *   <xs: sequence>
+ *     <xs: element name="faultcode" type="xs: QName"/>
+ *     <xs: element name="faultstring" type="xs: string"/>
+ *     <xs: element name="faultactor" type="xs: anyURI" minOccurs="0"/>
+ *     <xs: element name="detail" type="tns: detail" minOccurs="0"/>
+ *   </xs: sequence>
+ *  </xs: complexType>
+ *
+ *  <xs: complexType name="detail">
+ *    <xs: sequence>
+ *      <xs: any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+ *    </xs: sequence>
+ *    <xs: anyAttribute namespace="##any" processContents="lax"/>
+ *  </xs: complexType>
  *
  */
 
@@ -36,7 +56,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSoapHeader, Other), NULL, NULL, NULL},
+	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSoapDetail, any), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
@@ -46,59 +66,59 @@ static struct XmlSnippet schema_snippets[] = {
 
 
 static void
-class_init(LassoSoapHeaderClass *klass)
+class_init(LassoSoapDetailClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "Header");
+	lasso_node_class_set_nodename(nclass, "detail");
 	lasso_node_class_set_ns(nclass, LASSO_SOAP_ENV_HREF, LASSO_SOAP_ENV_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
-lasso_soap_header_get_type()
+lasso_soap_detail_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoSoapHeaderClass),
+			sizeof (LassoSoapDetailClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoSoapHeader),
+			sizeof(LassoSoapDetail),
 			0,
 			NULL,
 			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoSoapHeader", &this_info, 0);
+				"LassoSoapDetail", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoSoapHeader*
-lasso_soap_header_new()
+LassoSoapDetail*
+lasso_soap_detail_new()
 {
-	LassoSoapHeader *node;
+	LassoSoapDetail *node;
 
-	node = g_object_new(LASSO_TYPE_SOAP_HEADER, NULL);
+	node = g_object_new(LASSO_TYPE_SOAP_DETAIL, NULL);
 
 	return node;
 }
 
-LassoSoapHeader*
-lasso_soap_header_new_from_message(const gchar *message)
+LassoSoapDetail*
+lasso_soap_detail_new_from_message(const gchar *message)
 {
-	LassoSoapHeader *node;
+	LassoSoapDetail *node;
 
 	g_return_val_if_fail(message != NULL, NULL);
 
-	node = g_object_new(LASSO_TYPE_SOAP_HEADER, NULL);
+	node = g_object_new(LASSO_TYPE_SOAP_DETAIL, NULL);
 	lasso_node_init_from_message(LASSO_NODE(node), message);
 
 	return node;

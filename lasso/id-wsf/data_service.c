@@ -68,7 +68,7 @@
 #include "../xml/dst_modify.h"
 #include "../xml/dst_modify_response.h"
 #include "../xml/soap_binding_correlation.h"
-#include "../xml/soap_fault.h"
+#include "../xml/soap-1.1/soap_fault.h"
 #include "../xml/is_redirect_request.h"
 
 #include <xmlsec/xmltree.h>

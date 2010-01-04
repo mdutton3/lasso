@@ -22,9 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "private.h"
-#include "soap_body.h"
-#include "private.h"
+#include "../private.h"
+#include "./soap_body.h"
 
 /**
  * SECTION:soap_body

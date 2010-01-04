@@ -50,7 +50,8 @@
 #include "../xml/id-wsf-2.0/dstref_create.h"
 #include "../xml/id-wsf-2.0/dstref_delete.h"
 
-#include "../xml/soap_fault.h"
+#include "../xml/soap-1.1/soap_envelope.h"
+#include "../xml/soap-1.1/soap_fault.h"
 #include "../utils.h"
 #include "./private.h"
 #include "./idwsf2_helper.h"

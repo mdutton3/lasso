@@ -30,7 +30,7 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include "../xml/soap_fault.h"
+#include "../xml/soap-1.1/soap_fault.h"
 
 struct _LassoWsfProfilePrivate
 {

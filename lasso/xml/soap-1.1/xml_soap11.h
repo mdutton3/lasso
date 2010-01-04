@@ -22,22 +22,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_SOAP_BINDING_H__
-#define __LASSO_SOAP_BINDING_H__
+#ifndef __LASSO_XML_SOAP11_H__
+#define __LASSO_XML_SOAP11_H__
 
-#include "./soap_binding_provider.h"
-#include "./soap_binding_correlation.h"
-#include "./soap-1.1/soap_envelope.h"
+#include "./soap_body.h"
+#include "./soap_detail.h"
+#include "./soap_envelope.h"
+#include "./soap_fault.h"
+#include "./soap_header.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-LassoSoapBindingProvider* lasso_soap_binding_get_provider(LassoSoapEnvelope *envelope);
-
-LassoSoapBindingCorrelation* lasso_soap_binding_get_correlation(LassoSoapEnvelope *evelope);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-#endif /* __LASSO_SOAP_BINDING_H__ */
+#endif /* __LASSO_XML_SOAP11_H__ */

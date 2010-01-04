@@ -30,7 +30,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "../export.h"
-#include "../xml/soap_envelope.h"
+#include "../xml/soap-1.1/soap_envelope.h"
+#include "../xml/soap-1.1/soap_fault.h"
 #include "../xml/id-wsf-2.0/sb2_target_identity.h"
 #include "../xml/ws/wsse_security_header.h"
 #include "../xml/saml-2.0/saml2_assertion.h"

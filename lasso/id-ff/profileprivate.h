@@ -32,8 +32,6 @@ extern "C" {
 
 #include "profile.h"
 
-#include "../xml/soap_envelope.h"
-
 struct _LassoProfilePrivate
 {
 	char *artifact;

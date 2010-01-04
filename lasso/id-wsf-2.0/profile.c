@@ -40,7 +40,7 @@
 #include "profile.h"
 #include "session.h"
 
-#include "../xml/soap_fault.h"
+#include "../xml/soap-1.1/soap_fault.h"
 #include "../xml/soap_binding_correlation.h"
 #include "../xml/soap_binding_provider.h"
 #include "../xml/soap_binding_processing_context.h"

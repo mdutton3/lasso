@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = saml-2.0
+SUBDIRS = saml-2.0 soap-1.1
 if WSF_ENABLED
 SUBDIRS += id-wsf-2.0 ws
 endif
@@ -188,11 +188,6 @@ liblasso_xml_la_SOURCES = \
 	samlp_response_abstract.c \
 	samlp_status.c \
 	samlp_status_code.c \
-	soap_body.c \
-	soap_detail.c \
-	soap_fault.c \
-	soap_envelope.c \
-	soap_header.c \
 	$(WSF_C_FILES)
 
 liblassoinclude_HEADERS = \
@@ -247,11 +242,6 @@ liblassoinclude_HEADERS = \
 	samlp_response_abstract.h \
 	samlp_status.h \
 	samlp_status_code.h \
-	soap_body.h \
-	soap_detail.h \
-	soap_fault.h \
-	soap_envelope.h \
-	soap_header.h \
 	xml_enc.h \
 	$(WSF_H_FILES)
 

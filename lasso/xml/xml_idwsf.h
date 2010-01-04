@@ -82,11 +82,6 @@
 #include "./soap_binding_processing_context.h"
 #include "./soap_binding_provider.h"
 #include "./soap_binding_usage_directive.h"
-#include "./soap_body.h"
-#include "./soap_detail.h"
-#include "./soap_envelope.h"
-#include "./soap_fault.h"
-#include "./soap_header.h"
 #include "./utility_status.h"
 
 #endif

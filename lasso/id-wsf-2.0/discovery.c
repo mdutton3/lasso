@@ -43,6 +43,8 @@
 #include "../xml/saml_attribute_value.h"
 #include "../xml/xml_enc.h"
 
+#include "../xml/soap-1.1/soap_fault.h"
+
 #include "../xml/saml-2.0/saml2_assertion.h"
 #include "../xml/saml-2.0/samlp2_name_id_policy.h"
 

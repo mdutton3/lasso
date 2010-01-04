@@ -22,11 +22,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "private.h"
-#include "soap_detail.h"
+#include "./soap_fault.h"
+#include "../private.h"
+#include "../../utils.h"
 
-/*
+/**
+ * SECTION:soap_fault
+ * @short_description: object mapping for a soap11:Fault
+ * @stability: Stable
  *
+ * <figure>
+ * <title>Schema fragment for soap11:Fault</title>
+ * <programlisting>
+ * <![CDATA[
  * <xs: element name="Fault" type="tns: Fault"/>
  * <xs: complexType name="Fault" final="extension">
  *   <xs: annotation>
@@ -48,7 +56,9 @@
  *    </xs: sequence>
  *    <xs: anyAttribute namespace="##any" processContents="lax"/>
  *  </xs: complexType>
- *
+ * ]]>
+ * </programlisting>
+ * </figure>
  */
 
 /*****************************************************************************/
@@ -56,7 +66,9 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSoapDetail, any), NULL, NULL, NULL},
+	{ "faultcode", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoSoapFault, faultcode), NULL, NULL, NULL},
+	{ "faultstring", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoSoapFault, faultstring), NULL, NULL, NULL},
+	{ "detail", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSoapFault, Detail), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
@@ -66,60 +78,75 @@ static struct XmlSnippet schema_snippets[] = {
 
 
 static void
-class_init(LassoSoapDetailClass *klass)
+class_init(LassoSoapFaultClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "detail");
+	lasso_node_class_set_nodename(nclass, "Fault");
 	lasso_node_class_set_ns(nclass, LASSO_SOAP_ENV_HREF, LASSO_SOAP_ENV_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
-lasso_soap_detail_get_type()
+lasso_soap_fault_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoSoapDetailClass),
+			sizeof (LassoSoapFaultClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoSoapDetail),
+			sizeof(LassoSoapFault),
 			0,
 			NULL,
 			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoSoapDetail", &this_info, 0);
+				"LassoSoapFault", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoSoapDetail*
-lasso_soap_detail_new()
+LassoSoapFault*
+lasso_soap_fault_new()
 {
-	LassoSoapDetail *node;
+	LassoSoapFault *node;
 
-	node = g_object_new(LASSO_TYPE_SOAP_DETAIL, NULL);
+	node = g_object_new(LASSO_TYPE_SOAP_FAULT, NULL);
 
 	return node;
 }
 
-LassoSoapDetail*
-lasso_soap_detail_new_from_message(const gchar *message)
+LassoSoapFault*
+lasso_soap_fault_new_from_message(const gchar *message)
 {
-	LassoSoapDetail *node;
+	LassoSoapFault *node;
 
 	g_return_val_if_fail(message != NULL, NULL);
 
-	node = g_object_new(LASSO_TYPE_SOAP_DETAIL, NULL);
+	node = g_object_new(LASSO_TYPE_SOAP_FAULT, NULL);
 	lasso_node_init_from_message(LASSO_NODE(node), message);
 
 	return node;
 }
+
+LassoSoapFault*
+lasso_soap_fault_new_full(const char *faultcode, const char *faultstring)
+{
+	LassoSoapFault *soap_fault;
+
+	if (! faultcode && ! faultstring)
+		return NULL;
+	soap_fault = g_object_new(LASSO_TYPE_SOAP_FAULT, NULL);
+	lasso_assign_string(soap_fault->faultcode, faultcode);
+	lasso_assign_string(soap_fault->faultstring, faultstring);
+
+	return soap_fault;
+}
+

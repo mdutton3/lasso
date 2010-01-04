@@ -75,11 +75,6 @@
 #include "./saml_subject_locality.h"
 #include "./saml_subject_statement_abstract.h"
 #include "./saml_subject_statement.h"
-#include "./soap_body.h"
-#include "./soap_detail.h"
-#include "./soap_envelope.h"
-#include "./soap_fault.h"
-#include "./soap_header.h"
 #include "./strings.h"
 #include "./xml_enc.h"
 

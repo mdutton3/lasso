@@ -22,9 +22,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "private.h"
-#include "soap_envelope.h"
-#include "../utils.h"
+#include "../private.h"
+#include "./soap_envelope.h"
+#include "../../utils.h"
 
 /**
  * SECTION:soap_envelope
@@ -103,6 +103,9 @@ lasso_soap_envelope_new_from_message(const gchar *message)
 	g_return_val_if_fail(message != NULL, NULL);
 
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
+	if (! LASSO_IS_SOAP_ENVELOPE(envelope)) {
+		lasso_release_gobject(envelope);
+	}
 
 	return envelope;
 }

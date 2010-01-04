@@ -30,7 +30,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "../id-ff/profile.h"
-#include "../xml/soap_envelope.h"
+#include "../xml/soap-1.1/soap_envelope.h"
 #include "../xml/ws/wsa_endpoint_reference.h"
 
 #define LASSO_TYPE_IDWSF2_PROFILE (lasso_idwsf2_profile_get_type())
