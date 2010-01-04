@@ -97,7 +97,7 @@ lasso_interaction_profile_service_process_response_msg(LassoInteractionProfileSe
  * Return value: 0 if successful, an error code otherwise.
  */
 gint
-lasso_interaction_profile_service_build_redirect_response_msg(LassoWsfProfile *profile, char *redirect_url)
+lasso_wsf_profile_init_interaction_service_redirect(LassoWsfProfile *profile, char *redirect_url)
 {
 	LassoSoapDetail *detail = NULL;
 	LassoSoapFault *fault = NULL;
