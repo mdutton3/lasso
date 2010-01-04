@@ -628,9 +628,9 @@
 /**
  * LASSO_SOAP_FAULT_REDIRECT_REQUEST:
  *
- * Redirect request from Attribute Provider
+ * A SOAP Fault containing a Redirect Request was received
  */
-#define LASSO_SOAP_FAULT_REDIRECT_REQUEST 800
+#define LASSO_SOAP_ERROR_REDIRECT_REQUEST_FAULT 800
 /**
  * LASSO_SOAP_ERROR_MISSING_ENVELOPE:
  *

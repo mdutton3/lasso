@@ -384,7 +384,7 @@ lasso_idwsf2_data_service_process_query_response_soap_fault_msg(LassoIdWsf2DataS
 	if (redirect_request != NULL) {
 		/* This is not a failure, this exception code indicates the WSP needs to ask */
 		/* user consent to get an attribute */
-		res = LASSO_SOAP_FAULT_REDIRECT_REQUEST;
+		res = LASSO_SOAP_ERROR_REDIRECT_REQUEST_FAULT;
 		/* Get redirect request url */
 		service->redirect_url = g_strdup(redirect_request->redirectURL);
 	}

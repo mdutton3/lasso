@@ -175,6 +175,8 @@ lasso_strerror(int error_code)
 			return "Missing service instance";
 		case LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND:
 			return "Unable to get content of element.";
+		case LASSO_SOAP_ERROR_REDIRECT_REQUEST_FAULT:
+			return "A SOAP Fault containing a Redirect Request was received";
 		case LASSO_PROFILE_ERROR_BAD_SESSION_DUMP:
 			return "Failed to create session from dump";
 		case LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED:
@@ -251,8 +253,6 @@ lasso_strerror(int error_code)
 			return "Unable to get child of element.";
 		case LASSO_ERROR_UNIMPLEMENTED:
 			return "Unimplemented part of Lasso.";
-		case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
-			return "Redirect request from Attribute Provider";
 		case LASSO_PROFILE_ERROR_INVALID_MSG:
 			return "Invalid message";
 		case LASSO_PROFILE_ERROR_MISSING_ASSERTION:
