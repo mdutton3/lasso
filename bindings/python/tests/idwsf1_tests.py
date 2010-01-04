@@ -264,7 +264,7 @@ class DataServiceQueryTestCase(IdWsf1TestCase):
         wsp_service.buildResponseMsg()
 
         wsc_service.processQueryResponseMsg(wsp_service.msgBody)
-        self.failUnless(wsc_service.getAnswer('/pp:PP/pp:InformalName') ==
+        self.failUnless(wsc_service.getAnswer() ==
                 '<InformalName xmlns="urn:liberty:id-sis-pp:2003-08">Damien</InformalName>')
 
 class DataServiceModifyTestCase(IdWsf1TestCase):
@@ -283,7 +283,8 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
             </PP>'''
 
         wsc_service = self.get_pp_service()
-        wsc_service.initModify(xpath, new_data)
+        wsc_service.initModify()
+        wsc_service.addModification(xpath, new_data, overrideAllowed = True)
         wsc_service.buildRequestMsg()
 
         request_type = lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
@@ -291,7 +292,7 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
 
         self.wsp = self.get_wsp_server()
         wsp_service = lasso.DataService(self.wsp)
-        wsp_service.processModifyMsg(wsc_service.msgBody)
+        wsp_service.processRequestMsg(wsc_service.msgBody)
 
         item = wsp_service.request.modification[0]
         self.failUnless(item.newData.any[0] ==
@@ -299,6 +300,7 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
         self.failUnless(item.select == '/pp:PP/pp:InformalName')
 
         wsp_service.resourceData = old_data
+        wsp_service.validateRequest()
         wsp_service.buildModifyResponseMsg()
         # Save the new wsp_service.resourceData here
 
@@ -324,7 +326,8 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
             </PP>'''
 
         wsc_service = self.get_pp_service()
-        wsc_service.initModify(xpath, new_data)
+        wsc_service.initModify()
+        wsc_service.addModification(xpath, new_data, overrideAllowed = True)
         wsc_service.buildRequestMsg()
 
         request_type = lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
@@ -332,8 +335,9 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
 
         self.wsp = self.get_wsp_server()
         wsp_service = lasso.DataService(self.wsp)
-        wsp_service.processModifyMsg(wsc_service.msgBody)
+        wsp_service.processRequestMsg(wsc_service.msgBody)
         wsp_service.resourceData = old_data
+        wsp_service.validateRequest()
         wsp_service.buildModifyResponseMsg()
         # Save the new wsp_service.resourceData here
 
@@ -356,7 +360,8 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
         redir_url = 'http://site/redirect_for_consent'
 
         wsc_service = self.get_pp_service()
-        wsc_service.initModify(xpath, new_data)
+        wsc_service.initModify()
+        wsc_service.addModification(xpath, new_data, overrideAllowed = True)
         wsc_service.buildRequestMsg()
 
         request_type = lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
@@ -364,18 +369,24 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
 
         self.wsp = self.get_wsp_server()
         wsp_service = lasso.DataService(self.wsp)
-        wsp_service.processModifyMsg(wsc_service.msgBody)
+        wsp_service.processRequestMsg(wsc_service.msgBody)
         wsp_service.resourceData = old_data
 
-        wsp_service.needRedirectUser(redir_url)
+        wsp_service.initInteractionServiceRedirect(redir_url)
         wsp_service.buildModifyResponseMsg()
         # Save the new wsp_service.resourceData here
 
         # Data mustn't have been modified here
         self.failUnless(wsp_service.resourceData == old_data)
+        self.failUnless(wsp_service.msgBody is not None)
 
-        wsc_service.processModifyResponseMsg(wsp_service.msgBody)
-        self.failUnless(wsc_service.getRedirectRequestUrl() == redir_url)
+        try:
+            wsc_service.processModifyResponseMsg(wsp_service.msgBody)
+        except lasso.SoapRedirectRequestFaultError:
+            pass
+        except Exception, e:
+            self.fail(e)
+        self.failUnless(wsc_service.msgUrl == redir_url)
 
 
 discoveryQuerySuite = unittest.makeSuite(DiscoveryQueryTestCase, 'test')

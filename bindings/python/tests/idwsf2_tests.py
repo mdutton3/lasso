@@ -104,7 +104,7 @@ class IdWsf2TestCase(unittest.TestCase):
         idp_disco.buildResponseMsg()
 
         wsp_disco.processMetadataRegisterResponseMsg(idp_disco.msgBody)
-        return idp, wsp_disco.svcMDID
+        return idp, wsp_disco.svcMDIDs[0]
 
     def login(self, sp, idp, sp_identity_dump=None, sp_session_dump=None,
             idp_identity_dump=None, idp_session_dump=None):
@@ -193,9 +193,12 @@ class IdpSelfRegistrationTestCase(IdWsf2TestCase):
         abstract = ''
         soapEndpoint = ''
 
-        svcMDID = disco.metadataRegisterSelf(service_type, abstract, soapEndpoint)
-
-        self.failIf(svcMDID, 'svcMDID should not be set')
+        try:
+            svcMDID = disco.metadataRegisterSelf(service_type, abstract, soapEndpoint)
+        except lasso.ParamBadTypeOrNullObjError:
+            pass
+        else:
+            self.fail('metadataRegisterSelf should fail with a ParamBadTypeOrNullObjError')
 
 
 class MetadataRegisterTestCase(IdWsf2TestCase):
@@ -283,7 +286,8 @@ class MetadataRegisterTestCase(IdWsf2TestCase):
         idp_disco = lasso.IdWsf2Discovery(idp)
         idp_disco.processMetadataRegisterMsg(wsp_disco.msgBody)
 
-        self.failUnless(idp_disco.metadata.dump(), 'missing registered metadata')
+        self.failUnless(len(idp_disco.metadatas) == 1, 'missing registered metadata')
+        self.failUnless(idp_disco.metadatas[0].dump(), 'missing registered metadata')
 
     def test06(self):
         """Build metadata registration response"""
@@ -345,7 +349,8 @@ class MetadataRegisterTestCase(IdWsf2TestCase):
 
         wsp_disco.processMetadataRegisterResponseMsg(idp_disco.msgBody)
 
-        self.failUnless(wsp_disco.svcMDID, 'missing svcMDID')
+        self.failUnless(len(wsp_disco.svcMDIDs) == 1, 'missing svcMDID')
+        self.failUnless(wsp_disco.svcMDIDs[0], 'missing svcMDID')
 
 class MetadataAssociationAddTestCase(IdWsf2TestCase):
     def test01(self):
@@ -1362,13 +1367,13 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
                 </MsgContact>
             </PP>"""
 
+        print wsp_service.nameIdentifier
         try:
             wsp_service.parseQueryItems()
-        except lasso.Error, e:
-            if e[0] != lasso.DST_ERROR_QUERY_FAILED:
-                self.fail(e)
-        else:
-             self.fail('query items parsing should have failed because no item was requested')
+        except lasso.DstEmptyRequestError:
+            pass
+        except Exception, e:
+            self.fail(e)
 
     def test13(self):
         """Data service parse query items - failure - wrong item"""
@@ -1547,15 +1552,19 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
                 </MsgContact>
             </PP>"""
 
-        wsp_service.parseQueryItems()
+        try:
+            wsp_service.parseQueryItems()
+        except lasso.DstQueryPartiallyFailedError:
+            pass
+        except:
+             self.fail('parseQueryItems should emit a "partially failed" error because a wrong query item was requested')
         wsp_service.buildResponseMsg()
 
         try:
             service.processQueryResponseMsg(wsp_service.msgBody)
-        except lasso.Error, e:
-            if e[0] != lasso.DST_ERROR_QUERY_PARTIALLY_FAILED:
-                self.fail(e)
-        else:
+        except lasso.DstQueryPartiallyFailedError:
+            pass
+        except:
              self.fail('response should have a "partially failed" status because a wrong query item was requested')
 
     def test20(self):
@@ -1668,7 +1677,12 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
                 </MsgContact>
             </PP>"""
 
-        wsp_service.parseQueryItems()
+        try:
+            wsp_service.parseQueryItems()
+        except lasso.DstQueryPartiallyFailedError:
+            pass
+        except:
+             self.fail('parseQueryItems should emit a "partially failed" error because a wrong query item was requested')
         wsp_service.buildResponseMsg()
 
         try:
@@ -1701,9 +1715,10 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
 
         try:
             service.processQueryResponseMsg(wsp_service.msgBody)
-        except lasso.Error, e:
-            if e[0] != lasso.SOAP_FAULT_REDIRECT_REQUEST:
-                self.fail(e)
+        except lasso.SoapRedirectRequestFaultError:
+            pass
+        except Exception, e:
+            self.fail(e)
         else:
             self.fail('a "soap fault redirect request" exception should have been raised')
 
@@ -1726,9 +1741,10 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
 
         try:
             service.processQueryResponseMsg(wsp_service.msgBody)
-        except lasso.Error, e:
-            if e[0] == lasso.SOAP_FAULT_REDIRECT_REQUEST:
-                pass
+        except lasso.SoapRedirectRequestFaultError:
+            pass
+        except Exception, e:
+            self.fail(e)
 
         self.failUnlessEqual(service.redirectUrl, 'http://sp5/consent', 'redirectUrl is not set or wrong')
 
