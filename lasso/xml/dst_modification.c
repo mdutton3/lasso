@@ -63,7 +63,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModification, id), NULL, NULL, NULL},
 	{ "notChangedSince", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModification,
 			notChangedSince), NULL, NULL, NULL },
-	{ "overrideAllowed", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModification,
+	{ "overrideAllowed", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN, G_STRUCT_OFFSET(LassoDstModification,
 			overrideAllowed), NULL, NULL, NULL },
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
