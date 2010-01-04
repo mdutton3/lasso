@@ -110,9 +110,6 @@ def is_collection(type):
 def is_string_type(type):
     return type in ['char*', 'const char*', 'gchar*', 'const gchar*']
 
-def is_const_type(type):
-    return type in ['const char*', 'const gchar*']
-
 class Binding:
     def __init__(self, binding_data):
         self.binding_data = binding_data
@@ -526,8 +523,12 @@ protected static native void destroy(long cptr);
             print >> fd, 'return_value = ',
             if 'new' in m.name:
                 print >>fd, '(%s)' % m.return_type,
-
-        print >> fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))
+        def arg2ref(x):
+            if is_const(x):
+                return '(%s) %s' % (x[0],x[1]) 
+            else:
+                return x[1]
+        print >> fd, '%s(%s);' % (m.name, ', '.join([arg2ref(x) for x in m.args]))
         # Free const char * args
         idx=0
         for arg in m.args:
@@ -554,7 +555,7 @@ protected static native void destroy(long cptr);
                 if m.return_owner:
                     if m.return_type == 'GList*' or m.return_type == 'const GList*':
                         print >> fd, '    free_glist(&return_value, NULL);'
-                    elif is_string_type(m.return_type) and not is_const_type(m.return_type):
+                    elif is_string_type(m.return_type) and not is_const(m.return_arg):
                         print >> fd, '    if (return_value)'
                         print >> fd, '        g_free(return_value);'
             print >> fd, '    return ret;'

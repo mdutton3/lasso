@@ -128,7 +128,8 @@ def value_type(arg):
     return arg[2].get('value-type')
 
 def is_out(arg):
-    return _test_arg(arg, 'out') or arg_type(arg).endswith('**')
+    return _test_arg(arg, 'out') or (arg_type(arg).endswith('**') and not _test_arg(arg, 'in'))
+
 
 def is_glist(arg):
     return re.match('GList\>', var_type(arg))

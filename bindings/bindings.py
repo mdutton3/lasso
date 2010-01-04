@@ -276,34 +276,7 @@ class DocString:
                             break
                     else:
                         raise Exception('should not happen ' + param_name + ' ' + lines[0] + repr(function))
-                    if 'allow-none' in param_options:
-                        arg[2]['optional'] = True
-                    if re.search('\(\s*out\s*\)', param_options):
-                        arg[2]['out'] = True
-                    if arg[2].get('optional'):
-                        m = re.search('\(\s*default\s*(.*)\s*\)', param_options)
-                        if m:
-                            prefix = ''
-                            if is_boolean(arg):
-                                prefix = 'b:'
-                            elif is_int(arg):
-                                prefix = 'c:'
-                            else:
-                                raise Exception('should not happen: could not found type for default: ' + param_options)
-                            arg[2]['default'] = prefix + m.group(1)
-                    m = re.search('\(\s*element-type\s+(\w+)(?:\s+(\w+))?', param_options)
-                    if m:
-                        if len(m.groups()) > 2:
-                            arg[2]['key-type'] = \
-                                    convert_type_from_gobject_annotation(m.group(1))
-                            arg[2]['value-type'] = \
-                                    convert_type_from_gobject_annotation(m.group(2))
-                        else:
-                            arg[2]['element-type'] = \
-                                    convert_type_from_gobject_annotation(m.group(1))
-                    m = re.search('\(\s*transfer\s+(\w+)', param_options)
-                    if m:
-                        arg[2]['transfer'] = m.group(1)
+                    self.annotation2arg(arg, param_options)
                 else:
                     param_desc = splits[1]
                     self.parameters.append([param_name, param_desc])
@@ -326,17 +299,52 @@ class DocString:
         self.description = self.description.strip()
 
         # return value
-        if lines[0].startswith('Return value'):
+        if lines[0].startswith('Return value') or lines[0].startswith('Returns'):
             lines[0] = lines[0].split(':', 1)[1]
-            self.return_value = ''
+            accu = ''
             while lines[0].strip():
-                self.return_value = self.return_value + ' ' + lines[0].strip()
+                accu = accu + ' ' + lines[0].strip()
                 if len(lines) == 1:
                     break
                 lines = lines[1:]
-            self.return_value = self.return_value[1:] # remove leading space
+            # find GObject-introspection annotations
+            if re.match(r'\s*\(', accu):
+                annotation, accu = accu.split(':', 1)
+                self.annotation2arg(function.return_arg, annotation)
+            self.return_value = accu.strip() # remove leading space
+    def annotation2arg(self, arg, annotation):
+        '''Convert GObject-introspection annotations to arg options'''
 
-
+        if 'allow-none' in annotation:
+            arg[2]['optional'] = True
+        if re.search('\(\s*out\s*\)', annotation):
+            arg[2]['out'] = True
+        if re.search('\(\s*in\s*\)', annotation):
+            arg[2]['in'] = True
+        if arg[2].get('optional'):
+            m = re.search('\(\s*default\s*(.*)\s*\)', annotation)
+            if m:
+                prefix = ''
+                if is_boolean(arg):
+                    prefix = 'b:'
+                elif is_int(arg):
+                    prefix = 'c:'
+                else:
+                    raise Exception('should not happen: could not found type for default: ' + annotation)
+                arg[2]['default'] = prefix + m.group(1)
+        m = re.search('\(\s*element-type\s+(\w+)(?:\s+(\w+))?', annotation)
+        if m:
+            if len(m.groups()) > 2:
+                arg[2]['key-type'] = \
+                        convert_type_from_gobject_annotation(m.group(1))
+                arg[2]['value-type'] = \
+                        convert_type_from_gobject_annotation(m.group(2))
+            else:
+                arg[2]['element-type'] = \
+                        convert_type_from_gobject_annotation(m.group(1))
+        m = re.search('\(\s*transfer\s+(\w+)', annotation)
+        if m:
+            arg[2]['transfer'] = m.group(1)
 
 def normalise_var(type, name):
     if name[0] == '*':
@@ -443,7 +451,8 @@ def parse_header(header_file):
                 i += 1
                 line = line[:-1] + lines[i].lstrip()
 
-            m = re.match(r'LASSO_EXPORT(.*(?:\s|\*))(\w+)\s*\((.*?)\)', line)
+            # parse the type, then the name, then argument list
+            m = re.match(r'LASSO_EXPORT\s+(.*(?:\s|\*))(\w+)\s*\(\s*(.*?)\s*\)\s*;', line)
             if m and not m.group(2).endswith('_get_type'):
                 return_type, function_name, args = m.groups()
                 return_type = return_type.strip()
@@ -458,6 +467,7 @@ def parse_header(header_file):
                     return_type = clean_type(return_type)
                     if return_type != 'void':
                         f.return_type = return_type
+                        f.return_arg = (return_type, None, {})
                     if function_name.endswith('_destroy'):
                         # skip the _destroy functions, they are just wrapper over
                         # g_object_unref

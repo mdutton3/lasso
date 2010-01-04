@@ -343,7 +343,6 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             if is_out(arg):
                 # export the returned variable
                 free = is_transfer_full(unref_type(arg))
-                print m
                 self.set_zval('php_out_%s' % argname, argname, unref_type(arg), free = free)
                 pass
             elif argtype == 'xmlNode*':
