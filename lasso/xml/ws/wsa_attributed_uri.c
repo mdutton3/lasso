@@ -75,6 +75,9 @@ class_init(LassoWsAddrAttributedURIClass *klass)
 	lasso_node_class_set_nodename(nclass, "AttributedURI");
 	lasso_node_class_set_ns(nclass, LASSO_WSA_HREF, LASSO_WSA_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	lasso_registry_default_add_direct_mapping(LASSO_WSA_HREF, "Action", LASSO_LASSO_HREF, "LassoWsAddrAttributedURI");
+	lasso_registry_default_add_direct_mapping(LASSO_WSA_HREF, "MessageID", LASSO_LASSO_HREF, "LassoWsAddrAttributedURI");
+	lasso_registry_default_add_direct_mapping(LASSO_WSA_HREF, "To", LASSO_LASSO_HREF, "LassoWsAddrAttributedURI");
 }
 
 GType
@@ -126,7 +129,7 @@ lasso_wsa_attributed_uri_new()
  * Return value: a newly created #LassoWsAddrAttributedURI object
  **/
 LassoWsAddrAttributedURI*
-lasso_wsa_attributed_uri_new_with_string(char *content)
+lasso_wsa_attributed_uri_new_with_string(const char *content)
 {
 	LassoWsAddrAttributedURI *object;
 	object = g_object_new(LASSO_TYPE_WSA_ATTRIBUTED_URI, NULL);

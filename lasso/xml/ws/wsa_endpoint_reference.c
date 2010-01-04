@@ -86,6 +86,9 @@ class_init(LassoWsAddrEndpointReferenceClass *klass)
 	lasso_node_class_set_nodename(nclass, "EndpointReference");
 	lasso_node_class_set_ns(nclass, LASSO_WSA_HREF, LASSO_WSA_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	lasso_registry_default_add_direct_mapping(LASSO_WSA_HREF, "From", LASSO_LASSO_HREF, "LassoWsAddrEndpointReference");
+	lasso_registry_default_add_direct_mapping(LASSO_WSA_HREF, "ReplyTo", LASSO_LASSO_HREF, "LassoWsAddrEndpointReference");
+	lasso_registry_default_add_direct_mapping(LASSO_WSA_HREF, "FaultTo", LASSO_LASSO_HREF, "LassoWsAddrEndpointReference");
 }
 
 GType

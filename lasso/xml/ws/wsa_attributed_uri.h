@@ -74,7 +74,7 @@ struct _LassoWsAddrAttributedURIClass {
 LASSO_EXPORT GType lasso_wsa_attributed_uri_get_type(void);
 LASSO_EXPORT LassoWsAddrAttributedURI* lasso_wsa_attributed_uri_new(void);
 
-LASSO_EXPORT LassoWsAddrAttributedURI* lasso_wsa_attributed_uri_new_with_string(char *content);
+LASSO_EXPORT LassoWsAddrAttributedURI* lasso_wsa_attributed_uri_new_with_string(const char *content);
 
 
 #ifdef __cplusplus
