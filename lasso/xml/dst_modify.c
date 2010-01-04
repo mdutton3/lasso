@@ -173,19 +173,11 @@ lasso_dst_modify_get_type()
 }
 
 LassoDstModify*
-lasso_dst_modify_new(LassoDstModification *modification)
+lasso_dst_modify_new()
 {
 	LassoDstModify *modify;
-	/* Force a warning */
-	LassoDstModification *_modification = LASSO_DST_MODIFICATION(modification);
-
-	g_return_val_if_fail(LASSO_IS_DST_MODIFICATION(modification) == TRUE, NULL);
 
 	modify = g_object_new(LASSO_TYPE_DST_MODIFY, NULL);
-
-	if (LASSO_IS_DST_MODIFICATION(_modification)) {
-		modify->Modification = g_list_append(modify->Modification, _modification);
-	}
 
 	return modify;
 }
