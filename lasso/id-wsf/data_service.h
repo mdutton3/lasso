@@ -81,12 +81,16 @@ LASSO_EXPORT gint lasso_data_service_init_query(LassoDataService *service,
 LASSO_EXPORT gint lasso_data_service_add_query_item(LassoDataService *service,
 		const char *select, const char *item_id);
 
-LASSO_EXPORT gint lasso_data_service_process_query_msg(LassoDataService *service,
+LASSO_EXPORT gint lasso_data_service_process_request_msg(LassoDataService *service,
 		const char *message, const char *security_mech_id);
+
+LASSO_EXPORT gint lasso_data_service_validate_request(LassoDataService *service);
 
 LASSO_EXPORT gint lasso_data_service_build_query_response_msg(LassoDataService *service);
 
 LASSO_EXPORT gint lasso_data_service_build_modify_response_msg(LassoDataService *service);
+
+LASSO_EXPORT gint lasso_data_service_build_response_msg(LassoDataService *service);
 
 LASSO_EXPORT gint lasso_data_service_process_query_response_msg(LassoDataService *service,
 		const char *message);
@@ -102,22 +106,23 @@ LASSO_EXPORT gint lasso_data_service_get_answers_by_select(LassoDataService *ser
 LASSO_EXPORT gint lasso_data_service_get_answers_by_item_id(LassoDataService *service,
 		const char *item_id, GList **output);
 
-LASSO_EXPORT  gint lasso_data_service_init_modify(LassoDataService *service);
+LASSO_EXPORT  gint lasso_data_service_init_modify(LassoDataService *service,
+		const char *security_mech_id);
 
 LASSO_EXPORT gint lasso_data_service_add_modification(LassoDataService *service,
 		const gchar *select, xmlNode *xmlData, gboolean overrideAllowed,
 		time_t *notChangedSince, LassoDstModification **output);
 
-LASSO_EXPORT gint lasso_data_service_process_modify_msg(LassoDataService *service,
-	const gchar *soap_msg, const gchar *security_mech_id);
 
 LASSO_EXPORT gint lasso_data_service_process_modify_response_msg(LassoDataService *service,
 		const gchar *soap_msg);
 
-LASSO_EXPORT  gchar* lasso_data_service_get_redirect_request_url(LassoDataService *service);
-
 LASSO_EXPORT gint lasso_data_service_get_query_item(LassoDataService *service, const char *select,
 		const char *item_id, LassoDstQueryItem **output);
+
+LASSO_EXPORT void lasso_data_service_set_resource_data(LassoDataService *service, const xmlNode *resource_data);
+
+LASSO_EXPORT xmlNode *lasso_data_service_get_resource_data(LassoDataService *service);
 
 #ifdef __cplusplus
 }
