@@ -30,6 +30,7 @@
 #include "loginprivate.h"
 #include "profileprivate.h"
 #include "federationprivate.h"
+#include "./saml2_helper.h"
 
 #include "../id-ff/providerprivate.h"
 #include "../id-ff/serverprivate.h"
@@ -758,14 +759,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->AuthnStatement = g_list_append(NULL, authentication_statement);
 
 	/* Save signing material in assertion private datas to be able to sign later */
-	if (profile->server->certificate) {
-		assertion->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
-	} else {
-		assertion->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
-	}
-	assertion->sign_method = profile->server->signature_method;
-	assertion->private_key_file = g_strdup(profile->server->private_key);
-	assertion->certificate_file = g_strdup(profile->server->certificate);
+	lasso_server_saml2_assertion_setup_signature(profile->server, assertion);
 
 	/* Save encryption material in assertion private datas to be able to encrypt later */
 	if (provider && provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_ASSERTION
