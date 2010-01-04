@@ -65,7 +65,7 @@ struct _LassoIdWsf2PsAddToCollectionRequest {
 	/*< public >*/
 	/* elements */
 	/* XXX */ void *TargetObjectID;
-	GList *ObjectID;
+	GList *ObjectID; /* of LassoNode */
 	/* XXX */ void *Subscription;
 };
 

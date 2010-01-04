@@ -66,7 +66,7 @@ struct _LassoIdWsf2ImsIdentityMappingResponse {
 	/*< public >*/
 	/* elements */
 	LassoIdWsf2UtilStatus *Status;
-	GList *MappingOutput;
+	GList *MappingOutput; /* of LassoNode */
 	/* attributes */
 	GHashTable *attributes;
 };

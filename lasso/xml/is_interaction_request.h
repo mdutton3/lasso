@@ -58,7 +58,7 @@ struct _LassoIsInteractionRequest {
 
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
-	GList *Inquiry;
+	GList *Inquiry; /* of LassoNode */
 	/* TODO : ds:KeyInfo */
 
 	char *id;

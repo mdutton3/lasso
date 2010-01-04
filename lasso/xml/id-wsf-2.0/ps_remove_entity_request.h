@@ -63,7 +63,7 @@ struct _LassoIdWsf2PsRemoveEntityRequest {
 
 	/*< public >*/
 	/* elements */
-	GList *TargetObjectID;
+	GList *TargetObjectID; /* of LassoNode */
 };
 
 struct _LassoIdWsf2PsRemoveEntityRequestClass {

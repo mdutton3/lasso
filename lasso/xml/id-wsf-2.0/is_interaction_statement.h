@@ -62,7 +62,7 @@ struct _LassoIdWsf2IsInteractionStatement {
 
 	/*< public >*/
 	/* elements */
-	GList *Inquiry;
+	GList *Inquiry; /* of LassoNode */
 	/*< private >*/
 	/* ds:Signature stuffs */
 	LassoSignatureType sign_type;

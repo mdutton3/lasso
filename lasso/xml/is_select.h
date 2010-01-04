@@ -48,7 +48,7 @@ typedef struct _LassoIsSelectClass LassoIsSelectClass;
 struct _LassoIsSelect {
 	LassoNode parent; /* FIXME : must inherit of InquiryElement class */
 
-	GList *Item;
+	GList *Item; /* of LassoNode */
 
 	gboolean multiple;
 };

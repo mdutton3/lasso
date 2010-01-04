@@ -65,7 +65,7 @@ struct _LassoIdWsf2PsResolveIdentifierResponse {
 
 	/*< public >*/
 	/* elements */
-	GList *ResolveOutput;
+	GList *ResolveOutput; /* of LassoNode */
 };
 
 struct _LassoIdWsf2PsResolveIdentifierResponseClass {

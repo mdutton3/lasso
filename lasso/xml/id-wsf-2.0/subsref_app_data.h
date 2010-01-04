@@ -62,7 +62,7 @@ struct _LassoIdWsf2SubsRefAppData {
 	/*< public >*/
 	/* elements */
 	GList *any; /* of xmlNode* */
-	GList *Subscription;
+	GList *Subscription; /* of LassoNode */
 };
 
 

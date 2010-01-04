@@ -62,7 +62,7 @@ struct _LassoIdWsf2SecTransitedProviderPath {
 
 	/*< public >*/
 	/* elements */
-	GList *TransitedProvider;
+	GList *TransitedProvider; /* of LassoNode */
 };
 
 struct _LassoIdWsf2SecTransitedProviderPathClass {

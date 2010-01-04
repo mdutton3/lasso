@@ -63,7 +63,7 @@ struct _LassoIdWsf2SubsRefDataResponse {
 
 	/*< public >*/
 	/* elements */
-	GList *ItemData;
+	GList *ItemData; /* of LassoNode */
 };
 
 

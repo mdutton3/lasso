@@ -48,7 +48,7 @@ typedef struct _LassoSoapBodyClass LassoSoapBodyClass;
 struct _LassoSoapBody {
 	LassoNode parent;
 
-	GList *any;
+	GList *any; /* of LassoNode */
 	gchar *Id;
 	/* TODO : supports of any attributes */
 };

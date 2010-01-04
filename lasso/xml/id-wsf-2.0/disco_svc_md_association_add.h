@@ -62,7 +62,7 @@ struct _LassoIdWsf2DiscoSvcMDAssociationAdd {
 
 	/*< public >*/
 	/* elements */
-	GList *SvcMDID;
+	GList *SvcMDID; /* of strings */
 	/* attributes */
 	GHashTable *attributes;
 };

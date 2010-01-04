@@ -63,8 +63,8 @@ struct _LassoIdWsf2IsInteractionResponse {
 	/*< public >*/
 	/* elements */
 	LassoIdWsf2UtilStatus *Status;
-	GList *InteractionStatement;
-	GList *Parameter;
+	GList *InteractionStatement; /* of LassoNode */
+	GList *Parameter; /* of LassoNode */
 };
 
 

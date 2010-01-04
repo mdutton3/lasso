@@ -53,7 +53,7 @@ struct _LassoDiscoQuery {
 
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
-	GList *RequestedServiceType;
+	GList *RequestedServiceType; /* of LassoNode */
 	gchar *id;
 };
 

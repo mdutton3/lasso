@@ -62,9 +62,9 @@ struct _LassoIdWsf2SubsRefModify {
 
 	/*< public >*/
 	/* elements */
-	GList *Subscription;
-	GList *ModifyItem;
-	GList *ResultQuery;
+	GList *Subscription; /* of LassoNode */
+	GList *ModifyItem; /* of LassoNode */
+	GList *ResultQuery; /* of LassoNode */
 };
 
 

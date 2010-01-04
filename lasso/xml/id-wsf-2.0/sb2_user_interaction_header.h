@@ -62,7 +62,7 @@ struct _LassoIdWsf2Sb2UserInteractionHeader {
 
 	/*< public >*/
 	/* elements */
-	GList *InteractionService;
+	GList *InteractionService; /* of LassoNode */
 	/* attributes */
 	char *interact;
 	char *language;

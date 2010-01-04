@@ -63,7 +63,7 @@ struct _LassoIdWsf2PsListMembersResponse {
 
 	/*< public >*/
 	/* elements */
-	GList *Object;
+	GList *Object; /* of LassoNode */
 };
 
 struct _LassoIdWsf2PsListMembersResponseClass {

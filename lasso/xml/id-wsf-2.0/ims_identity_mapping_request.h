@@ -64,7 +64,7 @@ struct _LassoIdWsf2ImsIdentityMappingRequest {
 
 	/*< public >*/
 	/* elements */
-	GList *MappingInput;
+	GList *MappingInput; /* of LassoNode */
 	/* attributes */
 	GHashTable *attributes;
 };

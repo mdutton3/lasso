@@ -63,7 +63,7 @@ struct _LassoIdWsf2Sb2CredentialsContext {
 	/*< public >*/
 	/* elements */
 	LassoSamlp2RequestedAuthnContext *RequestedAuthnContext;
-	GList *SecurityMechID;
+	GList *SecurityMechID; /* of strings */
 	/* attributes */
 	GHashTable *attributes;
 };

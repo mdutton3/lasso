@@ -51,7 +51,7 @@ typedef struct _LassoIsUserInteractionClass LassoIsUserInteractionClass;
 struct _LassoIsUserInteraction {
 	LassoNode parent;
 
-	GList *InteractionService;
+	GList *InteractionService; /* of LassoNode */
 
 	gchar *id;
 	gchar *interact;

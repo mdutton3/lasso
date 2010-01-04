@@ -62,12 +62,12 @@ struct _LassoIdWsf2DiscoRequestedService {
 
 	/*< public >*/
 	/* elements */
-	GList *ServiceType;
-	GList *ProviderID;
+	GList *ServiceType; /* of strings */
+	GList *ProviderID; /* of strings */
 	GList *Options; /* of LassoIdWsf2DiscoOptions */
-	GList *SecurityMechID;
-	GList *Framework;
-	GList *Action;
+	GList *SecurityMechID; /* of strings */
+	GList *Framework; /* of LassoIdWsf2SbfFramework */
+	GList *Action; /* of strings */
 	LassoNode *any;
 	/* attributes */
 	char *reqID;

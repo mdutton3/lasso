@@ -55,8 +55,8 @@ struct _LassoSaml2Evidence {
 
 	/*< public >*/
 	/* elements */
-	GList *AssertionIDRef;
-	GList *AssertionURIRef;
+	GList *AssertionIDRef; /* of LassoNode */
+	GList *AssertionURIRef; /* of LassoNode */
 	GList *Assertion; /* of LassoSaml2Assertion */
 	GList *EncryptedAssertion; /* of LassoSaml2EncryptedElement */
 };

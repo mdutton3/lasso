@@ -50,7 +50,7 @@ typedef struct _LassoSaCredentialsClass LassoSaCredentialsClass;
 struct _LassoSaCredentials {
 	LassoNode parent;
 
-	GList *any;
+	GList *any; /* of LassoNode */
 };
 
 struct _LassoSaCredentialsClass {

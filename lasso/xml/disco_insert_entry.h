@@ -53,7 +53,7 @@ struct _LassoDiscoInsertEntry {
 	LassoNode parent;
 
 	LassoDiscoResourceOffering *ResourceOffering;
-	GList *any;
+	GList *any; /* of LassoNode */
 };
 
 struct _LassoDiscoInsertEntryClass {

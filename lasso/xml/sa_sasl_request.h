@@ -50,7 +50,7 @@ typedef struct _LassoSaSASLRequestClass LassoSaSASLRequestClass;
 struct _LassoSaSASLRequest {
 	LassoNode parent;
 
-	GList *Data;
+	GList *Data; /* of strings */
 	LassoLibRequestAuthnContext *RequestAuthnContext;
 
 	char *mechanism;

@@ -62,10 +62,10 @@ struct _LassoIdWsf2DiscoEndpointContext {
 
 	/*< public >*/
 	/* elements */
-	GList *Address;
-	GList *Framework;
-	GList *SecurityMechID;
-	GList *Action;
+	GList *Address; /* of strings */
+	GList *Framework; /* of LassoNode */
+	GList *SecurityMechID; /* of strings */
+	GList *Action; /* of strings */
 };
 
 

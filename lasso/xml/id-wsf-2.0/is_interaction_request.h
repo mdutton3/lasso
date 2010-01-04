@@ -62,7 +62,7 @@ struct _LassoIdWsf2IsInteractionRequest {
 
 	/*< public >*/
 	/* elements */
-	GList *Inquiry;
+	GList *Inquiry; /* of LassoNode */
 	/* XXX */ void *KeyInfo;
 	/* attributes */
 	char *id;

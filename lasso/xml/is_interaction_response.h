@@ -53,8 +53,8 @@ struct _LassoIsInteractionResponse {
 	LassoNode parent; /* FIXME : inherit of LassoIsInquiryElement */
 
 	LassoUtilityStatus *Status;
-	GList *InteractionStatement;
-	GList *Parameter;
+	GList *InteractionStatement; /* of LassoNode */
+	GList *Parameter; /* of LassoNode */
 };
 
 struct _LassoIsInteractionResponseClass {

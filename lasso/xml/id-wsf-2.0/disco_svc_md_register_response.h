@@ -66,7 +66,7 @@ struct _LassoIdWsf2DiscoSvcMDRegisterResponse {
 	/*< public >*/
 	/* elements */
 	LassoIdWsf2UtilStatus *Status;
-	GList *SvcMDID;
+	GList *SvcMDID; /* of strings */
 	GList *Keys; /* of LassoIdWsf2DiscoKeys */
 	/* attributes */
 	GHashTable *attributes;

@@ -62,10 +62,10 @@ struct _LassoIdWsf2PsObject {
 	/*< public >*/
 	/* elements */
 	/* XXX */ void *ObjectID;
-	GList *DisplayName;
+	GList *DisplayName; /* of LassoNode */
 	/* XXX */ void *Tag;
-	GList *Object;
-	GList *ObjectRef;
+	GList *Object; /* of LassoNode */
+	GList *ObjectRef; /* of LassoNode */
 	/* attributes */
 	char *NodeType;
 	char *CreatedDateTime;

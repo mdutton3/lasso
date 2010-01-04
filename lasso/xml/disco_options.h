@@ -49,7 +49,7 @@ typedef struct _LassoDiscoOptionsClass LassoDiscoOptionsClass;
 struct _LassoDiscoOptions {
 	LassoNode parent;
 
-	GList *Option;
+	GList *Option; /* of strings */
 };
 
 struct _LassoDiscoOptionsClass {

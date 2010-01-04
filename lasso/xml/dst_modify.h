@@ -53,7 +53,7 @@ struct _LassoDstModify {
 	/*< public >*/
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
-	GList *Modification;
+	GList *Modification; /* of LassoNode */
 	GList *Extension; /* of xmlNode* */
 
 	char *id;

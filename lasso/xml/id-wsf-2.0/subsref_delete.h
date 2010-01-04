@@ -62,7 +62,7 @@ struct _LassoIdWsf2SubsRefDelete {
 
 	/*< public >*/
 	/* elements */
-	GList *DeleteItem;
+	GList *DeleteItem; /* of LassoNode */
 };
 
 

@@ -61,7 +61,7 @@ struct _LassoIdWsf2DiscoOptions {
 
 	/*< public >*/
 	/* elements */
-	GList *Option;
+	GList *Option; /* of strings */
 };
 
 

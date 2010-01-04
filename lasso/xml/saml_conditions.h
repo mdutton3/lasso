@@ -53,9 +53,9 @@ struct _LassoSamlConditions {
 
 	/*< public >*/
 	/* <element ref="saml:Condition"/> */
-	GList *Condition; /* LassoSamlCondition (XXX missing from lasso) */
+	GList *Condition; /* of LassoNode */
 	/* <element ref="saml:AudienceRestrictionCondition"/> */
-	GList *AudienceRestrictionCondition; /* LassoSamlAudienceRestrictionCondition */
+	GList *AudienceRestrictionCondition; /* of LassoSamlAudienceRestrictionCondition */
 	/* <attribute name="NotBefore" type="dateTime" use="optional"/> */
 	char *NotBefore;
 	/* <attribute name="NotOnOrAfter" type="dateTime" use="optional"/> */

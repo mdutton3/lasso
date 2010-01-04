@@ -62,7 +62,7 @@ struct _LassoIdWsf2IsSelect {
 
 	/*< public >*/
 	/* elements */
-	GList *Item;
+	GList *Item; /* of LassoNode */
 };
 
 

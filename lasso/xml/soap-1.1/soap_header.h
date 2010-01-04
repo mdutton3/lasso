@@ -48,7 +48,7 @@ typedef struct _LassoSoapHeaderClass LassoSoapHeaderClass;
 struct _LassoSoapHeader {
 	LassoNode parent;
 
-	GList *Other;
+	GList *Other; /* of LassoNode */
 };
 
 struct _LassoSoapHeaderClass {

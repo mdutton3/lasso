@@ -53,8 +53,8 @@ struct _LassoDiscoModify {
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 
-	GList *InsertEntry;
-	GList *RemoveEntry;
+	GList *InsertEntry; /* of LassoNode */
+	GList *RemoveEntry; /* of LassoNode */
 
 	char *id;
 };

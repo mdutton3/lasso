@@ -63,7 +63,7 @@ struct _LassoIdWsf2PsQueryObjectsResponse {
 
 	/*< public >*/
 	/* elements */
-	GList *Object;
+	GList *Object; /* of LassoNode */
 };
 
 

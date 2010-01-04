@@ -47,10 +47,10 @@ typedef struct _LassoIsInquiryClass LassoIsInquiryClass;
 struct _LassoIsInquiry {
 	LassoNode parent;
 
-	GList *Help;
-	GList *Select;
-	GList *Confirm;
-	GList *Text;
+	GList *Help; /* of LassoNode */
+	GList *Select; /* of LassoNode */
+	GList *Confirm; /* of LassoNode */
+	GList *Text; /* of LassoNode */
 
 	char *id;
 	char *title;

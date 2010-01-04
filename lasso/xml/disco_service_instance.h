@@ -55,7 +55,7 @@ struct _LassoDiscoServiceInstance {
 
 	char *ServiceType;
 	char *ProviderID;
-	GList *Description;
+	GList *Description; /* of LassoNode */
 };
 
 struct _LassoDiscoServiceInstanceClass {

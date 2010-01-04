@@ -63,7 +63,7 @@ struct _LassoIdWsf2SubsRefSubscription {
 
 	/*< public >*/
 	/* elements */
-	GList *ResultQuery;
+	GList *ResultQuery; /* of LassoNode */
 	/* XXX */ void *Aggregation;
 	/* XXX */ void *Trigger;
 };

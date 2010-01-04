@@ -66,7 +66,7 @@ struct _LassoIdWsf2DiscoSvcMDAssociationQueryResponse {
 	/*< public >*/
 	/* elements */
 	LassoIdWsf2UtilStatus *Status;
-	GList *SvcMDID;
+	GList *SvcMDID; /* of strings */
 	/* attributes */
 	GHashTable *attributes;
 };

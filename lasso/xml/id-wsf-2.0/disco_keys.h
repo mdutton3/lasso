@@ -61,7 +61,7 @@ struct _LassoIdWsf2DiscoKeys {
 
 	/*< public >*/
 	/* elements */
-	GList *KeyDescriptor;
+	GList *KeyDescriptor; /* of LassoNode */
 };
 
 

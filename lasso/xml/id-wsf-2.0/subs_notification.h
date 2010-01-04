@@ -61,7 +61,7 @@ struct _LassoIdWsf2SubsNotification {
 
 	/*< public >*/
 	/* elements */
-	GList *TestResult;
+	GList *TestResult; /* of LassoNode */
 	/* attributes */
 	char *id;
 	char *subscriptionID;

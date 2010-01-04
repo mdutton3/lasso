@@ -62,7 +62,7 @@ struct _LassoIdWsf2PsNotification {
 
 	/*< public >*/
 	/* elements */
-	GList *ItemData;
+	GList *ItemData; /* of LassoNode */
 };
 
 

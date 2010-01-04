@@ -64,7 +64,7 @@ struct _LassoIdWsf2PsSetObjectInfoRequest {
 
 	/*< public >*/
 	/* elements */
-	GList *Object;
+	GList *Object; /* of LassoNode */
 	/* XXX */ void *Subscription;
 };
 

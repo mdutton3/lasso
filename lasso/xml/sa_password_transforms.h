@@ -51,7 +51,7 @@ typedef struct _LassoSaPasswordTransformsClass LassoSaPasswordTransformsClass;
 struct _LassoSaPasswordTransforms {
 	LassoNode parent;
 
-	GList *Transform;
+	GList *Transform; /* of LassoNode */
 };
 
 struct _LassoSaPasswordTransformsClass {

@@ -53,7 +53,7 @@ struct _LassoDstQueryResponse {
 
 	/*< public >*/
 	LassoUtilityStatus *Status;
-	GList *Data;
+	GList *Data; /* of LassoNode */
 	GList *Extension; /* of xmlNode* */
 
 	char *id;

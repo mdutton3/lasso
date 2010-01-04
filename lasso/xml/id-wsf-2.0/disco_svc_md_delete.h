@@ -61,7 +61,7 @@ struct _LassoIdWsf2DiscoSvcMDDelete {
 
 	/*< public >*/
 	/* elements */
-	GList *SvcMDID;
+	GList *SvcMDID; /* of strings */
 	/* attributes */
 	GHashTable *attributes;
 };

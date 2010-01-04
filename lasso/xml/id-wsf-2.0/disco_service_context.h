@@ -62,7 +62,7 @@ struct _LassoIdWsf2DiscoServiceContext {
 
 	/*< public >*/
 	/* elements */
-	GList *ServiceType;
+	GList *ServiceType; /* of strings */
 	GList *Options; /* of LassoIdWsf2DiscoOptions */
 	GList *EndpointContext; /* of LassoIdWsf2DiscoEndpointContext */
 };

@@ -55,10 +55,10 @@ struct _LassoSaSASLResponse {
 
 	/*< public >*/
 	LassoUtilityStatus *Status;
-	GList *PasswordTransforms;
-	GList *Data;
-	GList *ResourceOffering;
-	GList *Credentials;
+	GList *PasswordTransforms; /* of LassoNode */
+	GList *Data; /* of strings */
+	GList *ResourceOffering; /* of LassoNode */
+	GList *Credentials; /* of LassoNode */
 	GList *any;
 
 	gchar *serverMechanism;

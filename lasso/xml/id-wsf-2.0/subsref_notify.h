@@ -62,7 +62,7 @@ struct _LassoIdWsf2SubsRefNotify {
 
 	/*< public >*/
 	/* elements */
-	GList *Notification;
+	GList *Notification; /* of LassoNode */
 	/* attributes */
 	char *timeStamp;
 };

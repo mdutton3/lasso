@@ -63,9 +63,9 @@ struct _LassoIdWsf2IsInquiry {
 	/*< public >*/
 	/* elements */
 	/* XXX */ void *Help;
-	GList *Select;
-	GList *Confirm;
-	GList *Text;
+	GList *Select; /* of LassoNode */
+	GList *Confirm; /* of LassoNode */
+	GList *Text; /* of LassoNode */
 	/* attributes */
 	char *id;
 	char *title;

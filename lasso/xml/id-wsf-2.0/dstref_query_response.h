@@ -63,7 +63,7 @@ struct _LassoIdWsf2DstRefQueryResponse {
 
 	/*< public >*/
 	/* elements */
-	GList *TestResult;
+	GList *TestResult; /* of LassoNode */
 	GList *Data; /* of LassoIdWsf2DstRefData */
 
 	/*< private >*/

@@ -63,8 +63,8 @@ struct _LassoIdWsf2SubsRefQueryResponse {
 
 	/*< public >*/
 	/* elements */
-	GList *TestResult;
-	GList *Data;
+	GList *TestResult; /* of LassoNode */
+	GList *Data; /* of LassoNode */
 };
 
 

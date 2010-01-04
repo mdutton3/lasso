@@ -51,7 +51,7 @@ struct _LassoSaml2AttributeValue {
 	LassoNode parent;
 
 	/*< public >*/
-	GList *any;
+	GList *any; /* of LassoNode */
 	GHashTable *attributes;
 };
 

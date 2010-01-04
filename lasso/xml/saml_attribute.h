@@ -52,7 +52,7 @@ struct _LassoSamlAttribute {
 	/*< public >*/
 	gchar *attributeName;
 	gchar *attributeNameSpace;
-	GList *AttributeValue;
+	GList *AttributeValue; /* of LassoNode */
 };
 
 struct _LassoSamlAttributeClass {

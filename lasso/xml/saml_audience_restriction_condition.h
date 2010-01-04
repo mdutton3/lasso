@@ -56,7 +56,7 @@ struct _LassoSamlAudienceRestrictionCondition {
 
 	/*< public >*/
 	/* <element ref="saml:Audience" maxOccurs="unbounded"/> */
-	GList *Audience;
+	GList *Audience; /* of strings */
 };
 
 struct _LassoSamlAudienceRestrictionConditionClass {

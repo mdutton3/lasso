@@ -61,7 +61,7 @@ struct _LassoIdWsf2SubsSubscription {
 
 	/*< public >*/
 	/* elements */
-	GList *RefItem;
+	GList *RefItem; /* of LassoNode */
 	GList *Extension; /* of LassoIdWsf2Utilextension */
 	/* attributes */
 	char *subscriptionID;

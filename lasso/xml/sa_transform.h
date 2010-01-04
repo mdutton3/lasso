@@ -50,7 +50,7 @@ typedef struct _LassoSaTransformClass LassoSaTransformClass;
 struct _LassoSaTransform {
 	LassoNode parent;
 
-	GList *Parameter;
+	GList *Parameter; /* of LassoNode */
 
 	char *name;
 	char *id;

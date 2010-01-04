@@ -62,9 +62,9 @@ struct _LassoIdWsf2SubsRefCreate {
 
 	/*< public >*/
 	/* elements */
-	GList *Subscription;
-	GList *CreateItem;
-	GList *ResultQuery;
+	GList *Subscription; /* of LassoNode */
+	GList *CreateItem; /* of LassoNode */
+	GList *ResultQuery; /* of LassoNode */
 };
 
 

@@ -62,8 +62,8 @@ struct _LassoIdWsf2DiscoSecurityContext {
 
 	/*< public >*/
 	/* elements */
-	GList *SecurityMechID;
-	GList *Token;
+	GList *SecurityMechID; /* of strings */
+	GList *Token; /* of LassoNode */
 };
 
 

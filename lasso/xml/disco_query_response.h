@@ -53,7 +53,7 @@ struct _LassoDiscoQueryResponse {
 	LassoNode parent;
 
 	LassoUtilityStatus *Status;
-	GList *ResourceOffering;
+	GList *ResourceOffering; /* of LassoNode */
 	LassoDiscoCredentials *Credentials;
 
 	char *id;

@@ -59,8 +59,8 @@ struct _LassoDiscoDescription {
 	 *   client fails to gain access to the service because it picked the wrong security
 	 *   mechanism.
 	 */
-	GList *SecurityMechID;
-	GList *CredentialRef;
+	GList *SecurityMechID; /* of strings */
+	GList *CredentialRef; /* of strings */
 
 	/* WsdlRef group */
 	gchar *WsdlURI;
