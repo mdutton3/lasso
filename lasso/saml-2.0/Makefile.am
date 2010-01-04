@@ -24,7 +24,8 @@ liblassoinclude_HEADERS = \
 	assertion_query.h \
 	ecp.h \
 	profile.h \
-	name_id_management.h
+	name_id_management.h \
+	provider.h
 
 lasso_private_h_sources = \
 	federationprivate.h \

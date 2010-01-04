@@ -6017,4 +6017,5 @@ lasso_get_prefix_for_dst_service_href
 <FILE>saml2_utils</FILE>
 <TITLE>Utility functions for SAML 2.0</TITLE>
 lasso_profile_is_saml_query
+lasso_provider_saml2_node_encrypt
 </SECTION>

@@ -28,6 +28,7 @@
 #include "providerprivate.h"
 #include "../id-ff/providerprivate.h"
 #include "../utils.h"
+#include "./provider.h"
 
 const char *profile_names[] = {
 	"", /* No fedterm in SAML 2.0 */
@@ -423,4 +424,29 @@ lasso_saml20_provider_accept_http_method(LassoProvider *provider, const LassoPro
 	}
 	lasso_release_string(protocol_profile);
 	return rc;
+}
+
+/**
+ * lasso_provider_saml2_node_encrypt:
+ * @provider: a #LassoProvider object
+ * @lasso_node: a #LassoNode object
+ *
+ * Dump the node object to an XML fragment, then encrypt this fragment using encryption key of
+ * @provider, then encapsulate the resulting encrypted content into a #LassoSaml2EncryptedElement.
+ *
+ * Return value: a newly created #LassoSaml2EncryptedElement if successfull, NULL otherwise.
+ */
+LassoSaml2EncryptedElement*
+lasso_provider_saml2_node_encrypt(const LassoProvider *provider, LassoNode *lasso_node)
+{
+	LassoSaml2EncryptedElement *saml2_encrypted_element;
+
+	g_return_val_if_fail(LASSO_IS_PROVIDER (provider), NULL);
+	g_return_val_if_fail(LASSO_IS_NODE (lasso_node), NULL);
+
+	saml2_encrypted_element = lasso_node_encrypt(lasso_node,
+			lasso_provider_get_encryption_public_key(provider),
+			lasso_provider_get_encryption_sym_key_type(provider));
+
+	return saml2_encrypted_element;
 }
