@@ -88,9 +88,9 @@ struct _LassoLogin {
 	/*< public >*/
 	LassoLoginProtocolProfile protocolProfile;
 	gchar *assertionArtifact;
+	/*< private >*/
 	LassoSamlAssertion *assertion;
 
-	/*< private >*/
 	gchar *nameIDPolicy;
 	LassoHttpMethod http_method;
 
@@ -146,6 +146,8 @@ LASSO_EXPORT int lasso_login_validate_request_msg(LassoLogin *login,
 		gboolean authentication_result, gboolean is_consent_obtained);
 
 LASSO_EXPORT int lasso_login_process_paos_response_msg(LassoLogin *login, gchar *msg);
+
+LASSO_EXPORT LassoNode *lasso_login_get_assertion(LassoLogin *login);
 
 #ifdef __cplusplus
 }

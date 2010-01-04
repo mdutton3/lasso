@@ -2266,3 +2266,23 @@ lasso_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 
 	return 0;
 }
+
+/**
+ * lasso_login_get_assertion:
+ * @login: a #LassoLogin object
+ *
+ * Return the last build assertion.
+ *
+ * Return value: a #LassoNode representing the build assertion (generally a #LassoSamlAssertion when
+ * using ID-FF 1.2 or a #LassoSaml2Assertion when using SAML 2.0)
+ */
+LassoNode*
+lasso_login_get_assertion(LassoLogin *login)
+{
+	g_return_val_if_fail (LASSO_IS_LOGIN (login), NULL);
+
+	if (login->private_data && login->private_data->saml2_assertion)
+		return (LassoNode*)g_object_ref(login->private_data->saml2_assertion);
+
+	return (LassoNode*)g_object_ref(login->assertion);
+}

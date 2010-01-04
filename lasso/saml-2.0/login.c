@@ -1194,6 +1194,8 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		LassoSaml2Assertion *assertion = samlp2_response->Assertion->data;
 		int rc2 = 0;
 
+		lasso_assign_gobject (profile->private_data->saml2_assertion, assertion);
+
 		/* If no signature was validated on the response, check the signature at the
 		 * assertion level */
 		if (profile->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
