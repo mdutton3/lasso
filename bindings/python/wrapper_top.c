@@ -378,10 +378,28 @@ failure:
 	return noneRef();
 }
 
+/**
+ * get_time_t:
+ * @time: a #PyInt
+ *
+ * Convert a python integer object to a time_t value, considering it is a unsigned 32 bit integer
+ * value.
+ *
+ * Return: a time_t* value if time is a python integer, NULL otherwise.
+ */
+static time_t*
+get_time_t(PyObject *time)
+{
+	if (time != Py_None && PyInt_Check(time)) {
+		time_t *val = malloc(sizeof(time_t));
+
+		*val = (time_t)PyInt_AS_LONG(time);
+		return val;
+	}
+	return NULL;
+}
+
 /* wrapper around GObject */
-
-
-
 static void
 PyGObjectPtr_dealloc(PyGObjectPtr *self)
 {
