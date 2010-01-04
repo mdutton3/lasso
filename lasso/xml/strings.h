@@ -1258,6 +1258,7 @@
 /* Confirmation methods */
 
 #define LASSO_SAML2_CONFIRMATION_METHOD_BEARER "urn:oasis:names:tc:SAML:2.0:cm:bearer"
+#define LASSO_SAML2_CONFIRMATION_METHOD_HOLDER_OF_KEY "urn:oasis:names:tc:SAML:2.0:cm:holder-of-key"
 
 /*****************************************************************************/
 /* ID-WSF 2.0                                                                */
