@@ -6035,3 +6035,11 @@ lasso_get_prefix_for_dst_service_href
 lasso_profile_is_saml_query
 lasso_provider_saml2_node_encrypt
 </SECTION>
+
+<SECTION>
+<FILE>soap_binding2</FILE>
+<TITLE>SOAP Binding utility function for ID-WSF 2.0</TITLE>
+lasso_soap_envelope_sb2_get_provider_id
+lasso_soap_envelope_sb2_get_redirect_request_url
+lasso_soap_envelope_sb2_get_target_identity_header
+</SECTION>

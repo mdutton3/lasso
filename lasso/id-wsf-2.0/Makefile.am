@@ -22,7 +22,8 @@ liblasso_id_wsf2_la_SOURCES = \
 	discovery.c \
 	data_service.c \
 	profile.c \
-	saml2_login.c
+	saml2_login.c \
+	soap_binding.c
 
 liblassoinclude_HEADERS = \
 	id_wsf_2.h \
@@ -31,6 +32,7 @@ liblassoinclude_HEADERS = \
 	profile.h \
 	identity.h \
 	server.h \
-	session.h
+	session.h \
+	soap_binding.h
 
 EXTRA_DIST = $(lasso_private_h_sources)

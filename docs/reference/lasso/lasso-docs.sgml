@@ -351,6 +351,7 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
   </chapter>
   <chapter id="idwsf2">
     <title>ID-WSF 2.0</title>
+    <xi:include href="xml/soap_binding2.xml"/>
     <xi:include href="xml/id_wsf_2_0_discovery.xml"/>
     <xi:include href="xml/id_wsf_2_0_data_service.xml"/>
     <xi:include href="xml/id_wsf_2_0_profile.xml"/>
