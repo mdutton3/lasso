@@ -71,7 +71,9 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format);
 gboolean lasso_provider_load_public_key(LassoProvider *provider,
 		LassoPublicKeyType public_key_type);
-xmlSecKey* lasso_provider_get_public_key(LassoProvider *provider);
+xmlSecKey* lasso_provider_get_public_key(const LassoProvider *provider);
+xmlSecKey* lasso_provider_get_encryption_public_key(const LassoProvider *provider);
+LassoEncryptionSymKeyType lasso_provider_get_encryption_sym_key_type(const LassoProvider* provider);
 int lasso_provider_verify_saml_signature(LassoProvider *provider, xmlNode *signed_node, xmlDoc *doc);
 int lasso_provider_verify_query_signature(LassoProvider *provider, const char *message);
 

@@ -372,10 +372,30 @@ static struct XmlSnippet schema_snippets[] = {
 static LassoNodeClass *parent_class = NULL;
 
 xmlSecKey*
-lasso_provider_get_public_key(LassoProvider *provider)
+lasso_provider_get_public_key(const LassoProvider *provider)
 {
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	return provider->private_data->public_key;
+}
+
+/**
+ * lasso_provider_get_encryption_public_key:
+ * @provider: a #LassoProvider object.
+ *
+ * Return the #xmlSecKey public key to use for encrypting content target at @provider.
+ *
+ * Return value: an #xmlSecKey object, or NULL if no key is known or @provider is not a
+ * #LassoProvider.
+ */
+xmlSecKey*
+lasso_provider_get_encryption_public_key(const LassoProvider *provider)
+{
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+
+	if (provider->private_data->encryption_public_key) {
+		return provider->private_data->encryption_public_key;
+	}
+	return lasso_provider_get_public_key(provider);
 }
 
 static void
@@ -1263,6 +1283,23 @@ lasso_provider_set_encryption_sym_key_type(LassoProvider *provider,
 {
 	g_return_if_fail(LASSO_IS_PROVIDER(provider));
 	provider->private_data->encryption_sym_key_type = encryption_sym_key_type;
+}
+
+/**
+ * lasso_provider_get_encryption_sym_key_type:
+ * @provider: a #LassoProvider object
+ *
+ * Return the encryption sym key type for this provider.
+ *
+ * Return value: a #LassoEncryptionSymKeyType value.
+ */
+LassoEncryptionSymKeyType
+lasso_provider_get_encryption_sym_key_type(const LassoProvider *provider)
+{
+	if (LASSO_IS_PROVIDER(provider) && provider->private_data)
+		return provider->private_data->encryption_sym_key_type;
+
+	return LASSO_ENCRYPTION_SYM_KEY_TYPE_DEFAULT;
 }
 
 /**
