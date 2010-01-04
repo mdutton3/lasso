@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "lib_assertion.h"
+#include "../registry.h"
 
 /**
  * SECTION:lib_assertion
@@ -81,6 +82,8 @@ class_init(LassoLibAssertionClass *klass)
 	lasso_node_class_set_nodename(nclass, "Assertion");
 	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	lasso_registry_default_add_direct_mapping(LASSO_LIB_HREF, "AssertionType",
+			LASSO_LASSO_HREF, "LassoLibAssertion");
 }
 
 GType
