@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "wsa_endpoint_reference.h"
+#include "../../registry.h"
 
 /*
  * Schema fragment (ws-addr.xsd):
