@@ -31,6 +31,7 @@ extern "C" {
 
 #include "../xml/ws/wsa_endpoint_reference.h"
 #include "../xml/id-wsf-2.0/disco_security_context.h"
+#include "./profile.h"
 
 
 const char* lasso_wsa_endpoint_reference_get_idwsf2_service_type(
@@ -59,6 +60,12 @@ LASSO_EXPORT LassoWsAddrEndpointReference* lasso_wsa_endpoint_reference_new_for_
 
 LASSO_EXPORT int lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *epr,
 		LassoNode *security_token, const char **security_mechanisms);
+
+LASSO_EXPORT LassoIdWsf2Profile *lasso_wsa_endpoint_reference_get_service(
+		LassoWsAddrEndpointReference *epr);
+
+LASSO_EXPORT int lasso_wsa_endpoint_reference_associate_service_to_type(
+		const char *service_type_uri, GType g_type);
 
 #ifdef __cplusplus
 }

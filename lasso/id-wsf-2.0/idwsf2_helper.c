@@ -42,23 +42,21 @@
  *
  * Return the disco:ServiceType metadata element content
  *
- * Return value: (transfer-none): the content of the first disco:ServiceType metadata, or NULL if none is found.
+ * Return value: (transfer none): the content of the first disco:ServiceType metadata, or NULL if
+ * none is found.
  */
 const char*
 lasso_wsa_endpoint_reference_get_idwsf2_service_type(const LassoWsAddrEndpointReference *epr)
 {
 	LassoIdWsf2DiscoServiceType *disco2_service_type;
 
-	g_return_val_if_fail(LASSO_IS_WSA_ENDPOINT_REFERENCE (epr) && epr->Metadata != NULL, NULL);
-
-	/* Get the service type from the EPR */
+	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE (epr) || epr->Metadata == NULL)
+		return NULL;
 	disco2_service_type = lasso_extract_gobject_from_list (LassoIdWsf2DiscoServiceType,
 			LASSO_TYPE_IDWSF2_DISCO_SERVICE_TYPE, epr->Metadata->any);
-
 	if (disco2_service_type) {
 		return disco2_service_type->content;
 	}
-
 	return NULL;
 }
 
@@ -75,7 +73,8 @@ lasso_wsa_endpoint_reference_get_idwsf2_provider_id(const LassoWsAddrEndpointRef
 {
 	LassoIdWsf2DiscoProviderID *disco2_provider_id;
 
-	g_return_val_if_fail(LASSO_IS_WSA_ENDPOINT_REFERENCE (epr) && epr->Metadata != NULL, NULL);
+	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE (epr) || epr->Metadata == NULL)
+		return NULL;
 
 	/* Get the service type from the EPR */
 	disco2_provider_id = lasso_extract_gobject_from_list (LassoIdWsf2DiscoProviderID,
@@ -96,7 +95,7 @@ lasso_wsa_endpoint_reference_get_idwsf2_provider_id(const LassoWsAddrEndpointRef
  * @create: allow to create the element if none if found, @security_mech_id is mandatory when create
  * is TRUE.
  *
- * Return value: (transfer-none): a #LassoIdWsf2DiscoSecurityContext, or NULL if none was found and
+ * Return value: (transfer none): a #LassoIdWsf2DiscoSecurityContext, or NULL if none was found and
  * created is FALSE.
  */
 LassoIdWsf2DiscoSecurityContext*
@@ -109,7 +108,8 @@ lasso_wsa_endpoint_reference_get_idwsf2_security_context_for_security_mechanism(
 	LassoIdWsf2DiscoSecurityContext *created = NULL;
 	LassoMiscTextNode *new_security_mech_id_declaration;
 
-	g_return_val_if_fail(LASSO_IS_WSA_ENDPOINT_REFERENCE (epr) && epr->Metadata != NULL, NULL);
+	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE (epr) || epr->Metadata == NULL)
+		return NULL;
 
 	lasso_foreach_full_begin(LassoIdWsf2DiscoSecurityContext*, context, it1, epr->Metadata->any);
 	if (LASSO_IS_IDWSF2_DISCO_SECURITY_CONTEXT (context)) {
@@ -161,7 +161,9 @@ lasso_wsa_endpoint_reference_get_token_by_usage(
 {
 	LassoIdWsf2DiscoSecurityContext *security_context;
 
-	security_context = lasso_wsa_endpoint_reference_get_idwsf2_security_context_for_security_mechanism (epr, sec_mech_predicate, security_mech_id, TRUE);
+	security_context =
+		lasso_wsa_endpoint_reference_get_idwsf2_security_context_for_security_mechanism(
+			epr, sec_mech_predicate, security_mech_id, TRUE);
 	lasso_foreach_full_begin (LassoIdWsf2SecToken*, token, iter, security_context->Token);
 	if (LASSO_IS_IDWSF2_SEC_TOKEN (token)) {
 		if (usage && g_strcmp0(token->usage, usage) == 0) {
@@ -182,15 +184,15 @@ lasso_wsa_endpoint_reference_get_token_by_usage(
 /**
  * lasso_wsa_endpoint_reference_get_security_token:
  * @epr: a #LassoWsAddrEndpointReference object
- * @sech_mech_predicate:(allow-none): a boolean function to select the security mechanism for which we want the
- * security token
+ * @sech_mech_predicate:(allow-none): a boolean function to select the security mechanism for which
+ * we want the security token
  * @security_mech_id:(allow-none): an optional specific security mechanism identifier to select the
  * security token.
  *
  * Return the first security token found in the metadata of the @epr object which qualify with
  * respect to the predicate or the given security mechanism identifier. It is an error to pass both
  * of @sech_mech_predicate and @security_mech_id as NULL.
- * 
+ *
  * Return value:(transfer none): a #LassoNode object or NULL if the query cannot be satisfied.
  */
 LassoNode*
@@ -204,15 +206,15 @@ lasso_wsa_endpoint_reference_get_security_token (const LassoWsAddrEndpointRefere
 /**
  * lasso_wsa_endpoint_reference_get_target_identity_token:
  * @epr: a #LassoWsAddrEndpointReference object
- * @sech_mech_predicate:(allow-none): a boolean function to select the security mechanism for which we want the
- * security token
+ * @sech_mech_predicate:(allow-none): a boolean function to select the security mechanism for which
+ * we want the security token
  * @security_mech_id:(allow-none): an optional specific security mechanism identifier to select the
  * security token.
  *
- * Return the first target identity token found in the metadata of the @epr object which qualify with
- * respect to the predicate or the given security mechanism identifier. It is an error to pass both
- * of @sech_mech_predicate and @security_mech_id as NULL.
- * 
+ * Return the first target identity token found in the metadata of the @epr object which qualify
+ * with respect to the predicate or the given security mechanism identifier. It is an error to pass
+ * both of @sech_mech_predicate and @security_mech_id as NULL.
+ *
  * Return value:(transfer none): a #LassoNode object or NULL if the query cannot be satisfied.
  */
 LassoNode*
@@ -278,7 +280,8 @@ lasso_wsa_endpoint_reference_new_for_idwsf2_service(const char *address,
  * lasso_wsa_endpoint_reference_add_security_token:
  * @epr: a #LassoWsAddrEndpointReference object
  * @security_token: a security token as a #LassoNode object
- * @security_mechanisms:(in): a list of security mechanism for whom the token is made
+ * @security_mechanisms:(in)(transfer none)(array zero-terminated=1): a list of security mechanism
+ * for whom the token is made
  *
  * Add a new security context declaration for the given security mechanisms identifiers and populate
  * it with a security token.
@@ -286,7 +289,8 @@ lasso_wsa_endpoint_reference_new_for_idwsf2_service(const char *address,
  * Return value: 0 if successfull, an error code otherwise.
  */
 int
-lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *epr, LassoNode *security_token, const char **security_mechanisms)
+lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *epr,
+		LassoNode *security_token, const char **security_mechanisms)
 {
 	LassoIdWsf2SecToken *sec_token = NULL;
 	LassoWsAddrMetadata *metadata = NULL;
@@ -314,4 +318,70 @@ lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *ep
 	lasso_list_add_new_gobject(metadata->any, security_context);
 cleanup:
 	return rc;
+}
+
+static GHashTable *_mapping = NULL;
+
+static GHashTable *_get_mapping() {
+	if (_mapping == NULL) {
+		_mapping = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
+	}
+	return _mapping;
+}
+
+
+/**
+ * lasso_wsa_endpoint_reference_associate_service_to_type:
+ * @service_type_uri: a service type to associate
+ * @g_type: the type of the profile object handling this service type
+ *
+ * Associate a profile type to a service type.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+int
+lasso_wsa_endpoint_reference_associate_service_to_type(
+		const char *service_type_uri, GType g_type)
+{
+	int rc = 0;
+
+	lasso_check_non_empty_string(service_type_uri);
+	if (! g_type_is_a(g_type, LASSO_TYPE_IDWSF2_PROFILE)) {
+		return LASSO_PARAM_ERROR_INVALID_VALUE;
+	}
+	g_hash_table_insert(_get_mapping(),
+			g_strdup(service_type_uri), (gpointer)g_type);
+cleanup:
+	return rc;
+}
+
+/**
+ * lasso_wsa_endpoint_reference_get_service:
+ * @epr: a #LassoWsAddrEndpointReference object
+ *
+ * Get a profile object able to communicate with the service represented by this EPR.
+ *
+ * Return object: a newly created #LassoIdWsf2Profile instance.
+ */
+LassoIdWsf2Profile *
+lasso_wsa_endpoint_reference_get_service(
+		LassoWsAddrEndpointReference *epr)
+{
+	GType type;
+	const char *service_type_uri;
+
+	if (! LASSO_IS_WSA_ENDPOINT_REFERENCE(epr))
+		return NULL;
+
+	service_type_uri = lasso_wsa_endpoint_reference_get_idwsf2_service_type(epr);
+	type = (GType)g_hash_table_lookup(_get_mapping(), service_type_uri);
+	if (type) {
+		LassoIdWsf2Profile *profile;
+
+		profile = (LassoIdWsf2Profile*)g_object_new(type, NULL);
+		lasso_idwsf2_profile_set_epr(profile, epr);
+
+		return profile;
+	}
+	return NULL;
 }
