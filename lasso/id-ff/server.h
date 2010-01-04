@@ -90,7 +90,7 @@ LASSO_EXPORT void lasso_server_destroy(LassoServer *server);
 
 LASSO_EXPORT gchar* lasso_server_dump(LassoServer *server);
 
-LASSO_EXPORT LassoProvider* lasso_server_get_provider(LassoServer *server,
+LASSO_EXPORT LassoProvider* lasso_server_get_provider(const LassoServer *server,
 		const gchar *providerID);
 
 LASSO_EXPORT int lasso_server_set_encryption_private_key(LassoServer *server,

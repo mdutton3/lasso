@@ -348,11 +348,11 @@ lasso_server_get_first_providerID(LassoServer *server)
  *
  * Looks up for a #LassoProvider whose ID is @providerID and returns it.
  *
- * Return value: the #LassoProvider, NULL if it was not found.  The
+ * Return value: (transfer-none): the #LassoProvider, NULL if it was not found.  The
  *     #LassoProvider is owned by Lasso and should not be freed.
  **/
 LassoProvider*
-lasso_server_get_provider(LassoServer *server, const gchar *providerID)
+lasso_server_get_provider(const LassoServer *server, const gchar *providerID)
 {
 	if (! LASSO_IS_SERVER(server) || providerID == NULL || strlen(providerID) == 0) {
 		return NULL;
