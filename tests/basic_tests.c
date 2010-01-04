@@ -104,7 +104,7 @@ END_TEST
 
 const char *trad(const char *from_namespace, const char *from_name, const char* to_namespace)
 {
-	if (strcmp(from_namespace, LASSO_LIB_HREF) == 0 &&
+	if (strcmp(from_namespace, "coin") == 0 &&
 			strcmp(to_namespace, LASSO_LASSO_HREF) == 0)
 	{
 		char *temp = g_strconcat("Lasso", from_name, NULL);
@@ -121,12 +121,12 @@ START_TEST(test07_registry_functional_mapping)
 	const char *name;
 	gint r;
 
-	r = lasso_registry_default_add_functional_mapping(LASSO_LIB_HREF, LASSO_LASSO_HREF, trad);
+	r = lasso_registry_default_add_functional_mapping("coin", LASSO_LASSO_HREF, trad);
 	fail_unless(r == 0, "lasso_registry_default_add_functional mapping should return 0 for new mapping");
-	name = lasso_registry_default_get_mapping(LASSO_LIB_HREF, "Assertion", LASSO_LASSO_HREF);
+	name = lasso_registry_default_get_mapping("coin", "Assertion", LASSO_LASSO_HREF);
 	fail_unless(name != NULL, "lasso_registry_default_get_mapping should return the recent mapping");
 	fail_unless(strcmp(name, "LassoAssertion") == 0, "lasso_registry_default_get_mapping should return LassoAssertion");
-	r = lasso_registry_default_add_functional_mapping(LASSO_LIB_HREF, LASSO_LASSO_HREF, trad);
+	r = lasso_registry_default_add_functional_mapping("coin", LASSO_LASSO_HREF, trad);
 	fail_unless(r == LASSO_REGISTRY_ERROR_KEY_EXISTS, "lasso_registry_default_add_functional_mapping should return LASSO_REGISTRY_KEY_EXISTS when done two times");
 }
 END_TEST
@@ -1871,6 +1871,7 @@ START_TEST(test10_test_alldumps)
 		fail_unless(xmlDocGetRootElement (xmldoc) != NULL, "Failed to parse %s: no root node element", *iter);
 		node = lasso_node_new_from_xmlNode(xmlDocGetRootElement(xmldoc));
 		fail_unless (LASSO_IS_SAML2_ENCRYPTED_ELEMENT (node), "Parsing of %s did not return a saml2:EncryptedElement, %s", *iter);
+		g_object_unref(node);
 		++iter;
 	}
 }
