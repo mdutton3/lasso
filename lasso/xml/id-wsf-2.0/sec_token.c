@@ -51,7 +51,7 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_NODE | SNIPPET_ANY | SNIPPET_ANY,
+	{ "", SNIPPET_NODE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoIdWsf2SecToken, any), NULL, NULL, NULL},
 	{ "id", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2SecToken, id), NULL, NULL, NULL},
