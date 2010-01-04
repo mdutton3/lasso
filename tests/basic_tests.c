@@ -34,6 +34,8 @@
 #include "../lasso/xml/id-wsf-2.0/xml_idwsf2.h"
 #include "../lasso/xml/ws/xml_ws.h"
 #include "../lasso/utils.h"
+#include "../lasso/xml/private.h"
+#include <libxml/tree.h>
 
 START_TEST(test01_server_load_dump_empty_string)
 {
@@ -1841,6 +1843,36 @@ START_TEST(test10_test_alldumps)
 	lasso_release_gobject(node);
 #endif
 #endif
+	/* test deserialization of saml2:EncryptedAssertion" */
+	const char *encrypted_element_xml[] = {
+	"<EncryptedAssertion xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n\
+		<EncryptedData/>\
+		<EncryptedKey/>\
+	</EncryptedAssertion>",
+	"<EncryptedID xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n\
+		<EncryptedData/>\
+		<EncryptedKey/>\
+	</EncryptedID>",
+	"<EncryptedAttribute xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n\
+		<EncryptedData/>\
+		<EncryptedKey/>\
+	</EncryptedAttribute>",
+	"<NewEncryptedID xmlns=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n\
+		<EncryptedData/>\
+		<EncryptedKey/>\
+	</NewEncryptedID>", NULL };
+	const char **iter = encrypted_element_xml;
+	while (*iter) {
+		xmlDoc *xmldoc;
+		LassoNode *node;
+
+		xmldoc = xmlParseDoc (BAD_CAST (*iter));
+		fail_unless(xmldoc != NULL, "Failed to parse %s: no xmldoc", *iter);
+		fail_unless(xmlDocGetRootElement (xmldoc) != NULL, "Failed to parse %s: no root node element", *iter);
+		node = lasso_node_new_from_xmlNode(xmlDocGetRootElement(xmldoc));
+		fail_unless (LASSO_IS_SAML2_ENCRYPTED_ELEMENT (node), "Parsing of %s did not return a saml2:EncryptedElement, %s", *iter);
+		++iter;
+	}
 }
 END_TEST
 
