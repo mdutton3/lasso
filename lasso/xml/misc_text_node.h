@@ -77,7 +77,7 @@ LASSO_EXPORT GType lasso_misc_text_node_get_type(void);
 
 LASSO_EXPORT LassoNode* lasso_misc_text_node_new(void);
 
-LASSO_EXPORT LassoMiscTextNode* lasso_misc_text_node_new_with_string(char *content);
+LASSO_EXPORT LassoMiscTextNode* lasso_misc_text_node_new_with_string(const char *content);
 
 LASSO_EXPORT LassoMiscTextNode* lasso_misc_text_node_new_with_xml_node(xmlNode *xml_node);
 

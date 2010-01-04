@@ -226,7 +226,7 @@ lasso_misc_text_node_new()
  * Return value: a newly created #LassoMiscTextNode object
  **/
 LassoMiscTextNode*
-lasso_misc_text_node_new_with_string(char *content)
+lasso_misc_text_node_new_with_string(const char *content)
 {
 	LassoMiscTextNode *object;
 	object = g_object_new(LASSO_TYPE_MISC_TEXT_NODE, NULL);
