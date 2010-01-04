@@ -18,7 +18,8 @@ liblasso_saml_20_la_SOURCES = \
 	login.c \
 	logout.c \
 	name_id_management.c \
-	server.c
+	server.c \
+	saml2_helper.c
 
 liblassoinclude_HEADERS = \
 	assertion_query.h \
