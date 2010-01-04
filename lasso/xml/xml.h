@@ -158,6 +158,8 @@ LASSO_EXPORT void lasso_node_set_custom_namespace(LassoNode *node, char *prefix,
 
 LASSO_EXPORT void lasso_node_set_custom_nodename(LassoNode *node, char *nodename);
 
+LASSO_EXPORT const char* lasso_node_get_name(LassoNode *node);
+
 LASSO_EXPORT LassoMessageFormat lasso_node_init_from_message(LassoNode *node, const char *message);
 
 LASSO_EXPORT gboolean lasso_node_init_from_query(LassoNode *node, const char *query);
@@ -170,6 +172,7 @@ LASSO_EXPORT char* lasso_get_prefix_for_dst_service_href(const char *href);
 
 LASSO_EXPORT void lasso_register_idwsf2_dst_service(const gchar *prefix, const gchar *href);
 LASSO_EXPORT gchar* lasso_get_prefix_for_idwsf2_dst_service_href(const gchar *href);
+
 
 #ifdef __cplusplus
 }
