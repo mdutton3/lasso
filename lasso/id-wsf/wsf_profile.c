@@ -186,7 +186,7 @@ lasso_wsf_profile_build_soap_fault_response_msg(LassoWsfProfile *profile, gint r
 gint
 lasso_wsf_profile_set_msg_url_from_description(LassoWsfProfile *wsf_profile)
 {
-	const LassoDiscoDescription *description = NULL;
+	LassoDiscoDescription *description = NULL;
 	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(wsf_profile),
@@ -198,6 +198,7 @@ lasso_wsf_profile_set_msg_url_from_description(LassoWsfProfile *wsf_profile)
 	} else {
 		rc = LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT;
 	}
+	lasso_release_gobject(description);
 	return rc;
 }
 
@@ -229,7 +230,7 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 	LassoSoapHeader *header = NULL;
 	LassoWsSec1SecurityHeader *wsse_security = NULL;
 	LassoSession *session = NULL;
-	const LassoDiscoDescription *description = NULL;
+	LassoDiscoDescription *description = NULL;
 	GList *credentialRefs = NULL;
 	gint rc = 0;
 	GList *needle = NULL;
@@ -271,6 +272,7 @@ lasso_wsf_profile_comply_with_saml_authentication(LassoWsfProfile *profile)
 	}
 cleanup:
 	lasso_release_gobject(wsse_security);
+	lasso_release_gobject(description);
 	return rc;
 }
 
@@ -536,7 +538,7 @@ lasso_wsf_profile_set_description(LassoWsfProfile *profile, LassoDiscoDescriptio
 LassoDiscoDescription *
 lasso_wsf_profile_get_description(const LassoWsfProfile *profile)
 {
-	return profile->private_data->description;
+	return lasso_ref(profile->private_data->description);
 }
 
 /**
@@ -551,7 +553,7 @@ lasso_wsf_profile_get_description(const LassoWsfProfile *profile)
 LassoDiscoResourceOffering *
 lasso_wsf_profile_get_resource_offering(LassoWsfProfile *profile)
 {
-	return profile->private_data->offering;
+	return lasso_ref(profile->private_data->offering);
 }
 
 /**
@@ -895,8 +897,8 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	}
 	goto_cleanup_if_fail_with_rc(envelope != NULL, LASSO_SOAP_ERROR_MISSING_ENVELOPE);
 	goto_cleanup_if_fail_with_rc(envelope->Body != NULL, LASSO_SOAP_ERROR_MISSING_BODY);
-	if (envelope->Body->any) {
-		profile->request = LASSO_NODE(envelope->Body->any->data);
+	if (envelope->Body->any && LASSO_IS_NODE(envelope->Body->any->data)) {
+		lasso_assign_gobject(profile->request, LASSO_NODE(envelope->Body->any->data));
 	} else {
 		profile->request = NULL;
 		rc = LASSO_PROFILE_ERROR_MISSING_REQUEST;
@@ -913,6 +915,7 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	goto_cleanup_if_fail_with_rc (correlation != NULL && correlation->messageID != NULL,
 		LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION);
 	messageId = correlation->messageID;
+
 	/* Comply with security mechanism */
 	if (lasso_security_mech_id_is_null_authentication(security_mech_id) == FALSE) {
 		goto_cleanup_if_fail_with_rc(FALSE, LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM);
