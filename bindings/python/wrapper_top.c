@@ -15,19 +15,20 @@ typedef int Py_ssize_t;
 GQuark lasso_wrapper_key;
 
 PyMODINIT_FUNC init_lasso(void);
-static PyObject* get_pystring_from_xml_node(xmlNode *xmlnode);
-static xmlNode*  get_xml_node_from_pystring(PyObject *string);
-static PyObject* get_dict_from_hashtable_of_objects(GHashTable *value);
-static PyObject* PyGObjectPtr_New(GObject *obj);
-static void set_hashtable_of_pygobject(GHashTable *a_hash, PyObject *dict);
-static void set_list_of_strings(GList **a_list, PyObject *seq);
-static void set_list_of_xml_nodes(GList **a_list, PyObject *seq);
-static void set_list_of_pygobject(GList **a_list, PyObject *seq);
-static PyObject *get_list_of_strings(const GList *a_list);
-static PyObject *get_list_of_xml_nodes(const GList *a_list);
-static PyObject *get_list_of_pygobject(const GList *a_list);
-static gboolean valid_seq(PyObject *seq);
-static void free_list(GList **a_list, GFunc free_help);
+G_GNUC_UNUSED static PyObject* get_pystring_from_xml_node(xmlNode *xmlnode);
+G_GNUC_UNUSED static xmlNode*  get_xml_node_from_pystring(PyObject *string);
+G_GNUC_UNUSED static PyObject* get_dict_from_hashtable_of_objects(GHashTable *value);
+G_GNUC_UNUSED static PyObject* PyGObjectPtr_New(GObject *obj);
+G_GNUC_UNUSED static void set_hashtable_of_pygobject(GHashTable *a_hash, PyObject *dict);
+G_GNUC_UNUSED static void set_list_of_strings(GList **a_list, PyObject *seq);
+G_GNUC_UNUSED static void set_list_of_xml_nodes(GList **a_list, PyObject *seq);
+G_GNUC_UNUSED static void set_list_of_pygobject(GList **a_list, PyObject *seq);
+G_GNUC_UNUSED static PyObject *get_list_of_strings(const GList *a_list);
+G_GNUC_UNUSED static PyObject *get_list_of_xml_nodes(const GList *a_list);
+G_GNUC_UNUSED static PyObject *get_list_of_pygobject(const GList *a_list);
+G_GNUC_UNUSED static gboolean valid_seq(PyObject *seq);
+G_GNUC_UNUSED static void free_list(GList **a_list, GFunc free_help);
+G_GNUC_UNUSED static time_t* get_time_t(PyObject *time);
 
 typedef struct {
 	PyObject_HEAD
