@@ -152,9 +152,6 @@
     <param name="service_type"/>
     <param name="option" optional="true"/>
   </func>
-  <func name="lasso_discovery_init_query">
-    <param name="security_mech_id" optional="true"/>
-  </func>
   <func name="lasso_discovery_process_modify_msg">
     <param name="message"/>
     <param name="security_mech_id" optional="true"/>
@@ -167,22 +164,6 @@
     <param name="service_type" optional="true"/>
   </func>
   <func name="lasso_discovery_get_description_auto" return_owner="false"/>
-  <!-- LassoDataService -->
-  <func name="lasso_data_service_init_query">
-    <param name="select" optional="true"/>
-    <param name="item_id" optional="true"/>
-    <param name="security_mech_id" optional="true"/>
-  </func>
-  <func name="lasso_data_service_process_query_msg">
-    <param name="message"/>
-    <param name="security_mech_id" optional="true"/>
-  </func>
-  <func name="lasso_data_service_process_modify_msg">
-    <param name="soap_msg"/>
-    <param name="security_mech_id" optional="true"/>
-  </func>
-  <func name="lasso_data_service_add_query_item" return_owner="false"/>
-
   <func name="lasso_server_get_service" skip="unless-id-wsf" />
   <func name="lasso_login_set_encryptedResourceId" skip="unless-id-wsf"/>
   <func name="lasso_node_new_from_dump" skip="java"/>
@@ -209,34 +190,6 @@
   <func name="lasso_authentication_init_request" skip="true"/>
   <func name="lasso_wsa_endpoint_reference_get_target_identity_token" skip="true"/>
   <func name="lasso_wsa_endpoint_reference_get_security_token" skip="true"/>
-  <!-- LassoIdWsf2Discovery -->
-  <func name="lasso_idwsf2_discovery_metadata_register_self">>
-    <param name="service_type"/>
-    <param name="abstract"/>
-    <param name="soap_endpoint"/>
-    <param name="svcMDID" optional="true"/>
-  </func>
-  <func name="lasso_idwsf2_discovery_init_query">
-    <param name="security_mech_id" optional="true"/>
-  </func>
-  <func name="lasso_idwsf2_discovery_get_service">
-    <param name="service_type" optional="true"/>
-  </func>
-  <!-- LassoIdWsf2DataService -->
-  <func name="lasso_idwsf2_data_service_get_attribute_nodes" return_type_qualifier="xmlNode*"/>
-  <func name="lasso_idwsf2_data_service_get_attribute_node">
-    <param name="item_id" optional="true"/>
-  </func>
-  <func name="lasso_idwsf2_data_service_get_attribute_strings" return_type_qualifier="char*"/>
-  <func name="lasso_idwsf2_data_service_get_attribute_string">
-    <param name="item_id" optional="true"/>
-  </func>
-  <func name="lasso_idwsf2_data_service_add_modify_item">
-    <param name="item_xpath"/>
-    <param name="item_id"/>
-    <param name="new_data"/>
-    <param name="overrideAllowed" optional="true" default="b:False"/>
-  </func>
   <!-- Exceptions -->
   <exception>
     <category name="Profile"/>
