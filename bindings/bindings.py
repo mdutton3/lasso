@@ -470,12 +470,13 @@ def parse_header(header_file):
                             if arg == 'void' or arg == '':
                                 continue
                             m = re.match(r'(.*(?:\s|\*))(\w+)', arg)
-                            type, name = m.groups()
-                            type = clean_type(type)
                             if m:
+                                type, name = m.groups()
+                                type = clean_type(type)
                                 f.args.append(list((type, name, {})))
                             else:
                                 print >>sys.stderr, 'failed to process:', arg, 'in line:', line
+                                f.skip = True
                         f.apply_overrides()
                         if not f.skip:
                             binding.functions.append(f)
