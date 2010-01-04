@@ -51,10 +51,6 @@
 #include "../xml/saml-2.0/saml2_attribute_value.h"
 #include "../xml/saml-2.0/saml2_name_id.h"
 
-#ifdef LASSO_WSF_ENABLED
-#include "../id-wsf-2.0/saml2_login_private.h"
-#endif
-
 #include "../utils.h"
 
 static int lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obtained);
@@ -775,10 +771,6 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 			provider->private_data->encryption_sym_key_type;
 	}
 
-#ifdef LASSO_WSF_ENABLED
-	lasso_saml20_login_assertion_add_discovery(login, assertion);
-#endif
-
 	/* store assertion in session object */
 	if (profile->session == NULL) {
 		profile->session = lasso_session_new();
@@ -1288,10 +1280,6 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 		/* add federation in identity */
 		lasso_identity_add_federation(LASSO_PROFILE(login)->identity, federation);
 	}
-
-#ifdef LASSO_WSF_ENABLED
-	lasso_saml20_login_copy_assertion_epr(login);
-#endif
 
 	return 0;
 }
