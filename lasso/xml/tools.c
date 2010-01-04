@@ -1100,14 +1100,22 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 /**
  * lasso_verify_signature:
  * @signed_node: an #xmlNode containing an enveloped xmlDSig signature
+ * @doc: (allow-none): the eventual #xmlDoc from which the node is extracted, if none is given then it will be
+ * created
  * @id_attr_name: the id attribune name for this node
- * @keys_manager: an #xmlSecKeysMnr containing the CA cert chain, to validate the key in the
+ * @keys_manager: (allow-none): an #xmlSecKeysMnr containing the CA cert chain, to validate the key in the
  * signature if there is one.
- * @public_key: a public key to validate the signature, if present the function ignore the key
+ * @public_key: (allow-none): a public key to validate the signature, if present the function ignore the key
  * contained in the signature.
+ * @signature_verification_option: flag to specify option about signature validation, see
+ * #SignatureVerificationOption.
+ * @uri_references: if the signature references multiple nodes, return them as a list of node IDs.
  *
  * This function validate a signature on an xmlNode following the instructions given in the document
  * Assertions and Protocol or the OASIS Security Markup Language (SAML) V1.1.
+ *
+ * The only kind of references that are accepted in thoses signatures are node ID references,
+ * looking like &#35;xxx;.
  *
  * Beware that it does not validate every needed properties for a SAML assertion, request or
  * response to be acceptable.
