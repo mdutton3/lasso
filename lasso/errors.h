@@ -829,3 +829,6 @@
  * The provider has no known public key
  */
 #define LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY -1500
+
+/* WS-Security */
+#define LASSO_WSSEC_ERROR_MISSING_SECURITY_TOKEN 1600

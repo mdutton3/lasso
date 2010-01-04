@@ -269,6 +269,8 @@ lasso_strerror(int error_code)
 			return "Missing SOAP header";
 		case LASSO_PROFILE_ERROR_MISSING_ISSUER:
 			return "Missing issuer";
+		case LASSO_WSSEC_ERROR_MISSING_SECURITY_TOKEN:
+			return "LASSO_WSSEC_ERROR_MISSING_SECURITY_TOKEN";
 		case LASSO_PROFILE_ERROR_INVALID_ISSUER:
 			return "Assertion issuer is not the same as the requested issuer";
 		case LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL:
