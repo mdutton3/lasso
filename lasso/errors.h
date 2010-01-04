@@ -731,6 +731,38 @@
  * refToMessageID attribute of the Corrrelation header does not match the SOAP request
  */
 #define LASSO_WSF_PROFILE_ERROR_INVALID_OR_MISSING_REFERENCE_TO_MESSAGE_ID -1109
+/**
+ * LASSO_WSF_PROFILE_ERROR_SECURITY_MECHANISM_CHECK_FAILED:
+ *
+ * Check for a security mechanism upon a received request failed.
+ */
+#define LASSO_WSF_PROFILE_ERROR_SECURITY_MECHANISM_CHECK_FAILED 1110
+
+/**
+ * LASSO_WSF_PROFILE_ERROR_UNKNOWN_STATUS_CODE:
+ *
+ * A response contained an unknown status code.
+ */
+#define LASSO_WSF_PROFILE_ERROR_UNKNOWN_STATUS_CODE 1112
+/**
+ * LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED:
+ *
+ * A interaction is required but the sender did not allow use to make interact redirect requests.
+ */
+#define LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED 1113
+/**
+ * LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED_FOR_DATA:
+ *
+ * A interaction is required to get fresh datas but the sender did not allow use to make interact
+ * redirect requests.
+ */
+#define LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED_FOR_DATA 1114
+/**
+ * LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST:
+ *
+ * The last parsed response contained a SOAP fault with a RedirectRequest element.
+ */
+#define LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST 1115
 
 /* ID-WSF 2 Discovery */
 /**
@@ -813,6 +845,12 @@
  * QueryObject is malformed
  */
 #define LASSO_DST_ERROR_MALFORMED_QUERY -1308
+/**
+ * LASSO_DST_ERROR_EMPTY_REQUEST
+ *
+ * Request is empty.
+ */
+#define LASSO_DST_ERROR_EMPTY_REQUEST -1309
 
 /* Lasso registry */
 /**
@@ -831,4 +869,76 @@
 #define LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY -1500
 
 /* WS-Security */
+/**
+ * LASSO_WSSEC_ERROR_MISSING_SECURITY_TOKEN:
+ *
+ * The request miss a WS-Security token.
+ */
 #define LASSO_WSSEC_ERROR_MISSING_SECURITY_TOKEN 1600
+
+/* ID-WSF 2.0 Discovery Service */
+/**
+ * LASSO_IDWSF2_DISCOVERY_ERROR_FAILED:
+ *
+ * Last discovery request failed.
+ */
+#define LASSO_IDWSF2_DISCOVERY_ERROR_FAILED 1700
+/**
+ * LASSO_IDWSF2_DISCOVERY_ERROR_FORBIDDEN:
+ *
+ * Last discovery request is forbidden by policy.
+ */
+#define LASSO_IDWSF2_DISCOVERY_ERROR_FORBIDDEN 1701
+/**
+ * LASSO_IDWSF2_DISCOVERY_ERROR_DUPLICATE:
+ *
+ * Last discovery request was denied because it would result in duplicate data in the service
+ */
+#define LASSO_IDWSF2_DISCOVERY_ERROR_DUPLICATE 1702
+/**
+ * LASSO_IDWSF2_DISCOVERY_ERROR_LOGICAL_DUPLICATE:
+ *
+ * Last discovery request was denied because it would result in logically duplicate data in the service
+ */
+#define LASSO_IDWSF2_DISCOVERY_ERROR_LOGICAL_DUPLICATE 1703
+/**
+ * LASSO_IDWSF2_DISCOVERY_ERROR_NO_RESULTS:
+ *
+ * The discovery query had no matching results.
+ */
+#define LASSO_IDWSF2_DISCOVERY_ERROR_NO_RESULTS 1704
+/**
+ * LASSO_IDWSF2_DISCOVERY_ERROR_NOT_FOUND:
+ *
+ * The specified item(s) were not found.
+ */
+#define LASSO_IDWSF2_DISCOVERY_ERROR_NOT_FOUND 1705
+
+/* ID-WSF 2.0 Data Service Template */
+
+/**
+ * LASSO_IDWSF2_DST_ERROR_DUPLICATE_ITEM:
+ *
+ * A call to add a new item would result in duplicate items.
+ */
+#define LASSO_IDWSF2_DST_ERROR_DUPLICATE_ITEM -1801
+
+/**
+ * LASSO_IDWSF2_DST_ERROR_PARTIAL_FAILURE:
+ *
+ * Server responded with a partial failure status code.
+ */
+#define LASSO_IDWSF2_DST_ERROR_PARTIAL_FAILURE 1802
+
+/**
+ * LASSO_IDWSF2_DST_ERROR_UNKNOWN_STATUS_CODE:
+ *
+ * Server response with an unknown status code.
+ */
+#define LASSO_IDWSF2_DST_ERROR_UNKNOWN_STATUS_CODE 1803
+/**
+ * LASSO_IDWSF2_DST_ERROR_ITEM_NOT_FOUND:
+ *
+ * The item_id was not found in the current query request.
+ */
+#define LASSO_IDWSF2_DST_ERROR_ITEM_NOT_FOUND 1804

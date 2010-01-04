@@ -43,6 +43,8 @@ lasso_strerror(int error_code)
 	switch (error_code) {
 		case LASSO_LOGIN_ERROR_REQUEST_DENIED:
 			return "Request denied.";
+		case LASSO_DST_ERROR_NO_DATA:
+			return "No data or no data for the designated query item in the query response";
 		case LASSO_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE:
 			return "Missing requested service";
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
@@ -61,6 +63,8 @@ lasso_strerror(int error_code)
 			return "Found an encrypted element but encryption private key is not set";
 		case LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER:
 			return "Missing name identifier";
+		case LASSO_IDWSF2_DST_ERROR_DUPLICATE_ITEM:
+			return "A call to add a new item would result in duplicate items.";
 		case LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE:
 			return "Invalid protocol profile";
 		case LASSO_PARAM_ERROR_INVALID_VALUE:
@@ -85,6 +89,8 @@ lasso_strerror(int error_code)
 			return "Identity not found";
 		case LASSO_WSF_PROFILE_ERROR_SOAP_FAULT:
 			return "SOAP ID-WSF binding returned a SOAP fault";
+		case LASSO_IDWSF2_DISCOVERY_ERROR_NOT_FOUND:
+			return "The specified item(s) were not found.";
 		case LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND:
 			return "Federation not found";
 		case LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL:
@@ -119,8 +125,12 @@ lasso_strerror(int error_code)
 			return "Missing SAML artifact";
 		case LASSO_DS_ERROR_INVALID_SIGALG:
 			return "Invalid signature algorithm.";
+		case LASSO_IDWSF2_DISCOVERY_ERROR_LOGICAL_DUPLICATE:
+			return "Last discovery request was denied because it would result in logically duplicate data in the service";
 		case LASSO_REGISTRY_ERROR_KEY_EXISTS:
 			return "Key alreadys exists in the registry";
+		case LASSO_IDWSF2_DISCOVERY_ERROR_FORBIDDEN:
+			return "Last discovery request is forbidden by policy.";
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
 			return "Unsupported protocol profile";
 		case LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT:
@@ -129,6 +139,8 @@ lasso_strerror(int error_code)
 			return "An unsigned authn request was received but the metadata specify that they must be signed.";
 		case LASSO_DATA_SERVICE_ERROR_CANNOT_ADD_ITEM:
 			return "LASSO_DATA_SERVICE_ERROR_CANNOT_ADD_ITEM";
+		case LASSO_IDWSF2_DISCOVERY_ERROR_FAILED:
+			return "Last discovery request failed.";
 		case LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM:
 			return "The specified security mechanism is not supported by lasso ID-WSF library";
 		case LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY:
@@ -139,8 +151,12 @@ lasso_strerror(int error_code)
 			return "QueryObject is malformed";
 		case LASSO_DS_ERROR_INVALID_SIGNATURE:
 			return "Invalid signature.";
+		case LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED_FOR_DATA:
+			return "redirect requests.";
 		case LASSO_DS_ERROR_DECRYPTION_FAILED:
 			return "Decryption of an encrypted node failed";
+		case LASSO_IDWSF2_DISCOVERY_ERROR_NO_RESULTS:
+			return "The discovery query had no matching results.";
 		case LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID:
 			return "If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object";
 		case LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED:
@@ -149,6 +165,8 @@ lasso_strerror(int error_code)
 			return "Failed to sign the node.";
 		case LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED:
 			return "Failed to load public key.";
+		case LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED:
+			return "A interaction is required but the sender did not allow use to make interact redirect requests.";
 		case LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED:
 			return "Service metadata registration failed";
 		case LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS:
@@ -181,6 +199,8 @@ lasso_strerror(int error_code)
 			return "Name identifier not found in request";
 		case LASSO_DST_ERROR_MODIFY_PARTIALLY_FAILED:
 			return "Modify partially failed : some items were correctly processed";
+		case LASSO_WSF_PROFILE_ERROR_UNKNOWN_STATUS_CODE:
+			return "A response contained an unknown status code.";
 		case LASSO_PROFILE_ERROR_INVALID_QUERY:
 			return "Invalid URL query";
 		case LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED:
@@ -191,6 +211,8 @@ lasso_strerror(int error_code)
 			return "The issuer of the message is unknown to us";
 		case LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH:
 			return "Failed to add new provider (protocol mismatch).";
+		case LASSO_WSF_PROFILE_ERROR_SECURITY_MECHANISM_CHECK_FAILED:
+			return "Check for a security mechanism upon a received request failed.";
 		case LASSO_SOAP_ERROR_MISSING_ENVELOPE:
 			return "Missing SOAP envelope";
 		case LASSO_PROFILE_ERROR_MISSING_REQUEST:
@@ -209,8 +231,8 @@ lasso_strerror(int error_code)
 			return "Invalid NameIDPolicy in lib:AuthnRequest";
 		case LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
 			return "Service metadata association failed";
-		case LASSO_DST_ERROR_NO_DATA:
-			return "No data or no data for the designated query item in the query response";
+		case LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST:
+			return "The last parsed response contained a SOAP fault with a RedirectRequest element.";
 		case LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED:
 			return "LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED";
 		case LASSO_LOGIN_ERROR_ASSERTION_REPLAY:
@@ -249,6 +271,8 @@ lasso_strerror(int error_code)
 			return "Expected GObject class was not found, cast failed";
 		case LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION:
 			return "Missing service description";
+		case LASSO_DST_ERROR_EMPTY_REQUEST:
+			return "Request is empty.";
 		case LASSO_DST_ERROR_NEW_DATA_MISSING:
 			return "Missing new data";
 		case LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT:
@@ -270,7 +294,7 @@ lasso_strerror(int error_code)
 		case LASSO_PROFILE_ERROR_MISSING_ISSUER:
 			return "Missing issuer";
 		case LASSO_WSSEC_ERROR_MISSING_SECURITY_TOKEN:
-			return "LASSO_WSSEC_ERROR_MISSING_SECURITY_TOKEN";
+			return "The request miss a WS-Security token.";
 		case LASSO_PROFILE_ERROR_INVALID_ISSUER:
 			return "Assertion issuer is not the same as the requested issuer";
 		case LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL:
@@ -289,6 +313,8 @@ lasso_strerror(int error_code)
 			return "Unable to get attribute of element.";
 		case LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE:
 			return "Failed to build Endpoint Reference";
+		case LASSO_IDWSF2_DISCOVERY_ERROR_DUPLICATE:
+			return "Last discovery request was denied because it would result in duplicate data in the service";
 		case LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED:
 			return "Failed to create keys manager.";
 		case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND:
