@@ -26,6 +26,7 @@
 #define __LASSO_UTILS_H__
 
 #include <glib.h>
+#include <glib-object.h>
 #include "debug.h"
 #include "./backward_comp.h"
 
@@ -52,6 +53,8 @@
 #endif
 
 #define lasso_private_data(object) ((object)->private_data)
+
+#define lasso_ref(object) ((object) != NULL ? g_object_ref(object) : NULL)
 
 /* Freeing */
 #define lasso_release(dest) \
@@ -81,7 +84,7 @@
 		if (G_IS_OBJECT(dest) || dest == NULL) { \
 			lasso_release_full(dest, g_object_unref); \
 		} else { \
-			g_critical("Trying to unref a non GObject pointer dest=%s", #dest); \
+			g_critical("Trying to unref a non GObject pointer file=%s:%u pointerbybname=%s pointer=%p", __FILE__, __LINE__, #dest, dest); \
 		} \
 	}
 
@@ -153,7 +156,7 @@
 
 #define lasso_assign_xml_string(dest,src) \
 	{ \
-		xmlChar *__tmp = g_strdup(src); \
+		xmlChar *__tmp = xmlStrdup(src); \
 		lasso_release_xml_string(dest); \
 		dest = __tmp; \
 	}
@@ -196,7 +199,7 @@
 	{ \
 		GList *__tmp = (src); \
 		lasso_release_gobject_list(dest); \
-		dest = __tmp; \
+		dest = (GList*)__tmp; \
 	}
 
 #define lasso_assign_list_of_gobjects(dest, src) \
@@ -300,6 +303,15 @@
 		lasso_list_add_non_null(dest, __tmp_src); \
 	}
 
+#define lasso_list_add_gstrv(dest, src) \
+	{ \
+		GList **__tmp_dest = &(dest); \
+		const char **__iter = (const char**)(src); \
+		while (__iter && *__iter) { \
+			lasso_list_add_string(*__tmp_dest, *__iter); \
+		} \
+	}
+
 /* Pointer ownership transfer */
 #define lasso_transfer_full(dest, src, kind) \
 	{\
@@ -340,6 +352,23 @@
 
 #define lasso_null_param(name) \
 	g_return_val_if_fail(name != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+inline static gboolean
+lasso_is_empty_string(const char *str) {
+	return ((str) == NULL || (str)[0] == '\0');
+}
+
+/**
+ * lasso_check_non_empty_string:
+ * @str: a char pointer
+ *
+ * Check that @str is non-NULL and not empty, otherwise jump to cleanup and return
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ.
+ */
+#define lasso_check_non_empty_string(str) \
+	goto_cleanup_if_fail_with_rc(! lasso_is_empty_string(str), \
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
 
 /**
  * The following macros are made to create some formalism for function's cleanup code.
@@ -410,6 +439,18 @@
 		} \
 	}
 
+/**
+ * check_good_rc:
+ * @what: a call to a function returning a lasso error code
+ *
+ * Check if return code is 0, if not store it in rc and jump to cleanup label.
+ */
+#define lasso_check_good_rc(what) \
+	{ \
+		int __rc = (what);\
+		goto_cleanup_if_fail_with_rc(__rc == 0, __rc); \
+	}
+
 #define lasso_mem_debug(who, what, where) \
 	{ \
 		if (lasso_flag_memory_debug) \
@@ -439,6 +480,9 @@
 #define lasso_foreach_full_end() \
 				} }
 
+#define lasso_list_get_first_child(list) \
+	((list) ? (list)->data : NULL)
+
 /* Declare type of element in a container */
 #ifndef OFTYPE
 #define OFTYPE(x)
@@ -446,5 +490,12 @@
 
 /* Get a printable extract for error messages */
 char* lasso_safe_prefix_string(const char *str, gsize length);
+int lasso_gobject_is_of_type(GObject *a, GType b);
+
+/* Get first node of this type in a list */
+/* ex: lasso_extract_node (LassoNode, LASSO_TYPE_NODE, list) */
+#define lasso_extract_gobject_from_list(type, gobjecttype, list) \
+	(type*) g_list_find_custom(list, \
+			(gconstpointer)gobjecttype, (GCompareFunc)lasso_gobject_is_of_type);
 
 #endif /* __LASSO_UTILS_H__ */

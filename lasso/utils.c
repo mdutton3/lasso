@@ -91,3 +91,25 @@ lasso_safe_prefix_string(const gchar *str, gsize length)
 	g_string_free(output, FALSE);
 	return ret;
 }
+
+/**
+ * lasso_gobject_is_of_type:
+ * @a: a #GObject object
+ * @b: a #GType value
+ *
+ * Return true if object @a is of type @b.
+ *
+ * Return value: whether object @a is of type @b.
+ */
+int
+lasso_gobject_is_of_type(GObject *a, GType b)
+{
+	GType typeid = (GType)b;
+
+	if (a && G_IS_OBJECT(a)) {
+		return G_OBJECT_TYPE(G_OBJECT(a)) == typeid ? 0 : 1;
+	}
+	return 1;
+}
+
+
