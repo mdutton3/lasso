@@ -22,6 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* permit importation of strptime for glibc2 */
+#define _XOPEN_SOURCE
 #include "private.h"
 #include <string.h>
 #include <time.h>
@@ -159,6 +161,28 @@ char*
 lasso_get_current_time()
 {
 	return lasso_time_to_iso_8601_gmt(time(NULL));
+}
+
+/**
+ * lasso_iso_8601_gmt_to_time_t:
+ * @xsdtime: an xsd time value
+ *
+ * Return value: a corresponding time_t value if possible.
+ */
+time_t
+lasso_iso_8601_gmt_to_time_t(char *xsdtime)
+{
+	struct tm tm;
+	char *strptime_ret;
+
+	if (xsdtime == NULL) {
+		return -1;
+	}
+	strptime_ret = strptime (xsdtime, "%Y-%m-%dT%H:%M:%SZ", &tm);
+	if (strptime_ret == NULL) {
+		return -1;
+	}
+	return mktime(&tm);
 }
 
 /**
