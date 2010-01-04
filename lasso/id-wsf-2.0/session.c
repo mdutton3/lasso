@@ -72,17 +72,27 @@ lasso_session_add_endpoint_reference(LassoSession *session, LassoWsAddrEndpointR
 	return 0;
 }
 
+/**
+ * lasso_session_get_endpoint_reference:
+ * @session: a #LassoSession object
+ * @service_type: a string giving the service type.
+ *
+ * Return an endpoint reference for the given service type.
+ *
+ * Return value: a caller owned #LassoWsAddrEndpointReference object for the given service type if
+ * one is found, NULL otherwise.
+ */
 LassoWsAddrEndpointReference*
 lasso_session_get_endpoint_reference(LassoSession *session, const gchar *service_type)
 {
 	LassoWsAddrEndpointReference* epr;
 
-	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
-	g_return_val_if_fail(service_type != NULL, NULL);
+	if (! LASSO_IS_SESSION(session) || service_type == NULL)
+		return NULL;
 
 	epr = g_hash_table_lookup(session->private_data->eprs, service_type);
 	if (LASSO_IS_WSA_ENDPOINT_REFERENCE(epr)) {
-		return LASSO_WSA_ENDPOINT_REFERENCE(epr);
+		return (LassoWsAddrEndpointReference*)g_object_ref(epr);
 	} else {
 		return NULL;
 	}
@@ -123,7 +133,7 @@ lasso_session_get_assertion_identity_token(LassoSession *session, const gchar *s
 			if (security_context->Token != NULL) {
 				sec_token = security_context->Token->data;
 				if (LASSO_IS_SAML2_ASSERTION(sec_token->any)) {
-					lasso_assign_new_gobject(assertion, sec_token->any);
+					lasso_assign_gobject(assertion, sec_token->any);
 					break;
 				}
 			}
