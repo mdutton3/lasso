@@ -31,10 +31,13 @@ extern "C" {
 
 #include "../id-ff/login.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
+#include "../xml/ws/wsa_endpoint_reference.h"
 
-void lasso_saml20_login_assertion_add_discovery(LassoLogin *login, LassoSaml2Assertion *assertion);
+LASSO_EXPORT int lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *url,
+		const char *abstract, const char *security_mech_id);
 
-gint lasso_saml20_login_copy_assertion_epr(LassoLogin *login);
+LASSO_EXPORT LassoWsAddrEndpointReference *lasso_login_idwsf2_get_discovery_bootstrap_epr(
+		LassoLogin *login);
 
 #ifdef __cplusplus
 }

@@ -5825,6 +5825,13 @@ LASSO_IDWSF2_DISCOVERY_GET_CLASS
 </SECTION>
 
 <SECTION>
+<FILE>id_wsf_2_0_login</FILE>
+<TITLE>Addon to SAML 2.0 profile for ID-WSF 2.0 bootsraping</TITLE>
+lasso_login_idwsf2_add_discovery_bootstrap_epr
+lasso_login_idwsf2_get_discovery_bootstrap_epr
+</SECTION>
+
+<SECTION>
 <FILE>errors</FILE>
 <TITLE>Error Codes</TITLE>
 LASSO_ERROR_UNDEFINED
