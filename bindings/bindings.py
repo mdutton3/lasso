@@ -25,7 +25,7 @@
 import os
 import re
 import sys
-import utils
+from utils import *
 
 from optparse import OptionParser
 
@@ -241,12 +241,14 @@ class Function:
 
 class DocString:
     orig_docstring = None
-    parameters = []
+    parameters = None
     return_value = None
     description = None
 
     def __init__(self, function, docstring):
         self.orig_docstring = docstring
+        self.parameters = []
+        self.params = {}
         lines = docstring.splitlines()
         # ignore the first line, it has the symbol name
         lines = lines[1:]
@@ -260,8 +262,52 @@ class DocString:
                 self.parameters = []
 
             if lines[0][0] == '@':
-                param_name, param_desc = lines[0][1:].split(':', 1)
-                self.parameters.append([param_name, param_desc])
+
+                splits = lines[0][1:].split(':', 2)
+                param_name = splits[0]
+                if len(splits) > 2:
+                    param_options = splits[1]
+                    param_desc = splits[2]
+                    self.parameters.append([param_name, param_desc, param_options])
+                    self.params[param_name] = { 'desc': param_desc, 'options': param_options }
+                    for a in function.args:
+                        if a[1] == param_name:
+                            arg = a
+                            break
+                    else:
+                        raise Exception('should not happen ' + param_name + ' ' + lines[0] + repr(function))
+                    if 'allow-none' in param_options:
+                        arg[2]['optional'] = True
+                    if re.search('\(\s*out\s*\)', param_options):
+                        arg[2]['out'] = True
+                    if arg[2].get('optional'):
+                        m = re.search('\(\s*default\s*(.*)\s*\)', param_options)
+                        if m:
+                            prefix = ''
+                            if is_boolean(arg):
+                                prefix = 'b:'
+                            elif is_int(arg):
+                                prefix = 'c:'
+                            else:
+                                raise Exception('should not happen: could not found type for default: ' + param_options)
+                            arg[2]['default'] = prefix + m.group(1)
+                    m = re.search('\(\s*element-type\s+(\w+)(?:\s+(\w+))?', param_options)
+                    if m:
+                        if len(m.groups()) > 2:
+                            arg[2]['key-type'] = \
+                                    convert_type_from_gobject_annotation(m.group(1))
+                            arg[2]['value-type'] = \
+                                    convert_type_from_gobject_annotation(m.group(2))
+                        else:
+                            arg[2]['element-type'] = \
+                                    convert_type_from_gobject_annotation(m.group(1))
+                    m = re.search('\(\s*transfer\s+(\w+)', param_options)
+                    if m:
+                        arg[2]['transfer'] = m.group(1)
+                else:
+                    param_desc = splits[1]
+                    self.parameters.append([param_name, param_desc])
+                    self.params[param_name] = { 'desc': param_desc }
             else:
                 # continuation of previous description
                 self.parameters[-1][1] = self.parameters[-1][1] + ' ' + lines[0].strip()
@@ -359,9 +405,7 @@ def parse_header(header_file):
         elif line.startswith('struct _'):
             m = re.match('struct ([a-zA-Z0-9_]+)', line)
             struct_name = m.group(1)
-            #print struct_name
             if struct_name in struct_names:
-                #print struct_name
                 in_struct = Struct(struct_name)
                 in_struct_private = False
         elif in_struct:
@@ -399,23 +443,21 @@ def parse_header(header_file):
                 i += 1
                 line = line[:-1] + lines[i].lstrip()
 
-            m = re.match(r'LASSO_EXPORT\s+((?:const |)[\w]+\s*\*?)\s+(OFTYPE\(.*?\)\s*)?(\*?\w+)\s*\((.*?)\)', line)
-            if m and not m.group(3).endswith('_get_type'):
-                return_type, oftype, function_name, args = m.groups()
+            m = re.match(r'LASSO_EXPORT(.*(?:\s|\*))(\w+)\s*\((.*?)\)', line)
+            if m and not m.group(2).endswith('_get_type'):
+                return_type, function_name, args = m.groups()
                 return_type = return_type.strip()
                 f = Function()
                 if function_name[0] == '*':
                     return_type += '*'
                     function_name = function_name[1:]
                 if binding.functions_toskip.get(function_name) != 1:
+                    if re.search('\<const\>', return_type):
+                        f.return_owner = False
+                    # clean the type
+                    return_type = clean_type(return_type)
                     if return_type != 'void':
                         f.return_type = return_type
-                    if return_type.startswith('const'):
-                        f.return_owner = False
-                    if oftype:
-                            oftype_parse = re.match(r'OFTYPE\((.*)\)', oftype)
-                            if oftype_parse:
-                                    f.return_type_qualifier = oftype_parse.group(1)
                     if function_name.endswith('_destroy'):
                         # skip the _destroy functions, they are just wrapper over
                         # g_object_unref
@@ -424,12 +466,14 @@ def parse_header(header_file):
                         f.name = function_name
                         f.args = []
                         for arg in [x.strip() for x in args.split(',')]:
+                            arg = clean_type(arg)
                             if arg == 'void' or arg == '':
                                 continue
-                            m = re.match(r'((const\s+)?\w+\*?)\s+(\*?\w+)', arg)
-                            # TODO: Add parsing of OFTYPE
+                            m = re.match(r'(.*(?:\s|\*))(\w+)', arg)
+                            type, name = m.groups()
+                            type = clean_type(type)
                             if m:
-                                f.args.append(list(normalise_var(m.group(1), m.group(3))) + [{}])
+                                f.args.append(list((type, name, {})))
                             else:
                                 print >>sys.stderr, 'failed to process:', arg, 'in line:', line
                         f.apply_overrides()

@@ -23,7 +23,25 @@ import os
 import sys
 import re
 import textwrap
-import utils
+from utils import *
+
+def defval_to_python_value(defval):
+    if defval is None:
+        return 'None'
+    if defval.startswith('b:'):
+        if defval[2:].lower() == 'true':
+            return 'True'
+        if defval[2:].lower() == 'false':
+            return 'False'
+    if defval.startswith('c:'):
+        return defval[8:]
+    raise Exception('Could not convert %s to python value' % defval)
+
+def get_python_arg_decl(arg):
+    if is_optional(arg):
+        return '%s = %s' % (arg_name(arg), defval_to_python_value(arg_default(arg)))
+    else:
+        return arg_name(arg)
 
 class Binding:
     def __init__(self, binding_data):
@@ -31,14 +49,7 @@ class Binding:
         self.src_dir = os.path.dirname(__file__)
 
     def is_pygobject(self, t):
-        if t:
-            m = re.match(r'(?:const\s*)?(.*)',t) # Remove const modifier
-            t = m.group(1)
-            return t not in ['guchar*', 'guchar*', 'char*', 'gchar*',
-                'GList*', 'GHashTable*',
-                'int', 'gint', 'gboolean', 'xmlNode*'] + self.binding_data.enums
-        else:
-            return False
+        return t and is_object((t,'',{})) and t not in self.binding_data.enums
 
     def generate(self):
         fd = open('lasso.py', 'w')
@@ -254,17 +265,14 @@ if WSF_SUPPORT:
 
         methods = clss.methods[:]
         # constructor(s)
-        method_prefix = 'lasso_' + utils.format_as_underscored(klassname) + '_'
+        method_prefix = 'lasso_' + format_as_underscored(klassname) + '_'
         for m in self.binding_data.functions:
             if m.name == method_prefix + 'new':
                 c_args = []
                 py_args = []
                 for o in m.args:
                     arg_type, arg_name, arg_options = o
-                    if arg_options.get('optional'):
-                        py_args.append('%s = None' % arg_name)
-                    else:
-                        py_args.append(arg_name)
+                    py_args.append(get_python_arg_decl(o))
 
                     if self.is_pygobject(arg_type):
                         c_args.append('%s._cptr' % arg_name)
@@ -284,15 +292,12 @@ if WSF_SUPPORT:
 
         for m in self.binding_data.functions:
             if m.name.startswith(method_prefix + 'new_'):
-                constructor_name = utils.format_as_camelcase(m.name[len(method_prefix):])
+                constructor_name = format_as_camelcase(m.name[len(method_prefix):])
                 c_args = []
                 py_args = []
                 for o in m.args:
                     arg_type, arg_name, arg_options = o
-                    if arg_options.get('optional'):
-                        py_args.append('%s = None' % arg_name)
-                    else:
-                        py_args.append(arg_name)
+                    py_args.append(get_python_arg_decl(o))
 
                     if self.is_pygobject(arg_type):
                         c_args.append('%s._cptr' % arg_name)
@@ -311,7 +316,7 @@ if WSF_SUPPORT:
 
         # create properties for members
         for m in clss.members:
-            mname = utils.format_as_camelcase(m[1])
+            mname = format_as_camelcase(m[1])
             options = m[2]
             print >> fd, '    def get_%s(self):' % mname
             if self.is_pygobject(m[0]):
@@ -372,7 +377,7 @@ if WSF_SUPPORT:
             else:
                 mname = m.name
                 mname = re.match(r'lasso_.*_get_(\w+)', mname).group(1)
-                mname = utils.format_underscore_as_camelcase(mname)
+                mname = format_underscore_as_camelcase(mname)
                 print >> fd, '    def get_%s(self):' % mname
                 function_name = m.name[6:]
 
@@ -413,25 +418,21 @@ if WSF_SUPPORT:
                 function_name = m.name[6:]
             py_args = []
             c_args = []
+            outarg = None
             for o in m.args[1:]:
                 arg_type, arg_name, arg_options = o
-                if arg_options.get('optional'):
-                    if arg_options.get('default'):
-                        defval = arg_options.get('default')
-                        if defval.startswith('c:'): # constant
-                            py_args.append('%s = %s' % (arg_name, defval[8:]))
-                        elif defval.startswith('b:'): # boolean
-                            py_args.append('%s = %s' % (arg_name, defval[2:]))
-                        else:
-                            print >> sys.stderr, "E: don't know what to do with %s" % defval
-                            sys.exit(1)
-                    else:
-                        py_args.append('%s = None' % arg_name)
+                if is_out(o):
+                    assert not outarg
+                    outarg = o
+                    outvar = '_%s_out' % arg_name
                 else:
-                    py_args.append(arg_name)
-                if arg_type in ('char*', 'const char*', 'guchar*', 'const guchar*', 'gchar*', 'const gchar*', 'xmlNode*') or \
+                    py_args.append(get_python_arg_decl(o))
+
+                if is_out(o):
+                    c_args.append(outvar)
+                elif arg_type in ('char*', 'const char*', 'guchar*', 'const guchar*', 'gchar*', 'const gchar*', 'xmlNode*') or \
                         arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] or \
-                        arg_type in self.binding_data.enums:
+                        arg_type in self.binding_data.enums or is_time_t_pointer(o):
                     c_args.append(arg_name)
                 else:
                     c_args.append('%s._cptr' % arg_name)
@@ -446,32 +447,39 @@ if WSF_SUPPORT:
                 c_args = ''
 
             print >> fd, '    def %s(self%s):' % (
-                    utils.format_underscore_as_camelcase(mname), py_args)
+                    format_underscore_as_camelcase(mname), py_args)
             if m.docstring:
                 print >> fd, "        '''"
                 print >> fd, self.format_docstring(m, mname, 8)
                 print >> fd, "        '''"
-            if m.return_type in (None, 'void'):
-                print >> fd, '        _lasso.%s(self._cptr%s)' % (
-                        function_name, c_args)
-            elif m.return_type in ('gint', 'int'):
+
+            if outarg:
+                print >> fd, "        %s = list((None,))" % outvar
+            return_type = m.return_type
+            return_type_qualifier = m.return_type_qualifier
+            assert is_int(make_arg(return_type),self.binding_data) or not outarg
+            if return_type in ('gint', 'int'):
                 print >> fd, '        rc = _lasso.%s(self._cptr%s)' % (
                         function_name, c_args)
-                print >> fd, '        if rc == 0:'
-                print >> fd, '            return'
-                print >> fd, '        raise Error.raise_on_rc(rc)'
-            elif m.return_type == 'GList*' and self.is_pygobject(m.return_type_qualifier):
+                print >> fd, '        if rc != 0:'
+                print >> fd, '            raise Error.raise_on_rc(rc)'
+            elif return_type in (None, 'void'):
+                print >> fd, '        _lasso.%s(self._cptr%s)' % (
+                        function_name, c_args)
+            elif return_type == 'GList*' and self.is_pygobject(return_type_qualifier):
                 print >> fd, '        value = _lasso.%s(self._cptr%s)' % (
                         function_name, c_args)
                 print >> fd, '        if value is not None:'
                 print >> fd, '            value = tuple([cptrToPy(x) for x in value])'
                 print >> fd, '        return value'
-            elif self.is_pygobject(m.return_type):
+            elif self.is_pygobject(return_type):
                 print >> fd, '        return cptrToPy(_lasso.%s(self._cptr%s))' % (
                         function_name, c_args)
             else:
                 print >> fd, '        return _lasso.%s(self._cptr%s)' % (
                         function_name, c_args)
+            if outarg:
+                print >> fd, '        return %s[0]' % outvar
             print >> fd, ''
 
         print >> fd, ''
@@ -573,10 +581,10 @@ if WSF_SUPPORT:
                 name = m.rename
                 if name.startswith('lasso_'):
                     name = name[6:]
-                    pname = utils.format_as_camelcase(name)
+                    pname = format_as_camelcase(name)
             else:
                 name = m.name[6:]
-                pname = utils.format_as_camelcase(name)
+                pname = format_as_camelcase(name)
             print >> fd, '%s = _lasso.%s' % (pname, name)
 
 
@@ -627,7 +635,7 @@ register_constants(PyObject *d)
     def generate_member_wrapper(self, c, fd):
         klassname = c.name
         for m in c.members:
-            mname = utils.format_as_camelcase(m[1])
+            mname = format_as_camelcase(m[1])
             # getter
             print >> fd, '''static PyObject*
 %s_%s_get(G_GNUC_UNUSED PyObject *self, PyObject *args)
@@ -715,60 +723,62 @@ register_constants(PyObject *d)
             print >> fd, ''
 
 
-    def return_value(self, fd, vtype, options):
+    def return_value(self, fd, vtype, options, return_var_name = 'return_value', return_pyvar_name = 'return_pyvalue'):
         if vtype == 'gboolean':
-            print >> fd, '    if (return_value) {'
+            print >> fd, '    if (%s) {' % return_var_name
             print >> fd, '        Py_INCREF(Py_True);'
-            print >> fd, '        return_pyvalue = Py_True;'
+            print >> fd, '        %s = Py_True;' % return_pyvar_name
             print >> fd, '    } else {'
             print >> fd, '        Py_INCREF(Py_False);'
-            print >> fd, '        return_pyvalue = Py_False;'
+            print >> fd, '        %s = Py_False;' % return_pyvar_name
             print >> fd, '    }'
         elif vtype in ['int', 'gint'] + self.binding_data.enums:
-            print >> fd, '    return_pyvalue = PyInt_FromLong(return_value);'
+            print >> fd, '    %s = PyInt_FromLong(%s);' % (return_pyvar_name, return_var_name)
         elif vtype in ('char*', 'guchar*', 'const guchar*', 'gchar*'):
-            print >> fd, '    if (return_value) {'
-            print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
-            print >> fd, '        g_free(return_value);'
+            print >> fd, '    if (%s) {' % return_var_name
+            print >> fd, '        %s = PyString_FromString(%s);' % (return_pyvar_name, return_var_name)
+            print >> fd, '        g_free(%s);' % return_var_name
             print >> fd, '    } else {'
-            print >> fd, '        return_pyvalue = noneRef();'
+            print >> fd, '        %s = noneRef();' % return_pyvar_name
             print >> fd, '    }'
         elif vtype in ('const char*', 'const gchar*'):
-            print >> fd, '    if (return_value) {'
-            print >> fd, '        return_pyvalue = PyString_FromString(return_value);'
+            print >> fd, '    if (%s) {' % return_var_name
+            print >> fd, '        %s = PyString_FromString(%s);' % (return_pyvar_name, return_var_name)
             print >> fd, '    } else {'
-            print >> fd, '        return_pyvalue = noneRef();'
+            print >> fd, '        %s = noneRef();' % return_pyvar_name
             print >> fd, '    }'
         elif vtype in ('const GList*', 'GList*',):
             elem_type = options.get('elem_type')
-            if elem_type == 'char*':
-                print >> fd, '    return_pyvalue = get_list_of_strings(return_value);'
-            elif elem_type == 'xmlNode*':
-                print >> fd, '    return_pyvalue = get_list_of_xml_nodes(return_value);'
+            if not elem_type or self.is_pygobject(elem_type):
+                print >> fd, '    %s = get_list_of_pygobject(%s);' % (return_pyvar_name, return_var_name)
+            elif elem_type == 'char*':
+                print >> fd, '    %s = get_list_of_strings(%s);' % (return_pyvar_name, return_var_name)
+            elif elem_type.startswith('xmlNode'):
+                print >> fd, '    %s = get_list_of_xml_nodes(%s);' % (return_pyvar_name, return_var_name)
             else:
-                print >> fd, '    return_pyvalue = get_list_of_pygobject(return_value);'
+                raise Exception('Should not happen: %s %s ' % (repr(options), vtype))
         elif vtype in ('GHashTable*',):
             elem_type = options.get('elem_type')
             if elem_type == 'char*':
-                print >> fd, '    return_pyvalue = get_dict_from_hashtable_of_strings(return_value);'
+                print >> fd, '    %s = get_dict_from_hashtable_of_strings(%s);' % (return_pyvar_name, return_var_name)
             else:
-                print >> fd, '    return_pyvalue = get_dict_from_hashtable_of_objects(return_value);'
+                print >> fd, '    %s = get_dict_from_hashtable_of_objects(%s);' % (return_pyvar_name, return_var_name)
         elif vtype == 'xmlNode*':
             # convert xmlNode* to strings
-            print >> fd, '    if (return_value) {'
-            print >> fd, '        return_pyvalue = get_pystring_from_xml_node(return_value);'
+            print >> fd, '    if (%s) {' % return_var_name
+            print >> fd, '        %s = get_pystring_from_xml_node(%s);' % (return_pyvar_name, return_var_name)
             print >> fd, '    } else {'
-            print >> fd, '        return_pyvalue = noneRef();'
+            print >> fd, '        %s = noneRef();' % return_pyvar_name
             print >> fd, '    }'
         else:
             # return a PyGObjectPtr (wrapper around GObject)
             print >> fd, '''\
-    if (return_value) {
-        return_pyvalue = PyGObjectPtr_New(G_OBJECT(return_value));
+    if (%s) {
+        %s = PyGObjectPtr_New(G_OBJECT(%s));
     } else {
-        return_pyvalue = noneRef();
+        %s = noneRef();
     }
-'''
+''' % (return_var_name, return_pyvar_name, return_var_name, return_pyvar_name)
 
     def generate_function_wrapper(self, m, fd):
         if m.rename:
@@ -785,6 +795,9 @@ register_constants(PyObject *d)
         parse_tuple_args = []
         for arg in m.args:
             arg_type, arg_name, arg_options = arg
+            arg_def = None
+            python_cvt_def = None
+            defval = None
             if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
                 arg_type = arg_type.replace('const ', '')
                 if arg_options.get('optional'):
@@ -794,7 +807,7 @@ register_constants(PyObject *d)
                 else:
                     parse_tuple_format.append('s')
                 parse_tuple_args.append('&%s' % arg_name)
-                print >> fd, '    %s %s = NULL;' % (arg[0], arg[1])
+                arg_def = '    %s %s = NULL;' % (arg[0], arg[1])
             elif arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
                 if arg_options.get('optional'):
                     if not '|' in parse_tuple_format:
@@ -807,23 +820,34 @@ register_constants(PyObject *d)
                         defval = defval[2:].upper()
                     else:
                         defval = defval[2:]
-                    print >> fd, '    %s %s = %s;' % (arg[0], arg[1], defval)
+                    arg_def = '    %s %s = %s;' % (arg[0], arg[1], defval)
                 else:
-                    print >> fd, '    %s %s;' % (arg[0], arg[1])
-            elif arg_type in ('GList*', 'xmlNode*'):
+                    arg_def = '    %s %s;' % (arg[0], arg[1])
+            elif is_xml_node(arg) or is_list(arg) or is_time_t_pointer(arg):
                 parse_tuple_format.append('O')
                 parse_tuple_args.append('&cvt_%s' % arg_name)
-                print >> fd, '    %s %s = NULL;' % (arg[0], arg[1])
-                print >> fd, '    PyObject *cvt_%s = NULL;' % arg_name
+                arg_def = '    %s %s = NULL;' % (arg[0], arg[1])
+                python_cvt_def = '    PyObject *cvt_%s = NULL;' % arg_name
             else:
                 parse_tuple_format.append('O')
                 parse_tuple_args.append('&cvt_%s' % arg_name)
-                print >> fd, '    %s %s = NULL;' % (arg[0], arg[1])
-                print >> fd, '    PyGObjectPtr *cvt_%s = NULL;' % arg_name
+                arg_def = '    %s %s = NULL;' % (arg[0], arg[1])
+                python_cvt_def = '    PyGObjectPtr *cvt_%s = NULL;' % arg_name
+            if is_out(arg):
+                arg_def = '    %s %s = NULL;' % (var_type(arg), arg[1])
+                parse_tuple_format.pop()
+                parse_tuple_format.append('O')
+                parse_tuple_args.pop()
+                parse_tuple_args.append('&cvt_%s_out' % arg_name)
+                python_cvt_def = '    PyObject *cvt_%s_out = NULL;' % arg_name
+                print >> fd, '    PyObject *out_pyvalue = NULL;'
+            print >> fd, arg_def
+            if python_cvt_def:
+                print >> fd, python_cvt_def
 
         if m.return_type:
             print >> fd, '    %s return_value;' % m.return_type
-            print >> fd, '    PyObject* return_pyvalue;'
+            print >> fd, '    PyObject* return_pyvalue = NULL;'
         print >> fd, ''
 
         parse_tuple_args = ', '.join(parse_tuple_args)
@@ -834,7 +858,9 @@ register_constants(PyObject *d)
                 ''.join(parse_tuple_format), parse_tuple_args)
 
         for f, arg in zip(parse_tuple_format, m.args):
-            if arg[0] == 'GList*':
+            if is_out(arg):
+                continue
+            if is_list(arg):
                 qualifier = arg[2].get('elem_type')
                 if qualifier == 'char*':
                     print >> fd, '    set_list_of_strings(&%s, cvt_%s);' % (arg[1], arg[1])
@@ -844,8 +870,10 @@ register_constants(PyObject *d)
                     print >> fd, '    set_list_of_pygobject(&%s, cvt_%s);' % (arg[1], arg[1])
                 else:
                     print >> sys.stderr, 'E: unqualified GList argument in', name
-            elif arg[0] == 'xmlNode*':
+            elif is_xml_node(arg):
                 print >> fd, '    %s = get_xml_node_from_pystring(cvt_%s);' % (arg[1], arg[1])
+            elif is_time_t_pointer(arg):
+                print >> fd, '    %s = get_time_t(cvt_%s);' % (arg[1], arg[1])
             elif f == 'O':
                 print >> fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
 
@@ -853,10 +881,15 @@ register_constants(PyObject *d)
             print >> fd, '    return_value =',
             if 'new' in m.name:
                 print >> fd, '(%s)' % m.return_type,
-        print >> fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))
+        else:
+            print >> fd, '   ',
+        print >> fd, '%s(%s);' % (m.name, ', '.join([ref_name(x) for x in m.args]))
 
         for f, arg in zip(parse_tuple_format, m.args):
-            if arg[0] == 'GList*':
+            if is_out(arg):
+                self.return_value(fd, var_type(arg), {'elem_type': element_type(arg)}, return_var_name = arg[1], return_pyvar_name = 'out_pyvalue')
+                print >> fd, '    PyList_SetItem(cvt_%s_out, 0, out_pyvalue);' % arg[1]
+            elif arg[0] == 'GList*':
                 qualifier = arg[2].get('elem_type')
                 if qualifier == 'char*':
                     print >> fd, '    free_list(&%s, (GFunc)g_free);' % arg[1]
@@ -864,6 +897,8 @@ register_constants(PyObject *d)
                     print >> fd, '    free_list(&%s, (GFunc)xmlFreeNode);' % arg[1]
                 elif qualifier == 'LassoNode':
                     print >> fd, '    free_list(&%s, (GFunc)g_object_unref);' % arg[1]
+            elif is_time_t_pointer(arg):
+                print >> fd, '    if (%s) free(%s);' % (arg[1], arg[1])
 
         if not m.return_type:
             print >> fd, '    return noneRef();'

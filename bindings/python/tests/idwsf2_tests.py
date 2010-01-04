@@ -40,7 +40,7 @@ import lasso
 try:
     dataDir
 except NameError:
-    dataDir = '../../../tests/data'
+    dataDir = os.path.join(os.environ['TOP_SRCDIR'], 'tests', 'data')
 
 
 class IdWsf2TestCase(unittest.TestCase):

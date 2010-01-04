@@ -36,7 +36,7 @@ import lasso
 try:
     dataDir
 except NameError:
-    dataDir = '../../../tests/data'
+    dataDir = os.path.join(os.environ['TOP_SRCDIR'], 'tests', 'data')
 
 wsp_metadata = os.path.join(dataDir, 'sp1-la/metadata.xml')
 wsp_private_key = os.path.join(dataDir, 'sp1-la/private-key-raw.pem')
@@ -50,6 +50,12 @@ idp_public_key = os.path.join(dataDir, 'idp1-la/public-key.pem')
 
 abstract_description = "Personal Profile Resource"
 resource_id = "http://idp/user/resources/1"
+
+def __LINE__():
+    try:
+        raise Exception
+    except:
+        return sys.exc_info()[2].tb_frame.f_back.f_lineno
 
 class IdWsf1TestCase(unittest.TestCase):
     def get_wsp_server(self):
@@ -144,7 +150,7 @@ class IdWsf1TestCase(unittest.TestCase):
 
         # Process query
         idp_disco = lasso.Discovery(self.idp)
-        idp_disco.processQueryMsg(wsc_disco.msgBody)
+        idp_disco.processRequestMsg(wsc_disco.msgBody)
         idp_disco.setIdentityFromDump(idp_identity_dump)
         idp_disco.getIdentity().addResourceOffering(self.get_resource_offering())
         idp_disco.buildResponseMsg()
@@ -158,10 +164,12 @@ class DiscoveryQueryTestCase(IdWsf1TestCase):
         '''Test a discovery query'''
         service = self.get_pp_service()
         # Check service attributes
-        self.failUnless(service.resourceId is not None)
-        self.failUnless(service.resourceId.content == resource_id)
-        self.failUnless(service.providerId == self.wsc.providerIds[0])
-        self.failUnless(service.abstractDescription == abstract_description)
+        resource_offering = service.getResourceOffering()
+        self.failUnless(resource_offering is not None)
+        self.failUnless(resource_offering.resourceId is not None)
+        self.failUnless(resource_offering.resourceId.content == resource_id)
+        self.failUnless(resource_offering.serviceInstance.providerId == self.wsc.providerIds[0])
+        self.failUnless(resource_offering.abstract == abstract_description)
 
 class DiscoveryModifyTestCase(IdWsf1TestCase):
     def test01(self):
@@ -177,16 +185,18 @@ class DiscoveryModifyTestCase(IdWsf1TestCase):
         wsp_disco = lasso.Discovery(self.wsp)
         wsp_disco.setIdentityFromDump(sp_identity_dump)
         wsp_disco.setSessionFromDump(sp_session_dump)
-        wsp_disco.initInsert(self.get_resource_offering())
+        resource_offering = self.get_resource_offering()
+        wsp_disco.initModify()
+        wsp_disco.addInsertEntry(resource_offering.serviceInstance, resource_offering.resourceId)
         wsp_disco.buildRequestMsg()
 
         # Process Modify
         request_type = lasso.getRequestTypeFromSoapMsg(wsp_disco.msgBody)
         self.failUnless(request_type == lasso.REQUEST_TYPE_DISCO_MODIFY)
         idp_disco = lasso.Discovery(self.idp)
-        idp_disco.processModifyMsg(wsp_disco.msgBody)
+        idp_disco.processRequestMsg(wsp_disco.msgBody)
         idp_disco.setIdentityFromDump(idp_identity_dump)
-        idp_disco.buildModifyResponseMsg()
+        idp_disco.buildResponseMsg()
         offerings = idp_disco.identity.getOfferings()
         self.failUnless('<disco:Status code="OK"/>' in idp_disco.msgBody)
         self.failUnless('<disco:ModifyResponse newEntryIDs="%s"' % offerings[0].entryId in idp_disco.msgBody)
@@ -211,20 +221,21 @@ class DiscoveryRemoveTestCase(IdWsf1TestCase):
         wsp_disco = lasso.Discovery(self.wsp)
         wsp_disco.setIdentityFromDump(sp_identity_dump)
         wsp_disco.setSessionFromDump(sp_session_dump)
-        wsp_disco.initRemove('0')
+        wsp_disco.initModify()
+        wsp_disco.addRemoveEntry('0')
         wsp_disco.buildRequestMsg()
 
         # Process Modify
         request_type = lasso.getRequestTypeFromSoapMsg(wsp_disco.msgBody)
         self.failUnless(request_type == lasso.REQUEST_TYPE_DISCO_MODIFY)
         idp_disco = lasso.Discovery(self.idp)
-        idp_disco.processModifyMsg(wsp_disco.msgBody)
+        idp_disco.processRequestMsg(wsp_disco.msgBody)
         idp_disco.setIdentityFromDump(idp_identity_dump)
         offering = self.get_resource_offering()
         idp_disco.getIdentity().addResourceOffering(offering)
         self.failUnless('<disco:ServiceType>urn:liberty:id-sis-pp:2003-08</disco:ServiceType>' in
             idp_disco.identity.dump())
-        idp_disco.buildModifyResponseMsg()
+        idp_disco.buildResponseMsg()
         self.failUnless('<disco:Status code="OK"/>' in idp_disco.msgBody)
         self.failIf('<disco:ServiceType>urn:liberty:id-sis-pp:2003-08</disco:ServiceType>' in
             idp_disco.identity.dump())
@@ -237,17 +248,19 @@ class DataServiceQueryTestCase(IdWsf1TestCase):
         '''Test a data service query'''
         wsc_service = self.get_pp_service()
         wsc_service.initQuery('/pp:PP/pp:InformalName', 'name')
-        wsc_service.buildRequestMsg()
+        wsc_service.buildSoapRequestMsg()
         self.failUnless(lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
                         == lasso.REQUEST_TYPE_DST_QUERY)
 
         self.wsp = self.get_wsp_server()
         wsp_service = lasso.DataService(self.wsp)
-        wsp_service.processQueryMsg(wsc_service.msgBody)
+        wsp_service.processRequestMsg(wsc_service.msgBody)
+        self.failUnless(isinstance(wsp_service.request, lasso.DstQuery))
         wsp_service.resourceData = '''
             <PP xmlns="urn:liberty:id-sis-pp:2003-08">
                     <InformalName>Damien</InformalName>
             </PP>'''
+        wsp_service.validateRequest()
         wsp_service.buildResponseMsg()
 
         wsc_service.processQueryResponseMsg(wsp_service.msgBody)

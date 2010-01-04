@@ -22,7 +22,7 @@
 import re
 import sys
 
-import utils
+from utils import *
 
 class PhpCode:
     def __init__(self, binding_data, fd):
@@ -135,7 +135,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
         print >> self.fd, ''
 
     def generate_constructors(self, klass):
-        method_prefix = utils.format_as_underscored(klass.name) + '_'
+        method_prefix = format_as_underscored(klass.name) + '_'
         for m in self.binding_data.functions:
             if m.name == method_prefix + 'new':
                 php_args = []
@@ -183,7 +183,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
 
         for m in klass.members:
             mtype = m[0]
-            mname = utils.format_as_camelcase(m[1])
+            mname = format_as_camelcase(m[1])
             options = m[2]
 
             # Getters
@@ -253,7 +253,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
             except IndexError:
                 setter = None
             mname = re.match(r'lasso_.*_get_(\w+)', meth_name).group(1)
-            mname =utils.format_as_camelcase(mname)
+            mname = format_as_camelcase(mname)
 
             print >> self.fd, '    /**'
             print >> self.fd, '     * @return %s' % self.get_docstring_return_type(m.return_type)
@@ -278,7 +278,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
             print >> self.fd, ''
 
         # second pass on methods, real methods
-        method_prefix = utils.format_as_underscored(klass.name) + '_'
+        method_prefix = format_as_underscored(klass.name) + '_'
         for m in methods:
             if m.name.endswith('_new') or m.name.endswith('_new_from_dump') or \
                     m.name.endswith('_new_full'):
@@ -295,9 +295,13 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
             mname = mname[len(method_prefix):]
             php_args = []
             c_args = []
+            outarg = None
             for arg in m.args[1:]:
                 arg_type, arg_name, arg_options = arg
                 arg_name = '$' + arg_name
+                if is_out(arg):
+                    assert not outarg
+                    outarg = arg
                 if arg_options.get('optional'):
                     if arg_options.get('default'):
                         defval = arg_options.get('default')
@@ -318,6 +322,11 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
                     c_args.append(arg_name)
                 else:
                     c_args.append('%s._cptr' % arg_name)
+                if is_out(arg):
+                    php_args.pop()
+                    php_args.append(arg_name)
+                    c_args.pop()
+                    c_args.append(arg_name)
 
             if php_args:
                 php_args = ', '.join(php_args)
@@ -331,7 +340,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
             if m.docstring:
                 print >> self.fd, self.generate_docstring(m, mname, 4)
             print >> self.fd, '    public function %s(%s) {' % (
-                    utils.format_underscore_as_camelcase(mname), php_args)
+                    format_underscore_as_camelcase(mname), php_args)
             if m.return_type == 'void':
                 print >> self.fd, '        %s($this->_cptr%s);' % (cname, c_args)
             elif m.return_type in ('gint', 'int'):

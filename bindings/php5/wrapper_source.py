@@ -22,7 +22,7 @@
 import sys
 import os
 
-import utils
+from utils import *
 
 class WrapperSource:
     def __init__(self, binding_data, fd):
@@ -32,7 +32,7 @@ class WrapperSource:
         self.src_dir = os.path.dirname(__file__)
 
     def is_object(self, t):
-        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*',
+        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*', 'GType',
                 'xmlNode*', 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
 
     def generate(self):
@@ -101,12 +101,81 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 
 '''
 
+    def set_zval(self, zval_name, c_variable, type, free = False):
+        '''Emit code to set a zval* of name zval_name, from the value of the C variable called c_variable type, type.
+        '''
+        # first we free the previous value
+        p = (zval_name, c_variable)
+        q = { 'zval_name' : zval_name, 'c_variable' : c_variable }
+        print >> self.fd, '    zval_dtor(%s);' % zval_name
+        if is_pointer(type):
+            print >> self.fd, '    if (! %s) {' % c_variable
+            print >> self.fd, '       ZVAL_NULL(%s);' % zval_name
+            print >> self.fd, '    } else {'
+        if is_int(type, self.binding_data):
+            print >> self.fd, '    ZVAL_LONG(%s, %s);' % p
+        elif is_boolean(type):
+            print >> self.fd, '    ZVAL_BOOL(%s, %s);' % p
+        elif is_cstring(type):
+            print >> self.fd, '    ZVAL_STRING(%s, %s, 1);' % p
+            if free and not is_const(type):
+                print >> self.fd, 'g_free(%s)' % c_variable
+        elif arg_type(type) == 'xmlNode*':
+            print >> self.fd, '''\
+    {
+        char* xmlString = get_string_from_xml_node(%(c_variable)s);
+        if (xmlString) {
+            ZVAL_STRING(%(zval_name)s, xmlString, 0);
+        } else {
+            ZVAL_NULL(%(zval_name)s);
+        }
+    }
+''' % q
+        elif arg_type(type) == 'GList*':
+            elem_type = make_arg(element_type(type))
+            if not arg_type(elem_type):
+                raise Exception('unknown elem_type: ' + repr(type))
+            if is_cstring(elem_type):
+                function = 'set_array_from_list_of_strings'
+                free_function = 'free_glist(%(c_variable)s, (GFunc)free);'
+            elif arg_type(elem_type).startswith('xmlNode'):
+                function = 'set_array_from_list_of_xmlnodes'
+                free_function = 'free_glist(%(c_variable)s, (GFunc)xmlFree);'
+            elif is_object(elem_type):
+                function = 'set_array_from_list_of_objects'
+                free_function = 'g_list_free(%(c_variable)s);'
+            else:
+                raise Exception('unknown elem_type: ' + repr(type))
+            print >> self.fd, '     %s(%s, &%s);' % (function, c_variable, zval_name)
+            if free:
+                print >> self.fd, '   ', free_function % q
+        elif is_object(type):
+            print >> self.fd, '''\
+    if (G_IS_OBJECT(%(c_variable)s)) {
+        PhpGObjectPtr *obj = PhpGObjectPtr_New(G_OBJECT(%(c_variable)s));
+        ZEND_REGISTER_RESOURCE(%(zval_name)s, obj, le_lasso_server);
+    } else {
+        ZVAL_NULL(%(zval_name)s);
+    }''' % q
+            if free:
+                print >> self.fd, '''\
+    if (%(c_variable)s) {
+        g_object_unref(%(c_variable)s); // If constructor ref is off by one'
+    }''' % q
+
+        else:
+            raise Exception('unknown type: ' + repr(type) + unconstify(arg_type(type)))
+        if is_pointer(type):
+            print >> self.fd, '    }'
+
+
+
     def return_value(self, vtype, options, free = False):
         if vtype is None:
             return
         elif vtype == 'gboolean':
             print >> self.fd, '    RETVAL_BOOL(return_c_value);'
-        elif vtype in ['int', 'gint'] + self.binding_data.enums:
+        elif vtype in ['int', 'gint', 'GType', ] + self.binding_data.enums:
             print >> self.fd, '    RETVAL_LONG(return_c_value);'
         elif vtype in ('char*', 'gchar*'):
             print >> self.fd, '''\
@@ -186,7 +255,12 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         parse_tuple_args = []
         for arg in m.args:
             arg_type, arg_name, arg_options = arg
-            if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
+            if is_out(arg):
+                print >> self.fd, '   zval *php_out_%s = NULL;' % arg_name
+                print >> self.fd, '   %s %s;' % (var_type(arg), arg_name)
+                parse_tuple_format.append('z!')
+                parse_tuple_args.append('&php_out_%s' % arg_name)
+            elif arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
                 arg_type = arg_type.replace('const ', '')
                 parse_tuple_format.append('s!')
                 parse_tuple_args.append('&%s_str, &%s_len' % (arg_name, arg_name))
@@ -232,7 +306,9 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 ''' % (''.join(parse_tuple_format), parse_tuple_args)
 
         for f, arg in zip(parse_tuple_format, m.args):
-            if arg[0] == 'xmlNode*':
+            if is_out(arg):
+                continue
+            elif arg[0] == 'xmlNode*':
                 print >> self.fd, '''\
         %(name)s = get_xml_node_from_string(%(name)s_str);''' % {'name': arg[1]}
             elif f.startswith('s'):
@@ -259,12 +335,18 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 print >> self.fd, '(%s)' % m.return_type,
         else:
             print >> self.fd, '   ',
-        print >> self.fd, '%s(%s);' % (m.name, ', '.join([x[1] for x in m.args]))
+        print >> self.fd, '%s(%s);' % (m.name, ', '.join([ref_name(x) for x in m.args]))
         # Free the converted arguments
 
         for f, arg in zip(parse_tuple_format, m.args):
             argtype, argname, argoptions = arg
-            if argtype == 'xmlNode*':
+            if is_out(arg):
+                # export the returned variable
+                free = is_transfer_full(unref_type(arg))
+                print m
+                self.set_zval('php_out_%s' % argname, argname, unref_type(arg), free = free)
+                pass
+            elif argtype == 'xmlNode*':
                 print >> self.fd, '    xmlFree(%s);' % argname
             elif f.startswith('a'):
                 elem_type = arg[2].get('elem_type')
@@ -289,7 +371,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('elem_type'))
             return
 
-        function_name = '%s_%s_get' % (klassname, utils.format_as_camelcase(m_name))
+        function_name = '%s_%s_get' % (klassname, format_as_camelcase(m_name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
         self.functions_list.append(function_name)
@@ -333,7 +415,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('elem_type'))
             return
 
-        function_name = '%s_%s_set' % (klassname, utils.format_as_camelcase(m_name))
+        function_name = '%s_%s_set' % (klassname, format_as_camelcase(m_name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
         self.functions_list.append(function_name)

@@ -22,6 +22,18 @@
 import re
 import string
 
+_mapping_convert_type_from_gobject_annotation = {
+        'utf8': 'char8'
+}
+
+def convert_type_from_gobject_annotation(type):
+    return _mapping_convert_type_from_gobject_annotation.get(type, type)
+
+def clean_type(type):
+    type = type.strip()
+    type = re.sub('\s+', ' ', type)
+    return re.sub('\s*\*\s*', '*', type)
+
 def format_as_camelcase(var):
     '''Format an identifier name into CamelCase'''
     if '_' in var:
@@ -100,3 +112,102 @@ def group(list):
 
 
 
+def _test_arg(arg, what):
+    return bool(arg[2].get(what))
+
+def is_optional(arg):
+    return _test_arg(arg, 'optional')
+
+def element_type(arg):
+    return arg[2].get('element-type')
+
+def key_type(arg):
+    return arg[2].get('key-type')
+
+def value_type(arg):
+    return arg[2].get('value-type')
+
+def is_out(arg):
+    return _test_arg(arg, 'out') or arg_type(arg).endswith('**')
+
+def is_glist(arg):
+    return re.match('GList\>', var_type(arg))
+
+def is_hashtable(arg):
+    return re.match('GHashTable\>', var_type(arg))
+
+def var_type(arg):
+    '''Return the type of variable to store content'''
+    if is_out(arg):
+        return arg[0][:-1]
+    else:
+        return arg[0]
+
+def unref_type(arg):
+    return (var_type(arg), arg[1], arg[2])
+
+def ref_name(arg):
+    if is_out(arg):
+        return '&%s' % arg[1]
+    else:
+        return arg[1]
+
+def arg_type(arg):
+    return arg[0]
+
+def arg_name(arg):
+    return arg[1]
+
+def unconstify(type):
+    return re.sub(r'\bconst\b\s*', '', type).strip()
+
+def make_arg(type):
+    return (type,'',{})
+
+def arg_default(arg):
+    return arg[2].get('default')
+
+def remove_modifiers(type):
+    type = re.sub(r'\s*\bunsigned\b\s*', ' ', type).strip()
+    type = re.sub(r'\s*\bconst\b\s*', ' ', type).strip()
+    type = re.sub(r'\s*\bsigned\b\s*', ' ', type).strip()
+    type = re.sub(r'\s*\bvolatile\b\s*', ' ', type).strip()
+    return clean_type(type)
+
+def is_const(arg):
+    return bool(re.search(r'\bconst\b', arg_type(arg)))
+
+def is_cstring(arg):
+    return unconstify(arg_type(arg)) in ('char*','gchar*','guchar*')
+
+def is_xml_node(arg):
+    return unconstify(arg_type(arg)).startswith('xmlNode')
+
+def is_boolean(arg):
+    return arg_type(arg) in ('gboolean','bool')
+
+def is_pointer(arg):
+    return arg_type(arg).endswith('*')
+
+def is_list(arg):
+    return unconstify(arg_type(arg)).startswith('GList')
+
+def is_int(arg, binding_data):
+    return arg_type(arg) in [ 'int', 'gint', 'long', 'glong'] + binding_data.enums
+
+def is_time_t_pointer(arg):
+    return re.match(r'\btime_t*', unconstify(arg_type(arg)))
+
+def is_transfer_full(arg):
+    transfer = arg[2].get('transfer')
+    if transfer:
+        return transfer == 'full'
+    else:
+        return is_out(arg) or is_object(arg)
+
+_not_objects = ( 'GHashTable', 'GList', 'GType' )
+
+def is_object(arg):
+
+    t = unconstify(arg_type(arg))
+    return t[0] in string.uppercase and not [ x for x in _not_objects if x in t ]

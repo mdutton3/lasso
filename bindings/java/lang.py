@@ -24,7 +24,7 @@ import sys
 import re
 import textwrap
 
-import utils
+from utils import *
 
 lasso_package_name = 'com.entrouvert.lasso'
 lasso_java_path = 'com/entrouvert/lasso/'
@@ -39,14 +39,24 @@ def with_return_owner(d):
 def generate_arg_list(self,args):
     def arg_to_decl(arg):
         type, name, option = arg
-        return self.JNI_arg_type(type) + ' ' + utils.format_as_camelcase(name)
-    return ', '.join([ arg_to_decl(x) for x in args ])
+        return self.JNI_arg_type(type) + ' ' + format_as_camelcase(name)
+    return ', '.join([ arg_to_decl(x) for x in args if not is_out(x)])
 
 def generate_arg_list2(args):
     def arg_to_decl(arg):
         type, name, option = arg
-        return utils.format_as_camelcase(name)
+        if is_out(arg):
+            return 'output'
+        return format_as_camelcase(name)
     return ', '.join([ arg_to_decl(x) for x in args ])
+
+def generate_arg_list3(self,args):
+    def arg_to_decl(arg):
+        type, name, option = arg
+        if is_out(arg):
+            return 'Object[] output'
+        return self.JNI_arg_type(type) + ' ' + format_as_camelcase(name)
+    return ', '.join([ arg_to_decl(x) for x in args])
 
 def convert_class_name(lasso_name):
     return lasso_name[5:]
@@ -85,8 +95,8 @@ def error_to_exception(error_name):
         super = 'Lasso'
     else:
         super, name = re.match('LASSO(_.*)_ERROR(_.*)', error_name).groups()
-    super = utils.format_as_camelcase(super.lower())
-    name = utils.format_as_camelcase(name.lower())
+    super = format_as_camelcase(super.lower())
+    name = format_as_camelcase(name.lower())
     return (super+name+'Exception',super+'Exception')
 
 def wrapper_decl(name, jnitype, fd):
@@ -274,17 +284,17 @@ protected static native void destroy(long cptr);
         else:
             jtype = self.JNI_return_type(m.return_type)
         name = self.JNI_function_name(m)
-        print >> fd, '   public static native %s %s(%s);' % (jtype,name, generate_arg_list(self,m.args))
+        print >> fd, '   public static native %s %s(%s);' % (jtype,name, generate_arg_list3(self,m.args))
 
     def JNI_member_function_prefix(self,c,m):
         klassname = c.name[5:]
-        mname = utils.format_as_camelcase(m[1])
+        mname = format_as_camelcase(m[1])
         return '%s_%s' % (klassname,mname)
 
     def generate_JNI_member(self, c, fd):
         for m in c.members:
             prefix = self.JNI_member_function_prefix(c,m)
-            mname = utils.format_as_camelcase(m[1])
+            mname = format_as_camelcase(m[1])
             mtype = m[0]
 
             jtype = self.JNI_member_type(m)
@@ -691,7 +701,7 @@ protected static native void destroy(long cptr);
                 continue
             name, = re.match('LASSO_ERROR(.*)',orig).groups()
             name = name.lower()
-            name = utils.format_underscore_as_camelcase(name)
+            name = format_underscore_as_camelcase(name)
             name = 'Lasso%sException' % name
             self.generate_exception_class(name, 'LassoException', 0, orig)
             self.generate_exception_switch_case(efd, name, orig)
@@ -726,7 +736,7 @@ protected static native void destroy(long cptr);
             if m.rename:
                 return m.rename
             else:
-                name = utils.format_as_camelcase(m.name[6:])
+                name = format_as_camelcase(m.name[6:])
                 name = name[prefix:]
                 return name[0].lower() + name[1:]
         for c in self.binding_data.structs:
@@ -776,7 +786,7 @@ protected static native void destroy(long cptr);
             for m in c.members:
                 type, name, options = m
                 prefix = self.JNI_member_function_prefix(c,m)
-                jname = utils.format_as_camelcase('_'+name)
+                jname = format_as_camelcase('_'+name)
                 jtype = self.JNI_member_type(m)
                 if type == 'GList*' or type == 'const GList*':
                     print >> fd, '    public void set%s(List list) {' % jname
@@ -859,8 +869,10 @@ protected static native void destroy(long cptr);
                     else:
                         print >> fd, '    /**\n'
                     print >> fd, '      *'
-                    for name, desc in doc.parameters:
-                        print >> fd, normalize(desc, '      * @param %s ' % utils.format_as_camelcase(name))
+                    for p in doc.parameters:
+                        name = p[0]
+                        desc = p[1]
+                        print >> fd, normalize(desc, '      * @param %s ' % format_as_camelcase(name))
                     if doc.return_value:
                         print >> fd, normalize(doc.return_value, '      * @return ')
                     if m.errors:
@@ -868,7 +880,22 @@ protected static native void destroy(long cptr);
                             err = error_to_exception(err)[0]
                             print >> fd, normalize(err,'      * @throws ')
                     print >> fd, '    **/'
-                if m.return_type == 'GList*' or m.return_type == 'const GList*':
+                outarg = None
+                for a in args:
+                    if is_out(a):
+                        # only one output arg supported
+                        assert not outarg
+                        outarg = a
+                if outarg:
+                    assert is_int(make_arg(m.return_type), self.binding_data)
+                    new_return_type = self.JNI_return_type(var_type(outarg))
+                    print >> fd, '    public %s %s(%s) {' % (new_return_type, mname, generate_arg_list(self, args[1:]))
+                    print >> fd, '        Object[] output = new Object[1];'
+                    print >> fd, '        LassoException.throwError(LassoJNI.%s(this, %s));' % (jni_name, generate_arg_list2(args[1:]))
+                    print >> fd, '        return (%s)output[0];' % new_return_type
+                    print >> fd, '    }'
+
+                elif m.return_type == 'GList*' or m.return_type == 'const GList*':
                     print >> fd, '    public List %s(%s) {' % (mname,generate_arg_list(self,args[1:]))
                     arglist = generate_arg_list2(args[1:])
                     if arglist:

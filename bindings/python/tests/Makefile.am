@@ -1,6 +1,8 @@
 MAINTAINERCLEANFILES = Makefile.in
 TESTS = #
 
+TESTS_ENVIRONMENT=TOP_SRCDIR=$(top_srcdir)
+
 if PYTHON_ENABLED
 TESTS += profiles_tests.py binding_tests.py
 endif

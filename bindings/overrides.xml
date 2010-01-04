@@ -37,14 +37,14 @@
   <!-- LassoWsfProfile -->
   <func name="lasso_wsf_profile_get_identity" return_owner="false" />
   <func name="lasso_wsf_profile_get_session" return_owner="false" />
-  <func name="lasso_wsf_profile_get_remote_provider" skip="true"/>
-  <func name="lasso_data_service_get_answer" skip="true"/>
-  <func name="lasso_data_service_get_query_item" skip="true"/>
-  <func name="lasso_data_service_add_modification" skip="true"/>
+  <func name="lasso_wsf_profile_get_remote_provider" skip="java"/>
+  <func name="lasso_data_service_get_answer" skip="java"/>
+  <func name="lasso_data_service_get_query_item" skip="java"/>
+  <func name="lasso_data_service_add_modification" skip="java"/>
+  <func name="lasso_data_service_get_answers" skip="java"/>
+  <func name="lasso_data_service_get_answers_by_select" skip="java"/>
+  <func name="lasso_data_service_get_answers_by_item_id" skip="java"/>
   <func name="lasso_saml2_encrypted_element_decrypt" skip="true"/>
-  <func name="lasso_data_service_get_answers" skip="true"/>
-  <func name="lasso_data_service_get_answers_by_select" skip="true"/>
-  <func name="lasso_data_service_get_answers_by_item_id" skip="true"/>
   <!-- LassoIdentity -->
   <func name="lasso_identity_get_federation" return_owner="false" />
   <func name="lasso_identity_get_svc_md_ids" return_type_qualifier="char*"/>
