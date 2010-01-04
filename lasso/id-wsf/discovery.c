@@ -864,8 +864,8 @@ cleanup:
 /**
  * lasso_discovery_init_resource_offering:
  * @discovery: a #LassoDiscovery object
- * @security_mech_id: a security mechanism string identifier
- * @output_offering: a pointer to a variable to hold the found resource offering
+ * @security_mech_id: (allow-none): a security mechanism string identifier
+ * @output_offering: (allow-none) (out): a pointer to a variable to hold the found resource offering
  *
  * Return value: 0 if successfull, an error code otherwise.
  **/
@@ -890,8 +890,9 @@ lasso_discovery_init_resource_offering(LassoDiscovery *discovery,
 	goto_cleanup_if_fail (! rc);
 cleanup:
 	if (output_offering) {
-		*output_offering = offering;
+		lasso_assign_gobject(*output_offering, offering);
 	}
+	lasso_release_gobject(offering);
 	return rc;
 }
 /**
