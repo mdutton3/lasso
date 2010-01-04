@@ -123,9 +123,9 @@ gboolean lasso_registry_functional_mapping_equal(LassoRegistryFunctionalMappingR
  */
 guint lasso_registry_direct_mapping_hash(LassoRegistryDirectMappingRecord *record)
 {
-	return g_direct_hash((void*)(ptrdiff_t)(record->from_namespace
-		^ record->from_name
-		^ record->to_namespace));
+	return g_direct_hash((gpointer)((ptrdiff_t)record->from_namespace
+		^ (ptrdiff_t)record->from_name
+		^ (ptrdiff_t)record->to_namespace));
 }
 
 /**
@@ -138,7 +138,8 @@ guint lasso_registry_direct_mapping_hash(LassoRegistryDirectMappingRecord *recor
  */
 guint lasso_registry_functional_mapping_hash(LassoRegistryFunctionalMappingRecord *record)
 {
-	return g_direct_hash((void*)(ptrdiff_t)(record->from_namespace ^ record->to_namespace));
+	return g_direct_hash((gpointer)((ptrdiff_t)record->from_namespace
+				^ (ptrdiff_t)record->to_namespace));
 }
 
 /**
