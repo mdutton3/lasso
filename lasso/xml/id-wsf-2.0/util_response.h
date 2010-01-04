@@ -76,6 +76,10 @@ struct _LassoIdWsf2UtilResponseClass {
 
 LASSO_EXPORT GType lasso_idwsf2_util_response_get_type(void);
 LASSO_EXPORT LassoIdWsf2UtilResponse* lasso_idwsf2_util_response_new(void);
+LASSO_EXPORT void lasso_idwsf2_util_response_set_status(
+		LassoIdWsf2UtilResponse *idwsf2_util_response, const char *status);
+LASSO_EXPORT void lasso_idwsf2_util_response_set_status2(
+		LassoIdWsf2UtilResponse *idwsf2_util_response, const char *status, const char *status2);
 
 
 

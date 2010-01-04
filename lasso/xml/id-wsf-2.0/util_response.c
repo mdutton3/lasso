@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "util_response.h"
+#include "../../utils.h"
 
 /**
  * SECTION:util_response
@@ -125,4 +126,58 @@ LassoIdWsf2UtilResponse*
 lasso_idwsf2_util_response_new()
 {
 	return g_object_new(LASSO_TYPE_IDWSF2_UTIL_RESPONSE, NULL);
+}
+
+/**
+ * lasso_idwsf2_util_response_set_status:
+ * @idwsf2_util_response: a #LassoIdWsf2UtilResponse object
+ * @status: a status code identifier
+ *
+ * Set the first level status code and no second level status code.
+ */
+void
+lasso_idwsf2_util_response_set_status(LassoIdWsf2UtilResponse *idwsf2_util_response,
+		const char *status)
+{
+	LassoIdWsf2UtilStatus *idwsf2_util_status;
+
+	if (! LASSO_IS_IDWSF2_UTIL_RESPONSE(idwsf2_util_response))
+		return;
+	if (status == NULL || status[0] == '\0')
+		return;
+
+	idwsf2_util_status = lasso_idwsf2_util_status_new();
+	lasso_assign_string(idwsf2_util_status->code, status);
+	lasso_assign_new_gobject(idwsf2_util_response->Status, idwsf2_util_status);
+}
+
+void
+lasso_idwsf2_util_response_set_status2(LassoIdWsf2UtilResponse *idwsf2_util_response,
+		const char *status, const char *status2)
+{
+	LassoIdWsf2UtilStatus *idwsf2_util_status = NULL;
+	LassoIdWsf2UtilStatus *idwsf2_util_status2 = NULL;
+
+	if (! LASSO_IS_IDWSF2_UTIL_RESPONSE(idwsf2_util_response))
+		return;
+	if (status2 == NULL || status2[0] == '\0')
+		return;
+
+	if (status) {
+		idwsf2_util_status = lasso_idwsf2_util_status_new();
+		lasso_assign_string(idwsf2_util_status->code, status);
+	} else {
+		if (LASSO_IS_IDWSF2_UTIL_STATUS(idwsf2_util_response->Status)) {
+			idwsf2_util_status = idwsf2_util_response->Status;
+		} else {
+			return;
+		}
+	}
+
+	if (idwsf2_util_status) {
+		idwsf2_util_status2 = lasso_idwsf2_util_status_new();
+		lasso_assign_string(idwsf2_util_status2->code, status2);
+		lasso_list_add_new_gobject(idwsf2_util_status->Status, idwsf2_util_status2);
+		lasso_assign_new_gobject(idwsf2_util_response->Status, idwsf2_util_status);
+	}
 }
