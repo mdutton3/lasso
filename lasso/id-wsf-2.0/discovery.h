@@ -56,9 +56,6 @@ typedef struct _LassoIdWsf2DiscoveryPrivate LassoIdWsf2DiscoveryPrivate;
 struct _LassoIdWsf2Discovery {
 	LassoIdWsf2Profile parent;
 
-	GList *metadatas; /* of LassoIdWsf2DiscoSvcMetadata* */
-	GList *svcMDIDs; /* of char* */
-
 	/*< private >*/
 	LassoIdWsf2DiscoveryPrivate *private_data;
 };
@@ -71,48 +68,78 @@ LASSO_EXPORT GType lasso_idwsf2_discovery_get_type(void);
 
 LASSO_EXPORT LassoIdWsf2Discovery* lasso_idwsf2_discovery_new(LassoServer *server);
 
-LASSO_EXPORT gchar* lasso_idwsf2_discovery_metadata_register_self(LassoIdWsf2Discovery *discovery,
-	const gchar *service_type, const gchar *abstract,
-	const gchar *soap_endpoint, const gchar *svcMDID);
+/**
+ * LassoIdWsf2DiscoveryRequestType:
+ * @LASSO_IDWSF2_DISCOVERY_METADATA_REGISTER_REQUEST:
+ * @LASSO_IDWSF2_DISCOVERY_METADATA_ASSOCIATION_REQUEST:
+ * @LASSO_IDWSF2_DISCOVERY_METADATA_DISSOCIATION_REQUEST:
+ * @LASSO_IDWSF2_DISCOVERY_QUERY:
+ */
+typedef enum {
+	LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_UNKNOWN,
+	LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_QUERY,
+	LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_QUERY,
+	LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_REGISTER,
+	LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_REPLACE,
+	LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_DELETE,
+	LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_ASSOCIATION_ADD,
+	LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_ASSOCIATION_DELETE,
+	LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_ASSOCIATION_QUERY,
+} LassoIdWsf2DiscoveryRequestType;
 
-LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery,
-	const gchar *service_type, const gchar *abstract,
-	const gchar *disco_provider_id, const gchar *soap_endpoint);
+/**
+ * LassoIdWsf2DiscoveryQueryResultType:
+ * @LASSO_IDWSF2_DISCOVERY_QUERY_RESULT_TYPE_BEST:
+ * @LASSO_IDWSF2_DISCOVERY_QUERY_RESULT_TYPE_ALL:
+ * @LASSO_IDWSF2_DISCOVERY_QUERY_RESULT_TYPE_ONLY_ONE:
+ */
+typedef enum {
+ LASSO_IDWSF2_DISCOVERY_QUERY_RESULT_TYPE_NONE,
+ LASSO_IDWSF2_DISCOVERY_QUERY_RESULT_TYPE_BEST,
+ LASSO_IDWSF2_DISCOVERY_QUERY_RESULT_TYPE_ALL,
+ LASSO_IDWSF2_DISCOVERY_QUERY_RESULT_TYPE_ONLY_ONE
+} LassoIdWsf2DiscoveryQueryResultType;
 
-LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_register_msg(
-	LassoIdWsf2Discovery *discovery, const gchar *message);
-
-LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_register_response_msg(
-	LassoIdWsf2Discovery *discovery, const gchar *message);
-
+/* Request initialization */
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_query(LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_replace(LassoIdWsf2Discovery *discovery);
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_association_add(
-	LassoIdWsf2Discovery *discovery, const gchar *svcMDID);
-
-LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_association_add_msg(
-	LassoIdWsf2Discovery *discovery, const gchar *message);
-
-LASSO_EXPORT gint lasso_idwsf2_discovery_register_metadata(LassoIdWsf2Discovery *discovery);
-
-LASSO_EXPORT gint lasso_idwsf2_discovery_process_metadata_association_add_response_msg(
-	LassoIdWsf2Discovery *discovery, const gchar *message);
-
-LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discovery,
-	const gchar *security_mech_id);
-
-LASSO_EXPORT gint lasso_idwsf2_discovery_add_requested_service_type(LassoIdWsf2Discovery *discovery,
-	const gchar *service_type);
-
-LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_msg(LassoIdWsf2Discovery *discovery,
-	const gchar *message);
-
-LASSO_EXPORT gint lasso_idwsf2_discovery_build_query_response_eprs(
+		LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_association_delete(
+		LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_association_query(
 		LassoIdWsf2Discovery *discovery);
 
-LASSO_EXPORT gint lasso_idwsf2_discovery_process_query_response_msg(
-		LassoIdWsf2Discovery *discovery, const gchar *message);
+/* Add metadatas to operate on, to make request, but also to make responses. */
+LASSO_EXPORT int lasso_idwsf2_discovery_add_service_metadata(
+		LassoIdWsf2Discovery *idwsf2_discovery, LassoIdWsf2DiscoSvcMetadata *service_metadata);
+LASSO_EXPORT int lasso_idwsf2_discovery_add_simple_service_metadata(
+		LassoIdWsf2Discovery *idwsf2_discovery, const char *abstract,
+		const char *provider_id, GList *service_types, GList *options, const char *address,
+		GList *security_mech_ids);
+LASSO_EXPORT GList* lasso_idwsf2_discovery_get_metadatas(LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT gint lasso_idwsf2_discovery_add_requested_service(LassoIdWsf2Discovery *discovery,
+		GList *service_types, GList *provider_ids, GList *options, GList *security_mech_ids,
+		GList *frameworks, GList *actions, LassoIdWsf2DiscoveryQueryResultType result_type,
+		const char *req_id);
 
-LASSO_EXPORT LassoIdWsf2DataService* lasso_idwsf2_discovery_get_service(
-	LassoIdWsf2Discovery *discovery, const gchar *service_type);
+/* Build the request message */
+LASSO_EXPORT gint lasso_idwsf2_discovery_build_request_msg(LassoIdWsf2Discovery *discovery,
+		const char *security_mech_id);
+
+/* Handle a request */
+LASSO_EXPORT LassoIdWsf2DiscoveryRequestType lasso_idwsf2_discovery_get_request_type(LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT gint lasso_idwsf2_discovery_validate_request(LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT gint lasso_idwsf2_discovery_fail_request(LassoIdWsf2Discovery *discovery,
+		const char *status_code, const char *status_code2);
+
+/* Process the response */
+LASSO_EXPORT gint lasso_idwsf2_discovery_process_response_msg(LassoIdWsf2Discovery *discovery,
+		const char *msg);
+LASSO_EXPORT GList* lasso_idwsf2_discovery_get_endpoint_references(LassoIdWsf2Discovery *discovery);
+
 
 #ifdef __cplusplus
 }

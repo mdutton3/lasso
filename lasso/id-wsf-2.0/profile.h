@@ -31,6 +31,7 @@ extern "C" {
 
 #include "../id-ff/profile.h"
 #include "../xml/soap_envelope.h"
+#include "../xml/ws/wsa_endpoint_reference.h"
 
 #define LASSO_TYPE_IDWSF2_PROFILE (lasso_idwsf2_profile_get_type())
 #define LASSO_IDWSF2_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -53,9 +54,6 @@ struct _LassoIdWsf2Profile {
 	LassoProfile parent;
 
 	/*< private >*/
-	LassoSoapEnvelope *soap_envelope_request;
-	LassoSoapEnvelope *soap_envelope_response;
-
 	LassoIdWsf2ProfilePrivate *private_data;
 };
 
@@ -65,30 +63,43 @@ struct _LassoIdWsf2ProfileClass {
 
 LASSO_EXPORT GType lasso_idwsf2_profile_get_type(void);
 
-LASSO_EXPORT gint lasso_idwsf2_profile_init_soap_request(LassoIdWsf2Profile *profile,
-	LassoNode *request, gchar *service_type);
+/* Initialize profile */
+LASSO_EXPORT void lasso_idwsf2_profile_set_epr(LassoIdWsf2Profile *idwsf2_profile,
+		LassoWsAddrEndpointReference *epr);
+LASSO_EXPORT LassoWsAddrEndpointReference* lasso_idwsf2_profile_get_epr(
+		LassoIdWsf2Profile *idwsf2_profile);
 
-LASSO_EXPORT gint lasso_idwsf2_profile_build_request_msg(LassoIdWsf2Profile *profile);
+/* Initialize requests */
+LASSO_EXPORT gint lasso_idwsf2_profile_init_request(LassoIdWsf2Profile *profile);
 
-LASSO_EXPORT gint lasso_idwsf2_profile_process_soap_request_msg(LassoIdWsf2Profile *profile,
-	const gchar *message);
+/* Build request message */
+LASSO_EXPORT gint lasso_idwsf2_profile_build_request_msg(LassoIdWsf2Profile *profile,
+		const char *security_mech_id);
 
+/* Handle request */
+LASSO_EXPORT gint lasso_idwsf2_profile_process_request_msg(LassoIdWsf2Profile *profile,
+		const char *msg);
+LASSO_EXPORT gint lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
+		const char *security_mech_id);
+LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_request(
+		LassoIdWsf2Profile *idwsf2_profile);
+LASSO_EXPORT LassoNode *lasso_idwsf2_profile_get_name_identifier(
+		LassoIdWsf2Profile *idwsf2_profile);
+
+/* Initialize response */
+LASSO_EXPORT gint lasso_idwsf2_profile_init_response(LassoIdWsf2Profile *profile);
+LASSO_EXPORT gint lasso_idwsf2_profile_init_soap_fault_response(LassoIdWsf2Profile *profile);
+LASSO_EXPORT gint lasso_idwsf2_profile_redirect_user_for_interaction(LassoIdWsf2Profile *profile,
+		const gchar *redirect_url, gboolean for_data);
+
+/* Build response message */
 LASSO_EXPORT gint lasso_idwsf2_profile_build_response_msg(LassoIdWsf2Profile *profile);
 
-LASSO_EXPORT gint lasso_idwsf2_profile_process_soap_response_msg(LassoIdWsf2Profile *profile,
-	const gchar *message);
-
-LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_build_soap_envelope(
-		const char *refToMessageId,
-		const char *providerId);
-
-LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_request(LassoIdWsf2Profile *idwsf2_profile);
-
-LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_response(LassoIdWsf2Profile *idwsf2_profile);
-
-LASSO_EXPORT void lasso_idwsf2_profile_set_response(LassoIdWsf2Profile *idwsf2_profile, LassoNode *response);
-
-LASSO_EXPORT void lasso_idwsf2_profile_set_request(LassoIdWsf2Profile *idwsf2_profile, LassoNode *request);
+/* Handle response */
+LASSO_EXPORT gint lasso_idwsf2_profile_process_response_msg(LassoIdWsf2Profile *profile,
+		const char *msg);
+LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_response(
+		LassoIdWsf2Profile *idwsf2_profile);
 
 #ifdef __cplusplus
 }
