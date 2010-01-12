@@ -89,6 +89,8 @@ struct _LassoNodeClassData
 	xmlNs *ns;
 	int sign_type_offset;
 	int sign_method_offset;
+	int private_key_file_offset;
+	int certificate_file_offset;
 	gboolean keep_xmlnode;
 };
 
