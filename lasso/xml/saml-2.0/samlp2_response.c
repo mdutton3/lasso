@@ -48,7 +48,7 @@
  * </figure>
  */
 
-extern LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
+extern LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion, char *recipient);
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -78,7 +78,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		assertions_copy = g_list_copy(response->Assertion);
 		for (assertions = response->Assertion;
 				assertions != NULL; assertions = g_list_next(assertions)) {
-			encrypted_element = lasso_assertion_encrypt(assertions->data);
+			encrypted_element = lasso_assertion_encrypt(assertions->data, NULL);
 			if (encrypted_element != NULL) {
 				/* use EncryptedAssertion */
 				response->EncryptedAssertion = g_list_append(
