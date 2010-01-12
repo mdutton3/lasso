@@ -57,8 +57,9 @@ LASSO_EXPORT gboolean lasso_saml2_assertion_is_audience_restricted(
 LASSO_EXPORT LassoSaml2NameID* lasso_saml2_name_id_build_persistent(const char *id,
 		const char *idpID, const char *providerID);
 
-LASSO_EXPORT LassoSaml2EncryptedElement* lasso_saml2_encrypted_element_build_encrypted_persistent_name_id(
-		const char *id, const char *idpID, const LassoProvider *provider);
+LASSO_EXPORT LassoSaml2EncryptedElement*
+	lasso_saml2_encrypted_element_build_encrypted_persistent_name_id(const char *id,
+		const char *idpID, const LassoProvider *provider);
 
 LASSO_EXPORT void lasso_saml2_assertion_set_subject_name_id(LassoSaml2Assertion *saml2_assertion,
 		LassoNode *node);
@@ -88,8 +89,12 @@ LASSO_EXPORT LassoProvider* lasso_saml2_assertion_get_issuer_provider(
 LASSO_EXPORT int lasso_server_saml2_assertion_setup_signature(LassoServer *server,
 		LassoSaml2Assertion *saml2_assertion);
 
-LASSO_EXPORT int lasso_saml2_assertion_add_attribute_with_node(LassoSaml2Assertion *assertion, const char *name, const char *nameformat, LassoNode *content);
+LASSO_EXPORT int lasso_saml2_assertion_add_attribute_with_node(LassoSaml2Assertion *assertion, const
+		char *name, const char *nameformat, LassoNode *content);
 
+LASSO_EXPORT LassoSaml2SubjectConfirmationData*
+	lasso_saml2_assertion_get_subject_confirmation_data(LassoSaml2Assertion *saml2_assertion,
+			gboolean create);
 
 #ifdef __cplusplus
 }

@@ -53,7 +53,10 @@
  * @http_method: if set, then it get the protocol profile in metadata
  *     corresponding of this HTTP request method.
  *
- * Initializes a new Name Id Management Request.
+ * Initializes a new Name Id Management Request. If @new_name_id is NULL, it is a Termination
+ * request, if not and we are an IdP is a NameID change request, if we are a SP, it is a request to
+ * add a SP provided Id to the NameID of the IdP. It can be useful if the SP do not want to store
+ * the federation, instead he can export its own identifiers to the IdP.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -73,10 +76,8 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 
 	request = (LassoSamlp2RequestAbstract*)lasso_samlp2_manage_name_id_request_new();
 	manage_name_id_request = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request);
-	rc = lasso_saml20_init_request(profile, remote_provider_id, TRUE, request, http_method,
-			LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID);
-	if (rc)
-		goto cleanup;
+	lasso_check_good_rc(lasso_saml20_init_request(profile, remote_provider_id, TRUE, request,
+				http_method, LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID));
 
 	lasso_assign_gobject(manage_name_id_request->NameID, (LassoSaml2NameID*)profile->nameIdentifier);
 	if (new_name_id) {
@@ -84,6 +85,11 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 	} else {
 		lasso_assign_new_gobject(manage_name_id_request->Terminate,
 				LASSO_SAMLP2_TERMINATE(lasso_samlp2_terminate_new()));
+		/* if we are the IdP we can apply termination immediately. */
+		if (profile->server->parent.role & LASSO_PROVIDER_ROLE_IDP) {
+			lasso_identity_remove_federation(profile->identity,
+					profile->remote_providerID);
+		}
 	}
 
 cleanup:
@@ -106,7 +112,7 @@ lasso_name_id_management_build_request_msg(LassoNameIdManagement *name_id_manage
 {
 	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 
-	return lasso_saml20_profile_build_request_msg(&name_id_management->parent, "ManageNameIDService", FALSE);
+	return lasso_saml20_profile_build_request_msg(&name_id_management->parent, "ManageNameIDService", name_id_management->parent.http_request_method, NULL);
 }
 
 
@@ -267,21 +273,21 @@ int
 lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_management)
 {
 	LassoProfile *profile = NULL;
-	gint rc = 0;
+	LassoSamlp2StatusResponse *response;
 
 	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 	profile = &name_id_management->parent;
 
 	/* no response set here means request denied */
-	if (! profile->response) {
-		profile->response = lasso_samlp2_manage_name_id_response_new();
-		lasso_saml20_profile_init_response(profile, LASSO_SAML2_STATUS_CODE_RESPONDER,
+	if (! LASSO_IS_SAMLP2_STATUS_RESPONSE(profile->response)) {
+		response = (LassoSamlp2StatusResponse*)lasso_samlp2_manage_name_id_response_new();
+		lasso_saml20_profile_init_response(profile, response, LASSO_SAML2_STATUS_CODE_RESPONDER,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
+		lasso_release_gobject(response);
 	}
 
-	rc = lasso_saml20_profile_build_response(profile, "ManageNameIDService", FALSE, profile->http_request_method);
-
-	return rc;
+	/* use the same binding as for the request */
+	return lasso_saml20_profile_build_response_msg(profile, "ManageNameIDService", profile->http_request_method, NULL);
 }
 
 
@@ -308,11 +314,9 @@ lasso_name_id_management_process_response_msg(
 	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 	lasso_null_param(response_msg);
 
-	profile = (LassoProfile*)name_id_management;
+	profile = &name_id_management->parent;
 	response = (LassoSamlp2StatusResponse*)lasso_samlp2_manage_name_id_response_new();
-	rc = lasso_saml20_profile_process_any_response(profile, response, response_msg);
-	if (rc)
-		goto cleanup;
+	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile, response, NULL, response_msg));
 
 	/* Stop here if signature validation failed. */
 	goto_cleanup_if_fail_with_rc(profile->signature_status == 0, profile->signature_status);

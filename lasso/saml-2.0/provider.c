@@ -223,7 +223,7 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 	LassoHttpMethod method = LASSO_HTTP_METHOD_NONE;
 	int i;
 	const char *possible_bindings[] = {
-		"HTTP-Redirect", "HTTP-Post", "SOAP", NULL
+		"HTTP-Redirect", "HTTP-Post", "SOAP", "HTTP-Artifact", NULL
 	};
 	LassoHttpMethod method_bindings[] = {
 		LASSO_HTTP_METHOD_SOAP, LASSO_HTTP_METHOD_REDIRECT, LASSO_HTTP_METHOD_POST

@@ -1271,6 +1271,19 @@ lasso_provider_set_encryption_mode(LassoProvider *provider, LassoEncryptionMode 
 }
 
 /**
+ * lasso_provider_get_encryption_mode:
+ * @provider: a #LassoProvider object
+ *
+ * Return the current encryption mode.
+ */
+LassoEncryptionMode
+lasso_provider_get_encryption_mode(LassoProvider *provider) {
+	if (! LASSO_IS_PROVIDER(provider) || ! provider->private_data)
+		return LASSO_ENCRYPTION_MODE_NONE;
+	return provider->private_data->encryption_mode;
+}
+
+/**
  * lasso_provider_set_encryption_sym_key_type:
  * @provider: provider to set encryption for
  * @encryption_sym_key_type: enum type for generated symetric key

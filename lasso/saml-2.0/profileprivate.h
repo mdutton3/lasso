@@ -36,7 +36,7 @@ extern "C" {
 #include "../xml/saml-2.0/samlp2_request_abstract.h"
 #include "../id-ff/provider.h"
 
-int lasso_saml20_init_request(LassoProfile *profile, char *remote_provider_id,
+int lasso_saml20_init_request(LassoProfile *profile, const char *remote_provider_id,
 		gboolean first_in_session, LassoSamlp2RequestAbstract *request_abstract,
 		LassoHttpMethod http_method, LassoMdProtocolType protocol_type);
 char* lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part);
@@ -57,23 +57,26 @@ int lasso_saml20_profile_process_artifact_response(LassoProfile *profile, const 
 gint lasso_saml20_profile_set_session_from_dump(LassoProfile *profile);
 gint lasso_saml20_profile_process_name_identifier_decryption(LassoProfile *profile,
 		LassoSaml2NameID **name_id, LassoSaml2EncryptedElement **encrypted_id);
-int lasso_saml20_profile_process_soap_request(LassoProfile *profile, char *request_msg);
-int lasso_saml20_profile_process_soap_response(LassoProfile *profile, char *response_msg);
+int lasso_saml20_profile_process_soap_request(LassoProfile *profile, const char *request_msg);
+int lasso_saml20_profile_process_soap_response(LassoProfile *profile, const char *response_msg);
 int lasso_saml20_profile_process_any_request(LassoProfile *profile, LassoNode *request_node,
-	char *request_msg);
-int lasso_saml20_profile_process_any_response(LassoProfile *profile, LassoSamlp2StatusResponse *response_node, char *response_msg);
+	const char *request_msg);
+int lasso_saml20_profile_process_any_response(LassoProfile *profile, LassoSamlp2StatusResponse *response_node, LassoHttpMethod *response_method, const char *response_msg);
 int lasso_saml20_profile_setup_request_signing(LassoProfile *profile);
-int lasso_saml20_profile_build_request_msg(LassoProfile *profile, char *service, gboolean no_signature);
-int lasso_saml20_profile_build_response(LassoProfile *profile, char *service, gboolean no_signature, LassoHttpMethod method);
-int lasso_saml20_profile_init_response(LassoProfile *profile, const char *status_code1,
-		const char *status_code2);
+int lasso_saml20_profile_build_request_msg(LassoProfile *profile, const char *service, LassoHttpMethod method, const char *url);
+int lasso_saml20_profile_build_response_msg(LassoProfile *profile, char *service,
+		LassoHttpMethod method, const char *_url);
+int lasso_saml20_profile_init_response(LassoProfile *profile,
+		LassoSamlp2StatusResponse *status_response, const char *status_code1, const char *status_code2);
 int lasso_saml20_profile_validate_request(LassoProfile *profile, gboolean needs_identity, LassoSamlp2StatusResponse *status_response, LassoProvider **provider_out);
 gint lasso_saml20_build_http_redirect_query_simple(LassoProfile *profile, LassoNode *msg,
-		gboolean must_sign, const char *profile_name, gboolean is_response);
+		const char *profile_name, gboolean is_response);
 gint lasso_saml20_profile_build_http_redirect(LassoProfile *profile, LassoNode *msg,
-		gboolean must_sign, const char *url);
+		const char *url);
 gint lasso_profile_saml20_setup_message_signature(LassoProfile *profile,
 		LassoNode *request_or_response);
+gint lasso_saml20_profile_setup_encrypted_node(LassoProvider *provider,
+		LassoNode **node_to_encrypt, LassoNode **node_destination);
 
 #ifdef __cplusplus
 }

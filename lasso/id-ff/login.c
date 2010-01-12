@@ -929,7 +929,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	}
 
 	IF_SAML2(profile) {
-		return lasso_saml20_login_build_authn_request_msg(login, remote_provider);
+		return lasso_saml20_login_build_authn_request_msg(login);
 	}
 
 	protocolProfile = LASSO_LIB_AUTHN_REQUEST(profile->request)->ProtocolProfile;

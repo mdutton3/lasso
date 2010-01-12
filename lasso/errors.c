@@ -117,6 +117,8 @@ lasso_strerror(int error_code)
 			return "SAML signature must contain only one reference";
 		case LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE:
 			return "Missing service type";
+		case LASSO_PROFILE_ERROR_UNSUPPORTED_BINDING:
+			return "The responder reported that he does not support this binding";
 		case LASSO_PROFILE_ERROR_CANNOT_FIND_A_PROVIDER:
 			return "Profile was called without a specific provider and we cannot find one.";
 		case LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML:
@@ -153,6 +155,8 @@ lasso_strerror(int error_code)
 			return "Invalid signature.";
 		case LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED_FOR_DATA:
 			return "redirect requests.";
+		case LASSO_IDWSF2_DST_ERROR_PARTIAL_FAILURE:
+			return "Server responded with a partial failure status code.";
 		case LASSO_DS_ERROR_DECRYPTION_FAILED:
 			return "Decryption of an encrypted node failed";
 		case LASSO_IDWSF2_DISCOVERY_ERROR_NO_RESULTS:
@@ -181,6 +185,8 @@ lasso_strerror(int error_code)
 			return "Failed to create session from dump";
 		case LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED:
 			return "Error building request QUERY url";
+		case LASSO_DS_ERROR_ENCRYPTION_FAILED:
+			return "Creation of an encrypted node failed";
 		case LASSO_DST_ERROR_MISSING_SERVICE_DATA:
 			return "Missing service data";
 		case LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED:
@@ -205,6 +211,8 @@ lasso_strerror(int error_code)
 			return "A response contained an unknown status code.";
 		case LASSO_PROFILE_ERROR_INVALID_QUERY:
 			return "Invalid URL query";
+		case LASSO_IDWSF2_DST_ERROR_UNKNOWN_STATUS_CODE:
+			return "Server response with an unknown status code.";
 		case LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED:
 			return "LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED";
 		case LASSO_PROFILE_ERROR_MISSING_RESPONSE:
@@ -243,6 +251,8 @@ lasso_strerror(int error_code)
 			return "The error return location should be either NULL or contains a NULL error.";
 		case LASSO_SOAP_ERROR_MISSING_BODY:
 			return "Missing SOAP body";
+		case LASSO_IDWSF2_DST_ERROR_ITEM_NOT_FOUND:
+			return "The item_id was not found in the current query request.";
 		case LASSO_XML_ERROR_INVALID_FILE:
 			return "Invalid XML file";
 		case LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT:

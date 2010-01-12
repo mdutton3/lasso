@@ -198,7 +198,14 @@
  *
  * Decryption of an encrypted node failed
  */
-#define LASSO_DS_ERROR_DECRYPTION_FAILED -118
+#define LASSO_DS_ERROR_DECRYPTION_FAILED 118
+/**
+ * LASSO_DS_ERROR_ENCRYPTION_FAILED:
+ *
+ * Creation of an encrypted node failed
+ */
+#define LASSO_DS_ERROR_ENCRYPTION_FAILED -119
+
 
 /* Server */
 /**
@@ -506,7 +513,6 @@
  * Received response does not refer to the request sent
  */
 #define LASSO_PROFILE_ERROR_RESPONSE_DOES_NOT_MATCH_REQUEST -442
-
 /**
  * LASSO_PROFILE_ERROR_INVALID_REQUEST:
  *
@@ -520,6 +526,13 @@
  * Received request is not of the expected type.
  */
 #define LASSO_PROFILE_ERROR_INVALID_RESPONSE 444
+/**
+ * LASSO_PROFILE_ERROR_UNSUPPPORTED_BINDING
+ *
+ * The responder reported that he does not support this binding
+ */
+#define LASSO_PROFILE_ERROR_UNSUPPORTED_BINDING 445
+
 
 /* functions/methods parameters checking */
 /**

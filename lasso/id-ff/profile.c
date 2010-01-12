@@ -43,12 +43,46 @@
 #include "./sessionprivate.h"
 
 #include "../saml-2.0/profileprivate.h"
+#include "../xml/saml-2.0/saml2_name_id.h"
+#include "../xml/saml-2.0/saml2_assertion.h"
 #include "../utils.h"
 #include "../debug.h"
 
 /*****************************************************************************/
 /* public functions                                                          */
 /*****************************************************************************/
+
+static LassoNode*
+_lasso_saml_assertion_get_name_id(LassoSamlAssertion *assertion) 
+{
+	LassoSamlAuthenticationStatement *authn_statement;
+	LassoSamlSubject *subject;
+
+	goto_cleanup_if_fail(LASSO_IS_SAML_ASSERTION(assertion));
+	authn_statement = assertion->AuthenticationStatement;
+	goto_cleanup_if_fail(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(authn_statement));
+	subject = authn_statement->parent.Subject;
+	goto_cleanup_if_fail(LASSO_IS_SAML_SUBJECT(subject));
+	if (LASSO_IS_SAML_NAME_IDENTIFIER(subject->NameIdentifier))
+		return (LassoNode*)subject->NameIdentifier;
+cleanup:
+	return NULL;
+}
+
+static LassoNode*
+_lasso_saml2_assertion_get_name_id(LassoSaml2Assertion *assertion)
+{
+	LassoSaml2Subject *subject;
+
+	goto_cleanup_if_fail(LASSO_SAML2_ASSERTION(assertion));
+	subject = assertion->Subject;
+	goto_cleanup_if_fail(LASSO_SAML2_SUBJECT(subject));
+	if (LASSO_IS_SAML2_NAME_ID(subject->NameID))
+		return (LassoNode*)subject->NameID;
+
+cleanup:
+	return NULL;
+}
 
 /**
  * lasso_profile_get_nameIdentifier:
@@ -69,29 +103,48 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
 	char *name_id_sp_name_qualifier;
 
 	g_return_val_if_fail(LASSO_IS_PROFILE(profile), NULL);
-
+	
 	g_return_val_if_fail(LASSO_IS_SERVER(profile->server), NULL);
 	g_return_val_if_fail(LASSO_IS_IDENTITY(profile->identity), NULL);
-	g_return_val_if_fail(profile->remote_providerID != NULL, NULL);
 
-	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-	if (remote_provider == NULL)
+	if (profile->remote_providerID == NULL)
 		return NULL;
 
-	name_id_sp_name_qualifier = lasso_provider_get_sp_name_qualifier(remote_provider);
-	if (name_id_sp_name_qualifier == NULL)
-		return NULL;
+	if (LASSO_IS_IDENTITY(profile->identity)) {
+		remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+		if (remote_provider == NULL)
+			goto use_session;
 
-	federation = g_hash_table_lookup(
-			profile->identity->federations,
-			name_id_sp_name_qualifier);
-	if (federation == NULL)
-		return NULL;
+		name_id_sp_name_qualifier = lasso_provider_get_sp_name_qualifier(remote_provider);
+		if (name_id_sp_name_qualifier == NULL)
+			goto use_session;
 
-	if (federation->remote_nameIdentifier)
-		return federation->remote_nameIdentifier;
+		federation = g_hash_table_lookup(
+				profile->identity->federations,
+				name_id_sp_name_qualifier);
+		if (federation == NULL)
+			goto use_session;
 
-	return federation->local_nameIdentifier;
+		if (federation->remote_nameIdentifier)
+			return federation->remote_nameIdentifier;
+		return federation->local_nameIdentifier;
+	}
+use_session:
+	/* For transient federations, so we must look at assertions no federation object exists */
+	if (LASSO_IS_SESSION(profile->session)) {
+		LassoNode *assertion, *name_id;
+
+		assertion = lasso_session_get_assertion(profile->session,
+				profile->remote_providerID);
+
+		name_id = _lasso_saml_assertion_get_name_id((LassoSamlAssertion*)assertion);
+		if (name_id)
+			return name_id;
+		name_id = _lasso_saml2_assertion_get_name_id((LassoSaml2Assertion*)assertion);
+		if (name_id)
+			return name_id;
+	}
+	return NULL;
 }
 
 /**

@@ -88,6 +88,10 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	profile = LASSO_PROFILE(logout);
 	lasso_profile_clean_msg_info(profile);
 
+	IF_SAML2(profile) {
+		return lasso_saml20_logout_build_request_msg(logout);
+	}
+
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_logout_init_request was not called before */
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
@@ -97,10 +101,6 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
-	IF_SAML2(profile) {
-		return lasso_saml20_logout_build_request_msg(logout, remote_provider);
 	}
 
 	/* build the logout request message */
@@ -1100,6 +1100,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoLogout *logout)
 {
+	logout->initial_http_request_method = LASSO_HTTP_METHOD_NONE;
 	logout->private_data = g_new0(LassoLogoutPrivate, 1);
 	logout->private_data->dispose_has_run = FALSE;
 }

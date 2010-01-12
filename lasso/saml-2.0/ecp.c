@@ -162,6 +162,7 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		xmlnode = xpathObj->nodesetval->nodeTab[0];
 		xmlUnlinkNode(xmlnode);
+		xmlFreeNode(xmlnode);
 	}
 	xmlXPathFreeObject(xpathObj);
 	xmlXPathFreeContext(xpathCtx);

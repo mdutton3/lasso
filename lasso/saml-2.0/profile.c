@@ -26,15 +26,17 @@
 #include <xmlsec/base64.h>
 
 #include "../utils.h"
-#include "providerprivate.h"
-#include "profileprivate.h"
-#include "profile.h"
+#include "./providerprivate.h"
+#include "./profileprivate.h"
+#include "./profile.h"
+#include "./provider.h"
 
 #include "../id-ff/providerprivate.h"
 #include "../id-ff/profile.h"
 #include "../id-ff/profileprivate.h"
 #include "../id-ff/serverprivate.h"
-#include <../id-ff/sessionprivate.h>
+#include "../id-ff/sessionprivate.h"
+#include "../id-ff/login.h"
 
 #include "../xml/private.h"
 #include "../xml/saml-2.0/samlp2_request_abstract.h"
@@ -48,16 +50,23 @@
 #include "../debug.h"
 
 static char* lasso_saml20_profile_build_artifact(LassoProvider *provider);
-static int lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int sign, char **query);
+static int lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, char **query,
+		LassoSignatureMethod method, const char *private_key);
 static gint lasso_profile_saml20_build_artifact_get_request_msg(LassoProfile *profile,
-		LassoProvider *provider, const char *service);
+		const char *service);
 static gint lasso_profile_saml20_build_artifact_post_request_msg(LassoProfile *profile,
-		LassoProvider *provider, const char *service);
+		const char *service);
 static gint lasso_profile_saml20_build_artifact_get_response_msg(LassoProfile *profile,
-		LassoProvider *provider, const char *service);
+		const char *service);
 static gint lasso_profile_saml20_build_artifact_post_response_msg(LassoProfile *profile,
-		LassoProvider *provider, const char *service);
-static gboolean has_signature(LassoNode *node);
+		const char *service);
+static gboolean has_signature(LassoNode *node, LassoSignatureMethod *signature_method, const char
+		**private_key_file);
+
+#define check_msg_body \
+	if (! profile->msg_body) { \
+		return critical_error(LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED); \
+	}
 
 /*
  * Helper functions
@@ -84,7 +93,7 @@ cleanup:
 }
 
 static char *
-get_url(LassoProvider *provider, char *service, char *binding)
+get_url(LassoProvider *provider, const char *service, const char *binding)
 {
 	char *meta;
 	char *result;
@@ -96,7 +105,7 @@ get_url(LassoProvider *provider, char *service, char *binding)
 }
 
 static char *
-get_response_url(LassoProvider *provider, char *service, char *binding)
+get_response_url(LassoProvider *provider, const char *service, const char *binding)
 {
 	char *meta;
 	char *result;
@@ -110,6 +119,28 @@ get_response_url(LassoProvider *provider, char *service, char *binding)
 	return result;
 }
 
+static const char*
+http_method_to_binding(LassoHttpMethod method) {
+	switch (method) {
+		case LASSO_HTTP_METHOD_POST:
+			return "HTTP-POST";
+		case LASSO_HTTP_METHOD_REDIRECT:
+			return "HTTP-Redirect";
+		case LASSO_HTTP_METHOD_SOAP:
+			return "SOAP";
+		case LASSO_HTTP_METHOD_ARTIFACT_GET:
+		case LASSO_HTTP_METHOD_ARTIFACT_POST:
+			return "HTTP-Artifact";
+		case LASSO_HTTP_METHOD_PAOS:
+			return "PAOS";
+		default:
+			return "";
+	}
+}
+
+/*
+ * Artifact Handling functions
+ */
 
 /**
  * lasso_saml20_profile_generate_artifact
@@ -125,11 +156,13 @@ char*
 lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part)
 {
 	lasso_assign_new_string(profile->private_data->artifact,
-			lasso_saml20_profile_build_artifact(LASSO_PROVIDER(profile->server)));
+			lasso_saml20_profile_build_artifact(&profile->server->parent));
 	if (part == 0) {
-		lasso_assign_new_string(profile->private_data->artifact_message, lasso_node_dump(profile->request));
+		lasso_assign_new_string(profile->private_data->artifact_message,
+				lasso_node_dump(profile->request));
 	} else if (part == 1) {
-		lasso_assign_new_string(profile->private_data->artifact_message, lasso_node_dump(profile->response));
+		lasso_assign_new_string(profile->private_data->artifact_message,
+				lasso_node_dump(profile->response));
 	} else {
 		/* XXX: RequestDenied here? */
 	}
@@ -162,44 +195,71 @@ lasso_saml20_profile_build_artifact(LassoProvider *provider)
 	return ret;
 }
 
-int
-lasso_saml20_profile_set_response_status(LassoProfile *profile,
-		const char *code1, const char *code2)
+/*
+ * this function factorize all case for producing SAML artifact messages
+ */
+static gint
+lasso_profile_saml20_build_artifact_msg(LassoProfile *profile,
+		const char *url, int request_or_response, int get_or_post)
 {
-	LassoSamlp2StatusResponse *status_response = NULL;
-	LassoSamlp2Status *status = NULL;
-	LassoSamlp2StatusCode *status_code1 = NULL;
-	LassoSamlp2StatusCode *status_code2 = NULL;
-	int rc = 0;
+	char *artifact = lasso_saml20_profile_generate_artifact(profile, request_or_response);
 
-	lasso_bad_param(PROFILE, profile);
-	lasso_null_param(code1);
-	lasso_extract_node_or_fail(status_response, profile->response, SAMLP2_STATUS_RESPONSE,
-			LASSO_PROFILE_ERROR_MISSING_RESPONSE);
-
-	if (! LASSO_IS_SAMLP2_STATUS(status_response->Status)) {
-		lasso_assign_new_gobject(status_response->Status,
-				(LassoSamlp2Status*)lasso_samlp2_status_new());
+	if (artifact == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 	}
-	status = status_response->Status;
-	if (! LASSO_IS_SAMLP2_STATUS_CODE(status->StatusCode)) {
-		lasso_assign_new_gobject(status->StatusCode,
-				(LassoSamlp2StatusCode*)lasso_samlp2_status_code_new());
+	/* hack... */
+	if (LASSO_IS_LOGIN(profile)) {
+		LassoLogin *login = (LassoLogin*)profile;
+		lasso_assign_string(login->assertionArtifact, artifact);
 	}
-	status_code1 = status->StatusCode;
-	lasso_assign_string(status_code1->Value, code1);
 
-	if (code2) {
-		if (! LASSO_IS_SAMLP2_STATUS_CODE(status_code1->StatusCode)) {
-			lasso_assign_new_gobject(status_code1->StatusCode,
-					(LassoSamlp2StatusCode*)lasso_samlp2_status_code_new());
+	if (get_or_post == 0) {
+		char *query;
+		if (profile->msg_relayState) {
+			query = lasso_url_add_parameters(NULL, 0, "SAMLart", artifact, "RelayState",
+								profile->msg_relayState, NULL);
+		} else {
+			query = lasso_url_add_parameters(NULL, 0, "SAMLart", artifact, NULL);
 		}
-		status_code2 = status_code1->StatusCode;
-		lasso_assign_string(status_code2->Value, code2);
+		lasso_assign_new_string(profile->msg_url,
+			lasso_concat_url_query(url, query));
+		lasso_release_string(query);
+	} else {
+		lasso_assign_string(profile->msg_url, url);
+		lasso_assign_string(profile->msg_body, artifact);
 	}
+	return 0;
+}
 
-cleanup:
-	return rc;
+enum {
+ REQUEST = 0,
+ RESPONSE = 1,
+ GET = 0,
+ POST = 1
+};
+
+static gint
+lasso_profile_saml20_build_artifact_get_request_msg(LassoProfile *profile, const char *url)
+{
+	return lasso_profile_saml20_build_artifact_msg(profile, url, REQUEST, GET);
+}
+
+static gint
+lasso_profile_saml20_build_artifact_post_request_msg(LassoProfile *profile, const char *url)
+{
+	return lasso_profile_saml20_build_artifact_msg(profile, url, REQUEST, POST);
+}
+
+static gint
+lasso_profile_saml20_build_artifact_get_response_msg(LassoProfile *profile, const char *url)
+{
+	return lasso_profile_saml20_build_artifact_msg(profile, url, RESPONSE, GET);
+}
+
+static gint
+lasso_profile_saml20_build_artifact_post_response_msg(LassoProfile *profile, const char *url)
+{
+	return lasso_profile_saml20_build_artifact_msg(profile, url, RESPONSE, POST);
 }
 
 int
@@ -337,26 +397,24 @@ cleanup:
 int
 lasso_saml20_profile_process_artifact_response(LassoProfile *profile, const char *msg)
 {
-	LassoNode *response;
 	LassoSamlp2ArtifactResponse *artifact_response;
+	int rc = 0;
 
-	/* XXX: handle errors properly */
-
-	response = lasso_node_new_from_soap(msg);
-	if (!LASSO_IS_SAMLP2_ARTIFACT_RESPONSE(response)) {
-		lasso_assign_new_gobject(profile->response, lasso_samlp2_response_new());
-		return LASSO_PROFILE_ERROR_INVALID_ARTIFACT;
-	}
-	artifact_response = LASSO_SAMLP2_ARTIFACT_RESPONSE(response);
-
+	artifact_response = (LassoSamlp2ArtifactResponse*)lasso_samlp2_artifact_response_new();
+	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile,
+				&artifact_response->parent, NULL, msg));
+	/* XXX: check signature status */
+	goto_cleanup_if_fail_with_rc(profile->response != NULL,
+			critical_error(LASSO_PROFILE_ERROR_INVALID_RESPONSE));
 	if (artifact_response->any == NULL) {
-		lasso_assign_new_gobject(profile->response, lasso_samlp2_response_new());
-		return LASSO_PROFILE_ERROR_MISSING_RESPONSE;
+		lasso_release_gobject(profile->response);
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_ARTIFACT);
 	}
 	lasso_assign_gobject(profile->response, artifact_response->any);
-	lasso_release_gobject(response);
 
-	return 0;
+cleanup:
+	lasso_release_gobject(artifact_response);
+	return rc;
 }
 
 /**
@@ -383,7 +441,6 @@ lasso_profile_is_saml_query(const gchar *query)
 
 	return FALSE;
 }
-
 
 static void
 lasso_saml20_profile_set_session_from_dump_decrypt(
@@ -423,7 +480,8 @@ lasso_saml20_profile_set_session_from_dump(LassoProfile *profile)
  * lasso_saml20_profile_process_name_identifier_decryption:
  * @profile: the #LassoProfile object
  * @name_id: the field containing the #LassoSaml2NameID object
- * @encrypted_id: the field containing an encrypted #LassoSaml2NameID as a #LassoSaml2EncryptedElement
+ * @encrypted_id: the field containing an encrypted #LassoSaml2NameID as a
+ * #LassoSaml2EncryptedElement
  *
  * Place content of the NameID in the profile nameIdentifier field, if no NameID is present but an
  * EncryptedElement is, then decrypt it, store it in place of the name_id field and in the
@@ -473,6 +531,10 @@ cleanup:
 	return rc;
 }
 
+/*
+ * Request handling functions
+ */
+
 /**
  * lasso_saml20_profile_process_any_request:
  * @profile: a #LassoProfile object
@@ -493,7 +555,7 @@ cleanup:
 int
 lasso_saml20_profile_process_any_request(LassoProfile *profile,
 		LassoNode *request_node,
-		char *request_msg)
+		const char *request_msg)
 {
 	int rc = 0;
 	LassoSaml2NameID *name_id = NULL;
@@ -562,7 +624,7 @@ cleanup:
 
 int
 lasso_saml20_profile_process_soap_request(LassoProfile *profile,
-		char *request_msg)
+		const char *request_msg)
 {
 	int rc = 0;
 	LassoSaml2NameID *issuer = NULL;
@@ -592,7 +654,7 @@ cleanup:
 
 int
 lasso_saml20_init_request(LassoProfile *profile,
-		char *remote_provider_id,
+		const char *remote_provider_id,
 		gboolean first_in_session,
 		LassoSamlp2RequestAbstract *request_abstract,
 		LassoHttpMethod http_method,
@@ -677,154 +739,184 @@ lasso_saml20_init_request(LassoProfile *profile,
 	lasso_assign_new_string(request_abstract->IssueInstant, lasso_get_current_time());
 	lasso_assign_gobject(profile->request, LASSO_NODE(request_abstract));
 
+	/* set signature */
+	lasso_check_good_rc(lasso_profile_saml20_setup_message_signature(profile, profile->request));
+
 cleanup:
 	return rc;
+}
+
+static int
+lasso_saml20_profile_build_redirect_request_msg(LassoProfile *profile, const char *url)
+{
+	return lasso_saml20_profile_build_http_redirect(profile,
+			profile->request,
+			url);
 }
 
 static int
 lasso_saml20_profile_build_post_request_msg(LassoProfile *profile,
-		LassoProvider *provider, char *service)
+		const char *url)
 {
-	int rc = 0;
-	LassoSamlp2RequestAbstract *request_abstract;
-
-	lasso_bad_param(PROFILE, profile);
-	lasso_bad_param(PROVIDER, provider);
-	lasso_extract_node_or_fail(request_abstract, profile->request, SAMLP2_REQUEST_ABSTRACT,
-			LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED);
-
-	lasso_assign_new_string(profile->msg_url, get_response_url(provider, service, "HTTP-POST"));
-	if (! profile->msg_url) {
-		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
-	}
+	lasso_assign_string(profile->msg_url, url);
 	lasso_assign_new_string(profile->msg_body,
-			lasso_node_export_to_base64(LASSO_NODE(request_abstract)));
-	if (! profile->msg_body) {
-		return critical_error(LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED);
-	}
-cleanup:
-	return rc;
+			lasso_node_export_to_base64(profile->request));
+	check_msg_body;
+	return 0;
 }
 
 static int
-lasso_saml20_profile_build_soap_request_msg(LassoProfile *profile, LassoProvider *provider,
-		char *service)
+lasso_saml20_profile_build_soap_request_msg(LassoProfile *profile, const char *url)
 {
-	int rc = 0;
-	char *url = NULL;
-	LassoSamlp2RequestAbstract *request_abstract;
-
-	lasso_bad_param(PROFILE, profile);
-	lasso_bad_param(PROVIDER, provider);
-	lasso_extract_node_or_fail(request_abstract, profile->request, SAMLP2_REQUEST_ABSTRACT,
-			LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED);
-
-	url = get_url(provider, service, "SOAP");
-	if (! url) {
-		rc = critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
-		goto cleanup;
-	}
+	lasso_assign_string(profile->msg_url, url);
 	lasso_assign_new_string(profile->msg_body,
-			lasso_node_export_to_soap(LASSO_NODE(request_abstract)));
-	lasso_transfer_string(profile->msg_url, url);
-
-	if (! profile->msg_body) {
-		return LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED;
-	}
-
-cleanup:
-	lasso_release_string(url);
-	return rc;
+			lasso_node_export_to_soap(profile->request));
+	check_msg_body;
+	return 0;
 }
 
+/**
+ * the url parameters is special for this function, it does not give the destination of the message
+ * (it's implicit for the caller of this function) but where response should be posted later) */
 static int
-lasso_saml20_profile_build_redirect_request_msg(LassoProfile *profile, LassoProvider *provider,
-		char *service)
+lasso_profile_saml20_build_paos_request_msg(LassoProfile *profile, const char *url)
 {
-	int rc = 0;
-	char *url = NULL;
-
-	url = get_url(provider, service, "HTTP-Redirect");
-	rc = lasso_saml20_profile_build_http_redirect(profile,
-			profile->request,
-			url);
-
-cleanup:
-	lasso_release_string(url);
-	return rc;
-
+	lasso_assign_new_string(profile->msg_body,
+			lasso_node_export_to_paos_request(profile->request,
+					profile->server->parent.ProviderID, url,
+					profile->msg_relayState));
+	check_msg_body;
+	return 0;
 }
 
 int
-lasso_saml20_profile_build_request_msg(LassoProfile *profile, char *service)
+lasso_saml20_profile_build_request_msg(LassoProfile *profile, const char *service,
+		LassoHttpMethod method, const char *_url)
 {
 	LassoProvider *provider;
+	char *made_url = NULL, *url;
 	int rc = 0;
 
 	lasso_bad_param(PROFILE, profile);
 
 	lasso_profile_clean_msg_info(profile);
 	lasso_check_good_rc(get_provider(profile, &provider));
+	url = (char*)_url;
 
-	switch (profile->http_request_method) {
+	/* check presence of a request */
+	if (! LASSO_IS_SAMLP2_REQUEST_ABSTRACT(profile->request)) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
+	}
+
+	/* if not explicitely given, automatically determine an URI from the metadatas */
+	if (url == NULL) {
+		made_url = url = get_url(provider, service, http_method_to_binding(method));
+	}
+
+	switch (method) {
 		case LASSO_HTTP_METHOD_SOAP:
-			rc = lasso_saml20_profile_build_soap_request_msg(profile, provider,
-					service);
+			rc = lasso_saml20_profile_build_soap_request_msg(profile, url);
 			break;
 		case LASSO_HTTP_METHOD_POST:
-			rc = lasso_saml20_profile_build_post_request_msg(profile, provider,
-					service);
+			rc = lasso_saml20_profile_build_post_request_msg(profile, url);
 			break;
 		case LASSO_HTTP_METHOD_REDIRECT:
-			rc = lasso_saml20_profile_build_redirect_request_msg(profile, provider,
-					service);
+			rc = lasso_saml20_profile_build_redirect_request_msg(profile, url);
 			break;
 		case LASSO_HTTP_METHOD_ARTIFACT_GET:
-			rc = lasso_profile_saml20_build_artifact_get_request_msg(profile, provider,
-					service);
+			rc = lasso_profile_saml20_build_artifact_get_request_msg(profile, url);
 			break;
-		case LASSO_HTTP_METHOD_ARTIFACT_GET:
-			rc = lasso_profile_saml20_build_artifact_post_request_msg(profile, provider,
-					service);
+		case LASSO_HTTP_METHOD_ARTIFACT_POST:
+			rc = lasso_profile_saml20_build_artifact_post_request_msg(profile, url);
 			break;
+		case LASSO_HTTP_METHOD_PAOS:
+			rc = lasso_profile_saml20_build_paos_request_msg(profile, url);
 		default:
 			rc = LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 			break;
 	}
 
 cleanup:
+	lasso_release_string(made_url);
 	return rc;
 
 }
 
+/*
+ * Response handling functions
+ */
+
 int
-lasso_saml20_profile_init_response(LassoProfile *profile, const char *status_code1, const char *status_code2)
+lasso_saml20_profile_set_response_status(LassoProfile *profile,
+		const char *code1, const char *code2)
 {
 	LassoSamlp2StatusResponse *status_response = NULL;
-	LassoSamlp2RequestAbstract *request_abstract = NULL;
-	LassoServer *server = NULL;
+	LassoSamlp2Status *status = NULL;
+	LassoSamlp2StatusCode *status_code1 = NULL;
+	LassoSamlp2StatusCode *status_code2 = NULL;
 	int rc = 0;
 
 	lasso_bad_param(PROFILE, profile);
+	lasso_null_param(code1);
 	lasso_extract_node_or_fail(status_response, profile->response, SAMLP2_STATUS_RESPONSE,
 			LASSO_PROFILE_ERROR_MISSING_RESPONSE);
-	lasso_extract_node_or_fail(server, profile->server, SERVER,
-			LASSO_PROFILE_ERROR_MISSING_SERVER);
-	lasso_extract_node_or_fail(request_abstract, profile->request, SAMLP2_REQUEST_ABSTRACT,
-			LASSO_PROFILE_ERROR_MISSING_REQUEST);
+
+	if (! LASSO_IS_SAMLP2_STATUS(status_response->Status)) {
+		lasso_assign_new_gobject(status_response->Status,
+				(LassoSamlp2Status*)lasso_samlp2_status_new());
+	}
+	status = status_response->Status;
+	if (! LASSO_IS_SAMLP2_STATUS_CODE(status->StatusCode)) {
+		lasso_assign_new_gobject(status->StatusCode,
+				(LassoSamlp2StatusCode*)lasso_samlp2_status_code_new());
+	}
+	status_code1 = status->StatusCode;
+	lasso_assign_string(status_code1->Value, code1);
+
+	if (code2) {
+		if (! LASSO_IS_SAMLP2_STATUS_CODE(status_code1->StatusCode)) {
+			lasso_assign_new_gobject(status_code1->StatusCode,
+					(LassoSamlp2StatusCode*)lasso_samlp2_status_code_new());
+		}
+		status_code2 = status_code1->StatusCode;
+		lasso_assign_string(status_code2->Value, code2);
+	}
+
+cleanup:
+	return rc;
+}
+
+
+int
+lasso_saml20_profile_init_response(LassoProfile *profile, LassoSamlp2StatusResponse *status_response,
+		const char *status_code1, const char *status_code2)
+{
+	LassoSamlp2RequestAbstract *request_abstract = NULL;
+	int rc = 0;
+
+	lasso_bad_param(PROFILE, profile);
+	if (! LASSO_IS_SAMLP2_STATUS_RESPONSE(status_response))
+		return LASSO_PROFILE_ERROR_MISSING_RESPONSE;
+	lasso_assign_gobject(profile->response, status_response);
 
 	lasso_assign_new_string(status_response->ID, lasso_build_unique_id(32));
 	lasso_assign_string(status_response->Version, "2.0");
-	lasso_assign_new_gobject(status_response->Issuer,
-			LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
-					server->parent.ProviderID)));
+	if (LASSO_IS_SERVER(profile->server)) {
+		lasso_assign_new_gobject(status_response->Issuer,
+				LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
+						profile->server->parent.ProviderID)));
+	}
 	lasso_assign_new_string(status_response->IssueInstant, lasso_get_current_time());
-	lasso_assign_string(status_response->InResponseTo, request_abstract->ID);
+	if (LASSO_IS_SAMLP2_REQUEST_ABSTRACT(profile->request)) {
+		lasso_assign_string(status_response->InResponseTo, 
+				((LassoSamlp2RequestAbstract*)request_abstract)->ID);
+	}
 	lasso_check_good_rc(lasso_profile_saml20_setup_message_signature(profile,
 				profile->response));
-	if (status_code1)
+	if (status_code1) {
 		lasso_saml20_profile_set_response_status(profile,
 				status_code1, status_code2);
+	}
 
 cleanup:
 	return rc;
@@ -860,8 +952,8 @@ lasso_saml20_profile_validate_request(LassoProfile *profile, gboolean needs_iden
 		goto cleanup;
 
 	/* init the response */
-	lasso_assign_gobject(profile->response, &status_response->parent);
-	lasso_saml20_profile_init_response(profile, LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
+	lasso_saml20_profile_init_response(profile, status_response,
+			LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
 
 	if (profile->signature_status) {
 		message(G_LOG_LEVEL_WARNING, "Request signature is invalid");
@@ -878,59 +970,6 @@ cleanup:
 
 }
 
-static int
-lasso_saml20_profile_build_post_response(LassoProfile *profile, LassoProvider *provider, char *service)
-{
-	lasso_bad_param(PROFILE, profile);
-	lasso_bad_param(PROVIDER, provider);
-
-	lasso_assign_new_string(profile->msg_url, get_response_url(provider, service, "HTTP-POST"));
-	if (! profile->msg_url) {
-		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
-	}
-	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_base64(profile->request));
-	if (! profile->msg_body) {
-		return critical_error(LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED);
-	}
-	return 0;
-}
-
-static int
-lasso_saml20_profile_build_redirect_response(LassoProfile *profile, LassoProvider *provider, char
-		*service)
-{
-	LassoSamlp2StatusResponse *status_response = NULL;
-	char *url = NULL;
-	int rc = 0;
-
-	lasso_null_param(service);
-
-	url = get_response_url(provider, service, "HTTP-Redirect");
-	rc = lasso_saml20_profile_build_http_redirect(profile,
-			profile->response,
-			lasso_flag_add_signature,
-			url);
-
-cleanup:
-	lasso_release_string(url);
-	return rc;
-}
-
-static int
-lasso_saml20_profile_build_soap_response(LassoProfile *profile)
-{
-	lasso_bad_param(PROFILE, profile);
-
-	lasso_release_string(profile->msg_url);
-	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(profile->response));
-
-	if (! profile->msg_body) {
-		return LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED;
-	}
-
-	return 0;
-}
-
 /**
  * lasso_saml20_profile_export_to_query:
  * @profile: a #LassoProfile
@@ -938,41 +977,35 @@ lasso_saml20_profile_build_soap_response(LassoProfile *profile)
  * @sign: TRUE if query must signed, FALSE otherwise
  *
  * Create a query following the DEFLATE encoding of the SAML 2.0 HTTP
- * Redirect binding.
+ * Redirect binding. If the root message node has an XML signature, signature is removed and query
+ * is signed.
  *
- * Return value: a newly allocated string containing the query string if successfull, NULL otherwise.
+ * Return value: a newly allocated string containing the query string if successfull, NULL
+ * otherwise.
  */
 static int
-lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int sign, char **query) {
+lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, char **query,
+		LassoSignatureMethod signature_method, const char *private_key_file) {
 	char *unsigned_query = NULL;
 	char *result = NULL;
 	int rc = 0;
-
-	lasso_bad_param(PROFILE, profile);
-	lasso_bad_param(NODE, msg);
 
 	unsigned_query = lasso_node_build_query(msg);
 	goto_cleanup_if_fail_with_rc(unsigned_query != NULL,
 			LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 	if (profile->msg_relayState) {
-		unsigned_query = lasso_url_add_parameters(unsigned_query, 1, "RelayState", profile->msg_relayState, NULL);
+		unsigned_query = lasso_url_add_parameters(unsigned_query, 1, "RelayState",
+				profile->msg_relayState, NULL);
 
 		if (strlen(profile->msg_relayState) > 80) {
-			g_warning("Encoded a RelayState of more than 80 bytes, see #3.4.3 of"
-					" saml-bindings-2.0-os");
+			message(G_LOG_LEVEL_WARNING, "Encoded a RelayState of more than 80 bytes, "
+					"see #3.4.3 of saml-bindings-2.0-os");
 		}
 	}
-	if (sign && lasso_flag_add_signature) {
-		LassoServer *server = profile->server;
-		goto_cleanup_if_fail_with_rc (LASSO_IS_SERVER(server),
-				LASSO_PROFILE_ERROR_MISSING_SERVER);
-		goto_cleanup_if_fail_with_rc (
-				profile->server->signature_method != LASSO_SIGNATURE_TYPE_NONE &&
-				profile->server->private_key,
-				LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED);
-		result = lasso_query_sign(unsigned_query, profile->server->signature_method,
-				profile->server->private_key);
-		goto_cleanup_if_fail_with_rc(result != NULL, LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
+	if (signature_method && private_key_file && lasso_flag_add_signature) {
+		result = lasso_query_sign(unsigned_query, signature_method, private_key_file);
+		goto_cleanup_if_fail_with_rc(result != NULL,
+				LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		lasso_transfer_string(*query, result);
 	} else {
 		lasso_transfer_string(*query, unsigned_query);
@@ -983,37 +1016,24 @@ cleanup:
 	return rc;
 }
 
-static void
-remove_signature(LassoNode *node) {
-	LassoNodeClass *klass;
-
-	if (node == NULL)
-		return;
-
-	klass = LASSO_NODE_GET_CLASS(node);
-	/* follow the class parenting chain */
-	while (klass && LASSO_IS_NODE_CLASS(klass)) {
-		if (klass && klass->node_data && klass->node_data->sign_type_offset != 0) {
-			G_STRUCT_MEMBER(LassoSignatureType, node, klass->node_data->sign_type_offset) =
-				LASSO_SIGNATURE_TYPE_NONE;
-		}
-		klass = g_type_class_peek_parent(klass);
-	}
-}
-
 static gboolean
-has_signature(LassoNode *node) {
+has_signature(LassoNode *node, LassoSignatureMethod *method, const char **private_key_file) {
 	LassoNodeClass *klass;
 
 	if (node == NULL)
-		return;
+		return FALSE;
 
 	klass = LASSO_NODE_GET_CLASS(node);
 	/* follow the class parenting chain */
 	while (klass && LASSO_IS_NODE_CLASS(klass)) {
 		if (klass && klass->node_data && klass->node_data->sign_type_offset != 0) {
-			if (G_STRUCT_MEMBER(LassoSignatureType, node, klass->node_data->sign_type_offset) !=
-				LASSO_SIGNATURE_TYPE_NONE) {
+			if (G_STRUCT_MEMBER(LassoSignatureType, node,
+						klass->node_data->sign_type_offset)
+					!= LASSO_SIGNATURE_TYPE_NONE) {
+				*method = G_STRUCT_MEMBER(LassoSignatureMethod, node,
+						klass->node_data->sign_method_offset);
+				*private_key_file = G_STRUCT_MEMBER(char*, node,
+						klass->node_data->private_key_file_offset);
 				return TRUE;
 			}
 		}
@@ -1042,54 +1062,102 @@ lasso_saml20_profile_build_http_redirect(LassoProfile *profile,
 	char *query = NULL;
 	int rc = 0;
 	gboolean must_sign = FALSE;
+	LassoSignatureMethod signature_method = 0;
+	const char *private_key_file = NULL;
 
-	if (url == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
-	}
+	goto_cleanup_if_fail_with_rc (url != NULL, LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	/* if message is signed, remove XML signature, add query signature */
-	if (has_signature(msg)) {
+	if (has_signature(msg, &signature_method, (const char **)&private_key_file)) {
 		must_sign = TRUE;
-		remove_signature(msg);
+		lasso_node_remove_signature(msg);
 	}
-	/* No signature on the XML message */
-	rc = lasso_saml20_profile_export_to_query(profile, msg, must_sign, &query);
-	if (rc)
-		return rc;
+	lasso_check_good_rc(lasso_saml20_profile_export_to_query(profile, msg, &query,
+				signature_method, private_key_file));
 
 	lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
 	lasso_release(profile->msg_body);
 	lasso_release(query);
 
+cleanup:
+	return rc;
+}
+
+static int
+lasso_saml20_profile_build_redirect_response_msg(LassoProfile *profile, const char *url)
+{
+	return lasso_saml20_profile_build_http_redirect(profile,
+			profile->response,
+			url);
+}
+
+static int
+lasso_saml20_profile_build_post_response_msg(LassoProfile *profile, const char *url)
+{
+	lasso_assign_string(profile->msg_url, url);
+	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_base64(profile->request));
+	check_msg_body;
 	return 0;
 }
 
+static int
+lasso_saml20_profile_build_soap_response_msg(LassoProfile *profile)
+{
+	lasso_release_string(profile->msg_url);
+	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(profile->response));
+	check_msg_body;
+	return 0;
+}
+
+
 int
-lasso_saml20_profile_build_response_msg(LassoProfile *profile, char *service, LassoHttpMethod method)
+lasso_saml20_profile_build_response_msg(LassoProfile *profile, char *service,
+		LassoHttpMethod method, const char *_url)
 {
 	LassoProvider *provider;
+	char *made_url = NULL, *url;
 	int rc = 0;
 
 	lasso_bad_param(PROFILE, profile);
 
 	lasso_profile_clean_msg_info(profile);
 	lasso_check_good_rc(get_provider(profile, &provider));
+	url = (char*)_url;
+
+	/* check presence of a request */
+	if (! LASSO_IS_SAMLP2_STATUS_RESPONSE(profile->response)) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_RESPONSE);
+	}
+
+	/* if not explicitely given, automatically determine an URI from the metadatas */
+	if (url == NULL && service) {
+		made_url = url = get_response_url(provider, service, http_method_to_binding(method));
+	}
 
 	switch (method) {
 		case LASSO_HTTP_METHOD_POST:
-			rc = lasso_saml20_profile_build_post_response(profile, provider, service);
+		case LASSO_HTTP_METHOD_REDIRECT:
+		case LASSO_HTTP_METHOD_ARTIFACT_GET:
+		case LASSO_HTTP_METHOD_ARTIFACT_POST:
+			goto_cleanup_with_rc(critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL));
+		default:
+			break;
+	}
+
+	switch (method) {
+		case LASSO_HTTP_METHOD_POST:
+			rc = lasso_saml20_profile_build_post_response_msg(profile, url);
 			break;
 		case LASSO_HTTP_METHOD_REDIRECT:
-			rc = lasso_saml20_profile_build_redirect_response(profile, provider,
-					service);
+			rc = lasso_saml20_profile_build_redirect_response_msg(profile, url);
 			break;
 		case LASSO_HTTP_METHOD_SOAP:
-			rc = lasso_saml20_profile_build_soap_response(profile);
+			rc = lasso_saml20_profile_build_soap_response_msg(profile);
 			break;
 		case LASSO_HTTP_METHOD_ARTIFACT_GET:
-			rc = lasso_profile_saml20_build_artifact_get_response_msg(profile, provider, service);
+			rc = lasso_profile_saml20_build_artifact_get_response_msg(profile, url);
 			break;
-		case LASSO_HTTP_METHOD_ARTIFACT_GET:
-			rc = lasso_profile_saml20_build_artifact_post_response_msg(profile, provider, service);
+		case LASSO_HTTP_METHOD_ARTIFACT_POST:
+			rc = lasso_profile_saml20_build_artifact_post_response_msg(profile, url);
 			break;
 		default:
 			rc= LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
@@ -1097,6 +1165,7 @@ lasso_saml20_profile_build_response_msg(LassoProfile *profile, char *service, La
 	}
 
 cleanup:
+	lasso_release_string(made_url);
 	return rc;
 }
 
@@ -1118,7 +1187,8 @@ cleanup:
 int
 lasso_saml20_profile_process_any_response(LassoProfile *profile,
 		LassoSamlp2StatusResponse *status_response,
-		char *response_msg)
+		LassoHttpMethod *response_method,
+		const char *response_msg)
 {
 	int rc = 0;
 
@@ -1128,7 +1198,6 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 	LassoSamlp2StatusResponse *response_abstract = NULL;
 	LassoSamlp2Status *status = NULL;
 	LassoSamlp2StatusCode *status_code1 = NULL;
-	LassoSamlp2StatusCode *status_code2 = NULL;
 	LassoMessageFormat format;
 
 	xmlDoc *doc = NULL;
@@ -1144,6 +1213,21 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 	if (format <= LASSO_MESSAGE_FORMAT_UNKNOWN) {
 		rc = LASSO_PROFILE_ERROR_INVALID_MSG;
 		goto cleanup;
+	}
+	if (response_method) {
+		switch (format) {
+			case LASSO_MESSAGE_FORMAT_SOAP:
+				*response_method = LASSO_HTTP_METHOD_SOAP;
+				break;
+			case LASSO_MESSAGE_FORMAT_QUERY:
+				*response_method = LASSO_HTTP_METHOD_REDIRECT;
+				break;
+			case LASSO_MESSAGE_FORMAT_BASE64:
+				*response_method = LASSO_HTTP_METHOD_POST;
+				break;
+			default:
+				return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+		}
 	}
 	lasso_assign_gobject(profile->response, (LassoNode*)status_response);
 	lasso_extract_node_or_fail(response_abstract, profile->response, SAMLP2_STATUS_RESPONSE,
@@ -1195,7 +1279,7 @@ cleanup:
  */
 int
 lasso_saml20_profile_process_soap_response(LassoProfile *profile,
-		char *response_msg)
+		const char *response_msg)
 {
 	int rc = 0;
 	LassoSaml2NameID *issuer = NULL;
@@ -1269,11 +1353,20 @@ lasso_profile_saml20_setup_message_signature(LassoProfile *profile, LassoNode *r
 {
 	lasso_bad_param(PROFILE, profile);
 
-	if (! lasso_flag_sign_messages) {
-		message(G_LOG_LEVEL_WARNING, "message should be signed but no-sign-messages flag is " \
-				"activated, so it won't be");
-		return 0;
+	switch (lasso_profile_get_signature_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_HINT_MAYBE:
+			if (! lasso_flag_sign_messages) {
+				message(G_LOG_LEVEL_WARNING, "message should be signed but no-sign-messages flag is " \
+						"activated, so it won't be");
+				return 0;
+			}
+			break;
+		case LASSO_PROFILE_SIGNATURE_HINT_FORBID:
+			return 0;
+		default:
+			break;
 	}
+
 	if (! LASSO_IS_SERVER(profile->server)) {
 		return LASSO_PROFILE_ERROR_MISSING_SERVER;
 	}
@@ -1314,63 +1407,22 @@ lasso_profile_saml20_setup_message_signature(LassoProfile *profile, LassoNode *r
 	return 0;
 }
 
-/*
- * this function factorize all case for producing SAML artifact messages
- */
-static gint
-lasso_profile_saml20_build_artifact_msg(LassoProfile *profile,
-		LassoProvider *provider, const char *service, int request_or_response, int get_or_post)
+gint
+lasso_saml20_profile_setup_encrypted_node(LassoProvider *provider,
+		LassoNode **node_to_encrypt, LassoNode **node_destination)
 {
-	char *artifact = lasso_saml20_profile_generate_artifact(profile, request_or_response);
-	if (request_or_response == 0) {
-		url = get_url(provider, service, "HTTP-Artifact");
-	} else {
-		url = get_response_url(provider, service, "HTTP-Artifact");
+	LassoNode *encrypted_node;
+
+	if (! LASSO_IS_PROVIDER(provider)) {
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
-	if (! url) {
-		return LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL;
+	encrypted_node = (LassoNode*)lasso_node_encrypt(*node_to_encrypt,
+			lasso_provider_get_encryption_public_key(provider),
+			lasso_provider_get_encryption_sym_key_type(provider));
+	if (! encrypted_node) {
+		return LASSO_DS_ERROR_ENCRYPTION_FAILED;
 	}
-	if (get_or_post == 0) {
-		if (profile->msg_relayState) {
-			query = lasso_url_add_parameters(NULL, 0, "SAMLart", artifact, "RelayState",
-								profile->msg_relayState, NULL);
-		} else {
-			query = lasso_url_add_parameters(NULL, 0, "SAMLart", artifact, NULL);
-		}
-		lasso_assign_new_string(profile->msg_url,
-			lasso_concat_url_query(url, query));
-		lasso_release_string(query);
-		lasso_release_string(url);
-	} else {
-		lasso_assign_new_string(profile->msg_url, url);
-		lasso_assign_string(profile->msg_body, artifact);
-	}
-}
-
-static gint
-lasso_profile_saml20_build_artifact_get_request_msg(LassoProfile *profile,
-		LassoProvider *provider, const char *service)
-{
-	return lasso_profile_saml20_build_artifact_msg(profile, provider, service, 0, 0);
-}
-
-static gint
-lasso_profile_saml20_build_artifact_post_request_msg(LassoProfile *profile,
-		LassoProvider *provider, const char *service)
-{
-	return lasso_profile_saml20_build_artifact_msg(profile, provider, service, 0, 1);
-}
-
-static gint
-lasso_profile_saml20_build_artifact_get_response_msg(LassoProfile *profile,
-		LassoProvider *provider, const char *service)
-{
-	return lasso_profile_saml20_build_artifact_msg(profile, provider, service, 1, 0);
-}
-
-static gint
-lasso_profile_saml20_build_artifact_post_response_msg(LassoProfile *profile,
-		LassoProvider *provider, const char *service)
-{
-	return lasso_profile_saml20_build_artifact_msg(profile, provider, service, 1, 1);
+	lasso_assign_new_gobject(*node_destination, encrypted_node);
+	lasso_release_gobject(*node_to_encrypt);
+	return 0;
 }

@@ -34,7 +34,7 @@ extern "C" {
 int lasso_saml20_logout_init_request(LassoLogout *logout,
 		LassoProvider *remote_provider, LassoHttpMethod http_method);
 
-int lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote_provider);
+int lasso_saml20_logout_build_request_msg(LassoLogout *logout);
 
 int lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg);
 

@@ -379,70 +379,18 @@ lasso_assertion_query_process_response_msg(
 		gchar *response_msg)
 {
 	LassoProfile *profile;
-	LassoHttpMethod response_method;
-	LassoProvider *remote_provider;
 	LassoSamlp2StatusResponse *response;
-	LassoMessageFormat format;
-	char *status_code_value;
 	int rc;
 
-	g_return_val_if_fail(LASSO_IS_ASSERTION_QUERY(assertion_query),
-			LASSO_PARAM_ERROR_INVALID_VALUE);
-	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	lasso_bad_param(ASSERTION_QUERY, assertion_query);
+	profile = &assertion_query->parent;
+	response = (LassoSamlp2StatusResponse*)lasso_samlp2_response_new();
 
-	profile = LASSO_PROFILE(assertion_query);
+	rc = lasso_saml20_profile_process_any_response(profile, response, NULL, response_msg);
 
-	if (LASSO_IS_SAMLP2_MANAGE_NAME_ID_RESPONSE(profile->response) == TRUE) {
-		lasso_node_destroy(profile->response);
-		profile->response = NULL;
-	}
-
-	profile->response = lasso_samlp2_response_new();
-	format = lasso_node_init_from_message(LASSO_NODE(profile->response), response_msg);
-
-	switch (format) {
-		case LASSO_MESSAGE_FORMAT_SOAP:
-			response_method = LASSO_HTTP_METHOD_SOAP;
-			break;
-		case LASSO_MESSAGE_FORMAT_QUERY:
-			response_method = LASSO_HTTP_METHOD_REDIRECT;
-			break;
-		default:
-			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
-	}
-
-	profile->remote_providerID = g_strdup(
-			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->Issuer->content);
-
-	/* get the provider */
-	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
-	/* verify signature */
-	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ID", format);
-	if (rc == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
-		/* XXX: is signature mandatory ? */
-		message(G_LOG_LEVEL_WARNING, "No signature on response");
-		rc = 0;
-	}
-
-	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
-
-	if (response->Status == NULL || response->Status->StatusCode == NULL
-			|| response->Status->StatusCode->Value == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "No Status in Response !");
-		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
-	}
-	status_code_value = response->Status->StatusCode->Value;
-
-	if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
-		message(G_LOG_LEVEL_CRITICAL, "Status code is not success: %s", status_code_value);
-		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
-	}
-
-	return 0;
+/* cleanup: */
+	lasso_release_gobject(response);
+	return rc;
 }
 
 

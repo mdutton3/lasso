@@ -45,156 +45,90 @@
 
 static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile *profile);
 
+static char*
+_lasso_saml2_assertion_get_session_index(LassoSaml2Assertion *assertion)
+{
+	if (! LASSO_IS_SAML2_AUTHN_STATEMENT(assertion->AuthnStatement->data))
+		return NULL;
+	return((LassoSaml2AuthnStatement*)assertion->AuthnStatement->data)->SessionIndex;
+}
+
 int
 lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_provider,
 		LassoHttpMethod http_method)
 {
-	LassoProfile *profile = LASSO_PROFILE(logout);
-	LassoNode *assertion_n;
-	LassoSaml2Assertion *assertion;
-	LassoSaml2NameID *name_id;
-	LassoSession *session;
-	LassoSamlp2RequestAbstract *request;
-	LassoSaml2EncryptedElement *encrypted_element = NULL;
-	char *assertion_SessionIndex = NULL;
+	LassoProfile *profile = &logout->parent;
+	LassoNode *assertion_n = NULL;
+	LassoSaml2Assertion *assertion = NULL;
+	//LassoSaml2NameID *name_id = NULL;
+	LassoSession *session = NULL;
+	//LassoSamlp2RequestAbstract *request = NULL;
+	//LassoSaml2EncryptedElement *encrypted_element = NULL;
+	LassoSamlp2LogoutRequest *logout_request = NULL;
+	//char *assertion_SessionIndex = NULL;
+	int rc = 0;
+
+	logout_request = (LassoSamlp2LogoutRequest*) lasso_samlp2_logout_request_new();
+
+	lasso_check_good_rc(lasso_saml20_init_request(profile,
+			remote_provider->ProviderID,
+			FALSE,
+			&logout_request->parent,
+			http_method,
+			LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT));
 
 	/* session existence has been checked in id-ff/ */
 	session = lasso_profile_get_session(profile);
-
 	assertion_n = lasso_session_get_assertion(session, profile->remote_providerID);
 	if (LASSO_IS_SAML2_ASSERTION(assertion_n) == FALSE) {
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_ASSERTION);
 	}
+	lasso_ref(assertion_n);
+	assertion = (LassoSaml2Assertion*)assertion_n;
 
-	assertion = LASSO_SAML2_ASSERTION(assertion_n);
-
-	if (assertion->Subject == NULL) {
-		return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
-	}
-
-	if (assertion->Subject->NameID == NULL) {
-		return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
-	}
-
-	name_id = assertion->Subject->NameID;
-	/* Just send back the NameID from the assertion. */
-	lasso_assign_gobject(profile->nameIdentifier, name_id);
-
-	if (http_method == LASSO_HTTP_METHOD_ANY) {
-		http_method = lasso_provider_get_first_http_method(
-				LASSO_PROVIDER(profile->server),
-				remote_provider,
-				LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT);
-	} else {
-		if (lasso_provider_accept_http_method(LASSO_PROVIDER(profile->server),
-					remote_provider,
-					LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT,
-					http_method,
-					TRUE) == FALSE) {
-			if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
-				/* it was probably used as last resort, and
-				 * failed, since the remote provider doesn't
-				 * support any logout.  remove assertion
-				 * unconditionnaly. */
-				lasso_session_remove_assertion(profile->session,
-						profile->remote_providerID);
-				if (logout->initial_remote_providerID && logout->initial_request) {
-					lasso_assign_string(profile->remote_providerID,
-							logout->initial_remote_providerID);
-					/* XXX: create response
-					profile->response = lasso_lib_logout_response_new_full(
-						LASSO_PROVIDER(profile->server)->ProviderID,
-						LASSO_SAML_STATUS_CODE_SUCCESS,
-						LASSO_LIB_LOGOUT_REQUEST(logout->initial_request),
-						LASSO_SIGNATURE_TYPE_NONE,
-						0);
-					*/
-				}
-			}
-			return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
-		}
-	}
-
-	lasso_assign_new_gobject(profile->request, lasso_samlp2_logout_request_new());
-	request = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request);
-	lasso_assign_new_string(request->ID, lasso_build_unique_id(32));
-	lasso_assign_string(request->Version, "2.0");
-	lasso_assign_new_gobject(request->Issuer,
-			LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
-					LASSO_PROVIDER(profile->server)->ProviderID)));
-	lasso_assign_new_string(request->IssueInstant, lasso_get_current_time());
-
-	lasso_assign_gobject(LASSO_SAMLP2_LOGOUT_REQUEST(request)->NameID, profile->nameIdentifier);
-
-	/* set the session index */
-	if (assertion->AuthnStatement) {
-		if (! LASSO_IS_SAML2_AUTHN_STATEMENT(assertion->AuthnStatement->data)) {
-
-			return LASSO_PROFILE_ERROR_BAD_SESSION_DUMP;
-		}
-		assertion_SessionIndex =
-			((LassoSaml2AuthnStatement*)assertion->AuthnStatement->data)->SessionIndex;
-		if (assertion_SessionIndex) {
-			lasso_assign_string(LASSO_SAMLP2_LOGOUT_REQUEST(request)->SessionIndex, assertion_SessionIndex);
-		}
-	}
-
-
+	/* set the nameid */
+	lasso_assign_gobject(logout_request->NameID, profile->nameIdentifier);
 	/* Encrypt NameID */
-	if (remote_provider &&
-		remote_provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_NAMEID
-			&& remote_provider->private_data->encryption_public_key != NULL) {
-		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
-			LASSO_NODE(LASSO_SAMLP2_LOGOUT_REQUEST(request)->NameID),
-			remote_provider->private_data->encryption_public_key,
-			remote_provider->private_data->encryption_sym_key_type));
-		if (encrypted_element != NULL) {
-			lasso_assign_new_gobject(LASSO_SAMLP2_LOGOUT_REQUEST(request)->EncryptedID, encrypted_element);
-			lasso_release_gobject(LASSO_SAMLP2_LOGOUT_REQUEST(request)->NameID)
+	rc = lasso_saml20_profile_setup_encrypted_node(remote_provider, (LassoNode**)&logout_request->NameID,
+			(LassoNode**)&logout_request->EncryptedID);
+	/* set the session index if one is found */
+	lasso_assign_string(logout_request->SessionIndex,
+			_lasso_saml2_assertion_get_session_index(assertion));
+	lasso_session_remove_assertion(profile->session,
+				profile->remote_providerID);
+
+cleanup:
+	/* special case: we suppose REDIRECT is the last resort method, so we force assertion
+	 * removal and create a possible response message with a second level status of PARTIAL. */
+	if (rc == LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE
+			&& http_method == LASSO_HTTP_METHOD_REDIRECT) {
+		lasso_session_remove_assertion(profile->session,
+				profile->remote_providerID);
+		if (logout->initial_remote_providerID && logout->initial_request) {
+			LassoSamlp2StatusResponse *response;
+
+			logout->private_data->partial_logout = TRUE;
+			lasso_assign_string(profile->remote_providerID,
+					logout->initial_remote_providerID);
+			response = (LassoSamlp2StatusResponse*) lasso_samlp2_logout_response_new();
+			/* ignore return code */
+			lasso_saml20_profile_init_response(profile, response, LASSO_SAML2_STATUS_CODE_SUCCESS,
+					LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT);
+			lasso_release_gobject(response);
 		}
 	}
-
-	logout->initial_http_request_method = http_method;
-
-	return 0;
+	lasso_release_gobject(logout_request);
+	lasso_release_gobject(assertion_n);
+	return rc;
 }
 
-
 int
-lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote_provider)
+lasso_saml20_logout_build_request_msg(LassoLogout *logout)
 {
-	LassoProfile *profile = LASSO_PROFILE(logout);
+	LassoProfile *profile = &logout->parent;
 
-	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_method =
-		LASSO_SIGNATURE_METHOD_RSA_SHA1;
-	if (profile->server->certificate) {
-		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_type =
-			LASSO_SIGNATURE_TYPE_WITHX509;
-	} else {
-		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_type =
-			LASSO_SIGNATURE_TYPE_SIMPLE;
-	}
-	lasso_assign_string(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file,
-		profile->server->private_key);
-	lasso_assign_string(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file,
-		profile->server->certificate);
-
-	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_SOAP) {
-		lasso_assign_new_string(profile->msg_url,
-			lasso_provider_get_metadata_one(remote_provider, "SingleLogoutService SOAP"));
-		lasso_assign_string(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Destination,
-				profile->msg_url);
-		lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(profile->request));
-		return 0;
-	}
-	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		return lasso_saml20_build_http_redirect_query_simple(profile, profile->request,
-				TRUE, "SingleLogoutService", FALSE);
-	}
-
-	/* XXX: artifact support */
-
-	return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
+	return lasso_saml20_profile_build_request_msg(profile, "SingleLogoutService",
+			logout->parent.http_request_method, NULL);
 }
 
 int
@@ -216,11 +150,12 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	if (rc1 && ! logout_request) {
 		return rc1;
 	}
+	/* remember initial request method, for setting it for generating response */
+	logout->initial_http_request_method = profile->http_request_method;
 
 	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile,
 			&logout_request->NameID,
 			&logout_request->EncryptedID);
-
 
 	lasso_release_gobject(logout_request);
 	if (profile->signature_status) {
@@ -230,7 +165,6 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 		return rc1;
 	}
 	return rc2;
-
 }
 
 int
@@ -244,41 +178,24 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	LassoSaml2Assertion *assertion;
 	LassoSamlp2LogoutRequest *logout_request;
 	char *assertion_SessionIndex = NULL;
+	int rc = 0;
 
 	if (LASSO_IS_SAMLP2_LOGOUT_REQUEST(profile->request) == FALSE)
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
-
 	logout_request = (LassoSamlp2LogoutRequest*)profile->request;
 
+	/* check the issuer */
 	lasso_assign_string(profile->remote_providerID,
-			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content);
-
-	/* get the provider */
+			logout_request->parent.Issuer->content);
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
-	lasso_assign_new_gobject(profile->response, lasso_samlp2_logout_response_new());
-	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
-	lasso_assign_new_string(response->ID, lasso_build_unique_id(32));
-	lasso_assign_string(response->Version, "2.0");
-	lasso_assign_new_gobject(response->Issuer,
-			LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
-					LASSO_PROVIDER(profile->server)->ProviderID)));
-	lasso_assign_new_string(response->IssueInstant, lasso_get_current_time());
-	lasso_assign_string(response->InResponseTo,
-			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-	lasso_saml20_profile_set_response_status_success(profile, NULL);
-
-	response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-	if (profile->server->certificate) {
-		response->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
-	} else {
-		response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
-	}
-	response->private_key_file = g_strdup(profile->server->private_key);
-	response->certificate_file = g_strdup(profile->server->certificate);
+	/* create the response */
+	response = (LassoSamlp2StatusResponse*)lasso_samlp2_logout_response_new();
+	lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
+				LASSO_SAML2_STATUS_CODE_SUCCESS, NULL));
 
 	/* verify signature status */
 	if (profile->signature_status != 0) {
@@ -313,7 +230,8 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	/* Verify name identifier and session matching */
 	if (assertion->Subject == NULL) {
 		lasso_saml20_profile_set_response_status(profile,
-				LASSO_SAML2_STATUS_CODE_RESPONDER, "http://lasso.entrouvert.org/error/MalformedAssertion");
+				LASSO_SAML2_STATUS_CODE_RESPONDER,
+				"http://lasso.entrouvert.org/error/MalformedAssertion");
 		return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
 	}
 
@@ -335,7 +253,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 			((LassoSaml2AuthnStatement*)assertion->AuthnStatement->data)->SessionIndex;
 		if (g_strcmp0(logout_request->SessionIndex, assertion_SessionIndex) != 0) {
 			lasso_saml20_profile_set_response_status_responder(profile,
-					LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
+					LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 			return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
 		}
 	}
@@ -371,9 +289,9 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 		lasso_transfer_gobject(logout->initial_response, profile->response);
 	}
 
-	return 0;
-
-
+cleanup:
+	lasso_release_gobject(response);
+	return rc;
 }
 
 static void
@@ -407,93 +325,41 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 {
 	LassoProfile *profile = LASSO_PROFILE(logout);
 	LassoSamlp2StatusResponse *response;
+	int rc = 0;
 
 	if (profile->response == NULL) {
 		/* no response set here means request denied */
-		lasso_assign_new_gobject(profile->response, lasso_samlp2_logout_response_new());
-		response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
-		lasso_assign_new_string(response->ID, lasso_build_unique_id(32));
-		lasso_assign_string(response->Version, "2.0");
-		lasso_assign_new_gobject(response->Issuer, LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
-				LASSO_PROVIDER(profile->server)->ProviderID)));
-		lasso_assign_new_string(response->IssueInstant, lasso_get_current_time());
-		if (profile->request) {
-			lasso_assign_string(response->InResponseTo,
-					LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-		}
-		lasso_saml20_profile_set_response_status_responder(profile,
-				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
-
-		response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-		if (profile->server->certificate) {
-			response->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
-		} else {
-			response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
-		}
-		lasso_assign_string(response->private_key_file, profile->server->private_key);
-		lasso_assign_string(response->certificate_file, profile->server->certificate);
+		response = (LassoSamlp2StatusResponse*) lasso_samlp2_logout_response_new();
+		lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
+					LASSO_SAML2_STATUS_CODE_RESPONDER,
+					LASSO_SAML2_STATUS_CODE_REQUEST_DENIED));
 	}
 
 	/* build logout response message */
-	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
-		lasso_release_string(profile->msg_url);
-		lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(profile->response));
-		return 0;
-	}
+	/* FIXME: should allow to override default response method, should just match that
+	 * request/response are of the same type synchronous or asynchronous */
+	rc = lasso_saml20_profile_build_response_msg(profile, "SingleLogoutService",
+			logout->initial_http_request_method, NULL);
 
-	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		return lasso_saml20_build_http_redirect_query_simple(profile,  profile->response, TRUE, "SingleLogoutService", TRUE);
-	}
-
-	return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+cleanup:
+	lasso_release_gobject(response);
+	return rc;
 }
 
 int
 lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *response_msg)
 {
-	LassoProfile *profile = LASSO_PROFILE(logout);
+	LassoProfile *profile = &logout->parent;
 	LassoHttpMethod response_method;
 	LassoProvider *remote_provider = NULL;
 	LassoSamlp2StatusResponse *response = NULL;
-	LassoMessageFormat format;
 	char *status_code_value = NULL;
-	int rc;
+	int rc = 0;
 
-	lasso_assign_new_gobject(profile->response, lasso_samlp2_logout_response_new());
-	format = lasso_node_init_from_message(LASSO_NODE(profile->response), response_msg);
+	response = (LassoSamlp2StatusResponse*)profile->response;
+	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile, response, &response_method, response_msg));
 
-	switch (format) {
-		case LASSO_MESSAGE_FORMAT_SOAP:
-			response_method = LASSO_HTTP_METHOD_SOAP;
-			break;
-		case LASSO_MESSAGE_FORMAT_QUERY:
-			response_method = LASSO_HTTP_METHOD_REDIRECT;
-			break;
-		default:
-			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
-	}
-
-	lasso_assign_string(profile->remote_providerID,
-			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->Issuer->content);
-
-	/* get the provider */
-	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
-	/* verify signature */
-	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ID", format);
-
-	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
-
-	if (response->Status == NULL || response->Status->StatusCode == NULL
-			|| response->Status->StatusCode->Value == NULL) {
-		rc = LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
-	} else {
-		status_code_value = response->Status->StatusCode->Value;
-	}
-
+	status_code_value = response->Status->StatusCode->Value;
 	if (status_code_value && strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
 		/* If at SP, if the request method was a SOAP type, then
 		 * rebuild the request message with HTTP method */
@@ -507,6 +373,7 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 			}
 			if (status_code_value == NULL) {
 				rc = LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+				goto cleanup;
 			}
 		}
 		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED) == 0) {
@@ -515,15 +382,16 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 			lasso_session_remove_assertion(
 					profile->session, profile->remote_providerID);
 			rc = LASSO_LOGOUT_ERROR_REQUEST_DENIED;
+			goto cleanup;
 		}
 		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
 			rc = LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
+			goto cleanup;
 		}
 		rc = LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
+		goto cleanup;
 	}
 
-	/* LogoutResponse status code value is ok */
-	/* XXX: handle RelayState if necessary */
 
 	/* if SOAP method or, if IDP provider type and HTTP Redirect,
 	 * then remove assertion */
@@ -543,7 +411,7 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 	if (logout->initial_remote_providerID &&
 			lasso_session_count_assertions(profile->session) == 0) {
 		remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-		if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
+		if (remote_provider->role & LASSO_PROVIDER_ROLE_SP) {
 			lasso_transfer_string(profile->remote_providerID,
 					logout->initial_remote_providerID);
 			lasso_transfer_gobject(profile->request, logout->initial_request);
@@ -565,6 +433,8 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 		lasso_session_remove_assertion(profile->session, profile->remote_providerID);
 	}
 
+cleanup:
+	lasso_release_gobject(response);
 	return rc;
 
 }

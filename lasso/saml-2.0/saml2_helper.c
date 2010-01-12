@@ -178,7 +178,7 @@ lasso_saml2_assertion_get_subject_confirmation(LassoSaml2Assertion *saml2_assert
 	return subject->SubjectConfirmation;
 }
 
-static LassoSaml2SubjectConfirmationData*
+LassoSaml2SubjectConfirmationData*
 lasso_saml2_assertion_get_subject_confirmation_data(LassoSaml2Assertion *saml2_assertion, gboolean create)
 {
 	LassoSaml2SubjectConfirmation *subject_confirmation;
@@ -707,5 +707,3 @@ lasso_saml2_assertion_add_attribute_with_node(LassoSaml2Assertion *assertion, co
 cleanup:
 	return rc;
 }
-
-

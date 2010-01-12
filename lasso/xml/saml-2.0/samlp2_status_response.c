@@ -173,9 +173,9 @@ class_init(LassoSamlp2StatusResponseClass *klass)
 			LassoSamlp2StatusResponse, sign_type);
 	nclass->node_data->sign_method_offset = G_STRUCT_OFFSET(
 			LassoSamlp2StatusResponse, sign_method);
-	nclass->node_data->private_key_file_offset = G_STRUCT_OFFSET(LassoSaml2StatusResponse,
+	nclass->node_data->private_key_file_offset = G_STRUCT_OFFSET(LassoSamlp2StatusResponse,
 			private_key_file);
-	nclass->node_data->certificate_file_offset = G_STRUCT_OFFSET(LassoSaml2StatusResponse,
+	nclass->node_data->certificate_file_offset = G_STRUCT_OFFSET(LassoSamlp2StatusResponse,
 			certificate_file);
 	nclass->node_data->keep_xmlnode = TRUE;
 }
