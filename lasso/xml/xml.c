@@ -618,11 +618,13 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 		goto cleanup;
 	}
 
+
 	/* encrypt the data */
 	if (xmlSecEncCtxXmlEncrypt(enc_ctx, encrypted_data, orig_node) < 0) {
 		message(G_LOG_LEVEL_WARNING, "Encryption failed");
 		goto cleanup;
 	}
+	
 
 	/* Create a new EncryptedElement */
 	encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_saml2_encrypted_element_new());
