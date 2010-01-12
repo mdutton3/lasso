@@ -1347,10 +1347,13 @@ lasso_saml20_login_init_idp_initiated_authn_request(LassoLogin *login,
 	if (! LASSO_IS_PROVIDER(provider))
 		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 
-	lasso_check_good_rc(lasso_login_init_authn_request(login, remote_providerID, LASSO_HTTP_METHOD_ANY));
-	lasso_release_string(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-	lasso_assign_string(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content,
-		remote_providerID);
+	lasso_assign_string(profile->remote_providerID, remote_providerID);
+	lasso_assign_gobject(profile->request, lasso_samlp2_authn_request_new());
+	lasso_assign_new_gobject(LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy,
+			lasso_samlp2_name_id_policy_new());
+	lasso_assign_new_gobject(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer,
+			LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
+					(char*)remote_providerID)));
 	default_name_id_format = lasso_provider_get_default_name_id_format(provider);
 	/* Change default NameIDFormat if default exists */
 	if (default_name_id_format) {
@@ -1362,6 +1365,8 @@ lasso_saml20_login_init_idp_initiated_authn_request(LassoLogin *login,
 		lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT);
 	}
+	lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy->SPNameQualifier,
+		remote_providerID);
 cleanup:
 
 	return rc;
