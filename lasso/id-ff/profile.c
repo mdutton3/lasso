@@ -102,35 +102,35 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
 	LassoFederation *federation;
 	char *name_id_sp_name_qualifier;
 
-	g_return_val_if_fail(LASSO_IS_PROFILE(profile), NULL);
-	
-	g_return_val_if_fail(LASSO_IS_SERVER(profile->server), NULL);
-	g_return_val_if_fail(LASSO_IS_IDENTITY(profile->identity), NULL);
+	if (!LASSO_IS_PROFILE(profile)) {
+		return NULL;
+	}
 
 	if (profile->remote_providerID == NULL)
 		return NULL;
 
-	if (LASSO_IS_IDENTITY(profile->identity)) {
+	/* beware, it is not a real loop ! */
+	if (LASSO_IS_IDENTITY(profile->identity)) do {
 		remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 		if (remote_provider == NULL)
-			goto use_session;
+			break;
 
 		name_id_sp_name_qualifier = lasso_provider_get_sp_name_qualifier(remote_provider);
 		if (name_id_sp_name_qualifier == NULL)
-			goto use_session;
+			break;
 
 		federation = g_hash_table_lookup(
 				profile->identity->federations,
 				name_id_sp_name_qualifier);
 		if (federation == NULL)
-			goto use_session;
+			break;
 
 		if (federation->remote_nameIdentifier)
 			return federation->remote_nameIdentifier;
 		return federation->local_nameIdentifier;
-	}
-use_session:
-	/* For transient federations, so we must look at assertions no federation object exists */
+	} while (FALSE);
+
+	/* For transient federations, we must look at assertions no federation object exists */
 	if (LASSO_IS_SESSION(profile->session)) {
 		LassoNode *assertion, *name_id;
 
