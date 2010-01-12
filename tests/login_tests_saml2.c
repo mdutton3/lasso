@@ -38,6 +38,7 @@ static char*
 generateIdentityProviderContextDump()
 {
 	LassoServer *serverContext;
+	GList *providers;
 	char *ret;
 
 	serverContext = lasso_server_new(
@@ -51,6 +52,8 @@ generateIdentityProviderContextDump()
 			TESTSDATADIR "/sp5-saml2/metadata.xml",
 			NULL,
 			NULL);
+	providers = g_hash_table_get_values(serverContext->providers);
+	lasso_provider_set_encryption_mode(LASSO_PROVIDER(providers->data), LASSO_ENCRYPTION_MODE_ASSERTION | LASSO_ENCRYPTION_MODE_NAMEID);
 	ret = lasso_server_dump(serverContext);
 
 	g_object_unref(serverContext);
@@ -280,17 +283,19 @@ START_TEST(test02_saml2_serviceProviderLogin)
 	spSessionDump = lasso_session_dump(LASSO_PROFILE(spLoginContext)->session);
 
 	/* Test InResponseTo checking */
-	found = strstr(soapResponseMsg, "Assertion");
-	fail_unless(found != NULL, "We must find an Assertion");
-	found = strstr(found, "InResponseTo=\"");
-	fail_unless(found != NULL, "We must find an InResponseTo attribute");
-	found[sizeof("InResponseTo=\"")] = '?';
-	lasso_set_flag("no-verify-signature");
-	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
-	lasso_set_flag("verify-signature");
-	fail_unless(rc != 0, "lasso_login_process_response_msg must fail");
-	rc = lasso_login_accept_sso(spLoginContext);
-	fail_unless(rc != 0, "lasso_login_accept_sso must fail");
+	if (! strstr(soapResponseMsg, "EncryptedAssertion")) {
+		found = strstr(soapResponseMsg, "Assertion");
+		fail_unless(found != NULL, "We must find an Assertion");
+		found = strstr(found, "InResponseTo=\"");
+		fail_unless(found != NULL, "We must find an InResponseTo attribute");
+		found[sizeof("InResponseTo=\"")] = '?';
+		lasso_set_flag("no-verify-signature");
+		rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
+		lasso_set_flag("verify-signature");
+		fail_unless(rc != 0, "lasso_login_process_response_msg must fail");
+		rc = lasso_login_accept_sso(spLoginContext);
+		fail_unless(rc != 0, "lasso_login_accept_sso must fail");
+	}
 
 	/* logout test */
 	/* generate a logout request */
