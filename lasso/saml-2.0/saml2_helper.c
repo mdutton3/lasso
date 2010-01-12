@@ -270,7 +270,7 @@ lasso_saml2_assertion_set_subject_confirmation_name_id(LassoSaml2Assertion *saml
  */
 void
 lasso_saml2_assertion_set_subject_confirmation_data(LassoSaml2Assertion *saml2_assertion,
-		const time_t tolerance, const time_t length, const char *Recipient,
+		time_t tolerance, time_t length, const char *Recipient,
 		const char *InResponseTo, const char *Address)
 {
 	LassoSaml2SubjectConfirmationData *saml2_subject_confirmation_data;
