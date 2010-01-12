@@ -225,6 +225,7 @@ NodeList = list
 StringList = list
 StringDict = dict
 registerIdWsf2DstService = registerIdwsf2DstService
+Provider.setEncryptionMode = Provider.set_encryptionMode
 
 if WSF_SUPPORT:
     DiscoDescription_newWithBriefSoapHttpDescription = DiscoDescription.newWithBriefSoapHttpDescription
