@@ -267,7 +267,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 print >> self.fd, '    %s %s = NULL;' % ('char*', arg_name)
                 print >> self.fd, '    %s %s_str = NULL;' % ('char*', arg_name)
                 print >> self.fd, '    %s %s_len = 0;' % ('int', arg_name)
-            elif arg_type in ['int', 'gint', 'GType', 'gboolean', 'const gboolean'] + self.binding_data.enums:
+            elif arg_type in ['time_t', 'int', 'gint', 'GType', 'gboolean', 'const gboolean'] + self.binding_data.enums:
                 parse_tuple_format.append('l')
                 parse_tuple_args.append('&%s' % arg_name)
                 print >> self.fd, '    %s %s;' % ('long', arg_name)

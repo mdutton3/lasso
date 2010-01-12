@@ -108,7 +108,7 @@ def is_collection(type):
     return type in ('const GList*','GList*','GHashTable*')
 
 def is_string_type(type):
-    return type in ['char*', 'const char*', 'gchar*', 'const gchar*']
+    return type in ['string', 'char*', 'const char*', 'gchar*', 'const gchar*']
 
 class Binding:
     def __init__(self, binding_data):
@@ -538,7 +538,7 @@ protected static native void destroy(long cptr);
                 print >> fd, '    if (%s)' % arg_name
                 print >> fd, '        g_free(%s);' % arg_name
             elif arg_type == 'GList*' or arg_type == 'const GList*':
-                if arg_options.get('element-type') == 'char*':
+                if is_string_type(arg_options.get('element-type')):
                     print >> fd, '    free_glist(&%s, (GFunc)free);' % arg_name
                 elif is_object(element_type(arg)):
                     print >> fd, '    free_glist(&%s, (GFunc)g_object_unref);' % arg_name

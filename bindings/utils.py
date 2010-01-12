@@ -197,7 +197,7 @@ def is_int(arg, binding_data):
     return arg_type(arg) in [ 'int', 'gint', 'long', 'glong'] + binding_data.enums
 
 def is_time_t_pointer(arg):
-    return re.match(r'\btime_t*', unconstify(arg_type(arg)))
+    return re.match(r'\btime_t\*', unconstify(arg_type(arg)))
 
 def is_transfer_full(arg):
     transfer = arg[2].get('transfer')

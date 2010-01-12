@@ -819,7 +819,7 @@ register_constants(PyObject *d)
                     parse_tuple_format.append('s')
                 parse_tuple_args.append('&%s' % arg_name)
                 arg_def = '    %s %s = NULL;' % (arg[0], arg[1])
-            elif arg_type in ['GType', 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
+            elif arg_type in ['GType', 'int', 'gint', 'gboolean', 'const gboolean', 'time_t'] + self.binding_data.enums:
                 parse_tuple_format.append('i')
                 parse_tuple_args.append('&%s' % arg_name)
                 if arg_options.get('default'):
