@@ -13,7 +13,6 @@ lasso_private_h_sources = \
 	private.h \
 	serverprivate.h \
 	sessionprivate.h \
-	saml2_login_private.h \
 	idwsf2_helper.h
 
 liblasso_id_wsf2_la_SOURCES = \
