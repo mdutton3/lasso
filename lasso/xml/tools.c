@@ -1691,3 +1691,61 @@ cleanup:
 
 	return new_url;
 }
+
+/**
+ * lasso_xmlsec_load_private_key_from_buffer:
+ * @buffer: a buffer containing a key in any format
+ * @length: length of the buffer
+ * @password: eventually a password
+ */
+xmlSecKey*
+lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password) {
+	int i = 0;
+	xmlSecKeyDataFormat key_formats[] = {
+		xmlSecKeyDataFormatDer,
+		xmlSecKeyDataFormatCertDer,
+		xmlSecKeyDataFormatPkcs8Der,
+		xmlSecKeyDataFormatCertPem,
+		xmlSecKeyDataFormatPkcs8Pem,
+		xmlSecKeyDataFormatPem,
+		xmlSecKeyDataFormatBinary,
+		0
+	};
+	xmlSecKey *private_key = NULL;
+
+	xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
+	for (i = 0; key_formats[i] && private_key == NULL; i++) {
+		private_key = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)buffer, length,
+				key_formats[i], password, NULL, NULL);
+	}
+	/* special lasso metadata hack */
+	if (! private_key) {
+		xmlChar *out;
+		int len;
+		out = xmlMalloc(length*4);
+		len = xmlSecBase64Decode(BAD_CAST buffer, out, length*4);
+		private_key = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)buffer, length,
+				xmlSecKeyDataFormatDer, password, NULL, NULL);
+		xmlFree(out);
+	}
+	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
+
+	return private_key;
+}
+
+
+xmlSecKey*
+lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *password) {
+	char *buffer;
+	size_t length;
+
+	if (! filename_or_buffer)
+		return NULL;
+
+	if (g_file_get_contents(filename_or_buffer, &buffer, &length, NULL)) {
+		return lasso_xmlsec_load_private_key_from_buffer(buffer, length, password);
+	} else {
+		return lasso_xmlsec_load_private_key_from_buffer(filename_or_buffer, strlen(filename_or_buffer), password);
+	}
+
+}

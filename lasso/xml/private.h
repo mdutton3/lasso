@@ -120,7 +120,6 @@ time_t lasso_iso_8601_gmt_to_time_t(char *xsdtime);
 LassoPemFileType lasso_get_pem_file_type(const char *file);
 
 xmlSecKeyPtr lasso_get_public_key_from_pem_file(const char *file);
-xmlSecKeyPtr lasso_load_private_key_file(const char *file);
 xmlSecKeyPtr lasso_get_public_key_from_pem_cert_file(const char *file);
 xmlSecKeysMngr* lasso_load_certs_from_pem_certs_chain_file (const char *file);
 
@@ -221,6 +220,8 @@ static inline void message(GLogLevelFlags level, const char *format, ...)
 
 char * lasso_get_relaystate_from_query(const char *query);
 char * lasso_url_add_parameters(char *url, gboolean free, ...);
+xmlSecKey* lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password);
+xmlSecKey* lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *password);
 
 #ifdef __cplusplus
 }
