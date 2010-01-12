@@ -1137,14 +1137,19 @@ lasso_saml20_profile_build_response_msg(LassoProfile *profile, char *service,
 		made_url = url = get_response_url(provider, service, http_method_to_binding(method));
 	}
 
-	switch (method) {
-		case LASSO_HTTP_METHOD_POST:
-		case LASSO_HTTP_METHOD_REDIRECT:
-		case LASSO_HTTP_METHOD_ARTIFACT_GET:
-		case LASSO_HTTP_METHOD_ARTIFACT_POST:
-			goto_cleanup_with_rc(critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL));
-		default:
-			break;
+	/* only asynchronous bindings needs an URL for the response, SOAP does not need it, and PAOS
+	 * is special (response is a SOAP request !?! ) */
+	if (! url) {
+		switch (method) {
+			case LASSO_HTTP_METHOD_POST:
+			case LASSO_HTTP_METHOD_REDIRECT:
+			case LASSO_HTTP_METHOD_ARTIFACT_GET:
+			case LASSO_HTTP_METHOD_ARTIFACT_POST:
+			case LASSO_HTTP_METHOD_PAOS:
+				goto_cleanup_with_rc(critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL));
+			default:
+				break;
+		}
 	}
 
 	switch (method) {
