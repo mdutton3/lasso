@@ -660,9 +660,8 @@ lasso_saml20_init_request(LassoProfile *profile,
 		LassoHttpMethod http_method,
 		LassoMdProtocolType protocol_type)
 {
-	LassoIdentity *identity = NULL;
-	LassoSession *session = NULL;
 	LassoServer *server = NULL;
+	LassoSession *session = NULL;
 	LassoProvider *remote_provider = NULL;
 	LassoSaml2NameID *name_id = NULL;
 	char *remote_provider_id_auto = NULL;
@@ -670,22 +669,30 @@ lasso_saml20_init_request(LassoProfile *profile,
 
 	lasso_bad_param(PROFILE, profile);
 	lasso_bad_param(SAMLP2_REQUEST_ABSTRACT, request_abstract);
-	if (http_method < LASSO_HTTP_METHOD_ANY || http_method >= LASSO_HTTP_METHOD_LAST) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid LassoHttpMethod argument");
-		return LASSO_PARAM_ERROR_INVALID_VALUE;
+
+	if (http_method != LASSO_HTTP_METHOD_ANY &&
+			http_method != LASSO_HTTP_METHOD_REDIRECT &&
+			http_method != LASSO_HTTP_METHOD_POST &&
+			http_method != LASSO_HTTP_METHOD_ARTIFACT_GET &&
+			http_method != LASSO_HTTP_METHOD_ARTIFACT_POST &&
+			http_method != LASSO_HTTP_METHOD_SOAP &&
+			http_method != LASSO_HTTP_METHOD_PAOS) {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
-	/* verify identity and sessions */
-	lasso_extract_node_or_fail(identity, profile->identity, IDENTITY,
-			LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
-	lasso_extract_node_or_fail(session, profile->session, SESSION,
-			LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
+	/* verify server and session object */
 	lasso_extract_node_or_fail(server, profile->server, SERVER,
 			LASSO_PROFILE_ERROR_MISSING_SERVER);
+	if (LASSO_IS_SESSION(profile->session)) {
+		session = profile->session;
+	}
 
 	/* set remote provider Id */
 	if (! remote_provider_id) {
 		if (first_in_session) {
+			if (! session) {
+				return LASSO_PROFILE_ERROR_SESSION_NOT_FOUND;
+			}
 			remote_provider_id_auto = lasso_session_get_provider_index(session, 0);
 		} else {
 			remote_provider_id_auto = lasso_server_get_first_providerID(server);
@@ -705,11 +712,9 @@ lasso_saml20_init_request(LassoProfile *profile,
 		goto cleanup;
 	/* set the name identifier */
 	name_id = (LassoSaml2NameID*)lasso_profile_get_nameIdentifier(profile);
-	if (! LASSO_IS_SAML2_NAME_ID(name_id)) {
-		rc = LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND;
-		goto cleanup;
+	if (LASSO_IS_SAML2_NAME_ID(name_id)) {
+		lasso_assign_gobject(profile->nameIdentifier, (LassoNode*)name_id);
 	}
-	lasso_assign_gobject(profile->nameIdentifier, (LassoNode*)name_id);
 
 	/* verify that this provider supports the current http method */
 	if (http_method == LASSO_HTTP_METHOD_ANY) {
