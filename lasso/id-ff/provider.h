@@ -105,15 +105,17 @@ typedef enum {
 /**
  * LassoProviderRole:
  * @LASSO_PROVIDER_ROLE_NONE: unitialized value (internal use)
- * @LASSO_PROVIDER_ROLE_SP: service provider
- * @LASSO_PROVIDER_ROLE_IDP: identity provider
+ * @LASSO_PROVIDER_ROLE_SP: service provider.
+ * @LASSO_PROVIDER_ROLE_IDP: identity provider.
+ * @LASSO_PROVIDER_ROLE_BOTH: service&identity provider.
  *
  * Provider Role.
  **/
 typedef enum {
 	LASSO_PROVIDER_ROLE_NONE = 0,
 	LASSO_PROVIDER_ROLE_SP,
-	LASSO_PROVIDER_ROLE_IDP
+	LASSO_PROVIDER_ROLE_IDP,
+	LASSO_PROVIDER_ROLE_BOTH
 } LassoProviderRole;
 
 
