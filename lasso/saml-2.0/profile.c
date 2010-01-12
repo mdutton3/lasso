@@ -1354,3 +1354,53 @@ cleanup:
 	lasso_release(url);
 	return rc;
 }
+
+gint
+lasso_profile_saml20_setup_message_signature(LassoProfile *profile, LassoNode *request_or_response)
+{
+	lasso_bad_param(PROFILE, profile);
+
+	if (! lasso_flag_sign_messages) {
+		message(G_LOG_LEVEL_WARNING, "message should be signed but no-sign-messages flag is " \
+				"activated, so it won't be");
+		return 0;
+	}
+	if (! LASSO_IS_SERVER(profile->server)) {
+		return LASSO_PROFILE_ERROR_MISSING_SERVER;
+	}
+	if (! profile->server->private_key_file) {
+		return LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
+	}
+	if (LASSO_IS_SAMLP2_REQUEST_ABSTRACT(request_or_response)) {
+		LassoSamlp2RequestAbstract *request;
+
+		request = (LassoSamlp2RequestAbstract*)request_or_response;
+		if (profile->server->certificate) {
+			request->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+		} else {
+			request->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
+		}
+		request->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
+		lasso_assign_string(request->private_key_file,
+				profile->server->private_key);
+		lasso_assign_string(request->certificate_file,
+				profile->server->certificate);
+	} else if (LASSO_IS_SAMLP2_STATUS_RESPONSE(request_or_response)) {
+		LassoSamlp2StatusResponse *response;
+
+		response = (LassoSamlp2StatusResponse*)request_or_response;
+		if (profile->server->certificate) {
+			response->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+		} else {
+			response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
+		}
+		response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
+		lasso_assign_string(response->private_key_file,
+				profile->server->private_key);
+		lasso_assign_string(response->certificate_file,
+				profile->server->certificate);
+	} else {
+		return LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ;
+	}
+	return 0;
+}

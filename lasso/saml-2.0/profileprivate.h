@@ -72,6 +72,8 @@ gint lasso_saml20_build_http_redirect_query_simple(LassoProfile *profile, LassoN
 		gboolean must_sign, const char *profile_name, gboolean is_response);
 gint lasso_saml20_profile_build_http_redirect(LassoProfile *profile, LassoNode *msg,
 		gboolean must_sign, const char *url);
+gint lasso_profile_saml20_setup_message_signature(LassoProfile *profile,
+		LassoNode *request_or_response);
 
 #ifdef __cplusplus
 }
