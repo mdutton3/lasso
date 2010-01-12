@@ -1230,6 +1230,29 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	return 0;
 }
 
+/**
+ * lasso_node_remove_signature:
+ * @node: a #LassoNode object
+ *
+ * Remove any signature setup on this node.
+ */
+void
+lasso_node_remove_signature(LassoNode *node) {
+       LassoNodeClass *klass;
+
+       if (! LASSO_IS_NODE(node))
+               return;
+       klass = LASSO_NODE_GET_CLASS(node);
+       /* follow the class parenting chain */
+       while (klass && LASSO_IS_NODE_CLASS(klass)) {
+               if (klass && klass->node_data && klass->node_data->sign_type_offset != 0) {
+                       G_STRUCT_MEMBER(LassoSignatureType, node, klass->node_data->sign_type_offset) =
+                               LASSO_SIGNATURE_TYPE_NONE;
+               }
+               klass = g_type_class_peek_parent(klass);
+       }
+}
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
