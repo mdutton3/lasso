@@ -483,7 +483,7 @@ lasso_node_export_to_soap(LassoNode *node)
  **/
 LassoSaml2EncryptedElement*
 lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
-		LassoEncryptionSymKeyType encryption_sym_key_type)
+		LassoEncryptionSymKeyType encryption_sym_key_type, const char *recipient)
 {
 	xmlDocPtr doc = NULL;
 	xmlNodePtr orig_node = NULL;
@@ -521,6 +521,9 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	}
 
 	/* Create encryption template for a specific symetric key type */
+	/* saml-core 2.2.4 line 498:
+	 * The Type attribute SHOULD be present and, if present, MUST contain a value of
+	 * http://www.w3.org/2001/04/xmlenc#Element. */
 	encrypted_data = xmlSecTmplEncDataCreate(doc,
 			xmlsec_encryption_sym_key_type,	NULL, xmlSecTypeEncElement, NULL, NULL);
 
@@ -567,7 +570,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 
 	/* add <enc:EncryptedKey/> to store the encrypted session key */
 	encrypted_key_node = xmlSecTmplKeyInfoAddEncryptedKey(key_info_node,
-			xmlSecTransformRsaPkcs1Id, NULL, NULL, NULL);
+			xmlSecTransformRsaPkcs1Id, NULL, NULL, (xmlChar*)recipient);
 	if (encrypted_key_node == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to add encrypted key");
 		goto cleanup;

@@ -500,7 +500,8 @@ lasso_provider_saml2_node_encrypt(const LassoProvider *provider, LassoNode *lass
 
 	saml2_encrypted_element = lasso_node_encrypt(lasso_node,
 			lasso_provider_get_encryption_public_key(provider),
-			lasso_provider_get_encryption_sym_key_type(provider));
+			lasso_provider_get_encryption_sym_key_type(provider),
+			provider->ProviderID);
 
 	return saml2_encrypted_element;
 }

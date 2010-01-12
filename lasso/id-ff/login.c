@@ -270,7 +270,7 @@ lasso_login_build_assertion(LassoLogin *login,
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
 			LASSO_NODE(ss->Subject->NameIdentifier),
 			provider->private_data->encryption_public_key,
-			provider->private_data->encryption_sym_key_type));
+			provider->private_data->encryption_sym_key_type, provider->ProviderID));
 		if (encrypted_element != NULL) {
 			lasso_assign_new_gobject(ss->Subject->EncryptedNameIdentifier, encrypted_element);
 			lasso_release_gobject(ss->Subject->NameIdentifier);

@@ -1418,7 +1418,8 @@ lasso_saml20_profile_setup_encrypted_node(LassoProvider *provider,
 	}
 	encrypted_node = (LassoNode*)lasso_node_encrypt(*node_to_encrypt,
 			lasso_provider_get_encryption_public_key(provider),
-			lasso_provider_get_encryption_sym_key_type(provider));
+			lasso_provider_get_encryption_sym_key_type(provider),
+			provider->ProviderID);
 	if (! encrypted_node) {
 		return LASSO_DS_ERROR_ENCRYPTION_FAILED;
 	}

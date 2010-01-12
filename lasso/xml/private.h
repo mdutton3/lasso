@@ -154,7 +154,7 @@ gboolean lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate
 xmlNode* lasso_node_get_xmlnode_for_any_type(LassoNode *node, xmlNode *cur);
 
 LassoSaml2EncryptedElement* lasso_node_encrypt(LassoNode *lasso_node,
-	xmlSecKey *encryption_public_key, LassoEncryptionSymKeyType encryption_sym_key_type);
+	xmlSecKey *encryption_public_key, LassoEncryptionSymKeyType encryption_sym_key_type, const char *recipient);
 
 int lasso_node_decrypt_xmlnode(xmlNode* encrypted_element, GList *encrypted_key,
 		xmlSecKey *encryption_private_key, LassoNode **output);

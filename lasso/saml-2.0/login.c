@@ -753,13 +753,14 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	/* Encrypt NameID */
 	if (do_encrypt_nameid) {
 		/* FIXME: as with assertions, it should be possible to setup encryption of NameID for later */
-		goto_cleanup_if_fail_with_rc(provider == NULL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+		goto_cleanup_if_fail_with_rc(provider != NULL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 		assertion->Subject->EncryptedID = (LassoSaml2EncryptedElement*)lasso_node_encrypt(
 			(LassoNode*)assertion->Subject->NameID,
 			lasso_provider_get_encryption_public_key(provider),
-			lasso_provider_get_encryption_sym_key_type(provider));
-		goto_cleanup_if_fail_with_rc(assertion->Subject->EncryptedID == NULL,
+			lasso_provider_get_encryption_sym_key_type(provider),
+			provider->ProviderID);
+		goto_cleanup_if_fail_with_rc(assertion->Subject->EncryptedID != NULL,
 				LASSO_DS_ERROR_ENCRYPTION_FAILED);
 		lasso_release_gobject(assertion->Subject->NameID);
 	}

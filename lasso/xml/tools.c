@@ -67,7 +67,6 @@
 /* A query string can be 3 times larger than the byte string value, because of the octet encoding
  * %xx */
 const int query_string_attribute_length_limit = 8192 * 3;
-LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
 static xmlSecKeyPtr lasso_get_public_key_from_private_key_file(const char *private_key_file);
 static gboolean is_base64(const char *message);
 static void xmlDetectSAX2(xmlParserCtxtPtr ctxt);
