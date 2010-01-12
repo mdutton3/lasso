@@ -261,6 +261,10 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	int rc = 0;
 
 	rc = parent_class->init_from_xml(node, xmlnode);
+
+	if (server->private_key) {
+		server->private_data->encryption_private_key = lasso_xmlsec_load_private_key(server->private_key, NULL);
+	}
 	if (rc)
 		return rc;
 
@@ -560,6 +564,8 @@ lasso_server_new(const gchar *metadata,
 	lasso_assign_string(server->private_key, private_key);
 	lasso_assign_string(server->private_key_password, private_key_password);
 	lasso_assign_string(server->certificate, certificate);
+	server->private_data->encryption_private_key = lasso_xmlsec_load_private_key(private_key,
+			private_key_password);
 
 	return server;
 }
@@ -594,6 +600,9 @@ lasso_server_new_from_buffers(const char *metadata, const char *private_key_cont
 	lasso_assign_string(server->private_key, private_key_content);
 	lasso_assign_string(server->private_key_password, private_key_password);
 	lasso_assign_string(server->certificate, certificate_content);
+	server->private_data->encryption_private_key =
+		lasso_xmlsec_load_private_key_from_buffer(private_key_content,
+				strlen(private_key_content), private_key_password);
 
 	return server;
 }
