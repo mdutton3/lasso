@@ -67,41 +67,27 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_me
 {
 	LassoProfile *profile = NULL;
 	LassoSamlp2RequestAbstract *request = NULL;
-	LassoServer *server = NULL;
 	gchar *default_name_id_format = NULL;
 	int rc = 0;
 
 	profile = &login->parent;
-	lasso_extract_node_or_fail(server, lasso_profile_get_server(profile), SERVER,
-			LASSO_PROFILE_ERROR_MISSING_SERVER);
 
-	if (http_method != LASSO_HTTP_METHOD_REDIRECT &&
-			http_method != LASSO_HTTP_METHOD_POST &&
-			http_method != LASSO_HTTP_METHOD_ARTIFACT_GET &&
-			http_method != LASSO_HTTP_METHOD_ARTIFACT_POST &&
-			http_method != LASSO_HTTP_METHOD_SOAP) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
-	}
+	/* new */
+	request = (LassoSamlp2RequestAbstract*)lasso_samlp2_authn_request_new();
+	lasso_check_good_rc(lasso_saml20_init_request(profile, profile->remote_providerID, FALSE,
+				request, http_method, LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON));
 
-	login->http_method = http_method;
+	/* FIXME: keep old behaviour */
+	login->http_method = login->parent.http_request_method;
 
-	lasso_assign_new_gobject(profile->request, lasso_samlp2_authn_request_new());
-	if (profile->request == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
-	}
-
-	request = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request);
-	request->ID = lasso_build_unique_id(32);
+	/* save request ID, for later check */
 	lasso_assign_string(login->private_data->request_id, request->ID);
-	lasso_assign_string(request->Version, "2.0");
-	request->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
-			LASSO_PROVIDER(profile->server)->ProviderID));
-	request->IssueInstant = lasso_get_current_time();
-
+	/* set name id policy */
 	lasso_assign_new_gobject(LASSO_SAMLP2_AUTHN_REQUEST(request)->NameIDPolicy,
-		LASSO_SAMLP2_NAME_ID_POLICY( lasso_samlp2_name_id_policy_new()));
-	/* retrieve the default name id formats for the given host */
-	default_name_id_format = lasso_provider_get_default_name_id_format(&server->parent);
+			lasso_samlp2_name_id_policy_new());
+	/* set name id policy format */
+	/* no need to check server, done in init_request */
+	default_name_id_format = lasso_provider_get_default_name_id_format(&profile->server->parent);
 	if (default_name_id_format) {
 		/* steal the string */
 		lasso_assign_new_string(LASSO_SAMLP2_AUTHN_REQUEST(request)->NameIDPolicy->Format,
@@ -110,6 +96,7 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_me
 		lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(request)->NameIDPolicy->Format,
 			LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT);
 	}
+	/* set name id policy SP qualifier (the 'destination' of the NameID) */
 	lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(request)->NameIDPolicy->SPNameQualifier,
 		request->Issuer->content);
 
