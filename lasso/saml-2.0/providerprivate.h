@@ -49,7 +49,7 @@ gchar* lasso_saml20_provider_get_assertion_consumer_service_binding(const LassoP
 		int service_id);
 gchar* lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(const LassoProvider *provider,
 		gchar *binding);
-
+gboolean lasso_saml20_provider_check_assertion_consumer_service_url(LassoProvider *provider, const gchar *url, const gchar *binding);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

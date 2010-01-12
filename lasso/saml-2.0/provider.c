@@ -42,6 +42,8 @@ const char *profile_names[] = {
 	NULL
 };
 
+static void add_assertion_consumer_url_to_list(gchar *key, G_GNUC_UNUSED gpointer value, GList **list);
+
 static void
 load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provider)
 {
@@ -245,6 +247,58 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 	}
 
 	return method;
+}
+
+gboolean
+lasso_saml20_provider_check_assertion_consumer_service_url(LassoProvider *provider, const gchar *url, const gchar *binding)
+{
+	GHashTable *descriptor;
+	GList *l = NULL, *r = NULL, *candidate = NULL;
+	char *name;
+	char *binding_s = NULL;
+	int lname;
+
+	descriptor = provider->private_data->SPDescriptor;
+	if (descriptor == NULL || url == NULL || binding == NULL)
+		return FALSE;
+
+	if (strcmp(binding, LASSO_SAML2_METADATA_BINDING_SOAP) == 0) {
+		binding_s = "SOAP";
+	} else if (strcmp(binding, LASSO_SAML2_METADATA_BINDING_REDIRECT) == 0) {
+		binding_s = "HTTP-Redirect";
+	} else if (strcmp(binding, LASSO_SAML2_METADATA_BINDING_POST) == 0) {
+		binding_s = "HTTP-POST";
+	} else if (strcmp(binding, LASSO_SAML2_METADATA_BINDING_ARTIFACT) == 0) {
+		binding_s = "HTTP-Artifact";
+	} else if (strcmp(binding, LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
+		binding_s = "PAOS";
+	}
+
+	if (binding_s == NULL) {
+		return FALSE;
+	}
+
+	g_hash_table_foreach(descriptor, (GHFunc)add_assertion_consumer_url_to_list, &r);
+
+	name = g_strdup_printf("AssertionConsumerService %s ", binding_s);
+	lname = strlen(name);
+	for (l = r; l; l = g_list_next(l)) {
+		char *b = l->data;
+		if (strncmp(name, b, lname) == 0) {
+			candidate = g_hash_table_lookup(descriptor, b);
+			if (candidate && candidate->data && strcmp(candidate->data, url) == 0)
+				break;
+			else
+				candidate = NULL;
+		}
+	}
+	g_free(name);
+	g_list_free(r);
+
+	if (candidate)
+		return TRUE;
+	else
+		return FALSE;
 }
 
 gchar*

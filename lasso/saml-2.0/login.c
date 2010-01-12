@@ -1358,7 +1358,11 @@ lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 	request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
 
 	if (request->AssertionConsumerServiceURL) {
-		return g_strdup(request->AssertionConsumerServiceURL);
+		if (lasso_saml20_provider_check_assertion_consumer_service_url(remote_provider,
+					request->AssertionConsumerServiceURL,
+					request->ProtocolBinding)) {
+			return g_strdup(request->AssertionConsumerServiceURL);
+		}
 	}
 
 	if (request->AssertionConsumerServiceIndex != -1 || request->ProtocolBinding == NULL) {
