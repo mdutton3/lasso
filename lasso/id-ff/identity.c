@@ -85,8 +85,11 @@ lasso_identity_add_federation(LassoIdentity *identity, LassoFederation *federati
 LassoFederation*
 lasso_identity_get_federation(LassoIdentity *identity, const char *providerID)
 {
-	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
-	g_return_val_if_fail(providerID != NULL, NULL);
+	if (! LASSO_IS_IDENTITY(identity) ||
+		providerID == NULL ||
+		identity->federations == NULL) {
+		return NULL;
+	}
 
 	return g_hash_table_lookup(identity->federations, providerID);
 }
