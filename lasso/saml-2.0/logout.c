@@ -60,12 +60,8 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	LassoProfile *profile = &logout->parent;
 	LassoNode *assertion_n = NULL;
 	LassoSaml2Assertion *assertion = NULL;
-	//LassoSaml2NameID *name_id = NULL;
 	LassoSession *session = NULL;
-	//LassoSamlp2RequestAbstract *request = NULL;
-	//LassoSaml2EncryptedElement *encrypted_element = NULL;
 	LassoSamlp2LogoutRequest *logout_request = NULL;
-	//char *assertion_SessionIndex = NULL;
 	int rc = 0;
 
 	logout_request = (LassoSamlp2LogoutRequest*) lasso_samlp2_logout_request_new();
@@ -89,8 +85,11 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	/* set the nameid */
 	lasso_assign_gobject(logout_request->NameID, profile->nameIdentifier);
 	/* Encrypt NameID */
-	rc = lasso_saml20_profile_setup_encrypted_node(remote_provider, (LassoNode**)&logout_request->NameID,
-			(LassoNode**)&logout_request->EncryptedID);
+	if (lasso_provider_get_encryption_mode(remote_provider) == LASSO_ENCRYPTION_MODE_NAMEID) {
+		lasso_check_good_rc(lasso_saml20_profile_setup_encrypted_node(remote_provider,
+					(LassoNode**)&logout_request->NameID,
+					(LassoNode**)&logout_request->EncryptedID));
+	}
 	/* set the session index if one is found */
 	lasso_assign_string(logout_request->SessionIndex,
 			_lasso_saml2_assertion_get_session_index(assertion));
@@ -324,7 +323,7 @@ int
 lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 {
 	LassoProfile *profile = LASSO_PROFILE(logout);
-	LassoSamlp2StatusResponse *response;
+	LassoSamlp2StatusResponse *response = NULL;
 	int rc = 0;
 
 	if (profile->response == NULL) {
@@ -356,8 +355,12 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 	char *status_code_value = NULL;
 	int rc = 0;
 
-	response = (LassoSamlp2StatusResponse*)profile->response;
+	response = (LassoSamlp2StatusResponse*) lasso_samlp2_logout_response_new();
 	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile, response, &response_method, response_msg));
+
+	remote_provider = lasso_server_get_provider(logout->parent.server, logout->parent.remote_providerID);
+	goto_cleanup_if_fail_with_rc(LASSO_IS_PROVIDER(remote_provider),
+			LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 	status_code_value = response->Status->StatusCode->Value;
 	if (status_code_value && strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
