@@ -131,10 +131,14 @@ class_init(LassoSamlpResponseAbstractClass *klass)
 	lasso_node_class_set_nodename(nclass, "ResponseAbstract");
 	lasso_node_class_set_ns(nclass, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
-	nclass->node_data->sign_type_offset = G_STRUCT_OFFSET(
-			LassoSamlpResponseAbstract, sign_type);
-	nclass->node_data->sign_method_offset = G_STRUCT_OFFSET(
-			LassoSamlpResponseAbstract, sign_method);
+	nclass->node_data->sign_type_offset = G_STRUCT_OFFSET(LassoSamlpResponseAbstract,
+			sign_type);
+	nclass->node_data->sign_method_offset = G_STRUCT_OFFSET(LassoSamlpResponseAbstract,
+			sign_method);
+	nclass->node_data->private_key_file_offset = G_STRUCT_OFFSET(LassoSamlpResponseAbstract,
+			private_key_file);
+	nclass->node_data->certificate_file_offset = G_STRUCT_OFFSET(LassoSamlpResponseAbstract,
+			certificate_file);
 }
 
 GType

@@ -170,6 +170,10 @@ class_init(LassoSaml2AssertionClass *klass)
 			LassoSaml2Assertion, sign_type);
 	nclass->node_data->sign_method_offset = G_STRUCT_OFFSET(
 			LassoSaml2Assertion, sign_method);
+	nclass->node_data->private_key_file_offset = G_STRUCT_OFFSET(LassoSaml2Assertion,
+			private_key_file);
+	nclass->node_data->certificate_file_offset = G_STRUCT_OFFSET(LassoSaml2Assertion,
+			certificate_file);
 	nclass->node_data->keep_xmlnode = TRUE;
 }
 
