@@ -896,7 +896,6 @@ int
 lasso_saml20_profile_init_response(LassoProfile *profile, LassoSamlp2StatusResponse *status_response,
 		const char *status_code1, const char *status_code2)
 {
-	LassoSamlp2RequestAbstract *request_abstract = NULL;
 	int rc = 0;
 
 	lasso_bad_param(PROFILE, profile);
@@ -914,7 +913,7 @@ lasso_saml20_profile_init_response(LassoProfile *profile, LassoSamlp2StatusRespo
 	lasso_assign_new_string(status_response->IssueInstant, lasso_get_current_time());
 	if (LASSO_IS_SAMLP2_REQUEST_ABSTRACT(profile->request)) {
 		lasso_assign_string(status_response->InResponseTo, 
-				((LassoSamlp2RequestAbstract*)request_abstract)->ID);
+				((LassoSamlp2RequestAbstract*)profile->request)->ID);
 	}
 	lasso_check_good_rc(lasso_profile_saml20_setup_message_signature(profile,
 				profile->response));
