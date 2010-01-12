@@ -229,7 +229,7 @@ lasso_idwsf2_profile_init_response(LassoIdWsf2Profile *profile)
  * @profile: a #LassoIdWsf2Profile object
  *
  * Serialize and sign, if needed, the SOAP request message, put the result in
- * <programlisting>LASSO_PROFILE(profile)->msg_body</paramlisting>.
+ * <programlisting>LASSO_PROFILE(profile)->msg_body</programlisting>.
  *
  * FIXME: really do sign messages.
  *
@@ -470,7 +470,7 @@ cleanup:
  * @idwsf2_profile: a #LassoIdWsf2Profile object
  *
  * Serialize and sign the SOAP, if needed, the response message, put the result in
- * <programlisting>LASSO_PROFILE(profile)->msg_body</paramlisting>.
+ * <programlisting>LASSO_PROFILE(profile)->msg_body</programlisting>.
  *
  * Return value: 0 if successful, LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED otherwise.
  */
