@@ -34,6 +34,7 @@
 #include "../xml/xml_enc.h"
 #include "../utils.h"
 #include "../xml/saml-2.0/samlp2_manage_name_id_request.h"
+#include "../xml/misc_text_node.h"
 
 /**
  * SECTION:name_id_management
@@ -67,12 +68,18 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 		LassoHttpMethod http_method)
 {
 	LassoProfile *profile = NULL;
+	LassoProvider *remote_provider;
 	LassoSamlp2ManageNameIDRequest *manage_name_id_request = NULL;
 	LassoSamlp2RequestAbstract *request = NULL;
+	gboolean do_encrypt = FALSE;
 	int rc = 0;
 
 	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 	profile = LASSO_PROFILE(name_id_management);
+	remote_provider = lasso_server_get_provider(profile->server, remote_provider_id);
+	if (! LASSO_IS_PROVIDER(remote_provider)) {
+		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
+	}
 
 	request = (LassoSamlp2RequestAbstract*)lasso_samlp2_manage_name_id_request_new();
 	manage_name_id_request = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request);
@@ -80,8 +87,30 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 				http_method, LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID));
 
 	lasso_assign_gobject(manage_name_id_request->NameID, (LassoSaml2NameID*)profile->nameIdentifier);
+	do_encrypt = (lasso_provider_get_encryption_mode(remote_provider) == LASSO_ENCRYPTION_MODE_NAMEID);
+
+	if (do_encrypt) {
+		/* Encrypt old nameid */
+		lasso_check_good_rc(lasso_saml20_profile_setup_encrypted_node(remote_provider,
+					(LassoNode**)&manage_name_id_request->NameID,
+					(LassoNode**)&manage_name_id_request->EncryptedID));
+	}
+
 	if (new_name_id) {
-		lasso_assign_string(manage_name_id_request->NewID, new_name_id);
+		if (do_encrypt) {
+			LassoMiscTextNode *text_node;
+			text_node =
+				(LassoMiscTextNode*)lasso_misc_text_node_new_with_string(new_name_id);
+			text_node->name = "NewEncryptedID";
+			text_node->ns_href = LASSO_SAML2_PROTOCOL_HREF;
+			text_node->ns_prefix = LASSO_SAML2_PROTOCOL_PREFIX;
+			lasso_check_good_rc(lasso_saml20_profile_setup_encrypted_node(remote_provider,
+						(LassoNode**)&text_node,
+						(LassoNode**)&manage_name_id_request->NewEncryptedID));
+			lasso_release_string(manage_name_id_request->NewID);
+		} else {
+			lasso_assign_string(manage_name_id_request->NewID, new_name_id);
+		}
 	} else {
 		lasso_assign_new_gobject(manage_name_id_request->Terminate,
 				LASSO_SAMLP2_TERMINATE(lasso_samlp2_terminate_new()));
