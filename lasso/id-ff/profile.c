@@ -501,7 +501,38 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	return 0;
 }
 
+/**
+ * lasso_profile_set_signature_hint:
+ * @profile: a #LassoProfile object
+ * @signature_hint: wheter next produced messages should be signed or not (or let Lasso choose from
+ * implicit information).
+ *
+ * By default each profile will choose to sign or not its messages, this method allow to force or
+ * forbid the signature of messages, on a per transaction basis.
+ */
+void
+lasso_profile_set_signature_hint(LassoProfile *profile, LassoProfileSignatureHint signature_hint)
+{
+	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
+		return;
+	profile->private_data->signature_hint = signature_hint;
+}
 
+/**
+ * lasso_profile_get_signature_hint:
+ * @profile: a #LassoProfile object
+ *
+ * Return the value of the signature hint attribute (see lasso_profile_set_signature_hint()).
+ *
+ * Return value: a value in the enum type #LassoProfileSignatureHint.
+ */
+LassoProfileSignatureHint
+lasso_profile_get_signature_hint(LassoProfile *profile)
+{
+	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
+		return LASSO_PROFILE_SIGNATURE_HINT_MAYBE;
+	return profile->private_data->signature_hint;
+}
 
 /*****************************************************************************/
 /* overridden parent class methods                                           */
@@ -552,6 +583,7 @@ instance_init(LassoProfile *profile)
 	profile->private_data->dispose_has_run = FALSE;
 	profile->private_data->artifact = NULL;
 	profile->private_data->artifact_message = NULL;
+	profile->private_data->signature_hint = LASSO_PROFILE_SIGNATURE_HINT_MAYBE;
 
 	profile->server = NULL;
 	profile->request = NULL;

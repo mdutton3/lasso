@@ -87,6 +87,11 @@ typedef enum {
 	LASSO_REQUEST_TYPE_IDWSF2_DISCO_QUERY = 15
 } LassoRequestType;
 
+typedef enum {
+	LASSO_PROFILE_SIGNATURE_HINT_MAYBE  = 0,
+	LASSO_PROFILE_SIGNATURE_HINT_FORCE  = 1,
+	LASSO_PROFILE_SIGNATURE_HINT_FORBID = 2
+} LassoProfileSignatureHint;
 
 struct _LassoProfile {
 	LassoNode parent;
@@ -142,6 +147,9 @@ LASSO_EXPORT char* lasso_profile_get_artifact(LassoProfile *profile);
 LASSO_EXPORT char* lasso_profile_get_artifact_message(LassoProfile *profile);
 LASSO_EXPORT void  lasso_profile_set_artifact_message(LassoProfile *profile, char *message);
 LASSO_EXPORT LassoServer* lasso_profile_get_server(LassoProfile *profile);
+LASSO_EXPORT void lasso_profile_set_signature_hint(LassoProfile *profile,
+		LassoProfileSignatureHint signature_hint);
+LASSO_EXPORT LassoProfileSignatureHint lasso_profile_get_signature_hint(LassoProfile *profile);
 
 #ifdef __cplusplus
 }

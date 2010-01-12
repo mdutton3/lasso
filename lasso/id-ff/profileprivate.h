@@ -37,6 +37,7 @@ struct _LassoProfilePrivate
 	char *artifact;
 	char *artifact_message;
 	gboolean dispose_has_run;
+	LassoProfileSignatureHint signature_hint;
 };
 
 void lasso_profile_set_response_status(LassoProfile *profile, const gchar *statusCodeValue);
