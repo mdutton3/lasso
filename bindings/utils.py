@@ -179,7 +179,9 @@ def is_const(arg):
     return bool(re.search(r'\bconst\b', arg_type(arg)))
 
 def is_cstring(arg):
-    return unconstify(arg_type(arg)) in ('char*','gchar*','guchar*')
+    if isinstance(arg, tuple):
+        arg = arg_type(arg)
+    return unconstify(arg) in ('char*','gchar*','guchar*','string','utf8')
 
 def is_xml_node(arg):
     return unconstify(arg_type(arg)).startswith('xmlNode')
