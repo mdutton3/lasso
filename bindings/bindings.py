@@ -354,6 +354,7 @@ def normalise_var(type, name):
         name = name[1:]
     return type, name
 
+exclude_private = True
 
 def parse_header(header_file):
     global binding
@@ -426,9 +427,9 @@ def parse_header(header_file):
                 in_struct_private = False
             elif '/*< private >*/' in line:
                 in_struct_private = True
-            elif in_struct_private:
+            elif in_struct_private and exclude_private:
                 pass
-            elif 'DEPRECATED' in line:
+            elif 'DEPRECATED' in line and exclude_private:
                 pass
             else:
                 # TODO: Add parsing of OFTYPE
@@ -455,7 +456,7 @@ def parse_header(header_file):
 
             # parse the type, then the name, then argument list
             m = re.match(r'LASSO_EXPORT\s+([^(]*(?:\s|\*))(\w+)\s*\(\s*(.*?)\s*\)\s*;', line)
-            if m and not m.group(2).endswith('_get_type'):
+            if m and (not exclude_private or not m.group(2).endswith('_get_type')):
                 return_type, function_name, args = m.groups()
                 return_type = return_type.strip()
                 f = Function()
@@ -470,7 +471,7 @@ def parse_header(header_file):
                     if return_type != 'void':
                         f.return_type = return_type
                         f.return_arg = (return_type, None, {})
-                    if function_name.endswith('_destroy'):
+                    if function_name.endswith('_destroy') and exclude_private:
                         # skip the _destroy functions, they are just wrapper over
                         # g_object_unref
                         pass
@@ -515,7 +516,7 @@ def parse_headers(srcdir):
         makefile_am = open(os.path.join(base, 'Makefile.am')).read()
         filenames = [x for x in filenames if x.endswith('.h') if x in makefile_am]
         for filename in filenames:
-            if filename in ('xml_idff.h', 'xml_idwsf.h', 'xml_saml2.h'):
+            if filename in ('xml_idff.h', 'xml_idwsf.h', 'xml_saml2.h', 'idwsf_strings.h'):
                 continue
             if filename == 'lasso_config.h' or 'private' in filename:
                 continue
