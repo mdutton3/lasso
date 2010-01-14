@@ -115,6 +115,8 @@ lasso_strerror(int error_code)
 			return "Received response does not refer to the request sent";
 		case LASSO_DS_ERROR_TOO_MUCH_REFERENCES:
 			return "SAML signature must contain only one reference";
+		case LASSO_SERVER_ERROR_INVALID_XML:
+			return "Parsed XML is invalid.";
 		case LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE:
 			return "Missing service type";
 		case LASSO_PROFILE_ERROR_UNSUPPORTED_BINDING:

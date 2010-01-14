@@ -232,6 +232,12 @@
  * Failed to load encryption private key.
  */
 #define LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED 204
+/**
+ * LASSO_SERVER_ERROR_INVALID_XML:
+ *
+ * Parsed XML is invalid.
+ */
+#define LASSO_SERVER_ERROR_INVALID_XML -205
 
 /* Single Logout */
 /**
