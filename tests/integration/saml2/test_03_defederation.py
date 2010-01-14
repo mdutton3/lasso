@@ -11,9 +11,10 @@ submit
 url http://localhost:10002
 submit fedterm-redirect
 url http://localhost:10002
-find 'Log on'
+notfind 'Log on'
+find 'Single Logout'
+find 'Federation Termination'
 go http://localhost:10001
-save_html /tmp/a.html
 find 'Local Logout'
 ''')
 
@@ -28,9 +29,8 @@ submit
 url http://localhost:10002
 submit fedterm-soap
 url http://localhost:10002
-find 'Log on'
+notfind 'Log on'
 go http://localhost:10001
-save_html /tmp/b.html
 find 'Local Logout'
 ''')
 
@@ -46,7 +46,9 @@ submit
 url http://localhost:10002
 submit fedterm-soap
 url http://localhost:10002
-find 'Log on'
+notfind 'Log on'
+find 'Single Logout'
+find 'Federation Termination'
 go http://localhost:10001
 fv 2 binding SOAP
 fv 2 slo 'Single Logout'
