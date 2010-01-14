@@ -93,8 +93,6 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	/* set the session index if one is found */
 	lasso_assign_string(logout_request->SessionIndex,
 			_lasso_saml2_assertion_get_session_index(assertion));
-	lasso_session_remove_assertion(profile->session,
-				profile->remote_providerID);
 
 cleanup:
 	/* special case: we suppose REDIRECT is the last resort method, so we force assertion
@@ -274,7 +272,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 		}
 	}
 
-	/* authentication is ok, federation is ok, propagation support is ok, remove assertion */
+	/* everything is ok, remove assertion */
 	lasso_session_remove_assertion(profile->session, profile->remote_providerID);
 
 	/* if at IDP and nb sp logged > 1, then backup remote provider id,
@@ -363,7 +361,8 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 			LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 	status_code_value = response->Status->StatusCode->Value;
-	if (status_code_value && strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
+	/* So we received an error... */
+	while (status_code_value && strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
 		/* If at SP, if the request method was a SOAP type, then
 		 * rebuild the request message with HTTP method */
 		/* XXX is this still what to do for SAML 2.0? */
@@ -376,31 +375,24 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 			}
 			if (status_code_value == NULL) {
 				rc = LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
-				goto cleanup;
+				break;
 			}
 		}
 		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED) == 0) {
 			/* assertion no longer on IdP so removing it locally
 			 * too */
-			lasso_session_remove_assertion(
-					profile->session, profile->remote_providerID);
 			rc = LASSO_LOGOUT_ERROR_REQUEST_DENIED;
-			goto cleanup;
+			break;
 		}
 		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
 			rc = LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
-			goto cleanup;
+			break;
 		}
 		rc = LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
-		goto cleanup;
+		break;
 	}
-
-
-	/* if SOAP method or, if IDP provider type and HTTP Redirect,
-	 * then remove assertion */
-	if (response_method == LASSO_HTTP_METHOD_SOAP ||
-			(remote_provider->role == LASSO_PROVIDER_ROLE_SP &&
-			 response_method == LASSO_HTTP_METHOD_REDIRECT) ) {
+	/* if at the idp, we do not care about the return code, just remove the assertion */
+	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP || rc == 0) {
 		lasso_session_remove_assertion(profile->session, profile->remote_providerID);
 	}
 
@@ -428,12 +420,6 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 						LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT);
 			}
 		}
-	}
-
-	/* if at SP */
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP &&
-			response_method == LASSO_HTTP_METHOD_REDIRECT) {
-		lasso_session_remove_assertion(profile->session, profile->remote_providerID);
 	}
 
 cleanup:
