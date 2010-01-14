@@ -72,6 +72,7 @@ LASSO_NAME_REGISTRATION_GET_CLASS
 <FILE>profile</FILE>
 LassoProfilePrivate
 LassoRequestType
+LassoProfileSignatureHint
 <TITLE>LassoProfile</TITLE>
 LassoProfile
 lasso_profile_get_request_type_from_soap_msg
@@ -87,6 +88,8 @@ lasso_profile_get_artifact
 lasso_profile_get_artifact_message
 lasso_profile_set_artifact_message
 lasso_profile_get_server
+lasso_profile_set_signature_hint
+lasso_profile_get_signature_hint
 <SUBSECTION Standard>
 LASSO_PROFILE
 LASSO_IS_PROFILE
