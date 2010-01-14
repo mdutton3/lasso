@@ -367,6 +367,9 @@ lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 	LassoNode *resp = NULL;
 	int rc = 0;
 
+	if ( ! LASSO_IS_SAMLP2_REQUEST_ABSTRACT(profile->request)) {
+		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+	}
 	response = LASSO_SAMLP2_STATUS_RESPONSE(lasso_samlp2_artifact_response_new());
 	if (profile->private_data->artifact_message) {
 		resp = lasso_node_new_from_dump(profile->private_data->artifact_message);
@@ -1098,7 +1101,7 @@ static int
 lasso_saml20_profile_build_post_response_msg(LassoProfile *profile, const char *url)
 {
 	lasso_assign_string(profile->msg_url, url);
-	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_base64(profile->request));
+	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_base64(profile->response));
 	check_msg_body;
 	return 0;
 }
