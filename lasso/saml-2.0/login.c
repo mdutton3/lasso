@@ -1288,7 +1288,7 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 			g_critical("Cannot happen");
 			break;
 	}
-	lasso_check_good_rc(lasso_saml20_profile_build_request_msg(profile, NULL, http_method, url));
+	lasso_check_good_rc(lasso_saml20_profile_build_response_msg(profile, NULL, http_method, url));
 
 cleanup:
 	return rc;
