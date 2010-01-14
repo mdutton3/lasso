@@ -1,6 +1,43 @@
 NEWS
 ====
 
+2.2.90 - January 14th 2009
+--------------------------
+
+Lots of internal changes and some external one too.
+
+There is a new api to force, forbid or let Lasso sign messages, it is called
+lasso_profile_set_signature_hint.
+
+Big overhaul of the ID-WSF 1 and 2 codes, and of the SAML 2.0 profiles. Now all
+SAML 2.0 profile use common internal functions from the lasso_saml20_profile_
+namespace to handle bindings (SOAP,Redirect,POST,Artifact,PAOS). New internal
+API to load SSL keys from many more formats from the public API.
+
+In ID-WSF 2.0, Data Service Template has been simplified, we no more try to
+apply queries, it is the responsability of the using code to handle them.
+
+In bindings land, the file bindings/utils.py has been stuffed with utility
+function to manipulate 'type' tuple, with are now used to transfer argument and
+type description, their schema is (name, C-type, { dictionary of options } ),
+they are now used everywhere in the different bindings. We support output
+argument in PHP5, Python and Java, i.e. pointer of pointer arguments with are
+written to in order to return multiple values. For language where the binding
+convert error codes to exceptions (all of them now), the ouput value is
+returned as the normal return value of the method, so only one output argument
+is handled for now.
+
+We now use GObject-introspection annotations in the documentation to transfer
+to the binding generator the necessary metadata about the API (content of
+lists, hashtables, wheter pointer are caller/callee owned, can be NULL or if
+argument have a default value). The file bindings/override.xml is now
+deprecated.
+
+In documentation land, the main reference documentation was reorganizaed and
+more symbols have been added to it. Many more functions are documented.
+
+There is now tools to control the evolution of the ABI/API of Lasso.
+
 2.2.2 - March 24th 2009
 -----------------------
 
