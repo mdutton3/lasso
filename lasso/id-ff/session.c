@@ -382,8 +382,9 @@ lasso_session_is_dirty(LassoSession *session)
 gint
 lasso_session_remove_assertion(LassoSession *session, const gchar *providerID)
 {
-	g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_INVALID_VALUE);
-	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	if (! LASSO_IS_SESSION(session) || lasso_is_empty_string(providerID)) {
+		return LASSO_PARAM_ERROR_INVALID_VALUE;
+	}
 
 	if (g_hash_table_remove(session->assertions, providerID)) {
 		session->is_dirty = TRUE;
