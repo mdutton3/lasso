@@ -870,7 +870,7 @@ register_constants(PyObject *d)
                 continue
             if is_list(arg):
                 qualifier = element_type(arg)
-                if qualifier == 'char*' or qualifier == 'utf8':
+                if is_cstring(qualifier):
                     print >> fd, '    set_list_of_strings(&%s, cvt_%s);' % (arg[1], arg[1])
                 elif qualifier == 'xmlNode*':
                     print >> fd, '    set_list_of_xml_nodes(&%s, cvt_%s);' % (arg[1], arg[1])
