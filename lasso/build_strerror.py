@@ -16,12 +16,12 @@ for line in hlines:
     m = re.match(r'^ \* (.*[^:])$', line)
     if m:
         description = m.group(1)
-    m = re.match(r'#define (LASSO_\w+)', line)
+    m = re.match(r'#define (LASSO_\w*ERROR\w+)', line)
     if m and description:
         messages[m.group(1)] = description
         description = None
     else:
-        m = re.match(r'#define (LASSO_\w+)',line)
+        m = re.match(r'#define (LASSO_\w*ERROR\w+)',line)
         if m:
             messages[m.group(1)] = m.group(1)
 
