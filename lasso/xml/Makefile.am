@@ -192,6 +192,7 @@ liblasso_xml_la_SOURCES = \
 
 liblassoinclude_HEADERS = \
 	strings.h \
+	idwsf_strings.h \
 	xml.h \
 	ds_key_info.h \
 	ds_key_value.h \
