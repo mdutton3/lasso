@@ -38,14 +38,20 @@
     </implements>
     <maintainer>
       <foaf:Person>
-        <foaf:name>Frédéric Péters</foaf:name>
-        <foaf:mbox rdf:resource="mailto:fpeters@entrouvert.com"/>
+        <foaf:name>Benjamin Dauvergne</foaf:name>
+        <foaf:mbox rdf:resource="mailto:bdauvergne@entrouvert.com"/>
       </foaf:Person>
     </maintainer>
     <developer>
       <foaf:Person>
-        <foaf:name>Benjamin Dauvergne</foaf:name>
-        <foaf:mbox rdf:resource="mailto:bdauvergne@entrouvert.com"/>
+        <foaf:name>Frédéric Péters</foaf:name>
+        <foaf:mbox rdf:resource="mailto:fpeters@entrouvert.com"/>
+      </foaf:Person>
+    </developer>
+    <developer>
+      <foaf:Person>
+        <foaf:name>Jérôme Schneider</foaf:name>
+        <foaf:mbox rdf:resource="mailto:jschneider@entrouvert.com"/>
       </foaf:Person>
     </developer>
     <repository>
@@ -54,6 +60,12 @@
         <browse rdf:resource="https://labs.libre-entreprise.org/plugins/scmsvn/viewcvs.php/?root=lasso"/>
       </SVNRepository>
     </repository>
+    <release>
+      <Version>
+        <created>2010-01-15</created>
+        <revision>2.2.90</revision>
+      </Version>
+    </release>
     <release>
       <Version>
         <created>2009-03-27</created>
