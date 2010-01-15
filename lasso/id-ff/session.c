@@ -88,9 +88,9 @@ lasso_session_add_assertion(LassoSession *session, const char *providerID, Lasso
 		LassoSamlAssertion *saml_assertion = LASSO_SAML_ASSERTION(assertion);
 		if (saml_assertion->Advice) {
 			LassoSamlAdvice *advice = saml_assertion->Advice;
-			GList *iter;
-			for (iter = advice->any; iter; iter = iter->next) {
-				xmlNode *node = (xmlNodePtr)iter->data;
+			LassoSamlAssertion *advice_assertion = (LassoSamlAssertion*)advice->Assertion;
+			if (LASSO_IS_SAML_ASSERTION(advice_assertion)) {
+				xmlNode *node = lasso_node_get_original_xmlnode(&advice_assertion->parent);
 				if (xmlSecCheckNodeName(node, (xmlChar*)"Assertion", (xmlChar*)LASSO_SAML_ASSERTION_HREF)) {
 					xmlChar *id = xmlGetProp(node, (xmlChar*)"AssertionID");
 					ret = lasso_session_add_assertion_with_id(session, (char*)id, node);

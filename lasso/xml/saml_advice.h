@@ -49,7 +49,11 @@ struct _LassoSamlAdvice {
 	LassoNode parent;
 
 	/*< public >*/
-	GList *any; /* of xmlNode */
+	/* <element ref="saml:AssertionIDReference"/> */
+	GList *AssertionIDReference; /* of LassoNode */
+	/* <element ref="saml:Assertion"/> */
+	LassoNode *Assertion; /* actually LassoSamlAssertion* but it recurses */
+
 };
 
 struct _LassoSamlAdviceClass {

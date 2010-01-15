@@ -54,10 +54,9 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-/*	{ "AssertionIDReference", SNIPPET_LIST_CONTENT,
+	{ "AssertionIDReference", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoSamlAdvice, AssertionIDReference), NULL, NULL, NULL},
-	{ "Assertion", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAdvice, Assertion), NULL, NULL, NULL}, */
-	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoSamlAdvice, any), NULL, NULL, NULL},
+	{ "Assertion", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAdvice, Assertion), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
