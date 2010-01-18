@@ -527,7 +527,6 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     <xi:include href="xml/wsse_reference.xml"/>
     <xi:include href="xml/wsse_security_header.xml"/>
     <xi:include href="xml/wsse_security_token_reference.xml"/>
-    <xi:include href="xml/wsse_security.xml"/>
     <xi:include href="xml/wsse_transformation_parameters.xml"/>
     <xi:include href="xml/wsse_username_token.xml"/>
     <xi:include href="xml/wsu_timestamp.xml"/>
