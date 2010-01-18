@@ -52,7 +52,7 @@ typedef struct _LassoAssertionQueryClass LassoAssertionQueryClass;
 typedef struct _LassoAssertionQueryPrivate LassoAssertionQueryPrivate;
 
 /**
- * LassoAssertionQueryRequestType::
+ * LassoAssertionQueryRequestType:
  * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_UNSET: the unknown value
  * @LASSO_ASSERTION_QUERY_REQUEST_TYPE_ASSERTION_ID: an AssertionID request, to retrieve an
  * assertion by its ID.

@@ -370,7 +370,7 @@ lasso_is_empty_string(const char *str) {
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 
-/**
+/*
  * The following macros are made to create some formalism for function's cleanup code.
  *
  * The exit label should be called 'cleanup'. And for functions returning an integer error code, the

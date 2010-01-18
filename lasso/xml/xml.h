@@ -50,7 +50,7 @@ extern "C" {
 #define LASSO_NODE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_NODE, LassoNodeClass))
 
 /**
- * LassoMessageFormat::
+ * LassoMessageFormat:
  * @LASSO_MESSAGE_FORMAT_ERROR: error while determining format
  * @LASSO_MESSAGE_FORMAT_UNKNOWN: unknown format
  * @LASSO_MESSAGE_FORMAT_XML: XML
@@ -73,7 +73,7 @@ typedef enum {
 
 
 /**
- * LassoSignatureType::
+ * LassoSignatureType:
  * @LASSO_SIGNATURE_TYPE_NONE: no signature
  * @LASSO_SIGNATURE_TYPE_SIMPLE: sign with the private key, copy the public part in the signature.
  * @LASSO_SIGNATURE_TYPE_WITHX509: sign with the private key, copy the associated certificat in the
@@ -89,7 +89,7 @@ typedef enum {
 
 
 /**
- * LassoSignatureMethod::
+ * LassoSignatureMethod:
  * @LASSO_SIGNATURE_METHOD_RSA_SHA1: sign using a RSA private key
  * @LASSO_SIGNATURE_METHOD_DSA_SHA1: sign using a DSA private key
  *

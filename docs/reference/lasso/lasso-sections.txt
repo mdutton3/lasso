@@ -1,6 +1,5 @@
 <SECTION>
 <FILE>server</FILE>
-LassoServerPrivate
 <TITLE>LassoServer</TITLE>
 LassoServer
 lasso_server_new
@@ -70,12 +69,10 @@ LASSO_NAME_REGISTRATION_GET_CLASS
 
 <SECTION>
 <FILE>profile</FILE>
-LassoProfilePrivate
-LassoRequestType
-LassoProfileSignatureHint
 <TITLE>LassoProfile</TITLE>
 LassoProfile
 lasso_profile_get_request_type_from_soap_msg
+LassoRequestType
 lasso_profile_is_liberty_query
 lasso_profile_get_identity
 lasso_profile_get_session
@@ -90,6 +87,7 @@ lasso_profile_set_artifact_message
 lasso_profile_get_server
 lasso_profile_set_signature_hint
 lasso_profile_get_signature_hint
+LassoProfileSignatureHint
 <SUBSECTION Standard>
 LASSO_PROFILE
 LASSO_IS_PROFILE
@@ -102,7 +100,6 @@ LASSO_PROFILE_GET_CLASS
 
 <SECTION>
 <FILE>identity</FILE>
-LassoIdentityPrivate
 <TITLE>LassoIdentity</TITLE>
 LassoIdentity
 lasso_identity_new
@@ -122,16 +119,10 @@ LASSO_IDENTITY_GET_CLASS
 
 <SECTION>
 <FILE>provider</FILE>
-LassoProviderPrivate
-LassoHttpMethod
-LassoMdProtocolType
-LassoProviderRole
-LassoProtocolConformance
-LassoEncryptionMode
-LassoEncryptionSymKeyType
 <TITLE>LassoProvider</TITLE>
 LassoProvider
 lasso_provider_new
+LassoProviderRole
 lasso_provider_new_from_buffer
 lasso_provider_get_assertion_consumer_service_url
 lasso_provider_get_metadata_one
@@ -139,15 +130,20 @@ lasso_provider_get_metadata_list
 lasso_provider_new_from_dump
 lasso_provider_get_first_http_method
 lasso_provider_accept_http_method
+LassoHttpMethod
+LassoMdProtocolType
 lasso_provider_has_protocol_profile
 lasso_provider_get_base64_succinct_id
 lasso_provider_get_organization
 lasso_provider_get_protocol_conformance
+LassoProtocolConformance
+lasso_provider_get_encryption_mode
 lasso_provider_set_encryption_mode
+LassoEncryptionMode
 lasso_provider_set_encryption_sym_key_type
+LassoEncryptionSymKeyType
 lasso_provider_verify_single_node_signature
 lasso_provider_get_default_name_id_format
-lasso_provider_get_encryption_mode
 lasso_provider_get_sp_name_qualifier
 <SUBSECTION Standard>
 LASSO_PROVIDER
@@ -161,7 +157,6 @@ LASSO_PROVIDER_GET_CLASS
 
 <SECTION>
 <FILE>session</FILE>
-LassoSessionPrivate
 <TITLE>LassoSession</TITLE>
 LassoSession
 lasso_session_new
@@ -207,7 +202,6 @@ LASSO_LECP_GET_CLASS
 
 <SECTION>
 <FILE>login</FILE>
-LassoLoginPrivate
 LassoLoginProtocolProfile
 <TITLE>LassoLogin</TITLE>
 LassoLogin
@@ -246,7 +240,6 @@ LASSO_LOGIN_GET_CLASS
 
 <SECTION>
 <FILE>federation</FILE>
-LassoFederationPrivate
 <TITLE>LassoFederation</TITLE>
 LassoFederation
 lasso_federation_new
@@ -265,7 +258,6 @@ LASSO_FEDERATION_GET_CLASS
 
 <SECTION>
 <FILE>logout</FILE>
-LassoLogoutPrivate
 <TITLE>LassoLogout</TITLE>
 LassoLogout
 lasso_logout_new
@@ -314,7 +306,6 @@ LASSO_NAME_IDENTIFIER_MAPPING_GET_CLASS
 
 <SECTION>
 <FILE>wsf_profile</FILE>
-LassoWsfProfilePrivate
 <TITLE>LassoWsfProfile</TITLE>
 LassoWsfProfile
 lasso_wsf_profile_get_identity
@@ -358,7 +349,6 @@ LASSO_WSF_PROFILE_GET_CLASS
 
 <SECTION>
 <FILE>authentication</FILE>
-LassoAuthenticationPrivate
 LassoUserAccount
 LassoSaslMechanisms
 <TITLE>LassoAuthentication</TITLE>
@@ -385,7 +375,6 @@ LASSO_AUTHENTICATION_GET_CLASS
 
 <SECTION>
 <FILE>personal_profile_service</FILE>
-LassoPersonalProfileServicePrivate
 <TITLE>LassoPersonalProfileService</TITLE>
 LassoPersonalProfileService
 lasso_personal_profile_service_new
@@ -403,7 +392,6 @@ LASSO_PERSONAL_PROFILE_SERVICE_GET_CLASS
 
 <SECTION>
 <FILE>interaction_profile_service</FILE>
-LassoInteractionProfileServicePrivate
 <TITLE>LassoInteractionProfileService</TITLE>
 LassoInteractionProfileService
 lasso_interaction_profile_service_new
@@ -422,7 +410,6 @@ LASSO_INTERACTION_PROFILE_SERVICE_GET_CLASS
 
 <SECTION>
 <FILE>data_service</FILE>
-LassoDataServicePrivate
 <TITLE>LassoDataService</TITLE>
 LassoDataService
 lasso_data_service_new
@@ -451,7 +438,6 @@ LASSO_DATA_SERVICE_GET_CLASS
 
 <SECTION>
 <FILE>discovery</FILE>
-LassoDiscoveryPrivate
 <TITLE>LassoDiscovery</TITLE>
 LassoDiscovery
 lasso_discovery_new
@@ -5676,7 +5662,6 @@ LASSO_IDWSF2_DSTREF_DATA_RESPONSE_GET_CLASS
 
 <SECTION>
 <FILE>ecp</FILE>
-LassoEcpPrivate
 <TITLE>LassoEcp</TITLE>
 LassoEcp
 lasso_ecp_new
@@ -5719,7 +5704,6 @@ LASSO_NAME_ID_MANAGEMENT_GET_CLASS
 
 <SECTION>
 <FILE>assertion_query</FILE>
-LassoAssertionQueryPrivate
 LassoAssertionQueryRequestType
 <TITLE>LassoAssertionQuery</TITLE>
 LassoAssertionQuery
@@ -5743,7 +5727,6 @@ LASSO_ASSERTION_QUERY_GET_CLASS
 
 <SECTION>
 <FILE>id_wsf_2_0_data_service</FILE>
-LassoIdWsf2DataServicePrivate
 <TITLE>LassoIdWsf2DataService</TITLE>
 LassoIdWsf2DataService
 lasso_idwsf2_data_service_new
@@ -5763,7 +5746,6 @@ LASSO_IDWSF2_DATA_SERVICE_GET_CLASS
 
 <SECTION>
 <FILE>id_wsf_2_0_profile</FILE>
-LassoIdWsf2ProfilePrivate
 <TITLE>LassoIdWsf2Profile</TITLE>
 LassoIdWsf2Profile
 lasso_idwsf2_profile_build_request_msg
@@ -5781,7 +5763,6 @@ LASSO_IDWSF2_PROFILE_GET_CLASS
 
 <SECTION>
 <FILE>id_wsf_2_0_discovery</FILE>
-LassoIdWsf2DiscoveryPrivate
 <TITLE>LassoIdWsf2Discovery</TITLE>
 LassoIdWsf2Discovery
 lasso_idwsf2_discovery_new

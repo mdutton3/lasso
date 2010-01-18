@@ -783,9 +783,10 @@ lasso_saml20_profile_build_soap_request_msg(LassoProfile *profile, const char *u
 	return 0;
 }
 
-/**
+/*
  * the url parameters is special for this function, it does not give the destination of the message
- * (it's implicit for the caller of this function) but where response should be posted later) */
+ * (it's implicit for the caller of this function) but where response should be posted later).
+ */
 static int
 lasso_profile_saml20_build_paos_request_msg(LassoProfile *profile, const char *url)
 {

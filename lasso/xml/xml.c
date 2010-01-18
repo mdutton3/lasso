@@ -694,7 +694,7 @@ lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 }
 
 /**
- * lasso_node_build_query(LassoNode *node)
+ * lasso_node_build_query:
  * @node: a #LassoNode
  *
  * Build an HTTP query from the given LassoNode, this is a pure virtual
@@ -2718,7 +2718,7 @@ xmlUseNsDef(xmlNs *ns, xmlNode *node)
 
 /**
  * xmlCleanNs
- * @root_node:
+ * @root_node: the root #xmlNode where to start the cleaning.
  *
  * xmlCleanNs removes duplicate xml namespace declarations and merge them on
  * the @root_node.

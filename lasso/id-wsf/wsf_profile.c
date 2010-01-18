@@ -1193,7 +1193,14 @@ lasso_wsf_profile_new_full(LassoServer *server, LassoDiscoResourceOffering *offe
 	return profile;
 }
 
-/** Create a new XmlSig template without any reference and return the create
+/**
+ * add_signature_template:
+ * @server:
+ * @doc:
+ * @node
+ * @signature_ptr:
+ *
+ * Create a new XmlSig template without any reference and return the create
  * Signature node. If node is not null add Signature as a last child to it.
  */
 static gint

@@ -69,7 +69,7 @@ HINSTANCE g_hModule = NULL;
  * DllMain:
  * @hinstDLL: hnadle to the DLL module
  * @fdwReason: reason value of the DLL call
- * @lpvReserved:
+ * @lpvReserved: use is unknown.
  *
  * Called when the DLL is attached or detached by a program.
  *

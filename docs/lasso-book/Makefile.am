@@ -31,5 +31,5 @@ endif
 	$(REST2HTML) $? > $@
 
 CLEANFILES = $(SP_DOC_HTML) book.html
-EXTRA_DIST = lasso-book.txt $(LASSOBOOK_FILES) $(SP_DOC_FILES)
+EXTRA_DIST = lasso-book.txt $(LASSOBOOK_FILES) $(SP_DOC_FILES) default.css
 

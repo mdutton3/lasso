@@ -25,7 +25,7 @@
 
 #ifndef BACKWARD_COMP_H
 
-/** This file contains re-implementations of functions which only exists in recent version of our
+/* This file contains re-implementations of functions which only exists in recent version of our
  * dependencies, like GLib, OpenSSL or libxml.
  */
 

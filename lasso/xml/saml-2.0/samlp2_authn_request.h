@@ -76,6 +76,7 @@ struct _LassoSamlp2AuthnRequest {
 
 	/* This field is deprecated do not use it,
 	 * kept for ABI compatibility */
+	/*< private >*/
 	G_GNUC_DEPRECATED char *relayState;
 };
 

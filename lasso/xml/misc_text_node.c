@@ -218,10 +218,10 @@ lasso_misc_text_node_new()
 
 /**
  * lasso_misc_text_node_new_with_string:
- * @content:
+ * @content: the content of newly created #LassoMiscTextNode
  *
- * Creates a new #LassoMiscTextNode object and initializes it
- * with @content.
+ * Creates a new #LassoMiscTextNode object and initializes it with @content. Beware that no
+ * nodename, so it would create a text child, not an element.
  *
  * Return value: a newly created #LassoMiscTextNode object
  **/

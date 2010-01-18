@@ -125,10 +125,10 @@ lasso_saml2_name_id_new()
 
 /**
  * lasso_saml2_name_id_new_with_string:
- * @content:
+ * @content: the Name Identifier.
  *
  * Creates a new #LassoSaml2NameID object and initializes it
- * with @content.
+ * with @content. Beware that no format is set.
  *
  * Return value: a newly created #LassoSaml2NameID object
  **/
