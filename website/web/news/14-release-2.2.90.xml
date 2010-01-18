@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<div xmlns="http://www.w3.org/1999/xhtml">
+ <h3>2010-01-15: Released 2.2.90</h3>
+
+ <p>
+  Lasso 2.2.90 has been released.
+  <a href="/download/">Download it now</a>
+ </p>
+
+ <p class="changes">
+  <strong>What changed ?</strong>
+  <p>Lots of internal changes and some external one too.</p>
+
+  <p>There is a new api to force, forbid or let Lasso sign messages, it is
+	  called  lasso_profile_set_signature_hint.</p>
+
+  <p>Big overhaul of the ID-WSF 1 and 2 codes, and of the SAML 2.0 profiles. Now all
+SAML 2.0 profile use common internal functions from the lasso_saml20_profile_
+namespace to handle bindings (SOAP,Redirect,POST,Artifact,PAOS). New internal
+API to load SSL keys from many more formats from the public API.</p>
+
+  <p>In ID-WSF 2.0, Data Service Template has been simplified, we no more try to
+	  apply queries, it is the responsability of the using code to handle them.</p>
+
+  <p>In bindings land, the file bindings/utils.py has been stuffed with utility
+function to manipulate 'type' tuple, with are now used to transfer argument and
+type description, their schema is (name, C-type, { dictionary of options } ),
+they are now used everywhere in the different bindings. We support output
+argument in PHP5, Python and Java, i.e. pointer of pointer arguments with are
+written to in order to return multiple values. For language where the binding
+convert error codes to exceptions (all of them now), the ouput value is
+returned as the normal return value of the method, so only one output argument
+is handled for now.</p>
+
+  <p>We now use GObject-introspection annotations in the documentation to transfer
+to the binding generator the necessary metadata about the API (content of
+lists, hashtables, wheter pointer are caller/callee owned, can be NULL or if
+argument have a default value). The file bindings/override.xml is now
+deprecated.</p>
+
+  <p>In documentation land, the main reference documentation was reorganizaed and
+	  more symbols have been added to it. Many more functions are documented.</p>
+
+  <p>There is now tools to control the evolution of the ABI/API of Lasso.</p>
+
+  <strong>Summary of API changes:</strong>
+
+  <ul>
+  <li><p>New constants:</p>
+ <pre>
+LASSO_DS_ERROR_ENCRYPTION_FAILED
+LASSO_DURATION_DAY
+LASSO_DURATION_HOUR
+LASSO_DURATION_MINUTE
+LASSO_DURATION_WEEK
+LASSO_ERROR_CAST_FAILED
+LASSO_HTTP_METHOD_PAOS
+LASSO_PROFILE_ERROR_INVALID_REQUEST
+LASSO_PROFILE_ERROR_INVALID_RESPONSE
+LASSO_PROFILE_ERROR_UNSUPPORTED_BINDING
+LASSO_PROFILE_SIGNATURE_HINT_FORBID
+LASSO_PROFILE_SIGNATURE_HINT_FORCE
+LASSO_PROFILE_SIGNATURE_HINT_MAYBE
+LASSO_PROVIDER_ROLE_BOTH
+LASSO_SAML2_ASSERTION_INDETERMINATE
+LASSO_SAML2_ASSERTION_INVALID
+LASSO_SAML2_ASSERTION_VALID
+LASSO_SAML2_AUTHN_CONTEXT_UNSPECIFIED
+LASSO_SAML2_CONFIRMATION_METHOD_HOLDER_OF_KEY
+LASSO_SOAP_FAULT_CODE_CLIENT
+LASSO_SOAP_FAULT_CODE_MUST_UNDERSTAND
+LASSO_SOAP_FAULT_CODE_VERSION_MISMATCH
+</pre>
+</li>
+<li><p>New enums:</p>
+ <pre>
+LassoProfileSignatureHint
+LassoSaml2AssertionValidationState
+</pre>
+</li>
+<li><p>New functions:</p>
+ <pre>
+lasso_login_get_assertion(LassoLogin* login) : LassoNode*
+lasso_misc_text_node_get_xml_content(LassoMiscTextNode* misc_text_node) : xmlNode*
+lasso_misc_text_node_new_with_xml_node(xmlNode* xml_node) : LassoMiscTextNode*
+lasso_misc_text_node_set_xml_content(LassoMiscTextNode* misc_text_node, xmlNode* node) : void
+lasso_node_get_name(LassoNode* node) : const char*
+lasso_node_set_custom_namespace(LassoNode* node, char* prefix, char* href) : void
+lasso_node_set_custom_nodename(LassoNode* node, char* nodename) : void
+lasso_profile_get_signature_hint(LassoProfile* profile) : LassoProfileSignatureHint
+lasso_profile_set_signature_hint(LassoProfile* profile, LassoProfileSignatureHint signature_hint) : void
+lasso_provider_get_default_name_id_format(const LassoProvider* provider) : gchar*
+lasso_provider_get_encryption_mode(LassoProvider* provider) : LassoEncryptionMode
+lasso_provider_get_sp_name_qualifier(LassoProvider* provider) : char*
+lasso_provider_saml2_node_encrypt(const LassoProvider* provider, LassoNode* lasso_node) : LassoSaml2EncryptedElement*
+lasso_provider_verify_single_node_signature(LassoProvider* provider, LassoNode* node, const char* id_attr_name) : int
+lasso_saml2_assertion_add_attribute_with_node(LassoSaml2Assertion* assertion, const char* name, const char* nameformat, LassoNode* content) : int
+lasso_saml2_assertion_add_audience_restriction(LassoSaml2Assertion* saml2_assertion, const char* providerID) : void
+lasso_saml2_assertion_add_proxy_limit(LassoSaml2Assertion* saml2_assertion, int proxy_count, GList* proxy_audiences) : void
+lasso_saml2_assertion_get_issuer_provider(const LassoSaml2Assertion* saml2_assertion, const LassoServer* server) : LassoProvider*
+lasso_saml2_assertion_get_subject_confirmation_data(LassoSaml2Assertion* saml2_assertion, gboolean create) : LassoSaml2SubjectConfirmationData*
+lasso_saml2_assertion_has_audience_restriction(LassoSaml2Assertion* saml2_assertion) : gboolean
+lasso_saml2_assertion_is_audience_restricted(LassoSaml2Assertion* saml2_assertion, char* providerID) : gboolean
+lasso_saml2_assertion_set_basic_conditions(LassoSaml2Assertion* saml2_assertion, time_t tolerance, time_t length, gboolean one_time_use) : void
+lasso_saml2_assertion_set_subject_confirmation_data(LassoSaml2Assertion* saml2_assertion, time_t tolerance, time_t length, const char* Recipient, const char* InResponseTo, const char* Address) : void
+lasso_saml2_assertion_set_subject_confirmation_name_id(LassoSaml2Assertion* saml2_assertion, LassoNode* node) : void
+lasso_saml2_assertion_set_subject_name_id(LassoSaml2Assertion* saml2_assertion, LassoNode* node) : void
+lasso_saml2_assertion_validate_conditions(LassoSaml2Assertion* saml2_assertion, const char* relaying_party_providerID) : LassoSaml2AssertionValidationState
+lasso_saml2_encrypted_element_build_encrypted_persistent_name_id(const char* id, const char* idpID, const LassoProvider* provider) : LassoSaml2EncryptedElement*
+lasso_saml2_name_id_build_persistent(const char* id, const char* idpID, const char* providerID) : LassoSaml2NameID*
+lasso_saml2_name_id_equals(LassoSaml2NameID* name_id, LassoSaml2NameID* other_name_id) : gboolean
+lasso_server_saml2_assertion_setup_signature(LassoServer* server, LassoSaml2Assertion* saml2_assertion) : int
+</pre></li>
+</ul>
+</p>
+
+</div>
