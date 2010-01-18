@@ -11,7 +11,6 @@ if WITH_TESTS
 TESTS = tests tests2
 noinst_PROGRAMS = tests perfs tests2
 
-EXTRA_DIST = valgrind
 
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
@@ -42,8 +41,8 @@ perfs_LDADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 perfs_LDFLAGS = -rpath `cd $(top_builddir)/lasso/.libs/; pwd`
 
 endif
-
-EXTRA_DIST = $(tests_SOURCES) integration tests.h
+g
+EXTRA_DIST = valgrind tests.h $(tests_SOURCES)
 
 SUBDIRS = data metadata
 
