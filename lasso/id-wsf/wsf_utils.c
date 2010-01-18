@@ -25,7 +25,7 @@
 /**
  * SECTION:id_wsf_utils
  * @short_description: Misc functions used in the implementation of ID-WSF 1.0
- * @stability: Internal
+ * @stability: Private
  */
 
 
