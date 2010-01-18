@@ -352,7 +352,7 @@ lasso_server_get_first_providerID(LassoServer *server)
  *
  * Looks up for a #LassoProvider whose ID is @providerID and returns it.
  *
- * Return value: (transfer-none): the #LassoProvider, NULL if it was not found.  The
+ * Return value: (transfer none): the #LassoProvider, NULL if it was not found.  The
  *     #LassoProvider is owned by Lasso and should not be freed.
  **/
 LassoProvider*

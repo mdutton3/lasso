@@ -89,7 +89,7 @@ lasso_soap_envelope_sb2_get_redirect_request_url(LassoSoapEnvelope *soap_envelop
  *
  * Return the first sb2:TargetIdentity header.
  *
- * Return value: (transfer-none): the first #LassoIdWsf2Sb2TargetIdentity object found in the
+ * Return value: (transfer none): the first #LassoIdWsf2Sb2TargetIdentity object found in the
  * headers of the @soap_envelope, or NULL if none is found.
  */
 LassoIdWsf2Sb2TargetIdentity*
@@ -109,7 +109,7 @@ lasso_soap_envelope_sb2_get_target_identity_header(LassoSoapEnvelope *soap_envel
  * @soap_envelope: a #LassoSoapEnvelope object
  * @create: wether to create the header if not found
  *
- * Return value: (transfer-none): the wsse:Security header found in the SOAP message, or NULL if
+ * Return value: (transfer none): the wsse:Security header found in the SOAP message, or NULL if
  * none is found, and creation was not allowed.
  */
 static LassoWsSec1SecurityHeader*
@@ -137,7 +137,7 @@ lasso_soap_envelope_wssec_get_security_header_impl(LassoSoapEnvelope *soap_envel
  *
  * Return the first wsse:Security header found in the headers of @soap_envelope.
  *
- * Return value: (transfer-none): the wsse:Security header found in the SOAP message, or NULL if
+ * Return value: (transfer none): the wsse:Security header found in the SOAP message, or NULL if
  * none is found.
  */
 LassoWsSec1SecurityHeader*
@@ -172,7 +172,7 @@ lasso_soap_envelope_add_security_token(LassoSoapEnvelope *soap_envelope, LassoNo
  * Return a SAML2 Assertion used as a security token if one is found in the headers of
  * @soap_envelope.
  *
- * Return value: (transfer-none): a #LassoSaml2Assertion, or NULL if none is found.
+ * Return value: (transfer none): a #LassoSaml2Assertion, or NULL if none is found.
  */
 LassoSaml2Assertion*
 lasso_soap_envelope_get_saml2_security_token(LassoSoapEnvelope *soap_envelope)
