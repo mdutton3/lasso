@@ -17,7 +17,7 @@ SUBDIRS		= lasso \
 		  bindings \
 		  docs
 
-EXTRA_DIST	= COPYING lasso.pc.in lasso-src-config.in
+EXTRA_DIST	= COPYING lasso.pc.in lasso-src-config.in autogen.sh tools
 
 MAINTAINERCLEANFILES = \
     Makefile.in \
