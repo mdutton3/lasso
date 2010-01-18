@@ -89,7 +89,7 @@ $AUTOMAKE --add-missing -Wno-portability $am_opt || exit $?
 cd "$THEDIR"
 
 if [ "$1" != "noconfig" ]; then
-$srcdir/configure --enable-maintainer-mode "$@" || exit $?
+	$srcdir/configure --enable-gtk-doc --enable-maintainer-mode "$@" || exit $?
 fi
 
 echo
