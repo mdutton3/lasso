@@ -20,7 +20,7 @@ WSF_C_FILES = \
 	personal_profile_service.c \
 	data_service.c \
 	wsf_profile.c \
-	utils.c \
+	wsf_utils.c \
 	id_ff_extensions.c
 
 WSF_H_FILES = \
@@ -31,7 +31,7 @@ WSF_H_FILES = \
 	personal_profile_service.h \
 	data_service.h \
 	wsf_profile.h \
-	utils.h \
+	wsf_utils.h \
 	id_ff_extensions.h
 endif
 
