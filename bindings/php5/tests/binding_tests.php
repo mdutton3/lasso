@@ -23,7 +23,7 @@
 
 require("../lasso.php");
 
-define("DATA_DIR", "../../../tests/data/");
+define("DATA_DIR", getenv("SRCDIR") . "../../../tests/data/");
 
 function test01() {
     echo "Get an xmlNode* from a Lasso function... ";

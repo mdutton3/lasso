@@ -1,5 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 if PHP5_ENABLED
+TESTS_ENVIRONMENT=env "SRCDIR=$(srcdir)/"
 TESTS = profile_tests.sh binding_tests.sh
 endif
 

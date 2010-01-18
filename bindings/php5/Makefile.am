@@ -1,6 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
 MOSTLYCLEANFILES = __init__.pyc lang.pyc php_code.pyc wrapper_header.pyc wrapper_top.pyc
-SUBDIRS = examples
+SUBDIRS = examples tests
 
 INCLUDES = \
 	-I$(top_builddir) \
