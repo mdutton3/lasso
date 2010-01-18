@@ -44,14 +44,22 @@ typedef struct _LassoSession LassoSession;
 typedef struct _LassoSessionClass LassoSessionClass;
 typedef struct _LassoSessionPrivate LassoSessionPrivate;
 
+/**
+ * LassoSession:
+ * @assertions:(element-type string LassoNode): a hashtable of #LassoSamlAssertion or #LassoSaml2Assertion, indexed by provider ids,
+ * @is_dirty: whether this session object has been modified since its creation.
+ *
+ * #LassoSession stores the assertions received or emitted during the current session. It stores
+ * state for using profiles like #LassoLogin or #LassoLogout.
+ */
 struct _LassoSession {
 	LassoNode parent;
 
-	/*< private >*/
 	/* Can actually contain LassoSamlAssertion or LassoSaml2Assertion */
-	GHashTable *assertions; /* of LassoSamlAssertion */
+	GHashTable *assertions; /* of LassoNode */
 	gboolean is_dirty;
 
+	/*< private >*/
 	LassoSessionPrivate *private_data;
 };
 
