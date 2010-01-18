@@ -70,18 +70,18 @@ fi
 # to support timj aclocal setup we are shipping gnome-doc-utils.m4
 # and making sure automake picks it up ;)
 # this is bad as -I prepends to the search path
+echo "* Running libtoolize"
+libtoolize --copy --force
+
+echo "* Running gtkdocize"
+gtkdocize --flavour no-tmpl || exit $?
+
 echo "* Running $ACLOCAL"
 $ACLOCAL $ACLOCAL_FLAGS -I m4 || exit $?
 
 echo "* Running autoconf"
 autoconf || exit $?
 (autoheader --version)  < /dev/null > /dev/null 2>&1 && autoheader
-
-echo "* Running libtoolize"
-libtoolize --copy --force
-
-echo "* Running gtkdocize"
-gtkdocize --flavour no-tmpl || exit $?
 
 echo "* Running $AUTOMAKE"
 $AUTOMAKE --add-missing -Wno-portability $am_opt || exit $?
