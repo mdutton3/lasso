@@ -34,6 +34,7 @@ liblassoinclude_HEADERS = \
 	identity.h \
 	server.h \
 	session.h \
-	soap_binding.h
+	soap_binding.h \
+	saml2_login.h
 
 EXTRA_DIST = $(lasso_private_h_sources)
