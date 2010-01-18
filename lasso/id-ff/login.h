@@ -75,7 +75,12 @@ typedef enum {
  * @protocolProfile: the kind of binding used for this authentication request.
  * @assertionArtifact: a string representing the artifact received through an artifact resolution.
  * request
- * @assertion: after calling lasso_login_build_assertion, the assertion is stored here.
+ * @assertion: after calling lasso_login_build_assertion(), lasso_login_process_response_msg() or
+ * lasso_login_process_authn_response_msg(), the assertion is stored here.
+ * @nameIDPolicy: after calling lasso_login_process_request_msg(), the name id policy is stored
+ * here.
+ * @http_method: after calling lasso_login_init_authn_request(), the chosen #LassoHttpMethod is kept
+ * here and is used after by lasso_login_build_authn_request().
  *
  * Single sign-on profile for the current transaction; possibly an
  * assertionArtifact to be used by the service provider in its
