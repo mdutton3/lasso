@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibNameIdentifierMappingRequest
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:NameIdentifierMappingRequest&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibNameIdentifierMappingRequest ##### -->
+<para>
+
+</para>
+
+@Extension: 
+@ProviderID: 
+@NameIdentifier: 
+@TargetNamespace: 
+@consent: 
+
+<!-- ##### FUNCTION lasso_lib_name_identifier_mapping_request_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_lib_name_identifier_mapping_request_new_full ##### -->
+<para>
+
+</para>
+
+@providerID: 
+@nameIdentifier: 
+@targetNamespace: 
+@sign_type: 
+@sign_method: 
+@Returns: 
+
+

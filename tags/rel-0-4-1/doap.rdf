@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:doap="http://usefulinc.com/ns/doap#"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xml:lang="en">
+  <Project xmlns="http://xmlns.com/foaf/0.1/">
+    <name>Lasso</name>
+    <homepage rdf:resource="http://lasso.entrouvert.org"/>
+    <created>2003-07-01</created>
+    <description>
+      Lasso (Liberty Alliance Single Sign On) is a free (GNU GPL) implementation
+      of the Liberty Alliance specifications.  Those define protocols for
+      federated identities, single sign-on, etc.  Lasso provides both a C
+      library and bindings for several languages (Python, Java, PHP and C# for
+      now).
+    </description>
+    <shortdesc>Free Software implementation of Liberty Alliance specifications</shortdesc>
+    <!--<bug-database rdf:resource="http://lasso.entrouvert.org/bugs"/>-->
+    <mailing-list rdf:resource="http://lasso.entrouvert.org/mailinglists"/>
+    <programming-language>C</programming-language>
+    <programming-language>Python</programming-language>
+    <programming-language>Java</programming-language>
+    <programming-language>PHP</programming-language>
+    <programming-language>C#</programming-language>
+    <license rdf:resource="http://usefulinc.com/doap/licenses/gpl"/>
+    <download-page rdf:resource="http://lasso.entrouvert.org/download/"/>
+    <maintainer>
+      <foaf:Person>
+        <foaf:name>Nicolas Clapiès</foaf:name>
+	<foaf:mbox rdf:resource="mailto:nclapies@entrouvert.com"/>
+      </foaf:Person>
+    </maintainer>
+    <maintainer>
+      <foaf:Person>
+        <foaf:name>Valéry Febvre</foaf:name>
+	<foaf:mbox rdf:resource="mailto:vfebvre@easter-eggs.com"/>
+      </foaf:Person>
+    </maintainer>
+    <repository>
+      <CVSRepository>
+        <anon-root>:pserver:anonymous@cvs.labs.libre-entreprise.org:/cvsroot/lasso</anon-root>
+        <module>lasso</module>
+        <browse rdf:resource="http://cvs.labs.libre-entreprise.org/cgi-bin/cvsweb.cgi/lasso/?cvsroot=lasso"/>
+      </CVSRepository>
+    </repository>
+    <release>
+      <Version>
+        <created>2004-09-06</created>
+        <revision>0.4.0</revision>
+      </Version>
+      <Version>
+        <created>2004-07-27</created>
+        <revision>0.3.0</revision>
+      </Version>
+      <Version>
+        <created>2004-06-01</created>
+        <revision>0.2.0</revision>
+      </Version>
+    </release>
+  </Project>
+</rdf:RDF>

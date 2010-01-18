@@ -1,0 +1,98 @@
+Source: lasso
+Priority: optional
+Section: libs
+Maintainer: Frederic Peters <fpeters@debian.org>
+Build-Depends: debhelper (>= 5.0.37.2), libxml2-dev, libxslt1-dev, libxmlsec1-dev, libxmlsec1-openssl, libglib2.0-dev, python-all-dev (>= 2.3.5-11), libexpat1-dev, fastjar, python-central (>= 0.5), gcc-4.3, java-gcj-compat [!alpha !arm !hppa !hurd-i386], gcj [!alpha !arm !hppa !hurd-i386], gcj-4.3 [!alpha !arm !hppa !hurd-i386], php5-dev, python-lxml
+XS-Python-Version: all
+Standards-Version: 3.7.2
+Homepage: http://lasso.entrouvert.org
+
+Package: liblasso3-dev
+Section: libdevel
+Architecture: any
+Depends: liblasso3 (= ${binary:Version}), libxml2-dev, libxmlsec1-dev, libglib2.0-dev
+Provides: liblasso-dev
+Conflicts: liblasso-dev, liblasso0, liblasso1
+Description: Liberty ID-FF library - development kit
+ Lasso is an implementation of the Liberty Identity Federation specifications
+ defined by the Liberty Alliance consortium.  They defines processes such as
+ network identity federation and single sign-on.
+ .
+ This package contains the development files for Lasso.
+ .
+ Homepage: http://lasso.entrouvert.org
+ 
+Package: liblasso3
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Liberty ID-FF library - runtime library
+ Lasso is an implementation of the Liberty Identity Federation specifications
+ defined by the Liberty Alliance consortium.  They defines processes such as
+ network identity federation and single sign-on.
+ .
+ This package contains liblasso library used by applications to gain Library
+ Alliance support.
+ .
+ Homepage: http://lasso.entrouvert.org
+
+Package: python-lasso
+Conflicts: liblasso0-python2.3, python2.3-lasso, python2.4-lasso
+Replaces: liblasso0-python2.3, python2.3-lasso, python2.4-lasso
+Provides: liblasso0-python2.3, ${python:Provides}
+Section: python
+Architecture: any
+Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:depends}
+XB-Python-Version: ${python:Versions}
+Description: Liberty ID-FF library - Python bindings
+ Lasso is an implementation of the Liberty Identity Federation specifications
+ defined by the Liberty Alliance consortium.  They defines processes such as
+ network identity federation and single sign-on.
+ .
+ This package contains Python bindings for liblasso, needed to use lasso
+ in Python applications.
+ .
+ Homepage: http://lasso.entrouvert.org
+
+Package: liblasso-java
+Section: libs
+Architecture: amd64 armel i386 ia64 mips mipsel powerpc ppc64 s390 sparc kfreebsd-i386 kfreebsd-amd64
+Depends: ${shlibs:Depends}, ${misc:depends}
+Description: Liberty ID-FF library - Java bindings
+ Lasso is an implementation of the Liberty Identity Federation specifications
+ defined by the Liberty Alliance consortium.  They defines processes such as
+ network identity federation and single sign-on.
+ .
+ This package provides the Java interface to liblasso, needed to use lasso in
+ Java applications.
+ .
+ Homepage: http://lasso.entrouvert.org
+
+Package: liblasso-perl
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:depends}, ${perl:Depends}
+Description: Liberty ID-FF library - Perl bindings
+ Lasso is an implementation of the Liberty Identity Federation specifications
+ defined by the Liberty Alliance consortium.  They defines processes such as
+ network identity federation and single sign-on.
+ .
+ This package contains Perl bindings for liblasso, needed to use lasso
+ in Perl applications.
+ .
+ Homepage: http://lasso.entrouvert.org
+
+Package: php5-lasso
+Section: web
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:depends}
+Description: Liberty ID-FF library - PHP 5 bindings
+ Lasso is an implementation of the Liberty Identity Federation specifications
+ defined by the Liberty Alliance consortium.  They defines processes such as
+ network identity federation and single sign-on.
+ .
+ This package contains PHP bindings for liblasso, needed to use lasso
+ in PHP applications.
+ .
+ Homepage: http://lasso.entrouvert.org
+

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<div xmlns="http://www.w3.org/1999/xhtml">
+ <h3>2007-08-13: Released 2.1.0</h3>
+
+ <p>
+  Lasso 2.1.0 has been released.
+  <a href="/download/">Download it now</a>
+ </p>
+
+ <p class="changes">
+  <strong>What changed ?</strong>
+Added preliminary support for ID-WSF 2, Discovery and Data Service Template,
+added missing accessors for class elements in SAML 2 language bindings, fixed
+potential DoS in message parsing.
+ </p>
+
+</div>

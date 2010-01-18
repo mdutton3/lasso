@@ -1,0 +1,10 @@
+import os
+
+AUTHENTIC_SRCDIR = '/home/fred/src/eo/authentic/'
+AUTHENTICCTL = os.path.join(AUTHENTIC_SRCDIR, 'authenticctl.py')
+AUTHENTIC_DATADIR = os.path.join(AUTHENTIC_SRCDIR, 'data')
+
+LCS_SRCDIR = '/home/fred/src/eo/lasso-conformance-sp/'
+LCSCTL = os.path.join(LCS_SRCDIR, 'lcsctl.py')
+LCS_DATADIR = os.path.join(LCS_SRCDIR, 'data')
+

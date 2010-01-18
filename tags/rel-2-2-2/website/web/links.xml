@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Related Links</title>
+ </head>
+ <body>
+
+  <h1>Related Links</h1>
+
+  <h2>Lasso</h2>
+
+  <p>
+   <a href="http://authentic.labs.libre-entreprise.org">Authentic</a> is a
+   full-featured Liberty-compliant identity provider aiming to address a broad
+   range of needs, from simple to complex setups.  (GNU GPL)
+  </p>
+
+  <p>
+   <a href="http://idpc.labs.libre-entreprise.org">IdPC</a> is a minimalist Liberty
+   identity provider written as a set of CGI scripts using Lasso.  (GNU GPL)
+  </p>
+
+  <p>
+   <a href="http://labs.libre-entreprise.org/projects/liberatedav/">Liberate DAV!</a> is
+   a free (GPL) Liberty Alliance ID-FF single sign-on module for WebDAV Apache2 servers.
+  </p>
+
+  <p>
+   Lasso is used in the French <i>"Carte de Vie Quotidienne"</i> and
+   <i>"Services de Vie Quotidienne"</i> projects; the Lasso Python
+   bindings are used to run the identity provider (<a
+   href="https://macommune.identification.svq.fr">macommune.identification.svq.fr</a>)
+   and two service providers (<a
+   href="https://macommune.formulaires.svq.fr">macommune.formulaires.svq.fr</a>
+   and <a
+   href="https://macommune.consultation.svq.fr">macommune.consultation.svq.fr</a>).
+   The straight C library is used in the home-banking service provider.
+  </p>
+
+  <p>
+   <a href="souk/">Souk</a> is a Liberty Alliance
+   framework written in Python.  It served as test platform to pass the Liberty
+   Conformance event.  (GNU GPL, no longer maintained).
+  </p>
+
+  <p>
+   Free (GPL) PHP code, that was initially designed to ease implementation of Lasso in
+   services providers: <a
+   href="http://cvs.labs.libre-entreprise.org/cgi-bin/cvsweb.cgi/sp-kit/?cvsroot=lasso">
+   LASSO Service Provider Kit</a>.  This "kit" is no more maintained.
+  </p>
+  
+  <h2>Not Lasso</h2>
+
+  <p>
+   <a href="http://www.sourceid.org">SourceID</a> is an open source (custom license) 
+   implementation of the Liberty Alliance ID-FF 1.2 protocols in Java.
+  </p>
+ 
+ </body>
+</html>

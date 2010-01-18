@@ -1,0 +1,11 @@
+
+* lib_authn_request :
+   ke faire avec fcts set_relayState et set_consent egalement present
+   ds samlp_request_abstract?
+
+
+* StatusResponseType, Status
+
+* Response -> samlp:ResponseType extend samlp:StatusResponseType
+   ds LibertyAlliance : StatusResponseType est redefinit (extend
+   samlp:ResponseAbstractType) ???

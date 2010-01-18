@@ -1,0 +1,68 @@
+<!-- ##### SECTION Title ##### -->
+LassoIdentity
+
+<!-- ##### SECTION Short_Description ##### -->
+Principal Identity
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT LassoIdentity ##### -->
+<para>
+
+</para>
+
+@federations: 
+@is_dirty: 
+
+<!-- ##### FUNCTION lasso_identity_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_identity_new_from_dump ##### -->
+<para>
+
+</para>
+
+@dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_identity_destroy ##### -->
+<para>
+
+</para>
+
+@identity: 
+
+
+<!-- ##### FUNCTION lasso_identity_dump ##### -->
+<para>
+
+</para>
+
+@identity: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_identity_get_federation ##### -->
+<para>
+
+</para>
+
+@identity: 
+@providerID: 
+@Returns: 
+
+

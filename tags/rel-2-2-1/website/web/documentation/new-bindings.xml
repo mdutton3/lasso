@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>New Bindings in 2.2.0</title>
+  </head>
+  <body>
+    <h1>New Bindings in 2.2.0</h1>
+
+    <h2 id="python">Python</h2>
+    <p> To a large extent the new bindings are compatible with the old SWIG
+bindings; in a few cases they can do things differently but wrappers are in
+place to avoid client code changes.
+</p>
+    <ul>
+      <li>NodeList and StringList objects are obsolete, normal Python tuples (no lists, immutability is a requirement) can be used instead. (NodeList and StringList kept as aliases to Python list object for compatibility)</li>
+      <li>StringDict object is obsolete, a normal Python dictionary can be used instead. (StringDict kept as an alias to Python dict object for compatibility)</li>
+      <li>In LibAuthnRequest and Samlp2AuthnRequest, nameIDPolicy has been renamed to nameIdPolicy. (old name kept as an alias)</li>
+      <li>In Saml2Subject, nameID has been renamed to nameId. (old name kept as an alias)</li>
+      <li>In MiscTextNode, text_child has been renamed to textChild. (old name kept as an alias)</li>
+      <li>In Identity there is now a federations dictionary member, the providerIds attribute is made to return the keys of that dictionary.</li>
+      <li>In Server there is now a providers dictionary member, the providerIds attribute is made to return the keys of that dictionary.</li>
+      <li>In Session there is now a assertions dictionary member, the providerIds attribute is made to return the keys of that dictionary.</li>
+      <li>In Profile there is now a hasDirtyIdentity() method, a isIdentityDirty property is made to return its result.</li>
+      <li>In Profile there is now a hasSessionIdentity() method, a isSessionDirty property is made to return its result.</li>
+      <li><strong>Incompatible Change</strong>: Provider constructor raises an appropriate exception on error, checking the this member to know if an error occured is no longer necessary and doesn't work, you can use the following code to emulate the new behaviour in the old bindings: 
+<pre>
+    if not hasattr(lasso, 'cptrToPy'):
+        print 'old swig bindings, setting new lasso.Provider'
+        lasso.OrigProvider = lasso.Provider
+        # old (SWIG) bindings
+        class Provider(lasso.OrigProvider):
+            def __init__(self, *args):
+                lasso.OrigProvider.__init__(self, *args)
+                if self.this is None:
+                    raise lasso.Error('Error creating Provider')
+        lasso.Provider = Provider
+</pre></li>
+    </ul>
+
+    <h2 id="java">Java</h2>
+    <ul>
+      <li>NodeList and StringList are obsolete use normal java List class (ArrayList, LinkedList).</li>
+      <li>getFederations in Identity, getProviders in Server and getAssertions in Session returns HashMap. You can modify them and commit your changes using the associated setXXX method.</li>
+      <li>all lasso constants are in the class LassoConstants.</li>
+      <li>all lasso error codes are converted to java exceptions with a derived name, look at the Javadoc --- the default Makefile does not generate documentation on exception Throwing, modify BINDING_OPTIONS in bindings/java/Makefile. There are abstract exception classes for catching family of exceptions.</li>
+      <li> shared library name changed, now it's libjnilasso.so (should not bother you since the java class load it for you)</li>
+    </ul>
+
+    <h2 id="php5">PHP</h2>
+    <p>
+To a large extent the new PHP5 bindings are compatible with the old PHP4 SWIG bindings; in a few cases they can do things differently but wrappers are in place to avoid client code changes.
+</p>
+    <ul>
+      <li>Programs must now add this line before calling lasso functions : <tt>include("lasso.php");</tt>
+with the file "lasso.php" being in your PHP path </li>
+      <li> Exceptions are raised for functions which in PHP4 returned negative integers</li>
+      <li>NodeList, StringList and StringDict objects are obsolete, normal PHP5 arrays can be used instead.</li>
+      <li>In LibAuthnRequest and Samlp2AuthnRequest, nameIDPolicy has been renamed to nameIdPolicy.</li>
+      <li>In SamlSubject and Saml2Subject, nameID has been renamed to nameId</li>
+      <li>In MiscTextNode, text_child has been renamed to textChild.</li>
+      <li>In Identity there is now a federations dictionary member, instead of the providerIds attribute</li>
+      <li>In Server there is now a providers dictionary member, instead of the providerIds attribute</li>
+      <li>In Session there is now a assertions dictionary member, instead of the providerIds attribute</li>
+      <li>In Profile there is now a hasDirtyIdentity() method, instead of the isIdentityDirty attribute</li>
+      <li>In Profile there is now a hasSessionIdentity() method, instead of the
+  isIdentityDirty attribute</li>
+    </ul>
+  </body>
+</html>

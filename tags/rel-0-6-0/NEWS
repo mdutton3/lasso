@@ -1,0 +1,52 @@
+NEWS
+====
+
+0.6.0 - January 27th 2005
+-------------------------
+
+Rewrote library internals to use standard structures instead of libxml2 nodes;
+this allows faster processing, more flexibility and better support for language
+bindings.  Documented all the API functions.  Fixed and improved the rest.
+
+
+0.5.0 - November 9th 2004
+-------------------------
+
+All features of SP Basic, SP, IDP, and LECP profiles for Liberty IDFF 1.2
+Static Conformance are now implemented, except for "Backward Compatibility".
+Extended features are also supported, except for "Affiliations".  Compatible
+with the demo application of the last Beta version of SourceID Liberty 2.0.
+
+Improved metadata support, a lot of new feature and bugfixes.
+
+API, ABI, and dump format of messages have changed, so this release is not
+compatible with previous versions.
+
+
+0.4.1 - September 7th 2004
+--------------------------
+
+Small bug fixes. Windows DLL are now linked with standard call aliases.
+
+
+0.4.0 - September 6th 2004
+--------------------------
+
+Complete support for the main profiles of Liberty Alliance IF-FF 1.2 (Single
+Sign On, Single Logout, and Federation Termination).  Revamped language
+bindings to use SWIG (supported languages are noew Python, PHP, Java and C#).
+More unit tests.  Bugs fixed.
+
+
+0.3.0 - July 27th 2004
+----------------------
+
+Improved support for Single Sign On and Single Logout profiles.  Python and
+Java bindings.  Unit tests.  Bugs fixed.
+
+
+0.2.0 - June 1st 2004
+---------------------
+
+First release as a C library.
+

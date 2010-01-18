@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibAuthnContext
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:AuthnContext&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibAuthnContext ##### -->
+<para>
+
+</para>
+
+@AuthnContextClassRef: 
+@AuthnContextStatementRef: 
+@AuthenticationContextStatement: 
+
+<!-- ##### FUNCTION lasso_lib_authn_context_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

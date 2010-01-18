@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<EntityDescriptor
+    providerID="http://test.local/liberty/metadata"
+    xmlns="urn:liberty:metadata:2003-08">
+
+<SPDescriptor protocolSupportEnumeration="urn:liberty:iff:2003-08">
+
+<KeyDescriptor use="signing">
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:X509Data>
+        <ds:X509Certificate>-----BEGIN CERTIFICATE-----
+MIIDnjCCAoagAwIBAgIBATANBgkqhkiG9w0BAQUFADBUMQswCQYDVQQGEwJGUjEP
+MA0GA1UECBMGRnJhbmNlMQ4wDAYDVQQHEwVQYXJpczETMBEGA1UEChMKRW50cm91
+dmVydDEPMA0GA1UEAxMGRGFtaWVuMB4XDTA2MTAyNzA5MDc1NFoXDTExMTAyNjA5
+MDc1NFowVDELMAkGA1UEBhMCRlIxDzANBgNVBAgTBkZyYW5jZTEOMAwGA1UEBxMF
+UGFyaXMxEzARBgNVBAoTCkVudHJvdXZlcnQxDzANBgNVBAMTBkRhbWllbjCCASIw
+DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAM06Hx6VgHYR9wUf/tZVVTRkVWNq
+h9x+PvHA2qH4OYMuqGs4Af6lU2YsZvnrmRdcFWv0+UkdAgXhReCWAZgtB1pd/W9m
+6qDRldCCyysow6xPPKRz/pOTwRXm/fM0QGPeXzwzj34BXOIOuFu+n764vKn18d+u
+uVAEzk1576pxTp4pQPzJfdNLrLeQ8vyCshoFU+MYJtp1UA+h2JoO0Y8oGvywbUxH
+ioHN5PvnzObfAM4XaDQohmfxM9Uc7Wp4xKAc1nUq5hwBrHpjFMRSz6UCfMoJSGIi
++3xJMkNCjL0XEw5NKVc5jRKkzSkN5j8KTM/k1jPPsDHPRYzbWWhnNtd6JlkCAwEA
+AaN7MHkwCQYDVR0TBAIwADAsBglghkgBhvhCAQ0EHxYdT3BlblNTTCBHZW5lcmF0
+ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFP2WWMDShux3iF74+SoO1xf6qhqaMB8G
+A1UdIwQYMBaAFGjl6TRXbQDHzSlZu+e8VeBaZMB5MA0GCSqGSIb3DQEBBQUAA4IB
+AQAZ/imK7UMognXbs5RfSB8cMW6iNAI+JZqe9XWjvtmLfIIPbHM96o953SiFvrvQ
+BZjGmmPMK3UH29cjzDx1R/RQaYTyMrHyTePLh3BMd5mpJ/9eeJCSxPzE2ECqWRUa
+pkjukecFXqmRItwgTxSIUE9QkpzvuQRb268PwmgroE0mwtiREADnvTFkLkdiEMew
+fiYxZfJJLPBqwlkw/7f1SyzXoPXnz5QbNwDmrHelga6rKSprYKb3pueqaIe8j/AP
+NC1/bzp8cGOcJ88BD5+Ny6qgPVCrMLE5twQumJ12V3SvjGNtzFBvg2c/9S5OmVqR
+LlTxKnCrWAXftSm1rNtewTsF
+-----END CERTIFICATE-----</ds:X509Certificate>
+      </ds:X509Data>
+    </ds:KeyInfo>
+  </KeyDescriptor>
+
+</SPDescriptor>
+</EntityDescriptor>

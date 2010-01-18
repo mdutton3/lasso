@@ -1,0 +1,39 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibAuthnResponseEnvelope
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:AuthnResponseEnvelope&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibAuthnResponseEnvelope ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Extension: 
+@AuthnResponse: 
+@AssertionConsumerServiceURL: 
+
+<!-- ##### FUNCTION lasso_lib_authn_response_envelope_new ##### -->
+<para>
+
+</para>
+
+@response: 
+@assertionConsumerServiceURL: 
+@Returns: 
+
+

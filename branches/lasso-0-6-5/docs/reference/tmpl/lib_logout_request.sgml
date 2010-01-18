@@ -1,0 +1,52 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibLogoutRequest
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:LogoutRequest&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibLogoutRequest ##### -->
+<para>
+
+</para>
+
+@Extension: 
+@ProviderID: 
+@NameIdentifier: 
+@SessionIndex: 
+@RelayState: 
+@consent: 
+@NotOnOrAfter: 
+
+<!-- ##### FUNCTION lasso_lib_logout_request_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_lib_logout_request_new_full ##### -->
+<para>
+
+</para>
+
+@providerID: 
+@nameIdentifier: 
+@sign_type: 
+@sign_method: 
+@Returns: 
+
+

@@ -1,0 +1,11 @@
+Makefile
+Makefile.in
+.libs
+.deps
+*.stamp
+sgml
+tmpl
+html
+code
+build
+version.xml

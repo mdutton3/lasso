@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<EntityDescriptor
+    providerID="https://idp2/metadata"
+    xmlns="urn:liberty:metadata:2003-08">
+ <IDPDescriptor>
+
+  <SingleSignOnServiceURL>https://idp2:2000/singleSignOn</SingleSignOnServiceURL>
+  <SingleSignOnProtocolProfile>http://projectliberty.org/profiles/sso-get</SingleSignOnProtocolProfile>
+
+  <SingleLogoutServiceURL>https://idp2:2000/singleLogout</SingleLogoutServiceURL>
+  <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
+
+  <RegisterNameIdentifierServiceURL>https://idp2:2000/registerNameIdentifier</RegisterNameIdentifierServiceURL>
+  <RegisterNameIdentifierProtocolProfile>http://projectliberty.org/profiles/rni-sp-http</RegisterNameIdentifierProtocolProfile>
+
+  <SoapEndpoint>https://idp2:2000/soapEndpoint</SoapEndpoint>
+
+</IDPDescriptor>
+</EntityDescriptor>

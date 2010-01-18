@@ -1,0 +1,265 @@
+/* $Id$ 
+ *
+ * Lasso - A free implementation of the Liberty Alliance specifications.
+ *
+ * Copyright (C) 2004-2007 Entr'ouvert
+ * http://lasso.entrouvert.org
+ * 
+ * Authors: See AUTHORS file in top-level directory.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include <glib/gstrfuncs.h>
+#include <lasso/errors.h>
+#include <lasso/xml/xml.h>
+
+/* WARNING!!!: This is a generated file do not modify it, add new error message
+ * a comments inside errors.h */
+
+/**
+ * lasso_strerror:
+ * @error_code: a gint error code returned by a lasso function
+ *
+ * Convert an error code from a lasso fuction to a human readable string.
+ *
+ * Returns: a static string.
+ */
+const char*
+lasso_strerror(int error_code)
+{
+	switch (error_code) {
+		case LASSO_LOGIN_ERROR_REQUEST_DENIED:
+			return "Request denied";
+		case LASSO_DISCOVERY_ERROR_MISSING_REQUESTED_SERVICE:
+			return "Missing requested service";
+		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
+			return "An object type provided as parameter";
+		case LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS:
+			return "Status code is not success";
+		case LASSO_LOGOUT_ERROR_REQUEST_DENIED:
+			return "Request denied by identity provider";
+		case LASSO_PROFILE_ERROR_SESSION_NOT_FOUND:
+			return "Session not found";
+		case LASSO_PROFILE_ERROR_INVALID_SOAP_MSG:
+			return "Invalid SOAP message";
+		case LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY:
+			return "Found an encrypted element but encryption private key is not set";
+		case LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER:
+			return "Missing name identifier";
+		case LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE:
+			return "Invalid protocol profile";
+		case LASSO_PARAM_ERROR_INVALID_VALUE:
+			return "A parameter value is invalid.";
+		case LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL:
+			return "Unknown principal on logout";
+		case LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD:
+			return "Invalid HTTP method";
+		case LASSO_PROFILE_ERROR_INVALID_POST_MSG:
+			return "Invalid POST message";
+		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE:
+			return "Target name space not found";
+		case LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE_ADDRESS:
+			return "Missing endpoint reference address";
+		case LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED:
+			return "Failed to initialize keys manager.";
+		case LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED:
+			return "Error building request object";
+		case LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND:
+			return "Identity not found";
+		case LASSO_WSF_PROFILE_ERROR_SOAP_FAULT:
+			return "LASSO_WSF_PROFILE_ERROR_SOAP_FAULT";
+		case LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND:
+			return "Federation not found";
+		case LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL:
+			return "Unable to find Profile URL in metadata";
+		case LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND:
+			return "Name identifier not found";
+		case LASSO_DST_ERROR_MISSING_SERVICE_DATA:
+			return "Missing service data";
+		case LASSO_PROFILE_ERROR_INVALID_ARTIFACT:
+			return "Invalid artifact";
+		case LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST:
+			return "LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST";
+		case LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND:
+			return "Unable to get attribute value of element.";
+		case LASSO_DS_ERROR_CONTEXT_CREATION_FAILED:
+			return "Failed to create signature context.";
+		case LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION:
+			return "LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION";
+		case LASSO_SERVER_ERROR_INVALID_XML:
+			return "LASSO_SERVER_ERROR_INVALID_XML";
+		case LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE:
+			return "Missing service type";
+		case LASSO_PROFILE_ERROR_MISSING_ARTIFACT:
+			return "Missing SAML artifact";
+		case LASSO_DS_ERROR_INVALID_SIGALG:
+			return "Invalid signature algorithm.";
+		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
+			return "Unsupported protocol profile";
+		case LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT:
+			return "No default endpoint";
+		case LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST:
+			return "LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST";
+		case LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM:
+			return "LASSO_WSF_PROFILE_ERROR_UNSUPPORTED_SECURITY_MECHANISM";
+		case LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY:
+			return "LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY";
+		case LASSO_XML_ERROR_MISSING_NAMESPACE:
+			return "LASSO_XML_ERROR_MISSING_NAMESPACE";
+		case LASSO_DS_ERROR_INVALID_SIGNATURE:
+			return "Invalid signature.";
+		case LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED:
+			return "Failed to load encryption private key.";
+		case LASSO_DS_ERROR_SIGNATURE_FAILED:
+			return "Failed to sign the node.";
+		case LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED:
+			return "Failed to load public key.";
+		case LASSO_DISCOVERY_ERROR_SVC_METADATA_REGISTER_FAILED:
+			return "Service metadata registration failed";
+		case LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS:
+			return "Status code is not success";
+		case LASSO_PROFILE_ERROR_MISSING_SERVICE_INSTANCE:
+			return "Missing service instance";
+		case LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND:
+			return "Unable to get content of element.";
+		case LASSO_PROFILE_ERROR_BAD_SESSION_DUMP:
+			return "Failed to create session from dump";
+		case LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED:
+			return "Error building request QUERY url";
+		case LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED:
+			return "Failed to load certificate.";
+		case LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP:
+			return "Failed to create identity from dump";
+		case LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED:
+			return "Failed to load private key.";
+		case LASSO_DISCOVERY_ERROR_FAILED_TO_BUILD_ENDPOINT_REFERENCE:
+			return "Failed to build Endpoint Reference";
+		case LASSO_ERROR_UNDEFINED:
+			return "Undefined error case";
+		case LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED:
+			return "LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED";
+		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_IDENTIFIER:
+			return "LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_IDENTIFIER";
+		case LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER:
+			return "Name identifier not found in request";
+		case LASSO_DST_ERROR_MODIFY_PARTIALLY_FAILED:
+			return "Modify partially failed : some items were correctly processed";
+		case LASSO_PROFILE_ERROR_INVALID_QUERY:
+			return "Invalid URL query";
+		case LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED:
+			return "LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED";
+		case LASSO_PROFILE_ERROR_MISSING_RESPONSE:
+			return "Missing response";
+		case LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH:
+			return "Failed to add new provider (protocol mismatch).";
+		case LASSO_SOAP_ERROR_MISSING_ENVELOPE:
+			return "Missing SOAP envelope";
+		case LASSO_PROFILE_ERROR_MISSING_REQUEST:
+			return "Missing request";
+		case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
+			return "ProviderID unknown to LassoServer.";
+		case LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL:
+			return "Unknown principal";
+		case LASSO_LOGIN_ERROR_INVALID_SIGNATURE:
+			return "LASSO_LOGIN_ERROR_INVALID_SIGNATURE";
+		case LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
+			return "Invalid NameIDPolicy in lib:AuthnRequest";
+		case LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
+			return "Service metadata association failed";
+		case LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED:
+			return "LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED";
+		case LASSO_LOGIN_ERROR_ASSERTION_REPLAY:
+			return "Assertion replay";
+		case LASSO_PARAM_ERROR_CHECK_FAILED:
+			return "The error return location should be";
+		case LASSO_SOAP_ERROR_MISSING_BODY:
+			return "Missing SOAP body";
+		case LASSO_XML_ERROR_INVALID_FILE:
+			return "Invalid XML file";
+		case LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT:
+			return "LASSO_WSF_PROFILE_ERROR_MISSING_ENDPOINT";
+		case LASSO_XML_ERROR_NODE_NOT_FOUND:
+			return "Unable to get child of element.";
+		case LASSO_ERROR_UNIMPLEMENTED:
+			return "Unimplemented part of Lasso";
+		case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
+			return "Redirect request from Attribute Provider";
+		case LASSO_PROFILE_ERROR_INVALID_MSG:
+			return "Invalid message";
+		case LASSO_PROFILE_ERROR_MISSING_ASSERTION:
+			return "Missing assertion";
+		case LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING:
+			return "Missing ressource offering";
+		case LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE:
+			return "Unsupported protocol profile";
+		case LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED:
+			return "Error building request message";
+		case LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED:
+			return "LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED";
+		case LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION:
+			return "Missing service description";
+		case LASSO_DST_ERROR_NEW_DATA_MISSING:
+			return "Missing new data";
+		case LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT:
+			return "LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT";
+		case LASSO_PROFILE_ERROR_MISSING_SUBJECT:
+			return "Missing subject";
+		case LASSO_DST_ERROR_MODIFY_FAILED:
+			return "Modify failed";
+		case LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND:
+			return "Federation not found on logout";
+		case LASSO_PROFILE_ERROR_MISSING_STATUS_CODE:
+			return "Missing status code";
+		case LASSO_DST_ERROR_QUERY_FAILED:
+			return "Query failed";
+		case LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND:
+			return "Signature template has not been found.";
+		case LASSO_SOAP_ERROR_MISSING_HEADER:
+			return "Missing SOAP header";
+		case LASSO_PROFILE_ERROR_MISSING_ISSUER:
+			return "Missing issuer";
+		case LASSO_SOAP_ERROR_MISSING_SOAP_FAULT_DETAIL:
+			return "Missing SOAP fault detail";
+		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE:
+			return "LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE";
+		case LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED:
+			return "LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED";
+		case LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED:
+			return "Failed to verify signature.";
+		case LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED:
+			return "Error building response object";
+		case LASSO_WSF_PROFILE_ERROR_MISSING_ASSERTION_ID:
+			return "AssertionID attribute is missing";
+		case LASSO_XML_ERROR_ATTR_NOT_FOUND:
+			return "Unable to get attribute of element.";
+		case LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED:
+			return "Failed to create keys manager.";
+		case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND:
+			return "Signature element not found.";
+		case LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED:
+			return "Failed to add new provider.";
+		case LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE:
+			return "Missing endpoint reference";
+		case LASSO_DST_ERROR_QUERY_PARTIALLY_FAILED:
+			return "Query partially failed : some items were correctly processed";
+		case LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND:
+			return "Federation not found on login";
+		case LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID:
+			return "ProviderID not found";
+		default:
+			return "Unknown LASSO_ERROR, you should regenerate errors.c";
+	}
+}

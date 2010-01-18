@@ -1,0 +1,118 @@
+<!-- ##### SECTION Title ##### -->
+LassoServer
+
+<!-- ##### SECTION Short_Description ##### -->
+Representation of the current server
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+It holds the data about a provider, other providers it knows, which
+certificates to use, etc.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoServer ##### -->
+<para>
+
+</para>
+
+@providers: 
+@services: 
+@private_key: 
+@private_key_password: 
+@certificate: 
+@signature_method: 
+
+<!-- ##### FUNCTION lasso_server_new ##### -->
+<para>
+
+</para>
+
+@metadata: 
+@private_key: 
+@private_key_password: 
+@certificate: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@secret_key: 
+
+
+<!-- ##### FUNCTION lasso_server_new_from_dump ##### -->
+<para>
+
+</para>
+
+@dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_server_add_provider ##### -->
+<para>
+
+</para>
+
+@server: 
+@role: 
+@metadata: 
+@public_key: 
+@ca_cert_chain: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_server_add_service ##### -->
+<para>
+
+</para>
+
+@server: 
+@service: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@service_type: 
+@service_endpoint: 
+
+
+<!-- ##### FUNCTION lasso_server_destroy ##### -->
+<para>
+
+</para>
+
+@server: 
+
+
+<!-- ##### FUNCTION lasso_server_dump ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_server_get_provider ##### -->
+<para>
+
+</para>
+
+@server: 
+@providerID: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_server_get_service ##### -->
+<para>
+
+</para>
+
+@server: 
+@serviceType: 
+@Returns: 
+
+

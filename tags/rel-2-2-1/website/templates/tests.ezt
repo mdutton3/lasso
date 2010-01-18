@@ -1,0 +1,23 @@
+<h1>Test suite ([title])</h1>
+
+<p>Executed on [datetime]</p>
+
+[for suite]
+ [if-any suite.title]<h2>[suite.title]</h2>[end]
+ <table>
+  [for suite.test]
+   <tr>
+    <td class="test-description">[suite.test.description]</td>
+    <td class="[suite.test.result]"> </td>
+   </tr>
+  [end]
+ <tfoot>
+  <tr>
+   <td colspan="2">
+    [suite.len_tests] tests
+    [if-any suite.duration]executed in [suite.duration]s[end]
+   </td>
+  </tr>
+ </tfoot>
+ </table>
+[end]

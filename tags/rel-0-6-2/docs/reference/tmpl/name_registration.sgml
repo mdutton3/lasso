@@ -1,0 +1,109 @@
+<!-- ##### SECTION Title ##### -->
+LassoNameRegistration
+
+<!-- ##### SECTION Short_Description ##### -->
+Name Registration
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT LassoNameRegistration ##### -->
+<para>
+
+</para>
+
+@parent: 
+@oldNameIdentifier: 
+
+<!-- ##### FUNCTION lasso_name_registration_new ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_registration_destroy ##### -->
+<para>
+
+</para>
+
+@name_registration: 
+
+
+<!-- ##### FUNCTION lasso_name_registration_new_from_dump ##### -->
+<para>
+
+</para>
+
+@server: 
+@dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_registration_build_request_msg ##### -->
+<para>
+
+</para>
+
+@name_registration: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_registration_build_response_msg ##### -->
+<para>
+
+</para>
+
+@name_registration: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_registration_init_request ##### -->
+<para>
+
+</para>
+
+@name_registration: 
+@remote_providerID: 
+@http_method: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_registration_process_request_msg ##### -->
+<para>
+
+</para>
+
+@name_registration: 
+@request_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_registration_process_response_msg ##### -->
+<para>
+
+</para>
+
+@name_registration: 
+@response_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_registration_validate_request ##### -->
+<para>
+
+</para>
+
+@name_registration: 
+@Returns: 
+
+

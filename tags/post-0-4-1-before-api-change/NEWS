@@ -1,0 +1,28 @@
+NEWS
+====
+
+0.4.1 - September 7th 2004
+--------------------------
+
+Small bug fixes. Windows DLL are now linked with standard call aliases.
+
+0.4.0 - September 6th 2004
+--------------------------
+
+Complete support for the main profiles of Liberty Alliance IF-FF 1.2 (Single
+Sign On, Single Logout, and Federation Termination).  Revamped language
+bindings to use SWIG (supported languages are noew Python, PHP, Java and C#).
+More unit tests.  Bugs fixed.
+
+0.3.0 - July 27th 2004
+----------------------
+
+Improved support for Single Sign On and Single Logout profiles.  Python and
+Java bindings.  Unit tests.  Bugs fixed.
+
+
+0.2.0 - June 1st 2004
+---------------------
+
+First release as a C library.
+

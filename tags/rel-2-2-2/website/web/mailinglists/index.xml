@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Mailing Lists</title>
+ </head>
+ <body>
+ 	<h1>Mailing Lists</h1>
+
+	<p>
+	  There are currently two mailing lists for Lasso.
+	</p>
+	
+	<ul>
+	 <li><a href="http://lists.labs.libre-entreprise.org/mailman/listinfo/lasso-devel">lasso-devel</a>:
+	   main development mailing list (<a
+	   href="http://lists.labs.libre-entreprise.org/pipermail/lasso-devel/">archives</a>)</li>
+
+	 <li><a href="http://lists.labs.libre-entreprise.org/mailman/listinfo/lasso-commits">lasso-commits</a>:
+	   Subversion commits are sent here (<a
+	   href="http://lists.labs.libre-entreprise.org/pipermail/lasso-commits/">archives</a>)</li>
+	</ul>
+	
+ </body>
+</html>
+

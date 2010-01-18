@@ -1,0 +1,139 @@
+<!-- ##### SECTION Title ##### -->
+LassoDataService
+
+<!-- ##### SECTION Short_Description ##### -->
+ID-WSF Data Service Profile
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+XXX
+</para>
+
+<para>
+Following up on #LassoDiscovery first example, it created a @service object,
+this is a #LassoDataService instance.  This example continues from that step
+and retrieves the name of the principal:
+</para>
+
+<informalexample><programlisting><![CDATA[
+char *soap_answer;            /* SOAP answer from data service */
+xmlNode *principal_name;      /* libxml2 xmlNode with the principal name */
+
+service = lasso_discovery_get_service(discovery);
+lasso_data_service_init_query(service, "/pp:PP/pp:InformalName", NULL);
+lasso_data_service_build_request_msg(service);
+
+/*
+ * service must perform SOAP call to LASSO_WSF_PROFILE(service)->msg_url
+ * the SOAP message is LASSO_WSF_PROFILE(service)->msg_body.  The answer
+ * is stored in char* soap_answer;
+ */
+
+lasso_data_service_process_query_response_msg(service, soap_answer);
+principal_name = lasso_data_service_get_answer(service, "/pp:PP/pp:InformalName");
+
+/*
+ * app should probably then use xmlNodeGetContent libxml2 function to get
+ * access to node content.
+ */
+]]></programlisting></informalexample>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoDataService ##### -->
+<para>
+
+</para>
+
+@resource_id: 
+@encrypted_resource_id: 
+@resource_data: 
+@provider_id: 
+@abstract_description: 
+
+<!-- ##### FUNCTION lasso_data_service_new ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_init_query ##### -->
+<para>
+
+</para>
+
+@service: 
+@select: 
+@item_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_add_query_item ##### -->
+<para>
+
+</para>
+
+@service: 
+@select: 
+@item_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_process_query_msg ##### -->
+<para>
+
+</para>
+
+@service: 
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_build_response_msg ##### -->
+<para>
+
+</para>
+
+@service: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_process_query_response_msg ##### -->
+<para>
+
+</para>
+
+@service: 
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_get_answer ##### -->
+<para>
+
+</para>
+
+@service: 
+@select: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_get_answer_for_item_id ##### -->
+<para>
+
+</para>
+
+@service: 
+@item_id: 
+@Returns: 
+
+

@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<title>Benchmarking service provider SSO tasks</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+<h1>Benchmarking service provider SSO tasks</h1>
+
+<h2>&#8220;AuthenticationRequest&#8221; generation</h2>
+
+<pre>
+lasso_login_init_authn_request(login, "https://idp1/metadata", LASSO_HTTP_METHOD_REDIRECT);
+request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)-&gt;request);
+request-&gt;IsPassive = 0;
+request-&gt;NameIDPolicy = g_strdup(LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
+request-&gt;consent = g_strdup(LASSO_LIB_CONSENT_OBTAINED);
+request-&gt;ProtocolProfile = g_strdup(LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST);
+lasso_login_build_authn_request_msg(login);
+</pre>
+
+<table class="benchs">
+<thead>
+<tr>
+<td></td>
+<th colspan="2">100 reqs</th>
+<th colspan="2">1000 reqs</th>
+<th colspan="2">10000 reqs</th>
+</tr>
+<tr class="labels">
+<td></td> <td>time</td> <td>req/s</td> <td>time</td> <td>req/s</td> <td>time</td> <td>req/s</td>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+<th>Intel® Pentium® M processor 1500Mhz</th>
+  <td>2.993</td>   <td>33.414</td>
+  <td>29.932</td>  <td>33.409</td>
+  <td>300.877</td> <td>33.236</td>
+</tr>
+
+<tr>
+<th>AMD Opteron™ Processor 242 (1.6Ghz)</th>
+  <td>0.716</td>  <td>139.734</td>
+  <td>7.136</td>  <td>140.136</td>
+  <td>71.213</td> <td>140.425</td>
+</tr>
+
+<tr>
+<th>Intel® Xeon™ CPU 2.80GHz</th>
+  <td>2.785</td>   <td>35.909</td>
+  <td>27.94</td>   <td>35.785</td>
+  <td>280.440</td> <td>35.658</td>
+</tr>
+</tbody>
+</table>
+
+<h2>&#8220;AuthenticationResponse&#8221; consuming</h2>
+
+<pre>
+lasso_login_process_authn_response_msg(login, authn_response_msg);
+lasso_login_accept_sso(login);
+</pre>
+
+<table class="benchs">
+<thead>
+<tr>
+<td></td>
+<th colspan="2">100 reqs</th>
+<th colspan="2">1000 reqs</th>
+<th colspan="2">10000 reqs</th>
+</tr>
+<tr class="labels">
+<td></td> <td>time</td> <td>req/s</td> <td>time</td> <td>req/s</td> <td>time</td> <td>req/s</td>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+<th>Intel® Pentium® M processor 1500Mhz</th>
+  <td>0.572</td>  <td>174.840</td>
+  <td>5.788</td>  <td>172.766</td>
+  <td>58.249</td> <td>171.677</td>
+</tr>
+
+<tr>
+<th>AMD Opteron™ Processor 242 (1.6Ghz)</th>
+  <td>0.303</td> <td>329.710</td>
+  <td>3.022</td>  <td>330.899</td>
+  <td>30.454</td> <td>328.368</td>
+</tr>
+
+<tr>
+<th>Intel® Xeon™ CPU 2.80GHz</th>
+  <td>0.609</td>  <td>164.218</td>
+  <td>6.179</td>  <td>161.835</td>
+  <td>62.457</td> <td>160.108</td>
+</tr>
+
+</tbody>
+</table>
+
+<p class="details-configuration">
+  Results last updated on January 25th, with Lasso almost 0.6.0.  Tests systems
+  were:
+</p>
+
+<ol class="test-machines">
+
+<li> <ul>
+  <li>Intel® Pentium® M processor 1500Mhz</li>
+  <li>1Gb RAM</li>
+  <li>Debian GNU/Linux "sid"
+    <ul>
+      <li>libxml2 2.6.11</li>
+      <li>XMLSec 1.2.6</li>
+      <li>OpenSSL 0.9.7e</li>
+    </ul></li>
+</ul> </li>
+
+<li> <ul>
+  <li>AMD Opteron™ Processor 242 (1.6Ghz)</li>
+  <li>2Gb RAM</li>
+  <li>Debian GNU/Linux "sarge" (unreleased AMD-64 version)
+    <ul>
+      <li>libxml2 2.6.11</li>
+      <li>XMLSec 1.2.6</li>
+      <li>OpenSSL 0.9.7e</li>
+    </ul></li>
+</ul> </li>
+
+<li> <ul>
+  <li>Intel® Xeon™ CPU 2.80GHz</li>
+  <li>512Mb RAM</li>
+  <li>Debian GNU/Linux "sarge"
+    <ul>
+      <li>libxml2 2.6.11</li>
+      <li>XMLSec 1.2.6</li>
+      <li>OpenSSL 0.9.7d</li>
+    </ul></li>
+</ul> </li>
+
+</ol>
+
+<h2>Library Usage</h2>
+
+<p>
+  Calculated with valgrind on test system #1 with 30 iterations; this shows
+  most time in those tests is spent in OpenSSL.
+</p>
+
+<p>
+<img src="/figures/perfs-sp-libs.png"
+  alt="Most time is spent in OpenSSL" />
+</p>
+
+
+<h2>Performance Stability</h2>
+
+<p>
+  Performance doesn't degrade when increasing the number of requests.
+</p>
+
+<p>
+  <img src="/figures/perfs-sp-stability.png" alt=""/>
+</p>
+
+</body>
+</html>

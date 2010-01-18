@@ -1,0 +1,88 @@
+div#banner {
+	background: white url(Insect.png) top left no-repeat;
+}
+
+div#banner h1 {
+	padding-left: 80px;
+	border-bottom: 1px solid #999;
+	min-height: 35px;
+}
+
+table td {
+	border: 1px solid black;
+	padding: 0 1ex;
+	text-align: center;
+}
+
+td.ok, td.ok295, td.success { background: #b5e42e; }
+td.missing, td.failure, td.error { background: #e42237; }
+td.gcc295, td.gcc295-failure, td.failure295 { background: #e4c02e; }
+
+tr.even {
+	background: #eee;
+}
+
+td.buildtime {
+	text-align: right;
+}
+
+th {
+	padding: 0 1ex;
+	vertical-align: top;
+}
+
+td.ok a:link, td.failure a:link {
+	color: black;
+}
+
+a:visited {
+	color: #800;
+}
+
+ul#system {
+	list-style: circle;
+	font-size: 80%;
+}
+
+span.file {
+    display: block;
+}
+
+td.test-description {
+	text-align: left;
+}
+
+tfoot {
+	font-weight: bold;
+}
+
+th[colspan] {
+	border: 1px solid black;
+	border-bottom: 0px;
+}
+
+tr#line2 th {
+	font-size: 90%;
+}
+
+pre {
+	white-space: -moz-pre-wrap;
+}
+
+pre span.stdin {
+	font-weight: bold;
+}
+
+pre span.warning {
+	color: #a00;
+}
+
+pre span.error {
+	color: #f00;
+	font-weight: bold;
+}
+
+td.test-description {
+	width: 50em;
+}
+

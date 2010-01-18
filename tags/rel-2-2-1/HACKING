@@ -1,0 +1,84 @@
+============
+Coding Style
+============
+
+- Use explicit ``!= NULL``, ``!= 0``, etc. This makes code easier to read
+  and remove warnings on some platform. Don't forget SPACES before and
+  after the comparison operator.
+
+  Examples:
+    BAD:
+            ``if (a)``
+    BAD:
+            ``if (a!=NULL)``
+    GOOD:
+            ``if (a != NULL)``
+    GOOD:
+            ``if (a != 0)``
+
+- Put figure brackets ``{}`` even if you have only one operator
+  in ``if``, ``for``, etc. This also makes code easier to read and 
+  saves a lot of time when you need to quickly change something. 
+
+  Examples:
+    BAD:
+      .. line-block::
+
+         if (a != NULL)
+           message(G_LOG_LEVEL_MESSAGE, "Ko");
+    GOOD:
+      .. line-block::
+
+         if (a != NULL) {
+           message(G_LOG_LEVEL_MESSAGE, "Ok");
+         }
+
+- Put SPACES before the opening round bracket and after the closing round
+  bracket with ``if``, ``for``, ``switch``, ``while``, etc. One more time,
+  it improves the readability of the code.
+
+  Examples:
+    BAD:
+      .. line-block::
+
+         if(a != NULL){
+           message(G_LOG_LEVEL_MESSAGE, "Ko");
+         }
+    GOOD:
+      .. line-block::
+
+         if (a != NULL) {
+           message(G_LOG_LEVEL_MESSAGE, "Ok");
+         }
+
+- Limit line length to at most 100 characters.
+
+- Check for memory leaks.
+  I recommend valgrind (http://valgrind.kde.org) utility with options:
+    --leak-check=yes
+    --show-reachable=yes
+    --num-callers=32
+    --suppressions=tests/valgrind/openssl.supp
+
+
+
+GNU Emacs
+=========
+
+::
+
+  (defun lasso-c-mode ()
+    "C mode with adjusted defaults for use with Lasso."
+    (interactive)
+    (c-mode)
+    (c-set-style "K&R")
+    (setq tab-width 8)
+    (setq indent-tabs-mode t)
+    (setq c-basic-offset 8))
+
+This will define the M-x lasso-c-mode command.  It can be switched on
+automatically in a given directory::
+
+  (setq auto-mode-alist (cons '("/usr/src/lasso.*/.*\\.[ch]$" .  lasso-c-mode)
+	auto-mode-alist))
+

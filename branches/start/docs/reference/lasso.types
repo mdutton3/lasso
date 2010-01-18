@@ -1,0 +1,19 @@
+#include <lasso/lasso.h>
+
+lib_assertion_get_type
+lib_authn_request_get_type
+lib_authn_response_get_type
+lib_request_authn_context_get_type
+lib_scoping_get_type
+saml_advice_get_type
+saml_assertion_get_type
+saml_name_identifier_get_type
+saml_statement_abstract_get_type
+saml_subject_get_type
+saml_subject_confirmation_get_type
+saml_subject_statement_abstract_get_type
+samlp_request_abstract_get_type
+samlp_response_get_type
+samlp_response_abstract_get_type
+samlp_status_get_type
+samlp_status_code_get_type

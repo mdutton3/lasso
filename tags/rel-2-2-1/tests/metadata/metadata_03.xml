@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<EntityDescriptor
+    providerID="http://test.local/liberty/metadata"
+    xmlns="urn:liberty:metadata:2003-08">
+
+<SPDescriptor protocolSupportEnumeration="urn:liberty:iff:2003-08">
+
+  <KeyDescriptor use="signing">
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:KeyValue>
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzTofHpWAdhH3BR/+1lVV
+NGRVY2qH3H4+8cDaofg5gy6oazgB/qVTZixm+euZF1wVa/T5SR0CBeFF4JYBmC0H
+Wl39b2bqoNGV0ILLKyjDrE88pHP+k5PBFeb98zRAY95fPDOPfgFc4g64W76fvri8
+qfXx3665UATOTXnvqnFOnilA/Ml900ust5Dy/IKyGgVT4xgm2nVQD6HYmg7Rjyga
+/LBtTEeKgc3k++fM5t8AzhdoNCiGZ/Ez1RztanjEoBzWdSrmHAGsemMUxFLPpQJ8
+yglIYiL7fEkyQ0KMvRcTDk0pVzmNEqTNKQ3mPwpMz+TWM8+wMc9FjNtZaGc213om
+WQIDAQAB
+      </ds:KeyValue>
+    </ds:KeyInfo>
+  </KeyDescriptor>
+
+</SPDescriptor>
+</EntityDescriptor>

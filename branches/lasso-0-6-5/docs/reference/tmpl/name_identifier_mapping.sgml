@@ -1,0 +1,101 @@
+<!-- ##### SECTION Title ##### -->
+LassoNameIdentifierMapping
+
+<!-- ##### SECTION Short_Description ##### -->
+Name Identifier Mapping
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoNameIdentifierMapping ##### -->
+<para>
+
+</para>
+
+@targetNameIdentifier: 
+
+<!-- ##### FUNCTION lasso_name_identifier_mapping_new ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_identifier_mapping_destroy ##### -->
+<para>
+
+</para>
+
+@mapping: 
+
+
+<!-- ##### FUNCTION lasso_name_identifier_mapping_build_request_msg ##### -->
+<para>
+
+</para>
+
+@mapping: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_identifier_mapping_build_response_msg ##### -->
+<para>
+
+</para>
+
+@mapping: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_identifier_mapping_init_request ##### -->
+<para>
+
+</para>
+
+@mapping: 
+@targetNameSpace: 
+@remote_providerID: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_identifier_mapping_process_request_msg ##### -->
+<para>
+
+</para>
+
+@mapping: 
+@request_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_identifier_mapping_process_response_msg ##### -->
+<para>
+
+</para>
+
+@mapping: 
+@response_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_identifier_mapping_validate_request ##### -->
+<para>
+
+</para>
+
+@mapping: 
+@Returns: 
+
+

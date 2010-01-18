@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<div xmlns="http://www.w3.org/1999/xhtml">
+ <h3>2005-01-17: Released 0.6.0</h3>
+
+ <p>
+  I am pleased to announce the release of Lasso 0.6.0.
+  <a href="/download/">Download it now</a>
+ </p>
+
+ <p class="changes">
+  <strong>What changed ?</strong>   Library internals were rewritten to use
+  standard structures instead of libxml2 nodes; this allows <a
+  href="/perfs">faster processing</a>,
+  more flexibility and better support for language bindings.  All the <a
+  href="/documentation/api-reference/index.html">API
+  functions</a> were documented.  And many fixes and improvements found their way.
+ </p>
+
+</div>

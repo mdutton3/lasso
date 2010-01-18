@@ -1,0 +1,45 @@
+======================
+Using Lasso Win32 Port
+======================
+
+Compile
+=======
+
+Execute::
+
+  ./autogen.sh --host=i686-pc-mingw32 --with-pkg-config-path=/usr/local/lib/pkgconfig
+
+and next ``make``.
+
+
+Know bugs
+=========
+
+Windows 9x/ME
+~~~~~~~~~~~~~
+
+Description
+-----------
+
+Some problem with link definition.
+
+Fix
+---
+
+After the build error, edit the lasso/*/.libs/*.la files and remove any link
+calls to user32 and kernel32.
+
+Installation
+~~~~~~~~~~~~
+
+Description
+-----------
+
+The ``.dll`` file is not copied to his destination directory.
+
+Fix
+---
+
+Manually copy the ``.dll`` file (``lasso/.libs/liblasso-3.dll``) to its
+destination directory.
+

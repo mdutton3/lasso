@@ -1,0 +1,171 @@
+Single Sign On
+    SP
+        /login (* url not normative *)
+            login = lasso_login_new(server)
+            lasso_login_init_authn_request(login, method)
+                # method = lassoHttpMethodRedirect or lassoHttpMethodPost
+            request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)
+            lasso_lib_authn_request_set_forceAuthn(request, TRUE)
+            lasso_lib_authn_request_set_nameIDPolicy(request, policy)
+                # policy is one of:
+                #  - lassoLibNameIDPolicyTypeFederated
+                #  - (...)
+            lasso_lib_authn_request_set_consent(request, consent)
+                # consent is one of:
+                #  - lassoLibConsentObtained
+            lasso_lib_authn_request_set_relayState(request, relayState)
+                # relayState is an optional value set by the SP
+            lasso_login_build_authn_request_msg(login, idpProviderId)
+                # if idpProviderId is NULL the first one defined in the metadata will be picked
+            
+            IF lassoHttpMethodRedirect
+                REDIRECT TO LASSO_PROFILE(login)->msg_url
+            
+            IF lassoHttpMethodPost
+                DISPLAY HTML FORM
+                    <form action="** LASSO_PROFILE(login)->msg_url **" method="post">
+                     <input type="hidden" name="LAREQ"
+		     	value="** LASSO_PROFILE(login)->msg_body **"/>
+                    </form>
+
+
+    IdP
+        /singleSignOn (* normative, Single Sign On service URL *)
+            login = lasso_login_new(server)
+            lasso_profile_set_identity_from_dump(LASSO_PROFILE(login), identity_dump)
+                # if identity_dump exists
+            lasso_profile_set_session_from_dump(LASSO_PROFILE(login), session_dump)
+                # if session_dump exists
+            IF METHOD IS GET
+                authn_request_msg = /query string/
+            IF METHOD IS POST
+                authn_request_msg = /form submitted LAREQ field/
+            lasso_login_init_from_authn_request_msg(login, authn_request_msg)
+
+            IF lasso_login_must_authenticate(login)
+                # proceed to authentication
+                # may serialize login object now: lasso_login_dump(login)  
+
+                # (...)
+
+                # may be coming back from another function; another url
+                # unserialize with lasso_login_new_from_dump(dump)
+                userAuthenticated = TRUE
+
+            ELSE
+                userAuthenticated = TRUE
+                    # or FALSE if it was not authenticated previously
+
+            authenticationMethod = lassoSamlAuthenticationMethodPassword
+                # or lassoSamlAuthenticationMethodSoftwarePki or others
+                # (see ...)
+                # this is how the user has been authenticated
+
+            reauthenticationTime = "2004-04-01T00:00:00Z"
+                # this is when the user will have to be reauthenticated
+
+            IF login->protocolProfile IS lassoLoginProtocolProfileBrwsArt
+                lasso_login_build_artifact_msg(login, userAuthenticated,
+                    authenticationMethod, reauthenticationTime,
+                    lassoHttpMethodRedirect)
+
+            IF login->protocolProfile IS lassoLoginProtocolProfileBrwsPost
+                lasso_login_build_authn_response_msg(login, userAuthenticated,
+                    authenticationMethod, reauthenticationTime)
+
+            # map LASSO_PROFILE(login)->nameIdentifier to user
+            # (write this down in a database)
+
+            IF lasso_profile_is_identity_dirty(LASSO_PROFILE(login))
+                identity = lasso_profile_get_identity(LASSO_PROFILE(login))
+                # save identity;
+                #   serialization with lasso_identity_dump(identity)
+
+            IF lasso_profile_is_session_dirty(LASSO_PROFILE(login))
+                session = lasso_profile_get_session(LASSO_PROFILE(login))
+                # save session;
+                #   serialization with lasso_session_dump(session)
+
+
+            IF login->protocolProfile IS lassoLoginProtocolProfileBrwsArt
+                assertion = lasso_login_get_assertion(login)
+                # save assertion; mapped to login->assertionArtifact  (|1|)
+                #   serialization with lasso_node_export(LASSO_NODE(assertion))
+                #    !!! LAME !!!
+        
+                REDIRECT TO LASSO_PROFILE(login)->msg_url
+
+            IF login->protocolProfile IS lassoLoginProtocolProfileBrwsPost
+                DISPLAY HTML FORM
+                    <form action="** LASSO_PROFILE(login)->msg_url **" method="post">
+                     <input type="hidden" name="LARES"
+		     	value="** LASSO_PROFILE(login)->msg_body **"/>
+                    </form>
+
+
+    SP
+        /assertionConsumer (* normative, assertion consumer service URL *)
+            login = lasso_login_new(server)
+            IF METHOD IS GET OR SUBMITTED FORM HAS LAREQ FIELD
+                    IF METHOD IS GET
+                        authn_request_msg = /query string/
+                        relayState = /query string, RelayState var/
+                        method = lassoHttpMethodRedirect
+                    IF METHOD IS POST
+                        authn_request_msg = /form submitted LAREQ field/
+                        relayState = /form submitted RelayState field/
+                        method = lassoHttpMethodPost
+
+                    lasso_login_init_request(login, authn_request_msg, method)
+                    lasso_login_build_request_msg(login)
+
+                    SOAP CALL ---------------------------------------------------------\
+                        TO LASSO_PROFILE(login)->msg_url                               |
+                        BODY LASSO_PROFILE(login)->msg_body
+
+                    lasso_login_process_response_msg(login, soap_answer_message)
+
+            ELSE IF SUBMITTED FORM HAS LARES FIELD
+                response_msg = /form submitted LARED field/
+                lasso_login_process_authn_response_msg(login, response_msg)
+                relayState = LASSO_PROFILE(login)->msg_RelayState
+
+            nameIdentifier = LASSO_PROFILE(login)->nameIdentifier
+
+            IF known nameIdentifier
+                # GET BACK identity_dump and session_dump
+                lasso_profile_set_identity_from_dump(LASSO_PROFILE(login, identity_dump)
+                lasso_profile_set_session_from_dump(LASSO_PROFILE(login), session_dump)
+
+            lasso_login_accept_sso(login)
+            
+            IF lasso_profile_is_identity_dirty(LASSO_PROFILE(login))
+                identity = lasso_profile_get_identity(LASSO_PROFILE(login))
+                # save identity;
+                #   serialization with lasso_identity_dump(identity)
+
+            IF lasso_profile_is_session_dirty(LASSO_PROFILE(login))
+                session = lasso_profile_get_session(LASSO_PROFILE(login))
+                # save session;
+                #   serialization with lasso_session_dump(session)
+
+            
+            REDIRECT anywhere
+
+
+    IdP                                                                                |
+        /soapEndPoint (* normative, SOAP endpoint *)                              <----/
+            soap_msg # is the received SOAP message body
+            request_type = lasso_profile_get_request_type_from_soap_msg(soap_msg);
+
+            IF request_type IS lassoRequestTypeLogin
+                login = lasso_login_new(server);
+                lasso_login_process_request_msg(login, soap_msg);
+                
+                # retrieve assertion_dump saved in (|1|) (and then delete it)
+                lasso_login_set_assertion_from_dump(login, assertion_dump)
+
+                lasso_login_build_response_msg(login)
+
+                ANSWER SOAP REQUEST WITH: LASSO_PROFILE(login)->msg_body
+

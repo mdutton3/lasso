@@ -1,0 +1,76 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibAuthnRequest
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:AuthnRequest&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Authentication requests are sent from a service provider to an identity
+provider.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#LassoLogin</term>
+<listitem><para>Class for Single Sign-On and Federation
+profile.</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibAuthnRequest ##### -->
+<para>
+@ProviderID is the service provider identifier, this field will often be filled
+with lasso_login_init_authn_request().
+</para>
+
+<para>
+@nameIDPolicy tells the identity provider about the policy to use for
+federation; it must be one of #LASSO_LIB_NAMEID_POLICY_TYPE_NONE,
+#LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME, #LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED
+or #LASSO_LIB_NAMEID_POLICY_TYPE_ANY.
+</para>
+
+<para>
+@IsPassive; if %TRUE (default) it tells the identity provider not to interact
+with the user.
+</para>
+
+<para>
+@ForceAuthn; only used if @IsPassive is %FALSE, it tells the identity provider
+to force authentication of the user even when already authenticated.
+</para>
+
+<para>
+@ProtocolProfile is the Single Sign-On and Federation profile to adopt; either
+#LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART (which is the default value) or
+#LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST.
+</para>
+
+@Extension: 
+@ProviderID: 
+@AffiliationID: 
+@NameIDPolicy: 
+@ForceAuthn: 
+@IsPassive: 
+@ProtocolProfile: 
+@AssertionConsumerServiceID: 
+@RequestAuthnContext: 
+@RelayState: 
+@Scoping: 
+@consent: 
+
+<!-- ##### FUNCTION lasso_lib_authn_request_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

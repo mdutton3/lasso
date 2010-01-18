@@ -1,0 +1,1 @@
+#define LASSO_WSF2_SUPPORT 1

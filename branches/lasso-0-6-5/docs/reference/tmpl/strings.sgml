@@ -1,0 +1,115 @@
+<!-- ##### SECTION Title ##### -->
+strings
+
+<!-- ##### SECTION Short_Description ##### -->
+Useful string constants
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED ##### -->
+<para>
+<emphasis>Federated</emphasis> name identifier constant, used in
+#LassoNameIdentifier.  It implies the name identifier belongs to
+a federation established between SP and IdP.
+</para>
+
+<para>
+Its value is urn:liberty:iff:nameid:federated.
+</para>
+
+
+
+<!-- ##### MACRO LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME ##### -->
+<para>
+"One-time" name identifier constant, used in #LassoNameIdentifier.
+</para>
+
+<para>
+Its value is urn:liberty:iff:nameid:one-time.
+</para>
+
+
+
+<!-- ##### MACRO LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED ##### -->
+<para>
+"Encrypted" name identifier constant, used in #LassoNameIdentifier.
+</para>
+
+<para>
+Its value is urn:liberty:iff:nameid:encrypted.
+</para>
+
+
+
+<!-- ##### MACRO LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID ##### -->
+<para>
+Its value is urn:liberty:iff:nameid:entityID.
+</para>
+
+
+
+<!-- ##### MACRO LASSO_LIB_NAMEID_POLICY_TYPE_NONE ##### -->
+<para>
+<emphasis>None</emphasis> policy for use in #LassoLibAuthnRequest.  It means an
+existing federation must be used and an error should be produced if none
+existed beforehand.
+</para>
+
+
+
+<!-- ##### MACRO LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME ##### -->
+<para>
+<emphasis>Onetime</emphasis> policy for use in #LassoLibAuthnRequest.  It means
+a federation must not be created between identity and service provider.  A
+temporary name identifier should be used instead.
+</para>
+
+
+
+<!-- ##### MACRO LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED ##### -->
+<para>
+<emphasis>Federated</emphasis> policy for use in #LassoLibAuthnRequest.  It
+means a federation may be created between identity and service provider (if it
+didn't exist before).
+</para>
+
+
+
+<!-- ##### MACRO LASSO_LIB_NAMEID_POLICY_TYPE_ANY ##### -->
+<para>
+<emphasis>Any</emphasis> policy for use in #LassoLibAuthnRequest.  It means a
+federation may be created if the principal agrees and it can fall back to
+<emphasis>onetime</emphasis> if he does not.
+</para>
+
+
+
+<!-- ##### MACRO LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART ##### -->
+<para>
+Identifies the Single Sign-On "Artifact" profile; where an artifact is passed
+from identity provider to service provider and back to get the
+#LassoLibAssertion.
+</para>
+
+
+
+<!-- ##### MACRO LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST ##### -->
+<para>
+Identifies the Single Sign-On "POST" profile; where the #LassoLibAssertion is
+sent directly from the identity provider to the service provider in an HTML
+form submission message.
+</para>
+
+
+

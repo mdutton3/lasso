@@ -1,0 +1,144 @@
+##############
+The Lasso Book
+##############
+
+
+=================
+Table of Contents
+=================
+
+
+.. contents:: Lasso Book
+
+
+===================
+General Information
+===================
+
+
+About This Manual
+=================
+
+This is the Lasso Book.
+
+Because this manual serves as a reference, it does not provide general
+instruction on Liberty Alliance or web concepts.  It also will not teach
+you how to use your operating system or command-line interpreter.
+
+The Lasso Software is under constant development, and this manual is
+updated frequently as well.  The most recent version of the manual is
+available online in at http://lasso.entrouvert.org/book.
+
+A copy of this book is distributed with each source code release of
+Lasso.  For binary distributions, please check with your vendor.
+
+The primary document is the reStructuredText file. The HTML version is
+produced automatically using ``rest2html``.
+
+If you have any suggestions concerning additions or corrections to this
+manual, please send them to the Lasso development mailing-list.
+
+This manual is maintained by the Lasso Documentation Team (see AUTHORS_
+for details).  For the many other contributors, see section Credits_.
+
+The copyright to this manual is owned by the French company Entr'ouvert.
+See section `Book Copyright and Permissions Notice`_.  Lasso and the
+Lasso logo are trademarks of Entr'ouvert.  Other trademarks and
+registered trademarks referred to in this manual are the property of
+their respective owners, and are used for identification purposes only.
+
+
+.. _README:
+.. include:: ../../README
+
+.. _INSTALL:
+.. include:: ../../INSTALL
+
+.. _AUTHORS:
+.. include:: ../../AUTHORS
+
+
+==============================
+Servers, Identities & Sessions
+==============================
+
+
+FIXME
+
+
+=================
+Profiles Overview
+=================
+
+
+FIXME
+
+
+=====
+Login
+=====
+
+
+FIXME
+
+
+======
+Logout
+======
+
+
+FIXME
+
+
+.. _README.WIN32:
+.. include:: ../../README.WIN32
+
+
+===================================
+Tips For Writing Lasso Applications
+===================================
+
+
+FIXME
+
+
+===============
+Troubleshooting
+===============
+
+
+FIXME
+
+
+============
+Contributing
+============
+
+
+FIXME
+
+
+.. _HACKING:
+.. include:: ../../HACKING
+
+
+=======
+Credits
+=======
+
+
+We would like to thank the following for their contributions to this text.
+
+  - Frédéric Péters for its future constructive criticisms.
+
+And to all of you who commented on and helped refine this document.
+
+Thanks.
+
+
+=====================================
+Book Copyright and Permissions Notice
+=====================================
+
+
+FIXME

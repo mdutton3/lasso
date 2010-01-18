@@ -1,0 +1,25 @@
+MAINTAINERCLEANFILES = Makefile.in
+SUBDIRS = python php5 java
+
+CLEANFILES = bindings.pyc lang_java.pyc lang_python.pyc lang_php5.pyc \
+             utils.pyc lang_php5_helpers/__init__.pyc lang_php5_helpers/php_code.pyc \
+              lang_php5_helpers/wrapper_header.pyc lang_php5_helpers/wrapper_source.pyc
+
+EXTRA_DIST = bindings.py \
+	lang_java.py \
+	lang_java_wrapper_bottom.c \
+	lang_java_wrapper_top.c \
+	lang_python.py \
+	lang_python_wrapper_bottom.c \
+	lang_python_wrapper_top.c \
+	lang_php5.py \
+	overrides.xml \
+	utils.py \
+	lang_php5_helpers/wrapper_source_top.c \
+	lang_php5_helpers/__init__.py \
+	lang_php5_helpers/php_code.py \
+	lang_php5_helpers/wrapper_header.py \
+	lang_php5_helpers/wrapper_source.py \
+	utility-scripts/error-analyzer.pl \
+	ghashtable.h
+

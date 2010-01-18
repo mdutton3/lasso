@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Souk</title>
+ </head>
+ <body>
+
+  <h1>Souk</h1>
+
+  <p class="warning">
+   Souk is no longer maintained.  If you are looking for an Identity Provider,
+   you should look at <a
+   href="http://authentic.labs.libre-entreprise.org">Authentic</a>.
+  </p>
+
+  <p>
+   Souk is a free software Python framework that implements the <a
+   href="http://www.projectliberty.org">Liberty Alliance</a> <acronym
+   title="IDentity Federation Framework">ID-FF</acronym> 1.2 protocols.
+   It allows to build full-featured identity providers, service providers and
+   proxies and includes sample code for all these servers (See
+   <a href="#examples">examples below</a>).
+  </p>
+
+  <img alt="Screenshot of Liberty Alliance single sign-on using one of Souk."
+       src="sp1-sso.png" />
+
+  <p>
+   Initially, Souk has been developped as a test environment for <a
+   href="http://lasso.entrouvert.org">Lasso</a> (See last column in <a
+   href="http://lasso.entrouvert.org/buildbox">Subversion Status table</a>).
+  </p>
+
+  <p>
+   It is built on top of <a href="http://lasso.entrouvert.org">Lasso</a>,
+   <a href="http://www.xmlsoft.org">libxml2 &amp; libxslt</a> and <a
+   href="http://www.openssl.org">OpenSSL</a> and is developed on
+   GNU/Linux.
+  </p>
+
+
+  <h2>License</h2>
+
+
+  <p>
+   Souk is Free Software licensed under the <a href="/license">GNU
+   General Public License</a> (with an <a href="/license#openssl"
+   >OpenSSL exception</a>).
+  </p>
+
+  <p>Copyright © 2004, 2005 <a href="http://www.entrouvert.com">Entr'ouvert</a></p>
+
+
+  <h2>Download</h2>
+
+
+  <h3>Source</h3>
+
+  <p>
+   The latest Souk release is available as a gzipped tarball: <a
+   href="http://labs.libre-entreprise.org/download.php/361/souk-0.6.0.tar.gz"
+   >souk-0.6.0.tar.gz</a>
+  </p>
+
+  <p>
+   This version of Souk is designed to be used with Lasso 0.6.0 or greater.
+  </p>
+
+  <h3>Packages</h3>
+
+<!--
+  <p>
+   Debian packages are available, they are included in the current
+   development version (<i>sid</i>) and packages for the current
+   stable version (<i>sarge</i>) are available in this apt repository:
+  </p>
+
+  <pre>
+deb http://www.entrouvert.org ./debian/souk/
+</pre>
+-->
+
+  <p>
+   Since version 0.6.0, Souk has been ported to Windows and an installer is available from the
+   <a href="http://labs.libre-entreprise.org/project/showfiles.php?group_id=57">GForge project
+   page</a>.
+  </p>
+
+  <h2>Install</h2>
+
+
+  <pre class="literal-block">
+   python setup.py build
+   python setup.py install
+</pre>
+
+
+  <h2 id="examples">Examples</h2>
+
+  <p>
+   One of the Souk examples features 2 service providers, 2 different kinds of proxies
+   and 2 identity providers.
+  </p>
+
+  <img alt="2 service providers, 1 passive proxy, 1 dynamic proxy and 2 identity providers"
+       src="example-schema.png" />
+
+
+  <p>
+   To test it, add the following lines to your <code>/etc/hosts</code> file:
+  </p>
+
+  <pre class="literal-block">
+127.0.0.1 idp1.lasso.lan idp2.lasso.lan
+127.0.0.1 proxy1.lasso.lan proxy2.lasso.lan
+127.0.0.1 sp1.lasso.lan sp2.lasso.lan
+</pre>
+
+  <p>
+   Enter the <code>examples/lasso.lan</code> directory.
+  </p>
+
+  <p>
+   Launch each server below in a different terminal:
+  </p>
+
+  <pre class="literal-block">
+./sp1.py
+./sp2.py
+./proxy1.py
+./proxy2.py
+./idp1.py
+./idp2.py
+</pre>
+
+  <p>
+   Restart your web browser to take care of the changes in <code>/etc/hosts</code>.
+   Then you can use it to connect to the following URLs:
+  </p>
+
+  <ul>
+   <li>https://sp1.lasso.lan:2006</li>
+   <li>https://sp2.lasso.lan:2008</li>
+   <li>https://proxy1.lasso.lan:2014</li>
+   <li>https://proxy2.lasso.lan:2016</li>
+   <li>https://idp1.lasso.lan:1998</li>
+   <li>https://idp2.lasso.lan:2000</li>
+  </ul>
+
+  <p>
+   At startup, there exists 4 accounts on each service and identity provider.
+   Their login begins with "alice", "bob", "charlie" &amp; "david" and are
+   suffixed using "-sp1", "-sp2", "-idp1" &amp; "-idp2". For example the login
+   for Bob on service provider 2 is "bob-sp2".
+  </p>
+
+  <div class="warning">
+
+   <p class="admonition-title first">
+    Warning
+   </p>
+
+  <p>
+   Initially there is no identity federation between accounts. So the first time
+   you attempt to single sign-on, don't forget to set "Name ID Policy" to
+   "Federated", otherwise the authentication will fail.
+  </p>
+
+  </div>
+
+  <div class="warning">
+
+   <p class="admonition-title first">
+    Warning
+   </p>
+
+  <p>
+   Each server stores everything in RAM. It doesn't remember anything once it is
+   stopped; even identity federations are lost.
+  </p>
+
+  </div>
+
+
+  <h2>Mailing-Lists, Bugs Reports...</h2>
+
+
+  <p>
+   Everything is on our <a href="http://gforge.org">GForge</a> site: <a
+   href="http://labs.libre-entreprise.org/projects/souk/"
+   >http://labs.libre-entreprise.org/projects/souk/</a>.
+  </p>
+
+ </body>
+</html>
+

@@ -1,0 +1,24 @@
+  <h1>ChangeLog</h1>
+
+ <table>
+ [for entry]
+  <tr class="[if-index entry even]even[else]odd[end]">
+   <td>[entry.time]</td>
+   <td>[entry.author]</td>
+   <td>
+    [if-any entry.file]
+    [for entry.file]
+    <span class="file"><a href="http://labs.libre-entreprise.org/plugins/scmcvs/cvsweb.php/lasso/[entry.file.name]?cvsroot=lasso#rev[entry.file.revision]">[entry.file.name]</a> ([entry.file.revision])</span>
+	[end]
+    [end]
+    [if-any entry.revision]
+    <a href="https://labs.libre-entreprise.org/plugins/scmsvn/viewcvs.php?root=lasso&view=rev&rev=[entry.revision]">rev [entry.revision]</a>
+    [end]
+   </td>
+   <td>
+    [entry.msg]
+   </td>
+  </tr>
+ [end]
+ </table>
+

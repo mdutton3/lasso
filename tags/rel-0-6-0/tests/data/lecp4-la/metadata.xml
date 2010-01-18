@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<EntityDescriptor
+    providerID="https://lecp4/metadata"
+    xmlns="urn:liberty:metadata:2003-08">
+
+ <IDPDescriptor>
+
+  <SingleSignOnServiceURL>https://lecp4:2020/singleSignOn</SingleSignOnServiceURL>
+  <SingleSignOnProtocolProfile>http://projectliberty.org/profiles/sso-get</SingleSignOnProtocolProfile>
+  <SingleLogoutServiceURL>https://lecp4:2020/singleLogout</SingleLogoutServiceURL>
+  <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
+
+  <RegisterNameIdentifierServiceURL>https://lecp4:2020/registerNameIdentifier</RegisterNameIdentifierServiceURL>
+  <RegisterNameIdentifierProtocolProfile>http://projectliberty.org/profiles/rni-sp-http</RegisterNameIdentifierProtocolProfile>
+
+  <SoapEndpoint>https://lecp4:2020/soapEndpoint</SoapEndpoint>
+
+ </IDPDescriptor>
+
+ <SPDescriptor>
+
+  <AssertionConsumerServiceURL id="AssertionConsumerServiceURL1" isDefault="true">https://lecp4:2020/assertionConsumer</AssertionConsumerServiceURL>
+
+  <SingleLogoutServiceURL>https://lecp4:2020/singleLogout</SingleLogoutServiceURL>
+  <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
+
+  <RegisterNameIdentifierServiceURL>https://lecp4:2020/registerNameIdentifier</RegisterNameIdentifierServiceURL>
+  <RegisterNameIdentifierProtocolProfile>http://projectliberty.org/profiles/rni-sp-soap</RegisterNameIdentifierProtocolProfile>
+
+  <SoapEndpoint>https://lecp4:2020/soapEndpoint</SoapEndpoint>
+
+  <AuthnRequestsSigned>true</AuthnRequestsSigned>
+
+ </SPDescriptor>
+
+</EntityDescriptor>

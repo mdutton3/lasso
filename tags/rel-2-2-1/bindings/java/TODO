@@ -1,0 +1,6 @@
+* utiliser les numéros de version de lasso dans la doc/noms de fichiers
+* créer une hiérarchie object pour différentier les services SAML 2 des
+ services ID-FF 1.2 ainsi que mutualiser certaines méthodes.
+* déplacer les points d'accés saml2 et id-ff dans leurs répertoires res
+pectifs.
+* supporter plusieurs IdP 

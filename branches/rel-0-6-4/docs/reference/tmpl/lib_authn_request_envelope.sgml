@@ -1,0 +1,52 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibAuthnRequestEnvelope
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:AuthnRequestEnvelope&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibAuthnRequestEnvelope ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Extension: 
+@AuthnRequest: 
+@ProviderID: 
+@ProviderName: 
+@AssertionConsumerServiceURL: 
+@IDPList: 
+@IsPassive: 
+
+<!-- ##### FUNCTION lasso_lib_authn_request_envelope_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_lib_authn_request_envelope_new_full ##### -->
+<para>
+
+</para>
+
+@authnRequest: 
+@providerID: 
+@assertionConsumerServiceURL: 
+@Returns: 
+
+

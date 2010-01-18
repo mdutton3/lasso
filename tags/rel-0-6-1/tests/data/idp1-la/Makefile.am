@@ -1,0 +1,1 @@
+EXTRA_DIST = certificate.pem jks.keystore metadata.xml private-key-raw.pem public-key.pem

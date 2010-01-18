@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<EntityDescriptor
+    providerID="https://idp4/metadata"
+    xmlns="urn:liberty:metadata:2003-08">
+ <IDPDescriptor>
+
+  <SingleSignOnServiceURL>https://idp4:2004/singleSignOn</SingleSignOnServiceURL>
+  <SingleSignOnProtocolProfile>http://projectliberty.org/profiles/sso-get</SingleSignOnProtocolProfile>
+
+  <SingleLogoutServiceURL>https://idp4:2004/singleLogout</SingleLogoutServiceURL>
+  <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
+
+  <RegisterNameIdentifierServiceURL>https://idp4:2004/registerNameIdentifier</RegisterNameIdentifierServiceURL>
+  <RegisterNameIdentifierProtocolProfile>http://projectliberty.org/profiles/rni-sp-http</RegisterNameIdentifierProtocolProfile>
+
+  <SoapEndpoint>https://idp4:2004/soapEndpoint</SoapEndpoint>
+
+</IDPDescriptor>
+</EntityDescriptor>

@@ -1,0 +1,37 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibStatusResponse
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:StatusResponse&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibStatusResponse ##### -->
+<para>
+
+</para>
+
+@Extension: 
+@ProviderID: 
+@Status: 
+@RelayState: 
+
+<!-- ##### FUNCTION lasso_lib_status_response_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

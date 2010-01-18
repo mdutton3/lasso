@@ -1,0 +1,8 @@
+prefix=@prefix@
+datadir=@datadir@
+
+Name: Lasso#
+Version: @VERSION@
+Description: Lasso# - Lasso .NET Binding
+Libs: -r:${datadir}/dotnet/lasso/lasso.dll
+

@@ -1,0 +1,68 @@
+<!-- ##### SECTION Title ##### -->
+LassoFederation
+
+<!-- ##### SECTION Short_Description ##### -->
+Principal federation between two providers
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoFederation ##### -->
+<para>
+
+</para>
+
+@remote_providerID: 
+@local_nameIdentifier: 
+@remote_nameIdentifier: 
+
+<!-- ##### FUNCTION lasso_federation_new ##### -->
+<para>
+
+</para>
+
+@remote_providerID: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_federation_destroy ##### -->
+<para>
+
+</para>
+
+@federation: 
+
+
+<!-- ##### FUNCTION lasso_federation_build_local_name_identifier ##### -->
+<para>
+
+</para>
+
+@federation: 
+@nameQualifier: 
+@format: 
+@content: 
+
+
+<!-- ##### FUNCTION lasso_federation_verify_name_identifier ##### -->
+<para>
+
+</para>
+
+@federation: 
+@name_identifier: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@nameIdentifier: 
+
+

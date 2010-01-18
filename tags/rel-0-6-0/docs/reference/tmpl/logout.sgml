@@ -1,0 +1,134 @@
+<!-- ##### SECTION Title ##### -->
+LassoLogout
+
+<!-- ##### SECTION Short_Description ##### -->
+Single Logout Profile
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT LassoLogout ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION lasso_logout_new ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_logout_new_from_dump ##### -->
+<para>
+
+</para>
+
+@server: 
+@dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_logout_build_request_msg ##### -->
+<para>
+
+</para>
+
+@logout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_logout_build_response_msg ##### -->
+<para>
+
+</para>
+
+@logout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_logout_destroy ##### -->
+<para>
+
+</para>
+
+@logout: 
+
+
+<!-- ##### FUNCTION lasso_logout_dump ##### -->
+<para>
+
+</para>
+
+@logout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_logout_get_next_providerID ##### -->
+<para>
+
+</para>
+
+@logout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_logout_init_request ##### -->
+<para>
+
+</para>
+
+@logout: 
+@remote_providerID: 
+@request_method: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_logout_process_request_msg ##### -->
+<para>
+
+</para>
+
+@logout: 
+@request_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_logout_process_response_msg ##### -->
+<para>
+
+</para>
+
+@logout: 
+@response_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_logout_reset_providerID_index ##### -->
+<para>
+
+</para>
+
+@logout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_logout_validate_request ##### -->
+<para>
+
+</para>
+
+@logout: 
+@Returns: 
+
+

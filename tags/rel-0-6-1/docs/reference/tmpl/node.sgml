@@ -1,0 +1,176 @@
+<!-- ##### SECTION Title ##### -->
+LassoNode
+
+<!-- ##### SECTION Short_Description ##### -->
+Base class for all Lasso objects
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#LassoNode is the base class for Lasso objects; just a step over GObject as
+defined in glib.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT LassoNode ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM LassoSignatureType ##### -->
+<para>
+
+</para>
+
+@LASSO_SIGNATURE_TYPE_NONE: 
+@LASSO_SIGNATURE_TYPE_SIMPLE: 
+@LASSO_SIGNATURE_TYPE_WITHX509: 
+
+<!-- ##### ENUM LassoSignatureMethod ##### -->
+<para>
+
+</para>
+
+@LASSO_SIGNATURE_METHOD_RSA_SHA1: 
+@LASSO_SIGNATURE_METHOD_DSA_SHA1: 
+
+<!-- ##### FUNCTION lasso_node_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_node_new_from_dump ##### -->
+<para>
+
+</para>
+
+@dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_node_new_from_xmlNode ##### -->
+<para>
+
+</para>
+
+@node: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_node_new_from_soap ##### -->
+<para>
+
+</para>
+
+@soap: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_node_destroy ##### -->
+<para>
+
+</para>
+
+@node: 
+
+
+<!-- ##### FUNCTION lasso_node_dump ##### -->
+<para>
+
+</para>
+
+@node: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@encoding: 
+@format: 
+
+
+<!-- ##### FUNCTION lasso_node_export_to_base64 ##### -->
+<para>
+
+</para>
+
+@node: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_node_export_to_query ##### -->
+<para>
+
+</para>
+
+@node: 
+@sign_method: 
+@private_key_file: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_node_export_to_soap ##### -->
+<para>
+
+</para>
+
+@node: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_node_get_xmlNode ##### -->
+<para>
+
+</para>
+
+@node: 
+@lasso_dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_node_init_from_message ##### -->
+<para>
+
+</para>
+
+@node: 
+@message: 
+@Returns: 
+
+
+<!-- ##### ENUM LassoMessageFormat ##### -->
+<para>
+
+</para>
+
+@LASSO_MESSAGE_FORMAT_ERROR: 
+@LASSO_MESSAGE_FORMAT_UNKNOWN: 
+@LASSO_MESSAGE_FORMAT_XML: 
+@LASSO_MESSAGE_FORMAT_BASE64: 
+@LASSO_MESSAGE_FORMAT_QUERY: 
+@LASSO_MESSAGE_FORMAT_SOAP: 
+
+<!-- ##### FUNCTION lasso_node_init_from_query ##### -->
+<para>
+
+</para>
+
+@node: 
+@query: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_node_init_from_xml ##### -->
+<para>
+
+</para>
+
+@node: 
+@xmlnode: 
+@Returns: 
+
+

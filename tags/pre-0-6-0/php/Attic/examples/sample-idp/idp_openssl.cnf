@@ -1,0 +1,19 @@
+[ req ]
+default_bits = 2048
+encrypt_key = yes
+distinguished_name = req_dn
+x509_extensions = cert_type
+prompt = no
+
+[ req_dn ]
+C=FR
+ST=Ile de France
+L=Paris
+O=Entrouvert
+OU=Automatically-generated SSL key
+CN=idp1
+emailAddress=webmaster@domain.com
+
+[ cert_type ]
+nsCertType = server
+

@@ -1,0 +1,143 @@
+<!-- ##### SECTION Title ##### -->
+LassoProfile
+
+<!-- ##### SECTION Short_Description ##### -->
+Base class for all ID-FF profiles
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### ENUM LassoRequestType ##### -->
+<para>
+
+</para>
+
+@LASSO_REQUEST_TYPE_INVALID: 
+@LASSO_REQUEST_TYPE_LOGIN: 
+@LASSO_REQUEST_TYPE_LOGOUT: 
+@LASSO_REQUEST_TYPE_DEFEDERATION: 
+@LASSO_REQUEST_TYPE_NAME_REGISTRATION: 
+@LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING: 
+@LASSO_REQUEST_TYPE_LECP: 
+@LASSO_REQUEST_TYPE_DISCO_QUERY: 
+@LASSO_REQUEST_TYPE_DISCO_MODIFY: 
+@LASSO_REQUEST_TYPE_DST_QUERY: 
+@LASSO_REQUEST_TYPE_DST_MODIFY: 
+@LASSO_REQUEST_TYPE_SASL_REQUEST: 
+
+<!-- ##### STRUCT LassoProfile ##### -->
+<para>
+
+</para>
+
+@server: 
+@request: 
+@response: 
+@nameIdentifier: 
+@remote_providerID: 
+@msg_url: 
+@msg_body: 
+@msg_relayState: 
+
+<!-- ##### FUNCTION lasso_profile_get_identity ##### -->
+<para>
+
+</para>
+
+@profile: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@ctx: 
+
+
+<!-- ##### FUNCTION lasso_profile_get_session ##### -->
+<para>
+
+</para>
+
+@profile: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@ctx: 
+
+
+<!-- ##### FUNCTION lasso_profile_is_identity_dirty ##### -->
+<para>
+
+</para>
+
+@profile: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@ctx: 
+
+
+<!-- ##### FUNCTION lasso_profile_is_session_dirty ##### -->
+<para>
+
+</para>
+
+@profile: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@ctx: 
+
+
+<!-- ##### FUNCTION lasso_profile_set_identity_from_dump ##### -->
+<para>
+
+</para>
+
+@profile: 
+@dump: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@ctx: 
+
+
+<!-- ##### FUNCTION lasso_profile_set_session_from_dump ##### -->
+<para>
+
+</para>
+
+@profile: 
+@dump: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@ctx: 
+
+
+<!-- ##### FUNCTION lasso_profile_get_request_type_from_soap_msg ##### -->
+<para>
+
+</para>
+
+@soap: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_profile_is_liberty_query ##### -->
+<para>
+
+</para>
+
+@query: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_profile_get_nameIdentifier ##### -->
+<para>
+
+</para>
+
+@profile: 
+@Returns: 
+
+

@@ -1,0 +1,44 @@
+This package was debianized by Frederic Peters <fpeters@debian.org> on
+Fri, 16 Jul 2004 14:50:19 +0200.
+
+It was downloaded from http://lasso.entrouvert.org
+
+Upstream Authors:
+
+  Nicolas Clapies <nclapies@entrouvert.com>
+  Valery Febvre   <vfebvre@easter-eggs.com>
+  (complete list in AUTHORS)
+
+
+Copyright (c) 2004 Entr'ouvert
+Excepted the Lasso logo, copyright (c) 2004, Entr'ouvert & Florent Monnier
+
+License is GNU GPL v2 or later plus OpenSSL exception clause.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin St, Fifth Floor, Boston, MA  02110-1301,  USA.
+
+In addition, as a special exception, Entr'ouvert gives permission to link
+the code of its release of Lasso with the OpenSSL project's "OpenSSL"
+library (or with modified versions of it that use the same license as the
+"OpenSSL" library), and distribute the linked executables.  You must obey
+the GNU General Public License in all respects for all of the code used
+other than "OpenSSL".  If you modify this file, you may extend this
+exception to your version of the file, but you are not obligated to do so.
+If you do not wish to do so, delete this exception statement from your
+version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General Public
+License can be found in `/usr/share/common-licenses/GPL'.
+

@@ -1,0 +1,83 @@
+<!-- ##### SECTION Title ##### -->
+LassoDefederation
+
+<!-- ##### SECTION Short_Description ##### -->
+Federation Termination Notification Profile
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoDefederation ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION lasso_defederation_new ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_defederation_destroy ##### -->
+<para>
+
+</para>
+
+@defederation: 
+
+
+<!-- ##### FUNCTION lasso_defederation_build_notification_msg ##### -->
+<para>
+
+</para>
+
+@defederation: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_defederation_init_notification ##### -->
+<para>
+
+</para>
+
+@defederation: 
+@remote_providerID: 
+@http_method: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@notification_method: 
+
+
+<!-- ##### FUNCTION lasso_defederation_process_notification_msg ##### -->
+<para>
+
+</para>
+
+@defederation: 
+@notification_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_defederation_validate_notification ##### -->
+<para>
+
+</para>
+
+@defederation: 
+@Returns: 
+
+

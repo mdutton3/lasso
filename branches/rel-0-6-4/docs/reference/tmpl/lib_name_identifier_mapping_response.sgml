@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibNameIdentifierMappingResponse
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:NameIdentifierMappingResponse&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibNameIdentifierMappingResponse ##### -->
+<para>
+
+</para>
+
+@Extension: 
+@ProviderID: 
+@Status: 
+@NameIdentifier: 
+
+<!-- ##### FUNCTION lasso_lib_name_identifier_mapping_response_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_lib_name_identifier_mapping_response_new_full ##### -->
+<para>
+
+</para>
+
+@provideRID: 
+@statusCodeValue: 
+@request: 
+@sign_type: 
+@sign_method: 
+@Returns: 
+
+

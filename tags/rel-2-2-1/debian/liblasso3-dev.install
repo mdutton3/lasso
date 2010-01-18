@@ -1,0 +1,5 @@
+debian/tmp/usr/include/lasso
+debian/tmp/usr/lib/liblasso.a
+debian/tmp/usr/lib/liblasso.so
+debian/tmp/usr/lib/liblasso.la
+debian/tmp/usr/lib/pkgconfig/lasso.pc

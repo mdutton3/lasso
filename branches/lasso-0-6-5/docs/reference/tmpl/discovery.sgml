@@ -1,0 +1,205 @@
+<!-- ##### SECTION Title ##### -->
+LassoDiscovery
+
+<!-- ##### SECTION Short_Description ##### -->
+ID-WSF Discovery Service Profile
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The Discovery service usually runs on the principal identity provider and
+knowns about resources and services related to the principal.  Attribute
+providers can register themselves as offering resources for an user while other
+services can ask where to find a given resource.
+</para>
+
+<para>
+The following example is a service provider asking for a "PP" service (an
+attribute provider for the "Personal Profile"):
+</para>
+
+<informalexample><programlisting><![CDATA[
+LassoServer *server;  /* initialized before */
+char* session_dump;   /* initialized before */
+
+LassoDiscovery *discovery;    /* iscovery service */
+char *soap_answer;            /* SOAP answer from disco service */
+LassoProfileService *service; /* instance to perform on requested service */
+
+discovery = lasso_discovery_new(server);
+lasso_wsf_profile_set_session_from_dump(LASSO_WSF_PROFILE(discovery), session_dump);
+lasso_discovery_init_query(discovery);
+lasso_discovery_add_requested_service(discovery, LASSO_PP_HREF);
+lasso_discovery_build_request_msg(discovery);
+
+/*
+ * service must perform SOAP call to LASSO_WSF_PROFILE(discovery)->msg_url
+ * the SOAP message is LASSO_WSF_PROFILE(discovery)->msg_body.  The answer
+ * is stored in char* soap_answer;
+ */
+
+lasso_discovery_process_query_response_msg(discovery, soap_answer);
+
+service = lasso_discovery_get_service(discovery);
+]]></programlisting></informalexample>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoDiscovery ##### -->
+<para>
+
+</para>
+
+@parent: 
+@resource_id: 
+@encrypted_resource_id: 
+
+<!-- ##### FUNCTION lasso_discovery_new ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_destroy ##### -->
+<para>
+
+</para>
+
+@discovery: 
+
+
+<!-- ##### FUNCTION lasso_discovery_add_requested_service_type ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@service_type: 
+@option: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@serviceType: 
+@options: 
+
+
+<!-- ##### FUNCTION lasso_discovery_build_modify_response_msg ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_build_response_msg ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_get_service ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@service_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_get_services ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_init_insert ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@new_offering: 
+@security_mech_id: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@resource_offering: 
+@resourceOffering: 
+
+
+<!-- ##### FUNCTION lasso_discovery_init_query ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@security_mech_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_init_remove ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@entry_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_process_modify_msg ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@message: 
+@security_mech_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_process_modify_response_msg ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_process_query_msg ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@message: 
+@security_mech_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_process_query_response_msg ##### -->
+<para>
+
+</para>
+
+@discovery: 
+@message: 
+@Returns: 
+
+

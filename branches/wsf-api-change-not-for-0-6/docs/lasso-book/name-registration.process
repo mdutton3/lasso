@@ -1,0 +1,74 @@
+Name Registration
+
+(apply for both IdP and SP)
+
+/nameRegistration (* normative, Name Registration service URL *)
+    registration = lasso_name_registration_new(server)
+
+    IF lasso_is_liberty_query(query)
+        lasso_name_registration_process_request_msg(query)
+
+            oldNameIdentifier = registration->oldNameIdentifier
+            newNameIdentifier = LASSO_PROFILE(registration)->nameIdentifier
+
+            lasso_name_registration_validate_request(registration)
+
+        # Update identity (session is not changed, because name identifiers
+        # in assertions are left as is).
+    
+        # Update nameIdentifier in indexes if it has changed.
+
+        lasso_name_registration_build_response_msg(registration)
+        REDIRECT TO LASSO_PROFILE(registration)->msg_url
+
+    ELSE
+        lasso_profile_set_identity_from_dump(identityDump)
+        lasso_name_registration_init_request(registration, remote_providerID, method)
+            # method can be any, soap or redirect
+
+        lasso_name_registration_build_request_msg()
+        IF LASSO_PROFILE(registration)->msg_body:
+            SOAP CALL ----------------------------------------------------------------\
+                TO LASSO_PROFILE(registration)->msg_url                               |
+                BODY LASSO_PROFILE(registration)->msg_body
+
+            lasso_name_registration_process_response_msg(soap_answer_msg)
+            oldNameIdentifier = registration->oldNameIdentifier
+            newNameIdentifier = registration->nameIdentifier
+
+            lasso_name_registration_validate_request(registration)
+
+            # Update identity (session is not changed, because name
+            # indentifiers in assertions are left as is).
+
+            # Update nameIdentifier in indexes if it has changed.
+
+            lasso_name_registration_build_response_msg(registration)
+
+            REDIRECT TO LASSO_PROFILE(registration)->msg_url
+        ELSE
+            # XXX: Use Redirect method
+
+
+/nameRegistrationReturn  (* normative, Name Registration service Return URL *)
+    registration = lasso_name_registration_new_from_dump(nameRegistrationDump)
+    lasso_name_registration_process_response_msg(registration, query)
+
+
+                                                                                       |
+/soapEndPoint (* normative, SOAP endpoint *)                                      <----/
+    lasso_name_registration_process_request_msg(soapRequestMsg)
+
+    oldNameIdentifier = registration->oldNameIdentifier
+    newNameIdentifier = LASSO_PROFILE(registration)->nameIdentifier
+
+    lasso_name_registration_validate_request(registration)
+
+    # Update identity (session is not changed, because name identifiers
+    # in assertions are left as is).
+    
+    # Update nameIdentifier in indexes if it has changed.
+
+    lasso_name_registration_build_response_msg(registration)
+     ANSWER SOAP REQUEST WITH: LASSO_PROFILE(registration)->msg_body
+

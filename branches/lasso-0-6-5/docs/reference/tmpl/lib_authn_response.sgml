@@ -1,0 +1,39 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibAuthnResponse
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:AuthnResponse&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibAuthnResponse ##### -->
+<para>
+
+</para>
+
+@Extension: 
+@ProviderID: 
+@RelayState: 
+@consent: 
+
+<!-- ##### FUNCTION lasso_lib_authn_response_new ##### -->
+<para>
+
+</para>
+
+@providerID: 
+@request: 
+@Returns: 
+
+

@@ -1,0 +1,163 @@
+<!doctype book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
+<!ENTITY LassoLibAssertion SYSTEM "sgml/lib_assertion.sgml">
+<!ENTITY LassoLibAuthnRequest SYSTEM "sgml/lib_authn_request.sgml">
+<!ENTITY lasso-LassoLibAuthnRequestEnvelope SYSTEM "sgml/lib_authn_request_envelope.sgml">
+<!ENTITY LassoLibAuthnResponse SYSTEM "sgml/lib_authn_response.sgml">
+<!ENTITY lasso-LassoLibAuthnResponseEnvelope SYSTEM "sgml/lib_authn_response_envelope.sgml">
+<!ENTITY LassoLibIDPEntries SYSTEM "sgml/lib_idp_entries.sgml">
+<!ENTITY LassoLibIDPEntry SYSTEM "sgml/lib_idp_entry.sgml">
+<!ENTITY LassoLibIDPList SYSTEM "sgml/lib_idp_list.sgml">
+<!ENTITY LassoLibRequestAuthnContext SYSTEM "sgml/lib_request_authn_context.sgml">
+<!ENTITY LassoLibScoping SYSTEM "sgml/lib_scoping.sgml">
+<!ENTITY LassoSamlAdvice SYSTEM "sgml/saml_advice.sgml">
+<!ENTITY LassoSamlAssertion SYSTEM "sgml/saml_assertion.sgml">
+<!ENTITY LassoSamlAudienceRestrictionCondition SYSTEM "sgml/saml_audience_restriction_condition.sgml">
+<!ENTITY LassoSamlAuthenticationStatement SYSTEM "sgml/saml_authentication_statement.sgml">
+<!ENTITY LassoSamlAuthorityBinding SYSTEM "sgml/saml_authority_binding.sgml">
+<!ENTITY LassoSamlConditionAbstract SYSTEM "sgml/saml_condition_abstract.sgml">
+<!ENTITY LassoSamlConditions SYSTEM "sgml/saml_conditions.sgml">
+<!ENTITY LassoSamlNameIdentifier SYSTEM "sgml/saml_name_identifier.sgml">
+<!ENTITY LassoSamlStatementAbstract SYSTEM "sgml/saml_statement_abstract.sgml">
+<!ENTITY LassoSamlSubject SYSTEM "sgml/saml_subject.sgml">
+<!ENTITY LassoSamlSubjectConfirmation SYSTEM "sgml/saml_subject_confirmation.sgml">
+<!ENTITY LassoSamlSubjectLocality SYSTEM "sgml/saml_subject_locality.sgml">
+<!ENTITY LassoSamlSubjectStatementAbstract SYSTEM "sgml/saml_subject_statement_abstract.sgml">
+<!ENTITY LassoSamlpRequestAbstract SYSTEM "sgml/samlp_request_abstract.sgml">
+<!ENTITY LassoSamlpResponse SYSTEM "sgml/samlp_response.sgml">
+<!ENTITY LassoSamlpResponseAbstract SYSTEM "sgml/samlp_response_abstract.sgml">
+<!ENTITY LassoSamlpStatus SYSTEM "sgml/samlp_status.sgml">
+<!ENTITY LassoSamlpStatusCode SYSTEM "sgml/samlp_status_code.sgml">
+<!ENTITY LassoNode SYSTEM "sgml/xml.sgml">
+<!ENTITY LassoLibLogoutRequest SYSTEM "sgml/lib_logout_request.sgml">
+<!ENTITY LassoLibFederationTerminationNotification SYSTEM "sgml/lib_federation_termination_notification.sgml">
+<!ENTITY LassoLibIDPProvidedNameIdentifier SYSTEM "sgml/lib_idp_provided_name_identifier.sgml">
+<!ENTITY LassoLibLogoutResponse SYSTEM "sgml/lib_logout_response.sgml">
+<!ENTITY LassoLibNameIdentifierMappingRequest SYSTEM "sgml/lib_name_identifier_mapping_request.sgml">
+<!ENTITY LassoLibNameIdentifierMappingResponse SYSTEM "sgml/lib_name_identifier_mapping_response.sgml">
+<!ENTITY LassoLibOLDProvidedNameIdentifier SYSTEM "sgml/lib_old_provided_name_identifier.sgml">
+<!ENTITY LassoLibRegisterNameIdentifierRequest SYSTEM "sgml/lib_register_name_identifier_request.sgml">
+<!ENTITY LassoLibRegisterNameIdentifierResponse SYSTEM "sgml/lib_register_name_identifier_response.sgml">
+<!ENTITY lasso-LassoLibSPProvidedNameIdentifier SYSTEM "sgml/lib_sp_provided_name_identifier.sgml">
+<!ENTITY LassoLibStatusResponse SYSTEM "sgml/lib_status_response.sgml">
+<!ENTITY LassoLibSubject SYSTEM "sgml/lib_subject.sgml">
+<!ENTITY LassoSamlpRequest SYSTEM "sgml/samlp_request.sgml">
+<!ENTITY LassoLibAuthnContext SYSTEM "sgml/lib_authn_context.sgml">
+<!ENTITY LassoLibAuthenticationStatement SYSTEM "sgml/lib_authentication_statement.sgml">
+<!ENTITY LassoSoapEnvBody SYSTEM "sgml/soap-env_body.sgml">
+<!ENTITY LassoSoapEnvEnvelope SYSTEM "sgml/soap-env_envelope.sgml">
+<!ENTITY lasso-export SYSTEM "sgml/export.sgml">
+<!ENTITY lasso-lasso SYSTEM "sgml/lasso.sgml">
+<!ENTITY lasso-version SYSTEM "sgml/version.sgml">
+<!ENTITY LassoArtifact SYSTEM "sgml/artifact.sgml">
+<!ENTITY LassoAssertion SYSTEM "sgml/assertion.sgml">
+<!ENTITY LassoAuthenticationStatement SYSTEM "sgml/authentication_statement.sgml">
+<!ENTITY LassoAuthnRequest SYSTEM "sgml/authn_request.sgml">
+<!ENTITY lasso-LassoAuthnRequestEnvelope SYSTEM "sgml/authn_request_envelope.sgml">
+<!ENTITY LassoAuthnResponse SYSTEM "sgml/authn_response.sgml">
+<!ENTITY lasso-LassoAuthnResponseEnvelope SYSTEM "sgml/authn_response_envelope.sgml">
+<!ENTITY LassoFederationTerminationNotification SYSTEM "sgml/federation_termination_notification.sgml">
+<!ENTITY LassoFederation SYSTEM "sgml/federation.sgml">
+<!ENTITY LassoLecp SYSTEM "sgml/lecp.sgml">
+<!ENTITY LassoLogoutRequest SYSTEM "sgml/logout_request.sgml">
+<!ENTITY LassoLogoutResponse SYSTEM "sgml/logout_response.sgml">
+<!ENTITY LassoNameIdentifierMappingRequest SYSTEM "sgml/name_identifier_mapping_request.sgml">
+<!ENTITY LassoNameIdentifierMappingResponse SYSTEM "sgml/name_identifier_mapping_response.sgml">
+<!ENTITY LassoProvider SYSTEM "sgml/provider.sgml">
+<!ENTITY LassoRegisterNameIdentifierRequest SYSTEM "sgml/register_name_identifier_request.sgml">
+<!ENTITY LassoRegisterNameIdentifierResponse SYSTEM "sgml/register_name_identifier_response.sgml">
+<!ENTITY LassoRequest SYSTEM "sgml/request.sgml">
+<!ENTITY LassoResponse SYSTEM "sgml/response.sgml">
+<!ENTITY LassoDefederation SYSTEM "sgml/defederation.sgml">
+<!ENTITY LassoIdentity SYSTEM "sgml/identity.sgml">
+<!ENTITY LassoLogin SYSTEM "sgml/login.sgml">
+<!ENTITY LassoLogout SYSTEM "sgml/logout.sgml">
+<!ENTITY LassoProfile SYSTEM "sgml/profile.sgml">
+<!ENTITY LassoServer SYSTEM "sgml/server.sgml">
+<!ENTITY LassoSession SYSTEM "sgml/session.sgml">
+<!ENTITY lasso-tools SYSTEM "sgml/tools.sgml">
+]>
+<book id="index">
+  <bookinfo>
+    <title>Lasso API Reference</title>
+  </bookinfo>
+
+  <chapter>
+    <title>Lasso</title>
+    &LassoLibAssertion;
+    &LassoLibAuthnRequest;
+    &lasso-LassoLibAuthnRequestEnvelope;
+    &LassoLibAuthnResponse;
+    &lasso-LassoLibAuthnResponseEnvelope;
+    &LassoLibIDPEntries;
+    &LassoLibIDPEntry;
+    &LassoLibIDPList;
+    &LassoLibRequestAuthnContext;
+    &LassoLibScoping;
+    &LassoSamlAdvice;
+    &LassoSamlAssertion;
+    &LassoSamlAudienceRestrictionCondition;
+    &LassoSamlAuthenticationStatement;
+    &LassoSamlAuthorityBinding;
+    &LassoSamlConditionAbstract;
+    &LassoSamlConditions;
+    &LassoSamlNameIdentifier;
+    &LassoSamlStatementAbstract;
+    &LassoSamlSubject;
+    &LassoSamlSubjectConfirmation;
+    &LassoSamlSubjectLocality;
+    &LassoSamlSubjectStatementAbstract;
+    &LassoSamlpRequestAbstract;
+    &LassoSamlpResponse;
+    &LassoSamlpResponseAbstract;
+    &LassoSamlpStatus;
+    &LassoSamlpStatusCode;
+    &LassoNode;
+    &LassoLibLogoutRequest;
+    &LassoLibFederationTerminationNotification;
+    &LassoLibIDPProvidedNameIdentifier;
+    &LassoLibLogoutResponse;
+    &LassoLibNameIdentifierMappingRequest;
+    &LassoLibNameIdentifierMappingResponse;
+    &LassoLibOLDProvidedNameIdentifier;
+    &LassoLibRegisterNameIdentifierRequest;
+    &LassoLibRegisterNameIdentifierResponse;
+    &lasso-LassoLibSPProvidedNameIdentifier;
+    &LassoLibStatusResponse;
+    &LassoLibSubject;
+    &LassoSamlpRequest;
+    &LassoLibAuthnContext;
+    &LassoLibAuthenticationStatement;
+    &LassoSoapEnvBody;
+    &LassoSoapEnvEnvelope;
+    &lasso-export;
+    &lasso-lasso;
+    &lasso-version;
+    &LassoArtifact;
+    &LassoAssertion;
+    &LassoAuthenticationStatement;
+    &LassoAuthnRequest;
+    &lasso-LassoAuthnRequestEnvelope;
+    &LassoAuthnResponse;
+    &lasso-LassoAuthnResponseEnvelope;
+    &LassoFederationTerminationNotification;
+    &LassoFederation;
+    &LassoLecp;
+    &LassoLogoutRequest;
+    &LassoLogoutResponse;
+    &LassoNameIdentifierMappingRequest;
+    &LassoNameIdentifierMappingResponse;
+    &LassoProvider;
+    &LassoRegisterNameIdentifierRequest;
+    &LassoRegisterNameIdentifierResponse;
+    &LassoRequest;
+    &LassoResponse;
+    &LassoDefederation;
+    &LassoIdentity;
+    &LassoLogin;
+    &LassoLogout;
+    &LassoProfile;
+    &LassoServer;
+    &LassoSession;
+    &lasso-tools;
+  </chapter>
+</book>

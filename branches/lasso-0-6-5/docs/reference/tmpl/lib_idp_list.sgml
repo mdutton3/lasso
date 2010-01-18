@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibIDPList
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:IDPList&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibIDPList ##### -->
+<para>
+
+</para>
+
+@IDPEntries: 
+@GetComplete: 
+
+<!-- ##### FUNCTION lasso_lib_idp_list_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

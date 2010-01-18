@@ -1,0 +1,143 @@
+body {
+	font-family: sans-serif;
+}
+
+
+h1 a, h2 a, h3 a, h4 a {
+	text-decoration: inherit;
+	color: inherit;
+}
+
+pre.literal-block {
+	background: #eee;
+	border: 1px inset black;
+	padding: 2px;
+	margin: auto 10px;
+	overflow: auto;
+}
+
+h1.title {
+	text-align: center;
+	background: #eef;
+	border: 1px solid #aaf;
+	letter-spacing: 1px;
+}
+
+div.section {
+	margin-bottom: 2em;
+}
+
+div.section h1 {
+	padding: 0 15px;
+	background: #eef;
+	border: 1px solid #aaf;
+}
+
+div.section h2 {
+	padding: 0 15px;
+	background: #eef;
+	border: 1px solid #aaf;
+}
+
+div.document {
+	margin-top: 1em;
+	border-top: 1px solid #aaf;
+	border-bottom: 1px solid #aaf;
+}
+
+div.section p,
+div.section ul {
+	text-align: justify;
+}
+
+div.contents {
+	float: right;
+	border: 1px solid black;
+	margin: 1em;
+	background: #eef;
+	max-width: 33%;
+}
+
+div#building-liberty-services-with-lasso div#table-of-contents {
+	max-width: inherit;
+	float: none;
+	background: white url(lasso.png) bottom right no-repeat;
+}
+
+div.contents ul {
+	padding-left: 1em;
+	list-style: none;
+}
+
+div.contents li {
+	padding-bottom: 2px;
+}
+
+div.contents p {
+	background: #ddf;
+	text-align: center;
+	border-bottom: 1px solid black;
+	margin: 0;
+}
+
+th.docinfo-name {
+	text-align: right;
+	padding-right: 0.5em;
+}
+
+dd {
+	margin-bottom: 1ex;
+}
+
+table.table {
+	margin: 1ex 0;
+	border-spacing: 0px;
+}
+
+
+table.table th {
+	padding: 0px 1ex;
+	background: #eef;
+	font-weight: normal;
+}
+
+
+table.table td {
+	padding: 0 0.5ex;
+}
+
+div.note, div.warning {
+	padding: 0.3ex;
+	padding-left: 60px;
+	min-height: 50px;
+	margin: 1ex 1em;
+}
+
+div.note {
+	background: #ffa url(note.png) top left no-repeat;
+	border: 1px solid #fd8;
+}
+
+div.warning {
+	background: #ffd url(warning.png) top left no-repeat;
+}
+
+p.admonition-title {
+	font-weight: bold;
+	display: inline;
+	display: none;
+	padding-right: 1em;
+}
+
+div.figure {
+	margin: 0 auto;
+	width: 70%;
+	min-width: 800px;
+	text-align: center;
+}
+
+div.figure p.caption {
+	font-style: italic;
+	margin: 1ex 0 2em 0;
+	text-align: center;
+}

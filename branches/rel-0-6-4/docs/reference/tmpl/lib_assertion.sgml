@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibAssertion
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:Assertion&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibAssertion ##### -->
+<para>
+
+</para>
+
+@InResponseTo: 
+
+<!-- ##### FUNCTION lasso_lib_assertion_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_lib_assertion_new_full ##### -->
+<para>
+
+</para>
+
+@issuer: 
+@requestID: 
+@audience: 
+@notBefore: 
+@notOnOrAfter: 
+@Returns: 
+
+

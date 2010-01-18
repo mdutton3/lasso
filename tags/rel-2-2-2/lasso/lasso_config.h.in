@@ -1,0 +1,5 @@
+/* lasso/lasso_config.h.in. */
+
+/* Define if ID-WSF support is enabled */
+#undef LASSO_WSF_ENABLED
+

@@ -1,0 +1,186 @@
+html, body {
+	font-family: sans-serif;
+	margin: 0;
+}
+
+div.note, div.warning {
+	padding: 0.3ex;
+	padding-left: 60px;
+	min-height: 50px;
+	margin: 1ex 1em;
+}
+
+div.note {
+	background: #ffd url(note.png) top left no-repeat;
+}
+
+div.warning {
+	background: #ffd url(warning.png) top left no-repeat;
+}
+
+div#head h1 {
+	text-indent: -9000px;
+	background: url(lasso.png);
+	width: 233px;
+	height: 66px;
+	margin: 0;
+}
+
+div#sidebar ul {
+	padding: 0;
+	margin: 0;
+	float: left;
+	width: 100%;
+	background: #b5e42e;
+	border: 1px solid black;
+	border-width: 1px 0px;
+	list-style: none;
+}
+
+div#sidebar ul li {
+	display: inline;
+}
+
+div#sidebar ul li a {
+	padding: 0.1em 1em;
+	float: left;
+	border-right: 1px solid black;
+	text-decoration: none;
+	color: black;
+	font-weight: bold;
+}
+
+div#sidebar ul li#current a {
+	background: #e42237;
+}
+
+div#sidebar ul li a:hover {
+	background: #e42237;
+	color: white;
+}
+
+div#sidebar {
+	margin-bottom: 1em;
+}
+
+div#content {
+	clear: both;
+	margin: 1em;
+	margin-top: 2em;
+}
+
+div#footer {
+	background: #b5e42e;
+	border: 1px solid black;
+	border-width: 1px 0px;
+	margin: 1em 0;
+	text-align: center;
+	font-size: 80%;
+}
+
+pre {
+	background: #eee;
+	border: 1px inset black;
+	padding: 2px;
+}
+
+/*
+table#matrix td {
+	border: 1px solid black;
+	padding: 0 1ex;
+}
+*/
+
+tr.even {
+	background: #eee;
+}
+
+
+table.matrix td, table.matrix th {
+	border: 1px solid #444;
+}
+
+table.matrix thead th {
+	background: #b5e42e;
+	font-style: italic;
+	padding: 0 2ex;
+}
+
+table.matrix {
+	caption-side: bottom;
+}
+
+table.matrix caption {
+	font-size: 90%;
+}
+
+table.matrix th {
+	padding: 0 1.5ex;
+}
+
+table.matrix td {
+	padding: 0 0.3ex;
+	text-align: center;
+}
+
+table.matrix td.prof {
+	text-align: left;
+	padding: 0 0.5ex;
+}
+
+table.benchs tr.labels td {
+        text-align: center;
+}
+
+table.benchs tr>th:first-child { padding-right: 2em; }
+
+table.benchs td { padding: 0 0.7em;  text-align: right; }
+
+table.benchs thead, table.benchs th {
+	background: #eee;
+}
+
+ol.test-machines > li {
+	margin-bottom: 1em;
+	border-left: 1px solid #888;
+}
+
+p.details-configuration {
+	margin-top: 3em;
+}
+
+div#news {
+	float: right;
+	margin: 1em 3em;
+	border: 1px solid #333;
+	padding: 2px;
+	width: 20em;
+}
+
+div#news p {
+	margin: 0.2em;
+	font-size: 90%;
+}
+
+div#news div {
+	margin-bottom: 0.5em;
+}
+
+div#news h2 {
+	margin: 0;
+	font-size: 110%;
+	background: #b5e42e;
+	padding: 0px 3px;
+	border: 1px solid black;
+	text-align: center;
+}
+
+div#news h2 a {
+	color: inherit;
+}
+
+div#content {
+	margin-top: 3em;
+	clear: none;
+}
+

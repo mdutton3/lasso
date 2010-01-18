@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibFederationTerminationNotification
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:FederationTerminationNotification&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibFederationTerminationNotification ##### -->
+<para>
+
+</para>
+
+@Extension: 
+@ProviderID: 
+@NameIdentifier: 
+@consent: 
+@RelayState: 
+
+<!-- ##### FUNCTION lasso_lib_federation_termination_notification_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_lib_federation_termination_notification_new_full ##### -->
+<para>
+
+</para>
+
+@providerID: 
+@nameIdentifier: 
+@sign_type: 
+@sign_method: 
+@Returns: 
+
+

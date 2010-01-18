@@ -1,0 +1,239 @@
+<?xml version="1.0"?>
+<overrides>
+  <!-- Constants -->
+  <constant name="LASSO_SAML2_SUPPORT" value="True"/>
+  <!-- Functions -->
+  <func name="lasso_strerror" rename="strError"/>
+  <func name="lasso_profile_is_liberty_query" rename="isLibertyQuery"/>
+  <func name="lasso_profile_is_saml_query" rename="isSamlQuery"/>
+  <func name="lasso_profile_get_request_type_from_soap_msg"
+  	rename="lasso_get_request_type_from_soap_msg"/>
+  <func name="lasso_session_get_assertions" return_owner="true">
+    <param name="provider_id" optional="true"/>
+  </func>
+  <func name="lasso_check_version">
+    <param name="major"/>
+    <param name="minor"/>
+    <param name="subminor"/>
+    <param name="mode" optional="true" default="c:LASSO_CHECK_VERSION_NUMERIC"/>
+  </func>
+  <!-- LassoProvider -->
+  <func name="lasso_provider_get_metadata_list" return_owner="false"/>
+  <!-- LassoProfile -->
+  <func name="lasso_profile_get_nameIdentifier"
+  	rename="lasso_profile_get_federation_nameIdentifier"
+	return_owner="false" />
+  <func name="lasso_profile_get_identity" return_owner="false" />
+  <func name="lasso_profile_get_session" return_owner="false" />
+  <func name="lasso_profile_is_identity_dirty"
+  	rename="lasso_profile_has_dirty_identity"/>
+  <func name="lasso_profile_is_session_dirty"
+  	rename="lasso_profile_has_dirty_session"/>
+  <!-- LassoWsfProfile -->
+  <func name="lasso_wsf_profile_get_identity" return_owner="false" />
+  <func name="lasso_wsf_profile_get_session" return_owner="false" />
+  <!-- LassoIdentity -->
+  <func name="lasso_identity_get_federation" return_owner="false" />
+  <func name="lasso_identity_get_svc_md_ids" return_type_qualifier="char*"/>
+  <func name="lasso_identity_get_offerings" return_type_qualifier="LassoNode*">
+    <param name="service_type" optional="true"/>
+  </func>
+  <func name="lasso_identity_get_resource_offering" return_owner="false"/>
+  <!-- LassoServer -->
+  <func name="lasso_server_new">
+    <param name="metadata" optional="true"/>
+    <param name="private_key" optional="true"/>
+    <param name="private_key_password" optional="true"/>
+    <param name="certificate" optional="true"/>
+  </func>
+  <func name="lasso_server_add_provider">
+    <param name="public_key" optional="true"/>
+    <param name="ca_cert_chain" optional="true"/>
+  </func>
+  <func name="lasso_server_get_svc_metadatas_with_id_and_type">
+    <param name="svcMDIDs" type="GList*" elem_type="char*"/>
+    <param name="service_type"/>
+  </func>
+  <func name="lasso_server_get_svc_metadatas" return_owner="false" return_type_qualifier="LassoIdWsf2DiscoSvcMetadata*"/>
+  <func name="lasso_server_get_service" return_owner="false"/>
+  <!-- LassoSession -->
+  <func name="lasso_session_get_endpoint_reference" return_owner="false"/>
+  <!-- LassoProvider -->
+  <func name="lasso_provider_new">
+    <param name="public_key" optional="true"/>
+    <param name="ca_cert_chain" optional="true"/>
+  </func>
+  <!-- LassoLogin -->
+  <func name="lasso_login_init_authn_request">
+    <param name="remote_providerID" optional="true"/>
+    <param name="http_method" optional="true" default="c:LASSO_HTTP_METHOD_REDIRECT"/>
+  </func>
+  <func name="lasso_login_init_request">
+    <param name="response_http_method" optional="true" default="c:LASSO_HTTP_METHOD_REDIRECT"/>
+  </func>
+  <func name="lasso_login_init_idp_initiated_request">
+    <param name="remote_providerID" optional="true"/>
+  </func>
+  <func name="lasso_login_build_assertion">
+    <param name="authenticationMethod" optional="true"/>
+    <param name="authenticationInstant" optional="true"/>
+    <param name="reauthenticateOnOrAfter" optional="true"/>
+    <param name="notBefore" optional="true"/>
+    <param name="notOnOrAfter" optional="true"/>
+  </func>
+  <func name="lasso_login_process_authn_request_msg">
+    <param name="authn_request_msg" optional="true"/>
+  </func>
+  <func name="lasso_login_build_response_msg">
+    <param name="remote_providerID" optional="true"/>
+  </func>
+  <!-- LassoLogout -->
+  <func name="lasso_logout_init_request">
+    <param name="remote_providerID" optional="true"/>
+    <param name="request_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
+  </func>
+  <!-- LassoLecp -->
+  <func name="lasso_lecp_init_authn_request">
+    <param name="remote_providerID" optional="true"/>
+  </func>
+  <!-- LassoDefederation -->
+  <func name="lasso_defederation_init_notification">
+    <param name="remote_providerID" optional="true"/>
+    <param name="http_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
+  </func>
+  <!-- LassoNameIdManagement -->
+  <func name="lasso_name_id_management_init_request">
+    <param name="remote_provider_id" optional="true"/>
+    <param name="new_name_id" optional="true"/>
+    <param name="http_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
+  </func>
+  <!-- LassoNameIdentifierMapping -->
+  <func name="lasso_name_identifier_mapping_init_request">
+    <param name="targetNamespace"/>
+    <param name="remote_providerID" optional="true" />
+  </func>
+  <!-- LassoNameRegistration -->
+  <func name="lasso_name_registration_init_request">
+    <param name="remote_providerID"/>
+    <param name="http_method" optional="true" default="c:LASSO_HTTP_METHOD_ANY"/>
+  </func>
+  <!-- LassoDiscoDescription -->
+  <func name="lasso_disco_description_new_with_BriefSoapHttpDescription">
+    <param name="securityMechID"/>
+    <param name="endpoint"/>
+    <param name="soapAction" optional="true"/>
+  </func>
+  <!-- LassoDstQueryItem -->
+  <func name="lasso_dst_query_item_new">
+    <param name="select"/>
+    <param name="item_id" optional="true"/>
+  </func>
+  <!-- LassoDiscovery -->
+  <func name="lasso_discovery_init_insert">
+    <param name="new_offering"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_discovery_add_requested_service_type" return_owner="false">
+    <param name="service_type"/>
+    <param name="option" optional="true"/>
+  </func>
+  <func name="lasso_discovery_init_query">
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_discovery_process_modify_msg">
+    <param name="message"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_discovery_process_query_msg">
+    <param name="message"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_discovery_get_service">
+    <param name="service_type" optional="true"/>
+  </func>
+  <func name="lasso_discovery_get_description_auto" return_owner="false"/>
+  <!-- LassoDataService -->
+  <func name="lasso_data_service_init_query">
+    <param name="select" optional="true"/>
+    <param name="item_id" optional="true"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_data_service_process_query_msg">
+    <param name="message"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_data_service_get_answer">
+    <param name="select" optional="true"/>
+  </func>
+  <func name="lasso_data_service_process_modify_msg">
+    <param name="soap_msg"/>
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_data_service_add_query_item" return_owner="false"/>
+
+  <func name="lasso_server_get_service" skip="unless-id-wsf" />
+  <func name="lasso_login_set_encryptedResourceId" skip="unless-id-wsf"/>
+  <func name="lasso_node_new_from_dump" skip="java"/>
+  <func name="lasso_node_new_from_soap" skip="java"/>
+  <func name="lasso_node_new_from_xmlNode" skip="java"/>
+  <func name="lasso_provider_new_from_dump" skip="java"/>
+  <func name="lasso_saml2_name_id_new_with_string" return_type="LassoSaml2NameID*"/>
+  <func name="lasso_saml2_action_new_with_string" return_type="LassoSaml2Action*"/>
+  <func name="lasso_misc_text_node_new_with_string" return_type="LassoMiscTextNode*"/>
+
+  <func name="lasso_lib_name_identifier_mapping_response_new_full" return_type="LassoLibNameIdentifierMappingResponse*"/>
+  <func name="lasso_lib_logout_request_new_full" return_type="LassoLibLogoutRequest*"/>
+  <func name="lasso_lib_logout_response_new_full" return_type="LassoLibLogoutResponse*"/>
+  <func name="lasso_lib_register_name_identifier_response_new_full" return_type="LassoLibRegisterNameIdentifierResponse*"/>
+  <func name="lasso_lib_federation_termination_notification_new_full" return_type="LassoLibFederationTerminationNotification*"/>
+  <func name="lasso_lib_name_identifier_mapping_request_new_full" return_type="LassoLibNameIdentifierMappingRequest*"/>
+  <func name="lasso_lib_register_name_identifier_request_new_full" return_type="LassoLibRegisterNameIdentifierRequest*"/>
+  <!-- LassoServer -->
+  <func name="lasso_server_get_provider" return_owner="false" />
+  <!-- IdWsf -->
+  <arg name="abstract" rename="abstract_" language="java"/>
+  <func name="lasso_personal_profile_service_new_full" rename="lasso_personal_profile_server_new_personal_profile_service_full"/>
+  <func name="lasso_authentication_init_request" skip="true"/>
+  <!-- LassoIdWsf2Discovery -->
+  <func name="lasso_idwsf2_discovery_metadata_register_self">>
+    <param name="service_type"/>
+    <param name="abstract"/>
+    <param name="soap_endpoint"/>
+    <param name="svcMDID" optional="true"/>
+  </func>
+  <func name="lasso_idwsf2_discovery_init_query">
+    <param name="security_mech_id" optional="true"/>
+  </func>
+  <func name="lasso_idwsf2_discovery_get_service">
+    <param name="service_type" optional="true"/>
+  </func>
+  <!-- LassoIdWsf2DataService -->
+  <func name="lasso_idwsf2_data_service_get_attribute_nodes" return_type_qualifier="xmlNode*"/>
+  <func name="lasso_idwsf2_data_service_get_attribute_node">
+    <param name="item_id" optional="true"/>
+  </func>
+  <func name="lasso_idwsf2_data_service_get_attribute_strings" return_type_qualifier="char*"/>
+  <func name="lasso_idwsf2_data_service_get_attribute_string">
+    <param name="item_id" optional="true"/>
+  </func>
+  <func name="lasso_idwsf2_data_service_add_modify_item">
+    <param name="item_xpath"/>
+    <param name="item_id"/>
+    <param name="new_data"/>
+    <param name="overrideAllowed" optional="true" default="b:False"/>
+  </func>
+  <!-- Exceptions -->
+  <exception>
+    <category name="Profile"/>
+    <category name="Provider"/>
+    <category name="Server" parent="Provider"/>
+    <category name="Login" parent="Profile"/>
+    <category name="Logout" parent="Profile"/>
+    <category name="Defederation" parent="Profile"/>
+    <category name="NameIdentifierMapping" parent="Profile"/>
+    <category name="WsfProfile" parent="Profile"/>
+    <category name="Discovery" parent="WsfProfile"/>
+    <category name="DataService" parent="WsfProfile"/>
+    <category name="Dst" parent="WsfProfile"/>
+  </exception>
+</overrides>

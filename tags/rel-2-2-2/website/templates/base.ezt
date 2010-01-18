@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Lasso[if-any title] - [title][end]</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="/css/leaf-style.css" />
+[is section "buildbox"]
+<link rel="stylesheet" type="text/css" href="/css/buildbox.css" />
+[end]
+[is section "documentation"]
+<link rel="stylesheet" href="/documentation/default.css" type="text/css" />
+[end]
+<link rel="meta" title="DOAP" type="application/rdf+xml" href="http://lasso.entrouvert.org/doap.rdf"/>
+</head>
+<body>
+  <div id="shadow-wrapper">
+  <div id="page"[is section "buildbox"] class="buildbox"[end]>
+    <div id="header">
+     <h1><img src="/css/lasso.png" alt="Lasso"/></h1>
+     <span>Free Liberty Alliance Implementation</span>
+    </div>
+
+    <div id="navbar">
+     <ul>
+      <li><a[is section "index"] class="here"[end]
+         href="/">Home</a></li>
+      <li><a[is section "documentation"] class="here"[end]
+         href="/documentation/">Documentation</a></li>
+      <li><a[is section "download"] class="here"[end]
+         href="/download/">Download</a></li>
+      <li><a href="http://www.entrouvert.com">Entr'ouvert</a></li>
+     </ul>
+    </div>
+
+<div id="quicklinks">
+<div id="morelinks">
+ <h2>Resources</h2>
+      <ul>
+      <li[is section "mailinglists"] id="current"[end]>
+       <a href="/mailinglists/">Mailing Lists</a></li>
+      <li[is section "buildbox"] id="current"[end]>
+        <a href="/buildbox">Subversion Status</a></li>
+      <li[is section "links"] id="current"[end]>
+        <a href="/links">Related Links</a></li>
+      <li><a href="http://bugzilla.entrouvert.org/buglist.cgi?product=Lasso">Bug
+       reports</a></li>
+        </ul>
+</div>
+
+    [is section "index"]
+    <div id="news">
+     <h2>News</h2>
+     [news]
+    </div>
+    [end]
+</div>
+    
+  <div id="content">
+    [is section "buildbox"]<h1>Subversion Status</h1>[end]
+    [body]
+
+     <div id="copyright">
+         Copyright © 2004-2007 Entr'ouvert
+    </div>
+
+  </div>
+
+  </div> <!-- page -->
+  </div> <!-- shadowwrapper -->
+
+ </body>
+</html>

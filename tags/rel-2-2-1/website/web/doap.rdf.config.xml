@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://www.entrouvert.org/namespaces/expression/0.0">
+  <inode mimeType="text/html">
+    <pythonClass>expression.core.dataholders.StaticDataHolder</pythonClass>
+  </inode>
+</configuration>

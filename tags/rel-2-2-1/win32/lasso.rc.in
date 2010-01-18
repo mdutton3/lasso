@@ -1,0 +1,103 @@
+/** \file lasso.rc
+ * $Id$ 
+ *
+ * Lasso - A free implementation of the Liberty Alliance specifications.
+ *
+ * Copyright (C) 2004-2007 Entr'ouvert
+ * http://lasso.entrouvert.org
+ * 
+ * \author  Romain Chantereau <rchantereau@entrouvert.com>
+ * \date    2004
+ * \version  0.1
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include <afxres.h>
+#include <lasso_config.h>
+
+1 VERSIONINFO
+FILEVERSION LASSO_WINDOWS_VERSION
+PRODUCTVERSION LASSO_WINDOWS_VERSION
+FILEFLAGSMASK 1             /* Compile, metadata flags information are
+                                 written. */
+FILEFLAGS VS_FF_PRERELEASE  /* Pre-release of course. */
+FILEOS  VOS__WINDOWS32      /* Designed for all 32 bits Windows.*/
+FILETYPE VFT_DLL            /* Yes, lasso is a DLL. */
+{
+    /* String information, superseeds the var version info.*/
+    BLOCK "StringFileInfo"
+    {
+#ifdef _WIN32
+    BLOCK "040904B0" /* Lang=US English, Charset=Unicode.*/
+#else
+    BLOCK "040904E4" /* Lang=US English, Charset=Windows Multilingual.*/
+#endif
+        {
+            VALUE "CompanyName",     "Entr'ouvert\0"
+            VALUE "FileDescription",
+              "Free implementation of the Liberty Alliance specifications.\0" 
+
+            VALUE "FileVersion",     PACKAGE_VERSION
+            VALUE "InternalName",    PACKAGE
+            VALUE "LegalCopyright",  "Copyright \251 2004, Entr'ouvert\0"
+            VALUE "OriginalFilename", "@UPCASED_DLL_FILENAME@\0"
+            VALUE "ProductName",   PACKAGE_NAME 
+            VALUE "ProductVersion",  PACKAGE_VERSION 
+            VALUE "Comments",  
+                "Source code available at http://lasso.entrouvert.org" 
+            VALUE "License", "General Public License v2.0 or above\0"
+        }
+    }
+
+    BLOCK "VarFileInfo"
+    {
+#ifdef _WIN32
+      VALUE "Translation", 0x409, 1200 /* English language (0x409) and the
+                                            Unicode codepage (1200). */
+         
+#else
+      VALUE "Translation", 0x409, 1252 /* English language (0x409) and the
+                                            Windows ANSI codepage (1252). */
+#endif
+    }
+}
+
+/* Signatures, will be replaced by actual one.
+ * Cannot specify file name, windres does not seem to like that.
+ */
+
+/** \brief Signature ressource data.
+ *
+ * 144 bytes of null data. (WORD = 2 x 1 byte = 16 bits)
+ */
+0x29A RCDATA  DISCARDABLE
+{
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+    0x00,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+}
+
+/** \brief Mac ressource data.
+ *
+ * 16 bytes of 0 data. (WORD = 2 x 1 byte = 16 bits) 
+ */
+0x29B RCDATA  DISCARDABLE
+{
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+}

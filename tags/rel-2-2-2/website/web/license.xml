@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Copyright and License</title>
+ </head>
+ <body>
+
+ <h1>Copyright and License</h1>
+
+ <p>
+  Lasso is copyright © 2004-2007 Entr'ouvert.  The Lasso logo, copyright © 2004,
+  Entr'ouvert and Florent Monnier.
+ </p>
+
+ <p>
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the <a href="http://www.gnu.org/copyleft/gpl.html">GNU
+  General Public License</a> as published by the Free
+  Software Foundation; either version 2 of the License, or (at your option)
+  any later version.
+ </p>
+
+ <p>
+  This program is distributed in the hope that it will be useful, but
+  <strong>without any warranty</strong>; without even the implied warranty of
+  <strong>merchantability</strong> or <strong>fitness for a particular
+  purpose</strong>.  See the GNU General Public License for more details.
+ </p>
+
+ <p>
+  You should have received a copy of the GNU General Public License along
+  with this program; if not, write to the Free Software Foundation, Inc.,
+  59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ </p>
+
+ <p id="openssl">
+  In addition, as a special exception, Entr'ouvert gives permission to link
+  the code of its release of Lasso with the OpenSSL project's "OpenSSL"
+  library (or with modified versions of it that use the same license as the
+  "OpenSSL" library), and distribute the linked executables.  You must obey
+  the GNU General Public License in all respects for all of the code used
+  other than "OpenSSL".  If you modify this file, you may extend this
+  exception to your version of the file, but you are not obligated to do so.
+  If you do not wish to do so, delete this exception statement from your
+  version.
+ </p>
+
+ </body>
+</html>
+

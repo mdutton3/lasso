@@ -1,0 +1,488 @@
+=======================================
+Writing a Liberty service provider in C
+=======================================
+
+:author: Frederic Peters
+:contact: fpeters@entrouvert.com
+:date: $Date$
+:revision: $Revision$
+:copyright: Copyright © 2004-2007 Entr'ouvert
+
+.. contents:: Table of Contents
+.. section-numbering::
+
+
+Lasso Projects Basics
+=====================
+
+Lasso functions are defined in several header files typically located in
+``/usr/include/lasso/`` or ``/usr/local/include/lasso/``.  It is possible to
+include individual files but in most case it is enough to include the main
+``lasso.h``.
+
+The first thing to do is then to call ``lasso_init()``.  Similarly the last
+thing will be to call ``lasso_shutdown()``.  The smallest and useless Lasso
+project will therefore be::
+
+  #include <lasso/lasso.h>
+
+  int main(int argc, char *argv[])
+  {
+      lasso_init();
+      printf("Hello world.\n");
+      lasso_shutdown();
+      return 0;
+  }
+
+Lasso uses a tool called ``pkg-config`` to know the necessary flags for
+compilation and linking.
+
+::
+
+  $ pkg-config lasso --cflags
+ -DXMLSEC_CRYPTO=\"openssl\" -DXMLSEC_LIBXML_260=1 -D__XMLSEC_FUNCTION__=__FUNCTION__
+ -DXMLSEC_NO_XKMS=1 -DXMLSEC_NO_CRYPTO_DYNAMIC_LOADING=1 -DXMLSEC_CRYPTO_OPENSSL=1
+ -I/usr/include/lasso -I/usr/include/libxml2 -I/usr/include/xmlsec1 -I/usr/include/glib-2.0
+ -I/usr/lib/glib-2.0/include
+  $ pkg-config lasso --libs
+ -llasso -lxmlsec1-openssl -lxmlsec1 -lssl -lcrypto -ldl -lgobject-2.0 -lxslt -lxml2
+ -lpthread -lz -lm -lglib-2.0
+
+
+Creating an executable from the previous sample would then a simple matter of
+calling ``gcc`` with the right flags.  But there is currently a bug in
+XMLSec, the library used by Lasso to provide XML Signature and XML Encryption
+support.  It is possible to workaround the bug::
+
+  $ gcc hello.c -o hello $(pkg-config lasso --cflags --libs)
+ <command line>:4:16: missing terminating " character
+  $ gcc hello.c -o hello $(pkg-config xmlsec1 --cflags --libs | tr -d '\\')
+  $ ./hello
+ Hello world.
+
+Service Provider keys and metadata files
+========================================
+
+Liberty key files
+-----------------
+
+Service Provider needs private and public keys to sign sent messages. Private and
+public keys are loaded from PEM files by Lasso.
+
+If you don't have PEM format keys, you need to create them. To create a couple public key/private key with OpenSSL, use the following commands:
+
+Create a private key in a file named name-of-the-private-key.pem::
+
+  openssl genrsa -out name-of-the-private-key.pem 2048
+
+Extract the public key from the private key in a file named name-of-the-public-key.pem::
+
+  openssl rsa -in name-of-the-private-key.pem -pubout \
+    -out name-of-the-public-key.pem
+
+Your Service Provider also needs Identity Provider public key to verify received messages. You must get it from your Identity Provider.
+
+Liberty Metadata files
+----------------------
+
+Metadata are xml document describing provider configuration, that is its identifier, urls where to send him
+requests and supported Liberty Alliance profiles (that is methods describing how to send or process
+requests).
+
+Your Service Provider needs Identity Provider metadata to know where to send
+requests and how to process the requests he receives from the Identity Provider.
+You must get them from your Identity Provider. Then, you must create some metadata for your
+Service Provider and give them to your Identity Provider as well.
+
+Here is an example service provider metadata that you will have to adapt to your needs::
+
+  <?xml version="1.0"?>
+  <EntityDescriptor
+    providerID="http://sp.example.com/liberty/metadata" 
+    xmlns="urn:liberty:metadata:2003-08">
+    <SPDescriptor protocolSupportEnumeration="urn:liberty:iff:2003-08">
+        <SoapEndpoint>http://sp.example.com/liberty/soap-endpoint</SoapEndpoint>
+        <SingleLogoutServiceURL>sp.example.com/liberty/single-logout</SingleLogoutServiceURL>
+        <AssertionConsumerServiceURL id="AssertionConsumerService1"isDefault="true">http://sp.example.com/liberty/assertion-consumer-service</AssertionConsumerServiceURL>
+        <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-idp-soap</FederationTerminationNotificationProtocolProfile>
+        <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-idp-http</FederationTerminationNotificationProtocolProfile>
+        <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
+        <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-http</SingleLogoutProtocolProfile>
+        <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-sp-soap</SingleLogoutProtocolProfile>
+        <AuthnRequestsSigned>true</AuthnRequestsSigned>
+    </SPDescriptor>
+    <Organization>
+        <OrganizationName>Example Organization</OrganizationName>
+    </Organization>
+  </EntityDescriptor>
+
+Where sp.example.com is the domain name of Service Provider.
+
+``http://sp.example.com/liberty/metadata`` is the Service Provider Liberty
+identifier.
+
+``http://sp.example.com/liberty/soap-endpoint`` is the Service Provider SOAP
+endpoint where Identity Provider send SOAP single logout or defederation
+requests.
+
+``http://sp.example.com/liberty/assertion-consumer-service`` is the Service
+Provider assertion consumer url where Identity Provider must return single sign
+on authentication response.
+
+``http://sp.example.com/liberty/single-logout`` is the Service Provider single
+logout url. Service Provider can initiate single logout from this url or
+process HTTP single logout request from Identity Provider.  `
+
+More information about these metadatas can be found in Liberty Alliance specifications.
+
+Liberty and Lasso profiles
+==========================
+
+Lasso provides the necessary functions to implement Liberty Alliance profiles,
+as defined in the `Liberty ID-FF Bindings and Profiles Specification`_.  They
+are:
+
+- Single Sign-On and Federation
+- Name Registration
+- Federation Termination Notification
+- Single Logout
+- Identity Provider Introduction
+- Name Identifier Mapping
+- Name Identifier Encryption
+
+Each profile maps to a Lasso object such as ``LassoLogin``, ``LassoLogout``...
+Those are initialised with data known about identity and service providers,
+available in a ``LassoServer`` object.
+
+The ``LassoServer`` object may be created as follows:
+
+::
+
+  LassoServer *server;
+  server = lasso_server_new("sp-metadata.xml",
+  		"sp-private-key.pem", NULL, "sp-crt.pem");
+
+  lasso_server_add_provider(server, LASSO_PROVIDER_ROLE_IDP,
+  		"idp-metadata.xml", "idp-public-key.pem", "ca-crt.pem");
+
+- ``sp-metadata.xml`` is the Liberty metadata file for the service provider
+- ``idp-metadata.xml`` is the Liberty metadata file for the identity provider
+- ``sp-private-key.pem`` is the service provider private key; used to sign
+  documents
+- ``sp-crt.pem`` is the service provider certificate; sent inside signed
+  documents
+- ``idp-public-key.pem`` is the identity provider public key; used to verify
+  signature in documents sent by the identity provider
+- ``ca-crt.pem`` is the certificate of the certification authority used by the
+  identity provider
+- NULL, the third argument, would be used if the private key was protected by a
+  password.
+
+It is of course possible to have several calls so ``lasso_server_add_provider``
+if there are more than one identity provider.
+
+.. note:: Figures in the previously referred Binding and Profiles specification
+          document are quite helpful in figuring out the message passing.
+
+
+Serialisation
+-------------
+
+``LassoServer`` objects can be serialised into XML files::
+
+  gchar *dump;
+  FILE *fd;
+
+  dump = lasso_server_dump(server);
+  /* write dump into a file, a database, whatever */
+  g_free(dump);
+
+.. note:: ``lasso_server_dump`` (and other Lasso dump functions) allocates
+          memory through GLib.  ``g_free`` is then the function to use instead
+	  of ``free`` to release memory.
+
+It is then really easy to get back properly constructed objects::
+
+  LassoServer *server;
+  gchar *dump;
+
+  /* restore dump from file, database, whatever */
+  server = lasso_server_new_from_dump(dump);
+
+.. warning:: The server dump only contains the file names; not the actual file
+             contents.  Files should not be moved afterwards.
+
+
+
+Liberty Metadata Files
+======================
+
+
+They are descriptions of a provider containing ``providerID`` and various
+normative URLs::
+
+  <?xml version="1.0"?>
+  <EntityDescriptor
+      providerID="https://sp.example.com/" xmlns="urn:liberty:metadata:2003-08">
+    <SPDescriptor>
+      <SingleLogoutServiceURL>https://sp.example.com/singleLogout</SingleLogoutServiceURL>
+      <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
+      <SoapEndpoint>https://sp.example.com/soapEndpoint</SoapEndpoint>
+      <AssertionConsumerServiceURL id="AssertionConsumerServiceURL1" isDefault="true">
+        https://sp.example.com/assertionConsumer
+      </AssertionConsumerServiceURL>
+      <AuthnRequestsSigned>true</AuthnRequestsSigned>
+    </SPDescriptor>
+  </EntityDescriptor>
+
+Describe a service provider (with providerID ``https://sp.example.com``) whose
+single logout service URL is ``https://sp.example.com/singleLogout``.  Refer to
+the Liberty Alliance specifications for details.
+
+
+Single Sign-On and Federation Profile
+=====================================
+
+.. warning:: The source code presented in this section has for sole purpose
+             to explain the different steps necessary to implement this
+	     profile; they notably lack proper error checking.  See `Proper
+	     Error Checking`_ for details on error checking.
+
+
+As a first step the user points its browser to the service provider to the
+login URL; the service provider must then respond with an HTTP 302 Redirect
+response, pointing the user browser to the identity provider single sign on
+service.
+
+.. note:: the login URL is not normative; any name will do.
+
+
+``server`` is a ``LassoServer`` as seen earlier and ``idpProviderId`` is a
+string with the identity provider Id (the string must match a providerID
+defined in the metadata file).
+
+::
+
+  LassoLogin *login;
+  
+  login = lasso_login_new(server);
+  lasso_login_init_authn_request(login, idpProviderId, LASSO_HTTP_METHOD_REDIRECT);
+  
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ForceAuthn = TRUE;
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->IsPassive = FALSE;
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->NameIDPolicy =
+      strdup(LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->consent =
+      strdup(LASSO_LIB_CONSENT_OBTAINED);
+  lasso_login_build_authn_request_msg(login);
+
+
+You can now redirect the user to the URL defined in ``LASSO_PROFILE(login)->msg_url``; for
+example, in a CGI::
+  
+  printf("Location: %s\n", LASSO_PROFILE(login)->msg_url);
+
+
+The user then logs in on the identity provider which ultimately redirects back
+to the service provider; to the assertion consumer URL.  A SAML artifact is
+passed in the query parameter.
+
+.. note:: the assertion consumer URL is defined by Liberty; it must be declared
+   in the ``AssertionConsumerServiceURL`` element of the metadata file.
+
+::
+
+  LassoLogin *login;
+  
+  login = lasso_login_new(server);
+  lasso_login_init_request(login, query_string, LASSO_HTTP_METHOD_REDIRECT);
+  lasso_login_build_request_msg(login);
+
+The service provider must check this artifact using a SOAP request to the
+identity provider.  The URL is ``LASSO_PROFILE(login)->msg_url`` while the
+request is ``LASSO_PROFILE(login)->msg_body``.  The request must succeed with
+an HTTP 200 status code; let's consider its content is put in the ``answer``,
+the next statement would be::
+
+  lasso_login_process_response_msg(login, answer);
+
+The users are defined by a ``nameIdentifier`` (accessible through
+``LASSO_PROFILE(login)->nameIdentifier``).  Those typically map to users
+and sessions in some database on the service provider.  If existing; the
+session should probably contains a ``session_dump`` element and the user a
+``identity_dump`` element.  See `Database Considerations`_ below for more
+information.
+
+It is now time to get them out of the database and apply them to the ``login``
+object.
+
+::
+
+  if (session_dump != NULL) {
+      lasso_profile_set_session_from_dump(LASSO_PROFILE(login), session_dump);
+  }
+  if (identity_dump != NULL) {
+      lasso_profile_set_identity_from_dump(LASSO_PROFILE(login), identity_dump);
+  }
+  lasso_login_accept_sso(login);
+
+After ``lasso_login_accept_sso`` the session and the identity are updated (or
+created) and should then be saved.  If the identity has not recognised by the
+service provider an account will probably have to be created on the service
+provider; this is a good opportunity to ask the user for more information.
+
+You can get respective dumps like this::
+
+  LassoIdentity *identity;
+  LassoSession *session;
+  char *identity_dump = NULL, *session_dump = NULL;
+
+  if (lasso_profile_is_identity_dirty(LASSO_PROFILE(login))) {
+      identity = lasso_profile_get_identity(LASSO_PROFILE(login));
+      identity_dump = lasso_identity_dump(identity);
+      lasso_identity_destroy(identity);
+  }
+
+  if (lasso_profile_is_session_dirty(LASSO_PROFILE(login))) {
+      session = lasso_profile_get_session(LASSO_PROFILE(login));
+      session_dump = lasso_session_dump(session);
+      lasso_session_destroy(session);
+  }
+
+  /* code to store identity_dump and session_dump */
+
+Finally the ``login`` object can then be destroyed::
+
+  lasso_login_destroy(login);
+
+And a success web page displayed.
+
+
+Single Logout Profile
+=====================
+
+There are different single logout profiles; some initiated on the identity
+provider, others initiated on the service provider, using either HTTP redirects
+or SOAP requests.
+
+This part is about a logout using SOAP and initiated on the service provider.
+
+::
+
+  LassoLogout *logout;
+
+  logout = lasso_logout_new(lassoServer);
+
+
+Identity and session dumps should be restored to prepare the logout request.
+
+::
+
+  if (session_dump != NULL) {
+      lasso_profile_set_session_from_dump(LASSO_PROFILE(logout), session_dump);
+  }
+  if (identity_dump != NULL) {
+      lasso_profile_set_identity_from_dump(LASSO_PROFILE(logout), identity_dump);
+  }
+  
+  lasso_logout_init_request(logout, idpProviderId, LASSO_HTTP_METHOD_SOAP);
+  lasso_logout_build_request_msg(logout);
+
+
+The service provider must then make a SOAP request to the identity provider as above with
+LASSO_PROFILE(logout)->msg_url and LASSO_PROFILE(logout)->msg_body values.
+You should then pass the answer to Lasso::
+
+  lasso_logout_process_response_msg(logout, answer);
+
+And save back session and user dump; the process is similar as the one at the
+end of the single sign on profile.
+
+
+Proper Error Checking
+=====================
+
+Most Lasso functions return 0 on success and a negative number on failure.  It
+is strongly advised to check this return code on each call.
+
+::
+
+  int rc;
+
+  rc = lasso_logout_process_response_msg(logout, answer)
+  if (rc) {
+      fprintf(stderr, "Lasso Error: %d\n", rc);
+      /* handling error; most probably bailing out */
+  }
+
+
+Database Considerations
+=======================
+
+Lasso has been designed to let the service provider keep on using existing
+databases.  Typically there is already a table describing users; just add an
+identity dump column to the existing table:
+
+=======    ========================================    ==============
+User Id    existing data (name, address...)            Identity dump
+=======    ========================================    ==============
+1          ...                                         <Identity> ...
+2          ...                                         <Identity> ...
+=======    ========================================    ==============
+
+Mapping between existing users and name identifiers sent by the identity
+provider can be done with a simple table.
+
+===============    =======
+Name Identifier    User Id
+===============    =======
+AQWWRRS...         1
+CGFASDE...         2
+YYSSSDS...         1
+===============    =======
+
+.. note:: A separate table is needed because one user Id could map
+          to several name identifiers; in case there are several identity
+	  providers.
+
+Sessions are also commonly stored in databases; just add a session dump column
+to the existing session table:
+
+==========    =================    =============
+Session Id    misc session data    Session dump
+==========    =================    =============
+6744066       ...                  <Session> ...
+3338824       ...                  <Session> ...
+==========    =================    =============
+
+Likewise sessions should be mapped to name identifiers.
+
+===============    ==========
+Name Identifier    Session Id
+===============    ==========
+AQWWRRS...         3338824
+===============    ==========
+
+
+
+API Reference
+=============
+
+- LassoLogin_
+- LassoLogout_
+- LassoIdentity_
+- LassoServer_
+- LassoSession_
+
+
+
+
+.. _Liberty ID-FF Bindings and Profiles Specification:
+   http://www.projectliberty.org/liberty/content/download/319/2369/file/draft-liberty-idff-bindings-profiles-1.2-errata-v2.0.pdf
+
+.. _LassoLogin: /documentation/api-reference/lassologin.html
+.. _LassoLogout: /documentation/api-reference/lassologout.html
+.. _LassoIdentity: /documentation/api-reference/lassoidentity.html
+.. _LassoServer: /documentation/api-reference/lassoserver.html
+.. _LassoSession: /documentation/api-reference/lassosession.html
+

@@ -1,0 +1,168 @@
+<!-- ##### SECTION Title ##### -->
+LassoProvider
+
+<!-- ##### SECTION Short_Description ##### -->
+Service or identity provider
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+It holds all the data about a provider.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT LassoProvider ##### -->
+<para>
+
+</para>
+
+@ProviderID: 
+@role: 
+@metadata_filename: 
+@public_key: 
+@ca_cert_chain: 
+
+<!-- ##### ENUM LassoProviderRole ##### -->
+<para>
+
+</para>
+
+@LASSO_PROVIDER_ROLE_NONE: 
+@LASSO_PROVIDER_ROLE_SP: Acts as service provider
+@LASSO_PROVIDER_ROLE_IDP: Acts as identity provider
+
+<!-- ##### ENUM LassoHttpMethod ##### -->
+<para>
+
+</para>
+
+@LASSO_HTTP_METHOD_NONE: 
+@LASSO_HTTP_METHOD_ANY: Any method will do, select one automatically
+@LASSO_HTTP_METHOD_IDP_INITIATED: 
+@LASSO_HTTP_METHOD_GET: HTTP-GET implementation (for image tags in Single Logout)
+@LASSO_HTTP_METHOD_POST: use an HTML form to post message between service and
+  identity providers
+@LASSO_HTTP_METHOD_REDIRECT: use HTTP 302 redirects to post message between
+  service and identity providers
+@LASSO_HTTP_METHOD_SOAP: use a SOAP call to post message between service and
+  identity providers
+
+<!-- ##### ENUM LassoMdProtocolType ##### -->
+<para>
+
+</para>
+
+@LASSO_MD_PROTOCOL_TYPE_FEDERATION_TERMINATION: Federation Termination
+  Notification
+@LASSO_MD_PROTOCOL_TYPE_NAME_IDENTIFIER_MAPPING: Name Identifier Mapping
+@LASSO_MD_PROTOCOL_TYPE_REGISTER_NAME_IDENTIFIER: Name Registration
+@LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT: Single Logout
+@LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON: Single Sign-On and Federation
+
+<!-- ##### FUNCTION lasso_provider_new ##### -->
+<para>
+
+</para>
+
+@role: 
+@metadata: 
+@public_key: 
+@ca_cert_chain: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_new_from_dump ##### -->
+<para>
+
+</para>
+
+@dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_accept_http_method ##### -->
+<para>
+
+</para>
+
+@provider: 
+@remote_provider: 
+@protocol_type: 
+@http_method: 
+@initiate_profile: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_get_assertion_consumer_service_url ##### -->
+<para>
+
+</para>
+
+@provider: 
+@service_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_get_base64_succinct_id ##### -->
+<para>
+
+</para>
+
+@provider: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_get_first_http_method ##### -->
+<para>
+
+</para>
+
+@provider: 
+@remote_provider: 
+@protocol_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_get_metadata_list ##### -->
+<para>
+
+</para>
+
+@provider: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_get_metadata_one ##### -->
+<para>
+
+</para>
+
+@provider: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_has_protocol_profile ##### -->
+<para>
+
+</para>
+
+@provider: 
+@protocol_type: 
+@protocol_profile: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_get_organization ##### -->
+<para>
+
+</para>
+
+@provider: 
+@Returns: 
+
+

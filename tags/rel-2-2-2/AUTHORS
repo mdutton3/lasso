@@ -1,0 +1,86 @@
+=======
+Authors
+=======
+
+
+.. note:: Please do not send bug reports, help or feature requests directly
+          to the authors; use the request tracker or the mailing list.
+
+          (see README_ for details)
+
+
+Core
+====
+
+- Nicolas Clapiès <nclapies@entrouvert.com>
+- Valéry Febvre <vfebvre@easter-eggs.com>
+- Frédéric Péters <fpeters@entrouvert.com>
+- Damien Laniel <dlaniel@entrouvert.com>
+- Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+
+SWIG Bindings
+=============
+
+- Emmanuel Raviart <eraviart@entrouvert.com>
+
+with help from:
+
+- Romain Chantereau <rchantereau@entrouvert.com> (initial SWIG binding)
+- Christophe Nowicki <cnowicki@easter-eggs.com> (PHP)
+- Benjamin Poussin <poussin@codelutin.com> (first Java binding)
+- and the core developers
+
+
+Unit Tests
+==========
+
+- Emmanuel Raviart <eraviart@entrouvert.com>
+
+with help from the core developers
+
+Packaging
+=========
+
+- Frédéric Péters <fpeters@entrouvert.com>
+
+
+Debian Packaging
+================
+
+- Frédéric Péters <fpeters@entrouvert.com>
+
+
+Windows Port
+============
+
+- Romain Chantereau <rchantereau@entrouvert.com>
+
+
+Documentation
+=============
+
+- Christophe Boutet <cboutet@entrouvert.com>
+- Romain Chantereau <rchantereau@entrouvert.com>
+- Nicolas Clapiès <nclapies@entrouvert.com>
+- Pierre Cros <pcros@entrouvert.com>
+- Cédric Musso <cedric.musso@labor-liber.net>
+- Frédéric Péters <fpeters@entrouvert.com>
+- Emmanuel Raviart <eraviart@entrouvert.com>
+
+
+Lasso Logo
+==========
+
+- Florent Monnier <fmonnier@linux-nantes.fr.eu.org>
+
+
+Web Site Design
+===============
+
+- Frédéric Péters <fpeters@entrouvert.com>
+
+with help from:
+
+- Cédric Musso (initial design) <cedric.musso@labor-liber.net>
+

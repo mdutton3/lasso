@@ -1,0 +1,10 @@
+.deps
+.libs
+Makefile
+Makefile.in
+lasso.la
+lasso.php
+lasso_la-lasso_wrap.lo
+lasso_wrap.c
+php_lasso.h
+run-tests.php

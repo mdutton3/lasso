@@ -1,0 +1,73 @@
+==============
+Lasso Overview
+==============
+
+  Current homepage: <http://lasso.entrouvert.org>
+
+Lasso (Liberty Alliance Single Sign-On) is a free (GNU GPL) implementation
+of the Liberty Alliance specifications.  Those define processes for
+federated identities, single sign-on and related protocols.  Lasso provides
+both a C library and bindings for different languages.
+
+  Liberty Alliance Project homepage: <http://www.project-liberty.org>
+
+
+The latest version of Lasso can be found on the labs.libre-entreprise.org
+website, <http://labs.libre-entreprise.org/frs/?group_id=31>
+
+
+Lasso has several mailing lists:
+
+- lasso-devel@lists.labs.libre-entreprise.org
+
+  The mailing list for Lasso users and developers; discussions about both
+  development and deployment of Lasso have their place on this list.
+
+  <http://lists.labs.libre-entreprise.org/mailman/listinfo/lasso-devel>
+
+- lasso-cvs-commits@lists.labs.libre-entreprise.org
+
+  This list just distributes notices about commits to the Lasso CVS tree.
+  It has no discussions, and it is not interesting unless you wish to
+  take part in development.
+
+  <http://lists.labs.libre-entreprise.org/mailman/listinfo/lasso-cvs-commits>
+
+There is also a bug tracking system on the labs.libre-entreprise.org website,
+  <http://labs.libre-entreprise.org/tracker/?atid=206&group_id=31>
+
+
+Lasso was originally written by Nicolas Clapiès and Valéry Febvre.  Please
+see the file AUTHORS_ for a list of major contributors, and the ChangeLog
+for a detailed listing of all contributions.
+
+::
+
+  Copyright (c) 2004-2008 Entr'ouvert
+  Excepted the Lasso logo, copyright (c) 2004, Entr'ouvert & Florent Monnier
+
+
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the Free
+  Software Foundation; either version 2 of the License, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+  for more details.
+
+  You should have received a copy of the GNU General Public License along
+  with this program; if not, write to the Free Software Foundation, Inc.,
+  59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+  In addition, as a special exception, Entr'ouvert gives permission to link
+  the code of its release of Lasso with the OpenSSL project's "OpenSSL"
+  library (or with modified versions of it that use the same license as the
+  "OpenSSL" library), and distribute the linked executables.  You must obey
+  the GNU General Public License in all respects for all of the code used
+  other than "OpenSSL".  If you modify this file, you may extend this
+  exception to your version of the file, but you are not obligated to do so.
+  If you do not wish to do so, delete this exception statement from your
+  version.
+

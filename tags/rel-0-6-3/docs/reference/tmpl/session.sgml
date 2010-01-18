@@ -1,0 +1,90 @@
+<!-- ##### SECTION Title ##### -->
+LassoSession
+
+<!-- ##### SECTION Short_Description ##### -->
+Principal Session
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSession ##### -->
+<para>
+
+</para>
+
+@assertions: 
+@is_dirty: 
+
+<!-- ##### FUNCTION lasso_session_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_new_from_dump ##### -->
+<para>
+
+</para>
+
+@dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_destroy ##### -->
+<para>
+
+</para>
+
+@session: 
+
+
+<!-- ##### FUNCTION lasso_session_dump ##### -->
+<para>
+
+</para>
+
+@session: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_get_assertions ##### -->
+<para>
+
+</para>
+
+@session: 
+@provider_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_get_provider_index ##### -->
+<para>
+
+</para>
+
+@session: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_is_empty ##### -->
+<para>
+
+</para>
+
+@session: 
+@Returns: 
+
+

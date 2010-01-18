@@ -1,0 +1,60 @@
+Federation Termination Notification
+
+(apply for both IdP and SP)
+
+/federationTermination (* normative, Federation Termination Notification service URL *)
+    defederation = lasos_defederation_new(server)
+    IF lasso_is_liberty_query(query)
+        # query is a valid liberty message, then process it
+
+        lasso_defederation_process_notification_msg(defederation, query)
+
+        nameIdentifier = LASSO_PROFILE(defederation)->nameIdentifier
+        # Retrieve session and user using name identifier (->content).
+        lasso_profile_set_identity_from_dump(LASSO_PROFILE(defederation), identityDump)
+        lasso_profile_set_session_from_dump(LASSO_PROFILE(defederation), sessionDump)
+
+        lasso_defederation_validate_notification(defederation)
+        # Close the federation locally.
+        # The user is no more authenticated on any identity provider, Log him out.
+
+        REDIRECT TO LASSO_PROFILE(defederation)->msg_url
+
+    ELSE
+        # query is not a valid liberty message, then initiates profile
+
+        # identity and session from logged in user
+        lasso_profile_set_identity_from_dump(LASSO_PROFILE(defederation), identityDump)
+        lasso_profile_set_session_from_dump(LASSO_PROFILE(defederation), sessionDump)
+
+        lasso_defederation_build_notification_msg(defederation)
+
+        # close the local user account (session, index...)
+
+        IF LASSO_PROFILE(defederation)->msg_body:
+            SOAP CALL -----------------------------------------------------------------\
+                TO LASSO_PROFILE(defederation)->msg_url                                |
+                BODY LASSO_PROFILE(defederation)->msg_body
+
+        ELSE
+            REDIRECT TO LASSO_PROFILE(defederation)->msg_url
+
+
+/federationTerminationReturn  (* normative, Federation Termination service Return URL *)
+
+    # get the relay state if exists in query response
+
+
+/soapEndPoint (* normative, SOAP endpoint *)                                      <----/
+    defederation = lasso_defederation_new(server)
+    lasso_defederation_process_notification_msg(defederation, soapRequestMsg)
+    
+    nameIdentifier = LASSO_PROFILE(defederation)->nameIdentifier
+    # Retrieve session and user using name identifier (->content).
+
+    lasso_defederation_validate_notification(defederation)
+    # Close the federation locally.
+    # The user is no more authenticated on any identity provider. Log him out.
+    # Return OK (204), even when the defederation validation fails.
+        ANSWER SOAP REQUEST WITH 204 (No content)
+

@@ -1,0 +1,15 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Body><samlp:Response MinorVersion="1" MajorVersion="1" IssueInstant="2004-09-30T16:14:18.833Z" InResponseTo="_94FB56F1704964EB955A3B8CA0B40B13" ResponseID="iejcpHjCBaGPJHjszU6c_ELbJlz0" xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol" xmlns:lib="urn:liberty:iff:2003-08"><samlp:Status><samlp:StatusCode Value="samlp:Success"/></samlp:Status><saml:Assertion xsi:type="lib:AssertionType" IssueInstant="2004-09-30T16:14:15.756Z" AssertionID="iNzSg4S2ubDvK2pWToTtS1DaBJ5Q" Issuer="http://sourceid-idff-demo" InResponseTo="_EA6809CE64498D5AF62811101609A85A" MinorVersion="2" MajorVersion="1" xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><saml:Conditions NotOnOrAfter="2004-09-30T16:19:15.764Z" NotBefore="2004-09-30T16:13:15.763Z"><saml:AudienceRestrictionCondition><saml:Audience>https://sp2/metadata</saml:Audience></saml:AudienceRestrictionCondition></saml:Conditions><saml:AuthenticationStatement SessionIndex="01" AuthenticationInstant="2004-09-30T16:14:15.766Z" AuthenticationMethod="urn:oasis:names:tc:SAML:1.0:am:unspecified" xsi:type="lib:AuthenticationStatementType"><saml:Subject xsi:type="lib:SubjectType"><saml:NameIdentifier Format="urn:liberty:iff:nameid:federated" NameQualifier="https://sp2/metadata">iNrjxJrEqcOP3WpgSwtUoM7iKdNQ</saml:NameIdentifier><saml:SubjectConfirmation><saml:ConfirmationMethod>urn:oasis:names:tc:SAML:1.0:cm:artifact</saml:ConfirmationMethod></saml:SubjectConfirmation></saml:Subject></saml:AuthenticationStatement><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#dsa-sha1"/>
+<ds:Reference URI="#iNzSg4S2ubDvK2pWToTtS1DaBJ5Q">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>9XPQAZgwCnUHe1C/ebXio2+u/04=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue>FB0xnlcFDNYoWEFAkaLSxVvC20yOrr89UIfbCIwzcULiS/KMFaJKCA==</ds:SignatureValue>
+</ds:Signature></saml:Assertion></samlp:Response></SOAP-ENV:Body></SOAP-ENV:Envelope>
