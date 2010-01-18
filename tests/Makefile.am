@@ -11,6 +11,8 @@ if WITH_TESTS
 TESTS = tests tests2
 noinst_PROGRAMS = tests perfs tests2
 
+EXTRA_DIST = valgrind
+
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
 	-DTESTSDATADIR=\"$(srcdir)/data/\" \
