@@ -1,1 +1,183 @@
-../../lasso.doap
+<Project 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns="http://usefulinc.com/ns/doap#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:lang="en">
+    <name>Lasso</name>
+    <shortname>lasso</shortname>
+    <homepage rdf:resource="http://lasso.entrouvert.org"/>
+    <created>2003-07-01</created>
+    <description>
+      Lasso (Liberty Alliance Single Sign On) is a free (GNU GPL) implementation
+      of the Liberty Alliance specifications.  Those define protocols for
+      federated identities, single sign-on, etc.  Lasso supports ID-FF 1.2,
+      SAML 2.0 and parts of ID-WSF; it provides both a C library and bindings
+      for several languages (Python, Java, Perl, PHP 4 and PHP 5).
+    </description>
+    <shortdesc>Free Software implementation of Liberty Alliance specifications</shortdesc>
+    <bug-database rdf:resource="http://lasso.entrouvert.org/issues/"/>
+    <mailing-list rdf:resource="http://lasso.entrouvert.org/mailinglists"/>
+    <programming-language>C</programming-language>
+    <programming-language>Python</programming-language>
+    <programming-language>Java</programming-language>
+    <programming-language>PHP</programming-language>
+    <programming-language>Perl</programming-language>
+    <license rdf:resource="http://usefulinc.com/doap/licenses/gpl"/>
+    <download-page rdf:resource="http://lasso.entrouvert.org/download/"/>
+    <implements>
+      <Specification rdf:about="http://www.projectliberty.org/liberty/content/download/1266/8160/file/liberty-idff-1.2-20050520.zip">
+        <rdfs:label>Liberty Alliance ID-FF 1.2</rdfs:label>
+      </Specification
+    </implements>
+    <implements>
+      <Specification rdf:about="http://docs.oasis-open.org/security/saml/v2.0/saml-2.0-os.zip">
+        <rdfs:label>OASIS SAML 2.0</rdfs:label>
+      </Specification
+    </implements>
+    <maintainer>
+      <foaf:Person>
+        <foaf:name>Benjamin Dauvergne</foaf:name>
+        <foaf:mbox rdf:resource="mailto:bdauvergne@entrouvert.com"/>
+      </foaf:Person>
+    </maintainer>
+    <developer>
+      <foaf:Person>
+        <foaf:name>Frédéric Péters</foaf:name>
+        <foaf:mbox rdf:resource="mailto:fpeters@entrouvert.com"/>
+      </foaf:Person>
+    </developer>
+    <developer>
+      <foaf:Person>
+        <foaf:name>Jérôme Schneider</foaf:name>
+        <foaf:mbox rdf:resource="mailto:jschneider@entrouvert.com"/>
+      </foaf:Person>
+    </developer>
+    <repository>
+      <SVNRepository>
+        <location rdf:resource="svn://labs.libre-entreprise.org/svnroot/lasso" />
+        <browse rdf:resource="https://labs.libre-entreprise.org/plugins/scmsvn/viewcvs.php/?root=lasso"/>
+      </SVNRepository>
+    </repository>
+    <release>
+      <Version>
+        <created>2010-01-18</created>
+        <revision>2.2.90</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2009-03-27</created>
+        <revision>2.2.2</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2008-07-22</created>
+        <revision>2.2.1</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2008-05-28</created>
+        <revision>2.2.0</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2007-08-20</created>
+        <revision>2.1.1</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2007-08-13</created>
+        <revision>2.1.0</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2007-01-16</created>
+        <revision>2.0.0</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2006-12-19</created>
+        <revision>1.9.9</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2006-10-16</created>
+        <revision>0.6.6</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2006-03-21</created>
+        <revision>0.6.5</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2006-03-08</created>
+        <revision>0.6.4</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2005-09-30</created>
+        <revision>0.6.3</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2005-05-26</created>
+        <revision>0.6.2</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2005-02-22</created>
+        <revision>0.6.1</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2005-01-27</created>
+        <revision>0.6.0</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2004-11-09</created>
+        <revision>0.5.0</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2004-09-07</created>
+        <revision>0.4.1</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2004-09-06</created>
+        <revision>0.4.0</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2004-07-27</created>
+        <revision>0.3.0</revision>
+      </Version>
+    </release>
+    <release>
+      <Version>
+        <created>2004-06-01</created>
+        <revision>0.2.0</revision>
+      </Version>
+    </release>
+</Project>
