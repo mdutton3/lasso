@@ -105,7 +105,7 @@ lasso_session_get_endpoint_reference(LassoSession *session, const gchar *service
  *
  * Return a security token to contact a specified service.
  *
- * Return value: 0 if successfull, an error otherwise.
+ * Return value: (allow-none): a #LassoAssertion object or NULL
  */
 LassoSaml2Assertion*
 lasso_session_get_assertion_identity_token(LassoSession *session, const gchar *service_type)
