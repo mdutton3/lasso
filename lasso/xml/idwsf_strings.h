@@ -542,7 +542,7 @@
  *
  * Fault code for WS-Security tokens handling
  */
-#define LASSO_WSSE_SECEXT_FAULT_CODE_Unsupported_Security_Token \
+#define LASSO_WSSE_SECEXT_FAULT_CODE_UNSUPPORTED_SECURITY_TOKEN \
 	"wsse:UnsupportedSecurityToken"
 
 /**
@@ -550,7 +550,7 @@
  *
  * Fault code for WS-Security tokens handling
  */
-#define LASSO_WSSE_SECEXT_FAULT_CODE_Unsupported_Algorithm \
+#define LASSO_WSSE_SECEXT_FAULT_CODE_UNSUPPORTED_ALGORITHM \
 	"wsse:UnsupportedAlgorithm"
 
 /**
@@ -558,7 +558,7 @@
  *
  * Fault code for WS-Security tokens handling
  */
-#define LASSO_WSSE_SECEXT_FAULT_CODE_Invalid_Security \
+#define LASSO_WSSE_SECEXT_FAULT_CODE_INVALID_SECURITY \
 	"wsse:InvalidSecurity"
 
 /**
@@ -566,7 +566,7 @@
  *
  * Fault code for WS-Security tokens handling
  */
-#define LASSO_WSSE_SECEXT_FAULT_CODE_Invalid_Security_Token \
+#define LASSO_WSSE_SECEXT_FAULT_CODE_INVALID_SECURITY_TOKEN \
 	"wsse:InvalidSecurityToken"
 
 /**
