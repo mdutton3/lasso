@@ -3458,9 +3458,15 @@ LASSO_WSA_RELATES_TO_GET_CLASS
 
 <SECTION>
 <FILE>wsse_username_token</FILE>
-<TITLE>LassoWsSec1UsernameToken</TITLE>
-LassoWsSec1UsernameToken
+LassoWsseUsernameTokenPasswordType
+<TITLE>LassoWsseUsernameToken</TITLE>
+LassoWsseUsernameToken
 lasso_wsse_username_token_new
+lasso_wsse_username_token_reset_nonce
+lasso_wsse_username_token_set_password_kind
+lasso_wsse_username_token_set_password
+lasso_wsse_username_token_check_password
+lasso_wsse_username_token_derive_key
 <SUBSECTION Standard>
 LASSO_WSSE_USERNAME_TOKEN
 LASSO_IS_WSSE_USERNAME_TOKEN
@@ -6006,3 +6012,4 @@ lasso_soap_envelope_sb2_get_provider_id
 lasso_soap_envelope_sb2_get_redirect_request_url
 lasso_soap_envelope_sb2_get_target_identity_header
 </SECTION>
+

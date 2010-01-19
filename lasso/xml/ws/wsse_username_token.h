@@ -1,4 +1,4 @@
-/* $Id: wsse_username_token.h,v 1.0 2005/10/14 15:17:55 fpeters Exp $
+/* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -32,50 +32,55 @@ extern "C" {
 #include "../xml.h"
 
 #define LASSO_TYPE_WSSE_USERNAME_TOKEN (lasso_wsse_username_token_get_type())
-#define LASSO_WSSE_USERNAME_TOKEN(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), \
-		LASSO_TYPE_WSSE_USERNAME_TOKEN, \
-		LassoWsSec1UsernameToken))
-#define LASSO_WSSE_USERNAME_TOKEN_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), \
-		LASSO_TYPE_WSSE_USERNAME_TOKEN, \
-		LassoWsSec1UsernameTokenClass))
-#define LASSO_IS_WSSE_USERNAME_TOKEN(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-		LASSO_TYPE_WSSE_USERNAME_TOKEN))
+#define LASSO_WSSE_USERNAME_TOKEN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
+			LASSO_TYPE_WSSE_USERNAME_TOKEN, LassoWsseUsernameToken))
+#define LASSO_WSSE_USERNAME_TOKEN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
+			LASSO_TYPE_WSSE_USERNAME_TOKEN, LassoWsseUsernameTokenClass))
+#define LASSO_IS_WSSE_USERNAME_TOKEN(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_WSSE_USERNAME_TOKEN))
 #define LASSO_IS_WSSE_USERNAME_TOKEN_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), \
-		LASSO_TYPE_WSSE_USERNAME_TOKEN))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass),LASSO_TYPE_WSSE_USERNAME_TOKEN))
 #define LASSO_WSSE_USERNAME_TOKEN_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), \
-		LASSO_TYPE_WSSE_USERNAME_TOKEN, \
-		LassoWsSec1UsernameTokenClass))
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_WSSE_USERNAME_TOKEN, LassoWsseUsernameTokenClass))
 
+typedef struct _LassoWsseUsernameToken LassoWsseUsernameToken;
+typedef struct _LassoWsseUsernameTokenClass LassoWsseUsernameTokenClass;
 
-typedef struct _LassoWsSec1UsernameToken LassoWsSec1UsernameToken;
-typedef struct _LassoWsSec1UsernameTokenClass LassoWsSec1UsernameTokenClass;
+typedef enum {
+	LASSO_WSSE_USERNAME_TOKEN_PASSWORD_TYPE_UNKNOWN,
+	LASSO_WSSE_USERNAME_TOKEN_PASSWORD_TYPE_TEXT,
+	LASSO_WSSE_USERNAME_TOKEN_PASSWORD_TYPE_DIGEST,
+	LASSO_WSSE_USERNAME_TOKEN_PASSWORD_TYPE_LAST
+} LassoWsseUsernameTokenPasswordType;
 
-
-struct _LassoWsSec1UsernameToken {
+struct _LassoWsseUsernameToken {
 	LassoNode parent;
 
-	/*< public >*/
-	/* elements */
-	/* XXX */ void *Username;
-	/* attributes */
 	char *Id;
+	char *Username;
+	char *Nonce;
+	char *Salt;
+	char *Created;
+	int Iteration;
 	GHashTable *attributes;
 };
 
-
-struct _LassoWsSec1UsernameTokenClass {
+struct _LassoWsseUsernameTokenClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_wsse_username_token_get_type(void);
-LASSO_EXPORT LassoWsSec1UsernameToken* lasso_wsse_username_token_new(void);
 
+LASSO_EXPORT LassoWsseUsernameToken* lasso_wsse_username_token_new(void);
 
+LASSO_EXPORT void lasso_wsse_username_token_reset_nonce(LassoWsseUsernameToken *wsse_username_token);
+
+LASSO_EXPORT void lasso_wsse_username_token_set_password_kind(LassoWsseUsernameToken *wsse_username_token, LassoWsseUsernameTokenPasswordType password_type);
+
+LASSO_EXPORT int lasso_wsse_username_token_set_password(LassoWsseUsernameToken *wsse_username_token, char *password);
+
+LASSO_EXPORT int lasso_wsse_username_token_check_password(LassoWsseUsernameToken *wsse_username_token, char *password);
+
+LASSO_EXPORT guchar* lasso_wsse_username_token_derive_key(LassoWsseUsernameToken *wsse_username_token, char *password);
 
 #ifdef __cplusplus
 }

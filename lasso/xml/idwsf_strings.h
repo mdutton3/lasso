@@ -593,6 +593,36 @@
 #define LASSO_WSSE_SECEXT_FAULT_CODE_SECURITY_TOKEN_UNAVAILABLE \
 	"wsse:SecurityTokenUnavailable"
 
+/* 
+ * Username token profile 
+ */
+
+/**
+ * LASSO_WSSE_USERNAME_TOKEN_PROFILE_HREF:
+ */
+#define LASSO_WSSE_USERNAME_TOKEN_PROFILE_HREF \
+	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0"
+
+/**
+ * LASSO_WSSE_USERNAME_TOKEN_PROFILE_PASSWORD_DIGEST:
+ *
+ * Identifier for a UsernameToken of type PasswordDigest
+ */
+#define LASSO_WSSE_USERNAME_TOKEN_PROFILE_PASSWORD_DIGEST \
+	LASSO_WSSE_USERNAME_TOKEN_PROFILE_HREF "#PasswordDigest"
+
+/**
+ * LASSO_WSSE_USERNAME_TOKEN_PROFILE_PASSWORD_TEXT:
+ *
+ * Identifier for a UsernameToken of type PasswordText
+ */
+#define LASSO_WSSE_USERNAME_TOKEN_PROFILE_PASSWORD_TEXT \
+	LASSO_WSSE_USERNAME_TOKEN_PROFILE_HREF "#PasswordText"
+
+/*
+ * WS-Security Utility
+ */
+
 /**
  * LASSO_WSUTIL1_HREF:
  *
