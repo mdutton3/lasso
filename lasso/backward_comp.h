@@ -31,6 +31,8 @@
 
 /* GLIB backward-compatibility */
 #if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 16)
+#include <string.h>
+
 static inline int g_strcmp0(const char *str1, const char *str2) {
 	if (str1 == NULL && str2 == NULL) {
 		return 0;
