@@ -23,6 +23,7 @@
  */
 
 #include "../private.h"
+#include "../../utils.h"
 #include "saml2_name_id.h"
 
 /**
