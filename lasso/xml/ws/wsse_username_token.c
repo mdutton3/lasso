@@ -55,7 +55,8 @@ struct _LassoWsseUsernameTokenPrivate {
 typedef struct _LassoWsseUsernameTokenPrivate LassoWsseUsernameTokenPrivate;
 
 #define LASSO_WSSE_USERNAME_TOKEN_GET_PRIVATE(o) \
-	   (G_TYPE_INSTANCE_GET_PRIVATE ((o), LASSO_TYPE_WSSE_USERNAME_TOKEN, LassoWsseUsernameTokenPrivate))
+	   (G_TYPE_INSTANCE_GET_PRIVATE ((o), LASSO_TYPE_WSSE_USERNAME_TOKEN, \
+					 LassoWsseUsernameTokenPrivate))
 
 static LassoNodeClass *parent_class = NULL;
 
@@ -64,12 +65,18 @@ static LassoNodeClass *parent_class = NULL;
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoWsseUsernameToken, Id), NULL, LASSO_WSU_PREFIX, LASSO_WSU_HREF},
-	{ "Username", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsseUsernameToken, Username), NULL, NULL, NULL},
-	{ "Nonce", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsseUsernameToken, Nonce), NULL, NULL, NULL},
-	{ "Created", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsseUsernameToken, Created), NULL, NULL, NULL},
-	{ "Salt", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsseUsernameToken, Salt), NULL, LASSO_WSSE11_PREFIX, LASSO_WSSE11_HREF},
-	{ "Iteration", SNIPPET_CONTENT | SNIPPET_INTEGER, G_STRUCT_OFFSET(LassoWsseUsernameToken, Iteration), NULL, LASSO_WSSE11_PREFIX, LASSO_WSSE11_HREF},
+	{ "Id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoWsseUsernameToken, Id), NULL,
+		LASSO_WSU_PREFIX, LASSO_WSU_HREF},
+	{ "Username", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsseUsernameToken, Username), NULL,
+		NULL, NULL},
+	{ "Nonce", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsseUsernameToken, Nonce), NULL, NULL,
+		NULL},
+	{ "Created", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsseUsernameToken, Created), NULL, NULL,
+		NULL},
+	{ "Salt", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoWsseUsernameToken, Salt), NULL,
+		LASSO_WSSE11_PREFIX, LASSO_WSSE11_HREF},
+	{ "Iteration", SNIPPET_CONTENT | SNIPPET_INTEGER, G_STRUCT_OFFSET(LassoWsseUsernameToken,
+			Iteration), NULL, LASSO_WSSE11_PREFIX, LASSO_WSSE11_HREF},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoWsseUsernameToken, attributes), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
@@ -200,7 +207,8 @@ lasso_wsse_username_token_reset_nonce(LassoWsseUsernameToken *wsse_username_toke
  * Set the way to transmit password, that is either cleartext or digest.
  */
 void
-lasso_wsse_username_token_set_password_kind(LassoWsseUsernameToken *wsse_username_token, LassoWsseUsernameTokenPasswordType password_type)
+lasso_wsse_username_token_set_password_kind(LassoWsseUsernameToken *wsse_username_token,
+		LassoWsseUsernameTokenPasswordType password_type)
 {
 	LassoWsseUsernameTokenPrivate *private =
 		LASSO_WSSE_USERNAME_TOKEN_GET_PRIVATE(wsse_username_token);
@@ -209,7 +217,8 @@ lasso_wsse_username_token_set_password_kind(LassoWsseUsernameToken *wsse_usernam
 }
 
 static char *
-_lasso_wsse_username_token_compute_digest(LassoWsseUsernameToken *wsse_username_token, char *password)
+_lasso_wsse_username_token_compute_digest(LassoWsseUsernameToken *wsse_username_token,
+		char *password)
 {
 	guchar *nonce;
 	guint nonce_len = 0;
@@ -285,13 +294,13 @@ lasso_wsse_username_token_check_password(LassoWsseUsernameToken *wsse_username_t
 		case LASSO_WSSE_USERNAME_TOKEN_PASSWORD_TYPE_DIGEST:
 			digest = _lasso_wsse_username_token_compute_digest(wsse_username_token, password);
 			if (strcmp(private->Password, digest) != 0) {
-				rc = LASSO_WSSE_BAD_PASSWORD;
+				rc = LASSO_WSSEC_BAD_PASSWORD;
 			}
 			g_free(digest);
 			break;
 		case LASSO_WSSE_USERNAME_TOKEN_PASSWORD_TYPE_TEXT:
 			if (strcmp(private->Password, password) != 0) {
-				return LASSO_WSSE_BAD_PASSWORD;
+				return LASSO_WSSEC_BAD_PASSWORD;
 			}
 			break;
 		default:
