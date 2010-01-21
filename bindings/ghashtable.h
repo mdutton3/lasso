@@ -26,13 +26,17 @@ struct _GHashTable
 
 /* Helper functions to access JNI interface functions */
 #if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 12)
+static gboolean return_true(gpointer a, gpointer b, gpointer c)
+{
+	return TRUE;
+}
+
 void
 g_hash_table_remove_all (GHashTable *hash_table)
 {
     g_return_if_fail (hash_table != NULL);
 
-    g_hash_table_remove_all_nodes (hash_table, TRUE);
-    g_hash_table_maybe_resize (hash_table);
+    g_hash_table_foreach_remove (hash_table, (GHRFunc)return_true, NULL);
 }
 #endif
   /* copy of private struct and g_hash_table_get_keys from GLib internals
