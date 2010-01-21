@@ -170,17 +170,6 @@
   <func name="lasso_node_new_from_soap" skip="java"/>
   <func name="lasso_node_new_from_xmlNode" skip="java"/>
   <func name="lasso_provider_new_from_dump" skip="java"/>
-  <func name="lasso_saml2_name_id_new_with_string" return_type="LassoSaml2NameID*"/>
-  <func name="lasso_saml2_action_new_with_string" return_type="LassoSaml2Action*"/>
-  <func name="lasso_misc_text_node_new_with_string" return_type="LassoMiscTextNode*"/>
-
-  <func name="lasso_lib_name_identifier_mapping_response_new_full" return_type="LassoLibNameIdentifierMappingResponse*"/>
-  <func name="lasso_lib_logout_request_new_full" return_type="LassoLibLogoutRequest*"/>
-  <func name="lasso_lib_logout_response_new_full" return_type="LassoLibLogoutResponse*"/>
-  <func name="lasso_lib_register_name_identifier_response_new_full" return_type="LassoLibRegisterNameIdentifierResponse*"/>
-  <func name="lasso_lib_federation_termination_notification_new_full" return_type="LassoLibFederationTerminationNotification*"/>
-  <func name="lasso_lib_name_identifier_mapping_request_new_full" return_type="LassoLibNameIdentifierMappingRequest*"/>
-  <func name="lasso_lib_register_name_identifier_request_new_full" return_type="LassoLibRegisterNameIdentifierRequest*"/>
   <!-- LassoServer -->
   <func name="lasso_server_get_provider" return_owner="false" />
   <!-- IdWsf -->
