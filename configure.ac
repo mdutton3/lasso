@@ -125,9 +125,7 @@ dnl AC_CHECK_PROGS(JAVAH, gjavah gcjh javah)
 dnl AC_CHECK_PROGS(JAR, fastjar jar)
 
 AC_CHECK_PROGS(PERL, perl)
-AC_CHECK_PROGS(PHP4, php4 php)
 AC_CHECK_PROGS(PHP5, php5 php)
-AC_CHECK_PROGS(PHP4_CONFIG, php-config4 php-config)
 AC_CHECK_PROGS(PHP5_CONFIG, php-config5 php-config)
 AC_CHECK_PROGS(PYTHON, python)
 AC_CHECK_PROGS(SWIG, swig)
@@ -394,80 +392,6 @@ fi
 AM_CONDITIONAL([PYTHON_ENABLED],[test "x$enable_python" = "xyes"])
 AC_MSG_RESULT($enable_python)
 AC_SUBST(PYTHON_VERSION)
-
-# -----------
-# PHP 4 binding
-# -----------
-
-dnl Check if php is explicitly disabled.
-AC_ARG_ENABLE(php4, [  --disable-php4          disable the PHP 4 binding],,
-              enable_php4="no")
-
-AC_ARG_ENABLE(php4-force, [  --enable-php4-force     always enable of the PHP 4 binding (win32)],
-              [ENABLE_PHP4_FORCE="yes"],
-              [ENABLE_PHP4_FORCE="no"])
-
-AC_ARG_WITH(php4-config,
-            [  --with-php4-config=(PHP4_CONFIG)      Specify full path to php-config4.])
-
-AC_ARG_WITH(php4-extension-dir,
-            [  --with-php4-extension-dir=(PHP4_EXTENSION_DIR)      Specify full path to php 4 extension dir.],
-            [PHP4_EXTENSION_DIR="$withval"],[PHP4_EXTENSION_DIR=])
-
-dnl Check if user passed a specific php-config program.
-if test "X$with_php4_config" != "X" ; then
-    PHP4_CONFIG=$with_php4_config
-fi
-
-if test "X$PHP4_CONFIG" != "X" ; then
-  PHP4_INCLUDES=`$PHP4_CONFIG --includes`
-  PHP4_LDFLAGS=`$PHP4_CONFIG --ldflags`
-  PHP4_LIBS=`$PHP4_CONFIG --libs`
-  PHP4_PREFIX=`$PHP4_CONFIG --prefix`
-  PHP4_QUOTED_PREFIX=$(echo $PHP4_PREFIX | $SED 's/\//\\\//g')
-  PHP4_UNPREFIXED_EXTENSION_DIR=$($PHP4_CONFIG --extension-dir | $SED "s/$PHP4_QUOTED_PREFIX//g")
-else
-  # We assume PHP are in /usr/local directory.
-  if test $MINGW -eq 1; then 
-    CFLAGS="$CFLAGS -DZTS -DZEND_WIN32 -DWIN32 -D_MBCS"
-  fi
-  PHP4_INCLUDES="-I/usr/local/include/php4 -I/usr/local/include/php4/main -I/usr/local/include/php4/Zend -I/usr/local/include/php4/TSRM -I/usr/local/include/php4/win32"
-  PHP4_LDFLAGS=
-  PHP4_LIBS="-lphp4ts -lxmlparse -lxmltok"
-  PHP4_UNPREFIXED_EXTENSION_DIR=
-  PHP4_PREFIX=
-fi
-AC_SUBST(PHP4_INCLUDES)
-AC_SUBST(PHP4_LDFLAGS)
-AC_SUBST(PHP4_LIBS)
-AC_SUBST(PHP4_UNPREFIXED_EXTENSION_DIR)
-AC_SUBST(PHP4_EXTENSION_DIR)
-AC_SUBST(PHP4_PREFIX)
-
-dnl Check for expat
-have_expat_include=no
-if test $MINGW -eq 1; then 
-    AC_CHECK_LIB(xmlparse, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
-else
-    AC_CHECK_LIB(expat, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
-fi
-  
-if test x$have_expat_lib = xno; then
-    enable_php4="no (missing expat)"
-fi
-
-AC_MSG_CHECKING(for PHP 4 development files)
-if $PHP4_CONFIG --version | grep -q "^4" || test "x$ENABLE_PHP4_FORCE" = "xyes"
-then
-	PHP4_VERSION=`$PHP4_CONFIG --version 2> /dev/null`
-	languages_available="$languages_available php4($PHP4_VERSION)"
-else
-	enable_php4=no
-fi
-
-AC_MSG_RESULT($enable_php4)
-AM_CONDITIONAL([PHP4_ENABLED], [test "x$enable_php4" = "xyes"])
-AC_SUBST(PHP4_VERSION)
 
 # -----------
 # PHP 5 binding
@@ -908,13 +832,6 @@ lasso/xml/saml-2.0/Makefile
 lasso/xml/soap-1.1/Makefile
 lasso/xml/id-wsf-2.0/Makefile
 lasso/xml/ws/Makefile
-perl/Makefile
-php/Makefile
-swig/Makefile
-swig/wsf-support.i
-swig/saml-2.0/Makefile
-swig/id-wsf-2.0/Makefile
-swig/ws/Makefile
 tests/Makefile
 tests/data/Makefile
 tests/data/ca1-la/Makefile
@@ -972,7 +889,6 @@ Available languages:    ${languages_available}
 
 Java binding:           ${enable_java}
 Perl binding:           ${enable_perl}
-PHP 4 binding:          ${enable_php4}
 PHP 5 binding:          ${enable_php5}
 Python binding:         ${enable_python}
 
