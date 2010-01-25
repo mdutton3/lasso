@@ -313,8 +313,6 @@ lasso_strerror(int error_code)
 			return "Missing SOAP fault detail";
 		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE:
 			return "LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE";
-		case LASSO_WSSE_BAD_PASSWORD:
-			return "The known password does not match the UsernameToken";
 		case LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED:
 			return "Construction of an object from an XML document failed.";
 		case LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED:

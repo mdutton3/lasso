@@ -898,11 +898,11 @@
 #define LASSO_WSSEC_ERROR_MISSING_SECURITY_TOKEN 1600
 
 /**
- * LASSO_WSSEC_BAD_PASSWORD:
+ * LASSO_WSSEC_ERROR_BAD_PASSWORD:
  *
  * The known password does not match the UsernameToken
  */
-#define LASSO_WSSEC_BAD_PASSWORD 1601
+#define LASSO_WSSEC_ERROR_BAD_PASSWORD 1601
 
 /* ID-WSF 2.0 Discovery Service */
 /**

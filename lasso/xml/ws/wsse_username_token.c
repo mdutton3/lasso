@@ -294,13 +294,13 @@ lasso_wsse_username_token_check_password(LassoWsseUsernameToken *wsse_username_t
 		case LASSO_WSSE_USERNAME_TOKEN_PASSWORD_TYPE_DIGEST:
 			digest = _lasso_wsse_username_token_compute_digest(wsse_username_token, password);
 			if (strcmp(private->Password, digest) != 0) {
-				rc = LASSO_WSSEC_BAD_PASSWORD;
+				rc = LASSO_WSSEC_ERROR_BAD_PASSWORD;
 			}
 			g_free(digest);
 			break;
 		case LASSO_WSSE_USERNAME_TOKEN_PASSWORD_TYPE_TEXT:
 			if (strcmp(private->Password, password) != 0) {
-				return LASSO_WSSEC_BAD_PASSWORD;
+				return LASSO_WSSEC_ERROR_BAD_PASSWORD;
 			}
 			break;
 		default:
