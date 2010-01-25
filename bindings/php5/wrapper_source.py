@@ -319,7 +319,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 print >> self.fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
             elif f.startswith('a'):
                 element_type = arg[2].get('element-type')
-                if element_type == 'char*':
+                if is_cstring(element_type):
                     print >> self.fd, '    %(name)s = get_list_from_array_of_strings(zval_%(name)s);' % {'name': arg[1]}
                 else:
                     print >> sys.stderr, 'E: In %(function)s arg %(name)s is of type GList<%(elem)s>' % { 'function': m.name, 'name': arg[1], 'elem': element_type }
