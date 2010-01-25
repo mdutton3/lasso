@@ -59,7 +59,7 @@ struct _LassoSaSASLResponse {
 	GList *Data; /* of strings */
 	GList *ResourceOffering; /* of LassoNode */
 	GList *Credentials; /* of LassoNode */
-	GList *any;
+	GList *any; /* of LassoNode */
 
 	gchar *serverMechanism;
 	gchar *id;
