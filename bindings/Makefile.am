@@ -9,6 +9,9 @@ endif
 if JAVA_ENABLED
 SUBDIRS += java
 endif
+if PERL_ENABLED
+SUBDIRS += perl
+endif
 
 CLEANFILES = bindings.pyc lang_java.pyc lang_python.pyc lang_php5.pyc \
              utils.pyc lang_php5_helpers/__init__.pyc lang_php5_helpers/php_code.pyc \

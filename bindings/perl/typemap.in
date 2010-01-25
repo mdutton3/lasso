@@ -1,0 +1,10 @@
+INPUT
+
+T_GOBJECT_WRAPPER
+    $var = ($type)gperl_get_object($arg);
+
+T_XMLNODE
+    $var = pv_to_xmlnode($arg);
+
+T_GLIST_STRING
+    $var = array_to_glist_string((AV*)$arg);

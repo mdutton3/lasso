@@ -47,6 +47,10 @@ class BindingData:
 
     def __init__(self, options = None):
         self.headers = []
+        # [(char,string)]
+        # where char is:
+        # - i: integer
+        # - s: string
         self.constants = []
         self.structs = []
         self.struct_dict = {}
@@ -561,13 +565,16 @@ def main():
         from java import lang
 
         java_binding = lang.Binding(binding)
-        java_binding.generate();
+        java_binding.generate()
     elif options.language == 'java-list':
         from java import lang
 
         java_binding = lang.Binding(binding)
-        java_binding.print_list_of_files();
-
+        java_binding.print_list_of_files()
+    elif options.language == 'perl':
+        from perl import lang
+        perl_binding = lang.Binding(binding)
+        perl_binding.generate()
 
 if __name__ == '__main__':
     main()

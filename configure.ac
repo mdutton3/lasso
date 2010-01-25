@@ -864,6 +864,7 @@ bindings/python/tests/Makefile
 bindings/php5/Makefile
 bindings/php5/examples/Makefile
 bindings/php5/tests/Makefile
+bindings/perl/Makefile
 ])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `

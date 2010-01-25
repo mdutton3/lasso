@@ -1,0 +1,43 @@
+OUTPUT
+
+T_GOBJECT_WRAPPER
+    $arg = gperl_new_object((GObject*)$var, FALSE);
+
+T_XMLNODE_OWN
+    $arg = xmlnode_to_pv($var, TRUE);
+
+T_XMLNODE
+    $arg = xmlnode_to_pv($var, FALSE);
+
+T_GLIST_STRING
+    {
+      I32 ix, length;
+      length = g_list_length((GList*)$var);
+      EXTEND(SP, length);
+      for (ix = 0; ix < length; ++ix) {
+          ST(ix) = sv_2mortal(newSVpv((char*)$var->data, 0));
+          $var = $var->next;
+      }
+    }
+
+T_GLIST_XMLNODE
+    {
+      I32 ix, length;
+      length = g_list_length((GList*)$var);
+      EXTEND(SP, length);
+      for (ix = 0; ix < length; ++ix) {
+          ST(ix) = sv_2mortal(xmlnode_to_pv((xmlNode*)$var->data, FALSE));
+          $var = $var->next;
+      }
+    }
+
+T_GLIST_GOBJECT
+    {
+      I32 ix, length;
+      length = g_list_length((GList*)$var);
+      EXTEND(SP, length);
+      for (ix = 0; ix < length; ++ix) {
+          ST(ix) = sv_2mortal(gperl_new_object((GObject*)$var->data, FALSE));
+          $var = $var->next;
+      }
+    }

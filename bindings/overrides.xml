@@ -71,6 +71,7 @@
   <func name="lasso_server_get_service" return_owner="false"/>
   <!-- LassoSession -->
   <func name="lasso_session_get_endpoint_reference" return_owner="false"/>
+  <func name="lasso_session_get_assertions" skip="perl"/>
   <!-- LassoProvider -->
   <func name="lasso_provider_new">
     <param name="public_key" optional="true"/>
