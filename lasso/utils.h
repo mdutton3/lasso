@@ -299,6 +299,12 @@
 
 #define lasso_list_add_xml_node(dest, src) \
 	{ \
+		xmlNode *__tmp_src = xmlCopyNode(src, 1); \
+		lasso_list_add_non_null(dest, __tmp_src); \
+	}
+
+#define lasso_list_add_new_xml_node(dest, src) \
+	{ \
 		xmlNode *__tmp_src = src; \
 		lasso_list_add_non_null(dest, __tmp_src); \
 	}
