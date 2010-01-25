@@ -164,6 +164,9 @@ lasso_session_new_from_dump
 lasso_session_dump
 lasso_session_destroy
 lasso_session_get_assertions
+lasso_session_get_assertion
+lasso_session_remove_assertion
+lasso_session_add_assertion
 lasso_session_get_provider_index
 lasso_session_is_empty
 <SUBSECTION Standard>

@@ -165,7 +165,7 @@ lasso_session_add_status(LassoSession *session, const char *providerID, LassoNod
  *
  * Gets the assertion for the given @providerID.
  *
- * Return value: the assertion or NULL if it didn't exist.  This
+ * Return value:(transfer none): the assertion or NULL if it didn't exist.  This
  *      #LassoSamlAssertion is internally allocated and must not be freed by
  *      the caller.
  **/

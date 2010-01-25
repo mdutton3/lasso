@@ -78,6 +78,11 @@ LASSO_EXPORT GList* lasso_session_get_assertions(
 	LassoSession *session, const char* provider_id);
 LASSO_EXPORT gchar* lasso_session_get_provider_index(LassoSession *session, gint index);
 LASSO_EXPORT gboolean lasso_session_is_empty(LassoSession *session);
+LASSO_EXPORT gint lasso_session_remove_assertion(LassoSession *session, const gchar *providerID);
+LASSO_EXPORT LassoNode* lasso_session_get_assertion(
+		LassoSession *session, const gchar *providerID);
+LASSO_EXPORT gint lasso_session_add_assertion(LassoSession *session,
+		const char *providerID, LassoNode *assertion);
 
 #ifdef __cplusplus
 }

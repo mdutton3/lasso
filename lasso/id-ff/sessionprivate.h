@@ -46,22 +46,17 @@ struct _LassoSessionPrivate
 #endif
 };
 
-gint lasso_session_add_assertion(LassoSession *session,
-		const char *providerID, LassoNode *assertion);
 gint lasso_session_add_status(LassoSession *session,
 		const char *providerID, LassoNode *status);
 gint lasso_session_add_assertion_with_id(LassoSession *session,
 		const char *assertionID, xmlNode *assertion);
 
-LassoNode* lasso_session_get_assertion(
-		LassoSession *session, const gchar *providerID);
 xmlNode* lasso_session_get_assertion_by_id(
 		LassoSession *session, const gchar *assertionID);
 LassoNode* lasso_session_get_status(
 		LassoSession *session, const gchar *providerID);
 
 gint lasso_session_remove_status(LassoSession *session, const gchar *providerID);
-gint lasso_session_remove_assertion(LassoSession *session, const gchar *providerID);
 gint lasso_session_count_assertions(LassoSession *session);
 gboolean lasso_session_is_dirty(LassoSession *session);
 
