@@ -54,7 +54,7 @@ struct _LassoSamlAttributeValue {
 	LassoNode parent;
 
 	/*< public >*/
-	GList *any; /*of LassoNode */
+	GList *any; /* of LassoNode */
 };
 
 struct _LassoSamlAttributeValueClass {
