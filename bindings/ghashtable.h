@@ -26,7 +26,8 @@ struct _GHashTable
 
 /* Helper functions to access JNI interface functions */
 #if (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION < 12)
-static gboolean return_true(gpointer a, gpointer b, gpointer c)
+static gboolean return_true(G_GNUC_UNUSED gpointer a, G_GNUC_UNUSED gpointer b,
+		G_GNUC_UNUSED gpointer c)
 {
 	return TRUE;
 }
