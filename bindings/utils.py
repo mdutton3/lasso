@@ -132,10 +132,10 @@ def is_out(arg):
 
 
 def is_glist(arg):
-    return re.match('GList\>', var_type(arg))
+    return re.match('GList', var_type(arg))
 
 def is_hashtable(arg):
-    return re.match('GHashTable\>', var_type(arg))
+    return re.match('GHashTable', var_type(arg))
 
 def var_type(arg):
     '''Return the type of variable to store content'''
@@ -154,7 +154,10 @@ def ref_name(arg):
         return arg[1]
 
 def arg_type(arg):
-    return arg[0]
+    if isinstance(arg, str):
+        return arg
+    else:
+        return arg[0]
 
 def arg_name(arg):
     return arg[1]
@@ -179,8 +182,7 @@ def is_const(arg):
     return bool(re.search(r'\bconst\b', arg_type(arg)))
 
 def is_cstring(arg):
-    if isinstance(arg, tuple):
-        arg = arg_type(arg)
+    arg = arg_type(arg)
     return unconstify(arg) in ('char*','gchar*','guchar*','string','utf8')
 
 def is_xml_node(arg):
