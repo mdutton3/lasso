@@ -783,7 +783,7 @@ protected static native void destroy(long cptr);
             for m in cons:
                 name = method_name(m,class_name)
                 print >> fd, '    static public %s %s(%s) {' % (class_name, name, generate_arg_list(self,m.args))
-                print >> fd, '        return LassoJNI.%s(%s);' % (self.JNI_function_name(m),generate_arg_list2(m.args))
+                print >> fd, '        return (%s) LassoJNI.%s(%s);' % (class_name, self.JNI_function_name(m),generate_arg_list2(m.args))
                 print >> fd, '    }'
             print >> fd, '    /* Setters and getters */'
             for m in c.members:
