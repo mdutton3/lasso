@@ -243,6 +243,8 @@ lasso_strerror(int error_code)
 			return "Invalid NameIDPolicy in lib:AuthnRequest";
 		case LASSO_DISCOVERY_ERROR_SVC_METADATA_ASSOCIATION_ADD_FAILED:
 			return "Service metadata association failed";
+		case LASSO_WSSEC_ERROR_BAD_PASSWORD:
+			return "The known password does not match the UsernameToken";
 		case LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST:
 			return "The last parsed response contained a SOAP fault with a RedirectRequest element.";
 		case LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED:
