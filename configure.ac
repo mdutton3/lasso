@@ -567,7 +567,7 @@ AM_CONDITIONAL([CSHARP_ENABLED], [test "x$enable_csharp" = "xyes"])
 # ------------
 
 AC_ARG_ENABLE(perl, [  --disable-perl          disable the Perl binding],,
-              enable_perl="no")
+              enable_perl="yes")
 
 if test "X$PERL" != "X"; then
   PERLINSTALLSITEARCH=`$PERL -MConfig -e 'print $Config{installsitearch};'`
