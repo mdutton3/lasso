@@ -160,6 +160,8 @@ LASSO_EXPORT void lasso_node_set_custom_nodename(LassoNode *node, char *nodename
 
 LASSO_EXPORT const char* lasso_node_get_name(LassoNode *node);
 
+LASSO_EXPORT const char* lasso_node_get_namespace(LassoNode *node);
+
 LASSO_EXPORT LassoMessageFormat lasso_node_init_from_message(LassoNode *node, const char *message);
 
 LASSO_EXPORT gboolean lasso_node_init_from_query(LassoNode *node, const char *query);

@@ -2821,3 +2821,29 @@ lasso_node_get_name(LassoNode *node)
 	klass = LASSO_NODE_GET_CLASS(node);
 	return klass->node_data->node_name;
 }
+
+/**
+ * lasso_node_get_name:
+ * @node: a #LassoNode
+ *
+ * Return the XML element name for this object, the one that would be used in the XML dump of this
+ * object.
+ *
+ * Return value: the name of the object, the value must not be stored.
+ */
+const char*
+lasso_node_get_namespace(LassoNode *node)
+{
+	struct _CustomElement *custom_element;
+	LassoNodeClass *klass;
+	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
+
+	custom_element = _lasso_node_get_custom_element(node);
+	if (custom_element && custom_element->nodename) {
+		return custom_element->href;
+	}
+	klass = LASSO_NODE_GET_CLASS(node);
+	if (klass->node_data && klass->node_data->ns)
+		return (const char*)klass->node_data->ns->href;
+	return NULL;
+}
