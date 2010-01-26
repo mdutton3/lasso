@@ -54,7 +54,7 @@
 #include "../utils.h"
 #include "./idwsf2_helper.h"
 #include "./soap_binding.h"
-#include "../id-wsf/utils.h"
+#include "../id-wsf/wsf_utils.h"
 #include "../saml-2.0/saml2_helper.h"
 
 /**
@@ -124,6 +124,7 @@ lasso_idwsf2_profile_build_soap_envelope(const char *refToMessageId, const char 
 	LassoSoapHeader *header;
 	LassoSoapBody *body;
 	LassoIdWsf2Sb2Sender *sender;
+	LassoWsAddrAttributedURI *message_id;
 
 	/* Body */
 	body = lasso_soap_body_new();
@@ -140,6 +141,9 @@ lasso_idwsf2_profile_build_soap_envelope(const char *refToMessageId, const char 
 		lasso_assign_string(sender->providerID, providerID);
 		lasso_list_add_gobject(header->Other, sender);
 	}
+
+	message_id = lasso_soap_envelope_get_message_id(envelope, TRUE);
+	message_id->content = lasso_build_unique_id(32);
 
 	if (refToMessageId) {
 		LassoWsAddrAttributedURI *relates_to;
@@ -207,8 +211,9 @@ lasso_idwsf2_profile_init_response(LassoIdWsf2Profile *profile)
 {
 	char *provider_id = NULL;
 	LassoSoapEnvelope *soap_envelope;
-	char *request_message_id = NULL;
 	int rc = 0;
+	LassoWsAddrAttributedURI *request_message_id;
+	char *request_message_id_content = NULL;
 
 	lasso_bad_param(IDWSF2_PROFILE, profile);
 
@@ -216,8 +221,11 @@ lasso_idwsf2_profile_init_response(LassoIdWsf2Profile *profile)
 		provider_id = profile->parent.server->parent.ProviderID;
 	}
 	request_message_id = lasso_soap_envelope_get_message_id(
-			lasso_idwsf2_profile_get_soap_envelope_request(profile));
-	soap_envelope = lasso_idwsf2_profile_build_soap_envelope(request_message_id, provider_id);
+			lasso_idwsf2_profile_get_soap_envelope_request(profile), FALSE);
+	if (request_message_id) {
+		request_message_id_content = request_message_id->content;
+	}
+	soap_envelope = lasso_idwsf2_profile_build_soap_envelope(request_message_id_content, provider_id);
 	_set_soap_envelope_response(profile, soap_envelope);
 	lasso_release_gobject(profile->parent.response);
 
@@ -304,7 +312,8 @@ lasso_idwsf2_profile_process_request_msg(LassoIdWsf2Profile *wsf2_profile, const
 {
 	LassoProfile *profile = NULL;
 	LassoSoapEnvelope *envelope = NULL;
-	char *message_id;
+	LassoWsAddrAttributedURI *message_id;
+	char *message_id_content = NULL;
 	char *provider_id;
 	int rc = 0;
 
@@ -336,11 +345,14 @@ lasso_idwsf2_profile_process_request_msg(LassoIdWsf2Profile *wsf2_profile, const
 
 	/* Initialize soap response */
 	message_id = lasso_soap_envelope_get_message_id(
-			_get_soap_envelope_request(wsf2_profile));
+			_get_soap_envelope_request(wsf2_profile), FALSE);
+	if (message_id) {
+		message_id_content = message_id->content;
+	}
 	if (LASSO_IS_SERVER(profile->server)) {
 		provider_id = profile->server->parent.ProviderID;
 		lasso_assign_new_gobject(wsf2_profile->private_data->soap_envelope_response,
-				lasso_idwsf2_profile_build_soap_envelope(message_id, provider_id));
+				lasso_idwsf2_profile_build_soap_envelope(message_id_content, provider_id));
 	}
 	_add_fault_for_rc(wsf2_profile, rc);
 

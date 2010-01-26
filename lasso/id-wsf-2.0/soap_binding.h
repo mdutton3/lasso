@@ -34,6 +34,8 @@ extern "C" {
 #include "../xml/soap-1.1/soap_fault.h"
 #include "../xml/id-wsf-2.0/sb2_target_identity.h"
 #include "../xml/ws/wsse_security_header.h"
+#include "../xml/ws/wsa_attributed_uri.h"
+#include "../xml/ws/wsa_relates_to.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
 
 typedef enum {
@@ -65,7 +67,11 @@ LASSO_EXPORT const char* lasso_soap_envelope_get_action(LassoSoapEnvelope *soap_
 LASSO_EXPORT void lasso_soap_envelope_add_to_body(LassoSoapEnvelope *soap_envelope,
 		LassoNode *content);
 
-LASSO_EXPORT char* lasso_soap_envelope_get_message_id(LassoSoapEnvelope *soap_envelope);
+LASSO_EXPORT LassoWsAddrAttributedURI *lasso_soap_envelope_get_message_id(
+		LassoSoapEnvelope *soap_envelope, gboolean create);
+
+LASSO_EXPORT LassoWsAddrRelatesTo *lasso_soap_envelope_get_relates_to(LassoSoapEnvelope *envelope,
+		gboolean create);
 
 LASSO_EXPORT GList* lasso_soap_envelope_get_body_content(LassoSoapEnvelope *soap_envelope);
 

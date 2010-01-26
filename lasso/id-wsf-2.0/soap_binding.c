@@ -240,29 +240,88 @@ lasso_soap_envelope_add_to_body(LassoSoapEnvelope *soap_envelope, LassoNode *con
 	lasso_list_add_gobject(soap_envelope->Body->any, content);
 }
 
-/**
- * lasso_soap_envelope_get_message_id:
- * @soap_envelope: a #LassoSoapEnvelope object
- *
- * Return the WS-Addressing header MessageID content.
- *
- * Return value:(transfer none)(allow-none): a string or NULL if no message-id header is found.
- */
-char*
-lasso_soap_envelope_get_message_id(LassoSoapEnvelope *soap_envelope)
+inline static LassoNode*
+_get_node(GList **list, GType node_type, const char *node_name, const char *node_namespace,
+		const char *node_prefix, gboolean create)
 {
 	GList *i;
 
-	if (! LASSO_IS_SOAP_ENVELOPE(soap_envelope) || ! LASSO_IS_SOAP_HEADER(soap_envelope->Header))
-		return NULL;
+	lasso_foreach(i, (*list)) {
+		LassoNode *node = (LassoNode*)i->data;
 
-	lasso_foreach(i, soap_envelope->Header->Other) {
-		if (LASSO_IS_WSA_ATTRIBUTED_URI(i->data) && g_strcmp0(lasso_node_get_name((LassoNode*)i->data),
-					"MessageID")) {
-			return ((LassoWsAddrAttributedURI*)i->data)->content;
+		if (LASSO_IS_NODE(node) &&
+		    (! node_type || ( G_IS_OBJECT(node) && G_OBJECT_TYPE(node) == node_type)) &&
+		    (! node_name || g_strcmp0(lasso_node_get_name(node), node_name) == 0) &&
+		    (! node_namespace ||
+			     g_strcmp0(lasso_node_get_namespace(node), node_namespace) == 0)) {
+			return node;
 		}
 	}
+	if (create) {
+		LassoNode *node = (LassoNode*)g_object_new(node_type, NULL);
+		if (! node) {
+			return NULL;
+		}
+		if (g_strcmp0(lasso_node_get_name(node), node_name) != 0) {
+			lasso_node_set_custom_nodename(node, node_name);
+		}
+		if (g_strcmp0(lasso_node_get_namespace(node), node_namespace) == 0) {
+			lasso_node_set_custom_namespace(node, node_namespace, node_prefix);
+		}
+		lasso_list_add_new_gobject(*list, node);
+		return node;
+	}
 	return NULL;
+}
+
+LassoNode*
+_lasso_soap_envelope_get_header(LassoSoapEnvelope *soap_envelope, GType node_type,
+		const char *node_name, const char *node_namespace, const char *node_prefix,
+		gboolean create)
+{
+	if (! LASSO_IS_SOAP_ENVELOPE(soap_envelope) || !
+			LASSO_IS_SOAP_HEADER(soap_envelope->Header)) {
+		return NULL;
+	}
+
+	return _get_node(&soap_envelope->Header->Other, node_type, node_name, node_namespace,
+			node_prefix, create);
+}
+
+
+/**
+ * lasso_soap_envelope_get_message_id:
+ * @soap_envelope: a #LassoSoapEnvelope object
+ * @create:(default FALSE): whether to create the node if it is not found
+ *
+ * Return the WS-Addressing header MessageID content.
+ *
+ * Return value:(transfer none): a #LassoWsAddrAttributedURI object or NULL if none is found, and
+ * creation was not allowed.
+ */
+LassoWsAddrAttributedURI*
+lasso_soap_envelope_get_message_id(LassoSoapEnvelope *soap_envelope, gboolean create)
+{
+	return (LassoWsAddrAttributedURI*)_lasso_soap_envelope_get_header(soap_envelope,
+			LASSO_TYPE_WSA_ATTRIBUTED_URI, LASSO_WSA_ELEMENT_MESSAGE_ID, NULL, NULL,
+			create);
+}
+
+/**
+ * lasso_soap_envelope_get_relates_to:
+ * @soap_envelope: a #LassoSoapEnvelope object
+ * @create:(default FALSE): whether to create the node if it is not found
+ *
+ *
+ * Returns the RelatesTo WS-Addressing header, if it exists.
+ *
+ * Return value:(transfer none): a #LassoWsAddrAttributedURI object or NULL if none is found, and creation was not allowed.
+ */
+LassoWsAddrRelatesTo*
+lasso_soap_envelope_get_relates_to(LassoSoapEnvelope *soap_envelope, gboolean create)
+{
+	return (LassoWsAddrRelatesTo*)_lasso_soap_envelope_get_header(soap_envelope,
+			LASSO_TYPE_WSA_RELATES_TO, NULL, NULL, NULL, create);
 }
 
 /**

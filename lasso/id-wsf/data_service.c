@@ -61,8 +61,8 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include "discovery.h"
-#include "data_service.h"
+#include "./discovery.h"
+#include "./data_service.h"
 #include "../xml/dst_query.h"
 #include "../xml/dst_query_response.h"
 #include "../xml/dst_modify.h"

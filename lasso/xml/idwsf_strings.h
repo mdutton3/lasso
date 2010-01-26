@@ -655,6 +655,20 @@
  */
 #define LASSO_WSA_PREFIX "wsa"
 
+/**
+ * LASSO_WSA_ELEMENT_MESSAGE_ID:
+ *
+ * Name of the element representing SOAP MessageID in the WS-Addressing specification.
+ */
+#define LASSO_WSA_ELEMENT_MESSAGE_ID "MessageID"
+/**
+ * LASSO_WSA_ELEMENT_RELATES_TO:
+ *
+ * Name of the element representing SOAP messages inter-relationships in the WS-Addressing
+ * specification.
+ */
+#define LASSO_WSA_ELEMENT_RELATES_TO "RelatesTo"
+
 /* WS-Utility */
 /**
  * LASSO_WSU_HREF:

@@ -37,7 +37,7 @@
 #include "../xml/id-wsf-2.0/disco_security_context.h"
 #include "../xml/id-wsf-2.0/sec_token.h"
 #include "../xml/id-wsf-2.0/sbf_framework.h"
-#include "../id-wsf/utils.h"
+#include "../id-wsf/wsf_utils.h"
 #include "../xml/saml-2.0/saml2_attribute.h"
 #include "../xml/saml-2.0/saml2_attribute_statement.h"
 #include "../xml/saml-2.0/saml2_attribute_value.h"

@@ -81,9 +81,9 @@
 #include "../id-ff/providerprivate.h"
 #include "../id-ff/sessionprivate.h"
 
-#include "id_wsf.h"
-#include "wsf_profile_private.h"
-#include "utils.h"
+#include "./id_wsf.h"
+#include "./wsf_profile_private.h"
+#include "./wsf_utils.h"
 #include "../utils.h"
 
 struct _LassoDiscoveryPrivate
