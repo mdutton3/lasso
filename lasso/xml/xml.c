@@ -869,7 +869,7 @@ _lasso_node_get_custom_element_or_create(LassoNode *node)
  * the nearly same namespace.
  */
 void
-lasso_node_set_custom_namespace(LassoNode *node, char *prefix, char *href)
+lasso_node_set_custom_namespace(LassoNode *node, const char *prefix, const char *href)
 {
 	struct _CustomElement *custom_element;
 
@@ -889,7 +889,7 @@ lasso_node_set_custom_namespace(LassoNode *node, char *prefix, char *href)
  * a real element.
  */
 void
-lasso_node_set_custom_nodename(LassoNode *node, char *nodename)
+lasso_node_set_custom_nodename(LassoNode *node, const char *nodename)
 {
 	struct _CustomElement *custom_element;
 

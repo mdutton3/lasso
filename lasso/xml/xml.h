@@ -154,9 +154,10 @@ LASSO_EXPORT xmlNode* lasso_node_get_original_xmlnode(LassoNode *node);
 
 LASSO_EXPORT void lasso_node_set_original_xmlnode(LassoNode *node, xmlNode* xmlnode);
 
-LASSO_EXPORT void lasso_node_set_custom_namespace(LassoNode *node, char *prefix, char *href);
+LASSO_EXPORT void lasso_node_set_custom_namespace(LassoNode *node, const char *prefix,
+		const char *href);
 
-LASSO_EXPORT void lasso_node_set_custom_nodename(LassoNode *node, char *nodename);
+LASSO_EXPORT void lasso_node_set_custom_nodename(LassoNode *node, const char *nodename);
 
 LASSO_EXPORT const char* lasso_node_get_name(LassoNode *node);
 
