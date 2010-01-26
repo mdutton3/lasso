@@ -13,7 +13,7 @@ INCLUDES = \
 
 all: Lasso.so
 
-EXTRA_DIST=
+EXTRA_DIST=gobject_handling.c glist_handling.c typemap.in typemap.out lang.py Makefile.PL LassoNode.xs __init__.py test.pl test.sh t
 
 if WSF_ENABLED
 EXTRA_ARGS = --enable-id-wsf
