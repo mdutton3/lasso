@@ -23,7 +23,10 @@ Makefile.perl: $(srcdir)/Makefile.PL Lasso.xs Lasso.pm
 	CFLAGS="$(LASSO_XS_CFLAGS)" TOP_SRCDIR="$(top_srcdir)" TOP_BUILDDIR="$(top_builddir)" \
 	       SRCDIR="$(srcdir)" BUILDDIR=./ $(PERL) $(srcdir)/Makefile.PL PREFIX=$(prefix)
 
-	-if [ "$(srcdir)" != "$(builddir)" ]; then cp -R $(srcdir)/t $(srcdir)/test.pl $(srcdir)/Makefile.PL $(srcdir)/LassoNode.xs $(builddir); fi
+	-if [ "$(srcdir)" != "$(builddir)" ]; then \
+		cp -R $(srcdir)/t $(srcdir)/test.pl $(srcdir)/Makefile.PL $(srcdir)/LassoNode.xs .; \
+		chmod -R u+rwx t test.pl Makefile.PL LassoNode.xs; \
+	fi
 
 Lasso.xs Lasso.pm: lang.py typemap.in typemap.out
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l perl --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
@@ -31,13 +34,17 @@ Lasso.xs Lasso.pm: lang.py typemap.in typemap.out
 Lasso.so: Lasso.xs Lasso.pm Makefile.perl gobject_handling.c LassoNode.xs glist_handling.c
 	make -f Makefile.perl
 
-CLEANFILES = Lasso.pm Lasso.xs Lasso.so Makefile.perl typemap Lasso.o Lasso.bs pm_to_blib Lasso.c blib
+CLEANFILES = Lasso.pm Lasso.xs Lasso.so typemap Lasso.o Lasso.bs pm_to_blib Lasso.c blib
 
 clean-local:
-	-make -f Makefile.perl clean
-	-if [ "$(srcdir)" != "$(builddir)" ]; then rm -rf `find -mindepth 1 -not -name Makefile`; fi
+	-@make -f Makefile.perl clean
+	-@rm -f Makefile.perl
+	-if [ "$(srcdir)" != "$(builddir)" ]; then rm -rf `find -H -mindepth 1 -not -name Makefile` t; fi
 
 install-exec-local:
 	make -f Makefile.perl install DESTDIR=$(DESTDIR) PREFIX=$(prefix)
+
+uninstall-local:
+	@rm -rf `find $(DESTDIR)$(prefix) -name Lasso.pm -or -name Lasso.so -or -name Lasso.bs -or -name .packlist -or -name perllocal.pod`
 
 endif
