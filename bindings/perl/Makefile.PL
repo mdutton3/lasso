@@ -23,7 +23,7 @@ WriteMakefile(
       ( AUTHOR         => 'Benjamin Dauvergne <bdauvergne@entrouvert.com>') : ()),
     LIBS              => ["-L$TOP_SRCDIR/lasso/.libs -llasso"], # e.g., '-lm'
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'
-    INC               => "-I. -I$SRCDIR -I$TOP_SRCDIR -I../../ $CFLAGS", # e.g., '-I. -I/usr/include/other'
+    INC               => "-I. -I$SRCDIR -I$SRCDIR/../.. -I$TOP_BUILDDIR $CFLAGS", # e.g., '-I. -I/usr/include/other'
 	# Un-comment this if you add C files to link with later:
     OBJECT            => 'Lasso.o', # link all the C files too
     MAKEFILE          => 'Makefile.perl',

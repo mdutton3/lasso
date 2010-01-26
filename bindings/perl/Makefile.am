@@ -20,7 +20,7 @@ EXTRA_ARGS = --enable-id-wsf
 endif
 
 Makefile.perl: $(srcdir)/Makefile.PL Lasso.xs Lasso.pm
-	CFLAGS="$(LASSO_XS_CFLAGS)" TOP_SRCDIR="$(top_srcdir)" TOP_BUILDDIR="$(top_builddir)" \
+	CFLAGS="$(LASSO_XS_CFLAGS)" TOP_BUILDDIR="$(top_builddir)" \
 	       SRCDIR="$(srcdir)" BUILDDIR=./ $(PERL) $(srcdir)/Makefile.PL PREFIX=$(prefix)
 
 	-if [ "$(srcdir)" != "$(builddir)" ]; then \
