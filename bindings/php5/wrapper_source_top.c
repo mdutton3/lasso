@@ -294,7 +294,7 @@ get_hashtable_from_array_of_objects(zval *array)
 	return result;
 }
 
-static GHashTable*
+G_GNUC_UNUSED static GHashTable*
 get_hashtable_from_array_of_strings(zval *array)
 {
 	HashTable *hashtable = NULL;
@@ -344,7 +344,7 @@ set_array_from_hashtable_of_objects(GHashTable *hashtable, zval **array)
 	g_list_free(keys);
 }
 
-static void
+G_GNUC_UNUSED static void
 set_array_from_hashtable_of_strings(GHashTable *hashtable, zval **array)
 {
 	GList *keys = NULL;
