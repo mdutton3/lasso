@@ -960,8 +960,8 @@ register_xpath_namespace(gchar *prefix, gchar *href, xmlXPathContext *xpathCtx)
 static void
 lasso_register_idwsf_xpath_namespaces(xmlXPathContext *xpathCtx)
 {
-	xmlXPathRegisterNs(xpathCtx, (xmlChar*)LASSO_PP_PREFIX,
-			(xmlChar*)LASSO_PP_HREF);
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)LASSO_PP10_PREFIX,
+			(xmlChar*)LASSO_PP10_HREF);
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)LASSO_EP_PREFIX,
 			(xmlChar*)LASSO_EP_HREF);
 	if (dst_services_by_prefix == NULL)

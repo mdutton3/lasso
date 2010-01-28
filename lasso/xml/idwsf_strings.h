@@ -109,19 +109,34 @@
 #define LASSO_EP_PREFIX "ep"
 
 /**
- * LASSO_PP_HREF:
+ * LASSO_PP10_HREF:
  *
- * Namespace for FIXME
+ * Namespace for ID-SIS Personal Profile
  *
  */
-#define LASSO_PP_HREF   "urn:liberty:id-sis-pp:2003-08"
+#define LASSO_PP10_HREF   "urn:liberty:id-sis-pp:2003-08"
 /**
- * LASSO_PP_PREFIX:
+ * LASSO_PP10_PREFIX:
  *
- * Preferred prefix for namespace of FIXME
+ * Preferred prefix for namespace of ID-SIS Personal Profile
  *
  */
-#define LASSO_PP_PREFIX "pp"
+#define LASSO_PP10_PREFIX "pp10"
+
+/**
+ * LASSO_PP11_HREF:
+ *
+ * Namespace for ID-SIS Personal Profile
+ *
+ */
+#define LASSO_PP11_HREF   "urn:liberty:id-sis-pp:2005-05"
+/**
+ * LASSO_PP11_PREFIX:
+ *
+ * Preferred prefix for namespace of ID-SIS Personal Profile
+ *
+ */
+#define LASSO_PP11_PREFIX "pp11"
 
 /**
  * LASSO_IS_HREF:

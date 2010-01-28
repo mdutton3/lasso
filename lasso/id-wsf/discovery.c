@@ -46,7 +46,7 @@
  * discovery = lasso_discovery_new(server);
  * lasso_wsf_profile_set_session_from_dump(LASSO_WSF_PROFILE(discovery), session_dump);
  * lasso_discovery_init_query(discovery);
- * lasso_discovery_add_requested_service(discovery, LASSO_PP_HREF);
+ * lasso_discovery_add_requested_service(discovery, LASSO_PP10_HREF);
  * lasso_discovery_build_request_msg(discovery);
  *
  * // service must perform SOAP call to LASSO_WSF_PROFILE(discovery)->msg_url

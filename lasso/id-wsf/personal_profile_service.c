@@ -103,7 +103,7 @@ lasso_personal_profile_service_get_type()
 	static GType this_type = 0;
 
 	if (!this_type) {
-		lasso_discovery_register_constructor_for_service_type(LASSO_PP_HREF,
+		lasso_discovery_register_constructor_for_service_type(LASSO_PP10_HREF,
 			(LassoWsfProfileConstructor)lasso_personal_profile_service_new_full);
 		static const GTypeInfo this_info = {
 			sizeof(LassoPersonalProfileServiceClass),
