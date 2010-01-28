@@ -195,10 +195,33 @@
 		dest = xmlCopyNode(__tmp, 1); \
 	}
 
+#define lasso_assign_new_xml_node(dest,src) \
+	{ \
+		xmlNode *__tmp = (src); \
+		lasso_check_type_equality(dest, src); \
+		if (dest) \
+			xmlFreeNode(dest); \
+		dest = __tmp; \
+	}
+
 #define lasso_assign_new_list_of_gobjects(dest, src) \
 	{ \
 		GList *__tmp = (src); \
-		lasso_release_gobject_list(dest); \
+		lasso_release_list_of_gobjects(dest); \
+		dest = (GList*)__tmp; \
+	}
+
+#define lasso_assign_new_list_of_strings(dest, src) \
+	{ \
+		GList *__tmp = (src); \
+		lasso_release_list_of_strings(dest); \
+		dest = (GList*)__tmp; \
+	}
+
+#define lasso_assign_new_list_of_xml_node(dest, src) \
+	{ \
+		GList *__tmp = (src); \
+		lasso_release_list_of_xml_node(dest); \
 		dest = (GList*)__tmp; \
 	}
 
