@@ -166,8 +166,12 @@ class MetadataRegisterTestCase(IdWsf2TestCase):
         abstract = 'Personal Profile service'
         soapEndpoint = 'http://idp1/soapEndpoint'
         try:
-            wsp_disco.initMetadataRegister(
-                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
+            wsp_disco.initMetadataRegister()
+            wsp_disco.addSimpleServiceMetadata(service_types =
+                    ['urn:liberty:id-sis-pp:2005-05'], abstract = abstract,
+                    provider_id = wsp.providerIds[0], address = soapEndpoint)
+            self.failUnless(wsp_disco.request is not None)
+            self.failUnlessEqual(len(wsp_disco.metadatas), 1)
         except lasso.Error, e:
             self.fail(e)
 
