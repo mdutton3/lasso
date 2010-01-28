@@ -200,11 +200,14 @@ def is_boolean(arg):
 def is_pointer(arg):
     return arg_type(arg).endswith('*')
 
+def unpointerize(arg):
+    return arg_type(arg).replace('*','')
+
 def is_list(arg):
     return unconstify(arg_type(arg)).startswith('GList')
 
 def is_int(arg, binding_data):
-    return arg_type(arg) in [ 'int', 'gint', 'long', 'glong'] + binding_data.enums
+    return arg_type(arg) in [ 'time_t', 'int', 'gint', 'long', 'glong'] + binding_data.enums
 
 def is_time_t_pointer(arg):
     return re.match(r'\btime_t\*', unconstify(arg_type(arg)))
