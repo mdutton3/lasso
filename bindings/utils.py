@@ -110,10 +110,10 @@ def group(list):
         prev = x
     return pile[0]
 
-
-
 def _test_arg(arg, what):
-    return bool(arg[2].get(what))
+    if isinstance(arg, tuple) or isinstance(arg, list):
+        return bool(arg[2].get(what))
+    return False
 
 def is_optional(arg):
     return _test_arg(arg, 'optional')
@@ -132,17 +132,18 @@ def is_out(arg):
 
 
 def is_glist(arg):
-    return re.match('GList', var_type(arg))
+    return re.match('GList', unconstify(var_type(arg)))
 
 def is_hashtable(arg):
-    return re.match('GHashTable', var_type(arg))
+    return re.match('GHashTable', unconstify(var_type(arg)))
 
 def var_type(arg):
     '''Return the type of variable to store content'''
+    arg = arg_type(arg)
     if is_out(arg):
-        return arg[0][:-1]
+        return arg[:-1]
     else:
-        return arg[0]
+        return arg
 
 def unref_type(arg):
     return (var_type(arg), arg[1], arg[2])
@@ -154,16 +155,20 @@ def ref_name(arg):
         return arg[1]
 
 def arg_type(arg):
-    if isinstance(arg, str):
-        return arg
-    else:
+    if isinstance(arg, tuple) or isinstance(arg, list):
         return arg[0]
+    else:
+        return arg
 
 def arg_name(arg):
     return arg[1]
 
 def unconstify(type):
-    return re.sub(r'\bconst\b\s*', '', type).strip()
+    type = arg_type(type)
+    if isinstance(type, str):
+        return re.sub(r'\bconst\b\s*', '', type).strip()
+    else:
+        return type
 
 def make_arg(type):
     return (type,'',{})
@@ -183,10 +188,11 @@ def is_const(arg):
 
 def is_cstring(arg):
     arg = arg_type(arg)
-    return unconstify(arg) in ('char*','gchar*','guchar*','string','utf8')
+    return clean_type(unconstify(arg)) in ('char*','gchar*','guchar*','string','utf8','strings')
 
 def is_xml_node(arg):
-    return unconstify(arg_type(arg)).startswith('xmlNode')
+    arg = unconstify(arg_type(arg))
+    return arg and arg.startswith('xmlNode')
 
 def is_boolean(arg):
     return arg_type(arg) in ('gboolean','bool')
@@ -204,6 +210,8 @@ def is_time_t_pointer(arg):
     return re.match(r'\btime_t\*', unconstify(arg_type(arg)))
 
 def is_transfer_full(arg):
+    if not isinstance(arg, tuple):
+        return False
     transfer = arg[2].get('transfer')
     if transfer:
         return transfer == 'full'
@@ -213,6 +221,5 @@ def is_transfer_full(arg):
 _not_objects = ( 'GHashTable', 'GList', 'GType' )
 
 def is_object(arg):
-
     t = unconstify(arg_type(arg))
-    return t[0] in string.uppercase and not [ x for x in _not_objects if x in t ]
+    return t and t[0] in string.uppercase and not [ x for x in _not_objects if x in t ]
