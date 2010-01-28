@@ -7,4 +7,7 @@ T_XMLNODE
     $var = pv_to_xmlnode($arg);
 
 T_GLIST_STRING
-    $var = array_to_glist_string((AV*)$arg);
+    $var = array_to_glist_string((AV*)SvRV($arg));
+
+T_GLIST_GOBJECT
+    $var = array_to_glist_gobject((AV*)SvRV($arg));

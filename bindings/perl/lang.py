@@ -98,9 +98,12 @@ gchar *\tT_PV
 gboolean\tT_IV
 const LassoProvider *\tT_GOBJECT_WRAPPER
 xmlNode*\tT_XMLNODE
+const xmlNode*\tT_XMLNODE
 GList_string\tT_GLIST_STRING
 GList_xmlnode\tT_GLIST_XMLNODE
 GList_gobject\tT_GLIST_GOBJECT
+GList_string_const\tT_GLIST_STRING
+GList_gobject_const\tT_GLIST_GOBJECT
 const GList*\tT_GLIST_STRING
 GHashTable*\tT_PTRREF
 
@@ -115,8 +118,8 @@ GHashTable*\tT_PTRREF
             self.typemap.pn('const %-30s T_GOBJECT_WRAPPER' % (clss.name + '*'))
 
         # Create INPUT & OUTPUT maps
-        self.typemap.p(self.file_content('typemap.in'))
-        self.typemap.p(self.file_content('typemap.out'))
+        self.typemap.p(self.file_content('typemap-in'))
+        self.typemap.p(self.file_content('typemap-out'))
 
     def generate_pm_header(self):
         # Lasso.pm
@@ -144,6 +147,8 @@ GHashTable*\tT_PTRREF
 typedef GList* GList_string;
 typedef GList* GList_gobject;
 typedef GList* GList_xmlnode;
+typedef const GList* GList_string_const;
+typedef const GList* GList_gobject_const;
 
 /* #include "ppport.h" */''')
         for h in self.binding_data.headers:
@@ -217,7 +222,14 @@ INCLUDE: LassoNode.xs
         if 'get_nameIden' in name:
             return
         self.xs.pn()
-        self.xs.pn(func.return_type or 'void')
+        if not func.return_type or not is_glist(func.return_arg):
+            self.xs.pn(func.return_type or 'void')
+        elif is_glist(func.return_arg):
+            try:
+                self.xs.pn(self.glist_type(func.return_arg))
+            except:
+                print >>sys.stderr, 'failed', func.return_arg, func
+                raise
         self.xs.p(name + '(')
         arg_list = []
         for arg in func.args:
@@ -289,7 +301,7 @@ INCLUDE: LassoNode.xs
             %(release)s
             for (; i < items; i++) {
                 %(el_type)s data;
-                data = (%(el_type)s) %(convert)s;
+                data = (%(el_type)s)%(convert)s;
                 %(push)s(obj->%(field)s, data);
             }
             XSRETURN(0);
@@ -302,7 +314,7 @@ INCLUDE: LassoNode.xs
             ''' % { 'rtype': self.glist_type(member), 
                 'field': name, 
                 'clss': struct.name,
-                'el_type': self.starify(element_type(member)),
+                'el_type': self.element_type2real_type(element_type(member)),
                 'push': self.push_macro(member),
                 'convert': self.convert_function('ST(i)', member),
                 'release': self.release_list('obj', member),
@@ -317,7 +329,10 @@ INCLUDE: LassoNode.xs
             return str + '*'
 
     def glist_type(self, member):
-        return self.element_type_lookup(member, { 'string': 'GList_string', 'xml_node': 'GList_xmlnode', 'gobject': 'GList_gobject'})
+        x = self.element_type_lookup(member, { 'string': 'GList_string', 'xml_node': 'GList_xmlnode', 'gobject': 'GList_gobject'})
+        if is_const(member):
+            return x + '_const'
+        return x
 
     def element_type_lookup(self, member, lookup_table):
         if not is_glist(member):
@@ -425,7 +440,11 @@ INCLUDE: LassoNode.xs
                 if arg_type(member) ==  'void*':
                     print 'Skipping %s' % member
                     continue
-                self.generate_xs_getter_setter(struct, member)
+                try:
+                    self.generate_xs_getter_setter(struct, member)
+                except:
+                    print 'failed', struct, member
+                    raise
 
     def generate_wrapper(self):
         pass
@@ -436,3 +455,11 @@ INCLUDE: LassoNode.xs
     def return_value(self, vtype, options):
         pass
 
+    def element_type2real_type(self, type):
+        if is_cstring(type):
+            if is_const(type):
+                return 'const char*'
+            else:
+                return 'char*'
+        else:
+            return type + '*'

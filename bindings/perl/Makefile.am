@@ -13,7 +13,7 @@ INCLUDES = \
 
 all: Lasso.so
 
-EXTRA_DIST=gobject_handling.c glist_handling.c typemap.in typemap.out lang.py Makefile.PL LassoNode.xs __init__.py test.pl test.sh t
+EXTRA_DIST=gobject_handling.c glist_handling.c typemap-in typemap-out lang.py Makefile.PL LassoNode.xs __init__.py test.pl test.sh t
 
 if WSF_ENABLED
 EXTRA_ARGS = --enable-id-wsf
@@ -28,7 +28,7 @@ Makefile.perl: $(srcdir)/Makefile.PL Lasso.xs Lasso.pm
 		chmod -R u+rwx t test.pl Makefile.PL LassoNode.xs; \
 	fi
 
-Lasso.xs Lasso.pm: lang.py typemap.in typemap.out
+Lasso.xs Lasso.pm: lang.py typemap-in typemap-out
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l perl --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 
 Lasso.so: Lasso.xs Lasso.pm Makefile.perl gobject_handling.c LassoNode.xs glist_handling.c
