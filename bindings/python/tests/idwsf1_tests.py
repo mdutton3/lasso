@@ -92,7 +92,7 @@ class IdWsf1TestCase(unittest.TestCase):
                             "http://idp/pp/soapEndpoint",
                             "Discovery SOAP Endpoint description");
         pp_service_instance = lasso.DiscoServiceInstance(
-                                lasso.PP_HREF,
+                                lasso.PP10_HREF,
                                 "http://idp/providerId",
                                 pp_description);
         idp.addService(pp_service_instance);
@@ -123,7 +123,7 @@ class IdWsf1TestCase(unittest.TestCase):
 
     def get_resource_offering(self, soap_end_point='http://idp/pp/soapEndpoint'):
         service_instance = lasso.DiscoServiceInstance(
-                lasso.PP_HREF,
+                lasso.PP10_HREF,
                 self.idp.providerId,
                 lasso.DiscoDescription_newWithBriefSoapHttpDescription(
                     lasso.SECURITY_MECH_NULL,
@@ -145,7 +145,7 @@ class IdWsf1TestCase(unittest.TestCase):
         wsc_disco = lasso.Discovery(self.wsc)
         wsc_disco.setSessionFromDump(sp_session_dump)
         wsc_disco.initQuery()
-        wsc_disco.addRequestedServiceType(lasso.PP_HREF)
+        wsc_disco.addRequestedServiceType(lasso.PP10_HREF)
         wsc_disco.buildRequestMsg()
 
         # Process query
@@ -247,7 +247,7 @@ class DataServiceQueryTestCase(IdWsf1TestCase):
     def test01(self):
         '''Test a data service query'''
         wsc_service = self.get_pp_service()
-        wsc_service.initQuery('/pp:PP/pp:InformalName', 'name')
+        wsc_service.initQuery('/pp10:PP/pp10:InformalName', 'name')
         wsc_service.buildSoapRequestMsg()
         self.failUnless(lasso.getRequestTypeFromSoapMsg(wsc_service.msgBody)
                         == lasso.REQUEST_TYPE_DST_QUERY)
@@ -271,7 +271,7 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
     def test01(self):
         '''Test a data service modify'''
 
-        xpath = '/pp:PP/pp:InformalName'
+        xpath = '/pp10:PP/pp10:InformalName'
         old_data = '''
             <PP xmlns="urn:liberty:id-sis-pp:2003-08">
                 <InformalName>Damien</InformalName>
@@ -279,7 +279,7 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
         new_data = '<InformalName>Alain</InformalName>'
 
         new_full_data = '''<PP xmlns="urn:liberty:id-sis-pp:2003-08">
-                <pp:InformalName xmlns:pp="urn:liberty:id-sis-pp:2003-08">Alain</pp:InformalName>
+                <pp10:InformalName xmlns:pp10="urn:liberty:id-sis-pp:2003-08">Alain</pp10:InformalName>
             </PP>'''
 
         wsc_service = self.get_pp_service()
@@ -296,8 +296,8 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
 
         item = wsp_service.request.modification[0]
         self.failUnless(item.newData.any[0] ==
-            '<pp:InformalName xmlns:pp="urn:liberty:id-sis-pp:2003-08">Alain</pp:InformalName>')
-        self.failUnless(item.select == '/pp:PP/pp:InformalName')
+            '<pp10:InformalName xmlns:pp10="urn:liberty:id-sis-pp:2003-08">Alain</pp10:InformalName>')
+        self.failUnless(item.select == '/pp10:PP/pp10:InformalName')
 
         wsp_service.resourceData = old_data
         wsp_service.validateRequest()
@@ -311,7 +311,7 @@ class DataServiceModifyTestCase(IdWsf1TestCase):
     def test02(self):
         '''Test a data service modify - root element'''
 
-        xpath = '/pp:PP'
+        xpath = '/pp10:PP'
         old_data = '''
             <PP xmlns="urn:liberty:id-sis-pp:2003-08">
                 <InformalName>Damien</InformalName>
