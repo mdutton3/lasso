@@ -18,8 +18,10 @@ PyMODINIT_FUNC init_lasso(void);
 G_GNUC_UNUSED static PyObject* get_pystring_from_xml_node(xmlNode *xmlnode);
 G_GNUC_UNUSED static xmlNode*  get_xml_node_from_pystring(PyObject *string);
 G_GNUC_UNUSED static PyObject* get_dict_from_hashtable_of_objects(GHashTable *value);
+G_GNUC_UNUSED static PyObject* get_dict_from_hashtable_of_strings(GHashTable *value);
 G_GNUC_UNUSED static PyObject* PyGObjectPtr_New(GObject *obj);
 G_GNUC_UNUSED static void set_hashtable_of_pygobject(GHashTable *a_hash, PyObject *dict);
+G_GNUC_UNUSED static void set_hashtable_of_strings(GHashTable *a_hash, PyObject *dict);
 G_GNUC_UNUSED static void set_list_of_strings(GList **a_list, PyObject *seq);
 G_GNUC_UNUSED static void set_list_of_xml_nodes(GList **a_list, PyObject *seq);
 G_GNUC_UNUSED static void set_list_of_pygobject(GList **a_list, PyObject *seq);
@@ -59,6 +61,34 @@ get_dict_from_hashtable_of_objects(GHashTable *value)
 		item_value = g_hash_table_lookup(value, keys->data);
 		if (item_value) {
 			item = PyGObjectPtr_New(G_OBJECT(item_value));
+			PyDict_SetItemString(dict, (char*)keys->data, item);
+			Py_DECREF(item);
+		} else {
+			PyErr_Warn(PyExc_RuntimeWarning, "hashtable contains a null value");
+		}
+	}
+	g_list_free(begin);
+
+	proxy = PyDictProxy_New(dict);
+	Py_DECREF(dict);
+	return proxy;
+}
+
+static PyObject*
+get_dict_from_hashtable_of_strings(GHashTable *value)
+{
+	GList *keys, *begin;
+	PyObject *dict,*proxy;
+	char *item_value;
+	PyObject *item;
+
+	dict = PyDict_New();
+
+	begin = keys = g_hash_table_get_keys(value);
+	for (; keys; keys = g_list_next(keys)) {
+		item_value = g_hash_table_lookup(value, keys->data);
+		if (item_value) {
+			item = PyString_FromString(item_value);
 			PyDict_SetItemString(dict, (char*)keys->data, item);
 			Py_DECREF(item);
 		} else {
@@ -163,6 +193,44 @@ failure:
 			break;
 		g_object_unref((PyGObjectPtr*)value);
 	}
+}
+
+static void 
+set_hashtable_of_strings(GHashTable *a_hash, PyObject *dict)
+{
+	PyObject *key, *value;
+	Py_ssize_t i;
+
+	if (! a_hash) {
+		 PyErr_SetString(PyExc_TypeError, "hashtable does not exist");
+		 return;
+	}
+	if (dict != Py_None && ! PyDict_Check(dict)) {
+		 PyErr_SetString(PyExc_TypeError, "value should be a frozen dict");
+		 return;
+	}
+	i = 0;
+	// Increase ref count of common object between old and new
+	// value of the hashtable
+	while (PyDict_Next(dict, &i, &key, &value)) {
+		if (! PyString_Check(key) || ! PyString_Check(value))
+		{
+			PyErr_SetString(PyExc_TypeError,
+					"value should be a dict, "
+					"with string keys "
+					"and string values");
+			goto failure;
+		}
+	}
+	g_hash_table_remove_all (a_hash);
+	i = 0;
+	while (PyDict_Next(dict, &i, &key, &value)) {
+		char *ckey = PyString_AsString(key);
+		char *cvalue = PyString_AsString(value);
+		g_hash_table_insert (a_hash, g_strdup(ckey), g_strdup(cvalue));
+	}
+failure:
+	return;
 }
 
 /** Set the GList* pointer, pointed by a_list, to a pointer on a new GList

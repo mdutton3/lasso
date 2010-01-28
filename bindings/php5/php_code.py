@@ -177,62 +177,59 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
             elif m.name == method_prefix + 'new_full':
                 pass
 
-    def generate_getters_and_setters(self, klass):
 
-        # FIXME: handle objects and GLists
+    def generate_getter(self, c, m):
+        d = { 'type': arg_type(m), 'name': format_as_camelcase(arg_name(m)),
+                'docstring': self.get_docstring_return_type(arg_type(m)), 'class': c.name }
 
-        for m in klass.members:
-            mtype = m[0]
-            mname = format_as_camelcase(m[1])
-            options = m[2]
-
-            # Getters
-            print >> self.fd, '    /**'
-            print >> self.fd, '     * @return %s' % self.get_docstring_return_type(mtype)
-            print >> self.fd, '     */'
-            print >> self.fd, '    protected function get_%s() {' % mname
-            if self.is_object(mtype):
-                print >> self.fd, '        return cptrToPhp(%s_%s_get($this->_cptr));' % (
-                        klass.name, mname)
-            elif mtype in ('GList*', 'GHashTable*'):
-                print >> self.fd, '        $array = %s_%s_get($this->_cptr);' % (klass.name, mname)
-                if self.is_object(options.get('element-type')):
-                    print >> self.fd, '        $obj_array = array();'
-                    if mtype == 'GList*':
-                        print >> self.fd, '        foreach ($array as $item) {'
-                        print >> self.fd, '            $obj_array[] = cptrToPhp($item);'
-                    else:
-                        print >> self.fd, '        foreach ($array as $key => $item) {'
-                        print >> self.fd, '            $obj_array[$key] = cptrToPhp($item);'
-                    print >> self.fd, '        }'
-                    print >> self.fd, '        $array = $obj_array;'
-                print >> self.fd, '        return $array;'
-            else:
-                print >> self.fd, '        return %s_%s_get($this->_cptr);' % (klass.name, mname)
-            print >> self.fd, '    }'
-
-            # Setters
-            print >> self.fd, '    protected function set_%s($value) {' % mname
-            if self.is_object(mtype):
-                print >> self.fd, '        %s_%s_set($this->_cptr, $value->_cptr);' % (klass.name, mname)
-            elif mtype in ('GList*', 'GHashTable*') and self.is_object(options.get('element-type')):
-                print >> self.fd, '        $array = array();'
-                # FIXME: setting an array to NULL should really set it to NULL and not to an empty array
-                print >> self.fd, '        if (!is_null($value)) {'
-                if mtype == 'GList*':
-                    print >> self.fd, '            foreach ($value as $item) {'
-                    print >> self.fd, '                $array[] = $item->_cptr;'
-                else:
-                    print >> self.fd, '            foreach ($value as $key => $item) {'
-                    print >> self.fd, '                $array[$key] = $item->_cptr;'
-                print >> self.fd, '            }'
+        print >> self.fd, '''    /**'
+    * @return %(docstring)s
+    */
+    protected function get_%(name)s() {''' % d
+        print >> self.fd, '        $t = %(class)s_%(name)s_get($this->_cptr);' % d
+        if is_object(m):
+            print >> self.fd, '        $t = cptrToPhp($t);'
+        elif (is_glist(m) or is_hashtable(m)) and is_object(element_type(m)):
+                print >> self.fd, '        foreach ($t as $key => $item) {'
+                print >> self.fd, '            $t[$key] = cptrToPhp($item);'
                 print >> self.fd, '        }'
-                print >> self.fd, '        %s_%s_set($this->_cptr, $array);' % (klass.name, mname)
-            else:
-                print >> self.fd, '        %s_%s_set($this->_cptr, $value);' % (klass.name, mname)
-            print >> self.fd, '    }'
-            print >> self.fd, ''
+        elif is_hashtable(m) or (is_glist(m) and (is_cstring(element_type(m)) \
+                or is_xml_node(element_type(m)))) or is_int(m, self.binding_data) \
+                or is_boolean(m) or is_cstring(m) or is_xml_node(m):
+            pass
+        else:
+            raise Exception('Cannot generate a Php getter %s.%s' % (c,m))
+        print >> self.fd, '        return $t;'
+        print >>self.fd, '    }'
 
+    def generate_setter(self, c, m):
+        d = { 'type': arg_type(m), 'name': format_as_camelcase(arg_name(m)),
+                'docstring': self.get_docstring_return_type(arg_type(m)), 'class': c.name }
+        print >> self.fd, '    protected function set_%(name)s($value) {' % d
+        if is_object(m):
+            print >> self.fd, '        $value = $value->_cptr;'
+        elif (is_glist(m) or is_hashtable(m)) and is_object(element_type(m)):
+            print >> self.fd, '        $array = array();'
+            print >> self.fd, '        if (!is_null($value)) {'
+            print >> self.fd, '            foreach ($value as $key => $item) {'
+            print >> self.fd, '                $array[$key] = $item->_cptr;'
+            print >> self.fd, '            }'
+            print >> self.fd, '        }'
+            print >> self.fd, '        $value = $array;'
+        elif is_hashtable(m) or (is_glist(m) and (is_cstring(element_type(m)) \
+                or is_xml_node(element_type(m)))) or is_int(m, self.binding_data) \
+                or is_boolean(m) or is_cstring(m) or is_xml_node(m):
+            pass
+        else:
+            raise Exception('Cannot generate a Php setter %s.%s' % (c,m))
+        print >> self.fd, '        %(class)s_%(name)s_set($this->_cptr, $value);' % d
+        print >> self.fd, '    }'
+        print >> self.fd, ''
+
+    def generate_getters_and_setters(self, klass):
+        for m in klass.members:
+            self.generate_getter(klass, m)
+            self.generate_setter(klass, m)
 
     def generate_methods(self, klass):
         methods = klass.methods[:]

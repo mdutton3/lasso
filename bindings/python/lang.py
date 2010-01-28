@@ -272,10 +272,10 @@ if WSF_SUPPORT:
                 c_args = []
                 py_args = []
                 for o in m.args:
-                    arg_type, arg_name, arg_options = o
+                    type, arg_name, arg_options = o
                     py_args.append(get_python_arg_decl(o))
 
-                    if self.is_pygobject(arg_type):
+                    if self.is_pygobject(type):
                         c_args.append('%s and %s._cptr' % (arg_name, arg_name))
                     else:
                         c_args.append(arg_name)
@@ -297,10 +297,10 @@ if WSF_SUPPORT:
                 c_args = []
                 py_args = []
                 for o in m.args:
-                    arg_type, arg_name, arg_options = o
+                    type, arg_name, arg_options = o
                     py_args.append(get_python_arg_decl(o))
 
-                    if self.is_pygobject(arg_type):
+                    if self.is_pygobject(type):
                         c_args.append('%s and %s._cptr' % (arg_name, arg_name))
                     else:
                         c_args.append(arg_name)
@@ -319,37 +319,52 @@ if WSF_SUPPORT:
         for m in clss.members:
             mname = format_as_camelcase(m[1])
             options = m[2]
+            # getter
             print >> fd, '    def get_%s(self):' % mname
-            if self.is_pygobject(m[0]):
-                print >> fd, '        t = _lasso.%s_%s_get(self._cptr)' % (
-                        klassname, mname)
+            print >> fd, '        t = _lasso.%s_%s_get(self._cptr)' % (
+                    klassname, mname)
+            if is_object(m):
                 print >> fd, '        return cptrToPy(t)'
-            elif m[0] == 'GList*' and options.get('element-type') not in ('char*', 'xmlNode*'):
-                print >> fd, '        l = _lasso.%s_%s_get(self._cptr)' % (
-                        klassname, mname)
-                print >> fd, '        if not l: return l'
-                print >> fd, '        return tuple([cptrToPy(x) for x in l])'
-            elif m[0] == 'GHashTable*':
-                print >> fd, '        d = _lasso.%s_%s_get(self._cptr)' % (
-                        klassname, mname)
-                print >> fd, '        if not d: return d'
-                if options.get('element-type') != 'char*':
-                    print >> fd, '        d2 = {}'
-                    print >> fd, '        for k, v in d.items():'
-                    print >> fd, '            d2[k] = cptrToPy(v)'
-                    print >> fd, '        return frozendict(d2)'
+            elif is_glist(m):
+                el_type = element_type(m)
+                if is_cstring(el_type):
+                    pass
+                elif is_xml_node(el_type):
+                    pass
+                elif is_object(element_type(m)):
+                    print >> fd, '        if not t: return t'
+                    print >> fd, '        t = tuple([cptrToPy(x) for x in t])'
                 else:
-                    print >> fd, '        return frozendict(d)'
+                    raise Exception('Unsupported python getter %s.%s' % (clss, m))
+            elif is_hashtable(m):
+                el_type = element_type(m)
+                print >> fd, '        if not t: return t'
+                if is_object(el_type):
+                    print >> fd, '        d2 = {}'
+                    print >> fd, '        for k, v in t.items():'
+                    print >> fd, '            d2[k] = cptrToPy(v)'
+                    print >> fd, '        t = frozendict(d2)'
+                else:
+                    print >> fd, '        t = frozendict(t)'
+            elif is_boolean(m) or is_int(m, self.binding_data) or is_xml_node(m) or is_cstring(m):
+                pass
             else:
-                print >> fd, '        return _lasso.%s_%s_get(self._cptr)' % (
-                        klassname, mname)
+                raise Exception('Unsupported python getter %s.%s' % (clss, m))
+            print >> fd, '        return t;'
+            # setter
             print >> fd, '    def set_%s(self, value):' % mname
-            if self.is_pygobject(m[0]):
+            if is_object(m):
                 print >> fd, '        if value is not None:'
                 print >> fd, '            value = value and value._cptr'
-            elif m[0] == 'GList*' and options.get('element-type') not in ('char*', 'xmlNode*'):
-                print >> fd, '        if value is not None:'
-                print >> fd, '            value = tuple([x._cptr for x in value])'
+            elif is_glist(m):
+                el_type = element_type(m)
+                if is_cstring(el_type) or is_xml_node(el_type):
+                    pass
+                elif is_object(el_type):
+                    print >> fd, '        if value is not None:'
+                    print >> fd, '            value = tuple([x._cptr for x in value])'
+                else:
+                    raise Exception('Unsupported python setter %s.%s' % (clss, m))
             print >> fd, '        _lasso.%s_%s_set(self._cptr, value)' % (
                     klassname, mname)
             print >> fd, '    %s = property(get_%s, set_%s)' % (mname, mname, mname)
@@ -424,7 +439,7 @@ if WSF_SUPPORT:
             c_args = []
             outarg = None
             for o in m.args[1:]:
-                arg_type, arg_name, arg_options = o
+                type, arg_name, arg_options = o
                 if is_out(o):
                     assert not outarg
                     outarg = o
@@ -434,7 +449,7 @@ if WSF_SUPPORT:
 
                 if is_out(o):
                     c_args.append(outvar)
-                elif not self.is_pygobject(arg_type):
+                elif not self.is_pygobject(type):
                     c_args.append(arg_name)
                 else:
                     c_args.append('%s and %s._cptr' % (arg_name, arg_name))
@@ -444,7 +459,7 @@ if WSF_SUPPORT:
                 if '=' in x:
                     opt = True
                 elif opt:
-                    print 'W: non-optional follow optional,', m
+                    print >>sys.stderr, 'W: non-optional follow optional,', m
 
             if py_args:
                 py_args = ', ' + ', '.join(py_args)
@@ -645,15 +660,16 @@ register_constants(PyObject *d)
     def generate_member_wrapper(self, c, fd):
         klassname = c.name
         for m in c.members:
-            mname = format_as_camelcase(m[1])
+            name = arg_name(m)
+            mname = format_as_camelcase(arg_name(m))
             # getter
             print >> fd, '''static PyObject*
 %s_%s_get(G_GNUC_UNUSED PyObject *self, PyObject *args)
 {''' % (klassname[5:], mname)
             self.wrapper_list.append('%s_%s_get' % (klassname[5:], mname))
 
-            ftype = m[0]
-            if ftype in ('char*', 'const char*', 'guchar*', 'const guchar*', 'gchar*', 'const gchar*'):
+            ftype = arg_type(m)
+            if is_cstring(m):
                 ftype = 'char*'
             print >> fd, '    %s return_value;' % ftype
             print >> fd, '    PyObject* return_pyvalue;'
@@ -663,14 +679,17 @@ register_constants(PyObject *d)
             print >> fd, '    if (! PyArg_ParseTuple(args, "O", &cvt_this)) return NULL;'
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
 
-            if self.is_pygobject(ftype):
+            if is_cstring(m):
+                print >> fd, '    return_value = g_strdup(this->%s);' % arg_name(m)
+            elif is_object(m):
                 print >> fd, '    return_value = this->%s;' % m[1];
-            elif ftype in ('char*',):
-                print >> fd, '    return_value = g_strdup(this->%s);' % m[1]
             else:
                 print >> fd, '    return_value = this->%s;' % m[1];
-
-            self.return_value(fd, ftype, m[2])
+            try:
+                self.return_value(fd, m)
+            except:
+                print >>sys.stderr, 'W: cannot make an assignment for', c, m
+                raise
 
             print >> fd, '    return return_pyvalue;'
             print >> fd, '}'
@@ -684,57 +703,68 @@ register_constants(PyObject *d)
 
             print >> fd, '    PyGObjectPtr* cvt_this;'
             print >> fd, '    %s* this;' % klassname
-            arg_type = m[0]
+            type = m[0]
             # Determine type class
-            if m[0] in ('char*', 'const char*', 'guchar*', 'const guchar*', 'gchar*', 'const gchar*'):
-                arg_type = arg_type.replace('const ', '')
+            if is_cstring(m):
+                type = type.replace('const ', '')
                 parse_format = 'z'
                 parse_arg = '&value'
-                print >> fd, '    %s value;' % arg_type
-            elif arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums:
+                print >> fd, '    %s value;' % type
+            elif is_int(m, self.binding_data):
                 parse_format = 'i'
                 parse_arg = '&value'
-                print >> fd, '    %s value;' % arg_type
-            elif arg_type in ('GList*','GHashTable*', 'xmlNode*'):
+                print >> fd, '    %s value;' % type
+            elif is_glist(m) or is_hashtable(m) or is_xml_node(m) or is_boolean(m):
                 parse_format = 'O'
                 print >> fd, '    PyObject *cvt_value;'
                 parse_arg = '&cvt_value'
-            else:
+            elif is_object(m):
                 parse_format = 'O'
                 print >> fd, '    PyGObjectPtr *cvt_value;'
                 parse_arg = '&cvt_value'
+            else:
+                raise Exception('Unsupported field: %s' % (m,))
             # Get GObject
             print >> fd, '    if (! PyArg_ParseTuple(args, "O%s", &cvt_this, %s)) return NULL;' % (
                     parse_format, parse_arg)
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
             # Change value
-            if parse_format == 'i':
-                print >> fd, '    this->%s = value;' % m[1]
-            elif parse_format in ('s', 'z'):
-                print >> fd, '    if (this->%s) g_free(this->%s);' % (m[1], m[1])
-                print >> fd, '    this->%s = g_strdup(value);' % m[1]
-            elif parse_format == 'O' and arg_type == 'GList*':
-                element_type = m[2].get('element-type')
-                if element_type == 'char*':
-                    print >> fd, '    set_list_of_strings(&this->%s, cvt_value);' % m[1]
-                elif element_type == 'xmlNode*':
-                    print >> fd, '    set_list_of_xml_nodes(&this->%s, cvt_value);' % m[1]
+            if is_int(m, self.binding_data):
+                print >> fd, '    this->%s = value;' % name
+            elif is_boolean(m):
+                print >> fd, '    this->%s = PyInt_AS_LONG(cvt_value) ? TRUE : FALSE;' % name
+            elif is_cstring(m):
+                print >> fd, '    lasso_assign_string(this->%s, value);' % name
+            elif is_xml_node(m):
+                print >> fd, '    if (this->%s) xmlFreeNode(this->%s);' % (name, name)
+                print >> fd, '    this->%s = get_xml_node_from_pystring(cvt_value);' % name
+            elif is_glist(m):
+                el_type = element_type(m)
+                if is_cstring(el_type):
+                    print >> fd, '    set_list_of_strings(&this->%s, cvt_value);' % name
+                elif is_xml_node(el_type):
+                    print >> fd, '    set_list_of_xml_nodes(&this->%s, cvt_value);' % name
+                elif is_object(el_type):
+                    print >> fd, '    set_list_of_pygobject(&this->%s, cvt_value);' % name
                 else:
-                    print >> fd, '    set_list_of_pygobject(&this->%s, cvt_value);' % m[1]
-            elif parse_format == 'O' and arg_type == 'GHashTable*':
-                print >> fd, '    set_hashtable_of_pygobject(this->%s, cvt_value);' % m[1]
-            elif parse_format == 'O' and arg_type == 'xmlNode*':
-                print >> fd, '    if (this->%s) xmlFreeNode(this->%s);' % (m[1], m[1])
-                print >> fd, '    this->%s = get_xml_node_from_pystring(cvt_value);' % m[1]
-            elif parse_format == 'O':
-                print >> fd, '    set_object_field((GObject**)&this->%s, cvt_value);' % m[1]
+                    raise Exception('Unsupported setter for %s' % (m,))
+            elif is_hashtable(m):
+                el_type = element_type(m)
+                if is_object(el_type):
+                    print >> fd, '    set_hashtable_of_pygobject(this->%s, cvt_value);' % name
+                else:
+                    print >> fd, '    set_hashtable_of_strings(this->%s, cvt_value);' % name
+            elif is_object(m):
+                print >> fd, '    set_object_field((GObject**)&this->%s, cvt_value);' % name
+            else:
+                raise Exception('Unsupported member %s.%s' % (klassname, m))
             print >> fd, '    return noneRef();'
             print >> fd, '}'
             print >> fd, ''
 
 
-    def return_value(self, fd, vtype, options, return_var_name = 'return_value', return_pyvar_name = 'return_pyvalue'):
-        if vtype == 'gboolean':
+    def return_value(self, fd, arg, return_var_name = 'return_value', return_pyvar_name = 'return_pyvalue'):
+        if is_boolean(arg):
             print >> fd, '    if (%s) {' % return_var_name
             print >> fd, '        Py_INCREF(Py_True);'
             print >> fd, '        %s = Py_True;' % return_pyvar_name
@@ -742,45 +772,45 @@ register_constants(PyObject *d)
             print >> fd, '        Py_INCREF(Py_False);'
             print >> fd, '        %s = Py_False;' % return_pyvar_name
             print >> fd, '    }'
-        elif vtype in ['int', 'gint'] + self.binding_data.enums:
+        elif is_int(arg, self.binding_data):
             print >> fd, '    %s = PyInt_FromLong(%s);' % (return_pyvar_name, return_var_name)
-        elif vtype in ('char*', 'guchar*', 'const guchar*', 'gchar*'):
+        elif is_cstring(arg) and is_transfer_full(arg):
             print >> fd, '    if (%s) {' % return_var_name
             print >> fd, '        %s = PyString_FromString(%s);' % (return_pyvar_name, return_var_name)
             print >> fd, '        g_free(%s);' % return_var_name
             print >> fd, '    } else {'
             print >> fd, '        %s = noneRef();' % return_pyvar_name
             print >> fd, '    }'
-        elif vtype in ('const char*', 'const gchar*'):
+        elif is_cstring(arg):
             print >> fd, '    if (%s) {' % return_var_name
             print >> fd, '        %s = PyString_FromString(%s);' % (return_pyvar_name, return_var_name)
             print >> fd, '    } else {'
             print >> fd, '        %s = noneRef();' % return_pyvar_name
             print >> fd, '    }'
-        elif vtype in ('const GList*', 'GList*',):
-            element_type = options.get('element-type')
-            if not element_type or self.is_pygobject(element_type):
+        elif is_glist(arg):
+            el_type = element_type(arg)
+            if is_object(el_type):
                 print >> fd, '    %s = get_list_of_pygobject(%s);' % (return_pyvar_name, return_var_name)
-            elif element_type == 'char*':
+            elif is_cstring(el_type):
                 print >> fd, '    %s = get_list_of_strings(%s);' % (return_pyvar_name, return_var_name)
-            elif element_type.startswith('xmlNode'):
+            elif is_xml_node(el_type):
                 print >> fd, '    %s = get_list_of_xml_nodes(%s);' % (return_pyvar_name, return_var_name)
             else:
-                raise Exception('Should not happen: %s %s ' % (repr(options), vtype))
-        elif vtype in ('GHashTable*',):
-            element_type = options.get('element-type')
-            if element_type == 'char*':
-                print >> fd, '    %s = get_dict_from_hashtable_of_strings(%s);' % (return_pyvar_name, return_var_name)
-            else:
+                raise Exception('failed to make an assignment for %s' % (arg,))
+        elif is_hashtable(arg):
+            el_type = element_type(arg)
+            if is_object(el_type):
                 print >> fd, '    %s = get_dict_from_hashtable_of_objects(%s);' % (return_pyvar_name, return_var_name)
-        elif vtype == 'xmlNode*':
+            else:
+                print >> fd, '    %s = get_dict_from_hashtable_of_strings(%s);' % (return_pyvar_name, return_var_name)
+        elif is_xml_node(arg):
             # convert xmlNode* to strings
             print >> fd, '    if (%s) {' % return_var_name
             print >> fd, '        %s = get_pystring_from_xml_node(%s);' % (return_pyvar_name, return_var_name)
             print >> fd, '    } else {'
             print >> fd, '        %s = noneRef();' % return_pyvar_name
             print >> fd, '    }'
-        else:
+        elif is_object(arg):
             # return a PyGObjectPtr (wrapper around GObject)
             print >> fd, '''\
     if (%s) {
@@ -789,6 +819,8 @@ register_constants(PyObject *d)
         %s = noneRef();
     }
 ''' % (return_var_name, return_pyvar_name, return_var_name, return_pyvar_name)
+        else:
+            raise Exception('failed to make an assignment for %s' % (arg,))
 
     def generate_function_wrapper(self, m, fd):
         if m.rename:
@@ -908,7 +940,7 @@ register_constants(PyObject *d)
 
         for f, arg in zip(parse_tuple_format, m.args):
             if is_out(arg):
-                self.return_value(fd, var_type(arg), {'element-type': element_type(arg)}, return_var_name = arg[1], return_pyvar_name = 'out_pyvalue')
+                self.return_value(fd, arg, return_var_name = arg[1], return_pyvar_name = 'out_pyvalue')
                 print >> fd, '    PyList_SetItem(cvt_%s_out, 0, out_pyvalue);' % arg[1]
             elif arg[0] == 'GList*':
                 qualifier = arg[2].get('element-type')
@@ -926,7 +958,12 @@ register_constants(PyObject *d)
         else:
             # Constructor so decrease refcount (it was incremented by PyGObjectPtr_New called
             # in self.return_value
-            self.return_value(fd, m.return_type, {'element-type': m.return_type_qualifier})
+            try:
+                self.return_value(fd, m.return_arg)
+            except:
+                print >>sys.stderr, 'W: cannot assign return value of', m
+                raise
+
             if m.return_owner and self.is_pygobject(m.return_type):
                 print >> fd, '    if (return_value) g_object_unref(return_value);'
             print >> fd, '    return return_pyvalue;'

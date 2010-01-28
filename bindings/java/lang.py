@@ -416,12 +416,12 @@ protected static native void destroy(long cptr);
                 return 'get_list_of_xml_nodes(env, %s, &%s)' % (right, left)
             else:
                 return 'get_list_of_objects(env, %s, &%s)' % (right, left)
-        elif type in ('GHashTable*',):
+        elif is_hashtable(type):
             element_type = options.get('element-type')
-            if element_type == 'char*':
-                return 'get_hash_of_strings(env, %s, &%s)' % (right, left)
-            else:
+            if is_object(element_type):
                 return 'get_hash_of_objects(env, %s, &%s)' % (right, left)
+            else:
+                return 'get_hash_of_strings(env, %s, &%s)' % (right, left)
         elif type == 'xmlNode*':
                 return 'xml_node_to_jstring(env, %s, &%s)' % (right, left)
         else:
@@ -627,16 +627,20 @@ protected static native void destroy(long cptr);
                     print >> fd, '    add_to_list_of_objects(env, &gobj->%s,value);' % m[1]
                 print >> fd, '}'
                 # remove
-                if element_type not in ('xmlNode*',):
+                if is_xml_node(element_type):
+                    print >>sys.stderr, 'W: remove for list of xml node not supported: %s' % (m,)
+                else:
                     print >> fd,'/* Remover for %s %s.%s */' % (mtype,klassname,m[1])
                     wrapper_decl("%s_remove" % prefix, 'void', fd)
                     print >> fd, ', jobject jobj, %s value)\n  {' % jni_elem_type(element_type)
                     print >> fd, '    %s *gobj;' % klassname
                     print >> fd, '    jobject_to_gobject(env, jobj, (GObject**)&gobj);'
-                    if element_type in ('char*','gchar*'):
+                    if is_cstring(element_type):
                         print >> fd, '    remove_from_list_of_strings(env, &gobj->%s,value);' % m[1]
-                    else:
+                    elif is_object(element_type):
                         print >> fd, '    remove_from_list_of_objects(env, &gobj->%s,value);' % m[1]
+                    else:
+                        raise Exception('remove_from_list unsupported for %s' % (m,))
                     print >> fd, '}'
             # add/remove/get_by_name
             if mtype in ('GHashTable*',):

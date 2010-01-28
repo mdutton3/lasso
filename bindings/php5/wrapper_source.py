@@ -117,7 +117,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         elif is_boolean(type):
             print >> self.fd, '    ZVAL_BOOL(%s, %s);' % p
         elif is_cstring(type):
-            print >> self.fd, '    ZVAL_STRING(%s, %s, 1);' % p
+            print >> self.fd, '    ZVAL_STRING(%s, (char*)%s, 1);' % p
             if free and not is_const(type):
                 print >> self.fd, 'g_free(%s)' % c_variable
         elif arg_type(type) == 'xmlNode*':
@@ -131,7 +131,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         }
     }
 ''' % q
-        elif arg_type(type) == 'GList*':
+        elif is_glist(type):
             elem_type = make_arg(element_type(type))
             if not arg_type(elem_type):
                 raise Exception('unknown element-type: ' + repr(type))
@@ -146,7 +146,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 free_function = 'g_list_free(%(c_variable)s);'
             else:
                 raise Exception('unknown element-type: ' + repr(type))
-            print >> self.fd, '     %s(%s, &%s);' % (function, c_variable, zval_name)
+            print >> self.fd, '     %s((GList*)%s, &%s);' % (function, c_variable, zval_name)
             if free:
                 print >> self.fd, '   ', free_function % q
         elif is_object(type):
@@ -170,30 +170,24 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 
 
 
-    def return_value(self, vtype, options, free = False):
-        if vtype is None:
+    def return_value(self, arg, free = False):
+        if arg is None:
             return
-        elif vtype == 'gboolean':
+
+        if is_boolean(arg):
             print >> self.fd, '    RETVAL_BOOL(return_c_value);'
-        elif vtype in ['int', 'gint', 'GType', ] + self.binding_data.enums:
+        elif is_int(arg, self.binding_data):
             print >> self.fd, '    RETVAL_LONG(return_c_value);'
-        elif vtype in ('char*', 'gchar*'):
-            print >> self.fd, '''\
-    if (return_c_value) {
-        RETVAL_STRING(return_c_value, 1);
-    } else {
-        RETVAL_NULL();
-    }'''
-            if free:
-                print >> self.fd, '    free(return_c_value);'
-        elif vtype in ('const char*', 'const gchar*'):
+        elif is_cstring(arg):
             print >> self.fd, '''\
     if (return_c_value) {
         RETVAL_STRING((char*)return_c_value, 1);
     } else {
         RETVAL_NULL();
     }'''
-        elif vtype == 'xmlNode*':
+            if free or is_transfer_full(arg):
+                print >> self.fd, '    free(return_c_value);'
+        elif is_xml_node(arg):
             print >> self.fd, '''\
     {
         char* xmlString = get_string_from_xml_node(return_c_value);
@@ -204,42 +198,53 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         }
     }
 '''
-        elif vtype == 'GList*':
-            if options.get('element-type') == 'char*':
+        elif is_glist(arg):
+            el_type = element_type(arg)
+            if is_cstring(el_type):
                 print >> self.fd, '''\
-    set_array_from_list_of_strings(return_c_value, &return_value);
+    set_array_from_list_of_strings((GList*)return_c_value, &return_value);
 '''
-                if free:
-                    print >> self.fd, '    free_glist(&return_c_value, (GFunc)free);'
-            elif options.get('element-type') == 'xmlNode*':
+                if free or is_transfer_full(arg):
+                    print >> self.fd, '    lasso_release_list_of_strings(return_c_value);'
+            elif is_xml_node(el_type):
                 print >> self.fd, '''\
-    set_array_from_list_of_xmlnodes(return_c_value, &return_value);
+    set_array_from_list_of_xmlnodes((GList*)return_c_value, &return_value);
 '''
-                if free:
-                    print >> self.fd, '    free_glist(&return_c_value, (GFunc)efree);'
+                if free or is_transfer_full(arg):
+                    print >> self.fd, '    lasso_release_list_of_xml_node(return_c_value);'
+            elif is_object(el_type):
+                print >> self.fd, '''\
+    set_array_from_list_of_objects((GList*)return_c_value, &return_value);
+'''
+                if free or is_transfer_full(arg):
+                    print >> self.fd, '    lasso_release_list_of_gobjects(return_c_value);'
             else:
-                print >> self.fd, '''\
-    set_array_from_list_of_objects(return_c_value, &return_value);
-'''
-                if free:
-                    print >> self.fd, '    free_glist(&return_c_value, NULL);'
-        elif vtype == 'GHashTable*':
-            if options.get('element-type') not in ('char*', 'xmlNode*'):
+                raise Exception('cannot return value for %s' % (arg,))
+        elif is_hashtable(arg):
+            el_type = element_type(arg)
+            if is_object(el_type):
                 print >> self.fd, '''\
     set_array_from_hashtable_of_objects(return_c_value, &return_value);
 '''
-        else:
+            else:
+                if not is_cstring(arg):
+                    print >>sys.stderr, 'W: %s has no explicit string annotation' % (arg,)
+                print >> self.fd, '''\
+    set_array_from_hashtable_of_strings(return_c_value, &return_value);
+'''
+        elif is_object(arg):
             print >> self.fd, '''\
     if (return_c_value) {
+        PhpGObjectPtr *self;
         self = PhpGObjectPtr_New(G_OBJECT(return_c_value));
         ZEND_REGISTER_RESOURCE(return_value, self, le_lasso_server);
     } else {
         RETVAL_NULL();
     }'''
             if free:
-                print >> self.fd, '    if (return_c_value) {'
-                print >> self.fd, '        g_object_unref(return_c_value); // If constructor ref is off by one'
-                print >> self.fd, '    }'
+                print >> self.fd, '    lasso_release_gobject(return_c_value);'
+        else:
+            raise Exception('cannot return value for %s' % (arg,))
 
     def generate_function(self, m):
         if m.name in ('lasso_init','lasso_shutdown'):
@@ -291,8 +296,8 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 
         if m.return_type:
             print >> self.fd, '    %s return_c_value;' % m.return_type
-        if m.return_type is not None and self.is_object(m.return_type):
-            print >> self.fd, '    PhpGObjectPtr *self;'
+        if m.return_type is not None and self.is_object(m.return_arg):
+            print >> self.fd, '    G_GNUC_UNUSED PhpGObjectPtr *self;'
         print >> self.fd, ''
 
         parse_tuple_args = ', '.join(parse_tuple_args)
@@ -318,11 +323,13 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%s, PhpGObjectPtr *, &zval_%s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % (arg[1], arg[1])
                 print >> self.fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
             elif f.startswith('a'):
-                element_type = arg[2].get('element-type')
-                if is_cstring(element_type):
+                el_type = element_type(arg)
+                if is_cstring(el_type):
                     print >> self.fd, '    %(name)s = get_list_from_array_of_strings(zval_%(name)s);' % {'name': arg[1]}
+                elif is_object(el_type):
+                    print >> self.fd, '    %(name)s = get_list_from_array_of_objects(zval_%(name)s);' % {'name': arg[1]}
                 else:
-                    print >> sys.stderr, 'E: In %(function)s arg %(name)s is of type GList<%(elem)s>' % { 'function': m.name, 'name': arg[1], 'elem': element_type }
+                    print >> sys.stderr, 'E: In %(function)s arg %(name)s is of type GList<%(elem)s>' % { 'function': m.name, 'name': arg[1], 'elem': el_type }
             elif f == 'l':
                 pass
             else:
@@ -348,43 +355,39 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             elif argtype == 'xmlNode*':
                 print >> self.fd, '    xmlFree(%s);' % argname
             elif f.startswith('a'):
-                element_type = arg[2].get('element-type')
-                if element_type == 'char*':
+                el_type = element_type(arg)
+                if is_cstring(el_type):
                     print >> self.fd, '    if (%(name)s) {' % { 'name': arg[1] }
                     print >> self.fd, '        free_glist(&%(name)s,(GFunc)free);' % { 'name': arg[1] }
                     print >> self.fd, '    }'
 
-        self.return_value(m.return_type, {}, m.return_owner)
+        try:
+            self.return_value(m.return_arg, is_transfer_full(m.return_arg))
+        except:
+            raise Exception('Cannot return value for function %s' % m)
 
         print >> self.fd, '}'
         print >> self.fd, ''
 
     def generate_members(self, c):
-        for m_type, m_name, m_options in c.members:
-            self.generate_getter(c.name, m_type, m_name, m_options)
-            self.generate_setter(c.name, m_type, m_name, m_options)
+        for m in c.members:
+            self.generate_getter(c, m)
+            self.generate_setter(c, m)
 
-    def generate_getter(self, klassname, m_type, m_name, m_options):
-        if m_type == 'GList*' and m_options.get('element-type') not in ('char*', 'xmlNode*') \
-                and not self.is_object(m_options.get('element-type')):
-            print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('element-type'))
-            return
+    def generate_getter(self, c, m):
+        klassname = c.name
+        name = arg_name(m)
+        type = arg_type(m)
 
-        function_name = '%s_%s_get' % (klassname, format_as_camelcase(m_name))
+        function_name = '%s_%s_get' % (klassname, format_as_camelcase(name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
         self.functions_list.append(function_name)
 
-
-        if self.is_object(m_type):
-            print >> self.fd, '    %s return_c_value = NULL;' % m_type
-        else:
-            print >> self.fd, '    %s return_c_value;' % m_type
+        print >> self.fd, '    %s return_c_value;' % type
         print >> self.fd, '    %s* this;' % klassname
         print >> self.fd, '    zval* zval_this;'
         print >> self.fd, '    PhpGObjectPtr *cvt_this;'
-        if self.is_object(m_type):
-            print >> self.fd, '    PhpGObjectPtr *self;'
         print >> self.fd, ''
         print >> self.fd, '''\
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zval_this) == FAILURE) {
@@ -394,27 +397,16 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
     ZEND_FETCH_RESOURCE(cvt_this, PhpGObjectPtr *, &zval_this, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);
     this = (%s*)cvt_this->obj;
 ''' % (klassname)
-
-        if self.is_object(m_type):
-            print >> self.fd, '    if (this->%s != NULL) {' % m_name
-            print >> self.fd, '        return_c_value = this->%s;' % m_name
-            print >> self.fd, '    }'
-        else:
-            print >> self.fd, '    return_c_value = this->%s;' % m_name
-
-        self.return_value(m_type, m_options)
-
+        print >> self.fd, '    return_c_value = (%s)this->%s;' % (type, name)
+        self.return_value(m)
         print >> self.fd, '}'
         print >> self.fd, ''
 
-
-    def generate_setter(self, klassname, m_type, m_name, m_options):
-        if m_type == 'GList*' and m_options.get('element-type') not in ('char*', 'xmlNode*') \
-                and not self.is_object(m_options.get('element-type')):
-            print >> sys.stderr, 'E: GList argument : %s of %s, with type : %s' % (m_name, klassname, m_options.get('element-type'))
-            return
-
-        function_name = '%s_%s_set' % (klassname, format_as_camelcase(m_name))
+    def generate_setter(self, c, m):
+        klassname = c.name
+        name = arg_name(m)
+        type = arg_type(m)
+        function_name = '%s_%s_set' % (klassname, format_as_camelcase(name))
         print >> self.fd, '''PHP_FUNCTION(%s)
 {''' % function_name
         self.functions_list.append(function_name)
@@ -426,29 +418,28 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         # FIXME: This bloc should be factorised
         parse_tuple_format = ''
         parse_tuple_args = []
-        arg_type = m_type
-        arg_name = m_name
-        arg_options = m_options
-        if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*', 'xmlNode*'):
-            arg_type = arg_type.replace('const ', '')
+        if is_cstring(m) or is_xml_node(m):
+            # arg_type = arg_type.replace('const ', '')
             parse_tuple_format += 's'
-            parse_tuple_args.append('&%s_str, &%s_len' % (arg_name, arg_name))
-            print >> self.fd, '    %s %s_str = NULL;' % ('char*', arg_name)
-            print >> self.fd, '    %s %s_len = 0;' % ('int', arg_name)
-        elif arg_type in ['int', 'gint', 'GType', 'gboolean', 'const gboolean'] + self.binding_data.enums:
+            parse_tuple_args.append('&%s_str, &%s_len' % (name, name))
+            print >> self.fd, '    %s %s_str = NULL;' % ('char*', name)
+            print >> self.fd, '    %s %s_len = 0;' % ('int', name)
+        elif is_int(m, self.binding_data) or is_boolean(m):
             parse_tuple_format += 'l'
-            parse_tuple_args.append('&%s' % arg_name)
-            print >> self.fd, '    %s %s;' % ('long', arg_name)
+            parse_tuple_args.append('&%s' % name)
+            print >> self.fd, '    %s %s;' % ('long', name)
         # Must also handle lists of Objects
-        elif arg_type in ('GList*', 'GHashTable*'):
+        elif is_glist(m) or is_hashtable(m):
             parse_tuple_format += 'a'
-            parse_tuple_args.append('&zval_%s' % arg_name)
-            print >> self.fd, '    %s zval_%s;' % ('zval*', arg_name)
-        else:
+            parse_tuple_args.append('&zval_%s' % name)
+            print >> self.fd, '    %s zval_%s;' % ('zval*', name)
+        elif is_object(m):
             parse_tuple_format += 'r'
-            parse_tuple_args.append('&zval_%s' % arg_name)
-            print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', arg_name)
-            print >> self.fd, '    %s cvt_%s = NULL;' % ('PhpGObjectPtr*', arg_name)
+            parse_tuple_args.append('&zval_%s' % name)
+            print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', name)
+            print >> self.fd, '    %s cvt_%s = NULL;' % ('PhpGObjectPtr*', name)
+        else:
+            raise Exception('Cannot make a setter for %s.%s' % (c,m))
 
         if parse_tuple_args:
             parse_tuple_arg = parse_tuple_args[0]
@@ -471,60 +462,37 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 ''' % klassname
 
         # Set new value
-        if parse_tuple_format == 'l':
-            print >> self.fd, '    this->%s = %s;' % (m_name, m_name)
-        elif parse_tuple_format == 's':
-            print >> self.fd, '    if (this->%s) {' % m_name
-            print >> self.fd, '        g_free(this->%s);' % m_name
-            print >> self.fd, '    }'
-            print >> self.fd, '    if (%s_str && strcmp(%s_str, "") != 0) {' % (m_name, m_name)
-            if arg_type == 'xmlNode*':
-                print >> self.fd, '        this->%s = get_xml_node_from_string(%s_str);' % (m_name, m_name)
+        d = { 'name': name, 'type': type }
+        if is_int(m, self.binding_data) or is_boolean(m):
+            print >> self.fd, '    this->%s = %s;' % (name, name)
+        elif is_cstring(m):
+            print >> self.fd, '    lasso_assign_string(this->%(name)s, %(name)s_str);' % d
+        elif is_xml_node(m):
+            print >> self.fd, '    lasso_assign_new_xml_node(this->%(name)s, get_xml_node_from_string(%(name)s_str));' % d
+        elif is_glist(m):
+            el_type = element_type(m)
+            if is_cstring(el_type):
+                print >> self.fd, '    lasso_assign_new_list_of_strings(this->%(name)s, get_list_from_array_of_strings(zval_%(name)s));' % d
+            elif is_xml_node(el_type):
+                print >> self.fd, '    lasso_assign_new_list_of_xml_node(this->%(name)s, get_list_from_array_of_xmlnodes(zval_%(name)s))' % d
+            elif is_object(el_type):
+                print >> self.fd, '    lasso_assign_new_list_of_gobjects(this->%(name)s, get_list_from_array_of_objects(zval_%(name)s));' % d
             else:
-                print >> self.fd, '        this->%s = g_strndup(%s_str, %s_len);' % (m_name, m_name, m_name)
-            print >> self.fd, '    } else {'
-            print >> self.fd, '        this->%s = NULL;' % m_name
-            print >> self.fd, '    }'
-        elif arg_type == 'GList*':
-            if m_options.get('element-type') == 'char*':
-                print >> self.fd, '''
-    if (this->%(name)s) {
-        /* free existing list */
-        g_list_foreach(this->%(name)s, (GFunc)g_free, NULL);
-        g_list_free(this->%(name)s);
-    }
-    this->%(name)s = get_list_from_array_of_strings(zval_%(name)s);
-''' % { 'name': m_name }
-            elif m_options.get('element-type') == 'xmlNode*':
-                print >> self.fd, '''
-    if (this->%(name)s) {
-        /* free existing list */
-        g_list_foreach(this->%(name)s, (GFunc)xmlFreeNode, NULL);
-        g_list_free(this->%(name)s);
-    }
-    this->%(name)s = get_list_from_array_of_xmlnodes(zval_%(name)s);
-''' % { 'name': m_name }
-            else:
-                print >> self.fd, '''
-    free_glist(&this->%(name)s, (GFunc)g_object_unref);
-    this->%(name)s = get_list_from_array_of_objects(zval_%(name)s);
-''' % { 'name': m_name }
-        elif arg_type == 'GHashTable*' and arg_options.get('element-type') != 'char*':
+                raise Exception('Cannot create C setter for %s.%s' % (c,m))
+        elif is_hashtable(m):
+            el_type = element_type(m)
             print >> self.fd, '''\
-    {
-        GHashTable *oldhash = this->%(name)s;
-        this->%(name)s = get_hashtable_from_array_of_objects(zval_%(name)s);
-        g_hash_table_destroy(oldhash);
-    }
-''' % { 'name': m_name }
-        elif parse_tuple_format == 'r':
-            print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%s, PhpGObjectPtr*, &zval_%s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % (m_name, m_name)
-            print >> self.fd, '''
-    g_object_ref(cvt_%(name)s->obj);
-    if (this->%(name)s)
-        g_object_unref(this->%(name)s);
-    this->%(name)s = (%(type)s)cvt_%(name)s->obj;
-''' % { 'name': m_name, 'type': m_type }
+        {
+            GHashTable *oldhash = this->%(name)s;''' % d
+            if is_object(el_type):
+                print >>self.fd, '            this->%(name)s = get_hashtable_from_array_of_objects(zval_%(name)s);' % d
+            else:
+                print >>self.fd, '            this->%(name)s = get_hashtable_from_array_of_strings(zval_%(name)s);' % d
+            print >> self.fd, '            g_hash_table_destroy(oldhash);'
+            print >> self.fd, '        }'
+        elif is_object(m):
+            print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%(name)s, PhpGObjectPtr*, &zval_%(name)s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % d
+            print >> self.fd, '    lasso_assign_gobject(this->%(name)s, cvt_%(name)s->obj);' % d
 
         print >> self.fd, '}'
         print >> self.fd, ''

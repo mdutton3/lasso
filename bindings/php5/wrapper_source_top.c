@@ -192,10 +192,15 @@ get_list_from_array_of_xmlnodes(zval* array)
 	for (zend_hash_internal_pointer_reset_ex(hashtable, &pointer);
 			zend_hash_get_current_data_ex(hashtable, (void**) &data, &pointer) == SUCCESS;
 			zend_hash_move_forward_ex(hashtable, &pointer)) {
+		xmlNode *value;
+
 		temp = **data;
 		zval_copy_ctor(&temp);
 		convert_to_string(&temp);
-		result = g_list_append(result, get_xml_node_from_string(Z_STRVAL(temp)));
+		value = get_xml_node_from_string(Z_STRVAL(temp));
+		if (value) {
+			lasso_list_add_new_xml_node(result, value);
+		}
 		zval_dtor(&temp);
 	}
 	return result;
@@ -281,16 +286,37 @@ get_hashtable_from_array_of_objects(zval *array)
 			zend_hash_move_forward_ex(hashtable, &pointer)) {
 		cvt_temp = (PhpGObjectPtr*) zend_fetch_resource(data TSRMLS_CC, -1, PHP_LASSO_SERVER_RES_NAME, NULL, 1, le_lasso_server);
 		if (zend_hash_get_current_key_ex(hashtable, &key, &key_len, &index, 0, &pointer) == HASH_KEY_IS_STRING) {
-			if (cvt_temp != NULL) {
-				g_hash_table_insert(result, key, g_object_ref(cvt_temp->obj));
-			} else {
-				g_hash_table_insert(result, key, NULL);
-			}
+			g_hash_table_insert(result, key, lasso_ref(cvt_temp->obj));
 		} else {
-			if (cvt_temp != NULL) {
-				g_hash_table_insert(result, (gpointer)index, g_object_ref(cvt_temp->obj));
+			/* FIXME: throw an exception */
+		}
+	}
+	return result;
+}
+
+static GHashTable*
+get_hashtable_from_array_of_strings(zval *array)
+{
+	HashTable *hashtable = NULL;
+	HashPosition pointer;
+	int size;
+	char *key = NULL;
+	unsigned int key_len;
+	unsigned long index;
+	zval **data = NULL;
+	GHashTable *result = NULL;
+
+	result = g_hash_table_new(g_str_hash, g_str_equal);
+	hashtable = Z_ARRVAL_P(array);
+	size = zend_hash_num_elements(hashtable);
+	for (zend_hash_internal_pointer_reset_ex(hashtable, &pointer);
+			zend_hash_get_current_data_ex(hashtable, (void**) &data, &pointer) == SUCCESS;
+			zend_hash_move_forward_ex(hashtable, &pointer)) {
+		if (Z_TYPE_PP(data) == IS_STRING) {
+			if (zend_hash_get_current_key_ex(hashtable, &key, &key_len, &index, 0, &pointer) == HASH_KEY_IS_STRING) {
+				g_hash_table_insert(result, g_strdup(key), g_strdup(Z_STRVAL_PP(data)));
 			} else {
-				g_hash_table_insert(result, (gpointer)index, NULL);
+				/* FIXME: throw an exception */
 			}
 		}
 	}
@@ -310,6 +336,26 @@ set_array_from_hashtable_of_objects(GHashTable *hashtable, zval **array)
 		if (item) {
 			MAKE_STD_ZVAL(zval_item);
 			ZEND_REGISTER_RESOURCE(zval_item, PhpGObjectPtr_New(item), le_lasso_server);
+			add_assoc_zval(*array, (char*)keys->data, zval_item);
+		} else {
+			add_assoc_null(*array, (char*)keys->data);
+		}
+	}
+	g_list_free(keys);
+}
+
+static void
+set_array_from_hashtable_of_strings(GHashTable *hashtable, zval **array)
+{
+	GList *keys = NULL;
+	zval *zval_item = NULL;
+
+	array_init(*array);
+	for (keys = g_hash_table_get_keys(hashtable); keys; keys = g_list_next(keys)) {
+		char *item = g_hash_table_lookup(hashtable, keys->data);
+		if (item) {
+			MAKE_STD_ZVAL(zval_item);
+			ZVAL_STRING(zval_item, item, 1);
 			add_assoc_zval(*array, (char*)keys->data, zval_item);
 		} else {
 			add_assoc_null(*array, (char*)keys->data);

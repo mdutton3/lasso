@@ -42,6 +42,7 @@ try:
 except NameError:
     dataDir = os.path.join(os.environ['TOP_SRCDIR'], 'tests', 'data')
 
+disco_soap_url = 'http://idp1/soapEndpoint'
 
 class IdWsf2TestCase(unittest.TestCase):
     def getWspServer(self):
@@ -82,29 +83,28 @@ class IdWsf2TestCase(unittest.TestCase):
 
         return server
 
-    def idpRegisterSelf(self, idp_server):
-        disco = lasso.IdWsf2Discovery(idp_server)
-        service_type = lasso.IDWSF2_DISCO_HREF
-        abstract = 'Disco service'
-        soapEndpoint = 'http://idp1/soapEndpoint'
-        disco.metadataRegisterSelf(service_type, abstract, soapEndpoint)
-
-        return idp_server
 
     def metadataRegister(self, wsp, idp):
         wsp_disco = lasso.IdWsf2Discovery(wsp)
         abstract = 'Personal Profile service'
         soapEndpoint = 'http://idp1/soapEndpoint'
-        wsp_disco.initMetadataRegister(
-                'urn:liberty:id-sis-pp:2005-05', abstract, wsp.providerIds[0], soapEndpoint)
+        wsp_disco.initMetadataRegister()
+        wsp_disco.addSimpleServiceMetadata(
+                service_types = ['urn:liberty:id-sis-pp:2005-05'],
+                abstract = abstract, provider_id = wsp.providerIds[0],
+                address = soapEndpoint)
         wsp_disco.buildRequestMsg()
 
         idp_disco = lasso.IdWsf2Discovery(idp)
-        idp_disco.processMetadataRegisterMsg(wsp_disco.msgBody)
+        idp_disco.processRequestMsg(wsp_disco.msgBody)
+        idp_disco.validateRequestMsg()
+        assert(len(idp_disco.metadatas) = 1)
+        assert(idp_disco.metadatas[0].svcMDID == idp_disco.response.SvcMDID[0])
         idp_disco.buildResponseMsg()
-
         wsp_disco.processMetadataRegisterResponseMsg(idp_disco.msgBody)
-        return idp, wsp_disco.svcMDIDs[0]
+        assert(len(wsp_disco.metadatas) = 1)
+        assert(wsp_disco.metadatas[0].svcMDID == wsp_disco.response.SvcMDID[0])
+        return idp, wsp_disco.metadatas[0].svcMDID
 
     def login(self, sp, idp, sp_identity_dump=None, sp_session_dump=None,
             idp_identity_dump=None, idp_session_dump=None):
@@ -124,6 +124,7 @@ class IdWsf2TestCase(unittest.TestCase):
         idp_login.processAuthnRequestMsg(query)
         idp_login.validateRequestMsg(True, True)
         idp_login.buildAssertion(lasso.SAML_AUTHENTICATION_METHOD_PASSWORD, None, None, None, None)
+        idp_login.idwsf2AddDiscoveryBootstrapEpr(url = disco_soap_url, abstract = 'Discovery Service', security_mech_id = lasso.SECURITY_MECH_NULL)
         idp_login.buildArtifactMsg(lasso.HTTP_METHOD_ARTIFACT_GET)
         artifact_message = idp_login.artifactMessage
 
@@ -150,55 +151,7 @@ class IdWsf2TestCase(unittest.TestCase):
         if sp_login.isSessionDirty:
             sp_session_dump = sp_login.session.dump()
 
-        return sp_identity_dump, sp_session_dump, idp_identity_dump, idp_session_dump
-
-
-class IdpSelfRegistrationTestCase(IdWsf2TestCase):
-    def test01(self):
-        """Register IdP as Dicovery Service and get a random svcMDID"""
-
-        disco = lasso.IdWsf2Discovery(self.getIdpServer())
-
-        service_type = lasso.IDWSF2_DISCO_HREF
-        abstract = 'Disco service'
-        soapEndpoint = 'http://idp1/soapEndpoint'
-
-        svcMDID = disco.metadataRegisterSelf(service_type, abstract, soapEndpoint)
-        # In real use, store the server dump here
-
-        self.failUnless(svcMDID, 'missing svcMDID')
-
-    def test02(self):
-        """Register IdP as Dicovery Service with a given svcMDID"""
-
-        disco = lasso.IdWsf2Discovery(self.getIdpServer())
-
-        service_type = lasso.IDWSF2_DISCO_HREF
-        abstract = 'Disco service'
-        soapEndpoint = 'http://idp1/soapEndpoint'
-        mySvcMDID = 'RaNdOm StRiNg'
-
-        svcMDID = disco.metadataRegisterSelf(service_type, abstract, soapEndpoint, mySvcMDID)
-        # In real use, store the server dump here
-
-        self.failUnless(svcMDID, 'missing svcMDID')
-        self.failUnlessEqual(svcMDID, mySvcMDID, 'wrong svcMDID')
-
-    def test03(self):
-        """Register IdP as Dicovery Service with wrong parameters"""
-
-        disco = lasso.IdWsf2Discovery(self.getIdpServer())
-
-        service_type = ''
-        abstract = ''
-        soapEndpoint = ''
-
-        try:
-            svcMDID = disco.metadataRegisterSelf(service_type, abstract, soapEndpoint)
-        except lasso.ParamBadTypeOrNullObjError:
-            pass
-        else:
-            self.fail('metadataRegisterSelf should fail with a ParamBadTypeOrNullObjError')
+        return sp_identity_dump, sp_session_dump, idp_identity_dump, idp_session_dump, sp_login.idwsf2GetDiscoveryBootstrapEpr()
 
 
 class MetadataRegisterTestCase(IdWsf2TestCase):
@@ -1786,13 +1739,12 @@ class DataServiceQueryTestCase(IdWsf2TestCase):
         self.failUnless(email_strings[1] == email2)
 
 
-idpSelfRegistrationSuite = unittest.makeSuite(IdpSelfRegistrationTestCase, 'test')
 metadataRegisterSuite = unittest.makeSuite(MetadataRegisterTestCase, 'test')
 metadataAssociationAddSuite = unittest.makeSuite(MetadataAssociationAddTestCase, 'test')
 discoveryQuerySuite = unittest.makeSuite(DiscoveryQueryTestCase, 'test')
 dataServiceQuerySuite = unittest.makeSuite(DataServiceQueryTestCase, 'test')
 
-allTests = unittest.TestSuite((idpSelfRegistrationSuite, metadataRegisterSuite,
+allTests = unittest.TestSuite((metadataRegisterSuite,
     metadataAssociationAddSuite, discoveryQuerySuite, dataServiceQuerySuite))
 
 if __name__ == '__main__':
