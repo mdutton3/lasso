@@ -37,13 +37,13 @@
   <!-- LassoWsfProfile -->
   <func name="lasso_wsf_profile_get_identity" return_owner="false" />
   <func name="lasso_wsf_profile_get_session" return_owner="false" />
-  <func name="lasso_wsf_profile_get_remote_provider" skip="java"/>
-  <func name="lasso_data_service_get_answer" skip="java"/>
-  <func name="lasso_data_service_get_query_item" skip="java"/>
-  <func name="lasso_data_service_add_modification" skip="java"/>
-  <func name="lasso_data_service_get_answers" skip="java"/>
-  <func name="lasso_data_service_get_answers_by_select" skip="java"/>
-  <func name="lasso_data_service_get_answers_by_item_id" skip="java"/>
+  <func name="lasso_wsf_profile_get_remote_provider" skip="java,perl"/>
+  <func name="lasso_data_service_get_answer" skip="java,perl"/>
+  <func name="lasso_data_service_get_query_item" skip="java,perl"/>
+  <func name="lasso_data_service_add_modification" skip="java,perl"/>
+  <func name="lasso_data_service_get_answers" skip="java,perl"/>
+  <func name="lasso_data_service_get_answers_by_select" skip="java,perl"/>
+  <func name="lasso_data_service_get_answers_by_item_id" skip="java,perl"/>
   <func name="lasso_saml2_encrypted_element_decrypt" skip="true"/>
   <!-- LassoIdentity -->
   <func name="lasso_identity_get_federation" return_owner="false" />
@@ -177,9 +177,24 @@
   <arg name="abstract" rename="abstract_" language="java"/>
   <func name="lasso_personal_profile_service_new_full" rename="lasso_personal_profile_server_new_personal_profile_service_full"/>
   <func name="lasso_wsf_profile_new_full" rename="lasso_wsf_profile_wsf_profile_new_full"/>
-  <func name="lasso_authentication_init_request" skip="true"/>
   <func name="lasso_wsa_endpoint_reference_get_target_identity_token" skip="true"/>
   <func name="lasso_wsa_endpoint_reference_get_security_token" skip="true"/>
+  <func name="lasso_wsa_endpoint_reference_associate_service_to_type" skip="true"/>
+  <func name="lasso_authentication_get_type" skip="true"/>
+  <func name="lasso_authentication_get_type" skip="true"/>
+  <func name="lasso_authentication_new" skip="true"/>
+  <func name="lasso_authentication_destroy" skip="true"/>
+  <func name="lasso_authentication_client_start" skip="true"/>
+  <func name="lasso_authentication_client_step" skip="true"/>
+  <func name="lasso_authentication_get_mechanism_list" skip="true"/>
+  <func name="lasso_authentication_init_request" skip="true"/>
+  <func name="lasso_authentication_process_request_msg" skip="true"/>
+  <func name="lasso_authentication_process_response_msg" skip="true"/>
+  <func name="lasso_authentication_server_start" skip="true"/>
+  <func name="lasso_authentication_server_step" skip="true"/>
+  <struct name="LassoAuthentication" skip="true"/>
+  <func name="lasso_wsse_username_token_derive_key" skip="true"/>
+  <func name="lasso_wsa_endpoint_reference_add_security_token" skip="true"/>
   <!-- Exceptions -->
   <exception>
     <category name="Profile"/>

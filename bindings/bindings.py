@@ -59,10 +59,14 @@ class BindingData:
         self.options = options
         self.overrides = ET.parse(os.path.join(self.src_dir, 'overrides.xml'))
         self.functions_toskip = dict()
+        self.structs_toskip = dict()
 
         for func in self.overrides.findall('func'):
             if func.attrib.get('skip') == 'true':
                 self.functions_toskip[func.attrib.get('name')] = 1
+        for struct in self.overrides.findall('struct'):
+            if struct.attrib.get('skip') == 'true':
+                self.structs_toskip[struct.attrib.get('name')] = 1
 
     def match_tag_language(self,tag):
         if self.options and self.options.language:
@@ -183,6 +187,7 @@ toskip = None
 class Function:
     return_type = None
     return_type_qualifier = None
+    return_arg = None
     name = None
     rename = None
     args = None
@@ -193,7 +198,7 @@ class Function:
 
     def __repr__(self):
         return '<Function return_type:%s name:%s args:%r>' % (
-                self.return_type, self.name, self.args)
+                self.return_arg, self.name, self.args)
 
     def apply_overrides(self):
         for func in binding.overrides.findall('func'):
@@ -425,7 +430,10 @@ def parse_header(header_file):
                 in_struct_private = False
         elif in_struct:
             if line.startswith('}'):
-                binding.structs.append(in_struct)
+                if not in_struct.name in binding.structs_toskip:
+                    binding.structs.append(in_struct)
+                else:
+                    print >>sys.stderr, 'W: skipping structure %s due to overrides.xml' % in_struct.name
                 in_struct = None
             elif '/*< public >*/' in line:
                 in_struct_private = False
@@ -439,20 +447,19 @@ def parse_header(header_file):
                 # TODO: Add parsing of OFTYPE
                 member_match = re.match('\s+(\w+)\s+(\*?\w+)', line)
                 if member_match:
-                    member_type = member_match.group(1)
-                    member_name = member_match.group(2)
-                    if member_name == 'parent':
-                        in_struct.parent = member_type
+                    member_type, member_name = normalise_var(member_match.group(1), member_match.group(2))
+                    field = (member_type, member_name, {})
+                    if member_type == 'void*':
+                        print >>sys.stderr, 'W: skipping field %s.%s' % (in_struct.name, member_name)
                     else:
-                        in_struct.members.append(
-                                list(normalise_var(member_type, member_name)) + [{}])
-                    if member_type == 'GList':
-                        options = in_struct.members[-1][-1]
-                        if '/* of' in line:
-                            of_type = line[line.index('/* of')+6:].split()[0]
-                            if of_type == 'strings':
-                                of_type = 'char*'
-                            options['element-type'] = of_type
+                        if is_glist(field) or is_hashtable(field):
+                            found = re.search(r' of ([^*]*)', line)
+                            if found:
+                                field[2]['element-type'] = clean_type(found.group(1))
+                        if member_name == 'parent':
+                            in_struct.parent = member_type
+                        else:
+                            in_struct.members.append(field) 
         elif line.startswith('LASSO_EXPORT '):
             while not line.strip().endswith(';'):
                 i += 1
@@ -497,6 +504,8 @@ def parse_header(header_file):
                         f.apply_overrides()
                         if not f.skip:
                             binding.functions.append(f)
+                        else:
+                            print >>sys.stderr, 'W: skipping function', f
 
         i += 1
 
@@ -520,7 +529,9 @@ def parse_headers(srcdir):
         makefile_am = open(os.path.join(base, 'Makefile.am')).read()
         filenames = [x for x in filenames if x.endswith('.h') if x in makefile_am]
         for filename in filenames:
-            if filename in ('xml_idff.h', 'xml_idwsf.h', 'xml_saml2.h', 'idwsf_strings.h'):
+            if not binding.options.idwsf and filename == 'idwsf_strings.h':
+                continue
+            if filename in ('xml_idff.h', 'xml_idwsf.h', 'xml_saml2.h'):
                 continue
             if filename == 'lasso_config.h' or 'private' in filename:
                 continue
