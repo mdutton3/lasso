@@ -50,7 +50,7 @@ typedef struct _LassoSoapBindingUsageDirectiveClass LassoSoapBindingUsageDirecti
 struct _LassoSoapBindingUsageDirective {
 	LassoNode parent;
 
-	GList *other;
+	GList *other; /* of LassoNode */
 
 	gchar *id;
 	gchar *ref;

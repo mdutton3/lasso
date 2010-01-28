@@ -57,7 +57,7 @@ typedef struct _LassoSoapBindingExtCredentialClass \
 struct _LassoSoapBindingExtCredential {
 	LassoNode parent;
 
-	GList *any;
+	GList *any; /* of LassoNode */
 
 	gchar *notOnOrAfter;
 };

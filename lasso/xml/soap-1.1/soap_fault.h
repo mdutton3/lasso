@@ -51,7 +51,7 @@ struct _LassoSoapFault {
 
 	gchar *faultcode;
 	gchar *faultstring;
-	GList *faultactor;
+	GList *faultactor; /* of string */
 	LassoSoapDetail *Detail;
 };
 
