@@ -143,7 +143,7 @@ lasso_provider_get_metadata_one(const LassoProvider *provider, const char *name)
  *
  * Extracts zero to many elements from the provider metadata descriptor.
  *
- * Return value: a #GList with the elements.  This GList is internally
+ * Return value:(element-type string): a #GList with the elements.  This GList is internally
  *      allocated and points to internally allocated strings.  It must
  *      not be freed, modified or stored.
  **/

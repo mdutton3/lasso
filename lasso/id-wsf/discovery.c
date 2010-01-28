@@ -705,7 +705,7 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
  *
  * After a disco:query message, creates a GList object of #LassoDataService.
  *
- * Return value: a newly created GList object of #LassoDataService;
+ * Return value:(element-type LassoNode): a newly created GList object of #LassoDataService;
  *     or NULL if an error occured.
  **/
 GList*

@@ -39,6 +39,12 @@ lasso_identity_add_svc_md_id(LassoIdentity *identity, gchar *svcMDID)
 	return 0;
 }
 
+/**
+ * lasso_identity_get_svc_md_ids:
+ * @identity: a #LassoIdentity object
+ *
+ * Return value:(element-type string): a list of all collected svcMDIDs
+ */
 GList*
 lasso_identity_get_svc_md_ids(LassoIdentity *identity)
 {

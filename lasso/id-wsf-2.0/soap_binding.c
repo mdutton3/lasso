@@ -330,7 +330,7 @@ lasso_soap_envelope_get_relates_to(LassoSoapEnvelope *soap_envelope, gboolean cr
  *
  * Return the body content of the @soap_envelope object.
  *
- * Return value: the content or NULL if the concent is empty or the object invalid.
+ * Return value:(element-type LassoNode): the content or NULL if the concent is empty or the object invalid.
  */
 GList*
 lasso_soap_envelope_get_body_content(LassoSoapEnvelope *soap_envelope) {

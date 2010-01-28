@@ -430,13 +430,13 @@ lasso_idwsf2_discovery_get_metadatas(LassoIdWsf2Discovery *discovery)
 }
 
 /**
- * lasso_idwsf2_discovery_get_endpoint_references(LassoIdWsf2Discovery *discovery)
+ * lasso_idwsf2_discovery_get_endpoint_references:
  * @discovery: a #LassoIdWsf2Discovery object
  *
  * Return the list of wsa:EndpointReference returned by the last discovery query.
  *
- * Return value: (element-type LassoWsAddrEndpointReference)(transfer full): a #GList of
- * LassoWsAddrEndpointReference objects, or NULL if none is found
+ * Return value:(element-type LassoWsAddrEndpointReference)(transfer full): a #GList of
+ * LassoWsAddrEndpointReference objects, or NULL if none is found.
  */
 GList*
 lasso_idwsf2_discovery_get_endpoint_references(LassoIdWsf2Discovery *discovery)

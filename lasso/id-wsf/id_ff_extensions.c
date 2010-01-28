@@ -293,7 +293,7 @@ void add_matching_resource_offering_to_list(G_GNUC_UNUSED char *name, LassoDisco
  *
  * Returns a list of #LassoDiscoResourceOffering associated to this service type.
  *
- * Return value: a newly allocated list of #LassoDiscoResourceOffering
+ * Return value:(element-type LassoDiscoResourceOffering): a newly allocated list of #LassoDiscoResourceOffering
  */
 GList*
 lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type)
