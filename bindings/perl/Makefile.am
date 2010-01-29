@@ -14,20 +14,24 @@ INCLUDES = \
 
 all: Lasso.so
 
-EXTRA_DIST=gobject_handling.c glist_handling.c typemap-in typemap-out lang.py Makefile.PL LassoNode.xs __init__.py test.pl test.sh t
+TOCOPY=gobject_handling.c glist_handling.c ghashtable_handling.c Makefile.PL \
+	LassoNode.xs test.pl t
+
+EXTRA_DIST=$(TOCOPY) typemap-in typemap-out lang.py __init__.py test.sh
 
 if WSF_ENABLED
 EXTRA_ARGS = --enable-id-wsf
 endif
 
+# Copy if out of a build
 Makefile.perl: $(srcdir)/Makefile.PL Lasso.xs Lasso.pm
 	-if [ "$(srcdir)" != "$(builddir)" ]; then \
-		cp -R $(srcdir)/t $(srcdir)/test.pl $(srcdir)/Makefile.PL $(srcdir)/LassoNode.xs .; \
-		chmod -R u+rwx t test.pl Makefile.PL LassoNode.xs; \
+		for file in $(TOCOPY); do \
+			cp -Rf $(srcdir)/$$file .; \
+		done; \
+		chmod -R u+rwX $(TOCOPY); \
 	fi
-	CFLAGS="$(LASSO_XS_CFLAGS)" TOP_BUILDDIR="$(top_builddir)" \
-	       SRCDIR="$(srcdir)" BUILDDIR=./ $(PERL) Makefile.PL PREFIX=$(prefix)
-
+	$(PERL) Makefile.PL PREFIX=$(prefix) CCFLAGS="$(LASSO_XS_CFLAGS)" INC="-I. -I$(top_srcdir)" LIBS="`$(top_builddir)/lasso-src-config --libs`"
 
 Lasso.xs Lasso.pm: lang.py typemap-in typemap-out
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l perl --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
