@@ -230,6 +230,7 @@ gperl_get_object (SV * sv)
 static void
 gperl_lasso_error(int error)
 {
+	dTHX;
 	if (error != 0) {
 		HV *hv;
 		SV *sv;
@@ -241,6 +242,6 @@ gperl_lasso_error(int error)
 		(void)hv_store(hv, "message", 7, newSVpv(desc, 0), 0);
 		sv = sv_bless(newRV_noinc((SV*)hv), gv_stashpv("Lasso::Error", TRUE));
 		sv_setsv(ERRSV, sv);
-		croak ((void*)what);
+		Perl_croak (aTHX_ Nullch);
 	}
 }
