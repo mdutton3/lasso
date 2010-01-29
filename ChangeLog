@@ -1,3 +1,754 @@
+2010-01-29 00:58  bdauvergne
+
+	* bindings/python/lang.py: Binding python: make a better use of
+	  default value annotation for creating method declarations
+
+2010-01-29 00:43  bdauvergne
+
+	* bindings/perl/Makefile.PL, bindings/perl/Makefile.am,
+	  bindings/perl/ghashtable_handling.c,
+	  bindings/perl/gobject_handling.c, bindings/perl/lang.py,
+	  bindings/perl/t/Lasso.t, bindings/perl/test.sh,
+	  bindings/perl/typemap-in, bindings/perl/typemap-out: Binding
+	  perl: many improvements
+	  
+	  * handle GHashTable of strings and objects.
+	  * report errors with 'croak' as a Lasso::Error object.
+	  * add more basic tests.
+	  * for string arguments, convert undef to NULL, and croak if
+	  function
+	  does not accept NULL.
+	  * fix library paths in Makefile.PL.
+
+2010-01-29 00:43  bdauvergne
+
+	* bindings/bindings.py: Bindings: in bindings.py, fix regexp and
+	  annotation parsing for optional arguments and their default
+	  values
+
+2010-01-29 00:43  bdauvergne
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/login.c,
+	  lasso/saml-2.0/logout.c, lasso/saml-2.0/name_id_management.c,
+	  lasso/saml-2.0/profile.c, lasso/saml-2.0/profileprivate.h,
+	  lasso/saml-2.0/saml2_helper.c: SAML 2.0: fix annotations,
+	  documentation and signatures
+
+2010-01-28 15:32  bdauvergne
+
+	* bindings/python/tests/idwsf1_tests.py: Bindings python ID-WSF 1.0
+	  tests: update PP HREF symbol
+
+2010-01-28 15:32  bdauvergne
+
+	* bindings/php5/wrapper_source_top.c: Bindings php5: string
+	  hashtable methods are only used by ID-WSF bindings, mark them
+	  unused by default
+	  
+	  * bindings/php5/wrapper_source_top.c:
+	  only id-wsf has field of type GHashtTable<char*,char*> so when
+	  compiling without --enable-wsf, it give 'unused symbols' errors.
+	  Lets mark de the concerned functions as unused.
+
+2010-01-28 15:32  bdauvergne
+
+	* lasso/id-ff/server.h: ID-WSF 1.0: make LassoServer.services
+	  private with respect to the bindings
+
+2010-01-28 15:32  bdauvergne
+
+	* bindings/java/lang.py, bindings/java/wrapper_top.c: Bindings
+	  java: use utils.py methods, make set_hash_of_objects more robust
+
+2010-01-28 15:32  bdauvergne
+
+	* tests/data/Makefile.am: Tests: export sp2-la do dist file for
+	  dist with id-wsf enabled
+
+2010-01-28 15:31  bdauvergne
+
+	* bindings/utils.py: Bindings: add time_t to integer types, add
+	  unpointerize method
+
+2010-01-28 15:31  bdauvergne
+
+	* bindings/python/tests/idwsf2_tests.py: Binding python ID-WSF 2.0
+	  tests: update some tests
+
+2010-01-28 15:31  bdauvergne
+
+	* bindings/python/tests/Makefile.am: Binding Python ID-WSF 2.0:
+	  comment out test
+
+2010-01-28 15:31  bdauvergne
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/discovery.c,
+	  lasso/id-wsf/personal_profile_service.c,
+	  lasso/xml/idwsf_strings.h, lasso/xml/xml.c: ID-WSF: change name
+	  of Personal Profile namespace symbols, add symbols for ID-SIS PP
+	  1.1
+
+2010-01-28 15:31  bdauvergne
+
+	* bindings/java/lang.py, bindings/php5/php_code.py,
+	  bindings/php5/wrapper_source.py,
+	  bindings/php5/wrapper_source_top.c, bindings/python/lang.py,
+	  bindings/python/tests/idwsf2_tests.py,
+	  bindings/python/wrapper_top.c: Bindings: java, php5, python
+	  simplify logic in binding generator
+	  
+	  * use utils.h macros to manipulate fields.
+	  * use utils.py function to filter variables, argument and return
+	  types.
+	  * finish support of hashtables of strings for php5 and python.
+
+2010-01-28 15:31  bdauvergne
+
+	* bindings/bindings.py, bindings/overrides.xml: Bindings: better
+	  parse oftype annotation for hashtable, allow to skip structures
+	  
+	  * bindings/bindings.py:
+	  add possibility to skip generating bindings for structures to
+	  overrides.xml.
+	  parse element-type annotation /* of XXX */ for hashtable objects.
+	  output to stderr warning about skipped objects.
+	  parse idwsf_strings.h
+	  * bindings/overrides.xml:
+	  skip more ID-WSF 1.0 functions in java and perl.
+	  skip structure LassoAuthentication.
+
+2010-01-28 15:31  bdauvergne
+
+	* lasso/id-ff/provider.c, lasso/id-wsf-2.0/discovery.c,
+	  lasso/id-wsf-2.0/identity.c, lasso/id-wsf-2.0/server.c,
+	  lasso/id-wsf-2.0/soap_binding.c, lasso/id-wsf/discovery.c,
+	  lasso/id-wsf/id_ff_extensions.c: Core: fix gtk-doc annotations
+
+2010-01-28 15:31  bdauvergne
+
+	* lasso/utils.h: Core: add new macros to lasso/utils.h, fix
+	  lasso_assign_new_list_of_gobjects
+	  
+	  * lasso/utils.h:
+	  add:
+	  - lasso_assign_new_xml_node
+	  - lasso_assign_new_list_of_strings
+	  - lasso_assign_new_list_of_xml_node
+	  fix lasso_assign_new_list_of_gobjects, bad naming of release
+	  macro.
+
+2010-01-28 15:31  bdauvergne
+
+	* lasso/xml/dst_data.h, lasso/xml/sa_sasl_request.h,
+	  lasso/xml/soap-1.1/soap_fault.h,
+	  lasso/xml/soap_binding_ext_credential.h,
+	  lasso/xml/soap_binding_usage_directive.h: XML: add missing
+	  element-type annotations
+
+2010-01-28 15:31  bdauvergne
+
+	* bindings/utils.py: Bindings: in bindings/utils.py, augment
+	  robustness of matching functions to work with type alone or
+	  triples
+
+2010-01-28 15:31  bdauvergne
+
+	* bindings/perl/Makefile.am, bindings/perl/lang.py,
+	  bindings/perl/typemap-in, bindings/perl/typemap-out,
+	  bindings/perl/typemap.in, bindings/perl/typemap.out: Binding
+	  perl: update to binding
+	  
+	  * change extension of typemap files because if conflicts with
+	  existing
+	  * support constant list of strings and gobjects, add input rule
+	  for
+	  list of gobjects
+	  * fix setter for GList fields
+
+2010-01-26 20:59  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt,
+	  lasso/id-wsf-2.0/profile.c, lasso/id-wsf-2.0/saml2_login.c,
+	  lasso/id-wsf-2.0/soap_binding.c, lasso/id-wsf-2.0/soap_binding.h,
+	  lasso/id-wsf/authentication.c, lasso/id-wsf/data_service.c,
+	  lasso/id-wsf/discovery.c, lasso/id-wsf/wsf_profile.c,
+	  lasso/xml/disco_description.c, lasso/xml/idwsf_strings.h: ID-WSF
+	  1.0 & 2.0: complete lasso-sections.txt, add internal API to
+	  access SOAP headers, complete WS-Addressing support
+	  
+	  * docs/reference/lasso/lasso-sections.txt: complete documentation
+	  of
+	  LassoSoapEnvelope and LassoSoapFault with ID-WSF additions.
+	  
+	  * lasso/id-wsf-2.0/profile.c lasso/id-wsf-2.0/soap_binding.c
+	  lasso/id-wsf-2.0/soap_binding.h:
+	  add internal function _get_node and _get_header to simplify
+	  implementation of accessors for headers.
+	  change signature of lasso_soap_envelope_get_message_id and add
+	  new
+	  function lasso_soap_envelope_get_relates_to.
+	  update call points.
+	  add a message id when building a SOAP message.
+	  
+	  * lasso/xml/idwsf_strings.h:
+	  add element name for MessageID and RelatesTo WS-Addressing
+	  elements.
+	  
+	  * lasso/id-wsf/authentication.c lasso/id-wsf/data_service.c
+	  lasso/id-wsf/discovery.c lasso/id-wsf/wsf_profile.c
+	  lasso/id-wsf-2.0/saml2_login.c lasso/xml/disco_description.c:
+	  fix path name of header lasso/id-wsf/wsf_utils.h. make all
+	  internal
+	  include path relatives.
+
+2010-01-26 20:59  bdauvergne
+
+	* lasso/xml/xml.c, lasso/xml/xml.h: Core XML: make
+	  lasso_node_set_custom_namespace/nodename take const string
+	  
+	  * lasso/xml/xml.c lasso/xml/xml.h:
+	  mark argument of lasso_node_set_custom_namespace and
+	  lasso_node_set_custom_nodename as const char* strings.
+
+2010-01-26 20:59  bdauvergne
+
+	* lasso/xml/xml.c, lasso/xml/xml.h: Core XML: add function to get
+	  the namespace of a LassoNode
+	  
+	  * lasso/xml/xml.c lasso/xml/xml.h:
+	  if a custome namespace is set, return it, otherwise return the
+	  class
+	  namespace (klass->node_data->ns->href).
+
+2010-01-26 13:51  bdauvergne
+
+	* bindings/perl/Makefile.PL, bindings/perl/Makefile.am: Binding
+	  perl: fix include paths in the makefile, again
+
+2010-01-26 13:51  bdauvergne
+
+	* bindings/perl/Makefile.PL: in bindings/perl/Makefile.PL, add
+	  include path for normal builds
+
+2010-01-26 10:39  bdauvergne
+
+	* configure.ac: in configure.ac, activate the Perl binding in
+	  normal builds
+
+2010-01-26 10:39  bdauvergne
+
+	* configure.ac: Core: in configure.ac, activate warning when
+	  debugging, not in normal build
+	  
+	  * configure.ac:
+	  remove -Wxxx flag from AM_CFLAGS, add them if --enable-debugging
+	  is used.
+
+2010-01-26 10:39  bdauvergne
+
+	* lasso/saml-2.0/logout.c: in lasso/saml-2.0/logout.c, fix missing
+	  declaration
+
+2010-01-26 10:39  bdauvergne
+
+	* lasso/errors.c: Core: update errors.c file
+
+2010-01-26 10:39  bdauvergne
+
+	* bindings/perl/Makefile.am: in bindings/perl/Makefile.am, change
+	  permission to make distcheck works
+
+2010-01-26 10:39  bdauvergne
+
+	* bindings/perl/Makefile.am: in bindings/perl/Makefile.am, add
+	  files to EXTRA_DIST
+
+2010-01-25 23:47  bdauvergne
+
+	* bindings/Makefile.am, bindings/bindings.py,
+	  bindings/overrides.xml, bindings/perl,
+	  bindings/perl/LassoNode.xs, bindings/perl/Makefile.PL,
+	  bindings/perl/Makefile.am, bindings/perl/__init__.py,
+	  bindings/perl/glist_handling.c, bindings/perl/gobject_handling.c,
+	  bindings/perl/lang.py, bindings/perl/t, bindings/perl/t/Lasso.t,
+	  bindings/perl/test.pl, bindings/perl/test.sh,
+	  bindings/perl/typemap.in, bindings/perl/typemap.out,
+	  configure.ac: Bindings: add a new perl binding using the new
+	  binding infrastructure
+	  
+	  * XS files is autogenerated using bindings/binding.py model of
+	  the
+	  Lasso API. All constants are in the Lasso::Constants package, the
+	  LASSO_ prefix is removed.
+	  All classes are now Lasso::ClassName, field accessor also serves
+	  as
+	  setters, i.e you can do this:
+	  $name_id = Lasso::Saml2NameID::new();
+	  $name_id->content('coin');
+	  print $name_id->content;
+	  
+	  Is still missing:
+	  - a lot of test files,
+	  - support for hashtables,
+	  - and throwing exceptions when return code is non-zero.
+
+2010-01-25 23:47  bdauvergne
+
+	* bindings/utils.py: Bindings: in utils.py, fix is_glist and
+	  is_hashtable, make arg_type accept simple string as input instead
+	  of triples
+
+2010-01-25 23:47  bdauvergne
+
+	* lasso/xml/saml_attribute_value.h: in
+	  lasso/xml/saml_attribute_value.h, fix typo in content type
+	  annotation
+
+2010-01-25 23:47  bdauvergne
+
+	* lasso/xml/sa_sasl_response.h: in lasso/xml/sa_sasl_response.h,
+	  add GList content type annotation to field 'any'
+
+2010-01-25 23:47  bdauvergne
+
+	* bindings/php5/wrapper_source.py: Bindings PHP5: use is_cstring to
+	  match string types
+
+2010-01-25 23:47  bdauvergne
+
+	* Makefile.am, configure.ac, java/.cvsignore, java/Makefile.am,
+	  java/coldfusion/.cvsignore, java/coldfusion/Makefile,
+	  java/coldfusion/src/CFLassoSingleLogout.java,
+	  java/coldfusion/src/CFLassoSingleSignOn.java,
+	  java/coldfusion/web/assertionConsumer.cfm,
+	  java/coldfusion/web/singleLogout.cfm,
+	  java/coldfusion/web/singleSignOn.cfm,
+	  java/doc/ImplantationMapping.rst, java/doc/JNIForDummy.rst,
+	  java/tests/.cvsignore, java/tests/BindingTests.java,
+	  java/tests/LoginTest.java, perl/.cvsignore, perl/Makefile.PL,
+	  perl/Makefile.am, perl/tests/binding_tests.pl, php/.cvsignore,
+	  php/Makefile.am, php/patch_swig_output.py, php/tests/.cvsignore,
+	  php/tests/binding_tests.php, php/tests/perfs.php,
+	  swig/.cvsignore, swig/Lasso-saml2.i, swig/Lasso-wsf-disco.i,
+	  swig/Lasso-wsf-dst.i, swig/Lasso-wsf-is.i, swig/Lasso-wsf-sa.i,
+	  swig/Lasso-wsf-soap.i, swig/Lasso-wsf.i, swig/Lasso-wsf2.i,
+	  swig/Lasso.i, swig/Makefile.am, swig/id-wsf-2.0/Makefile.am,
+	  swig/id-wsf-2.0/disco_abstract.i,
+	  swig/id-wsf-2.0/disco_endpoint_context.i,
+	  swig/id-wsf-2.0/disco_keys.i, swig/id-wsf-2.0/disco_options.i,
+	  swig/id-wsf-2.0/disco_provider_id.i,
+	  swig/id-wsf-2.0/disco_query.i,
+	  swig/id-wsf-2.0/disco_query_response.i,
+	  swig/id-wsf-2.0/disco_requested_service.i,
+	  swig/id-wsf-2.0/disco_security_context.i,
+	  swig/id-wsf-2.0/disco_service_context.i,
+	  swig/id-wsf-2.0/disco_service_type.i,
+	  swig/id-wsf-2.0/disco_svc_md_association_add.i,
+	  swig/id-wsf-2.0/disco_svc_md_association_add_response.i,
+	  swig/id-wsf-2.0/disco_svc_md_association_delete.i,
+	  swig/id-wsf-2.0/disco_svc_md_association_delete_response.i,
+	  swig/id-wsf-2.0/disco_svc_md_association_query.i,
+	  swig/id-wsf-2.0/disco_svc_md_association_query_response.i,
+	  swig/id-wsf-2.0/disco_svc_md_delete.i,
+	  swig/id-wsf-2.0/disco_svc_md_delete_response.i,
+	  swig/id-wsf-2.0/disco_svc_md_query.i,
+	  swig/id-wsf-2.0/disco_svc_md_query_response.i,
+	  swig/id-wsf-2.0/disco_svc_md_register.i,
+	  swig/id-wsf-2.0/disco_svc_md_register_response.i,
+	  swig/id-wsf-2.0/disco_svc_md_replace.i,
+	  swig/id-wsf-2.0/disco_svc_md_replace_response.i,
+	  swig/id-wsf-2.0/disco_svc_metadata.i,
+	  swig/id-wsf-2.0/dst_data_response_base.i,
+	  swig/id-wsf-2.0/dst_delete_item_base.i,
+	  swig/id-wsf-2.0/dst_delete_response.i,
+	  swig/id-wsf-2.0/dst_request.i,
+	  swig/id-wsf-2.0/dst_result_query_base.i,
+	  swig/id-wsf-2.0/dst_test_item_base.i,
+	  swig/id-wsf-2.0/dstref_app_data.i,
+	  swig/id-wsf-2.0/dstref_create.i,
+	  swig/id-wsf-2.0/dstref_create_item.i,
+	  swig/id-wsf-2.0/dstref_create_response.i,
+	  swig/id-wsf-2.0/dstref_data.i,
+	  swig/id-wsf-2.0/dstref_data_response.i,
+	  swig/id-wsf-2.0/dstref_delete.i,
+	  swig/id-wsf-2.0/dstref_delete_item.i,
+	  swig/id-wsf-2.0/dstref_delete_response.i,
+	  swig/id-wsf-2.0/dstref_item_data.i,
+	  swig/id-wsf-2.0/dstref_modify.i,
+	  swig/id-wsf-2.0/dstref_modify_item.i,
+	  swig/id-wsf-2.0/dstref_modify_response.i,
+	  swig/id-wsf-2.0/dstref_query.i,
+	  swig/id-wsf-2.0/dstref_query_item.i,
+	  swig/id-wsf-2.0/dstref_query_response.i,
+	  swig/id-wsf-2.0/dstref_result_query.i,
+	  swig/id-wsf-2.0/dstref_test_item.i,
+	  swig/id-wsf-2.0/ims_identity_mapping_request.i,
+	  swig/id-wsf-2.0/ims_identity_mapping_response.i,
+	  swig/id-wsf-2.0/ims_mapping_input.i,
+	  swig/id-wsf-2.0/ims_mapping_output.i,
+	  swig/id-wsf-2.0/inheritance.h, swig/id-wsf-2.0/is_help.i,
+	  swig/id-wsf-2.0/is_inquiry.i,
+	  swig/id-wsf-2.0/is_inquiry_element.i,
+	  swig/id-wsf-2.0/is_interaction_request.i,
+	  swig/id-wsf-2.0/is_interaction_response.i,
+	  swig/id-wsf-2.0/is_interaction_statement.i,
+	  swig/id-wsf-2.0/is_item.i, swig/id-wsf-2.0/is_parameter.i,
+	  swig/id-wsf-2.0/is_select.i, swig/id-wsf-2.0/is_text.i,
+	  swig/id-wsf-2.0/main.h,
+	  swig/id-wsf-2.0/ps_add_collection_request.i,
+	  swig/id-wsf-2.0/ps_add_collection_response.i,
+	  swig/id-wsf-2.0/ps_add_entity_request.i,
+	  swig/id-wsf-2.0/ps_add_entity_response.i,
+	  swig/id-wsf-2.0/ps_add_known_entity_request.i,
+	  swig/id-wsf-2.0/ps_add_known_entity_response.i,
+	  swig/id-wsf-2.0/ps_add_to_collection_request.i,
+	  swig/id-wsf-2.0/ps_get_object_info_request.i,
+	  swig/id-wsf-2.0/ps_get_object_info_response.i,
+	  swig/id-wsf-2.0/ps_item_data.i,
+	  swig/id-wsf-2.0/ps_list_members_request.i,
+	  swig/id-wsf-2.0/ps_list_members_response.i,
+	  swig/id-wsf-2.0/ps_notification.i, swig/id-wsf-2.0/ps_notify.i,
+	  swig/id-wsf-2.0/ps_object.i,
+	  swig/id-wsf-2.0/ps_query_objects_request.i,
+	  swig/id-wsf-2.0/ps_query_objects_response.i,
+	  swig/id-wsf-2.0/ps_remove_collection_request.i,
+	  swig/id-wsf-2.0/ps_remove_entity_request.i,
+	  swig/id-wsf-2.0/ps_remove_from_collection_request.i,
+	  swig/id-wsf-2.0/ps_request_abstract.i,
+	  swig/id-wsf-2.0/ps_resolve_identifier_request.i,
+	  swig/id-wsf-2.0/ps_resolve_identifier_response.i,
+	  swig/id-wsf-2.0/ps_resolve_input.i,
+	  swig/id-wsf-2.0/ps_response_abstract.i,
+	  swig/id-wsf-2.0/ps_set_object_info_request.i,
+	  swig/id-wsf-2.0/ps_test_membership_request.i,
+	  swig/id-wsf-2.0/ps_test_membership_response.i,
+	  swig/id-wsf-2.0/sb2_consent.i,
+	  swig/id-wsf-2.0/sb2_credentials_context.i,
+	  swig/id-wsf-2.0/sb2_endpoint_update.i,
+	  swig/id-wsf-2.0/sb2_redirect_request.i,
+	  swig/id-wsf-2.0/sb2_sender.i,
+	  swig/id-wsf-2.0/sb2_target_identity.i,
+	  swig/id-wsf-2.0/sb2_timeout.i,
+	  swig/id-wsf-2.0/sb2_usage_directive.i,
+	  swig/id-wsf-2.0/sb2_user_interaction_header.i,
+	  swig/id-wsf-2.0/sbf_framework.i, swig/id-wsf-2.0/sec_token.i,
+	  swig/id-wsf-2.0/sec_token_policy.i,
+	  swig/id-wsf-2.0/sec_transited_provider_path.i,
+	  swig/id-wsf-2.0/subs_notification.i,
+	  swig/id-wsf-2.0/subs_notify_response.i,
+	  swig/id-wsf-2.0/subs_ref_item.i,
+	  swig/id-wsf-2.0/subs_subscription.i,
+	  swig/id-wsf-2.0/subsref_app_data.i,
+	  swig/id-wsf-2.0/subsref_create.i,
+	  swig/id-wsf-2.0/subsref_create_item.i,
+	  swig/id-wsf-2.0/subsref_create_response.i,
+	  swig/id-wsf-2.0/subsref_data.i,
+	  swig/id-wsf-2.0/subsref_data_response.i,
+	  swig/id-wsf-2.0/subsref_delete.i,
+	  swig/id-wsf-2.0/subsref_delete_item.i,
+	  swig/id-wsf-2.0/subsref_delete_response.i,
+	  swig/id-wsf-2.0/subsref_item_data.i,
+	  swig/id-wsf-2.0/subsref_modify.i,
+	  swig/id-wsf-2.0/subsref_modify_item.i,
+	  swig/id-wsf-2.0/subsref_modify_response.i,
+	  swig/id-wsf-2.0/subsref_notification.i,
+	  swig/id-wsf-2.0/subsref_notify.i,
+	  swig/id-wsf-2.0/subsref_notify_response.i,
+	  swig/id-wsf-2.0/subsref_query.i,
+	  swig/id-wsf-2.0/subsref_query_item.i,
+	  swig/id-wsf-2.0/subsref_query_response.i,
+	  swig/id-wsf-2.0/subsref_result_query.i,
+	  swig/id-wsf-2.0/subsref_subscription.i,
+	  swig/id-wsf-2.0/subsref_test_item.i,
+	  swig/id-wsf-2.0/util_empty.i, swig/id-wsf-2.0/util_extension.i,
+	  swig/id-wsf-2.0/util_response.i, swig/id-wsf-2.0/util_status.i,
+	  swig/inheritance.h, swig/saml-2.0/.cvsignore,
+	  swig/saml-2.0/Makefile.am, swig/saml-2.0/inheritance.h,
+	  swig/saml-2.0/main.h, swig/saml-2.0/saml2_action.i,
+	  swig/saml-2.0/saml2_advice.i, swig/saml-2.0/saml2_assertion.i,
+	  swig/saml-2.0/saml2_attribute.i,
+	  swig/saml-2.0/saml2_attribute_statement.i,
+	  swig/saml-2.0/saml2_attribute_value.i,
+	  swig/saml-2.0/saml2_audience_restriction.i,
+	  swig/saml-2.0/saml2_authn_context.i,
+	  swig/saml-2.0/saml2_authn_statement.i,
+	  swig/saml-2.0/saml2_authz_decision_statement.i,
+	  swig/saml-2.0/saml2_base_idabstract.i,
+	  swig/saml-2.0/saml2_condition_abstract.i,
+	  swig/saml-2.0/saml2_conditions.i,
+	  swig/saml-2.0/saml2_encrypted_element.i,
+	  swig/saml-2.0/saml2_evidence.i,
+	  swig/saml-2.0/saml2_key_info_confirmation_data.i,
+	  swig/saml-2.0/saml2_name_id.i,
+	  swig/saml-2.0/saml2_one_time_use.i,
+	  swig/saml-2.0/saml2_proxy_restriction.i,
+	  swig/saml-2.0/saml2_statement_abstract.i,
+	  swig/saml-2.0/saml2_subject.i,
+	  swig/saml-2.0/saml2_subject_confirmation.i,
+	  swig/saml-2.0/saml2_subject_confirmation_data.i,
+	  swig/saml-2.0/saml2_subject_locality.i,
+	  swig/saml-2.0/samlp2_artifact_resolve.i,
+	  swig/saml-2.0/samlp2_artifact_response.i,
+	  swig/saml-2.0/samlp2_assertion_id_request.i,
+	  swig/saml-2.0/samlp2_attribute_query.i,
+	  swig/saml-2.0/samlp2_authn_query.i,
+	  swig/saml-2.0/samlp2_authn_request.i,
+	  swig/saml-2.0/samlp2_authz_decision_query.i,
+	  swig/saml-2.0/samlp2_extensions.i,
+	  swig/saml-2.0/samlp2_idp_entry.i,
+	  swig/saml-2.0/samlp2_idp_list.i,
+	  swig/saml-2.0/samlp2_logout_request.i,
+	  swig/saml-2.0/samlp2_manage_name_id_request.i,
+	  swig/saml-2.0/samlp2_name_id_mapping_request.i,
+	  swig/saml-2.0/samlp2_name_id_mapping_response.i,
+	  swig/saml-2.0/samlp2_name_id_policy.i,
+	  swig/saml-2.0/samlp2_request_abstract.i,
+	  swig/saml-2.0/samlp2_requested_authn_context.i,
+	  swig/saml-2.0/samlp2_response.i, swig/saml-2.0/samlp2_scoping.i,
+	  swig/saml-2.0/samlp2_status.i,
+	  swig/saml-2.0/samlp2_status_code.i,
+	  swig/saml-2.0/samlp2_status_detail.i,
+	  swig/saml-2.0/samlp2_status_response.i,
+	  swig/saml-2.0/samlp2_subject_query_abstract.i,
+	  swig/saml-2.0/samlp2_terminate.i, swig/ws/Makefile.am,
+	  swig/ws/inheritance.h, swig/ws/main.h,
+	  swig/ws/wsa_attributed_any.i, swig/ws/wsa_attributed_qname.i,
+	  swig/ws/wsa_attributed_unsigned_long.i,
+	  swig/ws/wsa_attributed_uri.i, swig/ws/wsa_endpoint_reference.i,
+	  swig/ws/wsa_metadata.i, swig/ws/wsa_problem_action.i,
+	  swig/ws/wsa_reference_parameters.i, swig/ws/wsa_relates_to.i,
+	  swig/ws/wsse_embedded.i, swig/ws/wsse_reference.i,
+	  swig/ws/wsse_security_header.i,
+	  swig/ws/wsse_security_token_reference.i,
+	  swig/ws/wsse_transformation_parameters.i,
+	  swig/ws/wsse_username_token.i, swig/ws/wsu_timestamp.i,
+	  swig/wsf-support.i.in, swig/wsf2-support.i: Bindings: remove all
+	  SWIG bindings and SWIG related files
+
+2010-01-25 23:47  bdauvergne
+
+	* lasso/utils.h, lasso/xml/xml.c: Add new macro
+	  lasso_list_add_new_xml_node
+	  
+	  * lasso/utils.h:
+	  fix lasso_list_add_xml_node, it must copy the node before
+	  assigning
+	  it.
+	  add lasso_list_add_new_xml_node for keeping the old behaviour.
+	  * lasso/xml/xml.c:
+	  fix use of lasso_list_add_xml_node, because copying the node
+	  before
+	  assigning it is a leak now.
+
+2010-01-25 12:47  bdauvergne
+
+	* bindings/ghashtable.h: in bindings/ghashtable.h, Add missing
+	  unused argument hints
+
+2010-01-25 12:47  bdauvergne
+
+	* lasso/saml-2.0/logout.c: SAML 2.0 Logout: when in an SP initiated
+	  logout, lasso_logout_build_response_msg is the finishing call
+	  
+	  * lasso/saml-2.0/logout.c:
+	  when calling lasso_logout_build_response_msg(), if we known that
+	  we
+	  are in the middle of an SP initiated logout, i.e. if
+	  initial_remote_providerID is not NULL, then we can restore the
+	  intial
+	  response.
+
+2010-01-25 12:46  bdauvergne
+
+	* lasso/errors.c, lasso/errors.h,
+	  lasso/xml/ws/wsse_username_token.c: Fix name of
+	  LASSO_WSSEC_BAD_PASSWORD
+	  
+	  * lasso/errors.c lasso/errors.h:
+	  LASSO_WSSE_BAD_PASSWORD -> LASSO_WSSEC_ERROR_BAD_PASSWORD
+	  * lasso/xml/ws/wsse_username_token.c:
+	  update client code.
+
+2010-01-25 12:46  bdauvergne
+
+	* bindings/java/lang.py: Bindings java: cast return value of
+	  special constructors
+	  
+	  * bindings/java/lang.py:
+	  in the JAVA API special constructors are made to return their
+	  real
+	  type, but usual GObject constructors return their base type (here
+	  LassoNode) so we have to cast it.
+
+2010-01-25 12:46  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/id-ff/session.c,
+	  lasso/id-ff/session.h, lasso/id-ff/sessionprivate.h: Export more
+	  assertion access API for LassoSession
+	  
+	  * lasso/id-ff/session.c lasso/id-ff/session.h
+	  lasso/id-ff/sessionprivate.h:
+	  export lasso_session_get_assertion(),
+	  lasso_session_add_assertion()
+	  and lasso_session_remove_assertion().
+	  remove them from private header.
+	  * docs/reference/lasso/lasso-sections.txt:
+	  update documentation
+
+2010-01-21 17:54  bdauvergne
+
+	* bindings/overrides.xml: Bindings: remove useless overrides
+	  
+	  * bindings/overrides.xml:
+	  It is no more needed to force return type of constructors to
+	  their
+	  real types, the bindings check the type dynamically anyway.
+
+2010-01-21 17:54  bdauvergne
+
+	* bindings/ghashtable.h: Fix GHashTable backward compatibility
+	  header
+	  
+	  * lasso/ghashtable.h:
+	  g_hash_table_remove_all_nodes is not a public function, use
+	  g_hash_table_foreach_remove instead.
+
+2010-01-20 13:33  bdauvergne
+
+	* lasso/xml/saml-2.0/saml2_name_id.c: in saml2_name_id.c, include
+	  utils.h to benefit from replacement for g_strcmp0
+
+2010-01-20 13:33  bdauvergne
+
+	* lasso/errors.h, lasso/xml/ws/wsse_username_token.c: Fix
+	  LASSO_WSSEC_BAD_PASSWORD error, reformat wsse_username_token.c
+	  
+	  * lasso/errors.h:
+	  change error id and error name for LASSO_WSSEC_BAD_PASSWORD
+	  * lasso/xml/ws/wsse_username_token.c:
+	  update reference to LASSO_WSSEC_BAD_PASSWORD.
+	  reformat line longer than 100 characters.
+
+2010-01-19 15:03  bdauvergne
+
+	* lasso/id-wsf-2.0/server.c, lasso/id-wsf-2.0/session.c: ID-WSF
+	  2.0: add some annotations
+
+2010-01-19 12:44  bdauvergne
+
+	* lasso/backward_comp.h: Core: in backward_comp.h, include string.h
+	  if g_strcmp0 is used
+	  
+	  * lasso/backward_comp.h:
+	  implementation of g_strcmp0 depends upon string.h.
+
+2010-01-19 11:01  bdauvergne
+
+	* lasso/xml/idwsf_strings.h: WS-Security: fix typo in name of
+	  string symbols
+	  
+	  * lasso/xml/idwsf_strings.h:
+	  uppercase define for WS-Securities SOAP faults.
+
+2010-01-19 11:01  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/errors.c,
+	  lasso/errors.h, lasso/xml/idwsf_strings.h,
+	  lasso/xml/ws/wsse_username_token.c,
+	  lasso/xml/ws/wsse_username_token.h: WS: complete support for
+	  wsse:UsernameToken
+	  
+	  * docs/reference/lasso/lasso-sections.txt:
+	  add new functions and change type name in documentation.
+	  * lasso/errors.h lasso/errors.c:
+	  add an error to report password verification failure
+	  * lasso/xml/ws/wsse_username_token.h
+	  lasso/xml/ws/wsse_username_token.c:
+	  update support for wsse:UsernameToken up to version 1.1,
+	  implement
+	  digest and derived keys computations.
+	  * lasso/xml/idwsf_strings.h:
+	  add strings for Username WS-Security Token profile
+
+2010-01-19 10:44  bdauvergne
+
+	* lasso/xml/saml-2.0/saml2_authn_context.c: XML SAML-2.0:
+	  AuthnContext content is a xdf:choice so make content optional
+	  
+	  - lasso/xml/saml-2.0/saml2_authn_context.c:
+	  <AuthnContext/> can contain at least one node among:
+	  - <AuthnContextClassRef/>
+	  - <AuthnContextDeclRef/>
+	  - <AuthnContextDecl/>
+	  to approximate this possibility, we need to make any of them
+	  optional.
+	  <AuthenticatingAuthority/> should be a list but we cannot change
+	  it
+	  without breaking the ABI, so we will wait for this.
+
+2010-01-19 09:48  bdauvergne
+
+	* website/web/doap.rdf: make an explicit copy of lasso.doap to
+	  website/web/doap.rdf
+
+2010-01-19 09:44  bdauvergne
+
+	* website/web/news/14-release-2.2.90.xml: Reduce news message to
+	  fit the news column
+
+2010-01-18 15:08  bdauvergne
+
+	* website/web/download/index.xml: updat download link
+
+2010-01-18 14:41  bdauvergne
+
+	* lasso/id-wsf-2.0/Makefile.am: ID-WSF 2.0: Add saml2_login.h to
+	  list of headers
+
+2010-01-18 14:08  bdauvergne
+
+	* docs/reference/lasso/lasso-docs.sgml: Documentation:
+	  wsse_security.xml is now wsse_security_header.xml
+
+2010-01-18 14:08  bdauvergne
+
+	* autogen.sh: By default make autogen.sh to enable gtk doc
+
+2010-01-18 13:50  bdauvergne
+
+	* bindings/php5/Makefile.am, bindings/php5/tests/Makefile.am,
+	  bindings/php5/tests/binding_tests.php,
+	  bindings/php5/tests/binding_tests.sh,
+	  bindings/php5/tests/profile_tests.php,
+	  bindings/php5/tests/profile_tests.sh, configure.ac: Bindings
+	  PHP5: rewire php5 tests to the makefiles, make them pass
+	  distcheck
+
+2010-01-18 11:16  bdauvergne
+
+	* autogen.sh: in autogen.sh, move libtoolize and gtkdocize before
+	  aclocal
+
+2010-01-18 11:15  bdauvergne
+
+	* tests/Makefile.am: fix typo
+
+2010-01-18 11:04  bdauvergne
+
+	* tests/Makefile.am: Merge EXTRA_DIST declarations in
+	  tests/Makefile.am
+
+2010-01-18 10:49  bdauvergne
+
+	* lasso.doap: fix bad commit
+
+2010-01-18 10:47  bdauvergne
+
+	* lasso.doap: tag release 2.2.90
+
+2010-01-18 10:40  bdauvergne
+
+	* ChangeLog: Update changelog
 2010-01-18 10:04  bdauvergne
 
 	* NEWS, lasso.doap, website/web/news/14-release-2.2.90.xml: Change
