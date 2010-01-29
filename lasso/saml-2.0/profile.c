@@ -656,7 +656,7 @@ cleanup:
 }
 
 int
-lasso_saml20_init_request(LassoProfile *profile,
+lasso_saml20_profile_init_request(LassoProfile *profile,
 		const char *remote_provider_id,
 		gboolean first_in_session,
 		LassoSamlp2RequestAbstract *request_abstract,
@@ -1327,7 +1327,7 @@ cleanup:
 }
 
 gint
-lasso_saml20_build_http_redirect_query_simple(LassoProfile *profile,
+lasso_saml20_profile_build_http_redirect_query_simple(LassoProfile *profile,
 		LassoNode *msg,
 		const char *profile_name,
 		gboolean is_response)

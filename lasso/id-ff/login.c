@@ -1272,8 +1272,8 @@ lasso_login_destroy(LassoLogin *login)
 /**
  * lasso_login_init_authn_request:
  * @login: a #LassoLogin
- * @remote_providerID: the providerID of the identity provider (may be NULL)
- * @http_method: HTTP method to use for request transmission
+ * @remote_providerID:(allow-none): the providerID of the identity provider (may be NULL)
+ * @http_method:(default LASSO_HTTP_METHOD_REDIRECT): HTTP method to use for request transmission
  *
  * <para>Initializes a new AuthnRequest from current service provider to remote
  * identity provider specified in @remote_providerID (if NULL the first known

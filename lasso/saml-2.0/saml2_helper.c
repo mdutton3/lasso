@@ -285,18 +285,15 @@ lasso_saml2_assertion_set_subject_confirmation_data(LassoSaml2Assertion *saml2_a
 }
 
 /**
- * lasso_saml2_set_conditions:
+ * lasso_saml2_assertion_set_basic_conditions:
  * @tolerance:(default -1): tolerance to the range of time when the assertion is valid
  * @length:(default -1): length of the range of time when the assertion is valid
- * @audience_restriction:(allow-none): a providerID to restrict the assertion audience to
  * @one_time_use:(default FALSE): can the assertion be kept or should it be used immediately
- * @proxy_count:(default -1): number of hops of proxies
  *
  * Set conditions limiting usage of the assertion.
  *
  * @tolerance and @length are time quantity measured in seconds, it defines the time range in which
  * the assertion is valid, it is computed as [now()-tolerance, now()+length+tolerance].
- * @audience_restriction allows to limit the target of the assertion.
  * @one_time_use allows the issuer to limit caching of the assertion.
  * @proxy_count specify how many proxy hop can be traversed before this assertion should lose any trust.
  *

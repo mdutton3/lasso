@@ -83,7 +83,7 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 
 	request = (LassoSamlp2RequestAbstract*)lasso_samlp2_manage_name_id_request_new();
 	manage_name_id_request = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request);
-	lasso_check_good_rc(lasso_saml20_init_request(profile, remote_provider_id, TRUE, request,
+	lasso_check_good_rc(lasso_saml20_profile_init_request(profile, remote_provider_id, TRUE, request,
 				http_method, LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID));
 
 	lasso_assign_gobject(manage_name_id_request->NameID, (LassoSaml2NameID*)profile->nameIdentifier);

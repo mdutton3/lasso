@@ -66,7 +66,7 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 
 	logout_request = (LassoSamlp2LogoutRequest*) lasso_samlp2_logout_request_new();
 
-	lasso_check_good_rc(lasso_saml20_init_request(profile,
+	lasso_check_good_rc(lasso_saml20_profile_init_request(profile,
 			remote_provider->ProviderID,
 			FALSE,
 			&logout_request->parent,

@@ -74,7 +74,7 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_me
 
 	/* new */
 	request = (LassoSamlp2RequestAbstract*)lasso_samlp2_authn_request_new();
-	lasso_check_good_rc(lasso_saml20_init_request(profile, profile->remote_providerID, FALSE,
+	lasso_check_good_rc(lasso_saml20_profile_init_request(profile, profile->remote_providerID, FALSE,
 				request, http_method, LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON));
 
 	/* FIXME: keep old behaviour */

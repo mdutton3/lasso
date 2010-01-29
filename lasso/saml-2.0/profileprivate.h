@@ -36,7 +36,7 @@ extern "C" {
 #include "../xml/saml-2.0/samlp2_request_abstract.h"
 #include "../id-ff/provider.h"
 
-int lasso_saml20_init_request(LassoProfile *profile, const char *remote_provider_id,
+int lasso_saml20_profile_init_request(LassoProfile *profile, const char *remote_provider_id,
 		gboolean first_in_session, LassoSamlp2RequestAbstract *request_abstract,
 		LassoHttpMethod http_method, LassoMdProtocolType protocol_type);
 char* lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part);
@@ -69,7 +69,7 @@ int lasso_saml20_profile_build_response_msg(LassoProfile *profile, char *service
 int lasso_saml20_profile_init_response(LassoProfile *profile,
 		LassoSamlp2StatusResponse *status_response, const char *status_code1, const char *status_code2);
 int lasso_saml20_profile_validate_request(LassoProfile *profile, gboolean needs_identity, LassoSamlp2StatusResponse *status_response, LassoProvider **provider_out);
-gint lasso_saml20_build_http_redirect_query_simple(LassoProfile *profile, LassoNode *msg,
+gint lasso_saml20_profile_build_http_redirect_query_simple(LassoProfile *profile, LassoNode *msg,
 		const char *profile_name, gboolean is_response);
 gint lasso_saml20_profile_build_http_redirect(LassoProfile *profile, LassoNode *msg,
 		const char *url);
