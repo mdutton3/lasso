@@ -34,7 +34,10 @@ def defval_to_python_value(defval):
         if defval[2:].lower() == 'false':
             return 'False'
     if defval.startswith('c:'):
-        return defval[8:]
+        try:
+            return str(int(defval[2:]))
+        except:
+            return defval[8:]
     raise Exception('Could not convert %s to python value' % defval)
 
 def get_python_arg_decl(arg):
