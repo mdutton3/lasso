@@ -15,7 +15,7 @@ dnl - Second number is the number of supported API versions where API version >
 dnl   first number.
 dnl - Third number is the current API version implementation version number.
 dnl See libtool explanations about current, age and release, later in this file.
-AC_INIT([lasso], 2.2.90, lasso-devel@lists.labs.libre-entreprise.org)
+AC_INIT([lasso], 2.2.91, lasso-devel@lists.labs.libre-entreprise.org)
 dnl Check if autoconf ver > 2.53
 AC_PREREQ(2.53)
 AC_CONFIG_MACRO_DIR([m4])

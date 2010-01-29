@@ -1,6 +1,16 @@
 NEWS
 ====
 
+2.2.91 - January 26th 2010
+--------------------------
+
+A new Perl binding, fix for backward compatibility with old versions of glib,
+LassoLogout API is more robust since it does not need anymore for all SP logout
+to finish to work, new macro lasso_list_add_new_xml_node, add support for
+WS-Security UsernameToken (equivalent of poor man HTTP Digest Authentication),
+make public internal APIs: lasso_session_add_assertion,
+lasso_session_get_assertion and lasso_session_remove_assertion.
+
 2.2.90 - January 18th 2010
 --------------------------
 
