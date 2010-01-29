@@ -43,7 +43,7 @@ extern int lasso_init();
 
 void
 init_perl_lasso() {
-	type_to_package = g_hash_table_new_full(g_int_hash, g_int_equal, NULL, g_free);
+	type_to_package = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, g_free);
 	wrapper_quark = g_quark_from_static_string("PerlLasso::wrapper");
 	lasso_init();
 }
@@ -57,6 +57,7 @@ gperl_object_package_from_type (GType gtype)
 	if (!g_type_is_a (gtype, G_TYPE_OBJECT) &&
 		!g_type_is_a (gtype, G_TYPE_INTERFACE))
 		return NULL;
+
 
 	package = g_hash_table_lookup(type_to_package, (gconstpointer)gtype);
 	if (package)
@@ -112,7 +113,7 @@ update_wrapper (GObject *object, gpointer obj)
                                  (GDestroyNotify)gobject_destroy_wrapper);
 }
 
-SV *
+static SV *
 gperl_new_object (GObject * object,
                   gboolean own)
 {
@@ -212,7 +213,7 @@ gperl_new_object (GObject * object,
 	return sv;
 }
 
-GObject *
+static GObject *
 gperl_get_object (SV * sv)
 {
 	MAGIC *mg;
@@ -224,4 +225,22 @@ gperl_get_object (SV * sv)
 	if (! G_IS_OBJECT(mg->mg_ptr))
 		return NULL;
 	return (GObject *) mg->mg_ptr;
+}
+
+static void
+gperl_lasso_error(int error)
+{
+	if (error != 0) {
+		HV *hv;
+		SV *sv;
+		char *what = Nullch;
+
+		const char *desc = lasso_strerror(error);
+		hv = newHV();
+		(void)hv_store(hv, "code", 4, newSViv(error), 0);
+		(void)hv_store(hv, "message", 7, newSVpv(desc, 0), 0);
+		sv = sv_bless(newRV_noinc((SV*)hv), gv_stashpv("Lasso::Error", TRUE));
+		sv_setsv(ERRSV, sv);
+		croak ((void*)what);
+	}
 }

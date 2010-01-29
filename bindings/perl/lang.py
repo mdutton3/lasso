@@ -93,6 +93,8 @@ class Binding:
     def generate_typemap(self):
         self.typemap.pn('TYPEMAP')
         self.typemap.pn('''
+string_or_null\tT_STRING_OR_NULL
+string_non_null\tT_STRING_NON_NULL
 const gchar *\tT_PV
 gchar *\tT_PV
 gboolean\tT_IV
@@ -128,7 +130,7 @@ GHashTable*\tT_PTRREF
         for struct in self.binding_data.structs:
             if struct.name != 'LassoNode':
                 self.pm.pn('package Lasso::%s;' % struct.name[5:])
-                self.pm.pn('our @ISA = qw(%s);' % struct.parent[5:])
+                self.pm.pn('our @ISA = qw(Lasso::%s);' % struct.parent[5:])
                 self.pm.pn()
 
     def generate_xs_header(self):
@@ -139,11 +141,14 @@ GHashTable*\tT_PTRREF
 #include "XSUB.h"
 #include <stdio.h>
 
-#include "gobject_handling.c"
-#include "glist_handling.c"
+#include "./gobject_handling.c"
+#include "./glist_handling.c"
+#include "./ghashtable_handling.c"
 
 #define lasso_assign_simple(a,b) a = b;
 
+typedef char* string_non_null;
+typedef char* string_or_null;
 typedef GList* GList_string;
 typedef GList* GList_gobject;
 typedef GList* GList_xmlnode;
@@ -171,27 +176,42 @@ INCLUDE: LassoNode.xs
     HV *stash;
 
     init_perl_lasso();
-    stash = gv_stashpv("Lasso", 1);''')
+    stash = gv_stashpv("Lasso::Constants", 1);''')
         self.xs.indent()
         for constant in self.binding_data.constants:
             type, name = constant
             perl_name = name[6:]
-            self.xs.pn('ct = get_sv("Lasso::Constants::%s", TRUE | GV_ADDMULTI);' % perl_name)
-            if type == 'i':
-                self.xs.pn('sv_setiv(ct, %s);' % name)
-            elif type == 's':
-                self.xs.pn('sv_setpv(ct, %s);' % name)
-            elif type == 'b': # only one case LASSO_WSF_ENABLED
-                self.xs.unindent()
-                self.xs.pn('''#ifdef %s
-    sv_setiv(ct, 1);
-#else
-    sv_setiv(ct, 0);
-#endif''' % name)
-                self.xs.indent()
+            if False:
+                self.xs.pn('ct = get_sv("Lasso::Constants::%s", TRUE | GV_ADDMULTI);' % perl_name)
+                if type == 'i':
+                    self.xs.pn('sv_setiv(ct, %s);' % name)
+                elif type == 's':
+                    self.xs.pn('sv_setpv(ct, %s);' % name)
+                elif type == 'b': # only one case LASSO_WSF_ENABLED
+                    self.xs.unindent()
+                    self.xs.pn('''#ifdef %s
+        sv_setiv(ct, 1);
+    #else
+        sv_setiv(ct, 0);
+    #endif''' % name)
+                    self.xs.indent()
+                else:
+                    raise Exception('Unknown constant type: type: "%s" name: "%s"' % (type,name))
+                self.xs.pn('SvREADONLY_on (ct);')
             else:
-                raise Exception('Unknown constant type: type: "%s" name: "%s"' % (type,name))
-            self.xs.pn('SvREADONLY_on (ct);')
+                if type == 'i':
+                    self.xs.pn('ct = newSViv(%s);' % name)
+                elif type == 's':
+                    self.xs.pn('ct = newSVpv(%s, 0);' % name)
+                elif type == 'b': # only one case LASSO_WSF_ENABLED
+                    self.xs.unindent()
+                    self.xs.pn('''#ifdef %s
+        ct = newSViv(1);
+#else
+        ct = newSViv(0);
+#endif''' % name)
+                    self.xs.indent()
+                self.xs.pn('newCONSTSUB(stash, "%s", ct);' % perl_name)
         self.xs.unindent()
         self.xs.pn('}')
 
@@ -217,6 +237,15 @@ INCLUDE: LassoNode.xs
         klassname = clss.name
         pass
 
+    def default_value(self, arg):
+        default = arg_default(arg)
+        if default[0] == 'b':
+            return default[2:]
+        elif default[0] == 'c':
+            return default[2:]
+        else:
+            raise Exception('Unknown default value for %s' % (arg,))
+
     def generate_xs_function(self, func):
         name = func.name
         if 'get_nameIden' in name:
@@ -232,13 +261,35 @@ INCLUDE: LassoNode.xs
                 raise
         self.xs.p(name + '(')
         arg_list = []
+        if name.endswith('_new'):
+            arg_list.append('SV *cls')
         for arg in func.args:
-            if not is_glist(arg):
-                arg_list.append('%s %s' % (arg_type(arg), arg_name(arg)))
-            elif is_glist(arg):
-                arg_list.append('%s %s' % (self.glist_type(arg), arg_name(arg)))
+            decl = ''
+            if is_cstring(arg):
+                if is_optional(arg):
+                    decl = 'string_or_null %s' % arg_name(arg)
+                else:
+                    decl = 'string_non_null %s' % arg_name(arg)
+            elif not is_glist(arg):
+                decl = '%s %s' % (arg_type(arg), arg_name(arg))
+            else:
+                decl = '%s %s' % (self.glist_type(arg), arg_name(arg))
+            if is_optional(arg):
+                if arg_default(arg):
+                    decl += ' = ' + self.default_value(arg)
+                else:
+                    if is_cstring(arg) or is_glist(arg):
+                        decl += ' = NULL'
+                    else:
+                        raise Exception('Do not know what to do for optional: %s' % arg)
+            arg_list.append(decl)
         self.xs.p(','.join(arg_list))
         self.xs.pn(')')
+        if name.endswith('_new'):
+            self.xs.pn('  INIT:')
+            self.xs.pn('    cls = NULL;')
+            self.xs.pn('  C_ARGS:')
+            self.xs.pn('    ' + ', '.join([arg_name(arg) for arg in func.args]))
         need_prototype = False
         for x in func.args:
             if is_glist(x):
@@ -247,6 +298,8 @@ INCLUDE: LassoNode.xs
             self.xs.p('PROTOTYPE: ')
             optional = False
             proto = []
+            if name.endswith('_new'):
+                proto.append('$')
             for arg in func.args:
                 if is_optional(arg) and not optional:
                     proto.append(';')
@@ -269,6 +322,9 @@ INCLUDE: LassoNode.xs
         elif func.return_type and is_object(func.return_type) and not is_int(func.return_type, self.binding_data) and func.return_owner:
             self.xs.pn('''   CLEANUP:
          g_object_unref(RETVAL);''')
+        elif is_int(func.return_arg, self.binding_data):
+            self.xs.pn('''   CLEANUP:
+         gperl_lasso_error(RETVAL);''')
 
     def generate_xs_getter_setter(self, struct, member):
         name = arg_name(member)
@@ -320,7 +376,32 @@ INCLUDE: LassoNode.xs
                 'release': self.release_list('obj', member),
                 })
         elif is_hashtable(member):
-            print >>sys.stderr, 'W: skipping %(cls)s.%(name)s, GHashtable fields are not supported for the momement' % { 'cls': struct.name, 'name': arg_name(member) }
+            if is_object(element_type(member)):
+                kind = "objects"
+            else:
+                kind = "strings"
+            self.xs.pn('''
+HV*
+%(field)s(%(clss)s* obj, ...)
+    PROTOTYPE:
+        $;\%%
+    CODE:
+        if (items > 1) { /* setter */
+            if (SvTYPE(ST(1)) != SVt_RV || ! SvTYPE(SvRV(ST(1))) != SVt_PVHV) {
+                sv_dump(ST(1));
+                croak("Lasso::%(klass)s::%(field)s takes a reference to a hash as argument");
+            }
+            set_hash_of_%(kind)s(&obj->%(field)s, (HV*)SvRV(ST(1)));
+        }
+        RETVAL = get_hash_of_%(kind)s(obj->%(field)s);
+        sv_2mortal((SV*)RETVAL);
+    OUTPUT:
+        RETVAL
+''' % { 'kind': kind,
+            'field': name, 
+            'clss': struct.name,
+            'klass': struct.name[5:]
+                })
 
     def starify(self, str):
         if '*' in str:

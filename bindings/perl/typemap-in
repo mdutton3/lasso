@@ -1,4 +1,9 @@
 INPUT
+T_STRING_OR_NULL
+    $var = SvPOK($arg) ? SvPV_nolen($arg) : NULL;
+
+T_STRING_NON_NULL
+    $var = SvPOK($arg) ? SvPV_nolen($arg) : (croak(\"$var cannot be undef\"), NULL);
 
 T_GOBJECT_WRAPPER
     $var = ($type)gperl_get_object($arg);

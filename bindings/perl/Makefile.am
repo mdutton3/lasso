@@ -3,6 +3,7 @@ MOSTLYCLEANFILES =
 
 LASSO_XS_CFLAGS = -fno-strict-aliasing $(LASSO_CFLAGS) $(LASSO_CORE_CFLAGS) $(PERL_CFLAGS) $(AM_CFLAGS)
 
+TESTS_ENVIRONMENT=TOP_SRCDIR=$(top_srcdir)
 TESTS = test.sh
 
 if PERL_ENABLED
@@ -20,13 +21,13 @@ EXTRA_ARGS = --enable-id-wsf
 endif
 
 Makefile.perl: $(srcdir)/Makefile.PL Lasso.xs Lasso.pm
-	CFLAGS="$(LASSO_XS_CFLAGS)" TOP_BUILDDIR="$(top_builddir)" \
-	       SRCDIR="$(srcdir)" BUILDDIR=./ $(PERL) $(srcdir)/Makefile.PL PREFIX=$(prefix)
-
 	-if [ "$(srcdir)" != "$(builddir)" ]; then \
 		cp -R $(srcdir)/t $(srcdir)/test.pl $(srcdir)/Makefile.PL $(srcdir)/LassoNode.xs .; \
 		chmod -R u+rwx t test.pl Makefile.PL LassoNode.xs; \
 	fi
+	CFLAGS="$(LASSO_XS_CFLAGS)" TOP_BUILDDIR="$(top_builddir)" \
+	       SRCDIR="$(srcdir)" BUILDDIR=./ $(PERL) Makefile.PL PREFIX=$(prefix)
+
 
 Lasso.xs Lasso.pm: lang.py typemap-in typemap-out
 	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l perl --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)

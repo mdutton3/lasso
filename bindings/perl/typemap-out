@@ -18,6 +18,10 @@ T_GLIST_STRING
           ST(ix) = sv_2mortal(newSVpv((char*)$var->data, 0));
           $var = $var->next;
       }
+      if (length)
+          XSRETURN(length);
+      else
+          XSRETURN_EMPTY;
     }
 
 T_GLIST_XMLNODE
@@ -29,6 +33,10 @@ T_GLIST_XMLNODE
           ST(ix) = sv_2mortal(xmlnode_to_pv((xmlNode*)$var->data, FALSE));
           $var = $var->next;
       }
+      if (length)
+          XSRETURN(length);
+      else
+          XSRETURN_EMPTY;
     }
 
 T_GLIST_GOBJECT
@@ -40,4 +48,8 @@ T_GLIST_GOBJECT
           ST(ix) = sv_2mortal(gperl_new_object((GObject*)$var->data, FALSE));
           $var = $var->next;
       }
+      if (length)
+          XSRETURN(length);
+      else
+          XSRETURN_EMPTY;
     }
