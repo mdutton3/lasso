@@ -511,9 +511,12 @@ def parse_header(header_file):
 
 
 def parse_headers(srcdir):
-    wsf_prefixes = ['disco', 'dst', 'is', 'profile_service', 'discovery',
-            'wsf', 'interaction', 'utility', 'sa', 'soap', 'authentication',
-            'wsse', 'sec', 'idwsf2', 'wsf2', 'wsa', 'wsu']
+    wsf_prefixes = ['disco_', 'dst_', 'is_', 'profile_service_', 'discovery_',
+            'wsf_', 'interaction_', 'utility_', 'sa_', 'soap_', 'authentication_',
+            'wsse_', 'sec_', 'idwsf2_', 'wsf2_', 'wsa_', 'wsu']
+
+    srcdir = os.path.abspath(srcdir)
+    parentdir = os.path.dirname(srcdir)
 
     for base, dirnames, filenames in os.walk(srcdir):
         if base.endswith('/.svn'):
@@ -528,17 +531,24 @@ def parse_headers(srcdir):
             continue
         makefile_am = open(os.path.join(base, 'Makefile.am')).read()
         filenames = [x for x in filenames if x.endswith('.h') if x in makefile_am]
+        exclusion = ('xml_idff.h', 'xml_idwsf.h', 'xml_saml2.h', \
+                'xml_idwsf2.h', 'xml_soap11.h',
+                'lasso_config.h')
+        if binding.options.idwsf:
+            exclusion += ('idwsf_strings.h',)
         for filename in filenames:
-            if not binding.options.idwsf and filename == 'idwsf_strings.h':
+            if filename in exclusion:
                 continue
-            if filename in ('xml_idff.h', 'xml_idwsf.h', 'xml_saml2.h'):
+            if 'private' in filename:
                 continue
-            if filename == 'lasso_config.h' or 'private' in filename:
-                continue
-            if not binding.options.idwsf and filename.split('_')[0] in wsf_prefixes:
-                continue
-            binding.headers.append(os.path.join(base, filename))
-            parse_header(os.path.join(base, filename))
+            if not binding.options.idwsf:
+                if True in (filename.startswith(wsf_prefix) for wsf_prefix in wsf_prefixes):
+                    continue
+            header_path = os.path.join(base, filename)
+            header_relpath = os.path.relpath(header_path, parentdir)
+
+            binding.headers.append(header_relpath)
+            parse_header(header_path)
     binding.constants.append(('b', 'LASSO_WSF_ENABLED'))
 
 def main():
