@@ -323,8 +323,13 @@ INCLUDE: LassoNode.xs
             self.xs.pn('''   CLEANUP:
          g_object_unref(RETVAL);''')
         elif is_int(func.return_arg, self.binding_data):
-            self.xs.pn('''   CLEANUP:
-         gperl_lasso_error(RETVAL);''')
+            if name == 'lasso_check_version':
+                self.xs.pn('''   CLEANUP:
+       if (RETVAL != 1)
+             gperl_lasso_error(RETVAL);''')
+            else:
+                self.xs.pn('''   CLEANUP:
+             gperl_lasso_error(RETVAL);''')
 
     def generate_xs_getter_setter(self, struct, member):
         name = arg_name(member)

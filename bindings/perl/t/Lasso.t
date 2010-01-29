@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 8;
+use Test::More tests => 10;
 use Lasso;
 use Data::Dumper;
 use Error qw(:try);
@@ -38,3 +38,7 @@ ok($@->{code} == -409);
 $server = new Lasso::Server($SRCDIR . "/tests/data/sp5-saml2/metadata.xml", $SRCDIR . "/tests/data/sp5-saml2/private-key.pem");
 ok($server);
 $server->add_provider(Lasso::Constants::PROVIDER_ROLE_IDP, $SRCDIR . "/tests/data/idp5-saml2/metadata.xml");
+
+ok(Lasso::check_version(2,2,90, Lasso::Constants::CHECK_VERSION_NUMERIC) == 1);
+ok(Lasso::check_version(2,2,90, Lasso::Constants::CHECK_VERSION_EXACT) == 0);
+
