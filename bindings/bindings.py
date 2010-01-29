@@ -328,22 +328,22 @@ class DocString:
 
         if 'allow-none' in annotation:
             arg[2]['optional'] = True
-        if re.search('\(\s*out\s*\)', annotation):
+        if re.search(r'\(\s*out\s*\)', annotation):
             arg[2]['out'] = True
-        if re.search('\(\s*in\s*\)', annotation):
+        if re.search(r'\(\s*in\s*\)', annotation):
             arg[2]['in'] = True
-        if arg[2].get('optional'):
-            m = re.search('\(\s*default\s*(.*)\s*\)', annotation)
-            if m:
-                prefix = ''
-                if is_boolean(arg):
-                    prefix = 'b:'
-                elif is_int(arg, self.binding_data):
-                    prefix = 'c:'
-                else:
-                    raise Exception('should not happen: could not found type for default: ' + annotation)
-                arg[2]['default'] = prefix + m.group(1)
-        m = re.search('\(\s*element-type\s+(\w+)(?:\s+(\w+))?', annotation)
+        m = re.search(r'\(\s*default\s*([^ )]*)\s*\)', annotation)
+        if m:
+            prefix = ''
+            if is_boolean(arg):
+                prefix = 'b:'
+            elif is_int(arg, self.binding_data):
+                prefix = 'c:'
+            else:
+                raise Exception('should not happen: could not found type for default: ' + annotation)
+            arg[2]['default'] = prefix + m.group(1)
+            arg[2]['optional'] = True
+        m = re.search(r'\(\s*element-type\s+(\w+)(?:\s+(\w+))?', annotation)
         if m:
             if len(m.groups()) > 2:
                 arg[2]['key-type'] = \
@@ -353,7 +353,7 @@ class DocString:
             else:
                 arg[2]['element-type'] = \
                         convert_type_from_gobject_annotation(m.group(1))
-        m = re.search('\(\s*transfer\s+(\w+)', annotation)
+        m = re.search(r'\(\s*transfer\s+(\w+)', annotation)
         if m:
             arg[2]['transfer'] = m.group(1)
 
@@ -475,7 +475,7 @@ def parse_header(header_file):
                     return_type += '*'
                     function_name = function_name[1:]
                 if binding.functions_toskip.get(function_name) != 1:
-                    if re.search('\<const\>', return_type):
+                    if re.search(r'\<const\>', return_type):
                         f.return_owner = False
                     # clean the type
                     return_type = clean_type(return_type)
