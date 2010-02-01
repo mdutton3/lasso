@@ -50,6 +50,7 @@ def format_as_underscored(var):
     var = re.sub(r'[a-z0-9]([A-Z])', rep, var).lower()
     var = var.replace('id_wsf2_', 'idwsf2_')
     var = var.replace('_saslresponse', '_sasl_response')
+    var = var.replace('ws_addr_', 'wsa_')
     return var
 
 def format_underscore_as_camelcase(var):
