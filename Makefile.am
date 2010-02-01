@@ -23,4 +23,7 @@ pkgconfigdir	= $(libdir)/pkgconfig
 clean-local:
 	-rm -f lasso.pc
 
+dist-hook:
+	-rm -rf `find $(distdir) -name .svn`
+
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
