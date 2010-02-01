@@ -14,7 +14,7 @@ if WSF_ENABLED
 EXTRA_ARGS = --enable-id-wsf
 endif
 
-java_lasso_source_files = $(shell python $(top_srcdir)/bindings/bindings.py -l java-list --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS) )
+java_lasso_source_files := $(shell python $(top_srcdir)/bindings/bindings.py -l java-list --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS) )
 
 lasso_jardir=$(prefix)/share/java
 lasso_jar_DATA=lasso.jar
