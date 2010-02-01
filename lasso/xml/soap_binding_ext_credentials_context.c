@@ -114,16 +114,3 @@ lasso_soap_binding_ext_credentials_context_new()
 
 	return node;
 }
-
-LassoSoapBindingExtCredentialsContext*
-lasso_soap_binding_ext_credentials_context_new_from_message(const gchar *message)
-{
-	LassoSoapBindingExtCredentialsContext *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_SOAP_BINDING_EXT_CREDENTIALS_CONTEXT, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

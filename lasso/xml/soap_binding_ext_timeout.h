@@ -65,9 +65,6 @@ LASSO_EXPORT GType lasso_soap_binding_ext_timeout_get_type(void);
 
 LASSO_EXPORT LassoSoapBindingExtTimeout* lasso_soap_binding_ext_timeout_new(gint maxProcessingTime);
 
-LASSO_EXPORT LassoSoapBindingExtTimeout* \
-	lasso_soap_binding_ext_timeout_new_from_message(const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

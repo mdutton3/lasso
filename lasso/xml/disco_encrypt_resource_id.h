@@ -63,9 +63,6 @@ LASSO_EXPORT GType lasso_disco_encrypt_resource_id_get_type(void);
 
 LASSO_EXPORT LassoDiscoEncryptResourceID* lasso_disco_encrypt_resource_id_new(void);
 
-LASSO_EXPORT LassoDiscoEncryptResourceID* lasso_disco_encrypt_resource_id_new_from_message(
-	const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

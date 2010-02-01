@@ -61,11 +61,6 @@ LASSO_EXPORT GType lasso_sa_credentials_get_type(void);
 
 LASSO_EXPORT LassoSaCredentials* lasso_sa_credentials_new();
 
-LASSO_EXPORT LassoSaCredentials* lasso_sa_credentials_new_from_message(const gchar *message);
-
-LASSO_EXPORT gint lasso_sa_credentials_add_assertion(LassoSaCredentials *credentials,
-						     LassoSamlAssertion *assertion);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

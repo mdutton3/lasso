@@ -63,9 +63,6 @@ LASSO_EXPORT GType lasso_disco_authenticate_requester_get_type(void);
 
 LASSO_EXPORT LassoDiscoAuthenticateRequester* lasso_disco_authenticate_requester_new(void);
 
-LASSO_EXPORT LassoDiscoAuthenticateRequester* lasso_disco_authenticate_requester_new_from_message(
-	const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

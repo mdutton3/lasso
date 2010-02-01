@@ -112,16 +112,3 @@ lasso_soap_binding_provider_new(const gchar *providerID)
 
 	return node;
 }
-
-LassoSoapBindingProvider*
-lasso_soap_binding_provider_new_from_message(const gchar *message)
-{
-	LassoSoapBindingProvider *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_SOAP_BINDING_PROVIDER, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

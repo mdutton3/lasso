@@ -65,9 +65,6 @@ LASSO_EXPORT GType lasso_is_interaction_response_get_type(void);
 
 LASSO_EXPORT LassoIsInteractionResponse* lasso_is_interaction_response_new();
 
-LASSO_EXPORT LassoIsInteractionResponse* lasso_is_interaction_response_new_from_message(
-	const char *msg);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

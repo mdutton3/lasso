@@ -473,7 +473,6 @@ LASSO_DISCOVERY_GET_CLASS
 <TITLE>LassoSaSASLRequest</TITLE>
 LassoSaSASLRequest
 lasso_sa_sasl_request_new
-lasso_sa_sasl_request_new_from_message
 <SUBSECTION Standard>
 LASSO_SA_SASL_REQUEST
 LASSO_IS_SA_SASL_REQUEST
@@ -913,7 +912,6 @@ LASSO_DS_PREFIX
 <TITLE>LassoDiscoModify</TITLE>
 LassoDiscoModify
 lasso_disco_modify_new
-lasso_disco_modify_new_from_message
 <SUBSECTION Standard>
 LASSO_DISCO_MODIFY
 LASSO_IS_DISCO_MODIFY
@@ -1064,9 +1062,6 @@ LASSO_DISCO_DESCRIPTION_GET_CLASS
 <TITLE>LassoSaSASLResponse</TITLE>
 LassoSaSASLResponse
 lasso_sa_sasl_response_new
-lasso_sa_sasl_response_new_from_message
-lasso_sa_sasl_response_add_credentials
-lasso_sa_sasl_response_add_resource_offering
 <SUBSECTION Standard>
 LASSO_SA_SASL_RESPONSE
 LASSO_IS_SA_SASL_RESPONSE
@@ -1375,7 +1370,6 @@ LASSO_LIB_SUBJECT_GET_CLASS
 <TITLE>LassoDiscoAuthorizeRequester</TITLE>
 LassoDiscoAuthorizeRequester
 lasso_disco_authorize_requester_new
-lasso_disco_authorize_requester_new_from_message
 <SUBSECTION Standard>
 LASSO_DISCO_AUTHORIZE_REQUESTER
 LASSO_IS_DISCO_AUTHORIZE_REQUESTER
@@ -1451,7 +1445,6 @@ LASSO_SAML_AUTHORITY_BINDING_GET_CLASS
 <TITLE>LassoDiscoSendSingleLogout</TITLE>
 LassoDiscoSendSingleLogout
 lasso_disco_send_single_logout_new
-lasso_disco_send_single_logout_new_from_message
 <SUBSECTION Standard>
 LASSO_DISCO_SEND_SINGLE_LOGOUT
 LASSO_IS_DISCO_SEND_SINGLE_LOGOUT
@@ -1513,7 +1506,6 @@ LASSO_IS_IS_INTERACTION_RESPONSE
 <TITLE>LassoIsInteractionResponse</TITLE>
 LassoIsInteractionResponse
 lasso_is_interaction_response_new
-lasso_is_interaction_response_new_from_message
 <SUBSECTION Standard>
 LASSO_IS_INTERACTION_RESPONSE
 LASSO_TYPE_IS_INTERACTION_RESPONSE
@@ -1543,7 +1535,6 @@ LASSO_DST_QUERY_ITEM_GET_CLASS
 <TITLE>LassoDiscoQuery</TITLE>
 LassoDiscoQuery
 lasso_disco_query_new
-lasso_disco_query_new_from_message
 <SUBSECTION Standard>
 LASSO_DISCO_QUERY
 LASSO_IS_DISCO_QUERY
@@ -1575,7 +1566,6 @@ LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE_GET_CLASS
 <TITLE>LassoSoapBindingUsageDirective</TITLE>
 LassoSoapBindingUsageDirective
 lasso_soap_binding_usage_directive_new
-lasso_soap_binding_usage_directive_new_from_message
 <SUBSECTION Standard>
 LASSO_SOAP_BINDING_USAGE_DIRECTIVE
 LASSO_IS_SOAP_BINDING_USAGE_DIRECTIVE
@@ -1591,7 +1581,6 @@ LASSO_SOAP_BINDING_USAGE_DIRECTIVE_GET_CLASS
 <TITLE>LassoSaTransform</TITLE>
 LassoSaTransform
 lasso_sa_transform_new
-lasso_sa_transform_new_from_message
 <SUBSECTION Standard>
 LASSO_SA_TRANSFORM
 LASSO_IS_SA_TRANSFORM
@@ -1712,7 +1701,6 @@ LASSO_DISCO_RESOURCE_OFFERING_GET_CLASS
 <TITLE>LassoSoapBindingCorrelation</TITLE>
 LassoSoapBindingCorrelation
 lasso_soap_binding_correlation_new
-lasso_soap_binding_correlation_new_from_message
 <SUBSECTION Standard>
 LASSO_SOAP_BINDING_CORRELATION
 LASSO_IS_SOAP_BINDING_CORRELATION
@@ -1744,7 +1732,6 @@ LASSO_DISCO_SERVICE_INSTANCE_GET_CLASS
 <TITLE>LassoSaParameter</TITLE>
 LassoSaParameter
 lasso_sa_parameter_new
-lasso_sa_parameter_new_from_message
 <SUBSECTION Standard>
 LASSO_SA_PARAMETER
 LASSO_IS_SA_PARAMETER
@@ -1806,7 +1793,6 @@ LASSO_IS_USER_INTERACTION_GET_CLASS
 <TITLE>LassoDiscoQueryResponse</TITLE>
 LassoDiscoQueryResponse
 lasso_disco_query_response_new
-lasso_disco_query_response_new_from_message
 <SUBSECTION Standard>
 LASSO_DISCO_QUERY_RESPONSE
 LASSO_IS_DISCO_QUERY_RESPONSE
@@ -1886,7 +1872,6 @@ LASSO_MISC_TEXT_NODE_GET_CLASS
 <TITLE>LassoDiscoGenerateBearerToken</TITLE>
 LassoDiscoGenerateBearerToken
 lasso_disco_generate_bearer_token_new
-lasso_disco_generate_bearer_token_new_from_message
 <SUBSECTION Standard>
 LASSO_DISCO_GENERATE_BEARER_TOKEN
 LASSO_IS_DISCO_GENERATE_BEARER_TOKEN
@@ -1932,7 +1917,6 @@ LASSO_SAMLP_STATUS_GET_CLASS
 <TITLE>LassoDiscoModifyResponse</TITLE>
 LassoDiscoModifyResponse
 lasso_disco_modify_response_new
-lasso_disco_modify_response_new_from_message
 <SUBSECTION Standard>
 LASSO_DISCO_MODIFY_RESPONSE
 LASSO_IS_DISCO_MODIFY_RESPONSE
@@ -1948,7 +1932,6 @@ LASSO_DISCO_MODIFY_RESPONSE_GET_CLASS
 <TITLE>LassoSoapBindingProvider</TITLE>
 LassoSoapBindingProvider
 lasso_soap_binding_provider_new
-lasso_soap_binding_provider_new_from_message
 <SUBSECTION Standard>
 LASSO_SOAP_BINDING_PROVIDER
 LASSO_IS_SOAP_BINDING_PROVIDER
@@ -1978,7 +1961,6 @@ LASSO_SAML_CONDITION_ABSTRACT_GET_CLASS
 <TITLE>LassoSoapBindingConsent</TITLE>
 LassoSoapBindingConsent
 lasso_soap_binding_consent_new
-lasso_soap_binding_consent_new_from_message
 <SUBSECTION Standard>
 LASSO_SOAP_BINDING_CONSENT
 LASSO_IS_SOAP_BINDING_CONSENT
@@ -2055,7 +2037,6 @@ LASSO_IS_INTERACTION_STATEMENT_GET_CLASS
 <TITLE>LassoSaPasswordTransforms</TITLE>
 LassoSaPasswordTransforms
 lasso_sa_password_transforms_new
-lasso_sa_password_transforms_new_from_message
 <SUBSECTION Standard>
 LASSO_SA_PASSWORD_TRANSFORMS
 LASSO_IS_SA_PASSWORD_TRANSFORMS
@@ -2101,8 +2082,6 @@ LASSO_DISCO_INSERT_ENTRY_GET_CLASS
 <TITLE>LassoSaCredentials</TITLE>
 LassoSaCredentials
 lasso_sa_credentials_new
-lasso_sa_credentials_new_from_message
-lasso_sa_credentials_add_assertion
 <SUBSECTION Standard>
 LASSO_SA_CREDENTIALS
 LASSO_IS_SA_CREDENTIALS
@@ -2162,7 +2141,6 @@ LASSO_DISCO_AUTHENTICATE_SESSION_CONTEXT_GET_CLASS
 <TITLE>LassoDiscoEncryptResourceID</TITLE>
 LassoDiscoEncryptResourceID
 lasso_disco_encrypt_resource_id_new
-lasso_disco_encrypt_resource_id_new_from_message
 <SUBSECTION Standard>
 LASSO_DISCO_ENCRYPT_RESOURCE_ID
 LASSO_IS_DISCO_ENCRYPT_RESOURCE_ID
@@ -2360,7 +2338,6 @@ LASSO_DISCO_CREDENTIALS_GET_CLASS
 <TITLE>LassoDiscoAuthenticateRequester</TITLE>
 LassoDiscoAuthenticateRequester
 lasso_disco_authenticate_requester_new
-lasso_disco_authenticate_requester_new_from_message
 <SUBSECTION Standard>
 LASSO_DISCO_AUTHENTICATE_REQUESTER
 LASSO_IS_DISCO_AUTHENTICATE_REQUESTER
@@ -2514,7 +2491,6 @@ LASSO_IS_IS_INTERACTION_REQUEST
 <TITLE>LassoIsInteractionRequest</TITLE>
 LassoIsInteractionRequest
 lasso_is_interaction_request_new
-lasso_is_interaction_request_new_from_message
 <SUBSECTION Standard>
 LASSO_IS_INTERACTION_REQUEST
 LASSO_TYPE_IS_INTERACTION_REQUEST

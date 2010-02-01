@@ -71,9 +71,6 @@ LASSO_EXPORT GType lasso_soap_binding_ext_credential_get_type(void);
 LASSO_EXPORT LassoSoapBindingExtCredential* \
 	lasso_soap_binding_ext_credential_new(LassoNode *any);
 
-LASSO_EXPORT LassoSoapBindingExtCredential* \
-	lasso_soap_binding_ext_credential_new_from_message(const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

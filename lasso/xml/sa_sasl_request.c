@@ -127,16 +127,3 @@ lasso_sa_sasl_request_new(const gchar *mechanism)
 
 	return node;
 }
-
-LassoSaSASLRequest*
-lasso_sa_sasl_request_new_from_message(const gchar *message)
-{
-	LassoSaSASLRequest *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_SA_SASL_REQUEST, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

@@ -61,8 +61,6 @@ LASSO_EXPORT GType lasso_sa_parameter_get_type(void);
 
 LASSO_EXPORT LassoSaParameter* lasso_sa_parameter_new();
 
-LASSO_EXPORT LassoSaParameter* lasso_sa_parameter_new_from_message(const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

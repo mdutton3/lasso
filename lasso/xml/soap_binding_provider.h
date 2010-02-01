@@ -66,9 +66,6 @@ LASSO_EXPORT GType lasso_soap_binding_provider_get_type(void);
 
 LASSO_EXPORT LassoSoapBindingProvider* lasso_soap_binding_provider_new(const gchar *providerID);
 
-LASSO_EXPORT LassoSoapBindingProvider* lasso_soap_binding_provider_new_from_message(
-	const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

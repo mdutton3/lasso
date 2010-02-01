@@ -114,16 +114,3 @@ lasso_soap_binding_correlation_new(const gchar *messageId, const gchar *timestam
 
 	return node;
 }
-
-LassoSoapBindingCorrelation*
-lasso_soap_binding_correlation_new_from_message(const gchar *message)
-{
-	LassoSoapBindingCorrelation *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_SOAP_BINDING_CORRELATION, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

@@ -102,16 +102,3 @@ lasso_disco_send_single_logout_new()
 
 	return node;
 }
-
-LassoDiscoSendSingleLogout*
-lasso_disco_send_single_logout_new_from_message(const gchar *message)
-{
-	LassoDiscoSendSingleLogout *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_DISCO_SEND_SINGLE_LOGOUT, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

@@ -117,16 +117,3 @@ lasso_sa_transform_new(const char *name)
 
 	return node;
 }
-
-LassoSaTransform*
-lasso_sa_transform_new_from_message(const gchar *message)
-{
-	LassoSaTransform *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_SA_TRANSFORM, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

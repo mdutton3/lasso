@@ -110,16 +110,3 @@ lasso_soap_binding_processing_context_new()
 
 	return node;
 }
-
-LassoSoapBindingProcessingContext*
-lasso_soap_binding_processing_context_new_from_message(const gchar *message)
-{
-	LassoSoapBindingProcessingContext *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_SOAP_BINDING_PROCESSING_CONTEXT, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

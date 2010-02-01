@@ -67,9 +67,6 @@ LASSO_EXPORT GType lasso_soap_binding_usage_directive_get_type(void);
 LASSO_EXPORT LassoSoapBindingUsageDirective* lasso_soap_binding_usage_directive_new(
 	const gchar *ref);
 
-LASSO_EXPORT LassoSoapBindingUsageDirective* lasso_soap_binding_usage_directive_new_from_message(
-	const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

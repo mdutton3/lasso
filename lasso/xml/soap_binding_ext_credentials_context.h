@@ -75,9 +75,6 @@ LASSO_EXPORT GType lasso_soap_binding_ext_credentials_context_get_type(void);
 LASSO_EXPORT LassoSoapBindingExtCredentialsContext* \
 	lasso_soap_binding_ext_credentials_context_new();
 
-LASSO_EXPORT LassoSoapBindingExtCredentialsContext* \
-	lasso_soap_binding_ext_credentials_context_new_from_message(const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

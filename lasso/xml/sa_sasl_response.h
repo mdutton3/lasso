@@ -73,15 +73,6 @@ LASSO_EXPORT GType lasso_sa_sasl_response_get_type(void);
 
 LASSO_EXPORT LassoSaSASLResponse* lasso_sa_sasl_response_new(LassoUtilityStatus *status);
 
-LASSO_EXPORT LassoSaSASLResponse* lasso_sa_sasl_response_new_from_message(const gchar *message);
-
-LASSO_EXPORT gint lasso_sa_sasl_response_add_credentials(LassoSaSASLResponse *response,
-							 LassoSaCredentials *credentials);
-
-LASSO_EXPORT gint lasso_sa_sasl_response_add_resource_offering(
-	LassoSaSASLResponse *response,
-	LassoDiscoResourceOffering *resourceOffering);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

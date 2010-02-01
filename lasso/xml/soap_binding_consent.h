@@ -65,9 +65,6 @@ LASSO_EXPORT GType lasso_soap_binding_consent_get_type(void);
 
 LASSO_EXPORT LassoSoapBindingConsent* lasso_soap_binding_consent_new(const gchar *uri);
 
-LASSO_EXPORT LassoSoapBindingConsent* lasso_soap_binding_consent_new_from_message(
-	const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

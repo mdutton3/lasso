@@ -65,9 +65,6 @@ LASSO_EXPORT GType lasso_soap_binding_processing_context_get_type(void);
 
 LASSO_EXPORT LassoSoapBindingProcessingContext* lasso_soap_binding_processing_context_new();
 
-LASSO_EXPORT LassoSoapBindingProcessingContext* \
-	lasso_soap_binding_processing_context_new_from_message(const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

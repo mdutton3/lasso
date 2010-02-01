@@ -100,16 +100,3 @@ lasso_disco_encrypt_resource_id_new()
 
 	return node;
 }
-
-LassoDiscoEncryptResourceID*
-lasso_disco_encrypt_resource_id_new_from_message(const gchar *message)
-{
-	LassoDiscoEncryptResourceID *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_DISCO_ENCRYPT_RESOURCE_ID, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

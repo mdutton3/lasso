@@ -123,16 +123,3 @@ lasso_disco_query_new()
 
 	return node;
 }
-
-LassoDiscoQuery*
-lasso_disco_query_new_from_message(const gchar *message)
-{
-	LassoDiscoQuery *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_DISCO_QUERY, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

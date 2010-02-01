@@ -100,16 +100,3 @@ lasso_disco_generate_bearer_token_new()
 
 	return node;
 }
-
-LassoDiscoGenerateBearerToken*
-lasso_disco_generate_bearer_token_new_from_message(const gchar *message)
-{
-	LassoDiscoGenerateBearerToken *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_DISCO_GENERATE_BEARER_TOKEN, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

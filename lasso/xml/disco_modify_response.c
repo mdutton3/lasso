@@ -154,16 +154,3 @@ lasso_disco_modify_response_new(LassoUtilityStatus *status)
 
 	return response;
 }
-
-LassoDiscoModifyResponse*
-lasso_disco_modify_response_new_from_message(const gchar *message)
-{
-	LassoDiscoModifyResponse *response;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	response = g_object_new(LASSO_TYPE_DISCO_MODIFY_RESPONSE, NULL);
-	lasso_node_init_from_message(LASSO_NODE(response), message);
-
-	return response;
-}

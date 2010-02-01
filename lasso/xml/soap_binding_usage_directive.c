@@ -114,16 +114,3 @@ lasso_soap_binding_usage_directive_new(const gchar *ref)
 
 	return node;
 }
-
-LassoSoapBindingUsageDirective*
-lasso_soap_binding_usage_directive_new_from_message(const gchar *message)
-{
-	LassoSoapBindingUsageDirective *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_SOAP_BINDING_USAGE_DIRECTIVE, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

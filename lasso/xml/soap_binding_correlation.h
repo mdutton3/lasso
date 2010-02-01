@@ -68,9 +68,6 @@ LASSO_EXPORT LassoSoapBindingCorrelation* lasso_soap_binding_correlation_new(
 	const gchar *messageId,
 	const gchar *timestamp);
 
-LASSO_EXPORT LassoSoapBindingCorrelation* lasso_soap_binding_correlation_new_from_message(
-	const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

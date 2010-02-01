@@ -63,9 +63,6 @@ LASSO_EXPORT GType lasso_disco_send_single_logout_get_type(void);
 
 LASSO_EXPORT LassoDiscoSendSingleLogout* lasso_disco_send_single_logout_new(void);
 
-LASSO_EXPORT LassoDiscoSendSingleLogout* lasso_disco_send_single_logout_new_from_message(
-	const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -68,7 +68,8 @@ lasso_interaction_profile_service_process_request_msg(LassoInteractionProfileSer
 {
 	LassoIsInteractionRequest *request;
 
-	request = lasso_is_interaction_request_new_from_message(msg);
+	request = lasso_is_interaction_request_new();
+	lasso_node_init_from_message((LassoNode*)request, msg);
 	LASSO_WSF_PROFILE(service)->request = LASSO_NODE(request);
 
 	return 0;
@@ -80,7 +81,8 @@ lasso_interaction_profile_service_process_response_msg(LassoInteractionProfileSe
 {
 	LassoIsInteractionResponse *response;
 
-	response = lasso_is_interaction_response_new_from_message(msg);
+	response = lasso_is_interaction_response_new();
+	lasso_node_init_from_message((LassoNode*)response, msg);
 	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(response);
 
 	return 0;

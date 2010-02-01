@@ -101,31 +101,3 @@ lasso_sa_credentials_new()
 
 	return node;
 }
-
-LassoSaCredentials*
-lasso_sa_credentials_new_from_message(const gchar *message)
-{
-	LassoSaCredentials *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_SA_CREDENTIALS, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}
-
-gint
-lasso_sa_credentials_add_assertion(LassoSaCredentials *credentials,
-		LassoSamlAssertion *assertion)
-{
-	g_return_val_if_fail(LASSO_IS_SA_CREDENTIALS(credentials),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_SAML_ASSERTION(assertion),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	g_object_ref(assertion);
-	credentials->any = g_list_append(credentials->any, assertion);
-
-	return 0;
-}

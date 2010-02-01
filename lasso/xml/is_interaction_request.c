@@ -120,14 +120,3 @@ lasso_is_interaction_request_new()
 
 	return node;
 }
-
-LassoIsInteractionRequest*
-lasso_is_interaction_request_new_from_message(const char *msg)
-{
-	LassoIsInteractionRequest *node;
-
-	node = g_object_new(LASSO_TYPE_IS_INTERACTION_REQUEST, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), msg);
-
-	return node;
-}

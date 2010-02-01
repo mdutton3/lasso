@@ -65,8 +65,6 @@ LASSO_EXPORT GType lasso_disco_query_get_type(void);
 
 LASSO_EXPORT LassoDiscoQuery* lasso_disco_query_new(void);
 
-LASSO_EXPORT LassoDiscoQuery* lasso_disco_query_new_from_message(const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

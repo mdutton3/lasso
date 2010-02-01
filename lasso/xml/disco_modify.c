@@ -117,16 +117,3 @@ lasso_disco_modify_new()
 
 	return node;
 }
-
-LassoDiscoModify*
-lasso_disco_modify_new_from_message(const gchar *message)
-{
-	LassoDiscoModify *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_DISCO_MODIFY, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

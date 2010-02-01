@@ -67,8 +67,6 @@ LASSO_EXPORT GType lasso_disco_modify_get_type (void);
 
 LASSO_EXPORT LassoDiscoModify* lasso_disco_modify_new (void);
 
-LASSO_EXPORT LassoDiscoModify* lasso_disco_modify_new_from_message(const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

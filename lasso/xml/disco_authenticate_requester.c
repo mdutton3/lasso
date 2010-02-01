@@ -100,16 +100,3 @@ lasso_disco_authenticate_requester_new()
 
 	return node;
 }
-
-LassoDiscoAuthenticateRequester*
-lasso_disco_authenticate_requester_new_from_message(const gchar *message)
-{
-	LassoDiscoAuthenticateRequester *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_DISCO_AUTHENTICATE_REQUESTER, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

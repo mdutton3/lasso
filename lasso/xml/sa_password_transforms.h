@@ -62,9 +62,6 @@ LASSO_EXPORT GType lasso_sa_password_transforms_get_type(void);
 
 LASSO_EXPORT LassoSaPasswordTransforms* lasso_sa_password_transforms_new();
 
-LASSO_EXPORT LassoSaPasswordTransforms* lasso_sa_password_transforms_new_from_message(
-	const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -63,9 +63,6 @@ LASSO_EXPORT GType lasso_disco_generate_bearer_token_get_type(void);
 
 LASSO_EXPORT LassoDiscoGenerateBearerToken* lasso_disco_generate_bearer_token_new(void);
 
-LASSO_EXPORT LassoDiscoGenerateBearerToken* lasso_disco_generate_bearer_token_new_from_message(
-	const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -67,8 +67,6 @@ LASSO_EXPORT GType lasso_sa_sasl_request_get_type(void);
 
 LASSO_EXPORT LassoSaSASLRequest* lasso_sa_sasl_request_new(const char *mechanism);
 
-LASSO_EXPORT LassoSaSASLRequest* lasso_sa_sasl_request_new_from_message(const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

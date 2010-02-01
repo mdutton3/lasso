@@ -100,16 +100,3 @@ lasso_disco_authenticate_session_context_new()
 
 	return node;
 }
-
-LassoDiscoAuthenticateSessionContext*
-lasso_disco_authenticate_session_context_new_from_message(const gchar *message)
-{
-	LassoDiscoAuthenticateSessionContext *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_DISCO_AUTHENTICATE_SESSION_CONTEXT, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}

@@ -77,9 +77,6 @@ LASSO_EXPORT GType lasso_soap_binding_ext_service_instance_update_get_type(void)
 LASSO_EXPORT LassoSoapBindingExtServiceInstanceUpdate* \
 	lasso_soap_binding_ext_service_instance_update_new();
 
-LASSO_EXPORT LassoSoapBindingExtServiceInstanceUpdate* \
-	lasso_soap_binding_ext_service_instance_update_new_from_message(const gchar *message);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

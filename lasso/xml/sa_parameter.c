@@ -110,16 +110,3 @@ lasso_sa_parameter_new(const char *content, const char *name)
 
 	return node;
 }
-
-LassoSaParameter*
-lasso_sa_parameter_new_from_message(const gchar *message)
-{
-	LassoSaParameter *node;
-
-	g_return_val_if_fail(message != NULL, NULL);
-
-	node = g_object_new(LASSO_TYPE_SA_PARAMETER, NULL);
-	lasso_node_init_from_message(LASSO_NODE(node), message);
-
-	return node;
-}
