@@ -85,7 +85,7 @@ static void php_gobject_generic_destructor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 /* List handling */
 static void
 free_glist(GList **list, GFunc free_function) {
-    g_return_if_fail(list);
+    lasso_return_if_fail(list);
     if (*list) {
         if (free_function) {
             g_list_foreach(*list, free_function, NULL);

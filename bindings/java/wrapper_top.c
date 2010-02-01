@@ -93,9 +93,9 @@ new_object_with_gobject(JNIEnv *env, GObject *obj, const char *clsName, jobject 
 
     g_error_if_fail(env && clsName && obj && G_IS_OBJECT(obj));
 
-    g_return_val_if_fail((cls = (*env)->FindClass(env, clsName)), 0);
-    g_return_val_if_fail((mid = (*env)->GetMethodID(env, cls, "<init>", "(J)V")), 0);
-    g_return_val_if_fail((*jobj = (*env)->NewObject(env, cls, mid, PTR_TO_JLONG(obj))), 0);
+    lasso_return_val_if_fail((cls = (*env)->FindClass(env, clsName)), 0);
+    lasso_return_val_if_fail((mid = (*env)->GetMethodID(env, cls, "<init>", "(J)V")), 0);
+    lasso_return_val_if_fail((*jobj = (*env)->NewObject(env, cls, mid, PTR_TO_JLONG(obj))), 0);
     return 1;
 }
 
@@ -107,7 +107,7 @@ jstring_to_local_string(JNIEnv *env, jstring jstr, const char **str)
 
     if (jstr) {
         *str = (*env)->GetStringUTFChars(env, jstr, NULL);
-        g_return_val_if_fail(*str, 0);
+        lasso_return_val_if_fail(*str, 0);
     } else {
         *str = NULL;
     }
@@ -131,9 +131,9 @@ get_jlong_field(JNIEnv *env, jobject obj, const char *field, jlong *dest)
     jfieldID fid;
 
     cls = (*env)->GetObjectClass(env, obj);
-    g_return_val_if_fail(cls, 0);
+    lasso_return_val_if_fail(cls, 0);
     fid = (*env)->GetFieldID(env, cls, field, "J");
-    g_return_val_if_fail(fid, 0);
+    lasso_return_val_if_fail(fid, 0);
     *dest = (*env)->GetLongField(env, obj, fid);
     g_return_val_if_exception(0);
 
@@ -148,7 +148,7 @@ get_jclass_by_name(JNIEnv *env, const char *name) {
 static int
 get_array_element(JNIEnv *env, jobjectArray arr, jsize i, jobject *dest) {
     *dest = (*env)->GetObjectArrayElement(env, arr, i);
-    g_return_val_if_fail(! (*env)->ExceptionCheck(env), 0);
+    lasso_return_val_if_fail(! (*env)->ExceptionCheck(env), 0);
     return 1;
 }
 
@@ -171,9 +171,9 @@ create_object_array(JNIEnv *env, const char *clsName, jsize size, jobjectArray *
     g_error_if_fail(env && clsName && jarr);
 
     cls = get_jclass_by_name(env, clsName);
-    g_return_val_if_fail(cls, 0);
+    lasso_return_val_if_fail(cls, 0);
     *jarr = (*env)->NewObjectArray(env, size, get_jclass_by_name(env, clsName), NULL);
-    g_return_val_if_fail(*jarr, 0);
+    lasso_return_val_if_fail(*jarr, 0);
     return 1;
 }
 static int nullWeakRef(JNIEnv *env, jweak weakRef) {
@@ -241,7 +241,7 @@ static int
 string_to_jstring(JNIEnv *env, const char* str, jstring *jstr) {
     if (str) {
         *jstr = (*env)->NewStringUTF(env, str);
-        g_return_val_if_fail(jstr, 0);
+        lasso_return_val_if_fail(jstr, 0);
     } else {
         *jstr = NULL;
     }
@@ -252,7 +252,7 @@ string_to_jstring(JNIEnv *env, const char* str, jstring *jstr) {
  * if conversion failed. */
 static int
 string_to_jstring_and_free(JNIEnv *env, char* str, jstring *jstr) {
-    g_return_val_if_fail(string_to_jstring(env, str, jstr), 0);
+    lasso_return_val_if_fail(string_to_jstring(env, str, jstr), 0);
     if (str)
         g_free(str);
     return 1;
@@ -263,7 +263,7 @@ static int
 jstring_to_string(JNIEnv *env, jstring jstr, char **str) {
     const char *local_str = NULL;
 
-    g_return_val_if_fail(jstring_to_local_string(env, jstr, &local_str), 0);
+    lasso_return_val_if_fail(jstring_to_local_string(env, jstr, &local_str), 0);
     if (local_str) {
         lasso_assign_string(*str, local_str);
         release_local_string(env, jstr, local_str);
@@ -321,7 +321,7 @@ jstring_to_xml_node(JNIEnv *env, jstring jstr, xmlNode **xmlnode) {
     int ret = 1;
 
     g_error_if_fail(env && xmlnode);
-    g_return_val_if_fail(jstring_to_local_string(env, jstr, &local_str), 0);
+    lasso_return_val_if_fail(jstring_to_local_string(env, jstr, &local_str), 0);
 
     if (local_str) {
         doc = xmlReadDoc((unsigned char *)local_str, NULL, NULL, XML_PARSE_NONET);
@@ -421,7 +421,7 @@ jobject_to_gobject(JNIEnv *env, jobject obj, GObject **gobj) {
         *gobj = NULL;
         return 1;
     }
-    g_return_val_if_fail(get_jlong_field(env, obj, "cptr", &value), 0);
+    lasso_return_val_if_fail(get_jlong_field(env, obj, "cptr", &value), 0);
     gobject = convert_jlong_to_gobject(value);
     if (gobject && ! G_IS_OBJECT(gobject)) {
 #define s "jobject->cptr is not a pointer on a gobject: XXXXXXXXXXXXXXXXXXXXXXX"
@@ -440,7 +440,7 @@ jobject_to_gobject(JNIEnv *env, jobject obj, GObject **gobj) {
  * use for this function is composed with set_list_of_objects or set_hash_of_object. */
 static int
 jobject_to_gobject_noref(JNIEnv *env, jobject obj, GObject **gobj) {
-    g_return_val_if_fail(jobject_to_gobject(env, obj, gobj), 0);
+    lasso_return_val_if_fail(jobject_to_gobject(env, obj, gobj), 0);
     if (*gobj) {
         g_object_unref(*gobj);
     }
@@ -450,7 +450,7 @@ jobject_to_gobject_noref(JNIEnv *env, jobject obj, GObject **gobj) {
 /* List handling */
 static void
 free_glist(GList **list, GFunc free_function) {
-    g_return_if_fail(list);
+    lasso_return_if_fail(list);
     if (*list) {
         if (free_function) {
             g_list_foreach(*list, free_function, NULL);
@@ -477,14 +477,14 @@ get_list(JNIEnv *env, const char *clsName, const GList *list, Converter convert,
         goto out;
     }
     cls = get_jclass_by_name(env, clsName);
-    g_return_val_if_fail(cls, 0);
+    lasso_return_val_if_fail(cls, 0);
 
-    g_return_val_if_fail(create_object_array(env, clsName, l, jarr), 0);
+    lasso_return_val_if_fail(create_object_array(env, clsName, l, jarr), 0);
     for (i=0;i<l;i++) {
         jobject item;
 
-        g_return_val_if_fail(convert(env, list->data, &item), 0);
-        g_return_val_if_fail(set_array_element(env, *jarr, i, item), 0);
+        lasso_return_val_if_fail(convert(env, list->data, &item), 0);
+        lasso_return_val_if_fail(set_array_element(env, *jarr, i, item), 0);
         list = g_list_next(list);
     }
 out:
@@ -534,8 +534,8 @@ remove_from_list(JNIEnv *env, GList **list, jobject obj, GFunc free_function, GC
     GList *found = NULL;
 
     g_error_if_fail(env && list && compare && convert && free_function);
-    g_return_val_if_fail(obj, 1);
-    g_return_val_if_fail(convert(env, obj, &data), 0);
+    lasso_return_val_if_fail(obj, 1);
+    lasso_return_val_if_fail(convert(env, obj, &data), 0);
     found = g_list_find_custom(*list, data, compare);
     if (found) {
         free_function(found->data, NULL);
@@ -549,8 +549,8 @@ remove_from_list_of_strings(JNIEnv *env, GList **list, jstring jstr) {
     GList *found = NULL;
 
     g_error_if_fail(env && list);
-    g_return_val_if_fail(jstr, 1);
-    g_return_val_if_fail(jstring_to_local_string(env, jstr, &local_string), 0);
+    lasso_return_val_if_fail(jstr, 1);
+    lasso_return_val_if_fail(jstring_to_local_string(env, jstr, &local_string), 0);
     found = g_list_find_custom(*list, local_string, (GCompareFunc)strcmp);
     if (found) {
         g_free(found->data);
@@ -568,7 +568,7 @@ add_to_list(JNIEnv* env, GList** list, jobject obj, OutConverter convert) {
     gpointer data = NULL;
 
     g_error_if_fail(env && list && convert);
-    g_return_val_if_fail(convert(env, obj, &data),0);
+    lasso_return_val_if_fail(convert(env, obj, &data), 0);
     if (data)
         *list = g_list_append(*list, data);
     return 1;
@@ -586,7 +586,7 @@ get_hash(JNIEnv *env, char *clsName, GHashTable *hashtable, Converter convert, j
 
     g_error_if_fail (env && hashtable && convert);
     l = g_hash_table_size(hashtable);
-    g_return_val_if_fail(create_object_array(env, clsName, 2*l, jarr), 0);
+    lasso_return_val_if_fail(create_object_array(env, clsName, 2*l, jarr), 0);
     keys = g_hash_table_get_keys(hashtable);
     values = g_hash_table_get_values(hashtable);
     if (! (keys && values)) {
@@ -629,7 +629,7 @@ set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr)
     g_error_if_fail (env && hashtable);
     if (jarr) {
         /** First increment ref count of object in jarr */
-        g_return_val_if_fail(get_array_size(env, jarr, &l), 0);
+        lasso_return_val_if_fail(get_array_size(env, jarr, &l), 0);
         if (l % 2 != 0) {
             exception(env, "java array not of an even size");
             return 0;
@@ -638,8 +638,8 @@ set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr)
             jobject jobj = NULL;
             GObject *gobj = NULL;
 
-            g_return_val_if_fail(get_array_element(env, jarr, i, &jobj), 0);
-            g_return_val_if_fail(jobject_to_gobject_noref(env, jobj, &gobj), 0);
+            lasso_return_val_if_fail(get_array_element(env, jarr, i, &jobj), 0);
+            lasso_return_val_if_fail(jobject_to_gobject_noref(env, jobj, &gobj), 0);
             (*env)->DeleteLocalRef(env, jobj);
         }
         /* increment ref count of objects */
@@ -663,9 +663,9 @@ set_hash_of_objects(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr)
             jobject jvalue = NULL;
             GObject *value = NULL;
 
-            g_return_val_if_fail(get_array_element(env, jarr, i, &jkey), 0);
-            g_return_val_if_fail(get_array_element(env, jarr, i+1, &jvalue), 0);
-            g_return_val_if_fail(jstring_to_string(env, jkey, &key), 0);
+            lasso_return_val_if_fail(get_array_element(env, jarr, i, &jkey), 0);
+            lasso_return_val_if_fail(get_array_element(env, jarr, i+1, &jvalue), 0);
+            lasso_return_val_if_fail(jstring_to_string(env, jkey, &key), 0);
             if (! jobject_to_gobject_noref(env, jvalue, &value)) {
                 if (key)
                     g_free(key);
@@ -699,7 +699,7 @@ set_hash_of_strings(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr) {
 
     g_hash_table_remove_all(hashtable);
     if (jarr) {
-        g_return_val_if_fail(get_array_size(env, jarr, &l), 0);
+        lasso_return_val_if_fail(get_array_size(env, jarr, &l), 0);
         if (l % 2 != 0) {
             exception(env, "java array not of an even size");
             return 0;
@@ -710,7 +710,7 @@ set_hash_of_strings(JNIEnv *env, GHashTable *hashtable, jobjectArray jarr) {
             jstring jvalue = NULL;
             char *value = NULL;
 
-            g_return_val_if_fail(get_array_element(env, jarr, i, &jkey)
+            lasso_return_val_if_fail(get_array_element(env, jarr, i, &jkey)
                                  && get_array_element(env, jarr, i+1, &jvalue)
                                  && jstring_to_string(env, jkey, &key), 0);
             if (! key) {
@@ -739,7 +739,7 @@ remove_from_hash(JNIEnv *env, GHashTable *hashtable, jstring jkey) {
 
     g_error_if_fail (env && hashtable);
 
-    g_return_val_if_fail(jstring_to_local_string(env, jkey, &key), 0);
+    lasso_return_val_if_fail(jstring_to_local_string(env, jkey, &key), 0);
     g_hash_table_remove(hashtable, key);
     release_local_string(env, jkey, key);
     return 1;
@@ -774,7 +774,7 @@ get_hash_by_name(JNIEnv *env, GHashTable *hashtable, jstring jkey, Converter con
 
     g_error_if_fail (env && hashtable && convert);
 
-    g_return_val_if_fail(jstring_to_local_string(env, jkey, &key), 0);
+    lasso_return_val_if_fail(jstring_to_local_string(env, jkey, &key), 0);
     value = g_hash_table_lookup(hashtable, key);
     release_local_string(env, jkey, key);
     return convert(env, value, jvalue);

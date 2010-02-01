@@ -35,7 +35,7 @@ static gboolean return_true(G_GNUC_UNUSED gpointer a, G_GNUC_UNUSED gpointer b,
 void
 g_hash_table_remove_all (GHashTable *hash_table)
 {
-    g_return_if_fail (hash_table != NULL);
+    lasso_return_if_fail(hash_table != NULL);
 
     g_hash_table_foreach_remove (hash_table, (GHRFunc)return_true, NULL);
 }
@@ -51,7 +51,7 @@ g_hash_table_get_keys (GHashTable *hash_table)
   gint i;
   GList *retval;
 
-  g_return_val_if_fail (hash_table != NULL, NULL);
+  lasso_return_if_fail(hash_table != NULL, NULL);
 
   retval = NULL;
   for (i = 0; i < hash_table->size; i++)
@@ -68,7 +68,7 @@ g_hash_table_get_values (GHashTable *hash_table)
     gint i;
     GList *retval;
 
-    g_return_val_if_fail (hash_table != NULL, NULL);
+    lasso_return_if_fail(hash_table != NULL, NULL);
 
     retval = NULL;
     for (i = 0; i < hash_table->size; i++)

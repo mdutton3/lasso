@@ -241,7 +241,7 @@ set_list_of_strings(GList **a_list, PyObject *seq) {
 	GList *list = NULL;
 	int l = 0,i;
 
-	g_return_if_fail(valid_seq(seq));
+	lasso_return_if_fail(valid_seq(seq));
 	if (seq != Py_None) {
 		l = PySequence_Length(seq);
 	}
@@ -269,7 +269,7 @@ set_list_of_xml_nodes(GList **a_list, PyObject *seq) {
 	GList *list = NULL;
 	int l = 0,i;
 
-	g_return_if_fail(valid_seq(seq));
+	lasso_return_if_fail(valid_seq(seq));
 	if (seq != Py_None) {
 		l = PySequence_Length(seq);
 	}
@@ -299,7 +299,7 @@ set_list_of_pygobject(GList **a_list, PyObject *seq) {
 	GList *list = NULL;
 	int l = 0,i;
 
-	g_return_if_fail(valid_seq(seq));
+	lasso_return_if_fail(valid_seq(seq));
 	if (seq != Py_None) {
 		l = PySequence_Length(seq);
 	}
