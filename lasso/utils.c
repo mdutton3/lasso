@@ -35,6 +35,17 @@
  * @include: utils.h
  */
 
+/**
+ * lasso_safe_prefix_string:
+ * @str: a C string
+ * @length: the maximum length of an extract of the string
+ *
+ * Produce a limite length safe extract of a string, for debugging purpose. Special characters are
+ * replaced by their C string 'quoting'.
+ *
+ * Return value: a C string, of size < @length where newline, carriage returns and tabs are replaced
+ * by their C quotes.
+ */
 gchar*
 lasso_safe_prefix_string(const gchar *str, gsize length)
 {
@@ -42,7 +53,6 @@ lasso_safe_prefix_string(const gchar *str, gsize length)
 	gchar *ret;
 	gsize outputted = 0, i = 0;
 
-	fprintf (stderr, "Coin %s\n", str);
 	if (str == NULL) {
 		return strdup("NULL");
 	}

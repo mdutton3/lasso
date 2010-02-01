@@ -54,9 +54,33 @@
 
 #define lasso_private_data(object) ((object)->private_data)
 
-#define lasso_ref(object) ((object) != NULL ? g_object_ref(object) : NULL)
+/**
+ * lasso_ref:
+ * @object: an object whose reference count must be incremented.
+ *
+ * Increment the reference count of an object, do not emit warning if it is NULL.
+ *
+ * Return value: the @object.
+ */
+#define lasso_ref(object) ((object) != NULL ? (g_object_ref(object), object) : NULL)
+
+/**
+ * lasso_unref:
+ * @object: an object whose reference count must be decremented.
+ * 
+ * Decrement the reference count of an object, do not emit warnings if it is NULL.
+ *
+ * Return value: the @object.
+ */
+#define lasso_unref(object) ((object) != NULL ? (g_object_unref(object), object) : NULL)
 
 /* Freeing */
+
+/*
+ * lasso_release_xxx are macros which ensure you do not get 'double free' errors, they first check
+ * that the variable is not NULL before calling the deallocation function, and after deallocation
+ * they reset the variable to NULL, preventing 'double free'.
+ */
 #define lasso_release(dest) \
 	{ \
 		if (dest) { \
@@ -147,6 +171,11 @@
 	lasso_release_full2(dest, xmlSecKeyDestroy, xmlSecKeyPtr)
 
 /* Assignment and list appending */
+/*
+ * lasso_assign_xxx macros ensure that you dot leak previous value of assigned things, they use
+ * lasso_release_xxx macros to deallocate, they also ensure proper reference counting on passed by
+ * references values and proper copying on passed by value values.
+ */
 #define lasso_assign_string(dest,src) \
 	{ \
 		char *__tmp = g_strdup(src);\
@@ -264,9 +293,12 @@
 		dest = __tmp; \
 	}
 
-
-
 /* List appending */
+
+/* lasso_list_add_xxx macros, simplify code around list manipulation (g_list_append needs to be
+ * used like this 'l = g_list_appen(l, value)' ) and ensure proper reference count or copying of
+ * values.
+ */
 #define lasso_list_add(dest, src) \
 	{ \
 		lasso_check_type_equality((src), void*); \
@@ -342,6 +374,11 @@
 	}
 
 /* Pointer ownership transfer */
+
+/* lasso_transfer_xxx macros are like lasso_assign_xxx but they do not increment reference count or
+ * copy the source value, instead they steal the value (and set the source to NULL, preventing stale
+ * references).
+ */
 #define lasso_transfer_full(dest, src, kind) \
 	{\
 		lasso_release_##kind((dest)); \
@@ -398,6 +435,13 @@ lasso_is_empty_string(const char *str) {
 	goto_cleanup_if_fail_with_rc(! lasso_is_empty_string(str), \
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
+/*
+ * We extensively use goto operator but in a formalized way, i.e. only for error checking code
+ * paths.
+ *
+ * The next macros goto_cleanup_xxxx encapsulate idioms used in lasso, like checking for a condition
+ * or setting the return code which must be called 'rc' and be of an 'int' type.
+ */
 
 /*
  * The following macros are made to create some formalism for function's cleanup code.
@@ -486,6 +530,13 @@ lasso_is_empty_string(const char *str) {
 		fprintf(stderr, "  freeing %s/%s (at %p)\n", who, what, (void*)where); \
 	}
 
+/**
+ * lasso_foreach:
+ * @_iter: a #GList variable, which will server to traverse @_list
+ * @_list: a #GList value, which we will traverse
+ *
+ * Traverse a #GList list using 'for' construct. It must be followed by a block or a statement.
+ */
 #define lasso_foreach(_iter, _list) \
 	for (_iter = (_list); _iter; _iter = g_list_next(_iter))
 
@@ -509,13 +560,14 @@ lasso_is_empty_string(const char *str) {
 #define lasso_foreach_full_end() \
 				} }
 
+/**
+ * lasso_list_get_first_child:
+ * @list:(allowed-none): a #GList node or NULL.
+ *
+ * Return the first child in a list, or NULL.
+ */
 #define lasso_list_get_first_child(list) \
 	((list) ? (list)->data : NULL)
-
-/* Declare type of element in a container */
-#ifndef OFTYPE
-#define OFTYPE(x)
-#endif
 
 /* Get a printable extract for error messages */
 char* lasso_safe_prefix_string(const char *str, gsize length);
