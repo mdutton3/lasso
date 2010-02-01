@@ -579,4 +579,16 @@ int lasso_gobject_is_of_type(GObject *a, GType b);
 	(type*) g_list_find_custom(list, \
 			(gconstpointer)gobjecttype, (GCompareFunc)lasso_gobject_is_of_type);
 
+/*
+ * Simplify simple accessors argument checking.
+ *
+ */
+#define lasso_return_val_if_fail(assertion, value) \
+	if (!(assertion)) return (value);
+
+#define lasso_return_null_if_fail(assertion) \
+	lasso_return_val_if_fail(assertion, NULL)
+
+#define lasso_return_if_fail(assertion) \
+	if (!(assertion)) return;
 #endif /* __LASSO_UTILS_H__ */
