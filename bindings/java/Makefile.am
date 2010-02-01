@@ -7,6 +7,14 @@ INCLUDES = \
 CLASSPATH_ENV= CLASSPATH=.:$(CLASSPATH_JUNIT)
 CLASSPATH=.:tests
 
+AM_V_JAVAC = $(am__v_JAVAC_$(V))
+am__v_JAVAC_ = $(am__v_JAVAC_$(AM_DEFAULT_VERBOSITY))
+am__v_JAVAC_0 = @echo "  JAVAC    " $@;
+
+AM_V_JAR = $(am__v_JAR_$(V))
+am__v_JAR_ = $(am__v_JAR_$(AM_DEFAULT_VERBOSITY))
+am__v_JAR_0 = @echo "  JAR    " $@;
+
 java_extension_LTLIBRARIES = libjnilasso.la
 java_extensiondir = ${libdir}/java
 
@@ -21,12 +29,12 @@ lasso_jar_DATA=lasso.jar
 lasso_jar_class_files = $(java_lasso_source_files:.java=.class)
 
 %.class: %.java
-	$(JAVAC) $(CLASSPATH_OPT) $(CLASSPATH) $(JAVAC_FLAGS) -d . $<
+	$(AM_V_JAVAC) $(JAVAC) $(CLASSPATH_OPT) $(CLASSPATH) $(JAVAC_FLAGS) -d . $<
 
 all_jar_class_files = $(shell find com/entrouvert/lasso -name '*.class' | sed 's%\$$%\\$$%g')
 
 lasso.jar: $(java_lasso_source_files:.java=.class)
-	$(JAR) -cf $@ $(all_jar_class_files)
+	$(AM_V_JAR) $(JAR) -cf $@ $(all_jar_class_files)
 
 # Doc
 apidir = $(docbasedir)/lasso/java-api
@@ -38,7 +46,7 @@ doc:
 
 
 com_entrouvert_lasso_LassoJNI.h: com/entrouvert/lasso/LassoJNI.class  $(java_lasso_source_files:.java=.class)
-	$(JAVAH) $(JAVAH_FLAGS) -classpath . `echo $< | sed 'su/u.ug;su.classuu'`
+	$(AM_V_GEN) $(JAVAH) $(JAVAH_FLAGS) -classpath . `echo $< | sed 'su/u.ug;su.classuu'`
 
 libjnilasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir) $(AM_CFLAGS) @JAVA_INCLUDE@
 libjnilasso_la_CFLAGS += -Wno-unused-parameter
@@ -52,8 +60,7 @@ BUILT_SOURCES = com_entrouvert_lasso_LassoJNI.c com_entrouvert_lasso_LassoJNI.h
 BINDING_OPTION=#--enable-exception-docs
 
 $(java_lasso_source_files)  com_entrouvert_lasso_LassoJNI.c: wrapper_top.c wrapper_bottom.c lang.py ../bindings.py
-	$(PYTHON) $(top_srcdir)/bindings/bindings.py $(BINDING_OPTION) -l java --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
-	cp $(srcdir)/GObject.java com/entrouvert/lasso
+	$(AM_V_GEN) $(PYTHON) $(top_srcdir)/bindings/bindings.py $(BINDING_OPTION) -l java --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS); cp $(srcdir)/GObject.java com/entrouvert/lasso
 
 
 doc-publish: doc

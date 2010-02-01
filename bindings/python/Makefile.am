@@ -36,7 +36,7 @@ EXTRA_ARGS = --enable-id-wsf
 endif
 
 lasso.py _lasso.c: lang.py wrapper_top.c wrapper_bottom.c ../bindings.py
-	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l python --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
+	$(AM_V_GEN) $(PYTHON) $(top_srcdir)/bindings/bindings.py -l python --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 
 clean-local:
 	-rm -f lasso.py lasso.pyc _lasso.c

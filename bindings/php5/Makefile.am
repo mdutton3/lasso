@@ -30,7 +30,7 @@ endif
 
 
 lasso.php _lasso.c: lang.py wrapper_source.py wrapper_header.py wrapper_source_top.c php_code.py ../overrides.xml
-	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l php5 --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
+	$(AM_V_GEN) $(PYTHON) $(top_srcdir)/bindings/bindings.py -l php5 --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 
 doc:
 	phpdoc -o HTML:frames:earthli -f lasso.php -t docs

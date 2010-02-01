@@ -12,7 +12,7 @@ INCLUDES = \
 	-I$(top_srcdir) \
 	$(SASL_CFLAGS)
 
-all: Lasso.so
+all: blib/arch/auto/Lasso/Lasso.so Lasso.pm
 
 TOCOPY=gobject_handling.c glist_handling.c ghashtable_handling.c Makefile.PL \
 	LassoNode.xs test.pl t
@@ -25,31 +25,33 @@ endif
 
 # Copy if out of a build
 Makefile.perl: $(srcdir)/Makefile.PL Lasso.xs Lasso.pm
-	-if [ "$(srcdir)" != "$(builddir)" ]; then \
+	$(AM_V_GEN) if [ "$(srcdir)" != "$(builddir)" ]; then \
 		for file in $(TOCOPY); do \
-			cp -Rf $(srcdir)/$$file .; \
+			if [ $(srcdir)/$$file -nt $$file ]; then cp -Rf $(srcdir)/$$file .; fi; \
 		done; \
 		chmod -R u+rwX $(TOCOPY); \
-	fi
-	$(PERL) Makefile.PL PREFIX=$(prefix) CCFLAGS="$(LASSO_XS_CFLAGS)" INC="-I. -I$(top_srcdir)" LIBS="`$(top_builddir)/lasso-src-config --libs`"
+	fi; \
+	LOG=`mktemp`; ( $(PERL) Makefile.PL PREFIX=$(prefix) CCFLAGS="$(LASSO_XS_CFLAGS)" INC="-I. -I$(top_srcdir)" LIBS="`$(top_builddir)/lasso-src-config --libs`" 2>&1 >$$LOG && rm $$LOG ) || ( cat $$LOG; rm $$LOG )
 
 Lasso.xs Lasso.pm: lang.py typemap-in typemap-out
-	$(PYTHON) $(top_srcdir)/bindings/bindings.py -l perl --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
+	$(AM_V_GEN) $(PYTHON) $(top_srcdir)/bindings/bindings.py -l perl --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 
-Lasso.so: Lasso.xs Lasso.pm Makefile.perl gobject_handling.c LassoNode.xs glist_handling.c
-	make -f Makefile.perl
+blib/arch/auto/Lasso/Lasso.so: Lasso.xs Lasso.pm Makefile.perl gobject_handling.c LassoNode.xs glist_handling.c
+	$(AM_V_GEN) LOG=`mktemp`; (make -f Makefile.perl 2>&1 >$$LOG && rm $$LOG ) || ( cat $$LOG; rm $$LOG )
 
-CLEANFILES = Lasso.pm Lasso.xs Lasso.so typemap Lasso.o Lasso.bs pm_to_blib Lasso.c blib
+CLEANFILES = Lasso.pm Lasso.xs Lasso.so typemap Lasso.o Lasso.bs pm_to_blib Lasso.c
+
+DISTCLEANFILES = $(TOCOPY)
+distclean-local:
+	-@rm -rf $(TOCOPY)
 
 clean-local:
-	-@make -f Makefile.perl clean
-	-@rm -f Makefile.perl
-	-if [ "$(srcdir)" != "$(builddir)" ]; then rm -rf `find -H -mindepth 1 -not -name Makefile` t; fi
+	-@if [ -f Makefile.perl ]; then make -f Makefile.perl clean; fi; rm -f Makefile.perl
 
 install-exec-local:
 	make -f Makefile.perl install DESTDIR=$(DESTDIR) PREFIX=$(prefix)
 
 uninstall-local:
-	@rm -rf `find $(DESTDIR)$(prefix) -name Lasso.pm -or -name Lasso.so -or -name Lasso.bs -or -name .packlist -or -name perllocal.pod`
+	-@rm -rf `find $(DESTDIR)$(prefix) -name Lasso.pm -or -name Lasso.so -or -name Lasso.bs -or -name .packlist -or -name perllocal.pod`
 
 endif
