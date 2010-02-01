@@ -42,6 +42,22 @@ except ImportError:
 
 sys.path.append(os.path.dirname(__file__))
 
+# monkey patch os.path to include relpath if python version is < 2.6
+if not hasattr(os.path, "relpath"):
+    def relpath(longPath, basePath):
+        if not longPath.startswith(basePath):
+            raise RuntimeError("Unexpected arguments")
+        if longPath == basePath:
+            return "."
+        i = len(basePath)
+        if not basePath.endswith(os.path.sep):
+            i += len(os.path.sep)
+        return longPath[i:]
+
+    os.path.relpath = relpath
+
+
+
 class BindingData:
     src_dir = os.path.dirname(__file__)
 
