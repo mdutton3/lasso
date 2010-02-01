@@ -2199,7 +2199,23 @@ lasso_login_dump(LassoLogin *login)
  *
  * Initializes a response to the authentication request received.
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or <itemizedlist>
+ * <listitem><para>#LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,</para></listitem>
+ * <listitem><para>#LASSO_LOGIN_ERROR_REQUEST_DENIED</para> if @authentication_result if FALSE,</listitem>
+ * <listitem><para>#LASSO_LOGIN_ERROR_INVALID_SIGNATURE if signature validation of the request
+ * failed,</para></listitem>
+ * <listitem><para>#LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST if no signature was present on the
+ * request,</para></listitem>
+ * <listitem><para>#LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND if federation policy is
+ * #LASSO_LIB_NAMEID_POLICY_TYPE_NONE and no federation was found in the #LassoIdentity object
+ * (ID-FF 1.2 case)</para></listitem>
+ * <listitem><para>#LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY if request policy is not one of
+ * #LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED or #LASSO_LIB_NAMEID_POLICY_TYPE_ANY (ID-FF 1.2 case) or if no NameID policy was defined or the AllowCreate request flag is FALSE (SAML 2.0 case),</para></listitem>
+ * <listitem><para>#LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED if @is_consent_obtained is FALSE and
+ * conssent was necessary (for example if the request does not communicate that consent was already
+ * obtained from the user),</para></listitem>
+ * <listitem><para>#LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the requesting provider is unknown,</para></listitem>
+ * </itemizedlist>
  **/
 int
 lasso_login_validate_request_msg(LassoLogin *login, gboolean authentication_result,
