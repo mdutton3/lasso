@@ -1,3 +1,11 @@
+AM_V_SUBMAKE = $(am__v_SUBMAKE_$(V))
+am__v_SUBMAKE_ = $(am__v_SUBMAKE_$(AM_DEFAULT_VERBOSITY))
+am__v_SUBMAKE_0 = @echo "  SUBMAKE    " $@; LOG=`mktemp`; (
+
+AM_V_SUBMAKE_POSTFIX = $(am__v_SUBMAKE_POSTFIX_$(V))
+am__v_SUBMAKE_POSTFIX_ = $(am__v_SUBMAKE_POSTFIX_$(AM_DEFAULT_VERBOSITY))
+am__v_SUBMAKE_POSTFIX_0 = 2>&1 >$$LOG && rm $$LOG ) || ( cat $$LOG; rm $$LOG )
+
 MAINTAINERCLEANFILES = Makefile.in
 MOSTLYCLEANFILES =
 
@@ -30,14 +38,14 @@ Makefile.perl: $(srcdir)/Makefile.PL Lasso.xs Lasso.pm
 			if [ $(srcdir)/$$file -nt $$file ]; then cp -Rf $(srcdir)/$$file .; fi; \
 		done; \
 		chmod -R u+rwX $(TOCOPY); \
-	fi; \
-	LOG=`mktemp`; ( $(PERL) Makefile.PL PREFIX=$(prefix) CCFLAGS="$(LASSO_XS_CFLAGS)" INC="-I. -I$(top_srcdir)" LIBS="`$(top_builddir)/lasso-src-config --libs`" 2>&1 >$$LOG && rm $$LOG ) || ( cat $$LOG; rm $$LOG )
+	fi;
+	$(AM_V_SUBMAKE) $(PERL) Makefile.PL PREFIX=$(prefix) CCFLAGS="$(LASSO_XS_CFLAGS)" INC="-I. -I$(top_srcdir)" LIBS="`$(top_builddir)/lasso-src-config --libs`" OPTIMIZE="-g" $(AM_V_SUBMAKE_POSTFIX)
 
 Lasso.xs Lasso.pm: lang.py typemap-in typemap-out
 	$(AM_V_GEN) $(PYTHON) $(top_srcdir)/bindings/bindings.py -l perl --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 
 blib/arch/auto/Lasso/Lasso.so: Lasso.xs Lasso.pm Makefile.perl gobject_handling.c LassoNode.xs glist_handling.c
-	$(AM_V_GEN) LOG=`mktemp`; (make -f Makefile.perl 2>&1 >$$LOG && rm $$LOG ) || ( cat $$LOG; rm $$LOG )
+	$(AM_V_SUBMAKE) make -f Makefile.perl $(AM_V_SUBMAKE_POSTFIX)
 
 CLEANFILES = Lasso.pm Lasso.xs Lasso.so typemap Lasso.o Lasso.bs pm_to_blib Lasso.c
 

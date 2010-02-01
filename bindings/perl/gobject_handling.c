@@ -36,14 +36,16 @@
 #define REVIVE_UNDEAD(x) INT2PTR(void*, PTR2UV(x) & ~1)
 
 /* this code is copied / adapted from libglib-perl */
-GHashTable *type_to_package;
+GHashTable *types_by_types;
+GHashTable *types_by_package;
 GQuark wrapper_quark;
 
 extern int lasso_init();
 
-void
+static void
 init_perl_lasso() {
-	type_to_package = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, g_free);
+	types_by_types = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, g_free);
+	types_by_package = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
 	wrapper_quark = g_quark_from_static_string("PerlLasso::wrapper");
 	lasso_init();
 }
@@ -59,7 +61,7 @@ gperl_object_package_from_type (GType gtype)
 		return NULL;
 
 
-	package = g_hash_table_lookup(type_to_package, (gconstpointer)gtype);
+	package = g_hash_table_lookup(types_by_types, (gconstpointer)gtype);
 	if (package)
 		return package;
 
@@ -71,7 +73,8 @@ gperl_object_package_from_type (GType gtype)
 		return NULL;
 
 	package = g_strconcat("Lasso::", &type_name[5], NULL);
-	g_hash_table_insert(type_to_package, (gpointer)gtype, (gpointer)package);
+	g_hash_table_insert(types_by_types, (gpointer)gtype, (gpointer)package);
+	g_hash_table_insert(types_by_package, g_strdup(package), (gpointer)gtype);
 
 	return package;
 }
@@ -234,7 +237,6 @@ gperl_lasso_error(int error)
 	if (error != 0) {
 		HV *hv;
 		SV *sv;
-		char *what = Nullch;
 
 		const char *desc = lasso_strerror(error);
 		hv = newHV();
@@ -243,5 +245,20 @@ gperl_lasso_error(int error)
 		sv = sv_bless(newRV_noinc((SV*)hv), gv_stashpv("Lasso::Error", TRUE));
 		sv_setsv(ERRSV, sv);
 		Perl_croak (aTHX_ Nullch);
+	}
+}
+
+/*
+ * check_gobject:
+ * @object: a #GObject object
+ * @gtype: a #GType
+ *
+ * Check that a given pointer is really a pointer to a GObject of certain type.
+ * Return value: TRUE or FALSE.
+ */
+static void
+check_gobject(GObject *object, GType type) {
+	if (! G_IS_OBJECT(object) || ! g_type_is_a(G_OBJECT_TYPE(object), type)) {
+		gperl_lasso_error(LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	}
 }

@@ -246,10 +246,8 @@ INCLUDE: LassoNode.xs
         else:
             raise Exception('Unknown default value for %s' % (arg,))
 
-    def generate_xs_function(self, func):
+    def generate_xs_function(self, func, prefix = None):
         name = func.name
-        if 'get_nameIden' in name:
-            return
         self.xs.pn()
         if not func.return_type or not is_glist(func.return_arg):
             self.xs.pn(func.return_type or 'void')
@@ -262,7 +260,7 @@ INCLUDE: LassoNode.xs
         self.xs.p(name + '(')
         arg_list = []
         if name.endswith('_new'):
-            arg_list.append('SV *cls')
+            arg_list.append('char *cls')
         for arg in func.args:
             decl = ''
             if is_cstring(arg):
@@ -278,18 +276,25 @@ INCLUDE: LassoNode.xs
                 if arg_default(arg):
                     decl += ' = ' + self.default_value(arg)
                 else:
-                    if is_cstring(arg) or is_glist(arg):
+                    if is_cstring(arg) or is_glist(arg) or is_xml_node(arg) or is_object(arg):
                         decl += ' = NULL'
                     else:
                         raise Exception('Do not know what to do for optional: %s' % arg)
             arg_list.append(decl)
         self.xs.p(','.join(arg_list))
         self.xs.pn(')')
+
         if name.endswith('_new'):
             self.xs.pn('  INIT:')
             self.xs.pn('    cls = NULL;')
             self.xs.pn('  C_ARGS:')
             self.xs.pn('    ' + ', '.join([arg_name(arg) for arg in func.args]))
+        elif prefix and not func.name.startswith(prefix + 'new'):
+            self.xs.pn('  INIT:')
+            self.xs.pn('    check_gobject((GObject*)%(first_arg)s, %(gtype)s);' % {
+                'first_arg': arg_name(func.args[0]),
+                'gtype': prefix + 'get_type()' 
+                } )
         need_prototype = False
         for x in func.args:
             if is_glist(x):
@@ -318,10 +323,10 @@ INCLUDE: LassoNode.xs
             self.xs.pn('''   OUTPUT:
          RETVAL''')
             self.xs.pn('''   CLEANUP:
-         g_object_unref(RETVAL);''')
+         lasso_unref(RETVAL);''')
         elif func.return_type and is_object(func.return_type) and not is_int(func.return_type, self.binding_data) and func.return_owner:
             self.xs.pn('''   CLEANUP:
-         g_object_unref(RETVAL);''')
+         lasso_unref(RETVAL);''')
         elif is_int(func.return_arg, self.binding_data):
             if name == 'lasso_check_version':
                 self.xs.pn('''   CLEANUP:
@@ -363,6 +368,10 @@ INCLUDE: LassoNode.xs
             for (; i < items; i++) {
                 %(el_type)s data;
                 data = (%(el_type)s)%(convert)s;
+                if (! data) {
+                    %(release)s
+                    croak("an element cannot be converted to an %(el_type)s");
+                }
                 %(push)s(obj->%(field)s, data);
             }
             XSRETURN(0);
@@ -521,7 +530,7 @@ HV*
                 if func.name.startswith(prefix+'new'):
                     self.generate_xs_function(func)
             for func in struct.methods:
-                self.generate_xs_function(func)
+                self.generate_xs_function(func, prefix = prefix)
             for member in struct.members:
                 if arg_type(member) ==  'void*':
                     print 'Skipping %s' % member

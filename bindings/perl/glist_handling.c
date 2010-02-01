@@ -35,7 +35,7 @@
  *
  * Return value: a newly allocated SV/PV or under.
  */
-SV*
+static SV*
 xmlnode_to_pv(xmlNode *node, gboolean do_free)
 {
 	xmlOutputBufferPtr buf;
@@ -65,11 +65,15 @@ xmlnode_to_pv(xmlNode *node, gboolean do_free)
 	return pestring;
 }
 
-xmlNode *pv_to_xmlnode(SV *value) {
-	char *string = SvPV_nolen(value);
+static xmlNode *
+pv_to_xmlnode(SV *value) {
+	char *string;
 	xmlDoc *doc;
 	xmlNode *node = NULL;
 
+	if (! SvPOK(value))
+		return NULL;
+	string = SvPV_nolen(value);
 	if (! string)
 		return NULL;
 
@@ -83,37 +87,6 @@ xmlNode *pv_to_xmlnode(SV *value) {
 }
 
 /**
- * glist_string_to_array:
- * @list: a GList* of strings
- * @do_free: wheter to free the list after the transformation
- *
- * Convert a #GList of strings to a Perl array of strings.
- *
- * Return value: a newly created perl array
- */
-AV*
-glist_string_to_array(GList *list, gboolean do_free)
-{
-	AV *array;
-
-	array = newAV();
-
-	while (list) {
-		SV *sv;
-		sv = newSVpv((char*)list->data, 0);
-		if (! sv)
-			sv = &PL_sv_undef;
-		av_push(array, sv);
-		list = list->next;
-	}
-
-	if (do_free)
-		lasso_release_list_of_strings(list);
-
-	return array;
-}
-
-/**
  * array_to_glist_string:
  * @array: a Perl array
  *
@@ -121,7 +94,7 @@ glist_string_to_array(GList *list, gboolean do_free)
  *
  * Return value: a newly create #GList
  */
-GList*
+static GList*
 array_to_glist_string(AV *array)
 {
 	I32 len, i;
@@ -141,36 +114,6 @@ array_to_glist_string(AV *array)
 }
 
 /**
- * glist_gobject_to_array:
- * @list: a #GList of #GObject objects
- * @do_free: wheter to free the list after the conversion
- *
- * Convert a #GList of #GObject objects to a perl array.
- *
- * Return value: a newly created perl array
- */
-AV*
-glist_gobject_to_array(GList *list, gboolean do_free)
-{
-	AV *array;
-
-	array = newAV();
-	while (list) {
-		SV *sv;
-		sv = gperl_new_object((GObject*)list->data, FALSE);
-		if (! sv)
-			sv = &PL_sv_undef;
-		av_push(array, sv);
-		list = list->next;
-	}
-
-	if (do_free)
-		lasso_release_list_of_gobjects(list);
-
-	return array;
-}
-
-/**
  * array_to_glist_gobject:
  * @array: a perl array
  *
@@ -178,74 +121,20 @@ glist_gobject_to_array(GList *list, gboolean do_free)
  *
  * Return value: a newly created #GList of #GObject objects
  */
-GList*
+static GList*
 array_to_glist_gobject(AV *array) {
-	I32 len, i;
-	GList *result = NULL;
+       I32 len, i;
+       GList *result = NULL;
 
-	if (! array)
-		return NULL;
-	len = av_len(array);
-	for (i=len-1; i >= 0; i--) {
-		SV **sv;
+       if (! array)
+               return NULL;
+       len = av_len(array);
+       for (i=len-1; i >= 0; i--) {
+               SV **sv;
 
-		sv = av_fetch(array, i, 0);
-		lasso_list_add_gobject(result, gperl_get_object(*sv));
-	}
+               sv = av_fetch(array, i, 0);
+               lasso_list_add_gobject(result, gperl_get_object(*sv));
+       }
 
-	return result;
-}
-
-/**
- * glist_xmlnode_to_array:
- * @list: a #GList of #xmlNode
- * @do_free: whether to free the list after the conversion
- *
- * Convert a #GList of #xmlNode structures to a perl array of strings.
- *
- * Return value: a newly created Perl array */
-AV*
-glist_xmlnode_to_array(GList *list, gboolean do_free)
-{
-	AV *array;
-
-	array = newAV();
-	while (list) {
-		SV *sv = xmlnode_to_pv((xmlNode*)list->data, FALSE);
-		if (! sv)
-			sv = &PL_sv_undef;
-		av_push(array, sv);
-		list = list->next;
-	}
-
-	if (do_free)
-		lasso_release_list_of_xml_node(list);
-
-	return array;
-}
-
-/**
- * array_to_glist_xmlnode:
- * @array: a perl array
- *
- * Convert a perl array of strings to a #GList of #xmlNode structures.
- *
- * Return value: a newly created #GList of #xmlNode structures.
- */
-GList*
-array_to_glist_xmlnode(AV *array) {
-	I32 len, i;
-	GList *result = NULL;
-
-	if (! array)
-		return NULL;
-	len = av_len(array);
-	for (i=len-1; i >= 0; i--) {
-		SV **sv;
-
-		sv = av_fetch(array, i, 0);
-		lasso_list_add_new_xml_node(result, pv_to_xmlnode(*sv));
-	}
-
-	return result;
+       return result;
 }
