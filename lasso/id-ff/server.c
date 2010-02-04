@@ -183,7 +183,7 @@ lasso_server_load_affiliation(LassoServer *server, const gchar *filename)
 	xmlNode *node;
 	int rc = 0;
 
-	doc = xmlParseFile(filename);
+	doc = lasso_xml_parse_file(filename);
 	goto_cleanup_if_fail_with_rc (doc != NULL, LASSO_XML_ERROR_INVALID_FILE);
 
 	node = xmlDocGetRootElement(doc);
