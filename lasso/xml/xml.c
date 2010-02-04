@@ -551,7 +551,6 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 
 	if (xmlSecCryptoAppDefaultKeysMngrInit(key_manager) < 0) {
 		message(G_LOG_LEVEL_WARNING, "Failed to initialize keys manager");
-		xmlSecKeysMngrDestroy(key_manager);
 		goto cleanup;
 	}
 
@@ -559,7 +558,6 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	 * for destroying key
 	 */
 	if (xmlSecCryptoAppDefaultKeysMngrAdoptKey(key_manager, encryption_public_key) < 0) {
-		xmlSecKeysMngrDestroy(key_manager);
 		goto cleanup;
 	}
 
@@ -636,6 +634,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	lasso_transfer_gobject(ret, encrypted_element);
 
 cleanup:
+	lasso_release_key_manager(key_manager);
 	lasso_release_gobject(encrypted_element);
 	lasso_release_encrypt_context(enc_ctx);
 	lasso_release_doc(doc);

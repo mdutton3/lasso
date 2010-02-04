@@ -1697,16 +1697,19 @@ lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, con
 
 xmlSecKey*
 lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *password) {
-	char *buffer;
+	char *buffer = NULL;
 	size_t length;
+	xmlSecKey *ret;
 
 	if (! filename_or_buffer)
 		return NULL;
 
 	if (g_file_get_contents(filename_or_buffer, &buffer, &length, NULL)) {
-		return lasso_xmlsec_load_private_key_from_buffer(buffer, length, password);
+		ret = lasso_xmlsec_load_private_key_from_buffer(buffer, length, password);
 	} else {
-		return lasso_xmlsec_load_private_key_from_buffer(filename_or_buffer, strlen(filename_or_buffer), password);
+		ret = lasso_xmlsec_load_private_key_from_buffer(filename_or_buffer, strlen(filename_or_buffer), password);
 	}
+	lasso_release_string(buffer);
+	return ret;
 
 }
