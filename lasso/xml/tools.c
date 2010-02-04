@@ -1828,6 +1828,7 @@ lasso_xmlsec_load_key_info(xmlNode *key_descriptor)
 		return NULL;
 
 	ctx = xmlSecKeyInfoCtxCreate(NULL);
+	ctx->flags |= XMLSEC_KEYINFO_FLAGS_X509DATA_DONT_VERIFY_CERTS;
 	key = xmlSecKeyCreate();
 	/* anyway to make this reentrant and thread safe ? */
 	xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
