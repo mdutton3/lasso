@@ -222,6 +222,9 @@ char * lasso_get_relaystate_from_query(const char *query);
 char * lasso_url_add_parameters(char *url, gboolean free, ...);
 xmlSecKey* lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password);
 xmlSecKey* lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *password);
+xmlDocPtr lasso_xml_parse_file(const char *filepath);
+xmlDocPtr lasso_xml_parse_memory_with_error(const char *buffer, int size, xmlError *error);
+xmlSecKeyPtr lasso_xmlsec_load_key_info(xmlNode *key_descriptor);
 
 #ifdef __cplusplus
 }

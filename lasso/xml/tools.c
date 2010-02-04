@@ -57,6 +57,8 @@
 #include <unistd.h>
 #include "../debug.h"
 #include "../utils.h"
+#include <stdarg.h>
+#include <ctype.h>
 
 /**
  * SECTION:tools
@@ -1475,6 +1477,20 @@ cleanup:
 	return rc;
 }
 
+static void __xmlWarningFunc(G_GNUC_UNUSED void *userData, const char *msg, ...) {
+	va_list arg_ptr;
+
+	va_start(arg_ptr, msg);
+	g_logv("Lasso", G_LOG_LEVEL_WARNING, msg, arg_ptr);
+}
+
+static void __xmlErrorFunc(G_GNUC_UNUSED void *userData, const char *msg, ...) {
+	va_list arg_ptr;
+
+	va_start(arg_ptr, msg);
+	g_logv("Lasso", G_LOG_LEVEL_CRITICAL, msg, arg_ptr);
+}
+
 /**
  * lasso_xml_parse_memory:
  * @buffer:  an pointer to a char array
@@ -1494,8 +1510,12 @@ cleanup:
  * Return value: the resulting document tree
  **/
 xmlDocPtr
-lasso_xml_parse_memory(const char *buffer, int size)
-{
+lasso_xml_parse_memory(const char *buffer, int size) {
+	return lasso_xml_parse_memory_with_error(buffer, size, NULL);
+}
+
+xmlDocPtr
+lasso_xml_parse_memory_with_error(const char *buffer, int size, xmlError *error) {
 	xmlDocPtr ret;
 	xmlParserCtxtPtr ctxt;
 
@@ -1509,8 +1529,21 @@ lasso_xml_parse_memory(const char *buffer, int size)
 	}
 	ctxt->recovery = 0;
 	xmlCtxtUseOptions(ctxt, XML_PARSE_NONET);
+	if (error) {
+		ctxt->sax->warning = NULL;
+		ctxt->sax->error = NULL;
+		ctxt->sax->fatalError = NULL;
+	} else {
+		/* reroute errors through GLib logger */
+		ctxt->sax->warning = __xmlWarningFunc;
+		ctxt->sax->error = __xmlErrorFunc;
+	}
 
 	xmlParseDocument(ctxt);
+
+	if (error) {
+		xmlCopyError(&ctxt->lastError, error);
+	}
 
 	if (ctxt->wellFormed && ctxt->myDoc->intSubset != NULL) {
 		message(G_LOG_LEVEL_WARNING, "Denied message with DTD content");
@@ -1527,6 +1560,34 @@ lasso_xml_parse_memory(const char *buffer, int size)
 	xmlFreeParserCtxt(ctxt);
 
 	return ret;
+}
+
+/**
+ * lasso_xml_parse_file:
+ * @filepath: the file path
+ *
+ * Parse an XML file, report errors through GLib logger with the Lasso domain
+ *
+ * Return value: a newly create #xmlDoc object if successful, NULL otherwise.
+ */
+xmlDocPtr
+lasso_xml_parse_file(const char *filepath)
+{
+	char *file_content;
+	size_t file_length;
+	GError *error;
+
+	if (g_file_get_contents(filepath, &file_content, &file_length, &error)) {
+		xmlDocPtr ret;
+
+		ret = lasso_xml_parse_memory(file_content, file_length);
+		g_free(file_content);
+		return ret;
+	} else {
+		message(G_LOG_LEVEL_CRITICAL, "Cannot read XML file %s: %s", filepath, error->message);
+		g_error_free(error);
+		return NULL;
+	}
 }
 
 /* (almost) straight from libxml2 internal API */
@@ -1697,7 +1758,6 @@ lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, con
 	return private_key;
 }
 
-
 xmlSecKey*
 lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *password) {
 	char *buffer = NULL;
@@ -1715,4 +1775,94 @@ lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *passwo
 	lasso_release_string(buffer);
 	return ret;
 
+}
+
+gboolean
+lasso_get_base64_content(xmlNode *node, char **content, size_t *length) {
+	xmlChar *base64, *stripped_base64;
+	xmlChar *result;
+	int base64_length;
+	int rc = 0;
+
+	if (! node || ! content || ! length)
+		return FALSE;
+
+	base64 = xmlNodeGetContent(node);
+	if (! base64)
+		return FALSE;
+	stripped_base64 = base64;
+	/* skip spaces */
+	while (*stripped_base64 && isspace(*stripped_base64))
+		stripped_base64++;
+
+	base64_length = strlen((char*)stripped_base64);
+	result = g_new(xmlChar, base64_length);
+	xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
+	rc = xmlSecBase64Decode(stripped_base64, result, base64_length);
+	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
+	xmlFree(base64);
+	if (rc < 0) {
+		return FALSE;
+	} else {
+		*content = (char*)g_memdup(result, rc);
+		xmlFree(result);
+		*length = rc;
+		return TRUE;
+	}
+}
+
+xmlSecKeyPtr
+lasso_xmlsec_load_key_info(xmlNode *key_descriptor)
+{
+	xmlSecKeyPtr key, result = NULL;
+	xmlNodePtr key_info;
+	xmlSecKeyInfoCtxPtr ctx;
+	xmlNodePtr key_value;
+	int rc;
+
+	if (! key_descriptor)
+		return NULL;
+
+	key_info = xmlSecFindChild(key_descriptor, xmlSecNodeKeyInfo, xmlSecDSigNs);
+	if (! key_info)
+		return NULL;
+
+	ctx = xmlSecKeyInfoCtxCreate(NULL);
+	key = xmlSecKeyCreate();
+	/* anyway to make this reentrant and thread safe ? */
+	xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
+	rc = xmlSecKeyInfoNodeRead(key_info, key, ctx);
+	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
+
+	if (rc == -1 &&
+		((key_value = xmlSecFindChild(key_info, xmlSecNodeKeyValue, xmlSecDSigNs)) ||
+		 (key_value = xmlSecFindNode(key_info, xmlSecNodeX509Certificate, xmlSecDSigNs))))  {
+		char *content;
+		size_t length;
+
+		if (lasso_get_base64_content(key_value, &content, &length)) {
+			result = lasso_xmlsec_load_private_key_from_buffer(content, length, NULL);
+			g_free(content);
+		} else {
+			xmlChar *content;
+
+			content = xmlNodeGetContent(key_value);
+			if (content) {
+				result = lasso_xmlsec_load_private_key_from_buffer((char*)content, strlen((char*)content), NULL);
+				xmlFree(content);
+			}
+		}
+	} else {
+		/* swap result and temporary key */
+		result = key;
+		key = NULL;
+	}
+
+	if (key) {
+		xmlSecKeyDestroy(key);
+	}
+	if (ctx) {
+		xmlSecKeyInfoCtxDestroy(ctx);
+	}
+	return result;
 }
