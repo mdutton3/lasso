@@ -58,3 +58,120 @@
    fun:set_registry
    fun:lasso_discovery_register_constructor_for_service_type
 }
+{
+	suppression coin
+	Memcheck:Leak
+	fun:calloc
+	fun:g_malloc0
+	fun:type_data_make_W
+}
+
+
+{
+   type alloc 1
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   fun:type_node_any_new_W
+   fun:type_node_new_W
+}
+
+{
+   type alloc 2
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:g_realloc
+   fun:type_node_any_new_W
+   fun:type_node_new_W
+}
+
+{
+   type alloc 3
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:g_realloc
+   fun:type_add_flags_W
+   fun:g_type_register_fundamental
+}
+
+{
+   type alloc 4
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:type_add_flags_W
+   fun:g_type_register_fundamental
+}
+{
+   suppression 103
+   Memcheck:Cond
+   obj:/lib/i686/cmov/libcrypto.so.0.9.8
+   obj:/lib/i686/cmov/libcrypto.so.0.9.8
+   obj:/lib/i686/cmov/libcrypto.so.0.9.8
+   fun:BIO_vsnprintf
+   fun:BIO_snprintf
+   fun:asn1_add_error
+   fun:d2i_ASN1_SET
+   fun:d2i_AutoPrivateKey
+   fun:ASN1_d2i_bio
+   fun:d2i_PrivateKey_bio
+}
+{
+   suppression 125
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:g_realloc
+   fun:g_quark_from_static_string
+}
+{
+   suppression 128
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:g_realloc
+   fun:type_add_flags_W
+   fun:g_type_register_static
+}
+{
+   suppression 129
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   fun:g_boxed_type_register_static
+}
+{
+   suppression 131
+   Memcheck:Leak
+   fun:malloc
+   fun:g_malloc
+   fun:g_param_type_register_static
+}
+{
+   suppression 132
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:g_type_class_ref
+}
+{
+   suppression 133
+   Memcheck:Leak
+   fun:calloc
+   fun:g_slice_alloc
+   fun:g_hash_table_new_full
+   fun:g_hash_table_new
+   fun:g_quark_from_static_string
+}
+{
+   suppression 134
+   Memcheck:Leak
+   fun:calloc
+   fun:g_slice_alloc
+   fun:g_string_sized_new
+   fun:g_log_default_handler
+   fun:g_logv
+   fun:g_log
+}
