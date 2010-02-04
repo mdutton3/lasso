@@ -100,7 +100,7 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
 {
 	LassoProvider *remote_provider;
 	LassoFederation *federation;
-	char *name_id_sp_name_qualifier;
+	const char *name_id_sp_name_qualifier;
 
 	if (!LASSO_IS_PROFILE(profile)) {
 		return NULL;

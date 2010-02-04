@@ -101,6 +101,7 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_me
 		request->Issuer->content);
 
 cleanup:
+	lasso_release_gobject(request);
 	return rc;
 }
 
@@ -268,6 +269,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	lasso_assign_string(response->InResponseTo, LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
 
 cleanup:
+	lasso_release_gobject(response);
 	return rc;
 }
 
@@ -382,7 +384,7 @@ lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login)
 	LassoSamlp2NameIDPolicy *name_id_policy;
 	char *consent;
 	LassoFederation *federation;
-	char *name_id_sp_name_qualifier = NULL;
+	const char *name_id_sp_name_qualifier = NULL;
 	LassoProvider *remote_provider;
 	gboolean rc = TRUE;
 
@@ -436,7 +438,6 @@ lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login)
 		goto_cleanup_with_rc (TRUE)
 
 cleanup:
-	lasso_release_string (name_id_sp_name_qualifier);
 	return rc;
 }
 
@@ -505,7 +506,7 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 	LassoSamlp2NameIDPolicy *name_id_policy;
 	char *name_id_policy_format = NULL;
 	LassoFederation *federation;
-	char *name_id_sp_name_qualifier = NULL;
+	const char *name_id_sp_name_qualifier = NULL;
 	LassoProvider *remote_provider;
 	int rc = 0;
 
@@ -583,20 +584,18 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 	lasso_assign_gobject(profile->nameIdentifier, federation->local_nameIdentifier);
 
 cleanup:
-	lasso_release_string (name_id_sp_name_qualifier);
 	return rc;
 }
 
 static LassoFederation*
 _lasso_login_saml20_get_federation(LassoLogin *login) {
 	LassoFederation *federation = NULL;
-	char *name_id_sp_name_qualifier;
+	const char *name_id_sp_name_qualifier = NULL;
 
 
 	name_id_sp_name_qualifier = lasso_provider_get_sp_name_qualifier(
 			lasso_server_get_provider(login->parent.server, login->parent.remote_providerID));
 	federation = lasso_identity_get_federation(login->parent.identity, name_id_sp_name_qualifier);
-	lasso_release_string(name_id_sp_name_qualifier);
 	return federation;
 }
 

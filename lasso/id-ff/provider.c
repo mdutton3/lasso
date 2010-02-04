@@ -1363,10 +1363,10 @@ lasso_provider_get_default_name_id_format(const LassoProvider *provider)
  * Return value:(transfer none): a private string or NULL. Do not keep a reference on this string or
  * free it.
  */
-char*
+const char*
 lasso_provider_get_sp_name_qualifier(LassoProvider *provider)
 {
-	char *sp_name_qualifier;
+	const char *sp_name_qualifier;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	/* should not happen ! */
@@ -1379,7 +1379,7 @@ lasso_provider_get_sp_name_qualifier(LassoProvider *provider)
 	}
 
 	if (sp_name_qualifier) {
-		return g_strdup(sp_name_qualifier);
+		return sp_name_qualifier;
 	} else {
 		return NULL;
 	}

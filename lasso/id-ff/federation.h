@@ -65,7 +65,7 @@ struct _LassoFederationClass {
 
 LASSO_EXPORT GType lasso_federation_get_type(void);
 
-LASSO_EXPORT LassoFederation* lasso_federation_new(gchar *remote_providerID);
+LASSO_EXPORT LassoFederation* lasso_federation_new(const gchar *remote_providerID);
 
 LASSO_EXPORT void lasso_federation_build_local_name_identifier(LassoFederation *federation,
 		const gchar *nameQualifier, const gchar *format, const gchar *content);

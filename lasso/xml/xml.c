@@ -497,6 +497,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	xmlNodePtr key_info_node2 = NULL;
 	xmlSecEncCtxPtr enc_ctx = NULL;
 	xmlSecTransformId xmlsec_encryption_sym_key_type;
+	xmlSecKey *duplicate = NULL;
 
 	if (encryption_public_key == NULL || !xmlSecKeyIsValid(encryption_public_key)) {
 		message(G_LOG_LEVEL_WARNING, "Invalid encryption key");
@@ -557,7 +558,9 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	/* add key to keys manager, from now on keys manager is responsible
 	 * for destroying key
 	 */
-	if (xmlSecCryptoAppDefaultKeysMngrAdoptKey(key_manager, encryption_public_key) < 0) {
+	duplicate = xmlSecKeyDuplicate(encryption_public_key);
+	if (xmlSecCryptoAppDefaultKeysMngrAdoptKey(key_manager, duplicate) < 0) {
+		lasso_release_sec_key(duplicate);
 		goto cleanup;
 	}
 

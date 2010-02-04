@@ -278,7 +278,7 @@ lasso_federation_get_type()
  * Return value: a newly created #LassoFederation
  **/
 LassoFederation*
-lasso_federation_new(gchar *remote_providerID)
+lasso_federation_new(const gchar *remote_providerID)
 {
 	LassoFederation *federation;
 
