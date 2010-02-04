@@ -228,7 +228,6 @@ NodeList = list
 StringList = list
 StringDict = dict
 registerIdWsf2DstService = registerIdwsf2DstService
-Provider.setEncryptionMode = Provider.set_encryptionMode
 
 if WSF_SUPPORT:
     DiscoDescription_newWithBriefSoapHttpDescription = DiscoDescription.newWithBriefSoapHttpDescription
@@ -275,13 +274,13 @@ if WSF_SUPPORT:
                 c_args = []
                 py_args = []
                 for o in m.args:
-                    type, arg_name, arg_options = o
+                    type, aname, arg_options = o
                     py_args.append(get_python_arg_decl(o))
 
                     if self.is_pygobject(type):
-                        c_args.append('%s and %s._cptr' % (arg_name, arg_name))
+                        c_args.append('%s and %s._cptr' % (aname, aname))
                     else:
-                        c_args.append(arg_name)
+                        c_args.append(aname)
 
                 c_args = ', '.join(c_args)
                 py_args = ', ' + ', '.join(py_args)
@@ -300,13 +299,13 @@ if WSF_SUPPORT:
                 c_args = []
                 py_args = []
                 for o in m.args:
-                    type, arg_name, arg_options = o
+                    type, aname, arg_options = o
                     py_args.append(get_python_arg_decl(o))
 
                     if self.is_pygobject(type):
-                        c_args.append('%s and %s._cptr' % (arg_name, arg_name))
+                        c_args.append('%s and %s._cptr' % (aname, aname))
                     else:
-                        c_args.append(arg_name)
+                        c_args.append(aname)
                 c_args = ', '.join(c_args)
                 py_args = ', ' + ', '.join(py_args)
                 print >> fd, '    @classmethod'
@@ -382,55 +381,6 @@ if WSF_SUPPORT:
             print >> fd, ''
 
         # first pass on methods, getting accessors
-        for m in clss.methods:
-            if not ('_get_' in m.name and len(m.args) == 1):
-                continue
-            methods.remove(m)
-            try:
-                setter_name = m.name.replace('_get_', '_set_')
-                setter = [x for x in methods if x.name == setter_name][0]
-                methods.remove(setter)
-            except IndexError:
-                setter = None
-            if m.rename:
-                mname = m.rename
-                if mname.startswith('lasso_'):
-                    mname = mname[6:]
-                mname = '%s%s' % (mname[0].lower(), mname[1:])
-                print >> fd, '    def get_%s(self):' % mname
-                function_name = m.rename
-                if function_name.startswith('lasso_'):
-                    function_name = function_name[6:]
-            else:
-                mname = m.name
-                try:
-                    mname = re.match(r'lasso_.*_get_(\w+)', mname).group(1)
-                except:
-                    raise
-                mname = format_underscore_as_camelcase(mname)
-                print >> fd, '    def get_%s(self):' % mname
-                function_name = m.name[6:]
-
-            if is_object(m.return_arg):
-                print >> fd, '        t = _lasso.%s(self._cptr)' % function_name
-                print >> fd, '        return cptrToPy(t)'
-            else:
-                print >> fd, '        return _lasso.%s(self._cptr)' % function_name
-
-            if mname[0] == mname[0].lower() and not m.rename:
-                # API compatibility with SWIG bindings which didn't have
-                # accessors for those methods and used totally pythonified
-                # method name instead, such as getNextProviderId
-                print >> fd, '    get%s%s = get_%s' % (
-                        mname[0].upper(), mname[1:], mname)
-            if setter:
-                print >> fd, '    def set_%s(self, value):' % mname
-                print >> fd, '        _lasso.%s(self._cptr, value)' % setter.name[6:]
-                print >> fd, '    %s = property(get_%s, set_%s)' % (mname, mname, mname)
-            else:
-                print >> fd, '    %s = property(get_%s)' % (mname, mname)
-            print >> fd, ''
-
         # second pass on methods, real methods
         for m in methods:
             if m.name.endswith('_new') or m.name.endswith('_new_from_dump') or \
@@ -450,20 +400,20 @@ if WSF_SUPPORT:
             c_args = []
             outarg = None
             for o in m.args[1:]:
-                type, arg_name, arg_options = o
+                type, aname, arg_options = o
                 if is_out(o):
                     assert not outarg
                     outarg = o
-                    outvar = '_%s_out' % arg_name
+                    outvar = '_%s_out' % aname
                 else:
                     py_args.append(get_python_arg_decl(o))
 
                 if is_out(o):
                     c_args.append(outvar)
                 elif not self.is_pygobject(type):
-                    c_args.append(arg_name)
+                    c_args.append(aname)
                 else:
-                    c_args.append('%s and %s._cptr' % (arg_name, arg_name))
+                    c_args.append('%s and %s._cptr' % (aname, aname))
             # check py_args
             opt = False
             for x in py_args:
@@ -493,29 +443,61 @@ if WSF_SUPPORT:
             return_type = m.return_type
             return_type_qualifier = m.return_type_qualifier
             assert is_int(make_arg(return_type),self.binding_data) or not outarg
-            if return_type in ('gint', 'int'):
+            if return_type in (None, 'void'):
+                print >> fd, '        _lasso.%s(self._cptr%s)' % (
+                        function_name, c_args)
+            elif is_rc(m.return_arg):
                 print >> fd, '        rc = _lasso.%s(self._cptr%s)' % (
                         function_name, c_args)
                 print >> fd, '        if rc != 0:'
                 print >> fd, '            raise Error.raise_on_rc(rc)'
-            elif return_type in (None, 'void'):
-                print >> fd, '        _lasso.%s(self._cptr%s)' % (
+            elif is_int(m.return_arg, self.binding_data) or is_xml_node(m.return_arg) or is_cstring(m.return_arg) or is_boolean(m.return_arg):
+                print >> fd, '        return _lasso.%s(self._cptr%s)' % (
                         function_name, c_args)
-            elif return_type == 'GList*' and self.is_pygobject(return_type_qualifier):
-                print >> fd, '        value = _lasso.%s(self._cptr%s)' % (
-                        function_name, c_args)
-                print >> fd, '        if value is not None:'
-                print >> fd, '            value = tuple([cptrToPy(x) for x in value])'
-                print >> fd, '        return value'
+            elif is_glist(m.return_arg):
+                el_type = element_type(m.return_arg)
+                if is_object(el_type):
+                    print >> fd, '        value = _lasso.%s(self._cptr%s)' % (
+                            function_name, c_args)
+                    print >> fd, '        if value is not None:'
+                    print >> fd, '            value = tuple([cptrToPy(x) for x in value])'
+                    print >> fd, '        return value'
+                elif is_cstring(el_type):
+                    print >> fd, '        return _lasso.%s(self._cptr%s)' % (
+                            function_name, c_args)
+                else:
+                    raise Exception('Return Type GList<%s> is not supported' % el_type)
+            elif is_hashtable(m.return_arg):
+                raise Exception('Return type GHashTable unsupported')
             elif is_object(m.return_arg):
                 print >> fd, '        return cptrToPy(_lasso.%s(self._cptr%s))' % (
                         function_name, c_args)
             else:
-                print >> fd, '        return _lasso.%s(self._cptr%s)' % (
-                        function_name, c_args)
+                raise Exception('Return type %s is unsupported' % (m.return_arg,))
             if outarg:
                 print >> fd, '        return %s[0]' % outvar
             print >> fd, ''
+        # transform methods to properties
+        for m in methods:
+            name = m.rename or m.name
+            suffix = name[len(method_prefix)+len('get_'):]
+            if clss.getMember(suffix):
+                print >>sys.stderr, 'W: method %s and member %s clashes' % (m.name, arg_name(clss.getMember(suffix)))
+                continue
+            if not name.startswith(method_prefix) or not name[len(method_prefix):].startswith('get_'):
+                continue
+            setter_suffix = 'set_' + suffix
+            setter = None
+            for n in methods:
+                if n.name.endswith(setter_suffix):
+                    setter = n
+            pname = format_as_camelcase(name[len(method_prefix)+len('get_'):])
+            fname = format_as_camelcase(name[len(method_prefix):])
+            if not setter:
+                print >> fd, '    %s = property(%s)' % (pname, fname)
+            else:
+                f2name = format_as_camelcase(setter.name[len(method_prefix):])
+                print >> fd, '    %s = property(%s, %s)' % (pname, fname, f2name)
 
         print >> fd, ''
 
@@ -847,7 +829,7 @@ register_constants(PyObject *d)
         parse_tuple_format = []
         parse_tuple_args = []
         for arg in m.args:
-            arg_type, arg_name, arg_options = arg
+            arg_type, aname, arg_options = arg
             arg_def = None
             python_cvt_def = None
             defval = None
@@ -860,11 +842,11 @@ register_constants(PyObject *d)
                     parse_tuple_format.append('z')
                 else:
                     parse_tuple_format.append('s')
-                parse_tuple_args.append('&%s' % arg_name)
+                parse_tuple_args.append('&%s' % aname)
                 arg_def = '    %s %s = NULL;' % (arg[0], arg[1])
             elif arg_type in ['GType', 'int', 'gint', 'gboolean', 'const gboolean', 'time_t'] + self.binding_data.enums:
                 parse_tuple_format.append('i')
-                parse_tuple_args.append('&%s' % arg_name)
+                parse_tuple_args.append('&%s' % aname)
                 if arg_options.get('default'):
                     defval = arg_options.get('default')
                     if defval.startswith('b:'):
@@ -876,21 +858,21 @@ register_constants(PyObject *d)
                     arg_def = '    %s %s;' % (arg[0], arg[1])
             elif is_xml_node(arg) or is_list(arg) or is_time_t_pointer(arg):
                 parse_tuple_format.append('O')
-                parse_tuple_args.append('&cvt_%s' % arg_name)
+                parse_tuple_args.append('&cvt_%s' % aname)
                 arg_def = '    %s %s = NULL;' % (arg[0], arg[1])
-                python_cvt_def = '    PyObject *cvt_%s = NULL;' % arg_name
+                python_cvt_def = '    PyObject *cvt_%s = NULL;' % aname
             else:
                 parse_tuple_format.append('O')
-                parse_tuple_args.append('&cvt_%s' % arg_name)
+                parse_tuple_args.append('&cvt_%s' % aname)
                 arg_def = '    %s %s = NULL;' % (arg[0], arg[1])
-                python_cvt_def = '    PyGObjectPtr *cvt_%s = NULL;' % arg_name
+                python_cvt_def = '    PyGObjectPtr *cvt_%s = NULL;' % aname
             if is_out(arg):
                 arg_def = '    %s %s = NULL;' % (var_type(arg), arg[1])
                 parse_tuple_format.pop()
                 parse_tuple_format.append('O')
                 parse_tuple_args.pop()
-                parse_tuple_args.append('&cvt_%s_out' % arg_name)
-                python_cvt_def = '    PyObject *cvt_%s_out = NULL;' % arg_name
+                parse_tuple_args.append('&cvt_%s_out' % aname)
+                python_cvt_def = '    PyObject *cvt_%s_out = NULL;' % aname
                 print >> fd, '    PyObject *out_pyvalue = NULL;'
             print >> fd, arg_def
             if python_cvt_def:

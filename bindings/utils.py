@@ -207,6 +207,9 @@ def unpointerize(arg):
 def is_list(arg):
     return unconstify(arg_type(arg)).startswith('GList')
 
+def is_rc(arg):
+    return arg_type(arg) in [ 'int', 'gint' ]
+
 def is_int(arg, binding_data):
     return arg_type(arg) in [ 'time_t', 'int', 'gint', 'long', 'glong'] + binding_data.enums
 

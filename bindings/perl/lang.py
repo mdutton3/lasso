@@ -336,7 +336,7 @@ INCLUDE: LassoNode.xs
             cleanup.append('lasso_unref(RETVAL);')
         elif func.return_type and is_object(func.return_type) and not is_int(func.return_type, self.binding_data) and func.return_owner:
             cleanup.append('lasso_unref(RETVAL);')
-        elif is_int(func.return_arg, self.binding_data):
+        elif is_rc(func.return_arg):
             if name == 'lasso_check_version':
                 cleanup.append('if (RETVAL != 1)')
             cleanup.append('gperl_lasso_error(RETVAL);')

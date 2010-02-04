@@ -197,6 +197,20 @@ class Struct:
         for m in self.methods:
             print '  ', m
 
+    def getMember(self, name):
+        l = [m for m in self.members if arg_name(m) == name]
+        if l:
+            return l[0]
+        else:
+            return None
+
+    def getMethod(self, name):
+        l = [m for m in self.methods if m.name == name]
+        if l:
+            return l[0]
+        else:
+            return None
+
 toskip = None
 
 
@@ -422,14 +436,15 @@ def parse_header(header_file):
         elif line.startswith('#define'):
             m = re.match(r'#define\s+([a-zA-Z0-9_]+)\s+[-\w"]', line)
             if m:
-                constant = m.group(1)
-                if constant[0] != '_':
+                constant_name = m.group(1)
+                if constant_name[0] != '_':
                     # ignore private constants
                     if '"' in line:
                         constant_type = 's'
                     else:
                         constant_type = 'i'
-                    binding.constants.append((constant_type, constant))
+                    constant = (constant_type, constant_name)
+                    binding.constants.append(constant)
         elif line.startswith('typedef enum {'):
             in_enum = True
         elif line.startswith('typedef struct'):
@@ -534,6 +549,11 @@ def parse_headers(srcdir):
     srcdir = os.path.abspath(srcdir)
     parentdir = os.path.dirname(srcdir)
 
+    exclusion = ('xml_idff.h', 'xml_idwsf.h', 'xml_saml2.h', \
+            'xml_idwsf2.h', 'xml_soap11.h',
+            'lasso_config.h' )
+    if not binding.options.idwsf:
+        exclusion += 'idwsf_strings.h'
     for base, dirnames, filenames in os.walk(srcdir):
         if base.endswith('/.svn'):
             # ignore svn directories
@@ -547,11 +567,6 @@ def parse_headers(srcdir):
             continue
         makefile_am = open(os.path.join(base, 'Makefile.am')).read()
         filenames = [x for x in filenames if x.endswith('.h') if x in makefile_am]
-        exclusion = ('xml_idff.h', 'xml_idwsf.h', 'xml_saml2.h', \
-                'xml_idwsf2.h', 'xml_soap11.h',
-                'lasso_config.h')
-        if binding.options.idwsf:
-            exclusion += ('idwsf_strings.h',)
         for filename in filenames:
             if filename in exclusion:
                 continue
