@@ -164,11 +164,18 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 	LassoRequestType type = LASSO_REQUEST_TYPE_INVALID;
 	const char *name = NULL;
 	xmlNs *ns = NULL;
+	xmlError error;
 
+	memset(&error, 0, sizeof(xmlError));
 	if (soap == NULL)
 		return LASSO_REQUEST_TYPE_INVALID;
 
-	doc = xmlParseMemory(soap, strlen(soap));
+	doc = lasso_xml_parse_memory_with_error(soap, strlen(soap), &error);
+	if (! doc) {
+		message(G_LOG_LEVEL_WARNING, "Invalid soap message: %s", error.message);
+		type = LASSO_REQUEST_TYPE_INVALID;
+		goto cleanup;
+	}
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body/*", xpathCtx);
@@ -220,8 +227,9 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 
 	xmlXPathFreeObject(xpathObj);
 	xmlXPathFreeContext(xpathCtx);
+cleanup:
 	lasso_release_doc(doc);
-
+	xmlResetError(&error);
 	return type;
 }
 
