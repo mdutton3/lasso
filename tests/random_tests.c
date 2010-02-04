@@ -84,6 +84,8 @@ START_TEST(test01_server_new)
 	LassoServer *server;
 	LassoProvider *provider;
 	char *dump;
+	char *content = NULL;
+	size_t len;
 
 	server = lasso_server_new(
 			TESTSDATADIR "/idp1-la/metadata.xml",
@@ -98,7 +100,9 @@ START_TEST(test01_server_new)
 	fail_unless(server->signature_method == LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	fail_unless(provider->ProviderID != NULL);
 	fail_unless(provider->role == 0);
-	fail_unless(strcmp(provider->metadata_filename, TESTSDATADIR "/idp1-la/metadata.xml") == 0);
+	fail_unless(g_file_get_contents(TESTSDATADIR "/idp1-la/metadata.xml", &content, &len, NULL));
+	fail_unless(strcmp(provider->metadata_filename, content) == 0);
+	g_free(content);
 	fail_unless(provider->public_key == NULL);
 	fail_unless(provider->ca_cert_chain == NULL);
 
@@ -115,7 +119,8 @@ START_TEST(test01_server_new)
 	fail_unless(server->providers != NULL);
 	fail_unless(provider->ProviderID != NULL);
 	fail_unless(provider->role == 0, "provider->role != 0 => provider :=  %d", provider->role);
-	fail_unless(strcmp(provider->metadata_filename, TESTSDATADIR "/idp1-la/metadata.xml") == 0);
+	fail_unless(g_file_get_contents(TESTSDATADIR "/idp1-la/metadata.xml", &content, &len, NULL));
+	fail_unless(strcmp(provider->metadata_filename, content) == 0);
 	fail_unless(provider->public_key == NULL);
 	fail_unless(provider->ca_cert_chain == NULL);
 	g_object_unref(server);
