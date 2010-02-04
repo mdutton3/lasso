@@ -529,6 +529,7 @@ LassoNode*
 lasso_assertion_encrypt(LassoSaml2Assertion *assertion, char *recipient)
 {
 	xmlSecKey *encryption_public_key = NULL;
+	LassoNode *ret = NULL;
 
 	if (assertion->encryption_activated == FALSE ||
 			assertion->encryption_public_key_str == NULL) {
@@ -536,10 +537,12 @@ lasso_assertion_encrypt(LassoSaml2Assertion *assertion, char *recipient)
 	}
 
 	encryption_public_key = lasso_xmlsec_load_private_key(assertion->encryption_public_key_str, NULL);
-	return LASSO_NODE(lasso_node_encrypt(LASSO_NODE(assertion),
+	ret = LASSO_NODE(lasso_node_encrypt(LASSO_NODE(assertion),
 		encryption_public_key, assertion->encryption_sym_key_type, recipient));
-}
+	lasso_release_sec_key(encryption_public_key);
+	return ret;
 
+}
 
 /**
  * lasso_query_verify_signature:
@@ -1455,18 +1458,17 @@ lasso_node_decrypt_xmlnode(xmlNode* encrypted_element,
 	}
 
 cleanup:
-	if (doc == NULL) {
-		if (encrypted_data_node) {
-			xmlFreeNode(encrypted_data_node);
-		}
-		if (encrypted_key_node) {
-			xmlFreeNode(encrypted_key_node);
-		}
+	if (doc == NULL && encrypted_data_node) {
+		xmlFreeNode(encrypted_data_node);
+	}
+	if (doc2 == NULL && encrypted_key_node) {
+		xmlFreeNode(encrypted_key_node);
 	}
 	if (encCtx) {
 		xmlSecEncCtxDestroy(encCtx);
 	}
 	lasso_release_doc(doc);
+	lasso_release_doc(doc2);
 	lasso_release_gobject(decrypted_node);
 
 	return rc;
