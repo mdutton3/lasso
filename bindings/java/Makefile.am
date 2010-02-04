@@ -1,3 +1,5 @@
+.NOTPARALLEL:
+
 MAINTAINERCLEANFILES = Makefile.in
 INCLUDES = \
 	-I$(top_builddir) \
