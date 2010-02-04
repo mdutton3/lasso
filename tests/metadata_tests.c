@@ -74,6 +74,14 @@ START_TEST(test05_metadata_load_public_key_from_x509_cert)
 }
 END_TEST
 
+START_TEST(test06_metadata_load_public_key_from_rsa_keyvalue)
+{
+	LassoProvider *provider = lasso_provider_new(LASSO_PROVIDER_ROLE_SP,
+			TESTSMETADATADIR "/metadata_06.xml", NULL, NULL);
+	fail_unless(provider != NULL, "Can't load RSAKeyValue node");
+	g_object_unref(provider);
+}
+END_TEST
 
 Suite*
 metadata_suite()
@@ -89,11 +97,14 @@ metadata_suite()
 		tcase_create("Load PEM public key from <ds:KeyValue>");
 	TCase *tc_metadata_load_public_key_from_x509_cert =
 		tcase_create("Load DER public key from <ds:X509Certificate>");
+	TCase *tc_metadata_load_public_key_from_rsa_keyvalue =
+		tcase_create("Load RSAKeyValue public key");
 	suite_add_tcase(s, tc_metadata_load_der_certificate_from_x509_cert);
 	suite_add_tcase(s, tc_metadata_load_pem_certificate_from_x509_cert);
 	suite_add_tcase(s, tc_metadata_load_der_public_key_from_keyvalue);
 	suite_add_tcase(s, tc_metadata_load_pem_public_key_from_keyvalue);
 	suite_add_tcase(s, tc_metadata_load_public_key_from_x509_cert);
+	suite_add_tcase(s, tc_metadata_load_public_key_from_rsa_keyvalue);
 	tcase_add_test(tc_metadata_load_der_certificate_from_x509_cert,
 		test01_metadata_load_der_certificate_from_x509_cert);
 	tcase_add_test(tc_metadata_load_pem_certificate_from_x509_cert,
@@ -104,5 +115,7 @@ metadata_suite()
 		test04_metadata_load_pem_public_key_from_keyvalue);
 	tcase_add_test(tc_metadata_load_public_key_from_x509_cert,
 		test05_metadata_load_public_key_from_x509_cert);
+	tcase_add_test(tc_metadata_load_public_key_from_rsa_keyvalue,
+		test06_metadata_load_public_key_from_rsa_keyvalue);
 	return s;
 }

@@ -1717,23 +1717,18 @@ cleanup:
 	return new_url;
 }
 
-/**
- * lasso_xmlsec_load_private_key_from_buffer:
- * @buffer: a buffer containing a key in any format
- * @length: length of the buffer
- * @password: eventually a password
- */
 xmlSecKey*
-lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password) {
+_lasso_xmlsec_load_key_from_buffer(const char *buffer, size_t length, const char *password)
+{
 	int i = 0;
 	xmlSecKeyDataFormat key_formats[] = {
+		xmlSecKeyDataFormatPem,
+		xmlSecKeyDataFormatCertPem,
 		xmlSecKeyDataFormatDer,
+		xmlSecKeyDataFormatBinary,
 		xmlSecKeyDataFormatCertDer,
 		xmlSecKeyDataFormatPkcs8Der,
-		xmlSecKeyDataFormatCertPem,
 		xmlSecKeyDataFormatPkcs8Pem,
-		xmlSecKeyDataFormatPem,
-		xmlSecKeyDataFormatBinary,
 		0
 	};
 	xmlSecKey *private_key = NULL;
@@ -1743,17 +1738,32 @@ lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, con
 		private_key = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)buffer, length,
 				key_formats[i], password, NULL, NULL);
 	}
+	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
+
+	return private_key;
+}
+
+/**
+ * lasso_xmlsec_load_private_key_from_buffer:
+ * @buffer: a buffer containing a key in any format
+ * @length: length of the buffer
+ * @password: eventually a password
+ */
+xmlSecKey*
+lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password) {
+	xmlSecKey *private_key = NULL;
+
+	private_key = _lasso_xmlsec_load_key_from_buffer(buffer, length, password);
+
 	/* special lasso metadata hack */
 	if (! private_key) {
 		xmlChar *out;
 		int len;
 		out = xmlMalloc(length*4);
 		len = xmlSecBase64Decode(BAD_CAST buffer, out, length*4);
-		private_key = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)buffer, length,
-				xmlSecKeyDataFormatDer, password, NULL, NULL);
+		private_key = _lasso_xmlsec_load_key_from_buffer((char*)out, len, password);
 		xmlFree(out);
 	}
-	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 
 	return private_key;
 }
@@ -1815,10 +1825,13 @@ xmlSecKeyPtr
 lasso_xmlsec_load_key_info(xmlNode *key_descriptor)
 {
 	xmlSecKeyPtr key, result = NULL;
-	xmlNodePtr key_info;
-	xmlSecKeyInfoCtxPtr ctx;
-	xmlNodePtr key_value;
-	int rc;
+	xmlNodePtr key_info = NULL;
+	xmlSecKeyInfoCtx ctx;
+	xmlSecKeysMngr *keys_mngr;
+	xmlNodePtr key_value = NULL;
+	int rc = 0;
+	xmlChar *content = NULL;
+	X509 *cert;
 
 	if (! key_descriptor)
 		return NULL;
@@ -1826,44 +1839,68 @@ lasso_xmlsec_load_key_info(xmlNode *key_descriptor)
 	key_info = xmlSecFindChild(key_descriptor, xmlSecNodeKeyInfo, xmlSecDSigNs);
 	if (! key_info)
 		return NULL;
+	keys_mngr = xmlSecKeysMngrCreate();
+	rc = xmlSecCryptoAppDefaultKeysMngrInit(keys_mngr);
+	if (rc < 0) {
+		goto next;
+	}
+	rc = xmlSecKeyInfoCtxInitialize(&ctx, keys_mngr);
+	if (rc < 0) {
+		goto next;
+	}
+	ctx.flags = XMLSEC_KEYINFO_FLAGS_DONT_STOP_ON_KEY_FOUND
+		| XMLSEC_KEYINFO_FLAGS_X509DATA_DONT_VERIFY_CERTS;
+	ctx.mode = xmlSecKeyInfoModeRead;
+	ctx.keyReq.keyId = xmlSecKeyDataIdUnknown;
+	ctx.keyReq.keyType = xmlSecKeyDataTypePublic;
+	ctx.keyReq.keyUsage = xmlSecKeyDataUsageAny;
+	ctx.certsVerificationDepth = 0;
 
-	ctx = xmlSecKeyInfoCtxCreate(NULL);
-	ctx->flags |= XMLSEC_KEYINFO_FLAGS_X509DATA_DONT_VERIFY_CERTS;
 	key = xmlSecKeyCreate();
 	/* anyway to make this reentrant and thread safe ? */
 	xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
-	rc = xmlSecKeyInfoNodeRead(key_info, key, ctx);
+	rc = xmlSecKeyInfoNodeRead(key_info, key, &ctx);
 	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
+	xmlSecKeyInfoCtxFinalize(&ctx);
 
-	if (rc == -1 &&
-		((key_value = xmlSecFindChild(key_info, xmlSecNodeKeyValue, xmlSecDSigNs)) ||
-		 (key_value = xmlSecFindNode(key_info, xmlSecNodeX509Certificate, xmlSecDSigNs))))  {
-		char *content;
-		size_t length;
+	if (rc == 0) {
+		xmlSecKeyDataPtr cert_data;
 
-		if (lasso_get_base64_content(key_value, &content, &length)) {
-			result = lasso_xmlsec_load_private_key_from_buffer(content, length, NULL);
-			g_free(content);
-		} else {
-			xmlChar *content;
+		cert_data = xmlSecKeyGetData(key, xmlSecOpenSSLKeyDataX509Id);
 
-			content = xmlNodeGetContent(key_value);
-			if (content) {
-				result = lasso_xmlsec_load_private_key_from_buffer((char*)content, strlen((char*)content), NULL);
-				xmlFree(content);
+		if (cert_data) {
+			cert = xmlSecOpenSSLKeyDataX509GetCert(cert_data, 0);
+			if (cert) {
+				xmlSecKeyDataPtr cert_key;
+
+				cert_key = xmlSecOpenSSLX509CertGetKey(cert);
+				rc = xmlSecKeySetValue(key, cert_key);
+				if (rc < 0) {
+					xmlSecKeyDataDestroy(cert_key);
+					goto next;
+				}
 			}
 		}
-	} else {
-		/* swap result and temporary key */
-		result = key;
-		key = NULL;
 	}
 
-	if (key) {
-		xmlSecKeyDestroy(key);
+	if (rc == 0 && xmlSecKeyIsValid(key)) {
+		result = key;
+		key = NULL;
+		goto cleanup;
 	}
-	if (ctx) {
-		xmlSecKeyInfoCtxDestroy(ctx);
+	xmlSecKeyDestroy(key);
+next:
+	if (! (key_value = xmlSecFindChild(key_info, xmlSecNodeKeyValue, xmlSecDSigNs)) &&
+		 ! (key_value = xmlSecFindNode(key_info, xmlSecNodeX509Certificate, xmlSecDSigNs)))  {
+		goto cleanup;
 	}
+
+	content = xmlNodeGetContent(key_value);
+	if (content) {
+		result = lasso_xmlsec_load_private_key_from_buffer((char*)content, strlen((char*)content), NULL);
+		xmlFree(content);
+	}
+
+cleanup:
 	return result;
 }

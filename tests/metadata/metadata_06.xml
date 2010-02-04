@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<EntityDescriptor
+    providerID="http://test.local/liberty/metadata"
+    xmlns="urn:liberty:metadata:2003-08">
+
+<SPDescriptor protocolSupportEnumeration="urn:liberty:iff:2003-08">
+
+  <KeyDescriptor use="signing">
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:KeyValue>
+       <ds:RSAKeyValue>
+          <ds:Modulus>xA7SEU+e0yQH5rm9kbCDN9o3aPIo7HbP7tX6WOocLZAtNfyxSZDU16ksL6W
+jubafOqNEpcwR3RdFsT7bCqnXPBe5ELh5u4VEy19MzxkXRgrMvavzyBpVRgBUwUlV
+5foK5hhmbktQhyNdy/6LpQRhDUDsTvK+g9Ucj47es9AQJ3U=
+          </ds:Modulus>
+          <ds:Exponent>AQAB</ds:Exponent>
+       </ds:RSAKeyValue>
+      </ds:KeyValue>
+    </ds:KeyInfo>
+  </KeyDescriptor>
+
+</SPDescriptor>
+</EntityDescriptor>
