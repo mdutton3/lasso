@@ -967,6 +967,8 @@ lasso_node_impl_destroy(LassoNode *node)
 {
 	g_object_unref(G_OBJECT(node));
 }
+#define trace_snippet(format, args...) \
+	lasso_trace(format "%s.%s\n", ## args, G_OBJECT_TYPE_NAME(node), snippet->name)
 
 /** FIXME: return a real error code */
 static int
@@ -1002,9 +1004,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	}
 
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
-		if (lasso_flag_memory_debug == TRUE) {
-			fprintf(stderr, " initializing %s\n", G_OBJECT_CLASS_NAME(class));
-		}
+		lasso_trace(" initializing %s\n", G_OBJECT_CLASS_NAME(class));
 
 		for (t = xmlnode->children; t; t = t->next) {
 			if (t->type == XML_TEXT_NODE) {
@@ -1019,6 +1019,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 						location = value;
 						*location = g_list_append(
 								*location, xmlCopyNode(t, 1));
+						trace_snippet("   adding xmlNode %p", g_list_last(*location)->data);
 					} else if (type == SNIPPET_LIST_NODES &&
 							snippet->type & SNIPPET_ALLOW_TEXT) {
 						LassoNode *text_node;
@@ -1026,6 +1027,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 								"LassoMiscTextNode");
 						location = value;
 						*location = g_list_append(*location, text_node);
+						trace_snippet("   adding LassoMiscTextNode %p", text_node);
 					}
 					continue;
 				}
@@ -1055,9 +1057,10 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					xmlNode *t2 = t->children;
 					while (t2 && t2->type != XML_ELEMENT_NODE)
 						t2 = t2->next;
-					if (t2)
+					if (t2) {
 						tmp = lasso_node_new_from_xmlNode_with_type(t2,
 								snippet->class_name);
+					}
 				} else if (type == SNIPPET_CONTENT) {
 					tmp = xmlNodeGetContent(t);
 				} else if (type == SNIPPET_NAME_IDENTIFIER) {
@@ -1083,6 +1086,9 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 					if (n) {
 						*location = g_list_append(*location, n);
+						trace_snippet("   adding %p of type %s(%s) to ",
+								n, G_OBJECT_TYPE_NAME(n),
+								snippet->class_name);
 					} else {
 						/* failed to do sth with */
 						message(G_LOG_LEVEL_WARNING,
@@ -1093,13 +1099,16 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					GList **location = value;
 					xmlChar *s = xmlNodeGetContent(t);
 					lasso_list_add_string(*location, (char*)s);
+					trace_snippet("   adding text %s as content to ", s);
 					lasso_release_xml_string(s);
 				} else if (type == SNIPPET_EXTENSION ||
 						type == SNIPPET_LIST_XMLNODES) {
 					GList **location = value;
 					*location = g_list_append(*location, xmlCopyNode(t, 1));
-				} else if (type == SNIPPET_XMLNODE)
+					trace_snippet("   adding xmlNode %p to ", g_list_last(*location)->data);
+				} else if (type == SNIPPET_XMLNODE) {
 					tmp = xmlCopyNode(t, 1);
+				}
 
 				if (tmp == NULL)
 					break;
@@ -1109,13 +1118,22 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					if (snippet->type & SNIPPET_KEEP_XMLNODE && !
 							LASSO_NODE_GET_CLASS(tmp)->node_data->keep_xmlnode)
 					{
+						lasso_trace("    setting original xmlNode of %p (%s) to %p", tmp, G_OBJECT_TYPE_NAME(tmp), t)
 						lasso_node_set_original_xmlnode(tmp, t);
+					}
+					if (type == SNIPPET_XMLNODE) {
+						trace_snippet("   setting xmlNode %p as ", tmp);
+					} else {
+						trace_snippet("   setting %p of type %s (wanted %s) as ", tmp,
+								G_OBJECT_TYPE_NAME(tmp),
+								snippet->class_name);
 					}
 					*(void**)value = tmp;
 					tmp = NULL;
 				} else if (snippet->type & SNIPPET_INTEGER) {
 					int val = atoi(tmp);
 					(*(int*)value) = val;
+					trace_snippet("   setting integer %i for ", val);
 					xmlFree(tmp);
 					tmp = NULL;
 				} else if (snippet->type & SNIPPET_BOOLEAN) {
@@ -1125,12 +1143,14 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					} else if (strcmp((char*)tmp, "1") == 0) {
 						val = 1;
 					}
+					trace_snippet("   setting bool %s for ", val ? "TRUE" : "FALSE");
 					(*(int*)value) = val;
 					xmlFree(tmp);
 					tmp = NULL;
 				} else {
 					lasso_release_string(*(char**)value);
 					*(char**)value = g_strdup(tmp);
+					trace_snippet("   setting text %s as value for ", (char*)tmp);
 					if (lasso_flag_memory_debug == TRUE) {
 						fprintf(stderr, "   setting field %s/%s to value %p: %s\n", G_OBJECT_TYPE_NAME(node), snippet->name, *(void**)value, (char*)tmp);
 					}
@@ -1239,6 +1259,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	return 0;
 }
+#undef trace_snippet
 
 /**
  * lasso_node_remove_signature:
@@ -1393,7 +1414,6 @@ lasso_node_dispose(GObject *object)
 	LassoNodeClass *class;
 	struct XmlSnippet *snippet;
 	SnippetType type;
-	GList *elem;
 
 	if (lasso_flag_memory_debug == TRUE) {
 		fprintf(stderr, "dispose of %s (at %p)\n", G_OBJECT_TYPE_NAME(object), object);
@@ -1431,21 +1451,11 @@ lasso_node_dispose(GObject *object)
 					lasso_release_list_of_gobjects((*(GList**)value));
 					break;
 				case SNIPPET_EXTENSION:
-				case SNIPPET_LIST_CONTENT:
 				case SNIPPET_LIST_XMLNODES:
-					elem = (GList*)(*value);
-					while (elem) {
-						if (type == SNIPPET_LIST_XMLNODES && elem->data)
-							xmlFreeNode(elem->data);
-						if (type == SNIPPET_EXTENSION && elem->data)
-							xmlFreeNode(elem->data);
-						if (type == SNIPPET_LIST_NODES && elem->data)
-							lasso_node_destroy(elem->data);
-						if (type == SNIPPET_LIST_CONTENT && elem->data)
-							g_free(elem->data);
-						elem = g_list_next(elem);
-					}
-					g_list_free(*value);
+					lasso_release_list_of_xml_node(*(GList**)value);
+					break;
+				case SNIPPET_LIST_CONTENT:
+					lasso_release_list_of_strings(*(GList**)value);
 					break;
 				case SNIPPET_CONTENT:
 				case SNIPPET_TEXT_CHILD:
@@ -1866,7 +1876,11 @@ lasso_node_new_from_xmlNode_with_type(xmlNode *xmlnode, char *typename)
 	if (gtype == 0)
 		return NULL;
 
+
 	node = g_object_new(gtype, NULL);
+	if (lasso_flag_memory_debug == TRUE) {
+		fprintf(stderr, "allocation of %s (for xmlNode %p) : %p\n", g_type_name(gtype), xmlnode, node);
+	}
 	rc = lasso_node_init_from_xml(node, xmlnode);
 	if (rc) {
 		lasso_node_destroy(node);

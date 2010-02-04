@@ -25,6 +25,7 @@
 #ifndef __LASSO_UTILS_H__
 #define __LASSO_UTILS_H__
 
+#include <stdio.h>
 #include <glib.h>
 #include <glib-object.h>
 #include "debug.h"
@@ -591,4 +592,10 @@ int lasso_gobject_is_of_type(GObject *a, GType b);
 
 #define lasso_return_if_fail(assertion) \
 	if (!(assertion)) return;
+
+#define lasso_trace(args...) \
+	if (lasso_flag_memory_debug) { \
+		fprintf(stderr, ## args); \
+	}
+
 #endif /* __LASSO_UTILS_H__ */
