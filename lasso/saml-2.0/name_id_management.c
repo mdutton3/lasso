@@ -513,16 +513,14 @@ LassoNameIdManagement*
 lasso_name_id_management_new_from_dump(LassoServer *server, const char *dump)
 {
 	LassoNameIdManagement *name_id_management;
-	xmlDoc *doc;
 
-	if (dump == NULL)
-		return NULL;
+	name_id_management = (LassoNameIdManagement*)lasso_node_new_from_dump(dump);
 
-	name_id_management = lasso_name_id_management_new(server);
-	doc = lasso_xml_parse_memory(dump, strlen(dump));
-	lasso_node_init_from_xml(LASSO_NODE(name_id_management), xmlDocGetRootElement(doc));
-	lasso_release_doc(doc);
-
+	if (LASSO_IS_NAME_ID_MANAGEMENT(name_id_management)) {
+		lasso_assign_gobject(name_id_management->parent.server, server);
+	} else {
+		lasso_release_gobject(name_id_management);
+	}
 	return name_id_management;
 }
 
