@@ -326,8 +326,10 @@ if WSF_SUPPORT:
             print >> fd, '    def get_%s(self):' % mname
             print >> fd, '        t = _lasso.%s_%s_get(self._cptr)' % (
                     klassname, mname)
-            if is_object(m):
-                print >> fd, '        return cptrToPy(t)'
+            if is_int(m, self.binding_data) or is_xml_node(m) or is_cstring(m) or is_boolean(m):
+                pass
+            elif is_object(m):
+                print >> fd, '        t = cptrToPy(t)'
             elif is_glist(m):
                 el_type = element_type(m)
                 if is_cstring(el_type):
@@ -356,7 +358,9 @@ if WSF_SUPPORT:
             print >> fd, '        return t;'
             # setter
             print >> fd, '    def set_%s(self, value):' % mname
-            if is_object(m):
+            if is_int(m, self.binding_data) or is_xml_node(m) or is_cstring(m) or is_boolean(m):
+                pass
+            elif is_object(m):
                 print >> fd, '        if value is not None:'
                 print >> fd, '            value = value and value._cptr'
             elif is_glist(m):
@@ -368,6 +372,10 @@ if WSF_SUPPORT:
                     print >> fd, '            value = tuple([x._cptr for x in value])'
                 else:
                     raise Exception('Unsupported python setter %s.%s' % (clss, m))
+            elif is_hashtable(m):
+                print >> sys.stderr, 'W: unsupported setter for hashtable %s' % (m,)
+            else:
+                print >> sys.stderr, 'W: unsupported setter for %s' % (m,)
             print >> fd, '        _lasso.%s_%s_set(self._cptr, value)' % (
                     klassname, mname)
             print >> fd, '    %s = property(get_%s, set_%s)' % (mname, mname, mname)
@@ -403,7 +411,7 @@ if WSF_SUPPORT:
                 print >> fd, '    def get_%s(self):' % mname
                 function_name = m.name[6:]
 
-            if self.is_pygobject(m.return_type):
+            if is_object(m.return_arg):
                 print >> fd, '        t = _lasso.%s(self._cptr)' % function_name
                 print >> fd, '        return cptrToPy(t)'
             else:
@@ -499,7 +507,7 @@ if WSF_SUPPORT:
                 print >> fd, '        if value is not None:'
                 print >> fd, '            value = tuple([cptrToPy(x) for x in value])'
                 print >> fd, '        return value'
-            elif self.is_pygobject(return_type):
+            elif is_object(m.return_arg):
                 print >> fd, '        return cptrToPy(_lasso.%s(self._cptr%s))' % (
                         function_name, c_args)
             else:
