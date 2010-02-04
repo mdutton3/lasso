@@ -72,7 +72,7 @@ static gboolean lasso_provider_load_metadata_from_doc(LassoProvider *provider, x
 /**
  * lasso_provider_get_assertion_consumer_service_url:
  * @provider: a #LassoProvider
- * @service_id: the AssertionConsumerServiceID, NULL for default
+ * @service_id:(allow-none): the AssertionConsumerServiceID, NULL for default
  *
  * Extracts the AssertionConsumerServiceURL from the provider metadata
  * descriptor.
@@ -910,8 +910,8 @@ lasso_provider_new_helper(LassoProviderRole role, const char *metadata,
  * lasso_provider_new:
  * @role: provider role, identity provider or service provider
  * @metadata: path to the provider metadata file
- * @public_key: path to the provider public key file (may be a certificate) or NULL
- * @ca_cert_chain: path to the provider CA certificate chain file or NULL
+ * @public_key:(allow-none): path to the provider public key file (may be a certificate) or NULL
+ * @ca_cert_chain:(allow-none): path to the provider CA certificate chain file or NULL
  *
  * Creates a new #LassoProvider.
  *
@@ -929,8 +929,8 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
  * lasso_provider_new_from_buffer:
  * @role: provider role, identity provider or service provider
  * @metadata: string buffer containing a metadata file
- * @public_key: path to the provider public key file (may be a certificate) or NULL
- * @ca_cert_chain: path to the provider CA certificate chain file or NULL
+ * @public_key:(allow-none): path to the provider public key file (may be a certificate) or NULL
+ * @ca_cert_chain:(allow-none): path to the provider CA certificate chain file or NULL
  *
  * Creates a new #LassoProvider.
  *
@@ -1074,16 +1074,11 @@ LassoProvider*
 lasso_provider_new_from_dump(const gchar *dump)
 {
 	LassoProvider *provider;
-	xmlDoc *doc;
 
-	if (dump == NULL)
-		return NULL;
-
-	provider = g_object_new(LASSO_TYPE_PROVIDER, NULL);
-	doc = lasso_xml_parse_memory(dump, strlen(dump));
-	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc));
-	lasso_release_doc(doc);
-
+	provider = (LassoProvider*)lasso_node_new_from_dump(dump);
+	if (! LASSO_IS_PROVIDER(provider)) {
+		lasso_release_gobject(provider);
+	}
 	return provider;
 }
 

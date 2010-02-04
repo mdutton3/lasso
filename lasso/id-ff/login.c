@@ -2162,17 +2162,13 @@ LassoLogin*
 lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
 {
 	LassoLogin *login;
-	xmlDoc *doc;
 
-	if (dump == NULL)
-		return NULL;
-
-	login = g_object_new(LASSO_TYPE_LOGIN, NULL);
-	doc = xmlParseMemory(dump, strlen(dump));
-	init_from_xml(LASSO_NODE(login), xmlDocGetRootElement(doc));
-	lasso_assign_gobject(LASSO_PROFILE(login)->server, server);
-	lasso_release_doc(doc);
-
+	login = (LassoLogin*)lasso_node_new_from_dump(dump);
+	if (! LASSO_IS_LOGIN(login)) {
+		lasso_release_gobject(login);
+	} else {
+		lasso_assign_gobject(login->parent.server, server);
+	}
 	return login;
 }
 

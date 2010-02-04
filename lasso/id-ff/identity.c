@@ -367,24 +367,11 @@ LassoIdentity*
 lasso_identity_new_from_dump(const gchar *dump)
 {
 	LassoIdentity *identity;
-	xmlDoc *doc;
-	xmlNode *rootElement;
 
-	if (dump == NULL)
-		return NULL;
-
-	doc = xmlParseMemory(dump, strlen(dump));
-	if (doc == NULL)
-		return NULL;
-
-	rootElement = xmlDocGetRootElement(doc);
-	if (strcmp((char*)rootElement->name, "Identity") != 0) {
-		lasso_release_doc(doc);
-		return NULL;
+	identity = (LassoIdentity*)lasso_node_new_from_dump(dump);
+	if (! LASSO_IS_IDENTITY(identity)) {
+		lasso_release_gobject(identity);
 	}
-	identity = lasso_identity_new();
-	init_from_xml(LASSO_NODE(identity), rootElement);
-	lasso_release_doc(doc);
 
 	return identity;
 }

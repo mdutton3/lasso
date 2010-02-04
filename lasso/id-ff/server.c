@@ -88,8 +88,8 @@ lasso_server_add_provider_helper(LassoServer *server, LassoProviderRole role,
  * @server: a #LassoServer
  * @role: provider role, identity provider or service provider
  * @metadata: path to the provider metadata file
- * @public_key: provider public key file (may be a certificate) or NULL
- * @ca_cert_chain: provider CA certificate chain file or NULL
+ * @public_key:(allow-none): provider public key file (may be a certificate) or NULL
+ * @ca_cert_chain:(allow-none): provider CA certificate chain file or NULL
  *
  * Creates a new #LassoProvider and makes it known to the @server
  *
@@ -108,8 +108,8 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
  * @server: a #LassoServer
  * @role: provider role, identity provider or service provider
  * @metadata: a string buffer containg the metadata file for a new provider
- * @public_key: provider public key file (may be a certificate) or NULL
- * @ca_cert_chain: provider CA certificate chain file or NULL
+ * @public_key:(allow-none): provider public key file (may be a certificate) or NULL
+ * @ca_cert_chain:(allow-none): provider CA certificate chain file or NULL
  *
  * Creates a new #LassoProvider and makes it known to the @server
  *
@@ -140,7 +140,7 @@ lasso_server_destroy(LassoServer *server)
 /**
  * lasso_server_set_encryption_private_key:
  * @server: a #LassoServer
- * @filename: file name of the encryption key to load
+ * @filename:(allow-none): file name of the encryption key to load
  *
  * Load an encryption private key from a file and set it in the server object
  *
@@ -149,17 +149,17 @@ lasso_server_destroy(LassoServer *server)
 int
 lasso_server_set_encryption_private_key(LassoServer *server, const gchar *filename)
 {
-	LassoPemFileType file_type;
-
-	lasso_release_sec_key(server->private_data->encryption_private_key);
-	file_type = lasso_get_pem_file_type(filename);
-	if (file_type == LASSO_PEM_FILE_TYPE_PRIVATE_KEY) {
-		server->private_data->encryption_private_key = xmlSecCryptoAppKeyLoad(filename,
-			xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+	/* FIXME: add a password argument */
+	if (filename) {
+		xmlSecKey *key = lasso_xmlsec_load_private_key(filename, NULL);
+		if (! key || ! (xmlSecKeyGetType(key) & xmlSecKeyDataTypePrivate)) {
+			return LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED;
+		}
+		lasso_release_sec_key(server->private_data->encryption_private_key);
+		server->private_data->encryption_private_key = key;
+	} else {
+		lasso_release_sec_key(server->private_data->encryption_private_key);
 	}
-
-	if (server->private_data->encryption_private_key == NULL)
-		return LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED;
 
 	return 0;
 }
@@ -533,8 +533,8 @@ lasso_server_get_type()
  * lasso_server_new:
  * @metadata: path to the provider metadata file or NULL, for a LECP server
  * @private_key: path to the the server private key file or NULL
- * @private_key_password: password to private key if it is encrypted, or NULL
- * @certificate: path to the server certificate file, or NULL
+ * @private_key_password:(allow-none): password to private key if it is encrypted, or NULL
+ * @certificate:(allow-none): path to the server certificate file, or NULL
  *
  * Creates a new #LassoServer.
  *
@@ -574,8 +574,8 @@ lasso_server_new(const gchar *metadata,
  * lasso_server_new_from_buffers:
  * @metadata: NULL terminated string containing the content of an ID-FF 1.2 metadata file
  * @privatekey: NULL terminated string containing a PEM formatted private key
- * @private_key_password: a NULL terminated string which is the optional password of the private key
- * @certificate: NULL terminated string containing a PEM formatted X509 certificate
+ * @private_key_password:(allow-none): a NULL terminated string which is the optional password of the private key
+ * @certificate:(allow-none): NULL terminated string containing a PEM formatted X509 certificate
  *
  * Creates a new #LassoServer.
  *
@@ -617,16 +617,13 @@ lasso_server_new_from_buffers(const char *metadata, const char *private_key_cont
 LassoServer*
 lasso_server_new_from_dump(const gchar *dump)
 {
-	LassoNode *server;
-	server = lasso_node_new_from_dump(dump);
-	if (server == NULL)
-		return NULL;
+	LassoServer *server;
 
-	if (LASSO_IS_SERVER(server) == FALSE) {
-		lasso_node_destroy(LASSO_NODE(server));
-		return NULL;
+	server = (LassoServer*)lasso_node_new_from_dump(dump);
+	if (! LASSO_IS_SERVER(server)) {
+		lasso_release_gobject(server);
 	}
-	return LASSO_SERVER(server);
+	return server;
 }
 
 /**

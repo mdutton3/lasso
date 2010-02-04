@@ -756,27 +756,11 @@ LassoSession*
 lasso_session_new_from_dump(const gchar *dump)
 {
 	LassoSession *session;
-	xmlDoc *doc;
-	xmlNode *rootElement;
 
-	if (dump == NULL)
-		return NULL;
-
-	doc = xmlParseMemory(dump, strlen(dump));
-	if (doc == NULL)
-		return NULL;
-
-	rootElement = xmlDocGetRootElement(doc);
-	if (strcmp((char*)rootElement->name, "Session") != 0) {
-		lasso_release_doc(doc);
-		return NULL;
+	session = (LassoSession*)lasso_node_new_from_dump(dump);
+	if (! LASSO_IS_SESSION(session)) {
+		lasso_release_gobject(session);
 	}
-
-	session = lasso_session_new();
-	init_from_xml(LASSO_NODE(session), rootElement);
-	lasso_release_doc(doc);
-	session->is_dirty = FALSE;
-
 	return session;
 }
 
