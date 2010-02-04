@@ -516,7 +516,10 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	/* Load metadata */
 	if (provider->metadata_filename) {
 		if (! lasso_provider_load_metadata(provider, provider->metadata_filename)) {
-			lasso_provider_load_metadata_from_buffer(provider, provider->metadata_filename);
+			if (! lasso_provider_load_metadata_from_buffer(provider, provider->metadata_filename)) {
+				message(G_LOG_LEVEL_WARNING, "Metadata unrecoverable from dump");
+				return 1;
+			}
 		}
 	}
 
@@ -699,6 +702,27 @@ lasso_provider_get_protocol_conformance(const LassoProvider *provider)
 	return provider->private_data->conformance;
 }
 
+gboolean
+_lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *metadata, int length)
+{
+	xmlDoc *doc;
+	gboolean rc = TRUE;
+
+	lasso_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
+	if (length == -1) {
+		length = strlen(metadata);
+	}
+	doc = lasso_xml_parse_memory(metadata, length);
+	if (doc == NULL) {
+		return FALSE;
+	}
+	goto_cleanup_if_fail_with_rc (lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
+	lasso_assign_string(provider->metadata_filename, metadata);
+cleanup:
+	lasso_release_doc(doc);
+	return rc;
+}
+
 /**
  * lasso_provider_load_metadata_from_buffer:
  * @provider: a #LassProvider object
@@ -711,24 +735,7 @@ lasso_provider_get_protocol_conformance(const LassoProvider *provider)
 gboolean
 lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *metadata)
 {
-	xmlDoc *doc;
-	gboolean rc = TRUE;
-
-	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
-	doc = lasso_xml_parse_memory(metadata, strlen(metadata));
-	if (doc == NULL) {
-		char *extract;
-		extract = lasso_safe_prefix_string(metadata, 80);
-		message(G_LOG_LEVEL_CRITICAL, "Cannot parse metadatas: '%s'", extract);
-		lasso_release(extract);
-		return FALSE;
-	}
-	goto_cleanup_if_fail_with_rc (lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
-	lasso_assign_string(provider->metadata_filename, metadata);
-cleanup:
-	lasso_release_doc(doc);
-	return rc;
-
+	return _lasso_provider_load_metadata_from_buffer(provider, metadata, -1);
 }
 
 /**
@@ -743,21 +750,16 @@ cleanup:
 gboolean
 lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 {
-	xmlDoc *doc;
-	gboolean rc = TRUE;
+	char *file_content;
+	size_t file_length;
 
-	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
-	if (access(path, R_OK) != 0) {
-		return FALSE;
+	if (g_file_get_contents(path, &file_content, &file_length, NULL)) {
+		gboolean ret;
+		ret = _lasso_provider_load_metadata_from_buffer(provider, file_content, file_length);
+		lasso_release(file_content);
+		return ret;
 	}
-	doc = xmlParseFile(path);
-	goto_cleanup_if_fail_with_rc(doc != NULL, FALSE);
-	goto_cleanup_if_fail_with_rc(lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
-	/** Conserve metadata path for future dump/reload */
-	lasso_assign_string(provider->metadata_filename, path);
-cleanup:
-	lasso_release_doc(doc);
-	return rc;
+	return FALSE;
 }
 
 static gboolean
@@ -885,7 +887,9 @@ lasso_provider_new_helper(LassoProviderRole role, const char *metadata,
 	provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
 	provider->role = role;
 	if (loader(provider, metadata) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to load metadata from %s.", metadata);
+		if (loader == lasso_provider_load_metadata) {
+			message(G_LOG_LEVEL_WARNING, "Cannot load metadata from %s", metadata);
+		}
 		lasso_node_destroy(LASSO_NODE(provider));
 		return NULL;
 	}
@@ -944,24 +948,21 @@ lasso_provider_new_from_buffer(LassoProviderRole role, const char *metadata,
 			lasso_provider_load_metadata_from_buffer);
 }
 
+/**
+ * lasso_provider_load_public_key:
+ * @provider: a #LassoProvider object
+ * @public_key_type: the type of public key to load
+ *
+ * Load the public key from their transport format, a file or a KeyDescriptor #xmlNode.
+ *
+ * Return value: TRUE if loading was succesfull, FALSE otherwise.
+ */
 gboolean
 lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType public_key_type)
 {
-	LassoPemFileType file_type;
 	gchar *public_key = NULL;
-	xmlNode	*key_descriptor = NULL;
+	xmlNode *key_descriptor = NULL;
 	xmlSecKey *pub_key = NULL;
-	xmlSecKeyDataFormat key_formats[] = {
-		xmlSecKeyDataFormatDer,
-		xmlSecKeyDataFormatCertDer,
-		xmlSecKeyDataFormatPkcs8Der,
-		xmlSecKeyDataFormatCertPem,
-		xmlSecKeyDataFormatPkcs8Pem,
-		xmlSecKeyDataFormatPem,
-		xmlSecKeyDataFormatBinary,
-		0
-	};
-	int i;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
@@ -976,87 +977,26 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 	}
 
 	if (public_key == NULL) {
-		xmlNode *t = key_descriptor->children;
-		xmlChar *b64_value;
-		xmlSecByte *value;
-		int length;
-		int rc = 0;
-
-		/* could use XPath but going down manually will do */
-		while (t) {
-			if (t->type == XML_ELEMENT_NODE) {
-				if (strcmp((char*)t->name, "KeyInfo") == 0 ||
-						strcmp((char*)t->name, "X509Data") == 0) {
-					t = t->children;
-					continue;
-				}
-				if (strcmp((char*)t->name, "X509Certificate") == 0)
-					break;
-				if (strcmp((char*)t->name, "KeyValue") == 0)
-					break;
-			}
-			t = t->next;
+		pub_key = lasso_xmlsec_load_key_info(key_descriptor);
+		if (! pub_key) {
+			message(G_LOG_LEVEL_WARNING, "Could not read KeyInfo from %s KeyDescriptor", public_key_type == LASSO_PUBLIC_KEY_SIGNING ? "signing" : "encryption");
 		}
-		if (t == NULL) {
-			return FALSE;
-		}
-
-		b64_value = xmlNodeGetContent(t);
-		if (public_key_type == LASSO_PUBLIC_KEY_ENCRYPTION) {
-			provider->private_data->encryption_public_key_str =
-				g_strdup((char*)b64_value);
-		}
-		length = strlen((char*)b64_value);
-		value = g_malloc(length);
-		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
-		rc = xmlSecBase64Decode(b64_value, value, length);
-		if (rc < 0) {
-			/* bad base-64 */
-			g_free(value);
-			value = (xmlSecByte*)g_strdup((char*)b64_value);
-			rc = strlen((char*)value);
-		}
-
-		for (i=0; key_formats[i] && pub_key == NULL; i++) {
-			pub_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
-					key_formats[i], NULL, NULL, NULL);
-		}
-		xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
-		xmlFree(b64_value);
-		g_free(value);
-
-		if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
-			lasso_assign_new_sec_key(provider->private_data->public_key, pub_key);
-		} else {
-			lasso_assign_new_sec_key(provider->private_data->encryption_public_key, pub_key);
-		}
-
-		if (pub_key) {
-			return TRUE;
-		}
+	} else {
+		pub_key = lasso_xmlsec_load_private_key(public_key, NULL);
 	}
 
-	if (public_key_type == LASSO_PUBLIC_KEY_ENCRYPTION) {
-		/* encryption public key can never be set by filename */
-		return FALSE;
+	if (pub_key) {
+		switch (public_key_type) {
+			case LASSO_PUBLIC_KEY_SIGNING:
+				lasso_assign_new_sec_key(provider->private_data->public_key, pub_key);
+				break;
+			case LASSO_PUBLIC_KEY_ENCRYPTION:
+				lasso_assign_new_sec_key(provider->private_data->encryption_public_key, pub_key);
+				break;
+			default:
+				xmlSecKeyDestroy(pub_key);
+		}
 	}
-
-	file_type = lasso_get_pem_file_type(public_key);
-	switch (file_type) {
-		case LASSO_PEM_FILE_TYPE_UNKNOWN:
-			break; /* with a warning ? */
-		case LASSO_PEM_FILE_TYPE_CERT:
-			pub_key = lasso_get_public_key_from_pem_cert_file(public_key);
-			break;
-		case LASSO_PEM_FILE_TYPE_PUB_KEY:
-			pub_key = xmlSecCryptoAppKeyLoad(public_key,
-					xmlSecKeyDataFormatPem, NULL, NULL, NULL);
-			break;
-		case LASSO_PEM_FILE_TYPE_PRIVATE_KEY:
-			break; /* with a warning ? */
-	}
-
-	lasso_assign_new_sec_key(provider->private_data->public_key, pub_key);
 
 	return (pub_key != NULL);
 }
