@@ -1873,6 +1873,7 @@ START_TEST(test10_test_alldumps)
 		node = lasso_node_new_from_xmlNode(xmlDocGetRootElement(xmldoc));
 		fail_unless (LASSO_IS_SAML2_ENCRYPTED_ELEMENT (node), "Parsing of %s did not return a saml2:EncryptedElement, %s", *iter);
 		g_object_unref(node);
+		lasso_release_doc(xmldoc);
 		++iter;
 	}
 }

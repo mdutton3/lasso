@@ -825,6 +825,7 @@ _lasso_node_free_custom_element(struct _CustomElement *custom_element)
 {
 	lasso_release_string(custom_element->prefix);
 	lasso_release_string(custom_element->href);
+	lasso_release_string(custom_element->nodename);
 	lasso_release(custom_element);
 }
 
@@ -1476,12 +1477,6 @@ lasso_node_dispose(GObject *object)
 	parent_class->dispose(object);
 }
 
-static void
-lasso_node_finalize(GObject *object)
-{
-	parent_class->finalize(object);
-}
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -1509,7 +1504,6 @@ class_init(LassoNodeClass *class)
 
 	/* override */
 	gobject_class->dispose = lasso_node_dispose;
-	gobject_class->finalize = lasso_node_finalize;
 
 	original_xmlnode_quark = g_quark_from_static_string("lasso_original_xmlnode");
 	custom_element_quark = g_quark_from_static_string("lasso_custom_element");

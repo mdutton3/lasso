@@ -1338,7 +1338,7 @@ lasso_node_decrypt_xmlnode(xmlNode* encrypted_element,
 	xmlNodePtr encrypted_data_node = NULL;
 	xmlNodePtr encrypted_key_node = NULL;
 	xmlNodePtr encryption_method_node = NULL;
-	char *algorithm = NULL;
+	xmlChar *algorithm = NULL;
 	xmlSecKeyDataId key_type;
 	GList *i = NULL;
 	int rc = LASSO_DS_ERROR_DECRYPTION_FAILED;
@@ -1360,14 +1360,14 @@ lasso_node_decrypt_xmlnode(xmlNode* encrypted_element,
 		message(G_LOG_LEVEL_WARNING, "No EncryptionMethod node in EncryptedData");
 		goto cleanup;
 	}
-	algorithm = (char*)xmlGetProp(encryption_method_node, (xmlChar *)"Algorithm");
+	algorithm = xmlGetProp(encryption_method_node, (xmlChar *)"Algorithm");
 	if (algorithm == NULL) {
 		message(G_LOG_LEVEL_WARNING, "No EncryptionMethod");
 		goto cleanup;
 	}
-	if (strstr(algorithm , "#aes")) {
+	if (strstr((char*)algorithm , "#aes")) {
 		key_type = xmlSecKeyDataAesId;
-	} else if (strstr(algorithm , "des")) {
+	} else if (strstr((char*)algorithm , "des")) {
 		key_type = xmlSecKeyDataDesId;
 	} else {
 		message(G_LOG_LEVEL_WARNING, "Unknown EncryptionMethod");
@@ -1470,6 +1470,7 @@ cleanup:
 	lasso_release_doc(doc);
 	lasso_release_doc(doc2);
 	lasso_release_gobject(decrypted_node);
+	lasso_release_xml_string(algorithm);
 
 	return rc;
 }

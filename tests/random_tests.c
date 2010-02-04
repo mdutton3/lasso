@@ -204,6 +204,7 @@ START_TEST(test04_node_new_from_dump)
 	dump = lasso_node_dump(node);
 	fail_unless(dump != NULL, "node_dump failed");
 	g_object_unref(node);
+	g_free(dump);
 }
 END_TEST
 

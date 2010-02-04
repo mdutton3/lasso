@@ -723,8 +723,11 @@ dispose(GObject *object)
 {
 	LassoIdWsf2Profile *profile = LASSO_IDWSF2_PROFILE(object);
 
-	lasso_release_gobject(profile->private_data->soap_envelope_request);
-	lasso_release_gobject(profile->private_data->soap_envelope_response);
+	if (profile->private_data) {
+		lasso_release_gobject(profile->private_data->soap_envelope_request);
+		lasso_release_gobject(profile->private_data->soap_envelope_response);
+	}
+	lasso_release(profile->private_data);
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }

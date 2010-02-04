@@ -684,8 +684,10 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	/* TRANSIENT */
 	if (!name_id_policy || g_strcmp0(name_id_policy->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
-		name_id = (LassoSaml2NameID*)lasso_saml2_name_id_new_with_string(
-					lasso_build_unique_id(32));
+		char *id = lasso_build_unique_id(32);
+
+		name_id = (LassoSaml2NameID*)lasso_saml2_name_id_new_with_string(id);
+		lasso_release_string(id);
 		lasso_assign_string(name_id->NameQualifier,
 				lasso_provider_get_sp_name_qualifier(&profile->server->parent));
 		lasso_assign_string(name_id->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT);
