@@ -1741,7 +1741,6 @@ START_TEST(test10_test_alldumps)
 	lasso_release_gobject(node);
 	/* WSA */
 #ifdef LASSO_WSF_ENABLED
-#if 0
 	node = LASSO_NODE(lasso_wsa_attributed_any_new());
 	node_dump = lasso_node_dump(node);
 	fail_unless((node2 = lasso_node_new_from_dump(node_dump)) != NULL, "restoring dump failed after lasso_wsa_attributed_any_new");
@@ -1796,7 +1795,6 @@ START_TEST(test10_test_alldumps)
 	lasso_release_string(node_dump);
 	lasso_release_gobject(node2);
 	lasso_release_gobject(node);
-#endif
 	/* WSSE */
 	node = LASSO_NODE(lasso_wsse_embedded_new());
 	node_dump = lasso_node_dump(node);
@@ -1834,15 +1832,13 @@ START_TEST(test10_test_alldumps)
 	lasso_release_string(node_dump);
 	lasso_release_gobject(node2);
 	lasso_release_gobject(node);
-	node = LASSO_NODE(lasso_wsu_timestamp_new());
 	/* WSU */
-#if 0
+	node = LASSO_NODE(lasso_wsu_timestamp_new());
 	node_dump = lasso_node_dump(node);
 	fail_unless((node2 = lasso_node_new_from_dump(node_dump)) != NULL, "restoring dump failed after lasso_wsu_timestamp_new");
 	lasso_release_string(node_dump);
 	lasso_release_gobject(node2);
 	lasso_release_gobject(node);
-#endif
 #endif
 	/* test deserialization of saml2:EncryptedAssertion" */
 	const char *encrypted_element_xml[] = {
