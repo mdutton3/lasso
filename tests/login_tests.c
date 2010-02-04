@@ -30,6 +30,7 @@
 #include <glib.h>
 #include "../lasso/utils.h"
 #include "../lasso/backward_comp.h"
+#include "./tests.h"
 
 
 static char*
@@ -43,14 +44,15 @@ generateIdentityProviderContextDump()
 			TESTSDATADIR "/idp1-la/private-key-raw.pem",
 			NULL, /* Secret key to unlock private key */
 			TESTSDATADIR "/idp1-la/certificate.pem");
-	lasso_server_add_provider(
+	check_not_null(serverContext);
+	check_good_rc(lasso_server_add_provider(
 			serverContext,
 			LASSO_PROVIDER_ROLE_SP,
 			TESTSDATADIR "/sp1-la/metadata.xml",
 			TESTSDATADIR "/sp1-la/public-key.pem",
-			TESTSDATADIR "/ca1-la/certificate.pem");
+			TESTSDATADIR "/ca1-la/certificate.pem"));
 	ret = lasso_server_dump(serverContext);
-
+	check_not_null(ret);
 	g_object_unref(serverContext);
 
 	return ret;
@@ -67,14 +69,16 @@ generateServiceProviderContextDump()
 			TESTSDATADIR "/sp1-la/private-key-raw.pem",
 			NULL, /* Secret key to unlock private key */
 			TESTSDATADIR "/sp1-la/certificate.pem");
-	lasso_server_add_provider(
+	check_not_null(serverContext);
+	check_good_rc(lasso_server_add_provider(
 			serverContext,
 			LASSO_PROVIDER_ROLE_IDP,
 			TESTSDATADIR "/idp1-la/metadata.xml",
 			TESTSDATADIR "/idp1-la/public-key.pem",
-			TESTSDATADIR "/ca1-la/certificate.pem");
+			TESTSDATADIR "/ca1-la/certificate.pem"));
 
 	ret = lasso_server_dump(serverContext);
+	check_not_null(ret);
 	g_object_unref(serverContext);
 	return ret;
 }
