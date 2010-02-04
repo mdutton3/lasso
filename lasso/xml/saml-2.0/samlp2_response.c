@@ -23,9 +23,10 @@
  */
 
 #include "../private.h"
-#include "samlp2_response.h"
-#include "saml2_assertion.h"
-#include "saml2_encrypted_element.h"
+#include "./samlp2_response.h"
+#include "./saml2_assertion.h"
+#include "./saml2_encrypted_element.h"
+#include "../../utils.h"
 
 /**
  * SECTION:samlp2_response
@@ -68,24 +69,22 @@ static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoSamlp2Response *response = LASSO_SAMLP2_RESPONSE(node);
-	GList *assertions, *assertions_copy;
+	GList *assertions = NULL;
+	GList *Assertion_save = NULL;
 	LassoNode *encrypted_element = NULL;
-	xmlNode *result;
+	xmlNode *result = NULL;
 
 
 	/* Encrypt Assertions for messages but not for dumps */
 	if (lasso_dump == FALSE) {
-		assertions_copy = g_list_copy(response->Assertion);
-		for (assertions = response->Assertion;
-				assertions != NULL; assertions = g_list_next(assertions)) {
+		Assertion_save = response->Assertion;
+		response->Assertion = NULL;
+		lasso_foreach (assertions, Assertion_save) {
 			encrypted_element = lasso_assertion_encrypt(assertions->data, NULL);
 			if (encrypted_element != NULL) {
-				/* use EncryptedAssertion */
-				response->EncryptedAssertion = g_list_append(
-					response->EncryptedAssertion, encrypted_element);
-				/* and remove original unencrypted from Assertion */
-				response->Assertion = g_list_remove(response->Assertion,
-					assertions->data);
+				lasso_list_add_new_gobject(response->EncryptedAssertion, encrypted_element);
+			} else {
+				lasso_list_add_new_gobject(response->Assertion, assertions->data);
 			}
 		}
 	}
@@ -93,14 +92,9 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	result = parent_class->get_xmlNode(node, lasso_dump);
 
 	if (lasso_dump == FALSE) {
+		lasso_release_list_of_gobjects(response->EncryptedAssertion);
 		g_list_free(response->Assertion);
-		response->Assertion = assertions_copy;
-		for (assertions = response->EncryptedAssertion; assertions != NULL;
-				assertions = g_list_next(assertions)) {
-			lasso_node_destroy(assertions->data);
-		}
-		g_list_free(response->EncryptedAssertion);
-		response->EncryptedAssertion = NULL;
+		response->Assertion = Assertion_save;
 	}
 
 	return result;
