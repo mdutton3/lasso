@@ -247,6 +247,7 @@ INCLUDE: LassoNode.xs
             raise Exception('Unknown default value for %s' % (arg,))
 
     def generate_xs_function(self, func, prefix = None):
+        cleanup = []
         name = func.name
         self.xs.pn()
         if not func.return_type or not is_glist(func.return_arg):
@@ -269,7 +270,7 @@ INCLUDE: LassoNode.xs
                 else:
                     decl = 'string_non_null %s' % arg_name(arg)
             elif not is_glist(arg):
-                decl = '%s %s' % (arg_type(arg), arg_name(arg))
+                decl = '%s %s' % (unconstify(arg_type(arg)), arg_name(arg))
             else:
                 decl = '%s %s' % (self.glist_type(arg), arg_name(arg))
             if is_optional(arg):
@@ -281,6 +282,14 @@ INCLUDE: LassoNode.xs
                     else:
                         raise Exception('Do not know what to do for optional: %s' % arg)
             arg_list.append(decl)
+            # Cleanup code, for by-reference arguments
+            if is_glist(arg) and not is_transfer_full(arg):
+                    cleanup.append(self.release_list(arg_name(arg), arg))
+            if is_xml_node(arg) and not is_transfer_full(arg):
+                    cleanup.append('lasso_release_xml_node(%s)' % arg_name(arg))
+            if is_hashtable(arg):
+                raise Exception("No cleanup code generation for GHashTable")
+
         self.xs.p(','.join(arg_list))
         self.xs.pn(')')
 
@@ -299,6 +308,8 @@ INCLUDE: LassoNode.xs
         for x in func.args:
             if is_glist(x):
                 need_prototype = True
+            elif is_hashtable(x):
+                raise Exception("Dont know how to generate prototype for a hashtable argument")
         if need_prototype:
             self.xs.p('PROTOTYPE: ')
             optional = False
@@ -322,19 +333,20 @@ INCLUDE: LassoNode.xs
                       'args': ' ,'.join([arg_name(arg) for arg in func.args]) })
             self.xs.pn('''   OUTPUT:
          RETVAL''')
-            self.xs.pn('''   CLEANUP:
-         lasso_unref(RETVAL);''')
+            cleanup.append('lasso_unref(RETVAL);')
         elif func.return_type and is_object(func.return_type) and not is_int(func.return_type, self.binding_data) and func.return_owner:
-            self.xs.pn('''   CLEANUP:
-         lasso_unref(RETVAL);''')
+            cleanup.append('lasso_unref(RETVAL);')
         elif is_int(func.return_arg, self.binding_data):
             if name == 'lasso_check_version':
-                self.xs.pn('''   CLEANUP:
-       if (RETVAL != 1)
-             gperl_lasso_error(RETVAL);''')
-            else:
-                self.xs.pn('''   CLEANUP:
-             gperl_lasso_error(RETVAL);''')
+                cleanup.append('if (RETVAL != 1)')
+            cleanup.append('gperl_lasso_error(RETVAL);')
+        # Output cleanup code
+        if cleanup:
+            self.xs.pn('  CLEANUP:')
+            self.xs.indent()
+            for cl in cleanup:
+                self.xs.pn(cl)
+            self.xs.unindent()
 
     def generate_xs_getter_setter(self, struct, member):
         name = arg_name(member)
@@ -387,7 +399,7 @@ INCLUDE: LassoNode.xs
                 'el_type': self.element_type2real_type(element_type(member)),
                 'push': self.push_macro(member),
                 'convert': self.convert_function('ST(i)', member),
-                'release': self.release_list('obj', member),
+                'release': self.release_list('obj->' + arg_name(member), member),
                 })
         elif is_hashtable(member):
             if is_object(element_type(member)):
@@ -456,7 +468,7 @@ HV*
             macro = 'lasso_release_list_of_gobjects'
         else:
             raise Exception('Do not know how to release GList<%s>' % type)
-        return '%s(%s->%s);' % (macro, what, arg_name(member))
+        return '%s(%s);' % (macro, what)
 
     def convert_function(self, what, member):
         if not is_glist(member):
