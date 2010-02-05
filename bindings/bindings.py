@@ -553,7 +553,7 @@ def parse_headers(srcdir):
             'xml_idwsf2.h', 'xml_soap11.h',
             'lasso_config.h' )
     if not binding.options.idwsf:
-        exclusion += 'idwsf_strings.h'
+        exclusion += ( 'idwsf_strings.h', )
     for base, dirnames, filenames in os.walk(srcdir):
         if base.endswith('/.svn'):
             # ignore svn directories
