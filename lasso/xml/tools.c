@@ -1760,7 +1760,9 @@ lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, con
 		xmlChar *out;
 		int len;
 		out = xmlMalloc(length*4);
+		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
 		len = xmlSecBase64Decode(BAD_CAST buffer, out, length*4);
+		xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 		private_key = _lasso_xmlsec_load_key_from_buffer((char*)out, len, password);
 		xmlFree(out);
 	}
