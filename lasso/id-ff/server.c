@@ -532,7 +532,7 @@ lasso_server_get_type()
 /**
  * lasso_server_new:
  * @metadata: path to the provider metadata file or NULL, for a LECP server
- * @private_key: path to the the server private key file or NULL
+ * @private_key:(allow-none): path to the the server private key file or NULL
  * @private_key_password:(allow-none): password to private key if it is encrypted, or NULL
  * @certificate:(allow-none): path to the server certificate file, or NULL
  *
@@ -561,11 +561,17 @@ lasso_server_new(const gchar *metadata,
 		}
 	}
 
-	lasso_assign_string(server->private_key, private_key);
-	lasso_assign_string(server->private_key_password, private_key_password);
 	lasso_assign_string(server->certificate, certificate);
-	server->private_data->encryption_private_key = lasso_xmlsec_load_private_key(private_key,
-			private_key_password);
+	if (private_key) {
+		lasso_assign_string(server->private_key, private_key);
+		lasso_assign_string(server->private_key_password, private_key_password);
+		server->private_data->encryption_private_key = lasso_xmlsec_load_private_key(private_key,
+				private_key_password);
+		if (! server->private_data->encryption_private_key) {
+			message(G_LOG_LEVEL_WARNING, "Cannot load the private key");
+			lasso_release_gobject(server);
+		}
+	}
 
 	return server;
 }
@@ -573,9 +579,9 @@ lasso_server_new(const gchar *metadata,
 /**
  * lasso_server_new_from_buffers:
  * @metadata: NULL terminated string containing the content of an ID-FF 1.2 metadata file
- * @privatekey: NULL terminated string containing a PEM formatted private key
+ * @private_key_content:(allow-none): NULL terminated string containing a PEM formatted private key
  * @private_key_password:(allow-none): a NULL terminated string which is the optional password of the private key
- * @certificate:(allow-none): NULL terminated string containing a PEM formatted X509 certificate
+ * @certificate_content:(allow-none): NULL terminated string containing a PEM formatted X509 certificate
  *
  * Creates a new #LassoServer.
  *
@@ -597,12 +603,18 @@ lasso_server_new_from_buffers(const char *metadata, const char *private_key_cont
 			return NULL;
 		}
 	}
-	lasso_assign_string(server->private_key, private_key_content);
-	lasso_assign_string(server->private_key_password, private_key_password);
 	lasso_assign_string(server->certificate, certificate_content);
-	server->private_data->encryption_private_key =
-		lasso_xmlsec_load_private_key_from_buffer(private_key_content,
-				strlen(private_key_content), private_key_password);
+	if (private_key_content) {
+		lasso_assign_string(server->private_key, private_key_content);
+		lasso_assign_string(server->private_key_password, private_key_password);
+		server->private_data->encryption_private_key =
+			lasso_xmlsec_load_private_key_from_buffer(private_key_content,
+					strlen(private_key_content), private_key_password);
+		if (! server->private_data->encryption_private_key) {
+			message(G_LOG_LEVEL_WARNING, "Cannot load the private key");
+			lasso_release_gobject(server);
+		}
+	}
 
 	return server;
 }

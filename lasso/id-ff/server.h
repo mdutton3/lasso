@@ -75,9 +75,9 @@ LASSO_EXPORT LassoServer* lasso_server_new(const gchar *metadata,
 		const gchar *certificate);
 
 LASSO_EXPORT LassoServer* lasso_server_new_from_buffers(const gchar *metadata,
-		const gchar *private_key,
+		const gchar *private_key_content,
 		const gchar *private_key_password,
-		const gchar *certificate);
+		const gchar *certificate_content);
 
 LASSO_EXPORT LassoServer* lasso_server_new_from_dump(const gchar *dump);
 
