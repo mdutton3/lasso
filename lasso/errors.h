@@ -99,6 +99,12 @@
  */
 #define LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED     -15
 #define LASSO_XML_ERROR_MISSING_NAMESPACE              -16
+/**
+ * LASSO_XML_ERROR_SCHEMA_INVALID_FRAGMENT:
+ *
+ * An XML tree does not respect at least an XML schema of its namespaces.
+ */
+#define LASSO_XML_ERROR_SCHEMA_INVALID_FRAGMENT         17
 
 /* XMLDSig */
 /**
@@ -205,13 +211,21 @@
  * Creation of an encrypted node failed
  */
 #define LASSO_DS_ERROR_ENCRYPTION_FAILED -119
+/**
+ * LASSO_DS_ERROR_DECRYPTION_FAILED_MISSING_PRIVATE_KEY:
+ *
+ * Could not decrypt because the private key is not present.
+ */
+#define LASSO_DS_ERROR_DECRYPTION_FAILED_MISSING_PRIVATE_KEY 120
 
 
 /* Server */
 /**
  * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
  *
- * ProviderID unknown to LassoServer.
+ * The identifier of a provider is unknown to #LassoServer. To register a provider in a #LassoServer
+ * object, you must use the methods lasso_server_add_provider() or
+ * lasso_server_add_provider_from_buffer().
  */
 #define LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND -201
 /**
@@ -223,7 +237,9 @@
 /**
  * LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH:
  *
- * Failed to add new provider (protocol mismatch).
+ * Failed to add new provider (protocol mismatch). It means that you tried to add a provider
+ * supporting a protocol imcompatible with the protocol declared for your #LassoServer, for example
+ * metadata for ID-FF 1.2 with metadata for SAML 2.0.
  */
 #define LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH -203
 /**
@@ -634,6 +650,13 @@
  * If inResponseTo attribute is present, a matching request must be present too in the LassoLogin object
  */
 #define LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID 611
+
+/**
+ * LASSO_LOGIN_ERROR_INVALID_ASSERTION_SIGNATURE:
+ *
+ * Signature on an assertion could not be verified.
+ */
+#define LASSO_LOGIN_ERROR_INVALID_ASSERTION_SIGNATURE 612
 
 /* Federation Termination Notification */
 /**

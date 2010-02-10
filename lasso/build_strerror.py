@@ -28,7 +28,9 @@ for line in hlines:
 clines = file('%s/errors.c.in' % srcdir,'r').readlines()
 for line in clines:
     if '@ERROR_CASES@' in line:
-        for k in messages:
+        keys = messages.keys()
+        keys.sort()
+        for k in keys:
             print """		case %s:
 			return "%s";""" % (k,messages[k].rstrip('\n'))
     else:
