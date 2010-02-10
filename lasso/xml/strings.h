@@ -1074,9 +1074,12 @@
 #define LASSO_SAML2_CONFIRMATION_METHOD_HOLDER_OF_KEY "urn:oasis:names:tc:SAML:2.0:cm:holder-of-key"
 
 /* POST and GET request fields */
-#define LASSO_SAML2_FIELD_RESPONSE "SAMLResponse"
-#define LASSO_SAML2_FIELD_REQUEST  "SAMLRequest"
-#define LASSO_SAML2_FIELD_ARTIFACT "SAMLart"
+#define LASSO_SAML2_FIELD_RESPONSE   "SAMLResponse"
+#define LASSO_SAML2_FIELD_REQUEST    "SAMLRequest"
+#define LASSO_SAML2_FIELD_ARTIFACT   "SAMLart"
+#define LASSO_SAML2_FIELD_RELAYSTATE "RelayState"
+#define LASSO_SAML2_FIELD_SIGNATURE  "Signature"
+#define LASSO_SAML2_FIELD_SIGALG     "SigAlg"
 
 /*****************************************************************************/
 /* Others                                                                    */
