@@ -26,6 +26,45 @@
  * SECTION:lasso
  * @short_description: Initialization functions
  *
+ * <sec2>
+ * <title>Environment variables</title>
+ * <para>
+ * <literal>LASSO_FLAG</literal> is an environment vairable containing white-space separated values
+ * which allows to modify the behaviour of lasso. To negate the effect of one of
+ * the value, just add <literal>no-</literal> in front of its name. Those values
+ * are:
+ * <informaltable frame="non">
+ * <tgroup cols="2">
+ * <tbody>
+ * <rows>
+ * <entry><literal>no-verify-signature</literal></entry>
+ * <entry><para>Disable the validation of signatures on all message, usually for
+ * debugging pupose</para></entry>
+ * </rows>
+ * <rows>
+ * <entry><literal>memory-debug</literal></entry>
+ * <entry><para>Enable the tracing of nodes allocation, deallocation and initialization.</para></entry>
+ * </rows>
+ * <rows id="strict-checking">
+ * <entry><literal>strict-checking</literal></entry>
+ * <entry><para>Enable checking which were not done in previous version of Lasso, like matching <literal>ResponseTo</literal> attributes of response messages to the identifier of the request.</para></entry>
+ * </rows>
+ * <rows>
+ * <entry><literal>no-add-signature</literal></entry>
+ * <entry><para>Disable all signatures</para></entry>
+ * </rows>
+ * <rows>
+ * <entry><literal>no-sign-messages</literal></entry>
+ * <entry><para>Disable signatures on messages.</para></entry>
+ * </rows>
+ * <rows>
+ * <entry><literal>no-sign-messages</literal></entry>
+ * <entry><para>Disable signatures on messages.</para></entry>
+ * </rows>
+ * </tbody>
+ * </tgroup>
+ * </informaltable>
+ *  </para>
  **/
 
 #include <stdlib.h> /* getenv */
