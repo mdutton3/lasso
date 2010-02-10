@@ -1972,7 +1972,31 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
  *
  * Processes received assertion response.
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or
+ * <itemizedlist>
+ * <listitem><para>#LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,</para></listitem>
+ * <listitem><para>#LASSO_PARAM_ERROR_INVALID_VALUE if response_msg is NULL,</para></listitem>
+ * <listitem><para>#LASSO_PROFILE_ERROR_INVALID_MSG if the message is not a #LassoSamlpResponse (ID-FF 1.2) or a #LassoSamlp2ResponseMsg (SAML 2.0),</para></listitem>
+ * <listitem><para>#LASSO_PROFILE_ERROR_RESPONSE_DOES_NOT_MATCH_REQUEST if the response does not refer to the request or if the response refer to an unknown request and <link linkend="strict-checking"><literal>strict-checking</literal></link> is activated ,</para></listitem>
+ * <listitem><para>#LASSO_LOGIN_ERROR_REQUEST_DENIED the identity provided
+ * returned a failure status of "RequestDenied"</para></listitem>
+ * <listitem><para>#LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND if creation of a new
+ * federation was not allowed and none existed,</para></listitem>
+ * <listitem><para>#LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL if authentication failed
+ * or/and if the user cancelled the authentication,</para></listitem>
+ * <listitem><para>#LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS, if the response status
+ * is a failure but we have no more precise error code to report it, you must
+ * look at the second level status in the response,</para></listitem>
+ * <listitem><para>#LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND, if the issuing
+ * provider of the assertion is unknown,</para></listitem>
+ * <listitem><para>#LASSO_PROFILE_ERROR_INVALID_ISSUER the issuer of the
+ * assertion received, is not the expected one</para></listitem>
+ * <listitem><para>#LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND no statement was fournd, or none statement contains a subject with a name identifier,</para></listitem>
+ * <listitem><para>#LASSO_PROFILE_ERROR_MISSING_STATUS_CODE if the reponse is
+ * missing a <literal>StatusCode</literal> element,</para></listitem>
+ * <listitem><para>#LASSO_PROFILE_ERROR_MISSING_ASSERTION if the message does
+ * not contain any assertion.</para></listitem>
+ * </itemizedlist>
  **/
 gint
 lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
