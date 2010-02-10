@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 10;
+use Test::More tests => 11;
 use Lasso;
 use Data::Dumper;
 use Error qw(:try);
