@@ -524,3 +524,22 @@ lasso_saml2_assertion_add_attribute_with_node(LassoSaml2Assertion *assertion, co
 cleanup:
 	return rc;
 }
+
+/**
+ * lasso_saml2_assertion_get_in_response_to:
+ * @assertion: a #LassoSaml2Assertion object
+ *
+ * Return the ID of the request this assertion respond to.
+ *
+ * Return value: the InResponseTo attribute content of the SubjectConfirmationData if found
+ */
+const char*
+lasso_saml2_assertion_get_in_response_to(LassoSaml2Assertion *assertion)
+{
+	LassoSaml2SubjectConfirmationData *scd;
+
+	scd = lasso_saml2_assertion_get_subject_confirmation_data(assertion, FALSE);
+	if (! scd)
+		return NULL;
+	return scd->InResponseTo;
+}

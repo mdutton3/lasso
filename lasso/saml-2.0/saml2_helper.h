@@ -96,6 +96,8 @@ LASSO_EXPORT LassoSaml2SubjectConfirmationData*
 	lasso_saml2_assertion_get_subject_confirmation_data(LassoSaml2Assertion *saml2_assertion,
 			gboolean create);
 
+LASSO_EXPORT const char* lasso_saml2_assertion_get_in_response_to(LassoSaml2Assertion *assertion);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
