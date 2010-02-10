@@ -29,22 +29,27 @@
 
 /**
  * SECTION:registry
- * @short_description: Class to store a mapping of QName to other QName.
+ * @short_description: Class to store a mapping of qualified names (QName) to other qualified names.
  *
- * This object implement a function of (namespace, name, namespace) -> namespace.  For the moment
- * there is no need to enumerate all (namespace, name) pair given a base pair (i.e. a function
- * (namespace, name) -> [(namespace,name)].
+ * A qualified name is a name or a string in the context of another name, or namespace.
+ * This object implement a function of a tuple (namespace, name, namespace) to a name.  For the
+ * moment there is no need to enumerate all tuples (namespace, name) pair given a base pair, i.e. a
+ * function from tuple (namespace, name) to a list of tuples (namespace,name).
  *
- * We support two kind of mapping; you can give a direct mapping between two QName, or you can give
- * a function that will manage mapping between one namespace and another one.
- *
- * A QName is a name qualified by a namespace.
+ * We support two kinds of mapping:
+ * <itemizedlist>
+ * <listitem><para>you can give a direct mapping between two QName,</para></listitem>
+ * <listitem><para>or you can give a function that will manage mapping between one namespace and
+ * another one.</para></listitem>
+ * </itemizedlist>
  *
  * For internal use inside lasso we define the following namespaces:
- * LASSO_LASSO_HREF http://www.entrouvert.org/namespaces/lasso/0.0
- * LASSO_PYTHON_HREF http://lasso.entrouvert.org/namespaces/python/0.0
+ * <itemizedlist>
+ * <listitem><para>#LASSO_LASSO_HREF and,</para></listitem>
+ * <listitem><para>#LASSO_PYTHON_HREF.</para></listitem>
+ * </itemizedlist>
  *
- * For functionnal mappings the mapping function must return const char* strings created using
+ * For functional mappings the mapping function must return constant strings created using
  * g_intern_string() or using g_type_name().
  */
 
