@@ -1183,6 +1183,17 @@ cleanup:
 	return rc;
 }
 
+static gboolean
+_lasso_saml20_is_valid_issuer(LassoSaml2NameID *name_id) {
+	if (! LASSO_IS_SAML2_NAME_ID(name_id))
+		return FALSE;
+
+	if (name_id->Format && g_strcmp0(name_id->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY) != 0) {
+		return FALSE;
+	}
+	return TRUE;
+}
+
 /**
  * lasso_saml20_profile_process_any_response:
  * @profile: the SAML 2.0 #LassoProfile object
@@ -1205,14 +1216,13 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 		const char *response_msg)
 {
 	int rc = 0;
-
-	LassoSaml2NameID *name_id = NULL;
 	LassoProvider *remote_provider = NULL;
 	LassoServer *server = NULL;
 	LassoSamlp2StatusResponse *response_abstract = NULL;
 	LassoSamlp2Status *status = NULL;
 	LassoSamlp2StatusCode *status_code1 = NULL;
 	LassoMessageFormat format;
+	gboolean missing_issuer = FALSE;
 
 	xmlDoc *doc = NULL;
 	xmlNode *content = NULL;
@@ -1248,15 +1258,17 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 			LASSO_PROFILE_ERROR_INVALID_MSG);
 	lasso_extract_node_or_fail(server, profile->server, SERVER,
 			LASSO_PROFILE_ERROR_MISSING_SERVER);
-	lasso_extract_node_or_fail(name_id, response_abstract->Issuer, SAML2_NAME_ID,
-			LASSO_PROFILE_ERROR_MISSING_ISSUER);
+	if (_lasso_saml20_is_valid_issuer(response_abstract->Issuer)) {
+		lasso_assign_string(profile->remote_providerID, response_abstract->Issuer->content);
+	} else {
+		/* no issuer ? use implicit provider id */
+		missing_issuer = TRUE;
+	}
 
-	/* check issuer */
-	lasso_assign_string(profile->remote_providerID, response_abstract->Issuer->content);
 	remote_provider = lasso_server_get_provider(server, profile->remote_providerID);
 	goto_cleanup_if_fail_with_rc(remote_provider != NULL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
-	/* verify the signature at the request level */
+	/* verify the signature at the message level */
 	if (content && doc && format != LASSO_MESSAGE_FORMAT_QUERY) {
 		profile->signature_status =
 			lasso_provider_verify_saml_signature(remote_provider, content, doc);
@@ -1264,8 +1276,9 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 		profile->signature_status =
 			lasso_provider_verify_query_signature(remote_provider, response_msg);
 	} else {
-		profile->signature_status = LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
+		profile->signature_status = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
 	}
+	goto_cleanup_if_fail(! profile->signature_status);
 
 	/* verify status code */
 	lasso_extract_node_or_fail(status, status_response->Status, SAMLP2_STATUS,
@@ -1281,7 +1294,16 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 
 cleanup:
 	lasso_release_doc(doc);
-	return rc;
+	if (rc) {
+		return rc;
+	}
+	if (profile->signature_status) {
+		return LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
+	}
+	if (missing_issuer) {
+		return LASSO_PROFILE_ERROR_MISSING_ISSUER;
+	}
+	return 0;
 }
 
 /**
