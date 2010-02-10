@@ -128,6 +128,8 @@ char* lasso_query_sign(char *query, LassoSignatureMethod sign_method,
 
 int lasso_query_verify_signature(const char *query, const xmlSecKey *public_key);
 
+int lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_public_key);
+
 char* lasso_sha1(const char *str);
 
 char** urlencoded_to_strings(const char *str);
