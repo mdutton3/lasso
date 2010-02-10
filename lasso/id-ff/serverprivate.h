@@ -38,6 +38,8 @@ struct _LassoServerPrivate
 
 gchar* lasso_server_get_first_providerID(LassoServer *server);
 gchar* lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash);
+xmlSecKey* lasso_server_get_private_key(LassoServer *server);
+xmlSecKey* lasso_server_get_encryption_private_key(LassoServer *server);
 
 #ifdef __cplusplus
 }

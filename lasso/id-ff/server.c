@@ -652,3 +652,38 @@ lasso_server_dump(LassoServer *server)
 	return lasso_node_dump(LASSO_NODE(server));
 }
 
+/**
+ * lasso_server_get_private_key:
+ * @server: a #LassoServer object
+ *
+ * Return value:(transfer full): a newly created #xmlSecKey object.
+ */
+xmlSecKey*
+lasso_server_get_private_key(LassoServer *server)
+{
+	if (! LASSO_IS_SERVER(server))
+		return NULL;
+
+	if (! server->private_key)
+		return NULL;
+
+	return lasso_xmlsec_load_private_key(server->private_key, server->private_key_password);
+}
+
+/**
+ * lasso_server_get_encryption_private_key:
+ * @server: a #LassoServer object
+ *
+ * Return:(transfer none): a xmlSecKey object, it is owned by the #LassoServer object, so do not free it.
+ */
+xmlSecKey*
+lasso_server_get_encryption_private_key(LassoServer *server)
+{
+	if (! LASSO_IS_SERVER(server))
+		return NULL;
+
+	if (! server->private_data)
+		return NULL;
+
+	return server->private_data->encryption_private_key;
+}
