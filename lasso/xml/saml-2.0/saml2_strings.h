@@ -27,7 +27,7 @@
  * SECTION:saml2_strings
  * @short_description: String constants from SAML 2.0 specifications
  * @long_desscription: A lots of elements contains URL or enum based content, 
- * @include: lasso/xml/saml-2.0/saml2_strinsg.h
+ * @include: lasso/xml/saml-2.0/saml2_strings.h
  * @stability: Stable
  * @see_also: #LassoSamlp2AuthnRequest, #LassoSaml2Assertion, #LassoLogin
  */
@@ -164,12 +164,12 @@
  * <para>Name identifier format for SAML 2.0 entities, i.e. identity and service providers.</para>
  *
  * From saml-core-2.0-os.pdf: 
- * <blockquote><pare>Indicates that the content of the element is the
+ * <blockquote><para>Indicates that the content of the element is the
  * identifier of an entity that provides SAML-based services
  (such as a SAML authority, requester, or responder) or is a participant in SAML profiles (such as a
  * service provider supporting the browser SSO profile). Such an identifier can be used in the
- * <Issuer> element to identify the issuer of a SAML request, response, or assertion, or within the
- * <NameID> element to make assertions about system entities that can issue SAML requests,
+ * &lt;Issuer&gt; element to identify the issuer of a SAML request, response, or assertion, or within the
+ * &lt;NameID&gt; element to make assertions about system entities that can issue SAML requests,
  * responses, and assertions. It can also be used in other elements and attributes whose purpose is
  * to identify a system entity in various protocol exchanges.</para> <para>The syntax of such an
  * identifier is a URI of not more than 1024 characters in length. It is RECOMMENDED that a system
@@ -232,7 +232,7 @@
  *
  * Attribute format whose names are in the xs:Name domain.
  */
-#define LASSO_SAML2_ATTRIBUTE_NAME_FORMAT_BASIC       "urn:oasis:names:tc:SAML:2.0:attrname-format:basic"
+#define LASSO_SAML2_ATTRIBUTE_NAME_FORMAT_BASIC "urn:oasis:names:tc:SAML:2.0:attrname-format:basic"
 
 /* Actions */
 
@@ -393,11 +393,11 @@
 #define LASSO_SAML2_CONFIRMATION_METHOD_HOLDER_OF_KEY "urn:oasis:names:tc:SAML:2.0:cm:holder-of-key"
 
 /* POST and GET request fields */
-#define LASSO_SAML2_FIELD_RESPONSE   "SAMLResponse"
-#define LASSO_SAML2_FIELD_REQUEST    "SAMLRequest"
-#define LASSO_SAML2_FIELD_ARTIFACT   "SAMLart"
+#define LASSO_SAML2_FIELD_RESPONSE "SAMLResponse"
+#define LASSO_SAML2_FIELD_REQUEST "SAMLRequest"
+#define LASSO_SAML2_FIELD_ARTIFACT "SAMLart"
 #define LASSO_SAML2_FIELD_RELAYSTATE "RelayState"
-#define LASSO_SAML2_FIELD_SIGNATURE  "Signature"
-#define LASSO_SAML2_FIELD_SIGALG     "SigAlg"
+#define LASSO_SAML2_FIELD_SIGNATURE "Signature"
+#define LASSO_SAML2_FIELD_SIGALG "SigAlg"
 
 #endif /* __LASSO_SAML2_STRINGS_H__ */
