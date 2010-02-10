@@ -1097,8 +1097,18 @@ lasso_provider_verify_signature(LassoProvider *provider,
 		return LASSO_PROFILE_ERROR_INVALID_MSG;
 
 	if (format == LASSO_MESSAGE_FORMAT_QUERY) {
-		return lasso_query_verify_signature(message,
-				lasso_provider_get_public_key(provider));
+		switch (lasso_provider_get_protocol_conformance(provider)) {
+			case LASSO_PROTOCOL_LIBERTY_1_0:
+			case LASSO_PROTOCOL_LIBERTY_1_1:
+			case LASSO_PROTOCOL_LIBERTY_1_2:
+				return lasso_query_verify_signature(message,
+						lasso_provider_get_public_key(provider));
+			case LASSO_PROTOCOL_SAML_2_0:
+				return lasso_saml2_query_verify_signature(message,
+						lasso_provider_get_public_key(provider));
+			default:
+				return LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
+		}
 	}
 
 	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
@@ -1258,10 +1268,13 @@ lasso_provider_get_encryption_sym_key_type(const LassoProvider *provider)
  * Retrieve the public key of the given provider and verify the signature of the query string.
  *
  * Return value: 0 if succesfull,
- * LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY if no public key is set for this provider,
- * LASSO_DS_ERROR_INVALID_SIGNATURE if signature is invalid,
- * LASSO_DS_ERROR_SIGNATURE_NOT_FOUND if no signature is found,
- * LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED if the key cannot be loaded
+ * <itemizedlist>
+ * <listitem><para>#LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY if no public key is set for this provider,</para></listitem>
+ * <listitem><para>#LASSO_DS_ERROR_INVALID_SIGNATURE if signature is invalid,</para></listitem>
+ * <listitem><para>#LASSO_DS_ERROR_SIGNATURE_NOT_FOUND if no signature is found,</para></listitem>
+ * <listitem><para>#LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED if the key cannot be loaded,</para></listitem>
+ * <listitem><para>#LASSO_ERROR_UNIMPLEMENTED if the protocol profile of the provider is invalid or not supported.</para></listitem>
+ * </itemizedlist>
  */
 int
 lasso_provider_verify_query_signature(LassoProvider *provider, const char *message)
@@ -1272,7 +1285,18 @@ lasso_provider_verify_query_signature(LassoProvider *provider, const char *messa
 	provider_public_key = lasso_provider_get_public_key(provider);
 	g_return_val_if_fail(provider_public_key, LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY);
 
-	return lasso_query_verify_signature(message, provider_public_key);
+	switch (lasso_provider_get_protocol_conformance(provider)) {
+		case LASSO_PROTOCOL_LIBERTY_1_0:
+		case LASSO_PROTOCOL_LIBERTY_1_1:
+		case LASSO_PROTOCOL_LIBERTY_1_2:
+			return lasso_query_verify_signature(message,
+					lasso_provider_get_public_key(provider));
+		case LASSO_PROTOCOL_SAML_2_0:
+			return lasso_saml2_query_verify_signature(message,
+					lasso_provider_get_public_key(provider));
+		default:
+			return LASSO_ERROR_UNIMPLEMENTED;
+	}
 }
 
 /**
