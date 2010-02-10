@@ -49,7 +49,24 @@ extern "C" {
 typedef struct _LassoSamlp2NameIDPolicy LassoSamlp2NameIDPolicy;
 typedef struct _LassoSamlp2NameIDPolicyClass LassoSamlp2NameIDPolicyClass;
 
-
+/**
+ * LassoSamlp2NameIDPolicy:
+ * @Format: the name-identifier format, see #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_EMAIL,
+ * #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_X509, #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_WINDOWS,
+ * #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_KERBEROS, #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY,
+ * #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT, #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT or
+ * #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED.
+ * @SPNameQualifier: other providerID to use as SPNameQualifier in the returned assertion. By
+ * default an IdP create a NameID for the requesting entity, this field allows to obtain a NameID
+ * qualified for a third party.
+ * @AllowCreate: authorize the identity provider to create a new federation, otherwise it must
+ * report a failure in case no existing federation is found (status code of
+ * #LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST and error code of
+ * #LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND).
+ *
+ * NameIDPolicy element is part of AuthnRequest and allows to give hint to the identity provider
+ * about the NameID the service provider desire to receive.
+ */
 struct _LassoSamlp2NameIDPolicy {
 	LassoNode parent;
 
