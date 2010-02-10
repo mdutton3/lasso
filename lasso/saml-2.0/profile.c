@@ -216,10 +216,10 @@ lasso_profile_saml20_build_artifact_msg(LassoProfile *profile,
 	if (get_or_post == 0) {
 		char *query;
 		if (profile->msg_relayState) {
-			query = lasso_url_add_parameters(NULL, 0, "SAMLart", artifact, "RelayState",
+			query = lasso_url_add_parameters(NULL, 0, LASSO_SAML2_FIELD_ARTIFACT, artifact, "RelayState",
 								profile->msg_relayState, NULL);
 		} else {
-			query = lasso_url_add_parameters(NULL, 0, "SAMLart", artifact, NULL);
+			query = lasso_url_add_parameters(NULL, 0, LASSO_SAML2_FIELD_ARTIFACT, artifact, NULL);
 		}
 		lasso_assign_new_string(profile->msg_url,
 			lasso_concat_url_query(url, query));
@@ -278,7 +278,7 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 	if (method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
 		query_fields = urlencoded_to_strings(msg);
 		for (i=0; query_fields[i]; i++) {
-			if (strncmp((char*)query_fields[i], "SAMLart=", 8) == 0) {
+			if (strncmp((char*)query_fields[i], LASSO_SAML2_FIELD_ARTIFACT "=", 8) == 0) {
 				lasso_assign_string(artifact_b64, query_fields[i]+8);
 			}
 			xmlFree(query_fields[i]);
@@ -433,7 +433,8 @@ gboolean
 lasso_profile_is_saml_query(const gchar *query)
 {
 	gchar *parameters[] = {
-		"SAMLRequest=", "SAMLResponse=", "SAMLart=", NULL };
+		LASSO_SAML2_FIELD_REQUEST "=", LASSO_SAML2_FIELD_RESPONSE "=",
+		LASSO_SAML2_FIELD_ARTIFACT "=", NULL };
 	gint i;
 
 	g_return_val_if_fail(query, FALSE);

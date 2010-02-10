@@ -106,7 +106,7 @@ build_query(LassoNode *node)
 	if (deflated_message == NULL) {
 		return NULL;
 	}
-	ret = g_strdup_printf("SAMLResponse=%s", deflated_message);
+	ret = g_strdup_printf(LASSO_SAML2_FIELD_RESPONSE "=%s", deflated_message);
 	g_free(deflated_message);
 	return ret;
 }
