@@ -1050,25 +1050,87 @@ cleanup:
 	return rc;
 }
 
+static gboolean
+_lasso_check_assertion_issuer(LassoSaml2Assertion *assertion, const gchar *provider_id)
+{
+	if (! LASSO_SAML2_ASSERTION(assertion) || ! provider_id)
+		return FALSE;
+
+	if (! assertion->Issuer || ! assertion->Issuer->content)
+		return FALSE;
+
+	return g_strcmp0(assertion->Issuer->content, provider_id) == 0;
+}
+
+static gint
+_lasso_saml20_login_decrypt_assertion(LassoLogin *login, LassoSamlp2Response *samlp2_response)
+{
+	xmlSecKey *encryption_private_key;
+	GList *it;
+	gboolean at_least_one_decryption_failture = FALSE;
+	gboolean at_least_one_malformed_element = FALSE;
+
+	if (! samlp2_response->EncryptedAssertion)
+		return 0; /* nothing to do */
+
+	encryption_private_key = lasso_server_get_encryption_private_key(login->parent.server);
+	if (! encryption_private_key) {
+			message(G_LOG_LEVEL_WARNING, "Missing private encryption key, cannot decrypt assertions.");
+			return LASSO_DS_ERROR_DECRYPTION_FAILED_MISSING_PRIVATE_KEY;
+	}
+
+	lasso_foreach (it, samlp2_response->EncryptedAssertion) {
+		LassoSaml2EncryptedElement *encrypted_assertion;
+		LassoSaml2Assertion * assertion = NULL;
+		int rc1 = 0;
+
+		if (! LASSO_IS_SAML2_ENCRYPTED_ELEMENT(it->data)) {
+			message(G_LOG_LEVEL_WARNING, "EncryptedAssertion contains a non EncryptedElement object");
+			at_least_one_malformed_element |= TRUE;
+			continue;
+		}
+		encrypted_assertion = (LassoSaml2EncryptedElement*)it->data;
+		rc1 = lasso_saml2_encrypted_element_decrypt(encrypted_assertion, encryption_private_key, (LassoNode**)&assertion);
+
+		if (rc1) {
+			message(G_LOG_LEVEL_WARNING, "Could not decrypt an assertion: %s", lasso_strerror(rc1));
+			at_least_one_decryption_failture |= TRUE;
+			continue;
+		}
+
+		if (! LASSO_IS_SAML2_ASSERTION(assertion)) {
+			message(G_LOG_LEVEL_WARNING, "EncryptedAssertion contains something that is not an assertion");
+			lasso_release_gobject(assertion);
+			continue;
+		}
+		/* copy the assertion to the clear assertion list */
+		lasso_list_add_new_gobject(samlp2_response->Assertion, assertion);
+	}
+	
+	if (at_least_one_decryption_failture) {
+		return LASSO_DS_ERROR_DECRYPTION_FAILED;
+	}
+	if (at_least_one_malformed_element) {
+		return LASSO_XML_ERROR_SCHEMA_INVALID_FRAGMENT;
+	}
+	return 0;
+}
+
 static gint
 lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 {
 	LassoSamlp2StatusResponse *response;
 	LassoSamlp2Response *samlp2_response = NULL;
 	LassoProfile *profile;
-	xmlSecKey *encryption_private_key = NULL;
 	char *status_value;
-	GList *it = NULL;
-	int rc = 0, rc1 = 0;
+	int rc = 0, rc1 = 0, message_signature_status;
 
-	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	profile = LASSO_PROFILE(login);
-	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
+	profile = &login->parent;
 	lasso_extract_node_or_fail(response, profile->response, SAMLP2_STATUS_RESPONSE,
 			LASSO_PROFILE_ERROR_INVALID_MSG);
 	lasso_extract_node_or_fail(samlp2_response, response, SAMLP2_RESPONSE,
 			LASSO_PROFILE_ERROR_INVALID_MSG);
+	message_signature_status = profile->signature_status;
 
 	if (response->Status == NULL || ! LASSO_IS_SAMLP2_STATUS(response->Status) ||
 			response->Status->StatusCode == NULL ||
@@ -1095,91 +1157,54 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 				}
 			}
 		}
-
 		return LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS;
 	}
 
-
-	if (LASSO_IS_SERVER(profile->server) && profile->server->private_data) {
-		encryption_private_key = profile->server->private_data->encryption_private_key;
-	}
-
 	/* Decrypt all EncryptedAssertions */
-	it = samlp2_response->EncryptedAssertion;
-	for (;it;it = it->next) {
-		LassoSaml2EncryptedElement *encrypted_assertion;
-		LassoSaml2Assertion * assertion = NULL;
+	rc1 = _lasso_saml20_login_decrypt_assertion(login, samlp2_response);
+	/* traverse all assertions */
+	goto_cleanup_if_fail_with_rc (samlp2_response->Assertion != NULL,
+			LASSO_PROFILE_ERROR_MISSING_ASSERTION);
 
-		if (! encryption_private_key) {
-			message(G_LOG_LEVEL_WARNING, "Missing private encryption key, cannot decrypt assertions.");
-			break;
-		}
-
-		if (! LASSO_IS_SAML2_ENCRYPTED_ELEMENT(it->data)) {
-			message(G_LOG_LEVEL_WARNING, "EncryptedAssertion contains a non EncryptedElement object");
-			continue;
-		}
-		encrypted_assertion = (LassoSaml2EncryptedElement*)it->data;
-		rc1 = lasso_saml2_encrypted_element_decrypt(encrypted_assertion, encryption_private_key, (LassoNode**)&assertion);
-
-		if (rc1) {
-			message(G_LOG_LEVEL_WARNING, "Could not decrypt an assertion");
-			continue;
-		}
-
-		if (! LASSO_IS_SAML2_ASSERTION(assertion)) {
-			message(G_LOG_LEVEL_WARNING, "EncryptedAssertion contains something that is not an assertion");
-			lasso_release_gobject(assertion);
-			continue;
-		}
-		lasso_list_add_gobject(samlp2_response->Assertion, assertion);
-		lasso_release_gobject(assertion);
-	}
-
-	/** FIXME: treat more than the first assertion ? */
-	if (samlp2_response->Assertion != NULL) {
-		LassoSaml2Subject *subject;
-		LassoSaml2Assertion *assertion = samlp2_response->Assertion->data;
+	lasso_foreach_full_begin(LassoSaml2Assertion*, assertion, it, samlp2_response->Assertion);
+		LassoSaml2Subject *subject = NULL;
 		int rc2 = 0;
 
 		lasso_assign_gobject (login->private_data->saml2_assertion, assertion);
 
-		/* If no signature was validated on the response, check the signature at the
-		 * assertion level */
-		if (profile->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
-			profile->signature_status = rc2 = lasso_saml20_login_check_assertion_signature(login, assertion);
+		/* If signature has already been verified on the message, and assertion has the same
+		 * issuer as the message, the assertion is covered. So no need to verify a second
+		 * time */
+		if (message_signature_status != 0 
+			|| ! _lasso_check_assertion_issuer(assertion,
+				profile->remote_providerID)) {
+			rc2 = lasso_saml20_login_check_assertion_signature(login, assertion);
+			if (! profile->signature_status) {
+				profile->signature_status = rc2;
+			}
 		}
 
-		if (! LASSO_IS_SAML2_SUBJECT(assertion->Subject)) {
-			return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
-		}
-		subject = assertion->Subject;
+		goto_cleanup_if_fail_with_rc (profile->signature_status == 0,
+				LASSO_LOGIN_ERROR_INVALID_ASSERTION_SIGNATURE);
+		lasso_extract_node_or_fail(subject, assertion->Subject, SAML2_SUBJECT,
+				LASSO_PROFILE_ERROR_MISSING_SUBJECT);
 
 		/* Verify Subject->SubjectConfirmationData->InResponseTo */
-		if (login->private_data->request_id && (
-			assertion->Subject->SubjectConfirmation == NULL ||
-			assertion->Subject->SubjectConfirmation->SubjectConfirmationData == NULL ||
-			assertion->Subject->SubjectConfirmation->SubjectConfirmationData->InResponseTo == NULL ||
-			g_strcmp0(assertion->Subject->SubjectConfirmation->SubjectConfirmationData->InResponseTo, login->private_data->request_id) != 0)) {
-			return LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID;
+		if (login->private_data->request_id) {
+			const char *in_response_to = lasso_saml2_assertion_get_in_response_to(assertion);
+
+			if (g_strcmp0(in_response_to, login->private_data->request_id) != 0) {
+				rc = LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID;
+				goto cleanup;
+			}
 		}
 
 		/** Handle nameid */
-		rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile, &subject->NameID, &subject->EncryptedID);
-
-		if (rc2) {
-			rc = rc2;
-		}
-	} else {
-		if (rc1) {
-			rc = rc1;
-		} else {
-			rc = LASSO_PROFILE_ERROR_MISSING_ASSERTION;
-		}
-	}
-
+		lasso_check_good_rc(lasso_saml20_profile_process_name_identifier_decryption(profile,
+					&subject->NameID, &subject->EncryptedID));
+	lasso_foreach_full_end();
+	
 cleanup:
-
 	return rc;
 }
 
