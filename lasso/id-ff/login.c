@@ -38,7 +38,7 @@
  * <para>
  * The service provider must implement the following process:
  * <itemizedlist>
- *  <listitem><para>creating an authentication request (#LassoLibAuthnRequest) with
+ *  <listitem><para>creating an authentication request with
  *  lasso_login_init_authn_request();</para></listitem>
  *  <listitem><para>sending it to the identity provider with
  *  lasso_login_build_authn_request_msg();</para></listitem>
@@ -53,37 +53,80 @@
  *    </para></listitem>
  * </itemizedlist>
  * </para>
+ *
+ * <para>Our first example shows how to initiate a request toward an ID-FF 1.2 or SAML 2.0 identity
+ * provider. It supposes that we already initialized a #LassoServer object with the metadatas or our
+ * provider (and its private key if we want to sign the request), and that we added the metadatas of
+ * the targetted IdP with the method lasso_server_add_provider().  </para>
+ *
  * <example>
  * <title>Service Provider Login URL</title>
  * <programlisting>
- * LassoLogin *login;
+ * #LassoLogin *login;
+ * int rc; // hold return codes
  *
  * login = lasso_login_new(server);
- * lasso_login_init_authn_request(login, "http://identity-provider-id/",
+ * rc = lasso_login_init_authn_request(login, "http://identity-provider-id/",
  *                 LASSO_HTTP_METHOD_REDIRECT);
+ * if (rc != 0) {
+ *   ... // handle errors, most of them are related to bad initialization
+ * }
  *
  * // customize AuthnRequest
- * request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
- * request->NameIDPolicy = strdup(LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
- * request->ForceAuthn = TRUE;
- * request->IsPassive = FALSE;
- * request->ProtocolProfile = strdup(LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART);
+ * // protocolProfile is the protocolProfile of the provider http://identity-provider-id/
+ * if (protocolProfile == LASSO_LIBERTY_1_2) {
+ *         #LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
+ *         request->NameIDPolicy = strdup(LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
+ *         request->ForceAuthn = TRUE;
+ *         request->IsPassive = FALSE;
+ *         // tell the IdP how to return the response
+ *         request->ProtocolProfile = strdup(LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART);
+ * } else if (protocolProfile == LASSO_SAML_2_0) {
+ *         #LassoSamlp2AuthnRequest *request = #LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
+ *         if (request->NameIDPolicy->Format) {
+ *                 g_free(request->NameIDPolicy->Format);
+ *         }
+ *         request->NameIDPolicy->Format = g_strdup(#LASSO_NAME_IDENTIFIER_FORMAT_PERSISTENT);
+ *         request->NameIDPolicy->AllowCreate = 1;
+ *         request->ForceAuthn = TRUE;
+ *         request->IsPassive = FALSE;
+ *         // tell the IdP how to return the response
+ *         if (request->ProtocolBinding) {
+ *                  g_free(request->ProtocolBinding);
+ *         }
+ *         // here we expect an artifact response, it could be post, redirect or PAOS.
+ *         request->ProtocolBinding = g_strdup(#LASSO_SAML2_METADATA_BINDING_ARTIFACT);
+   }
+ * // Lasso will choose whether to sign the request by looking at the IdP
+ * // metadatas and at our metadatas, but you can always force him to sign or to
+ * // not sign using the method lasso_profile_set_signature_hint() on the
+ * // #LassoLogin object.
  *
- * lasso_login_build_authn_request_msg(login);
+ * rc = lasso_login_build_authn_request_msg(login);
+ * if (rc != 0) {
+      .... // handle errors
+      // could be that the requested binding (POST, Redirect, etc..) is not supported (#LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE)
+      // or that we could not sign the request (#LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED).
+ * }
  *
  * // redirect user to identity provider
+   // we chose the Redirect binding, so we have to generate a redirect HTTP response to the URL returned by Lasso
  * printf("Location: %s\n\nRedirected to IdP\n", LASSO_PROFILE(login)->msg_url);
  * </programlisting>
  * </example>
  *
+ * <para>Next example shows how to receive the response from the identity
+ * provider for ID-FF 1.2.</para>
+ *
  * <example>
- * <title>Service Provider Assertion Consumer Service URL</title>
+ * <title>Service Provider Assertion Consumer Service URL for ID-FF 1.2</title>
  * <programlisting>
  * LassoLogin *login;
  * char *request_method = getenv("REQUEST_METHOD");
  * char *artifact_msg = NULL, *lares = NULL, *lareq = NULL;
  * char *name_identifier;
  * lassoHttpMethod method;
+ * int rc = 0;
  *
  * login = lasso_login_new(server);
  * if (strcmp(request_method, "GET") == 0) {
@@ -103,12 +146,31 @@
  * }
  *
  * if (artifact_msg) {
- *         lasso_login_init_request(login, artifact_msg, method);
- *         lasso_login_build_request_msg(login);
+ *         // we received an artifact response,
+ *         // it means we did not really receive the response,
+ *         // only a token to redeem the real response from the identity
+ *         // provider through a SOAP resolution call
+ *         rc = lasso_login_init_request(login, artifact_msg, method);
+ *         if (rc != 0) {
+ *                   ... // handle errors
+ *                   // there is usually no error at this step, only
+ *                   // if the IdP response is malformed
+ *         }
+ *         rc = lasso_login_build_request_msg(login);
+ *         if (rc != 0) {
+ *                   ... // handle errors
+ *                   // as for AuthnRequest generation, it generally is caused
+ *                   // by a bad initialization like an impossibility to load
+ *                   // the private key.
+ *         }
  *         // makes a SOAP call, soap_call is NOT a Lasso function
  *         soap_answer_msg = soap_call(LASSO_PROFILE(login)->msg_url,
  *                         LASSO_PROFILE(login)->msg_body);
- *         lasso_login_process_response_msg(login, soap_answer_msg);
+ *         rc = lasso_login_process_response_msg(login, soap_answer_msg);
+ *         if (rc != 0) {
+ *                   ... // handle errors
+ *                   // here you can know if the IdP refused the request, 
+ *         }
  * } else if (response_msg) {
  *         lasso_login_process_authn_response_msg(login, response_msg);
  * }
@@ -141,6 +203,8 @@
  * printf("Location: %s\n\nRedirected to site root\n", login->msg_url);
  * </programlisting>
  * </example>
+ *
+ *
  */
 
 #include <xmlsec/base64.h>
