@@ -121,7 +121,7 @@ array_to_glist_string(AV *array)
  *
  * Return value: a newly created #GList of #GObject objects
  */
-static GList*
+G_GNUC_UNUSED static GList*
 array_to_glist_gobject(AV *array) {
        I32 len, i;
        GList *result = NULL;
