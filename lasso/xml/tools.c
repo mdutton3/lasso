@@ -681,45 +681,91 @@ lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_pu
 {
 	RSA *rsa = NULL;
 	DSA *dsa = NULL;
-	gchar **str_split = NULL;
 	char *digest = NULL, *b64_signature = NULL;
 	xmlSecByte *signature = NULL;
 	int key_size, status = 0, ret = 0;
+	char *query_copy = NULL;
+	char *signed_query = NULL;
+	char *i = NULL;
+	char **components = NULL, **j = NULL;
+	int n = 0;
+	char *saml_request_response = NULL;
+	char *relaystate = NULL;
 	char *sig_alg, *usig_alg = NULL;
 
-	g_return_val_if_fail(query != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	lasso_return_val_if_fail(query != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	lasso_return_val_if_fail(lasso_flag_verify_signature, 0);
+	lasso_return_val_if_fail(sender_public_key != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	lasso_return_val_if_fail(sender_public_key->value != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	if (lasso_flag_verify_signature == FALSE) {
-		return 0;
+	/* extract fields */
+	i = query_copy = g_strdup(query);
+	n = 1;
+	while (*i) {
+		if (*i == '&' || *i == ';')
+			n++;
+		i++;
 	}
-
-	g_return_val_if_fail(sender_public_key != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-	g_return_val_if_fail(sender_public_key->value != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
-	/* split query, the signature MUST be the last param of the query
-	 * actually there could be more params in the URL; but they wouldn't be
-	 * covered by the signature */
-
-	str_split = g_strsplit(query, "&Signature=", 0);
-	if (str_split[0] == NULL || str_split[1] == NULL) {
-		g_strfreev(str_split);
-		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
+	components = g_new0(char*, n+1);
+	components[n] = NULL;
+	n = 0;
+	i = query_copy;
+	components[n] = query_copy;
+	n += 1;
+	while (*i) {
+		if (*i == '&' || *i == ';') {
+			*i = '\0';
+			components[n] = i + 1;
+			n++;
+		}
+		i++;
 	}
-
-	if (sender_public_key->value->id == xmlSecOpenSSLKeyDataRsaId) {
-	} else {
-		/* no key; it will fail later */
+	/* extract specific fields */
+	j = components;
+#define match_field(x) \
+	(strncmp(x "=", *j, sizeof(x)) == 0)
+#define value strchr(*j, '=') + 1
+	while (*j) {
+		if (match_field(LASSO_SAML2_FIELD_RESPONSE)
+				|| match_field(LASSO_SAML2_FIELD_REQUEST)) {
+			saml_request_response = *j;
+		} else if (match_field(LASSO_SAML2_FIELD_RELAYSTATE)) {
+			relaystate = *j;
+		} else if (match_field(LASSO_SAML2_FIELD_SIGALG)) {
+			sig_alg = *j;
+		} else if (match_field(LASSO_SAML2_FIELD_SIGNATURE)) {
+			b64_signature = value;
+			b64_signature = xmlURIUnescapeString(b64_signature, 0, NULL);
+		}
+		++j;
 	}
+#undef match_field
+#undef value
 
-	sig_alg = strstr(str_split[0], "&SigAlg=");
-	if (sig_alg == NULL) {
-		ret = critical_error(LASSO_DS_ERROR_INVALID_SIGALG);
+	if (! saml_request_response) {
+		message(G_LOG_LEVEL_WARNING, "SAMLRequest or SAMLResponse missing in query");
+		ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
 		goto done;
 	}
-	sig_alg = strchr(sig_alg, '=')+1;
 
+	if (! b64_signature) {
+		ret = LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
+		goto done;
+	}
+	/* build the signed query */
+	if (relaystate) {
+		signed_query = g_strconcat(saml_request_response, "&", relaystate, "&", sig_alg, NULL);
+	} else {
+		signed_query = g_strconcat(saml_request_response, "&", sig_alg, NULL);
+	}
+
+	sig_alg = strchr(sig_alg, '=')+1;
+	if (! sig_alg) {
+		ret = LASSO_DS_ERROR_INVALID_SIGALG;
+		goto done;
+	}
 	usig_alg = xmlURIUnescapeString(sig_alg, 0, NULL);
-	if (strcmp(usig_alg, (char*)xmlSecHrefRsaSha1) == 0) {
+	if (g_strcmp0(usig_alg, (char*)xmlSecHrefRsaSha1) == 0) {
 		if (sender_public_key->value->id != xmlSecOpenSSLKeyDataRsaId) {
 			ret = critical_error(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 			goto done;
@@ -730,7 +776,7 @@ lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_pu
 			goto done;
 		}
 		key_size = RSA_size(rsa);
-	} else if (strcmp(usig_alg, (char*)xmlSecHrefDsaSha1) == 0) {
+	} else if (g_strcmp0(usig_alg, (char*)xmlSecHrefDsaSha1) == 0) {
 		if (sender_public_key->value->id != xmlSecOpenSSLKeyDataDsaId) {
 			ret = critical_error(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 			goto done;
@@ -746,21 +792,18 @@ lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_pu
 		goto done;
 	}
 
-	/* insure there is only the signature in str_split[1] */
-	if (strchr(str_split[1], '&')) {
-		strchr(str_split[1], '&')[0] = 0;
-	}
-
 	/* get signature (unescape + base64 decode) */
 	signature = xmlMalloc(key_size+1);
-	b64_signature = (char*)xmlURIUnescapeString(str_split[1], 0, NULL);
+	xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
 	if (b64_signature == NULL || xmlSecBase64Decode((xmlChar*)b64_signature, signature, key_size+1) < 0) {
+		xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 		ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
 		goto done;
 	}
+	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 
 	/* compute signature digest */
-	digest = lasso_sha1(str_split[0]);
+	digest = lasso_sha1(signed_query);
 	if (digest == NULL) {
 		ret = critical_error(LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED);
 		goto done;
@@ -781,7 +824,9 @@ done:
 	xmlFree(signature);
 	xmlFree(digest);
 	xmlFree(usig_alg);
-	g_strfreev(str_split);
+	lasso_release(components);
+	lasso_release(query_copy);
+	lasso_release(signed_query);
 
 	return ret;
 }

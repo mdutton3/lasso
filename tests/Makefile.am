@@ -26,7 +26,7 @@ tests_LDADD = \
 	$(top_builddir)/lasso/liblasso.la \
 	$(LASSO_LIBS) \
 	$(CHECK_LIBS)
-tests_LDFLAGS = -rpath `cd $(top_builddir)/lasso/.libs/; pwd`
+tests_LDFLAGS = -rpath `cd $(top_builddir)/lasso/.libs/; pwd` -static
 
 tests2_SOURCES = tests2.c
 tests2_LDADD = \

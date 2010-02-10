@@ -277,6 +277,53 @@ START_TEST(test06_lib_statuscode)
 }
 END_TEST
 
+extern xmlSecKey* lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password);
+
+extern int lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_public_key);
+
+
+START_TEST(test07_saml2_query_verify_signature)
+{
+	/* normal query as produces by Lasso */
+	const char query1[] = "SAMLRequest=fZHNasMwEIRfxeieWrYTtQjb4DgJBNqSNqWHXopw1kQgS6523Z%2B3r%2BxQSKDkOppvd2aVo%2BpML6uBjvYZPgZAir47Y1FODwUbvJVOoUZpVQcoqZH76uFepjdc9t6Ra5xhZ8h1QiGCJ%2B0si7argr0vxTLJ1guRilpU8%2FWtyKpNnaXrukoF32SCRa%2FgMfgLFvAAIQ6wtUjKUpB4wmc8nSX8hXOZ3Ml0%2FsaijfMNTIUK1iqDMGK7sFl%2Fwp9S5mNWOY3z5ZGol3GM%2FSLugNRBkcrjc0N%2ButJj6LNd7ZzRzc%2B4plN0ve6o6MOsnayyH6sggSUW7XfjsKdBGd1q8AX7JwOLKmPcV%2B1BUUhOfgAWl6dkl19W%2FgI%3D&RelayState=fake%5B%5D&SigAlg=http%3A%2F%2Fwww.w3.org%2F2000%2F09%2Fxmldsig%23rsa-sha1&Signature=wDxMSEPKhK%2FuU06cmL50oVx%2B7eP5%2FQirShQE%2BLv9pT3CrVwb6WBV1Tp9XS2VVJ2odLHogdA%2FE1XDW7BIRKYgkN8bXVlC2GybSYBhyn8bwAuyHs%2BnMW48LF%2FE5vFiZxbw8tMWUAktdvDuaXoZLhubX7UgV%2B%2BdRyjhckolpXTC9xuJdoHJUDF0vzzNm8xZs6LR7tjWUoz5CcjMJA3LVfWmpE5UjCyRmGbi9knGWHdY75CFtArD%2BNSkGeNx9xySrUlik6e57Zlodv4V9WBdeopAWskO58BA27GqTmnSLooeo%2FrtLxc1NZeuau11YxNzwl%2FvN8%2FQ5IsR3Xic8X1TaCCtwg%3D%3D";
+	/* SAMLRequest field was moved in the middle, Signature to the beginning and all & were
+	 * changed to ; */
+	const char query2[] = "Signature=wDxMSEPKhK%2FuU06cmL50oVx%2B7eP5%2FQirShQE%2BLv9pT3CrVwb6WBV1Tp9XS2VVJ2odLHogdA%2FE1XDW7BIRKYgkN8bXVlC2GybSYBhyn8bwAuyHs%2BnMW48LF%2FE5vFiZxbw8tMWUAktdvDuaXoZLhubX7UgV%2B%2BdRyjhckolpXTC9xuJdoHJUDF0vzzNm8xZs6LR7tjWUoz5CcjMJA3LVfWmpE5UjCyRmGbi9knGWHdY75CFtArD%2BNSkGeNx9xySrUlik6e57Zlodv4V9WBdeopAWskO58BA27GqTmnSLooeo%2FrtLxc1NZeuau11YxNzwl%2FvN8%2FQ5IsR3Xic8X1TaCCtwg%3D%3D;RelayState=fake%5B%5D;SAMLRequest=fZHNasMwEIRfxeieWrYTtQjb4DgJBNqSNqWHXopw1kQgS6523Z%2B3r%2BxQSKDkOppvd2aVo%2BpML6uBjvYZPgZAir47Y1FODwUbvJVOoUZpVQcoqZH76uFepjdc9t6Ra5xhZ8h1QiGCJ%2B0si7argr0vxTLJ1guRilpU8%2FWtyKpNnaXrukoF32SCRa%2FgMfgLFvAAIQ6wtUjKUpB4wmc8nSX8hXOZ3Ml0%2FsaijfMNTIUK1iqDMGK7sFl%2Fwp9S5mNWOY3z5ZGol3GM%2FSLugNRBkcrjc0N%2ButJj6LNd7ZzRzc%2B4plN0ve6o6MOsnayyH6sggSUW7XfjsKdBGd1q8AX7JwOLKmPcV%2B1BUUhOfgAWl6dkl19W%2FgI%3D;SigAlg=http%3A%2F%2Fwww.w3.org%2F2000%2F09%2Fxmldsig%23rsa-sha1";
+	const char query3[] = "RelayState=fake%5B%5D&SAMLRequest=fZHNasMwEIRfxeieWrYTtQjb4DgJBNqSNqWHXopw1kQgS6523Z%2B3r%2BxQSKDkOppvd2aVo%2BpML6uBjvYZPgZAir47Y1FODwUbvJVOoUZpVQcoqZH76uFepjdc9t6Ra5xhZ8h1QiGCJ%2B0si7argr0vxTLJ1guRilpU8%2FWtyKpNnaXrukoF32SCRa%2FgMfgLFvAAIQ6wtUjKUpB4wmc8nSX8hXOZ3Ml0%2FsaijfMNTIUK1iqDMGK7sFl%2Fwp9S5mNWOY3z5ZGol3GM%2FSLugNRBkcrjc0N%2ButJj6LNd7ZzRzc%2B4plN0ve6o6MOsnayyH6sggSUW7XfjsKdBGd1q8AX7JwOLKmPcV%2B1BUUhOfgAWl6dkl19W%2FgI%3D&SigAlg=http%3A%2F%2Fwww.w3.org%2F2000%2F09%2Fxmldsig%23rsa-sha1&Signature=wDxMSEPKhK%2FuU06cmL50oVx%2B7eP5%2FQirShQE%2BLv9pT3CrVwb6WBV1Tp9XS2VVJ2odLHogdA%2FE1XDW7BIRKYgkN8bXVlC2GybSYBhyn8bwAuyHs%2BnMW48LF%2FE5vFiZxbw8tMWUAktdvDuaXoZLhubX7UgV%2B%2BdRyjhckolpXTC9xuJdoHJUDF0vzzNm8xZs6LR7tjWUoz5CcjMJA3LVfWmpE5UjCyRmGbi9knGWHdY75CFtArD%2BNSkGeNx9xySrUlik6e57Zlodv4V9WBdeopAWskO58BA27GqTmnSLooeo%2FrtLxc1NZeuau11YxNzwl%2FvN8%2FQ5IsR3Xic8X1TacCtwg%3D%3D";
+	/* sp5-saml2 key */
+	const char pkey[] = "-----BEGIN CERTIFICATE-----\n\
+MIIDnjCCAoagAwIBAgIBATANBgkqhkiG9w0BAQUFADBUMQswCQYDVQQGEwJGUjEP\n\
+MA0GA1UECBMGRnJhbmNlMQ4wDAYDVQQHEwVQYXJpczETMBEGA1UEChMKRW50cm91\n\
+dmVydDEPMA0GA1UEAxMGRGFtaWVuMB4XDTA2MTAyNzA5MDc1NFoXDTExMTAyNjA5\n\
+MDc1NFowVDELMAkGA1UEBhMCRlIxDzANBgNVBAgTBkZyYW5jZTEOMAwGA1UEBxMF\n\
+UGFyaXMxEzARBgNVBAoTCkVudHJvdXZlcnQxDzANBgNVBAMTBkRhbWllbjCCASIw\n\
+DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAM06Hx6VgHYR9wUf/tZVVTRkVWNq\n\
+h9x+PvHA2qH4OYMuqGs4Af6lU2YsZvnrmRdcFWv0+UkdAgXhReCWAZgtB1pd/W9m\n\
+6qDRldCCyysow6xPPKRz/pOTwRXm/fM0QGPeXzwzj34BXOIOuFu+n764vKn18d+u\n\
+uVAEzk1576pxTp4pQPzJfdNLrLeQ8vyCshoFU+MYJtp1UA+h2JoO0Y8oGvywbUxH\n\
+ioHN5PvnzObfAM4XaDQohmfxM9Uc7Wp4xKAc1nUq5hwBrHpjFMRSz6UCfMoJSGIi\n\
++3xJMkNCjL0XEw5NKVc5jRKkzSkN5j8KTM/k1jPPsDHPRYzbWWhnNtd6JlkCAwEA\n\
+AaN7MHkwCQYDVR0TBAIwADAsBglghkgBhvhCAQ0EHxYdT3BlblNTTCBHZW5lcmF0\n\
+ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFP2WWMDShux3iF74+SoO1xf6qhqaMB8G\n\
+A1UdIwQYMBaAFGjl6TRXbQDHzSlZu+e8VeBaZMB5MA0GCSqGSIb3DQEBBQUAA4IB\n\
+AQAZ/imK7UMognXbs5RfSB8cMW6iNAI+JZqe9XWjvtmLfIIPbHM96o953SiFvrvQ\n\
+BZjGmmPMK3UH29cjzDx1R/RQaYTyMrHyTePLh3BMd5mpJ/9eeJCSxPzE2ECqWRUa\n\
+pkjukecFXqmRItwgTxSIUE9QkpzvuQRb268PwmgroE0mwtiREADnvTFkLkdiEMew\n\
+fiYxZfJJLPBqwlkw/7f1SyzXoPXnz5QbNwDmrHelga6rKSprYKb3pueqaIe8j/AP\n\
+NC1/bzp8cGOcJ88BD5+Ny6qgPVCrMLE5twQumJ12V3SvjGNtzFBvg2c/9S5OmVqR\n\
+LlTxKnCrWAXftSm1rNtewTsF\n\
+-----END CERTIFICATE-----";
+
+	xmlSecKeyPtr key = lasso_xmlsec_load_private_key_from_buffer(pkey, sizeof(pkey)-1, NULL);
+
+	fail_unless(key != NULL, "Cannot load public key");
+	fail_unless(lasso_saml2_query_verify_signature(query1, key) == 0, "Signature was not validated");
+	/* test reordering and semi-colon separator support */
+	fail_unless(lasso_saml2_query_verify_signature(query2, key) == 0, "Disordered signature was not validated");
+	fail_unless(lasso_saml2_query_verify_signature(query3, key) != 0, "Altered signature was validated");
+}
+END_TEST
+
 Suite*
 random_suite()
 {
@@ -298,6 +345,7 @@ random_suite()
 	tcase_add_test(tc_node, test04_node_new_from_dump);
 	tcase_add_test(tc_node, test05_xsi_type);
 	tcase_add_test(tc_node, test06_lib_statuscode);
+	tcase_add_test(tc_node, test07_saml2_query_verify_signature);
 
 	return s;
 }
