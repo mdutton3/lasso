@@ -813,22 +813,34 @@ urlencoded_to_strings(const char *str)
 	char *st, *st2;
 	char **result;
 
+	/* count components */
 	st = (char*)str;
-	while (strchr(st, '&')) {
-		st = strchr(st, '&')+1;
+	while (*st) {
+		if (*st == '&' || *st == ';')
+			n++;
 		n++;
+		st++;
 	}
 
-	result = g_malloc(sizeof(char*)*(n+1));
+	/* allocate result array */
+	result = g_new0(char*, n+1);
 	result[n] = NULL;
 
-	st = (char*)str;
-	for (i=0; i<n; i++) {
-		st2 = strchr(st, '&');
-		st2 = st2 ? st2 : st+strlen(st);
-		result[i] = xmlURIUnescapeString(st, st2-st, NULL);
-		st = st2 + 1;
+	/* tokenize */
+	st = st2 = (char*)str;
+	i = 0;
+	while(1) {
+		if (*st == '&' || *st == ';' || *st == '\0') {
+			ptrdiff_t len = st - st2;
+			result[i] = xmlURIUnescapeString(st2, len, NULL);
+			i++;
+			st2 = st + 1;
+			if (*st == '\0')
+				break;
+		}
+		st++;
 	}
+
 	return result;
 }
 
