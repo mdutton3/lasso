@@ -50,11 +50,12 @@
 
 /**
  * lasso_login_assertion_add_discovery:
- * @login: a #LassoLogin
- * @assertion:
+ * @login: a #LassoLogin object
+ * @assertion: a #LassoSamlAssertion object
  *
- * Adds AttributeStatement and ResourceOffering attributes to assertion if
- * there is a discovery service.
+ * Adds AttributeStatement and ResourceOffering attributes to @assertion of a @login object if there
+ * is a discovery service registerered in the @LassoLogin.server field.
+ * .
  **/
 void
 lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion)
@@ -95,10 +96,11 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 
 /**
  * lasso_login_set_encryptedResourceId:
- * @login: a #LassoLogin
- * @encryptedResourceId:
+ * @login: a #LassoLogin object
+ * @encryptedResourceId: the #LassoDiscoEncryptedResourceID to setup in the login object
  *
- * ...
+ * Set the #LassoDiscoEncryptedResourceID to place the next produced assertions as an ID-WSF 1.0
+ * bootstrap.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -119,9 +121,9 @@ lasso_login_set_encryptedResourceId(LassoLogin *login,
 /**
  * lasso_login_set_resourceId:
  * @login: a #LassoLogin
- * @content:
+ * @content: a resourceID identifier
  *
- * ...
+ * Set the resourceId to place in the next produced assertion for ID-WSF bootstrap.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -364,9 +366,9 @@ lasso_server_add_service_from_dump(LassoServer *server, const gchar *dump)
 /**
  * lasso_server_get_service:
  * @server: a #LassoServer
- * @serviceType:
+ * @serviceType: the service type
  *
- * ...
+ * Look up a disco service instance corresponding to this service type.
  *
  * Return value: the #LassoDiscoServiceInstance, NULL if it was not found.
  *     The #LassoDiscoServiceInstance is owned by Lasso and should not be

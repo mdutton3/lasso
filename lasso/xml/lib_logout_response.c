@@ -94,11 +94,11 @@ lasso_lib_logout_response_new()
 
 /**
  * lasso_lib_logout_response_new_full:
- * @providerID:
- * @statusCodeValue:
+ * @providerID: the providerID of the responded
+ * @statusCodeValue: a response status code
  * @request: the request this is a response to
- * @sign_type:
- * @sign_method:
+ * @sign_type: a #LassoSignatureType value
+ * @sign_method: a #LassoSignatureMethod value
  *
  * Creates a new #LassoLibLogoutResponse object and initializes it with the
  * parameters.

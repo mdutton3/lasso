@@ -584,10 +584,15 @@
 /**
  * LASSO_METADATA_HREF:
  *
- * Namespace for FIXME
+ * Namespace for ID-FF 1.2 metadatas.
  *
  */
 #define LASSO_METADATA_HREF	 "urn:liberty:metadata:2003-08"
+/**
+ * LASSO_METADATA_PREFIX:
+ *
+ * Preferred prefix for ID-FF 1.2 metadata namespace.
+ */
 #define LASSO_METADATA_PREFIX	 "md"
 
 /*****************************************************************************/

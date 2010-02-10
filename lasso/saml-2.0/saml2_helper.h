@@ -43,10 +43,30 @@ typedef enum {
 	LASSO_SAML2_ASSERTION_INDETERMINATE
 } LassoSaml2AssertionValidationState;
 
+/**
+ * LASSO_DURATION_MINUTE:
+ *
+ * Number of seconds in a minute.
+ */
 #define LASSO_DURATION_MINUTE 60
+/**
+ * LASSO_DURATION_HOUR:
+ *
+ * Number of seconds in a hour.
+ */
 #define LASSO_DURATION_HOUR 3600
-#define LASSO_DURATION_DAY 24*2600
-#define LASSO_DURATION_WEEK LASSO_DURATION_DAY*7
+/**
+ * LASSO_DURATION_DAY:
+ *
+ * Number of seconds in a day.
+ */
+#define LASSO_DURATION_DAY 24*LASSO_DURATION_HOUR
+/**
+ * LASSO_DURATION_WEEK:
+ *
+ * Number of seconds in a week.
+ */
+#define LASSO_DURATION_WEEK 7*LASSO_DURATION_DAY
 
 LASSO_EXPORT gboolean lasso_saml2_assertion_has_audience_restriction(
 		LassoSaml2Assertion *saml2_assertion);

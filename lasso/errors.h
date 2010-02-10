@@ -98,6 +98,11 @@
  * Construction of an object from an XML document failed.
  */
 #define LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED     -15
+/**
+ * LASSO_XML_ERROR_MISSING_NAMESPACE:
+ *
+ * A namespace is missing.
+ */
 #define LASSO_XML_ERROR_MISSING_NAMESPACE              -16
 /**
  * LASSO_XML_ERROR_SCHEMA_INVALID_FRAGMENT:

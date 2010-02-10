@@ -128,13 +128,14 @@ lasso_lib_name_identifier_mapping_request_new()
 /**
  * lasso_lib_name_identifier_mapping_request_new_full:
  * @providerID: the provider ID requesting the name identifier mapping
- * @nameIdentifier:
- * @targetNamespace:
- * @sign_type:
- * @sign_method:
+ * @nameIdentifier: a #LassoSamlNameIdentifier object
+ * @targetNamespace: an URI for the target namespace
+ * @sign_type: a #LassoSignatureType value
+ * @sign_method: a #LassoSignatureMethod value
  *
- * Creates a new #LassoLibNameIdentifierMappingRequest object and initializes
- * it with the parameters.
+ * Creates a new #LassoLibNameIdentifierMappingRequest object and initializes it with the
+ * parameters. It also setups the signature on the request object, you must preceise the signing key
+ * later.
  *
  * Return value: a newly created #LassoLibNameIdentifierMappingRequest object
  **/

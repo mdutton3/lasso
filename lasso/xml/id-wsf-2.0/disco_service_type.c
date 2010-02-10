@@ -109,10 +109,10 @@ lasso_idwsf2_disco_service_type_new()
 
 /**
  * lasso_idwsf2_disco_service_type_new_with_string:
- * @content:
+ * @content: the content string
  *
  * Creates a new #LassoIdWsf2DiscoServiceType object and initializes it
- * with @content.
+ * with @content as content.
  *
  * Return value: a newly created #LassoIdWsf2DiscoServiceType object
  **/

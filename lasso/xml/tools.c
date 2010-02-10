@@ -668,7 +668,7 @@ done:
 }
 
 /**
- * lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_public_key):
+ * lasso_saml2_query_verify_signature:
  * @query: a query string
  * @sender_public_key: the #xmlSecKey for the sender
  *

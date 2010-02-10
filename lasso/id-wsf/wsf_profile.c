@@ -1195,13 +1195,16 @@ lasso_wsf_profile_new_full(LassoServer *server, LassoDiscoResourceOffering *offe
 
 /**
  * add_signature_template:
- * @server:
- * @doc:
- * @node
- * @signature_ptr:
+ * @server: a #LassoServer object
+ * @doc: a #xmlDoc structure
+ * @node a #xmlNode structure
+ * @signature_ptr: an output argument for an #xmlNode structure
  *
- * Create a new XmlSig template without any reference and return the create
- * Signature node. If node is not null add Signature as a last child to it.
+ * Create a new XMLDSig template without any reference and return the created
+ * Signature node. If node is not NULL add Signature as a last child to it. If @signature_ptr is not
+ * NULL the template node is stored there.
+ *
+ * Return value: 0 if successful, LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED otherwise.
  */
 static gint
 add_signature_template(LassoServer *server, xmlDoc *doc, xmlNode *node, xmlNode **signature_ptr) {

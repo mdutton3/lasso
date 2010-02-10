@@ -193,12 +193,13 @@ lasso_lib_register_name_identifier_request_new()
 
 /**
  * lasso_lib_register_name_identifier_request_new_full:
- * @providerID:
- * @idpNameIdentifier:
- * @spNameIdentifier:
- * @oldNameIdentifier:
- * @sign_type:
- * @sign_method:
+ * @providerID: the providerID of the requester
+ * @idpNameIdentifier: a #LassoSamlNameIdentifier object, giving the new idp provided name
+ * identifier
+ * @spNameIdentifier: a #LassoSamlNameIdentifier object, giving the new sp provided name identifier
+ * @oldNameIdentifier: a #LassoSamlNameIdentifier object, giving the old name identifier
+ * @sign_type: a #LassoSignatureType value
+ * @sign_method: a #LassoSignatureMethod value
  *
  * Creates a new #LassoLibRegisterNameIdentifierRequest object and initializes
  * it with the parameters.

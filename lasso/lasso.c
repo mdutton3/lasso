@@ -29,10 +29,11 @@
  * <sec2>
  * <title>Environment variables</title>
  * <para>
- * <literal>LASSO_FLAG</literal> is an environment vairable containing white-space separated values
+ * <literal>LASSO_FLAG</literal> is an environment variable containing white-space separated values
  * which allows to modify the behaviour of lasso. To negate the effect of one of
- * the value, just add <literal>no-</literal> in front of its name. Those values
- * are:
+ * the value, just add <literal>no-</literal> in front of its name. The flag are also modifiable
+ * using the lasso_set_flag() function. Those values are:
+ *
  * <informaltable frame="non">
  * <tgroup cols="2">
  * <tbody>
@@ -64,7 +65,8 @@
  * </tbody>
  * </tgroup>
  * </informaltable>
- *  </para>
+ * </para>
+ * </sec2>
  **/
 
 #include <stdlib.h> /* getenv */
@@ -267,8 +269,8 @@ lasso_check_version(int major, int minor, int subminor, LassoCheckVersionMode mo
  * lasso_set_flag:
  * @flag: a string representing a flag name, prefix with 'no-' to disable it.
  *
- * Set a debugging flag. You can also use the environment variable named by the #LASSO_FLAG_ENV_VAR
- * macro to get the same effect. LASSO_DEBUG must contain flag name separated by spaces, commas,
+ * Set a debugging flag. You can also use the environment variable LASSO_FLAG
+ * to get the same effect. LASSO_FLAG must contain flag name separated by spaces, commas,
  * tabulations or colons.
  */
 void lasso_set_flag(char *flag) {
@@ -319,8 +321,3 @@ static void lasso_flag_parse_environment_variable() {
 		} while ((token = strtok_r(NULL, delim, &save_ptr)) != NULL);
 	}
 }
-
-
-
-
-

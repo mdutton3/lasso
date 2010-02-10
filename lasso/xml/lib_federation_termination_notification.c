@@ -194,8 +194,8 @@ lasso_lib_federation_termination_notification_new()
  * lasso_lib_federation_termination_notification_new_full:
  * @providerID: the provider ID doing the notification
  * @nameIdentifier: the name identifier for the federation to terminate.
- * @sign_type:
- * @sign_method:
+ * @sign_type: a #LassoSignatureType value
+ * @sign_method: a #LassoSignatureMethod value
  *
  * Creates a new #LassoLibFederationTerminationNotification object and
  * initializes it with the parameters.

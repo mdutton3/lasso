@@ -126,14 +126,15 @@ lasso_lib_assertion_new()
 
 /**
  * lasso_lib_assertion_new_full:
- * @issuer:
- * @requestID:
- * @audience:
- * @notBefore:
- * @notOnOrAfter:
+ * @issuer: the issuer entityID string
+ * @requestID:(allow-none): the identifier of the request which initiated the creation of this
+ * assertion
+ * @audience:(allow-none): the entityID of the receiver of this assertion
+ * @notBefore: a timestamp formatted as iso-8601
+ * @notOnOrAfter: a timestamp formatted as iso-8601
  *
- * Creates a new #LassoLibAssertion object and initializes it with the
- * parameters.
+ * Creates a new #LassoLibAssertion object and initializes its Issuer, InResponseTo,
+ * AudienceRestrictionCondition, notBefore and notOnOrAfter fields or attributes.
  *
  * Return value: a newly created #LassoLibAssertion object
  **/

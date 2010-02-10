@@ -98,11 +98,11 @@ lasso_lib_register_name_identifier_response_new()
 
 /**
  * lasso_lib_register_name_identifier_response_new_full:
- * @providerID:
- * @statusCodeValue:
- * @request: the request this is a response to
- * @sign_type:
- * @sign_method:
+ * @providerID: the providerID of the responder
+ * @statusCodeValue: a response status code
+ * @request: the request which is answered by this response
+ * @sign_type: a #LassoSignatureType value
+ * @sign_method: a #LassoSignatureMethod value
  *
  * Creates a new #LassoLibRegisterNameIdentifierResponse object and initializes
  * it with the parameters.

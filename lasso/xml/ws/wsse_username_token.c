@@ -23,6 +23,7 @@
 
 /**
  * SECTION:wsse_username_token
+ *
  * Transmit username and password credential as a WS-Security token. The password can be transmitted
  * as cleartext or using a digest mode. It also allows to derive encryption and HMAC signing keys.
  */

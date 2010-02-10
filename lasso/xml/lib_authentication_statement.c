@@ -119,14 +119,16 @@ lasso_lib_authentication_statement_new(void)
 
 /**
  * lasso_lib_authentication_statement_new_full:
- * @authenticationMethod:
- * @authenticationInstant: AuthenticationInstant (NULL to get current time)
- * @reauthenticateOnOrAfter:
- * @sp_identifier:
- * @idp_identifier:
+ * @authenticationMethod: an URI identifier for the authentication method
+ * @authenticationInstant:(allow-none): an ISO-8601 formatted timestamp for the authentication
+ * instant
+ * @reauthenticateOnOrAfter:(allow-none): an ISO-8601 formatted timestamp to set a limit on the value of this
+ * authentication
+ * @sp_identifier:(allow-none) a #LassoSamlNameIdentifier object, the SP qualifier for the subject of this statement
+ * @idp_identifier: a #LassoSamlNameIdentifier object, the IdP qualifier for the subject of this statemtn
  *
- * Creates a new #LassoLibAuthenticationStatement object and initializes it
- * with the parameters.
+ * Creates a new #LassoLibAuthenticationStatement object and initializes its subject,
+ * its AuthenticationMethod, its AuthenticationInstant, 
  *
  * Return value: a newly created #LassoLibAuthenticationStatement object
  **/
@@ -144,7 +146,7 @@ lasso_lib_authentication_statement_new_full(const char *authenticationMethod,
 	char *time;
 
 	g_return_val_if_fail(LASSO_IS_SAML_NAME_IDENTIFIER(idp_identifier), NULL);
-	g_return_val_if_fail(sp_identifier || idp_identifier, NULL);
+	g_return_val_if_fail(authenticationMethod, NULL);
 
 	subject = lasso_lib_subject_new();
 	if (sp_identifier == NULL) {

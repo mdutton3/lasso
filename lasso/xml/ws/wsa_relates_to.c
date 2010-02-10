@@ -121,10 +121,10 @@ lasso_wsa_relates_to_new()
 
 /**
  * lasso_wsa_relates_to_new_with_string:
- * @content:
+ * @content: a content string
  *
  * Creates a new #LassoWsAddrRelatesTo object and initializes it
- * with @content.
+ * with @content as content.
  *
  * Return value: a newly created #LassoWsAddrRelatesTo object
  **/

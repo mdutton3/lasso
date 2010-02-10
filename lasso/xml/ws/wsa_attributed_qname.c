@@ -117,10 +117,10 @@ lasso_wsa_attributed_qname_new()
 
 /**
  * lasso_wsa_attributed_qname_new_with_string:
- * @content:
+ * @content: a content string.
  *
  * Creates a new #LassoWsAddrAttributedQName object and initializes it
- * with @content.
+ * with @content as content.
  *
  * Return value: a newly created #LassoWsAddrAttributedQName object
  **/

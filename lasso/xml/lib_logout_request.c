@@ -180,8 +180,8 @@ lasso_lib_logout_request_new()
  * lasso_lib_logout_request_new_full:
  * @providerID: the provider ID requesting the logout
  * @nameIdentifier: the name identifier to log out
- * @sign_type:
- * @sign_method:
+ * @sign_type: a #LassoSignatureType value
+ * @sign_method: a #LassoSignatureMethod value
  *
  * Creates a new #LassoLibLogoutRequest object and initializes it with the
  * parameters.

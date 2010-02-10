@@ -121,10 +121,10 @@ lasso_wsa_attributed_uri_new()
 
 /**
  * lasso_wsa_attributed_uri_new_with_string:
- * @content:
+ * @content: a content string
  *
  * Creates a new #LassoWsAddrAttributedURI object and initializes it
- * with @content.
+ * with @content as content.
  *
  * Return value: a newly created #LassoWsAddrAttributedURI object
  **/
