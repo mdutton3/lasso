@@ -2621,11 +2621,11 @@ lasso_node_init_from_saml2_query_fields(LassoNode *node, char **query_fields, G_
 		if (t == NULL)
 			continue;
 		*t = 0;
-		if (strcmp(field, "SAMLEncoding") == 0) {
+		if (strcmp(field, LASSO_SAML2_FIELD_ENCODING) == 0) {
 			enc = t+1;
 			continue;
 		}
-		if (strcmp(field, "SAMLRequest") == 0 || strcmp(field, "SAMLResponse") == 0) {
+		if (strcmp(field, LASSO_SAML2_FIELD_REQUEST) == 0 || strcmp(field, LASSO_SAML2_FIELD_RESPONSE) == 0) {
 			req = t+1;
 			continue;
 		}
