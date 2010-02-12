@@ -25,6 +25,22 @@ import re
 import textwrap
 from utils import *
 
+
+def remove_bad_optional(args):
+    args.reverse()
+    non_opt = False
+    new_args = []
+    for x in args:
+        if not '=' in x:
+            non_opt = True
+        elif non_opt:
+            print >>sys.stderr, 'W: changed', x,
+            x = re.sub(' *=.*', '', x)
+            print >>sys.stderr, 'to', x
+        new_args.append(x)
+    new_args.reverse()
+    return new_args
+
 def defval_to_python_value(defval):
     if defval is None:
         return 'None'
@@ -281,6 +297,7 @@ if WSF_SUPPORT:
                         c_args.append('%s and %s._cptr' % (aname, aname))
                     else:
                         c_args.append(aname)
+                py_args = remove_bad_optional(py_args)
 
                 c_args = ', '.join(c_args)
                 py_args = ', ' + ', '.join(py_args)
@@ -306,6 +323,13 @@ if WSF_SUPPORT:
                         c_args.append('%s and %s._cptr' % (aname, aname))
                     else:
                         c_args.append(aname)
+                opt = False
+                py_args = remove_bad_optional(py_args)
+                for x in py_args:
+                    if '=' in x:
+                        opt = True
+                    elif opt:
+                        print >>sys.stderr, 'W: non-optional follows optional,', m
                 c_args = ', '.join(c_args)
                 py_args = ', ' + ', '.join(py_args)
                 print >> fd, '    @classmethod'
@@ -415,6 +439,7 @@ if WSF_SUPPORT:
                 else:
                     c_args.append('%s and %s._cptr' % (aname, aname))
             # check py_args
+            py_args = remove_bad_optional(py_args)
             opt = False
             for x in py_args:
                 if '=' in x:
