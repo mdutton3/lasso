@@ -1799,30 +1799,45 @@ xmlDetectSAX2(xmlParserCtxtPtr ctxt) {
  */
 char *
 lasso_get_relaystate_from_query(const char *query) {
-	char *start, *end;
+	const char *start = NULL, *end = NULL;
 	char *result = NULL;
 
 	if (query == NULL)
 		return NULL;
-	start = strstr(query, "?RelayState=");
+	if (strncmp(query, LASSO_SAML2_FIELD_RELAYSTATE "=", sizeof(LASSO_SAML2_FIELD_RELAYSTATE
+				"=") - 1) == 0) {
+		start = query + sizeof(LASSO_SAML2_FIELD_RELAYSTATE);
+	}
 	if (! start) {
-		start = strstr(query, "&RelayState=");
+		if (! start) {
+			start = strstr(query, "&RelayState=");
+		}
+		if (! start) {
+			start = strstr(query, ";RelayState=");
+		}
+		if (start) {
+			start += sizeof(LASSO_SAML2_FIELD_RELAYSTATE "=");
+		}
 	}
 	if (start) {
 		ptrdiff_t length;
+		const char *end2;
 
-		start += sizeof("&RelayState=") - 1;
 		end = strchr(start, '&');
+		end2 = strchr(start, ';');
+		if ((end2 != NULL) && (end2 < end)) {
+			end = end2;
+		}
 		if (end) {
 			length = end-start;
 		} else {
 			length = strlen(start);
 		}
 		if (length > query_string_attribute_length_limit) {
-			g_warning("Refused to parse a RelayState of size %ti > %u", length, query_string_attribute_length_limit);
-		} else {
-			result = xmlURIUnescapeString(start, length, NULL);
+			message(G_LOG_LEVEL_WARNING, "Received a RelayState of size %ti > %u",
+					length, query_string_attribute_length_limit);
 		}
+		result = xmlURIUnescapeString(start, length, NULL);
 	}
 	return result;
 }
