@@ -572,6 +572,8 @@ lasso_server_new(const gchar *metadata,
 			lasso_release_gobject(server);
 		}
 	}
+	lasso_provider_load_public_key(&server->parent, LASSO_PUBLIC_KEY_SIGNING);
+	lasso_provider_load_public_key(&server->parent, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	return server;
 }
@@ -615,6 +617,8 @@ lasso_server_new_from_buffers(const char *metadata, const char *private_key_cont
 			lasso_release_gobject(server);
 		}
 	}
+	lasso_provider_load_public_key(&server->parent, LASSO_PUBLIC_KEY_SIGNING);
+	lasso_provider_load_public_key(&server->parent, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	return server;
 }
