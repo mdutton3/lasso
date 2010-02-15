@@ -254,6 +254,7 @@ lasso_wsa_endpoint_reference_new_for_idwsf2_service(const char *address,
 
 	/* Metadatas */
 	metadata = lasso_wsa_metadata_new();
+	epr->Metadata = metadata;
 
 	/* Abstract */
 	lasso_list_add_new_gobject(metadata->any,
@@ -306,6 +307,7 @@ lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *ep
 
 	sec_token = lasso_idwsf2_sec_token_new();
 	lasso_assign_gobject(sec_token->any, security_token);
+	lasso_assign_string(sec_token->usage, LASSO_IDWSF2_SEC_TOKEN_USAGE_SECURITY_TOKEN);
 
 	security_context = lasso_idwsf2_disco_security_context_new();
 	while (security_mechanisms[0] != NULL) {
