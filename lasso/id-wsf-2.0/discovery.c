@@ -118,6 +118,7 @@ lasso_idwsf2_discovery_add_identity_to_epr(LassoIdWsf2Discovery *discovery,
 		return;
 	name_id = (LassoSaml2NameID*)federation->remote_nameIdentifier;
 	assertion = (LassoSaml2Assertion*)lasso_saml2_assertion_new();
+	lasso_server_saml2_assertion_setup_signature(discovery->parent.server, assertion);
 	provider = lasso_server_get_provider(discovery->parent.parent.server, provider_id);
 	if (provider)
 		lasso_saml2_assertion_set_subject_name_id(assertion,
