@@ -282,5 +282,6 @@ liblassoinclude_HEADERS = \
 	util_extension.h \
 	util_response.h \
 	util_status.h \
-	xml_idwsf2.h
+	xml_idwsf2.h \
+	idwsf2_strings.h
 
