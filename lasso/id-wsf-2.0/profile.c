@@ -51,6 +51,7 @@
 #include "../xml/ws/wsse_security_header.h"
 
 #include "../xml/saml-2.0/saml2_assertion.h"
+#include "../xml/misc_text_node.h"
 #include "../utils.h"
 #include "./idwsf2_helper.h"
 #include "./soap_binding.h"
@@ -248,6 +249,7 @@ lasso_idwsf2_profile_build_request_msg(LassoIdWsf2Profile *profile, const char *
 {
 	LassoWsAddrEndpointReference *epr;
 	LassoSoapEnvelope *envelope;
+	int rc = 0;
 
 	lasso_bad_param(IDWSF2_PROFILE, profile);
 	epr = lasso_idwsf2_profile_get_epr(profile);
@@ -267,7 +269,19 @@ lasso_idwsf2_profile_build_request_msg(LassoIdWsf2Profile *profile, const char *
 			security_token = lasso_wsa_endpoint_reference_get_security_token(epr,
 					lasso_security_mech_id_is_bearer_authentication, NULL);
 			if (security_token) {
-				lasso_soap_envelope_add_security_token (envelope, security_token);
+				xmlNode *real_thing;
+
+				real_thing = lasso_node_get_original_xmlnode(security_token);
+				if (! real_thing) {
+					message(G_LOG_LEVEL_CRITICAL, "Cannot put the unaltered security token in the header");
+					goto_cleanup_with_rc(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
+				} else {
+					LassoMiscTextNode *misc;
+
+					misc = lasso_misc_text_node_new_with_xml_node(real_thing);
+					lasso_soap_envelope_add_security_token (envelope, (LassoNode*)misc);
+					lasso_release_gobject(misc);
+				}
 			} else {
 				g_warning ("No security mechanism specified, " \
 						"failed to find security token for Bearer mechanism");
@@ -287,7 +301,8 @@ lasso_idwsf2_profile_build_request_msg(LassoIdWsf2Profile *profile, const char *
 	if (! LASSO_PROFILE(profile)->msg_body)
 		return LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED;
 
-	return 0;
+cleanup:
+	return rc;
 }
 
 /**
@@ -388,7 +403,7 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 		assertion = lasso_soap_envelope_get_saml2_security_token (envelope);
 		if (assertion == NULL)
 			goto cleanup;
-		if (! lasso_saml2_assertion_validate_conditions(assertion, NULL))
+		if (lasso_saml2_assertion_validate_conditions(assertion, NULL) != LASSO_SAML2_ASSERTION_VALID)
 			goto cleanup;
 		issuer = lasso_saml2_assertion_get_issuer_provider(assertion, profile->parent.server);
 		if (! issuer || issuer->role != LASSO_PROVIDER_ROLE_IDP)
@@ -396,7 +411,7 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 		if (lasso_provider_verify_single_node_signature(issuer, (LassoNode*)assertion, "ID") != 0)
 			goto cleanup;
 	} else {
-		g_warning("Only Bearer mechanism is supported!");
+		message(G_LOG_LEVEL_WARNING, "Only Bearer mechanism is supported!");
 		rc = LASSO_ERROR_UNIMPLEMENTED;
 		goto cleanup;
 	}
