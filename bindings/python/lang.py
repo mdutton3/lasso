@@ -698,7 +698,7 @@ register_constants(PyObject *d)
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
 
             if is_cstring(m):
-                print >> fd, '    return_value = g_strdup(this->%s);' % arg_name(m)
+                print >> fd, '    return_value = this->%s;' % arg_name(m)
             elif is_object(m):
                 print >> fd, '    return_value = this->%s;' % m[1];
             else:
