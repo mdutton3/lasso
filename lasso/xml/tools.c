@@ -1322,7 +1322,7 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 			LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
 
 	/* There should be only one reference */
-	goto_cleanup_if_fail_with_rc(((signature_verification_option & NO_SINGLE_REFERENCE) == 0) &&
+	goto_cleanup_if_fail_with_rc(((signature_verification_option & NO_SINGLE_REFERENCE) == 0) ||
 			xmlSecPtrListGetSize(&(dsigCtx->signedInfoReferences)) == 1, LASSO_DS_ERROR_TOO_MUCH_REFERENCES);
 	/* The reference should be to the signed node */
 	reference_uri = g_strdup_printf("#%s", id);
