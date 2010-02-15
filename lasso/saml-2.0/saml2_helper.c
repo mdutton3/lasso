@@ -367,7 +367,7 @@ lasso_saml2_assertion_add_proxy_limit (LassoSaml2Assertion *saml2_assertion, int
 }
 
 /**
- * lasso_saml2_validation_conditions:
+ * lasso_saml2_assertion_validate_conditions:
  * @saml2_assertion: a #LassoSaml2Assertion object
  * @relaying_party_providerID:(allow-none): the providerID of the current relaying party, use to
  * check for audience restrictions.
