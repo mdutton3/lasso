@@ -43,6 +43,7 @@
 #include "../xml/saml-2.0/saml2_attribute_value.h"
 #include "../xml/saml-2.0/samlp2_response.h"
 #include "./idwsf2_helper.h"
+#include "../xml/private.h"
 
 
 /**
@@ -96,6 +97,8 @@ lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *ur
 
 	/* Security/Identity token */
 	assertion_identity_token = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
+	assertion_identity_token->ID = lasso_build_unique_id(32);
+	assertion_identity_token->Issuer = (LassoSaml2NameID*)lasso_saml2_name_id_new_with_string(server->parent.ProviderID);
 	lasso_assign_gobject(assertion_identity_token->Subject,
 			assertion->Subject);
 	lasso_saml2_assertion_set_basic_conditions(assertion_identity_token,
@@ -103,9 +106,8 @@ lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *ur
 
 	/* Do we sign the assertion ? */
 	if (lasso_security_mech_id_is_saml_authentication(security_mech_id) || lasso_security_mech_id_is_bearer_authentication(security_mech_id)) {
-		rc = lasso_server_saml2_assertion_setup_signature(login->parent.server,
-				assertion_identity_token);
-		goto_cleanup_if_fail_with_rc(rc != 0, rc);
+		lasso_check_good_rc(lasso_server_saml2_assertion_setup_signature(login->parent.server,
+				assertion_identity_token));
 	}
 
 	rc = lasso_wsa_endpoint_reference_add_security_token(epr, (LassoNode*)assertion_identity_token, security_mechanisms);
