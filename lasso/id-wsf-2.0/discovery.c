@@ -1082,7 +1082,7 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 			LASSO_IS_IDWSF2_DISCO_SVC_MD_REGISTER_RESPONSE(response),
 			LASSO_PROFILE_ERROR_INVALID_RESPONSE);
 	lasso_check_good_rc(lasso_idwsf2_discovery_status2rc(response->Status));
-	goto_cleanup_if_fail_with_rc(g_list_length(response->SvcMDID) !=
+	goto_cleanup_if_fail_with_rc(g_list_length(response->SvcMDID) ==
 			g_list_length(request->SvcMD), LASSO_PROFILE_ERROR_INVALID_RESPONSE);
 	/* Check IDs */
 	i = response->SvcMDID;
@@ -1099,7 +1099,6 @@ lasso_idwsf2_discovery_process_metadata_register_response_msg(LassoIdWsf2Discove
 	while (i && j) {
 		lasso_assign_string(((LassoIdWsf2DiscoSvcMetadata*)j->data)->svcMDID,
 				i->data);
-		lasso_list_add_gobject(discovery->private_data->metadatas, request->SvcMD);
 		i = i->next;
 		j = j->next;
 	}
