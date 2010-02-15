@@ -147,7 +147,7 @@ lasso_login_idwsf2_get_discovery_bootstrap_epr(LassoLogin *login)
 	LassoSaml2AttributeStatement *attribute_statement = NULL;
 	LassoSaml2Attribute *attribute = NULL;
 	LassoSaml2AttributeValue *attribute_value = NULL;
-	GList *i = NULL, *j = NULL;
+	GList *i = NULL, *j = NULL, *k = NULL;
 	LassoWsAddrEndpointReference *rc = NULL;
 
 	g_return_val_if_fail (LASSO_IS_LOGIN (login), NULL);
@@ -181,12 +181,16 @@ lasso_login_idwsf2_get_discovery_bootstrap_epr(LassoLogin *login)
 			if (! LASSO_IS_SAML2_ATTRIBUTE_VALUE (attribute->AttributeValue->data))
 				continue;
 			attribute_value = (LassoSaml2AttributeValue*)attribute->AttributeValue->data;
-			if (! attribute_value->any)
-				continue;
-			if (LASSO_IS_WSA_ENDPOINT_REFERENCE (attribute_value->any->data))
-				continue;
-			rc = (LassoWsAddrEndpointReference*)g_object_ref(attribute_value->any->data);
-			goto cleanup;
+			lasso_foreach (k, attribute_value->any) {
+				if (! k->data) {
+					message(G_LOG_LEVEL_CRITICAL, "found a NULL in attribute_value->any");
+					break; /* NULL here ? bad... */
+				}
+				if (! LASSO_IS_WSA_ENDPOINT_REFERENCE (k->data))
+					continue;
+				rc = (LassoWsAddrEndpointReference*)g_object_ref(k->data);
+				goto cleanup;
+			}
 		}
 	}
 
