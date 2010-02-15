@@ -449,7 +449,11 @@ lasso_saml2_assertion_get_issuer_provider(const LassoSaml2Assertion *saml2_asser
 	g_return_val_if_fail (LASSO_IS_SAML2_ASSERTION (saml2_assertion), NULL);
 	issuer = saml2_assertion->Issuer;
 	g_return_val_if_fail (LASSO_IS_SAML2_NAME_ID (issuer), NULL);
-	g_return_val_if_fail (g_strcmp0(issuer->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY) == 0, NULL);
+	g_return_val_if_fail (issuer->Format == NULL || g_strcmp0(issuer->Format,
+				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY) == 0, NULL);
+	if (g_strcmp0(server->parent.ProviderID, issuer->content) == 0) {
+		return (LassoProvider*)&server->parent;
+	}
 	return lasso_server_get_provider (server, issuer->content);
 }
 
