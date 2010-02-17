@@ -202,7 +202,14 @@ class MetadataTestCase(IdWsf2TestCase):
         self.failUnless(idp_disco.request is not None)
         self.failUnlessEqual(len(idp_disco.request.svcMD), 1)
         self.failUnless(idp_disco.request.svcMD[0].svcMDID is None)
-        idp_disco.validateRequest()
+        try:
+            idp_disco.checkSecurityMechanism()
+        except lasso.Error, e:
+            self.fail(e)
+        try:
+            idp_disco.validateRequest()
+        except lasso.Error, e:
+            self.fail(e)
         self.failUnless(idp_disco.response is not None)
         self.failUnlessEqual(len(idp_disco.metadatas), 1)
         metadata = idp_disco.metadatas[0]
@@ -276,9 +283,19 @@ class MetadataTestCase(IdWsf2TestCase):
 
         idp_disco = lasso.IdWsf2Discovery(idp)
         self.failUnless(idp_disco is not None)
-        idp_disco.processRequestMsg(wsp_disco.msgBody)
+        try:
+            idp_disco.processRequestMsg(wsp_disco.msgBody)
+        except lasso.Error, e:
+            self.fail(e)
         self.failUnless(idp_disco.request is not None)
-        idp_disco.failRequest(lasso.IDWSF2_DISCOVERY_STATUS_CODE_FAILED, lasso.IDWSF2_DISCOVERY_STATUS_CODE_FORBIDDEN)
+        try:
+            idp_disco.checkSecurityMechanism()
+        except lasso.Error, e:
+            self.fail(e)
+        try:
+            idp_disco.failRequest(lasso.IDWSF2_DISCOVERY_STATUS_CODE_FAILED, lasso.IDWSF2_DISCOVERY_STATUS_CODE_FORBIDDEN)
+        except lasso.Error, e:
+            self.fail(e)
         self.failUnless(idp_disco.response is not None)
         self.failUnless(idp_disco.response.status is not None)
         self.failUnless(idp_disco.response.status.code is not lasso.IDWSF2_DISCOVERY_STATUS_CODE_FAILED)
@@ -303,6 +320,7 @@ class MetadataTestCase(IdWsf2TestCase):
 
         wsp_disco = lasso.IdWsf2Discovery(wsp)
         wsp_disco.setEpr(dst_epr)
+        print dst_epr.dump()
 
         abstract = 'Personal Profile service'
         wsp_disco.initMetadataRegister()
@@ -350,6 +368,10 @@ class MetadataTestCase(IdWsf2TestCase):
         soap_envelope = idp_disco.getSoapEnvelopeRequest()
         self.failUnless(soap_envelope is not None)
         self.failUnless(soap_envelope.getMessageId() is not None)
+        try:
+            idp_disco.checkSecurityMechanism()
+        except lasso.Error, e:
+            self.fail(e)
         # redirect
         interactionUrl = spInteractionUrl
         idp_disco.redirectUserForInteraction(interactionUrl, False)
@@ -379,15 +401,63 @@ class MetadataTestCase(IdWsf2TestCase):
         self.failUnless(response_envelope.sb2GetRedirectRequestUrl().startswith(interactionUrl + '?transactionID='))
         # Here keep information about the request associated to ID: response_envelope.getMessageId().content
         wsp_disco_dump = wsp_disco.dump()
-        print wsp_disco_dump
         wsp_disco = lasso.Node.newFromDump(wsp_disco_dump)
         request_envelope = wsp_disco.getSoapEnvelopeRequest()
         self.failUnless(request_envelope is not None)
         relates_to = request_envelope.getRelatesTo(True)
         self.failUnless(relates_to is not None)
-        relates_to.content = response_envelope.getMessageId().content
+        response_message_id = response_envelope.getMessageId().content
+        relates_to.content = response_message_id
         wsp_disco.buildRequestMsg()
-        print wsp_disco.msgBody, wsp_disco.msgUrl
+        # now redo as for test01 after request building
+        self.failUnlessEqual(wsp_disco.msgUrl, idpSoapEndpoint)
+        self.failUnless(wsp_disco.msgBody is not None)
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        self.failUnless(idp_disco is not None)
+        idp_disco.processRequestMsg(wsp_disco.msgBody)
+        self.failUnless(idp_disco.request is not None)
+        self.failUnlessEqual(len(idp_disco.request.svcMD), 1)
+        self.failUnless(idp_disco.request.svcMD[0].svcMDID is None)
+        try:
+            idp_disco.checkSecurityMechanism()
+        except lasso.Error, e:
+            print wsp_disco.msgBody
+            self.fail(e)
+        try:
+            idp_disco.validateRequest()
+        except lasso.Error, e:
+            self.fail(e)
+        self.failUnless(idp_disco.response is not None)
+        self.failUnlessEqual(len(idp_disco.metadatas), 1)
+        metadata = idp_disco.metadatas[0]
+        self.failUnlessEqual(metadata.abstract, abstract)
+        self.failUnlessEqual(metadata.providerId, wsp.providerId)
+        self.failUnlessEqual(len(metadata.serviceContext), 1)
+        self.failUnlessEqual(len(metadata.serviceContext[0].serviceType), 1)
+        self.failUnlessEqual(metadata.serviceContext[0].serviceType[0],
+                lasso.PP11_HREF)
+        self.failUnlessEqual(len(metadata.serviceContext[0].endpointContext), 1)
+        self.failUnlessEqual(
+                len(metadata.serviceContext[0].endpointContext[0].address),
+                1)
+        self.failUnlessEqual(metadata.serviceContext[0].endpointContext[0].address[0],
+                spSoapEndpoint)
+        self.failUnlessEqual(
+                len(metadata.serviceContext[0].endpointContext[0].securityMechId),
+                1)
+        self.failUnlessEqual(
+                metadata.serviceContext[0].endpointContext[0].securityMechId[0],
+                lasso.SECURITY_MECH_BEARER)
+        idp_disco.buildResponseMsg()
+        self.failUnless(metadata.svcMDID is not None)
+        self.failUnless(idp_disco.msgUrl is None)
+        self.failUnless(idp_disco.msgBody is not None)
+
+        wsp_disco.processResponseMsg(idp_disco.msgBody)
+
+        self.failUnless(len(wsp_disco.metadatas) == 1, 'missing svcMDID')
+        self.failUnless(wsp_disco.metadatas[0].svcMDID, 'missing svcMDID')
 
 class MetadataAssociationAddTestCase(IdWsf2TestCase):
     def test01(self):
