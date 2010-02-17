@@ -183,7 +183,7 @@ lasso_iso_8601_gmt_to_time_t(char *xsdtime)
 	if (strptime_ret == NULL) {
 		return -1;
 	}
-	return mktime(&tm);
+	return timegm(&tm);
 }
 
 /**
