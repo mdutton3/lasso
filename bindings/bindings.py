@@ -434,13 +434,19 @@ def parse_header(header_file):
                 if m:
                     binding.constants.append(('i', m.group(1)))
         elif line.startswith('#define'):
-            m = re.match(r'#define\s+([a-zA-Z0-9_]+)\s+[-\w"]', line)
+            m = re.match(r'#define\s+([a-zA-Z0-9_]+)\s+([-\w"]+)', line)
             if m:
                 constant_name = m.group(1)
                 if constant_name[0] != '_':
                     # ignore private constants
                     if '"' in line:
                         constant_type = 's'
+                    elif m.group(2).startswith('LASSO_'):
+                        l = [ c for c in binding.constants if m.group(2) == c[1] ]
+                        if l:
+                            contant_type = l[0][0]
+                        else:
+                            raise Exception()
                     else:
                         constant_type = 'i'
                     constant = (constant_type, constant_name)
