@@ -399,7 +399,7 @@ lasso_idwsf2_discovery_add_simple_service_metadata(LassoIdWsf2Discovery *idwsf2_
 		lasso_assign_list_of_strings(service_context->ServiceType, service_types);
 	}
 	if (options) {
-		lasso_assign_list_of_gobjects(service_context->Options, options);
+		lasso_assign_list_of_strings(service_context->Options, options);
 	}
 	endpoint_context = lasso_idwsf2_disco_endpoint_context_new();
 	if (address) {
@@ -407,7 +407,7 @@ lasso_idwsf2_discovery_add_simple_service_metadata(LassoIdWsf2Discovery *idwsf2_
 	}
 	lasso_list_add_new_gobject(endpoint_context->Framework, lasso_idwsf2_sbf_framework_new_full("2.0"));
 	if (security_mech_ids) {
-		lasso_list_add_gstrv(endpoint_context->SecurityMechID, security_mech_ids);
+		lasso_assign_list_of_strings(endpoint_context->SecurityMechID, security_mech_ids);
 	}
 
 	lasso_list_add_new_gobject(service_context->EndpointContext, endpoint_context);
