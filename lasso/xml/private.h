@@ -227,6 +227,7 @@ xmlSecKey* lasso_xmlsec_load_private_key(const char *filename_or_buffer, const c
 xmlDocPtr lasso_xml_parse_file(const char *filepath);
 xmlDocPtr lasso_xml_parse_memory_with_error(const char *buffer, int size, xmlError *error);
 xmlSecKeyPtr lasso_xmlsec_load_key_info(xmlNode *key_descriptor);
+char* lasso_xmlnode_to_string(xmlNode *node, gboolean format);
 
 #ifdef __cplusplus
 }

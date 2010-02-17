@@ -2100,3 +2100,35 @@ next:
 cleanup:
 	return result;
 }
+
+/**
+ * lasso_xmlnode_to_string:
+ * @xmlnode: an #xmlNode structure
+ * @format: whether to allow formatting (it break XML signatures)
+ *
+ * Transform an XML node to a C string
+ *
+ * Return value: a newly allocated C string
+ */
+char*
+lasso_xmlnode_to_string(xmlNode *node, gboolean format)
+{
+	xmlOutputBufferPtr buf;
+	xmlCharEncodingHandlerPtr handler = NULL;
+	xmlChar *buffer;
+	char *str;
+
+	if (! node)
+		return NULL;
+
+	handler = xmlFindCharEncodingHandler("utf-8");
+	buf = xmlAllocOutputBuffer(handler);
+	xmlNodeDumpOutput(buf, NULL, node, 0, format ? 1 : 0, "utf-8");
+	xmlOutputBufferFlush(buf);
+	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
+	/* do not mix XML and GLib strings, so we must copy */
+	str = g_strdup((char*)buffer);
+	xmlOutputBufferClose(buf);
+
+	return str;
+}
