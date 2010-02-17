@@ -202,7 +202,7 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 	} else if (strcmp(name, "Query") == 0) {
 		if (strcmp((char*)ns->href, LASSO_DISCO_HREF) == 0) {
 			type = LASSO_REQUEST_TYPE_DISCO_QUERY;
-		} else if (strcmp((char*)ns->href, LASSO_IDWSF2_DISCO_HREF) == 0) {
+		} else if (strcmp((char*)ns->href, LASSO_IDWSF2_DISCOVERY_HREF) == 0) {
 			type = LASSO_REQUEST_TYPE_IDWSF2_DISCO_QUERY;
 		} else {
 			type = LASSO_REQUEST_TYPE_DST_QUERY;

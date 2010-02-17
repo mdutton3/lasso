@@ -93,7 +93,7 @@ lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *ur
 
 	/* Build EndpointReference */
 	epr = lasso_wsa_endpoint_reference_new_for_idwsf2_service(
-			url, LASSO_IDWSF2_DISCO_HREF, server->parent.ProviderID, abstract);
+			url, LASSO_IDWSF2_DISCOVERY_HREF, server->parent.ProviderID, abstract);
 
 	/* Security/Identity token */
 	assertion_identity_token = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());

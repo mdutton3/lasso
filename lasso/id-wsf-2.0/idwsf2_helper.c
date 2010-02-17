@@ -126,8 +126,8 @@ lasso_wsa_endpoint_reference_get_idwsf2_security_context_for_security_mechanism(
 		new_security_mech_id_declaration =
 			lasso_misc_text_node_new_with_string(security_mech_id);
 		new_security_mech_id_declaration->name = "SecurityMechID";
-		new_security_mech_id_declaration->ns_href = LASSO_IDWSF2_DISCO_HREF;
-		new_security_mech_id_declaration->ns_prefix = LASSO_IDWSF2_DISCO_PREFIX;
+		new_security_mech_id_declaration->ns_href = LASSO_IDWSF2_DISCOVERY_HREF;
+		new_security_mech_id_declaration->ns_prefix = LASSO_IDWSF2_DISCOVERY_PREFIX;
 		lasso_list_add_new_gobject (created->SecurityMechID,
 				new_security_mech_id_declaration);
 		lasso_list_add_new_gobject (epr->Metadata->any, created);

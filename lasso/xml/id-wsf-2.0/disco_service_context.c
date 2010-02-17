@@ -77,7 +77,7 @@ class_init(LassoIdWsf2DiscoServiceContextClass *klass)
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "ServiceContext");
-	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DISCO_HREF, LASSO_IDWSF2_DISCO_PREFIX);
+	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_DISCOVERY_HREF, LASSO_IDWSF2_DISCOVERY_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
