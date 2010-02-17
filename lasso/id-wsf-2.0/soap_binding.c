@@ -423,3 +423,26 @@ lasso_soap_envelope_set_sb2_user_interaction_hint(LassoSoapEnvelope *soap_envelo
 			lasso_release_string(user_interaction->interact);
 	}
 }
+
+/**
+ * lasso_soap_envelope_get_soap_fault:
+ * @soap_envelope: a #LassoSoapEnvelope
+ * @create:(default FALSE): whether to create the SOAP Fault
+ *
+ * Return the first SOAP Fault in the Body of the soap message @soap_envelope.
+ *
+ * Return value:(transfer none)(allow-none): a #LassoSoapFault object or NULL.
+ */
+LassoSoapFault*
+lasso_soap_envelope_get_soap_fault(LassoSoapEnvelope *soap_envelope, gboolean create)
+{
+	LassoSoapFault *fault;
+
+	if (! LASSO_IS_SOAP_ENVELOPE(soap_envelope) || ! LASSO_SOAP_BODY(soap_envelope->Body))
+		return NULL;
+
+	fault = (LassoSoapFault*)_get_node(&soap_envelope->Body->any, LASSO_TYPE_SOAP_FAULT, NULL, NULL, NULL, create);
+
+	return fault;
+}
+

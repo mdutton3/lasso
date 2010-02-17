@@ -95,6 +95,9 @@ LASSO_EXPORT void lasso_soap_envelope_add_action(LassoSoapEnvelope *soap_envelop
 LASSO_EXPORT LassoSoapDetail *lasso_soap_fault_get_detail(LassoSoapFault *soap_fault,
 		gboolean create);
 
+LASSO_EXPORT LassoSoapFault* lasso_soap_envelope_get_soap_fault(LassoSoapEnvelope *soap_envelope,
+		gboolean create);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
