@@ -965,7 +965,9 @@ lasso_idwsf2_discovery_validate_md_register(LassoIdWsf2Discovery *discovery)
 	lasso_check_good_rc(lasso_idwsf2_profile_init_response(&discovery->parent));
 	envelope = lasso_idwsf2_profile_get_soap_envelope_response(profile);
 	lasso_soap_envelope_add_to_body(envelope, &response->parent);
+	lasso_assign_gobject(profile->parent.response, response);
 cleanup:
+	lasso_release_gobject(response);
 	return rc;
 }
 
