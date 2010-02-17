@@ -27,6 +27,7 @@
 #include "../private.h"
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
+#include <xmlsec/xmltree.h>
 
 #include "saml2_assertion.h"
 
@@ -118,8 +119,24 @@ static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoSaml2Assertion *assertion = LASSO_SAML2_ASSERTION(node);
-	xmlNode *xmlnode;
+	xmlNode *xmlnode, *original_xmlnode;
 	int rc = 0;
+
+	/* If assertion has been deserialized and contain a signature, dump it from the
+	 * original xmlnode. */
+	original_xmlnode = lasso_node_get_original_xmlnode(node);
+	while (original_xmlnode) {
+		xmlNode *signature, *signature_value;
+
+		signature = xmlSecFindChild(original_xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
+		if (! signature)
+			break;
+		signature_value = xmlSecFindNode(signature, xmlSecNodeSignatureValue, xmlSecDSigNs);
+		if (signature_value && signature_value->children) {
+			return xmlCopyNode(original_xmlnode, 1);
+		}
+		break;
+	}
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 
