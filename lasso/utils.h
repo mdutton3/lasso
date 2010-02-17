@@ -121,9 +121,10 @@
 
 #define lasso_release_list_of_full(dest, free_function) \
 	{ \
-		if (dest) { \
-			g_list_foreach(dest, (GFunc)free_function, NULL); \
-			lasso_release_list(dest); \
+		GList **__tmp = &(dest); \
+		if (*__tmp) { \
+			g_list_foreach(*__tmp, (GFunc)free_function, NULL); \
+			lasso_release_list(*__tmp); \
 		} \
 	}
 
