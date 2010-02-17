@@ -439,21 +439,50 @@ lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump)
 	return 0;
 }
 
+/**
+ * lasso_profile_get_artifact:
+ * @profile: a #LassoProfile object
+ *
+ * Return the artifact token
+ *
+ * Return value:(transfer full)(allow-none): a newly allocated string or NULL.
+ */
 char*
 lasso_profile_get_artifact(LassoProfile *profile)
 {
 	return g_strdup(profile->private_data->artifact);
 }
 
+/**
+ * lasso_profile_get_artifact_message:
+ * @profile: a #LassoProfile object
+ *
+ * Return the artifact message.
+ *
+ * Return value:(transfer full)(allow-none): a newly allocated string or NULL
+ */
 char*
 lasso_profile_get_artifact_message(LassoProfile *profile)
 {
 	return g_strdup(profile->private_data->artifact_message);
 }
 
+/**
+ * lasso_profile_set_artifact_message:
+ * @profile: a #LassoProfile object
+ * @message: the artifact message content
+ *
+ * Set @message as the content for the ArtifactResolve response.
+ *
+ */
 void
-lasso_profile_set_artifact_message(LassoProfile *profile, char *message)
+lasso_profile_set_artifact_message(LassoProfile *profile, const char *message)
 {
+	if (! LASSO_IS_PROFILE(profile)) {
+		message(G_LOG_LEVEL_CRITICAL, "set_artifact_message called on something not a" \
+			"LassoProfile object: %p", profile);
+		return;
+	}
 	lasso_assign_string(profile->private_data->artifact_message, message);
 }
 

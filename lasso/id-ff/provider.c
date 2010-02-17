@@ -77,7 +77,7 @@ static gboolean lasso_provider_load_metadata_from_doc(LassoProvider *provider, x
  * Extracts the AssertionConsumerServiceURL from the provider metadata
  * descriptor.
  *
- * Return value: the element value, NULL if the element was not found.  This
+ * Return value:(allow-none)(transfer full): the element value, NULL if the element was not found.  This
  *      string must be freed by the caller.
  **/
 gchar*
@@ -112,7 +112,7 @@ lasso_provider_get_assertion_consumer_service_url(const LassoProvider *provider,
  *
  * Extracts the element @name from the provider metadata descriptor.
  *
- * Return value: the element value, NULL if the element was not found.  This
+ * Return value:(transfer full)(allow-none): the element value, NULL if the element was not found.  This
  *      string must be freed by the caller.
  **/
 gchar*
@@ -143,7 +143,7 @@ lasso_provider_get_metadata_one(const LassoProvider *provider, const char *name)
  *
  * Extracts zero to many elements from the provider metadata descriptor.
  *
- * Return value:(element-type string): a #GList with the elements.  This GList is internally
+ * Return value:(transfer none)(element-type string): a #GList with the elements.  This GList is internally
  *      allocated and points to internally allocated strings.  It must
  *      not be freed, modified or stored.
  **/
@@ -320,19 +320,21 @@ lasso_provider_has_protocol_profile(const LassoProvider *provider,
  *
  * Computes and returns the base64-encoded provider succinct ID.
  *
- * Return value: the provider succinct ID.  This string must be freed by the
+ * Return value:(transfer full)(allow-none): the provider succinct ID.  This string must be freed by the
  *      caller.
  **/
 char*
 lasso_provider_get_base64_succinct_id(const LassoProvider *provider)
 {
-	char *succinct_id, *base64_succinct_id;
+	char *succinct_id, *base64_succinct_id, *ret;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	succinct_id = lasso_sha1(provider->ProviderID);
 	base64_succinct_id = (char*)xmlSecBase64Encode((xmlChar*)succinct_id, 20, 0);
 	xmlFree(succinct_id);
-	return base64_succinct_id;
+	ret = g_strdup(base64_succinct_id);
+	xmlFree(base64_succinct_id);
+	return ret;
 }
 
 
@@ -342,7 +344,7 @@ lasso_provider_get_base64_succinct_id(const LassoProvider *provider)
  *
  * Returns the provider metadata &lt;Organization&gt; XML node.
  *
- * Return value: the &lt;Organization/&gt; node (libxml2 xmlNode*); or NULL if it is
+ * Return value:(transfer full)(allow-none): the &lt;Organization/&gt; node (libxml2 xmlNode*); or NULL if it is
  *      not found.  This xmlnode must be freed by the caller.
  **/
 xmlNode*
@@ -384,7 +386,7 @@ lasso_provider_get_public_key(const LassoProvider *provider)
  *
  * Return the #xmlSecKey public key to use for encrypting content target at @provider.
  *
- * Return value: an #xmlSecKey object, or NULL if no key is known or @provider is not a
+ * Return value:(transfer none)(allow-none): an #xmlSecKey object, or NULL if no key is known or @provider is not a
  * #LassoProvider.
  */
 xmlSecKey*
@@ -695,6 +697,15 @@ lasso_provider_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_provider_get_protocol_conformance:
+ * @provider: a #LassoProvider object
+ *
+ * Return the protocol conformance of the given provider, it should allow to switch behaviour of SP
+ * and IdP code toward a specific protocol. See also #LassoProtocolConformance.
+ *
+ * Return value: a value in the #LassoProtocolConformance enumeration.
+ */
 LassoProtocolConformance
 lasso_provider_get_protocol_conformance(const LassoProvider *provider)
 {
@@ -1220,6 +1231,8 @@ lasso_provider_set_encryption_mode(LassoProvider *provider, LassoEncryptionMode 
  * @provider: a #LassoProvider object
  *
  * Return the current encryption mode.
+ *
+ * Return value: a value in the #LassoEncryptionMode enumeration.
  */
 LassoEncryptionMode
 lasso_provider_get_encryption_mode(LassoProvider *provider) {
@@ -1305,7 +1318,7 @@ lasso_provider_verify_query_signature(LassoProvider *provider, const char *messa
  *
  * If the provider has a list of supported name id formats in its metadatas, return the first one.
  *
- * Return value: a NameIDFormat URI or NULL, the returned value must be freed by the caller.
+ * Return value:(transfer full)(allow-none): a NameIDFormat URI or NULL, the returned value must be freed by the caller.
  */
 gchar*
 lasso_provider_get_default_name_id_format(const LassoProvider *provider)
@@ -1319,7 +1332,7 @@ lasso_provider_get_default_name_id_format(const LassoProvider *provider)
  *
  * Return the entityID to use for qualifying NameIdentifier.
  *
- * Return value:(transfer none): a private string or NULL. Do not keep a reference on this string or
+ * Return value:(transfer none)(allow-none): a private string or NULL. Do not keep a reference on this string or
  * free it.
  */
 const char*

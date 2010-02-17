@@ -332,7 +332,7 @@ get_first_providerID(gchar *key, G_GNUC_UNUSED gpointer value, char **providerID
  *
  * Looks up and returns the provider ID of a known provider
  *
- * Return value: the provider ID, NULL if there are no providers.  This string
+ * Return value:(transfer full)(allow-none): the provider ID, NULL if there are no providers.  This string
  *      must be freed by the caller.
  **/
 gchar*
@@ -395,7 +395,7 @@ get_providerID_with_hash(gchar *key, G_GNUC_UNUSED gpointer value, char **provid
  * Looks up a #LassoProvider whose ID hash is @b64_hash and returns its
  * provider ID.
  *
- * Return value: the provider ID, NULL if it was not found.
+ * Return value:(transfer full)(allow-none): the provider ID, NULL if it was not found.
  **/
 gchar*
 lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash)

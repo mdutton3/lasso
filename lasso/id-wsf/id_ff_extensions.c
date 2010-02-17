@@ -295,7 +295,7 @@ void add_matching_resource_offering_to_list(G_GNUC_UNUSED char *name, LassoDisco
  *
  * Returns a list of #LassoDiscoResourceOffering associated to this service type.
  *
- * Return value:(element-type LassoDiscoResourceOffering): a newly allocated list of #LassoDiscoResourceOffering
+ * Return value:(transfer full)(element-type LassoDiscoResourceOffering): a newly allocated list of #LassoDiscoResourceOffering
  */
 GList*
 lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type)
@@ -320,7 +320,7 @@ lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type)
  * usually allocated by lasso_identity_add_resource_offering() inside
  * offering->entryID.
  *
- * Return value: a #LassoDiscoResourceOffering, your must ref it if you intend
+ * Return value:(transfer none)(allow-none): a #LassoDiscoResourceOffering, your must ref it if you intend
  * to keep it around.
  */
 LassoDiscoResourceOffering*
@@ -370,7 +370,7 @@ lasso_server_add_service_from_dump(LassoServer *server, const gchar *dump)
  *
  * Look up a disco service instance corresponding to this service type.
  *
- * Return value: the #LassoDiscoServiceInstance, NULL if it was not found.
+ * Return value:(transfer none)(allow-none): the #LassoDiscoServiceInstance, NULL if it was not found.
  *     The #LassoDiscoServiceInstance is owned by Lasso and should not be
  *     freed.
  **/

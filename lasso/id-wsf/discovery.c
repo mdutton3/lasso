@@ -661,7 +661,7 @@ cleanup:
  * requested @service_type with the first resource offering found or the first resource offering
  * matching the service type.
  *
- * Return value: a newly created #LassoDataService object; or NULL if an
+ * Return value:(transfer full)(allow-none): a newly created #LassoDataService object; or NULL if an
  *     error occured.
  **/
 LassoWsfProfile*
@@ -705,7 +705,7 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
  *
  * After a disco:query message, creates a GList object of #LassoDataService.
  *
- * Return value:(element-type LassoNode): a newly created GList object of #LassoDataService;
+ * Return value:(transfer full)(element-type LassoNode): a newly created GList object of #LassoDataService;
  *     or NULL if an error occured.
  **/
 GList*

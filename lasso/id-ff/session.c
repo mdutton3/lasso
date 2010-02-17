@@ -165,7 +165,7 @@ lasso_session_add_status(LassoSession *session, const char *providerID, LassoNod
  *
  * Gets the assertion for the given @providerID.
  *
- * Return value:(transfer none): the assertion or NULL if it didn't exist.  This
+ * Return value:(transfer none)(allow-none): the assertion or NULL if it didn't exist.  This
  *      #LassoSamlAssertion is internally allocated and must not be freed by
  *      the caller.
  **/
@@ -184,7 +184,7 @@ lasso_session_get_assertion(LassoSession *session, const gchar *providerID)
  *
  * Gets the assertion for the given @assertionID.
  *
- * Return value: the assertion or NULL if it didn't exist.  This
+ * Return value:(transfer none)(allow-none): the assertion or NULL if it didn't exist.  This
  *      #LassoSamlAssertion is internally allocated and must not be freed by
  *      the caller.
  */
@@ -209,7 +209,7 @@ add_assertion_to_list(G_GNUC_UNUSED gchar *key, LassoLibAssertion *value, GList 
  *
  * Gets the assertions for the given @provider_id.
  *
- * Return value: (transfer container) (element-type LassoSamlAssertion): a list of #LassoSamlAssertion.
+ * Return value:(allow-none)(transfer container) (element-type LassoNode): a list of #LassoSamlAssertion.
  **/
 GList*
 lasso_session_get_assertions(LassoSession *session, const char *provider_id)
@@ -239,7 +239,7 @@ lasso_session_get_assertions(LassoSession *session, const char *provider_id)
  *
  * Gets the status for the given @providerID.
  *
- * Return value: the status or NULL if it didn't exist.  This #LassoSamlpStatus
+ * Return value:(transfer none)(allow-none): the status or NULL if it didn't exist.  This #LassoSamlpStatus
  *      is internally allocated and must not be freed by the caller.
  **/
 LassoNode*
@@ -265,7 +265,7 @@ add_providerID(gchar *key, G_GNUC_UNUSED LassoLibAssertion *assertion, LassoSess
  *
  * Looks up and returns the nth provider id.
  *
- * Return value: the provider id; or NULL if there were no nth provider.  This
+ * Return value:(transfer full)(allow-none): the provider id; or NULL if there were no nth provider.  This
  *      string must be freed by the caller.
  **/
 gchar*

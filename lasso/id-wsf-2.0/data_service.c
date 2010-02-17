@@ -106,6 +106,14 @@ lasso_idwsf2_data_service_set_service_type(LassoIdWsf2DataService *service, cons
 	return 0;
 }
 
+/**
+ * lasso_idwsf2_data_service_get_service_type:
+ * @service: a #LassoIdWsf2DataService object
+ *
+ * Return the service type of the received request
+ *
+ * Return value:(allow-none)(transfer none): the URI of the service type or NULL.
+ */
 const char*
 lasso_idwsf2_data_service_get_service_type(LassoIdWsf2DataService *service)
 {
@@ -114,6 +122,14 @@ lasso_idwsf2_data_service_get_service_type(LassoIdWsf2DataService *service)
 	return service->private_data->service_type;
 }
 
+/**
+ * lasso_idwsf2_data_service_get_service_type_prefix:
+ * @service: a #LassoIdWsf2DataService object
+ *
+ * Return the service type prefix of the received request
+ *
+ * Return value:(allow-none)(transfer none): the URI of the service type prefix or NULL.
+ */
 const char*
 lasso_idwsf2_data_service_get_service_type_prefix(LassoIdWsf2DataService *service)
 {
@@ -354,7 +370,7 @@ lasso_idwsf2_data_service_get_items(LassoIdWsf2DataService *service)
  *
  * Retrieve a specific item from a request.
  *
- * Return value: a #LassoIdWsf2DstRefQueryItem or a #LassoIdWsf2DstRefModifyItem object, or NULL if
+ * Return value:(transfer none)(allow-none): a #LassoIdWsf2DstRefQueryItem or a #LassoIdWsf2DstRefModifyItem object, or NULL if
  * no item for the given item_id exists.
  */
 LassoNode*
@@ -811,7 +827,7 @@ cleanup:
  *
  * Return the status from the current response.
  *
- * Return value: a #LassoIdWsf2UtilStatus object, or NULL.
+ * Return value:(transfer none)(allow-none): a #LassoIdWsf2UtilStatus object, or NULL.
  */
 LassoIdWsf2UtilStatus*
 lasso_idwsf2_data_service_get_response_status(LassoIdWsf2DataService *service)
@@ -837,7 +853,7 @@ lasso_idwsf2_data_service_get_response_status(LassoIdWsf2DataService *service)
  * @service: a #LassoIdWsf2DataService object
  * @item_id:(allow-none): an item_id or NULL if only one data is present
  *
- * Return value:(transfer none): a #LassoIdWsf2DstRefData or NULL if none is found.
+ * Return value:(allow-none)(transfer none): a #LassoIdWsf2DstRefData or NULL if none is found.
  */
 LassoIdWsf2DstRefData*
 lasso_idwsf2_data_service_get_query_item_result(LassoIdWsf2DataService *service,
@@ -866,7 +882,7 @@ lasso_idwsf2_data_service_get_query_item_result(LassoIdWsf2DataService *service,
  * lasso_idwsf2_data_service_get_query_item_results:
  * @service: a #LassoIdWsf2DataService object
  *
- * Return value:(transfer none)(element-type LassoIdWsf2DstRefData): the list of
+ * Return value:(allow-none)(transfer none)(element-type LassoIdWsf2DstRefData): the list of
  * #LassoIdWsf2DstRefData or NULL if none is found.
  */
 GList*

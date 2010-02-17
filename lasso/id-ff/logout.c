@@ -283,7 +283,7 @@ lasso_logout_destroy(LassoLogout *logout)
  * Returns the provider id from providerID_index in list of providerIDs in
  * principal session with the exception of initial service provider ID.
  *
- * Return value: a newly allocated string or NULL
+ * Return value:(transfer full): a newly allocated string or NULL
  **/
 gchar*
 lasso_logout_get_next_providerID(LassoLogout *logout)

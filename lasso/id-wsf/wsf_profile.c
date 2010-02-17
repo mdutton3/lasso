@@ -500,7 +500,7 @@ lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
  * lasso_wsf_profile_get_security_mech_id:
  * @profile: the #LassoWsfProfile object
  *
- * Return value: the current security mechanism id for this object.
+ * Return value:(transfer none): the current security mechanism id for this object.
  */
 const char *
 lasso_wsf_profile_get_security_mech_id(LassoWsfProfile *profile)
@@ -533,7 +533,7 @@ lasso_wsf_profile_set_description(LassoWsfProfile *profile, LassoDiscoDescriptio
  * locate the endpoint and the security mechanism to use for the next ID-WSF
  * request.
  *
- * Return value: a #LassoDiscoDescriptio or NULL if none is present.
+ * Return value:(transfer full): a #LassoDiscoDescriptio or NULL if none is present.
  */
 LassoDiscoDescription *
 lasso_wsf_profile_get_description(const LassoWsfProfile *profile)
@@ -547,7 +547,7 @@ lasso_wsf_profile_get_description(const LassoWsfProfile *profile)
  *
  * Returns the ResourceOffering setupt with this profile object.
  *
- * Return value: a #LassoDiscoResourceOffering if one was setup during
+ * Return value:(transfer full): a #LassoDiscoResourceOffering if one was setup during
  * construction, NULL otherwise.
  */
 LassoDiscoResourceOffering *
@@ -596,7 +596,7 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *pr
  *
  * Gets the identity bound to @profile.
  *
- * Return value: the identity or NULL if it none was found.  The #LassoIdentity
+ * Return value:(transfer none)(allow-none): the identity or NULL if it none was found.  The #LassoIdentity
  *      object is internally allocated and must not be freed by the caller.
  **/
 LassoIdentity*
@@ -614,8 +614,8 @@ lasso_wsf_profile_get_identity(const LassoWsfProfile *profile)
  *
  * Gets the session bound to @profile.
  *
- * Return value: the session or NULL if it none was found.  The #LassoSession
- *      object is internally allocated and must not be freed by the caller.
+ * Return value:(transfer none)(allow-none): the session or NULL if it none was found. The
+ * #LassoSession object is internally allocated and must not be freed by the caller.
  **/
 LassoSession*
 lasso_wsf_profile_get_session(const LassoWsfProfile *profile)
@@ -1456,7 +1456,7 @@ cleanup:
  *
  * Return the remote provider id parsed in the last processing of a SOAP request or a SOAP response.
  *
- * Return value: the provider id string or NULL.
+ * Return value:(transfer none)(allow-none): the provider id string or NULL.
  */
 const char*
 lasso_wsf_profile_get_remote_provider_id(LassoWsfProfile *wsf_profile)
@@ -1469,7 +1469,7 @@ lasso_wsf_profile_get_remote_provider_id(LassoWsfProfile *wsf_profile)
 /**
  * lasso_wsf_profile_get_remote_provider:
  * @wsf_profile: a #LassoWsfProfile object
- * @provider_ref: an output pointer to #LassoProvider object variable.
+ * @provider:(transfer full): an output pointer to #LassoProvider object variable.
  *
  * Return the remote provider parsed in the last processing of a SOAP request or a SOAP response.
  *
@@ -1506,7 +1506,7 @@ lasso_wsf_profile_get_remote_provider(LassoWsfProfile *wsf_profile, LassoProvide
  *
  * If a fault is going to be returned as next response, return it.
  *
- * Return value: a #LassoSoapFault, or NULL if none is currently present in the object.
+ * Return value:(transfer none)(allow-none): a #LassoSoapFault, or NULL if none is currently present in the object.
  */
 LassoSoapFault*
 lasso_wsf_profile_get_soap_fault(LassoWsfProfile *wsf_profile)
@@ -1565,7 +1565,7 @@ lasso_wsf_profile_set_status_code(LassoWsfProfile *wsf_profile, const char *stat
  *
  * Return the actual status code for this protocol object.
  *
- * Return value: a string owned by the profile object or NULL.
+ * Return value:(transfer none)(allow-none): a string owned by the profile object or NULL.
  */
 const char*
 lasso_wsf_profile_get_status_code(LassoWsfProfile *wsf_profile) {

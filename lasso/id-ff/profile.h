@@ -178,7 +178,7 @@ LASSO_EXPORT LassoNode* lasso_profile_get_nameIdentifier(LassoProfile *profile);
 
 LASSO_EXPORT char* lasso_profile_get_artifact(LassoProfile *profile);
 LASSO_EXPORT char* lasso_profile_get_artifact_message(LassoProfile *profile);
-LASSO_EXPORT void  lasso_profile_set_artifact_message(LassoProfile *profile, char *message);
+LASSO_EXPORT void  lasso_profile_set_artifact_message(LassoProfile *profile, const char *message);
 LASSO_EXPORT LassoServer* lasso_profile_get_server(LassoProfile *profile);
 LASSO_EXPORT void lasso_profile_set_signature_hint(LassoProfile *profile,
 		LassoProfileSignatureHint signature_hint);

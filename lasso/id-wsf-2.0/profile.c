@@ -663,7 +663,7 @@ lasso_idwsf2_profile_get_soap_envelope_response(LassoIdWsf2Profile *idwsf2_profi
  * Return the NameIdentifier found in a WS-Security authentication token, when Bearer or SAML
  * security mechanism is used.
  *
- * Return value: (allow-none): a #LassoNode object or NULL.
+ * Return value:(transfer full)(allow-none): a #LassoNode object or NULL.
  */
 LassoNode *
 lasso_idwsf2_profile_get_name_identifier(LassoIdWsf2Profile *idwsf2_profile)

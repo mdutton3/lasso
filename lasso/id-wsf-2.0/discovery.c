@@ -431,7 +431,7 @@ cleanup:
  * lasso_idwsf2_discovery_add_service_metadata() or
  * lasso_idwsf2_discovery_add_simple_service_metadata().
  *
- * Return value:(element-type LassoIdWsf2DiscoSvcMetadata): the list of metadatas.
+ * Return value:(transfer none)(element-type LassoIdWsf2DiscoSvcMetadata): the list of metadatas.
  */
 GList*
 lasso_idwsf2_discovery_get_metadatas(LassoIdWsf2Discovery *discovery)
@@ -447,7 +447,7 @@ lasso_idwsf2_discovery_get_metadatas(LassoIdWsf2Discovery *discovery)
  *
  * Return the list of wsa:EndpointReference returned by the last discovery query.
  *
- * Return value:(element-type LassoWsAddrEndpointReference)(transfer full): a #GList of
+ * Return value:(transfer none)(element-type LassoWsAddrEndpointReference): a #GList of
  * LassoWsAddrEndpointReference objects, or NULL if none is found.
  */
 GList*
@@ -472,7 +472,7 @@ cleanup:
  *
  * Return the list of SvcMDID, or service metadata ids, returned by the last discovery query.
  *
- * Return value:(element-type utf8): a list of SvcMDID's.
+ * Return value:(transfer none)(element-type utf8): a list of SvcMDID's.
  */
 GList*
 lasso_idwsf2_discovery_get_svcmdids(LassoIdWsf2Discovery *discovery)
@@ -521,7 +521,10 @@ lasso_idwsf2_discovery_get_svcmdids(LassoIdWsf2Discovery *discovery)
  * @discovery: a #LassoIdWsf2Discovery object
  * @security_mech_id:(allow-none):the security mech id to use, if NULL a Bearer mechanism is used.
  *
+ * Build the request message using a security mechanism to authenticate the requester and the target
+ * identity. If none is given Bearer mechanism is used.
  *
+ * Return value: 0 if successful, an error code otherwise.
  */
 gint
 lasso_idwsf2_discovery_build_request_msg(LassoIdWsf2Discovery *discovery,

@@ -211,7 +211,7 @@ lasso_data_service_add_query_item(LassoDataService *service,
  * @service: a #LassoDataService
  * @select: the select string of the query item to found
  * @item_id: the item id of the query item to found
- * @output: a #LassoDstQueryItem handle to store the result object, its reference count is not
+ * @output:(transfer none): a #LassoDstQueryItem handle to store the result object, its reference count is not
  * incremented.
  *
  * Look up the first query item in the current request matching the given criteria, @select or
@@ -300,7 +300,7 @@ lasso_data_service_build_response_msg(LassoDataService *service)
 /**
  * lasso_data_service_get_answers:
  * @service: a #LassoDataService object.
- * @output: (element-type xmlNode): an xmlNode** pointer where to put the xmlNode* of the result
+ * @output:(transfer full)(allow-none)(element-type xmlNode): an xmlNode** pointer where to put the xmlNode* of the result
  *
  * Get all the xmlNode content of the first Data element of the QueryResponse message.
  *
@@ -1240,7 +1240,7 @@ lasso_data_service_new_full(LassoServer *server, LassoDiscoResourceOffering *off
  * @service: a #LassoDataService object
  * @resource_data: (allow-none): an xmlnode representing the resource data of the service
  *
- *  FIXME: add documentation
+ * Set the resource data content.
  */
 void
 lasso_data_service_set_resource_data(LassoDataService *service, const xmlNode *resource_data)
@@ -1250,10 +1250,12 @@ lasso_data_service_set_resource_data(LassoDataService *service, const xmlNode *r
 
 
 /**
- * lasso_data_service_set_resource_data:
+ * lasso_data_service_get_resource_data:
  * @service: a #LassoDataService object
  *
- * FIXME: add documentation.
+ * Return the XML resrouce data in this data service.
+ *
+ * Return value:(transfer full)(allow-none): a newly allocated #xmlNode or NULL.
  */
 xmlNode *
 lasso_data_service_get_resource_data(LassoDataService *service)
