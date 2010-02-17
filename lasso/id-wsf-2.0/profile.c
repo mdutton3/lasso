@@ -459,7 +459,9 @@ cleanup:
  * @profile: a #LassoIdWsf2Profile object
  * @redirect_url: an URL where the user must be redirected
  *
- * Create a SOAP fault asking for user
+ * Create a SOAP fault containing a RedirectRequest element, with a redirectURL property set to
+ * @redirect_url concatenated with the parameter "transactionID" set to the messageID of the
+ * response message.
  *
  * Return value: 0 if successful, an error code otherwise.
  */
@@ -468,10 +470,12 @@ lasso_idwsf2_profile_redirect_user_for_interaction(
 	LassoIdWsf2Profile *profile, const gchar *redirect_url, gboolean for_data)
 {
 	LassoSoapFault *fault = NULL;
+	char *url = NULL;
 	LassoIdWsf2Sb2RedirectRequest *redirect_request = NULL;
 	LassoIdWsf2Sb2UserInteractionHint hint;
 	LassoIdWsf2Sb2UserInteractionHeader *user_interaction_header;
 	LassoSoapEnvelope *soap_envelope_request;
+	LassoWsAddrAttributedURI *messageID;
 	int rc = 0;
 
 	lasso_bad_param(IDWSF2_PROFILE, profile);
@@ -502,11 +506,22 @@ lasso_idwsf2_profile_redirect_user_for_interaction(
 	fault = (LassoSoapFault*)profile->parent.response;
 	lasso_assign_string(fault->faultcode, LASSO_SOAP_FAULT_CODE_SERVER);
 	lasso_assign_string(fault->faultstring, "Server error");
-	redirect_request = lasso_idwsf2_sb2_redirect_request_new_full(redirect_url);
+	messageID = lasso_soap_envelope_get_message_id(_get_soap_envelope_response(profile), FALSE);
+	if (! messageID || ! messageID->content) {
+		goto_cleanup_with_rc(
+				LASSO_WSF_PROFILE_ERROR_INVALID_OR_MISSING_REFERENCE_TO_MESSAGE_ID);
+	}
+	if (strchr(redirect_url, '?')) {
+		url = g_strconcat(redirect_url, "&transactionID=", messageID->content, NULL);
+	} else {
+		url = g_strconcat(redirect_url, "?transactionID=", messageID->content, NULL);
+	}
+	redirect_request = lasso_idwsf2_sb2_redirect_request_new_full(url);
+	g_free(url);
 	lasso_soap_fault_add_to_detail(fault, (LassoNode*)redirect_request);
 
 cleanup:
-	if (! rc) {
+	if (rc) {
 		LassoIdWsf2UtilStatus *status;
 		const char *status_code = NULL;
 		lasso_idwsf2_profile_init_soap_fault_response(profile);
@@ -528,9 +543,9 @@ cleanup:
 		}
 		if (status_code) {
 			status = lasso_idwsf2_util_status_new_with_code(status_code, NULL);
+			fault->Detail = lasso_soap_detail_new();
+			lasso_list_add_gobject(fault->Detail->any, status);
 		}
-		fault->Detail = lasso_soap_detail_new();
-		lasso_list_add_gobject(fault->Detail->any, status);
 	}
 	lasso_release_gobject(redirect_request);
 	return rc;
