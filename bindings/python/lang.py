@@ -361,11 +361,7 @@ if WSF_SUPPORT:
                 py_args = ', ' + ', '.join(py_args)
                 print >> fd, '    @classmethod'
                 print >> fd, '    def %s(cls%s):' % (constructor_name, py_args)
-                print >> fd, '         obj = cls.__new__(cls)'
-                print >> fd, '         obj._cptr = _lasso.%s(%s)' % (m.name[6:], c_args)
-                print >> fd, '         if obj._cptr is None:'
-                print >> fd, '             raise RuntimeError(\'lasso failed to create object\')'
-                print >> fd, '         return obj'
+                print >> fd, '         return cptrToPy(_lasso.%s(%s))' % (m.name[6:], c_args)
                 print >> fd, ''
 
         # create properties for members
