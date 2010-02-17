@@ -391,11 +391,11 @@ lasso_soap_envelope_get_sb2_user_interaction_hint(LassoSoapEnvelope *soap_envelo
 	header = lasso_soap_envelope_get_sb2_user_interaction_header(soap_envelope);
 	if (header) {
 		hint = header->interact;
-		if (g_strcmp0(hint, LASSO_SB2_USER_INTERACTION_INTERACT_IF_NEEDED))
+		if (g_strcmp0(hint, LASSO_SB2_USER_INTERACTION_INTERACT_IF_NEEDED) == 0)
 			return LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_INTERACT_IF_NEEDED;
-		if (g_strcmp0(hint, LASSO_SB2_USER_INTERACTION_DO_NOT_INTERACT))
+		if (g_strcmp0(hint, LASSO_SB2_USER_INTERACTION_DO_NOT_INTERACT) == 0)
 			return LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_DO_NOT_INTERACT;
-		if (g_strcmp0(hint, LASSO_SB2_USER_INTERACTION_DO_NOT_INTERACT_FOR_DATA))
+		if (g_strcmp0(hint, LASSO_SB2_USER_INTERACTION_DO_NOT_INTERACT_FOR_DATA) == 0)
 			return LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_DO_NOT_INTERACT_FOR_DATA;
 
 	}

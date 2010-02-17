@@ -236,8 +236,8 @@ lasso_data_service_get_query_item(LassoDataService *service,
 	{
 		LassoDstQueryItem *query_item = NULL;
 		lasso_extract_node_or_fail(query_item, query_items->data, DST_QUERY_ITEM, LASSO_ERROR_CAST_FAILED);
-		if ((select && g_strcmp0(select, query_item->Select)) ||
-			(item_id && g_strcmp0(item_id, query_item->itemID)))
+		if ((select && g_strcmp0(select, query_item->Select) == 0) ||
+			(item_id && g_strcmp0(item_id, query_item->itemID) == 0))
 		{
 			if (output) {
 				lasso_assign_new_gobject(*output, query_item);

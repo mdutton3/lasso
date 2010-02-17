@@ -114,7 +114,7 @@ lasso_wsa_endpoint_reference_get_idwsf2_security_context_for_security_mechanism(
 	lasso_foreach_full_begin(LassoIdWsf2DiscoSecurityContext*, context, it1, epr->Metadata->any);
 	if (LASSO_IS_IDWSF2_DISCO_SECURITY_CONTEXT (context)) {
 		lasso_foreach_full_begin(char*, textnode, it2, context->SecurityMechID);
-			if (g_strcmp0 (textnode, security_mech_id) || sech_mech_predicate(textnode)) {
+			if (g_strcmp0 (textnode, security_mech_id) == 0 || sech_mech_predicate(textnode)) {
 				return context;
 			}
 		lasso_foreach_full_end()
