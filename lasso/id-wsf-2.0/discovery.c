@@ -219,16 +219,24 @@ lasso_idwsf2_discovery_status2rc(LassoIdWsf2UtilStatus *status)
 		{ LASSO_IDWSF2_DISCOVERY_STATUS_CODE_NO_RESULTS, LASSO_IDWSF2_DISCOVERY_ERROR_NO_RESULTS },
 		{ LASSO_IDWSF2_DISCOVERY_STATUS_CODE_NOT_FOUND, LASSO_IDWSF2_DISCOVERY_ERROR_NOT_FOUND }
 	};
+	int rc = LASSO_WSF_PROFILE_ERROR_UNKNOWN_STATUS_CODE;
 
 	if (! LASSO_IS_IDWSF2_UTIL_STATUS(status) || ! status->code)
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 
 	for (i = 0; i < G_N_ELEMENTS(code2rc); ++i) {
 		if (g_strcmp0(status->code, code2rc[i].code) == 0) {
-			return code2rc[i].rc;
+			rc = code2rc[i].rc;
 		}
 	}
-	return LASSO_WSF_PROFILE_ERROR_UNKNOWN_STATUS_CODE;
+	/* check second level if necessary */
+	if (status->Status && rc == LASSO_IDWSF2_DISCOVERY_ERROR_FAILED) {
+		int rc2 = lasso_idwsf2_discovery_status2rc(status->Status->data);
+		if (rc2 != LASSO_WSF_PROFILE_ERROR_UNKNOWN_STATUS_CODE &&
+				rc2 != LASSO_PROFILE_ERROR_MISSING_STATUS_CODE)
+			rc = rc2;
+	}
+	return rc;
 }
 
 #define declare_init_request(name, request_element_type, constructor) \
