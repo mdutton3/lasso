@@ -1837,6 +1837,9 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	if (typename) {
 		node = lasso_node_new_from_xmlNode_with_type(xmlnode, typename);
 	}
+	if (! node) {
+		goto cleanup;
+	}
 	if (! fromXsi) {
 		/* if the typename was not obtained via xsi:type but through mapping of the element
 		 * name then keep the element name */
@@ -1856,6 +1859,7 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 
 
 	}
+cleanup:
 	lasso_release(typename);
 
 	return node;
