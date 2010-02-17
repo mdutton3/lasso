@@ -32,6 +32,7 @@ LASSO_BUILDDIR = os.environ.get('LASSO_BUILDDIR') or \
     CONFIG.get('LASSO_BUILDDIR') or \
     os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
+os.environ['LANG'] = 'C'
 os.environ['LD_LIBRARY_PATH'] = os.path.join(LASSO_BUILDDIR, "lasso", ".libs") + ":" + \
         os.environ.get('LD_LIBRARY_PATH', '')
 os.environ['PYTHONPATH'] = os.path.join(LASSO_BUILDDIR, "bindings", "python") + \
