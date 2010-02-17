@@ -47,6 +47,7 @@
 #include "../xml/xml_enc.h"
 #include "../xml/id-wsf-2.0/sb2_sender.h"
 #include "../xml/id-wsf-2.0/sb2_redirect_request.h"
+#include "../xml/id-wsf-2.0/util_status.h"
 
 #include "../xml/ws/wsse_security_header.h"
 
@@ -469,22 +470,32 @@ lasso_idwsf2_profile_redirect_user_for_interaction(
 	LassoSoapFault *fault = NULL;
 	LassoIdWsf2Sb2RedirectRequest *redirect_request = NULL;
 	LassoIdWsf2Sb2UserInteractionHint hint;
+	LassoIdWsf2Sb2UserInteractionHeader *user_interaction_header;
+	LassoSoapEnvelope *soap_envelope_request;
 	int rc = 0;
 
 	lasso_bad_param(IDWSF2_PROFILE, profile);
 	lasso_check_non_empty_string(redirect_url);
 
-	hint = lasso_soap_envelope_get_sb2_user_interaction_hint(
-			lasso_idwsf2_profile_get_soap_envelope_request(profile));
+	soap_envelope_request = lasso_idwsf2_profile_get_soap_envelope_request(profile);
+	if (! soap_envelope_request) {
+		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+	}
+	hint = lasso_soap_envelope_get_sb2_user_interaction_hint(soap_envelope_request);
 	switch (hint) {
 		case LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_DO_NOT_INTERACT:
-			return LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED;
+			goto_cleanup_with_rc(LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED);
 		case LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_DO_NOT_INTERACT_FOR_DATA:
 			if (for_data) {
-				return LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED_FOR_DATA;
+				goto_cleanup_with_rc(LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED_FOR_DATA);
 			}
 		default:
 			break;
+	}
+	user_interaction_header =
+		lasso_soap_envelope_get_sb2_user_interaction_header(soap_envelope_request, FALSE);
+	if (user_interaction_header == FALSE) {
+		goto_cleanup_with_rc(LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST_UNSUPPORTED_BY_REQUESTER);
 	}
 
 	lasso_check_good_rc(lasso_idwsf2_profile_init_soap_fault_response(profile));
@@ -495,6 +506,32 @@ lasso_idwsf2_profile_redirect_user_for_interaction(
 	lasso_soap_fault_add_to_detail(fault, (LassoNode*)redirect_request);
 
 cleanup:
+	if (! rc) {
+		LassoIdWsf2UtilStatus *status;
+		const char *status_code = NULL;
+		lasso_idwsf2_profile_init_soap_fault_response(profile);
+		fault = (LassoSoapFault*)profile->parent.response;
+		lasso_assign_string(fault->faultcode, LASSO_SOAP_FAULT_CODE_SERVER);
+		switch (rc) {
+			case LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED:
+				status_code = LASSO_IDWSF2_SB2_STATUS_CODE_SERVER_INTERACTION_REQUIRED;
+				break;
+			case LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED_FOR_DATA:
+				status_code = LASSO_IDWSF2_SB2_STATUS_CODE_SERVER_INTERACTION_REQUIRED;
+				break;
+			case LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST_UNSUPPORTED_BY_REQUESTER:
+				status_code = "RedirectRequestNeeded";
+				break;
+			default:
+				status_code = "UnknownInteraction error";
+				break;
+		}
+		if (status_code) {
+			status = lasso_idwsf2_util_status_new_with_code(status_code, NULL);
+		}
+		fault->Detail = lasso_soap_detail_new();
+		lasso_list_add_gobject(fault->Detail->any, status);
+	}
 	lasso_release_gobject(redirect_request);
 	return rc;
 }
@@ -815,9 +852,12 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (! wsf2_profile->private_data) {
 		wsf2_profile->private_data = g_new0(LassoIdWsf2ProfilePrivate, 1);
 	}
-	epr_node = xmlSecFindChild(xmlnode, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_EPR, BAD_CAST LASSO_LASSO_HREF);
-	request_node = xmlSecFindChild(xmlnode, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_REQUEST, BAD_CAST LASSO_LASSO_HREF);
-	response_node = xmlSecFindChild(xmlnode, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_RESPONSE, BAD_CAST LASSO_LASSO_HREF);
+	epr_node = xmlSecFindChild(xmlnode, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_EPR, BAD_CAST
+			LASSO_LASSO_HREF);
+	request_node = xmlSecFindChild(xmlnode, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_REQUEST,
+			BAD_CAST LASSO_LASSO_HREF);
+	response_node = xmlSecFindChild(xmlnode, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_RESPONSE,
+			BAD_CAST LASSO_LASSO_HREF);
 
 	if (epr_node) {
 		epr = (LassoWsAddrEndpointReference*)lasso_node_new_from_xmlNode(epr_node);
