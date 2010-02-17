@@ -27,8 +27,164 @@
  * This profile Send logout notifications between providers. Any receiving provider must retransmit
  * the notification to any other providers with which it shares the current identity by any means
  * supported by the two, that is any provider federated with the current provider. There can be
- * partial failures if no binding can be found to notify a federating partner.
+ * partial failures if no binding can be found to notify a federating partner or if a partner fails
+ * to respond.
  *
+ * <para>It is generally advised to apply the local logout transaction before sending a logout request to
+ * a partner. In short:
+ * <itemizedlist>
+ * <listitem><para>an identity provider receiving a logout request should kill the local
+ * session before sending logout request to other service provider and proxyied identity
+ * providers.</para></listitem>
+ * <listitem><para>a service provider intitiating a logout request must first kill its local session,
+ * then proceeds with the logout exchange with its identity provider</para></listitem>
+ * </itemizedlist></para>
+ *
+ * <example>
+ * <title>Service Provider Initiated Logout</title>
+ * <programlisting>
+ * LassoLogout *logout;
+ * char *session_dump; // must contain the session dump
+ *                     // for the current user
+ * int rc; // hold return codes
+ * char *soap_response;
+ *
+ * LassoHttpMethod method; // method to use, LASSO_HTTP_METHOD_REDIRECT, 
+ *                         // LASSO_HTTP_METHOD_POST or LASSO_HTTP_METHOD_SOAP,
+ *                         // other methods are rarely supported
+ *
+ * logout = lasso_logout_new(server);
+ * lasso_profile_set_session_from_dump(&logout-&gt;parent, session_dump);
+ * // the second argument can be NULL, lasso_logout_init_request() will automatically choose the
+ * // identity provider from the first assertion int the session
+ * rc = lasso_logout_init_request(login, "http://identity-provider-id/",
+ *                 method);
+ * if (rc != 0) {
+ *   ... // handle errors, most of them are related to bad initialization
+ *       // or unsupported binding
+ * }
+ * rc = lasso_logout_build_request_msg(logout);
+ * if (rc != 0) {
+ *   ... // handle errors, most of them are related to bad initialization
+ *       // or impossibility to build the query string (missing private keys for signing)
+ * }
+ *
+ * // now send the request
+ * switch (method) {
+ *     case LASSO_HTTP_METHOD_REDIRECT:
+ *         // LASSO_PROFILE(logout)-&gt;msg_url contains the URL where the 
+ *         // User Agent must be redirected
+ *         ...
+ *         break;
+ *     case LASSO_HTTP_METHOD_POST:
+ *        // you must build a form with a field name SAMLRequest (SAML 2.0) or LAREQ (ID-FF 1.2)
+ *        // with the content of LASSO_PROFILE(logout)-&gt;msg_body
+ *        // posting to the address LASSO_PROFILE(logout)-&gt;msg_url
+ *        ...
+ *        break;
+ *     case LASSO_HTTP_SOAP:
+ *        // makes a SOAP call, soap_call is NOT a Lasso function
+ *        soap_response = soap_call(login-&gt;parent.msg_url, login-&gt;parent.msg_body);
+ *        rc = lasso_logout_process_response_msg(logout, soap_response);
+ *        if (rc != 0) {
+ *             // handle errors, important ones are LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE meaning
+ *             // that one other service provider of the current session cannot be contacted by the
+ *             // identity provider with the current binding, for example it only accept REDIRECT
+ *             (asynchronous-binding) or
+ *             // POST an we are using SOAP (synchronous-binding).
+ *             ...
+ *        }
+ *     default:
+ *         // other binding neither are frequent or largely supported
+ *         // so report an error
+ *         break;
+ *     }
+ * </programlisting>
+ * </example>
+ *
+ * <para>The next snippet show how to implement a logout endpoint, to receive a logout request and
+ * respond.</para>
+ *
+ * <example>
+ * <title>Service Provider Logout Request Endpoint</title>
+ * <programlisting>
+ * LassoLogout *logout;
+ * char *session_dump;
+ * char *request_method = getenv("REQUEST_METHOD");
+ * int rc;
+ * int method;
+ *
+ * logout = lasso_logout_new(server);
+ * // server must be previously initialized, it can be kept around
+ * // and used for many transaction, it is never modified by any profile
+ * if (strcmp(request_method. "GET") == 0) {
+ *     method = LASSO_HTTP_METHOD_REDIRECT;
+ *     char query_string = getenv("QUERY_STRING");
+ *     rc = lasso_logout_process_request_msg(logout, query_string);
+ *     if (rc != 0) {
+ *         // handle errors
+ *         ...
+ *     }
+ * } else if (strcmp(request_method, "POST") == 0) {
+ *     char *message;
+ *     // read submitted content if this is a form, put LAREQ or SAMLRequest field into message and
+	 *     set method to LASSO_HTTP_METHOD_POST
+ *     // if content type is application/xml then put the full body of the POST inside message and
+ *     // set method to LASSO_HTTP_METHOD_SOAP
+ *     rc = lasso_logout_process_request_msg(logout, message);
+ *     if (rc != 0) {
+ *         // handle errors
+ *         ...
+ *     }
+ * }
+ * protocolProfile = lasso_provider_get_protocol_conformance(LASSO_PROVIDER(server));
+ * if (protocolProfile == LASSO_LIBERTY_1_2) {
+ *     char *session_index;
+ *     LassoSamlNameIdentifier *name_id;
+ *     LibLogoutRequest *logout_request;
+ *
+ *     logout_request = LIB_LOGOUT_REQUEST(LASSO_PROFILE(logout)-&gt;request);
+ *     session_index = logout_request-&gt;SessionIndex;
+ *     name_id = logout_request-&gt;NameIdentifier;
+ *     // lookup the session dump using session_index and name_id
+ * } else if (protocolProfile == LASSO_SAML_2_0) {
+ *     char *session_index;
+ *     LassoSaml2NameID *name_id;
+ *     LassoSamlp2LogoutRequest *logout_request;
+ *
+ *     logout_request = LASSO_SAMLP2_LOGOUT_REQUEST(LASSO_PROFILE(logout)-&gt;request);
+ *     session_index = logout_request-&gt;SessionIndex;
+ *     name_id = logout_request-&gt;NameID;
+ *     // lookup the session dump using session_index and name_id
+ * }
+ * lasso_profile_set_session_from_dump(LASSO_PROFILE(logout), session_dump);
+ * // you can check other property of the request here if you want
+ * // 
+ * if (request is accepted) {
+ *     rc = lasso_logout_validate_request(logout);
+ *     if (rc != 0) {
+ *         // handle errors..
+ *         ...
+ *     } else {
+ *     .... // kill the local session
+ *          // if local server is an identity provider, then traverse the session using
+ *          // lasso_logout_get_next_providerID() and send logout request to all logged 
+ *          // service providers.
+ *     }
+ * }
+ * // if lasso_logout_validate_request() was not called this will automatically create a Failure
+ * // response.
+ * rc = lasso_logout_build_response_msg(logout);
+ * if (rc != 0) {
+ *     // handle errors..
+ *     ...
+ * }
+ * // the response is produced with the same binding as the request
+ * // see the previous request example for how to send the response
+ * // the only change is for SOAP, you just need to print the msg_body as page content with a
+ * // Content-type of application/xml.
+ * </programlisting>
+ * </example>
  */
 
 #include "../xml/private.h"

@@ -327,7 +327,7 @@ cleanup:
  * <listitem><para>LASSO_PROFILE_ERROR_INVALID_MSG if we cannot parse the message,</para></listitem>
  * <listitem><para>LASSO_SOAP_ERROR_MISSING_BODY if the message has no body
  * content.</para></listitem>
- * <itemizedlist>
+ * </itemizedlist>
  */
 gint
 lasso_idwsf2_profile_process_request_msg(LassoIdWsf2Profile *wsf2_profile, const gchar *message)
@@ -603,6 +603,7 @@ lasso_idwsf2_profile_build_response_msg(LassoIdWsf2Profile *idwsf2_profile)
  * <listitem><para>LASSO_SOAP_ERROR_MISSING_BODY if no body element is found,</para></listitem>
  * <listitem><para>LASSO_PROFILE_ERROR_MISSING_RESPONSE if the body element is
  * empty.</para></listitem>
+ * </itemizedlist>
  */
 gint
 lasso_idwsf2_profile_process_response_msg(LassoIdWsf2Profile *profile, const gchar *message)
