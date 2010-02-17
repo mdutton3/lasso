@@ -92,8 +92,11 @@ struct _LassoIdWsf2DiscoveryPrivate
 	gboolean dispose_has_run;
 	GList *metadatas; /* of LassoIdWsf2DiscoSvcMetadata* */
 	GList *requested_services; /* of LassoIdWsf2DiscoRequestedService */
-	GList *svc_md_ids; /* of utf8 */
 };
+
+#define LASSO_IDWSF2_DISCOVERY_ELEMENT_METADATAS "Metadatas"
+#define LASSO_IDWSF2_DISCOVERY_ELEMENT_REQUESTED_SERVICES "RequestedServices"
+#define LASSO_IDWSF2_DISCOVERY_ELEMENT_REQUESTED_SERVICES "RequestedServices"
 
 
 static void
@@ -1290,6 +1293,97 @@ instance_init(LassoIdWsf2Discovery *discovery)
 	discovery->private_data->dispose_has_run = FALSE;
 }
 
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
+{
+	xmlNode *xmlnode;
+	LassoIdWsf2Discovery *discovery = (LassoIdWsf2Discovery*)node;
+
+	if (! LASSO_IS_IDWSF2_PROFILE(node))
+		return NULL;
+
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+
+	if (xmlnode && discovery->private_data) {
+		LassoIdWsf2DiscoveryPrivate *pdata = discovery->private_data;
+		if (pdata->metadatas) {
+			xmlNode *metadatas;
+			GList *i;
+			metadatas = xmlNewChild(xmlnode, NULL, BAD_CAST LASSO_IDWSF2_DISCOVERY_ELEMENT_METADATAS, NULL);
+			lasso_foreach(i, pdata->metadatas) {
+				xmlAddChild(metadatas, lasso_node_get_xmlNode(i->data, lasso_dump));
+			}
+		}
+		if (pdata->requested_services) {
+			xmlNode *requested_services;
+			GList *i;
+			requested_services = xmlNewChild(xmlnode, NULL, BAD_CAST LASSO_IDWSF2_DISCOVERY_ELEMENT_REQUESTED_SERVICES, NULL);
+			lasso_foreach(i, pdata->requested_services) {
+				xmlAddChild(requested_services, lasso_node_get_xmlNode(i->data, lasso_dump));
+			}
+		}
+	}
+
+	return xmlnode;
+}
+
+static int
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	LassoIdWsf2Discovery *discovery = (LassoIdWsf2Discovery*)node;
+	xmlNode *metadatas_node, *requested_services_node;
+	LassoIdWsf2DiscoveryPrivate *pdata;
+
+	if (! LASSO_IS_IDWSF2_DISCOVERY(discovery))
+		return LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ;
+
+	parent_class->init_from_xml(node, xmlnode);
+
+	if (xmlnode == NULL)
+		return LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED;
+
+	metadatas_node = xmlSecFindChild(xmlnode, BAD_CAST  LASSO_IDWSF2_DISCOVERY_ELEMENT_METADATAS, BAD_CAST  LASSO_LASSO_HREF);
+	requested_services_node = xmlSecFindChild(xmlnode, BAD_CAST LASSO_IDWSF2_DISCOVERY_ELEMENT_REQUESTED_SERVICES, BAD_CAST LASSO_LASSO_HREF);
+
+	if (! discovery->private_data) {
+		discovery->private_data = g_new0(LassoIdWsf2DiscoveryPrivate, 1);
+	}
+	pdata = discovery->private_data;
+
+	if (metadatas_node) {
+		xmlNode *it;
+		for (it = xmlSecGetNextElementNode(metadatas_node->children);
+				it != NULL; 
+				it = xmlSecGetNextElementNode(it->next)) {
+			LassoIdWsf2DiscoSvcMetadata *metadata;
+			metadata = (LassoIdWsf2DiscoSvcMetadata*)lasso_node_new_from_xmlNode(it);
+			if (! LASSO_IS_IDWSF2_DISCO_SVC_METADATA(metadata)) {
+				lasso_release_gobject(metadata);
+				goto error;
+			}
+			lasso_list_add_new_gobject(pdata->metadatas, metadata);
+		}
+	}
+	if (requested_services_node) {
+		xmlNode *it;
+		for (it = xmlSecGetNextElementNode(requested_services_node->children);
+				it != NULL; 
+				it = xmlSecGetNextElementNode(it->next)) {
+			LassoIdWsf2DiscoRequestedService *metadata;
+			metadata = (LassoIdWsf2DiscoRequestedService*)lasso_node_new_from_xmlNode(it);
+			if (! LASSO_IS_IDWSF2_DISCO_REQUESTED_SERVICE(metadata)) {
+				lasso_release_gobject(metadata);
+				goto error;
+			}
+			lasso_list_add_new_gobject(pdata->requested_services, metadata);
+		}
+	}
+
+	return 0;
+error:
+	return LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED;
+}
+
 static void
 class_init(LassoIdWsf2DiscoveryClass *klass)
 {
@@ -1298,6 +1392,9 @@ class_init(LassoIdWsf2DiscoveryClass *klass)
 	lasso_node_class_set_ns(LASSO_NODE_CLASS(klass), LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;
+	klass->parent.parent.parent.get_xmlNode = get_xmlNode;
+	klass->parent.parent.parent.init_from_xml = init_from_xml;
+
 }
 
 GType
