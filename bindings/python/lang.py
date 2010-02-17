@@ -70,6 +70,33 @@ class Binding:
     def is_pygobject(self, t):
         return t and is_object((t,'',{})) and t not in self.binding_data.enums
 
+    def free_value(self, fd, type, name = None):
+        if not name:
+            name = arg_anme(type)
+        if not name:
+            raise Exception('Cannot free, missing a name')
+        if is_cstring(type):
+            print >>fd, '   lasso_release_string(%s);' % name
+        elif is_int(type, self.binding_data):
+            pass
+        elif is_xml_node(type):
+            print >>fd, '   lasso_release_xml_node(%s);' % name
+        elif is_glist(type):
+            etype = element_type(type)
+            if is_cstring(etype):
+                '   lasso_release_list_of_strings(%s);' % name
+            elif is_object(etype):
+                '   lasso_release_list_of_gobjects(%s);' % name
+            else:
+                raise Exception('Unsupported caller owned return type %s' % ((repr(type), name),))
+        elif is_hashtable(type):
+            raise Exception('Unsupported caller owned return type %s' % ((repr(type), name),))
+        elif is_object(type):
+            print >> fd, '    if (return_value) g_object_unref(%s);' % name
+        else:
+            raise Exception('Unsupported caller owned return type %s' % ((repr(type), name),))
+
+
     def generate(self):
         fd = open('lasso.py', 'w')
         self.generate_header(fd)
@@ -504,6 +531,8 @@ if WSF_SUPPORT:
             print >> fd, ''
         # transform methods to properties
         for m in methods:
+            if len(m.args) > 1:
+                continue
             name = m.rename or m.name
             suffix = name[len(method_prefix)+len('get_'):]
             if clss.getMember(suffix):
@@ -795,7 +824,6 @@ register_constants(PyObject *d)
         elif is_cstring(arg) and is_transfer_full(arg):
             print >> fd, '    if (%s) {' % return_var_name
             print >> fd, '        %s = PyString_FromString(%s);' % (return_pyvar_name, return_var_name)
-            print >> fd, '        g_free(%s);' % return_var_name
             print >> fd, '    } else {'
             print >> fd, '        %s = noneRef();' % return_pyvar_name
             print >> fd, '    }'
@@ -982,8 +1010,8 @@ register_constants(PyObject *d)
                 print >>sys.stderr, 'W: cannot assign return value of', m
                 raise
 
-            if m.return_owner and self.is_pygobject(m.return_type):
-                print >> fd, '    if (return_value) g_object_unref(return_value);'
+            if is_transfer_full(m.return_arg):
+                self.free_value(fd, m.return_arg, name = 'return_value')
             print >> fd, '    return return_pyvalue;'
         print >> fd, '}'
         print >> fd, ''
