@@ -1391,7 +1391,7 @@ static void
 class_init(LassoIdWsf2DiscoveryClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
-	lasso_node_class_set_nodename(LASSO_NODE_CLASS(klass), "Discovery");
+	lasso_node_class_set_nodename(LASSO_NODE_CLASS(klass), "IdWsf2Discovery");
 	lasso_node_class_set_ns(LASSO_NODE_CLASS(klass), LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;

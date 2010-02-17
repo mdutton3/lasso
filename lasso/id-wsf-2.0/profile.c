@@ -827,19 +827,24 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		LassoIdWsf2ProfilePrivate *pdata = wsf2_profile->private_data;
 		if (pdata->epr) {
 			xmlNode *epr;
-			epr = xmlNewChild(xmlnode, NULL, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_EPR, NULL);
+			epr = xmlNewChild(xmlnode, NULL, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_EPR,
+					NULL);
 			xmlAddChild(epr, lasso_node_get_xmlNode((LassoNode*) pdata->epr,
 						lasso_dump));
 		}
 		if (pdata->soap_envelope_request) {
 			xmlNode *request;
-			request = xmlNewChild(xmlnode, NULL, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_REQUEST, NULL);
-			xmlAddChild(request, lasso_node_get_xmlNode((LassoNode*)pdata->soap_envelope_request,
+			request = xmlNewChild(xmlnode, NULL, BAD_CAST
+					LASSO_IDWSF2_PROFILE_ELEMENT_REQUEST, NULL);
+			xmlAddChild(request,
+					lasso_node_get_xmlNode(
+						(LassoNode*)pdata->soap_envelope_request,
 						lasso_dump));
 		}
 		if (pdata->soap_envelope_response) {
 			xmlNode *response;
-			response = xmlNewChild(xmlnode, NULL, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_RESPONSE, NULL);
+			response = xmlNewChild(xmlnode, NULL, BAD_CAST
+					LASSO_IDWSF2_PROFILE_ELEMENT_RESPONSE, NULL);
 			xmlAddChild(response, lasso_node_get_xmlNode((LassoNode*)
 						pdata->soap_envelope_response, lasso_dump));
 		}
@@ -873,6 +878,19 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			BAD_CAST LASSO_LASSO_HREF);
 	response_node = xmlSecFindChild(xmlnode, BAD_CAST LASSO_IDWSF2_PROFILE_ELEMENT_RESPONSE,
 			BAD_CAST LASSO_LASSO_HREF);
+
+	if (epr_node) {
+		epr_node = xmlSecFindChild(epr_node, BAD_CAST "EndpointReference", BAD_CAST
+				LASSO_WSA_HREF);
+	}
+	if (request_node) {
+		request_node = xmlSecFindChild(request_node, BAD_CAST "Envelope", BAD_CAST
+				LASSO_SOAP_ENV_HREF);
+	}
+	if (response_node) {
+		response_node = xmlSecFindChild(response_node, BAD_CAST "Envelope", BAD_CAST
+				LASSO_SOAP_ENV_HREF);
+	}
 
 	if (epr_node) {
 		epr = (LassoWsAddrEndpointReference*)lasso_node_new_from_xmlNode(epr_node);
