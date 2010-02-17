@@ -22,7 +22,8 @@
   </ul>
 
   <ul>
-   <li><a href="api-reference/index.html">API Reference</a></li>
+   <li><a href="api-reference/index.html">API Reference (stable release)</a></li>
+   <li><a href="api-reference-dev/index.html">API Reference (latest development version)</a></li>
   </ul>
 
 
