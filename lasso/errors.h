@@ -812,6 +812,13 @@
  * The last parsed response contained a SOAP fault with a RedirectRequest element.
  */
 #define LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST 1115
+/**
+ * LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST_UNSUPPORTED_BY_REQUESTER:
+ *
+ * The requester does not support SOAP Fault containing RedirectRequest elements. So it is not
+ * possible to use lasso_idwsf2_profile_redirect_user_for_interaction().
+ */
+#define LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST_UNSUPPORTED_BY_REQUESTER 1116
 
 /* ID-WSF 2 Discovery */
 /**

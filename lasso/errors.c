@@ -321,6 +321,8 @@ lasso_strerror(int error_code)
 			return "Security SOAP Header is missing";
 		case LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST:
 			return "The last parsed response contained a SOAP fault with a RedirectRequest element.";
+		case LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST_UNSUPPORTED_BY_REQUESTER:
+			return "possible to use lasso_idwsf2_profile_redirect_user_for_interaction().";
 		case LASSO_WSF_PROFILE_ERROR_SECURITY_MECHANISM_CHECK_FAILED:
 			return "Check for a security mechanism upon a received request failed.";
 		case LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED:
@@ -344,7 +346,7 @@ lasso_strerror(int error_code)
 		case LASSO_XML_ERROR_INVALID_FILE:
 			return "Invalid XML file";
 		case LASSO_XML_ERROR_MISSING_NAMESPACE:
-			return "LASSO_XML_ERROR_MISSING_NAMESPACE";
+			return "A namespace is missing.";
 		case LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND:
 			return "Unable to get content of element.";
 		case LASSO_XML_ERROR_NODE_NOT_FOUND:
