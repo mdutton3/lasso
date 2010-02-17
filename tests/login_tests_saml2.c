@@ -153,6 +153,7 @@ START_TEST(test02_saml2_serviceProviderLogin)
 	char *spSessionDump = NULL;
 	char *spLoginDump = NULL, *idpLoginDump = NULL;
 	char *found = NULL;
+	LassoSaml2Assertion *assertion;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
@@ -212,6 +213,10 @@ START_TEST(test02_saml2_serviceProviderLogin)
 			"FIXME: reauthenticateOnOrAfter",
 			"FIXME: notBefore",
 			"FIXME: notOnOrAfter");
+	assertion = (LassoSaml2Assertion*)lasso_login_get_assertion(idpLoginContext);
+	fail_unless(LASSO_IS_SAML2_ASSERTION(assertion));
+	lasso_saml2_assertion_set_basic_conditions(LASSO_SAML2_ASSERTION(assertion), 60, 120, FALSE);
+	lasso_release_gobject(assertion);
 	rc = lasso_login_build_artifact_msg(idpLoginContext, LASSO_HTTP_METHOD_ARTIFACT_GET);
 	fail_unless(rc == 0, "lasso_login_build_artifact_msg failed");
 
@@ -275,6 +280,11 @@ START_TEST(test02_saml2_serviceProviderLogin)
 	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
 	fail_unless(rc == 0, "lasso_login_process_response_msg failed");
 	rc = lasso_login_accept_sso(spLoginContext);
+	assertion = (LassoSaml2Assertion*)lasso_login_get_assertion(spLoginContext);
+	fail_unless(LASSO_IS_SAML2_ASSERTION(assertion));
+	fail_unless(lasso_saml2_assertion_validate_conditions(assertion, spLoginContext->parent.server->parent.ProviderID) == LASSO_SAML2_ASSERTION_VALID, "assertion conditions check failed");
+	fail_unless(lasso_saml2_assertion_validate_conditions(assertion, "coin") == LASSO_SAML2_ASSERTION_INVALID, "assertion conditions did not fail");
+	lasso_release_gobject(assertion);
 	fail_unless(rc == 0, "lasso_login_accept_sso failed");
 	fail_unless(LASSO_PROFILE(spLoginContext)->identity != NULL,
 			"spLoginContext has no identity");
