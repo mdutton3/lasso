@@ -48,7 +48,7 @@ typedef enum {
 
 LASSO_EXPORT char* lasso_soap_envelope_sb2_get_provider_id(LassoSoapEnvelope *soap_envelope);
 
-LASSO_EXPORT char* lasso_soap_envelope_sb2_get_redirect_request_url(
+LASSO_EXPORT const char* lasso_soap_envelope_sb2_get_redirect_request_url(
 		LassoSoapEnvelope *soap_envelope);
 
 LASSO_EXPORT LassoIdWsf2Sb2TargetIdentity* lasso_soap_envelope_sb2_get_target_identity_header(

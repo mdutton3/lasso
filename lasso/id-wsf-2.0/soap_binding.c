@@ -45,6 +45,9 @@
 		} \
 	}
 
+inline static LassoNode* _get_node(GList **list, GType node_type, const char *node_name,
+		const char *node_namespace, const char *node_prefix, gboolean create);
+
 /**
  * lasso_soap_envelope_sb2_get_provider_id:
  * @soap_envelope: a #LassoSoapEnvelope object
@@ -68,19 +71,34 @@ lasso_soap_envelope_sb2_get_provider_id(LassoSoapEnvelope *soap_envelope)
  * lasso_soap_envelope_sb2_get_redirect_request_url:
  * @soap_envelope: a #LassoSoapEnvelope object
  *
- * Return the redirect request URL from the sb2:RedirectRequest header.
+ * <p>Return the redirect request URL from the sb2:RedirectRequest SOAP Fault detail.</p>
  *
- * Return value: the redirect URL string or NULL if no sb2:RedirectRequest header is present.
+ * <p>The WSC MUST verify that this URL belong to the WSP. You can do this by comparing the domain
+ * with the one in the @LassoProfile.msg_url field</p>
+ * <p>The WSC MUST redirect the User Agent to this URL with a GET or POST request. It MUST add a
+ * parameter named ReturnToURL giving the URL where the WSP will send the User Agent after the
+ * interaction. It MAY add an IDP parameter indicating to the WSP how to authenticate the principal
+ * if no preexisting session with the User Agent exists</p>
+ *<p>The WSP must check that the ReturnToURL belon to the WSP, by using the providerID URL for example.</p>
+  <p>After the interaction the WSC must redirect the User Agent to the ReturnToURL URL adding a parameter named ResendMessage. If ResendMessage is 0 or false, it means that the principal refused to continue the process. Any other value means that the prinicpal accepted and so the WSC can try again its request.</p>
+  <p>In order to succeed the request need to refer to the SOAP Fault response containing the RedirectRequest element. See lasso_soap_envelope_get_relates_to(), and #LassoWsAddrAttributedURI.</p>
+ *
+ * Return value:(transfer none)(allow-none): the redirect URL string or NULL if no sb2:RedirectRequest detail is present.
  */
-char *
+const char *
 lasso_soap_envelope_sb2_get_redirect_request_url(LassoSoapEnvelope *soap_envelope)
 {
-	get_header(LASSO_IS_IDWSF2_SB2_REDIRECT_REQUEST);
+	LassoSoapFault *fault;
+	LassoIdWsf2Sb2RedirectRequest *redirect_request;
 
-	if (i)
-		return g_strdup(((LassoIdWsf2Sb2RedirectRequest*)i->data)->redirectURL);
-	else
+	fault = lasso_soap_envelope_get_soap_fault(soap_envelope, FALSE);
+	if (! fault || ! LASSO_IS_SOAP_DETAIL(fault->Detail))
 		return NULL;
+
+	redirect_request = (LassoIdWsf2Sb2RedirectRequest*) _get_node(&fault->Detail->any, LASSO_TYPE_IDWSF2_SB2_REDIRECT_REQUEST, NULL, NULL, NULL, FALSE);
+	if (! redirect_request)
+		return NULL;
+	return redirect_request->redirectURL;
 }
 
 /**
