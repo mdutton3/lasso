@@ -40,8 +40,8 @@ import lasso
 try:
     dataDir
 except NameError:
-    srcdir = os.environ.get('srcdir', '.')
-    dataDir = '%s/../../../tests/data' % srcdir
+    srcdir = os.environ.get('TOP_SRCDIR', '.')
+    dataDir = '%s/tests/data' % srcdir
 
 
 class ServerTestCase(unittest.TestCase):
