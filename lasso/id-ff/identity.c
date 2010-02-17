@@ -78,7 +78,7 @@ lasso_identity_add_federation(LassoIdentity *identity, LassoFederation *federati
  *
  * Looks up and returns the #LassoFederation for this provider ID.
  *
- * Return value: the #LassoFederation; or NULL if it didn't exist.  The
+ * Return value:(transfer none): the #LassoFederation; or NULL if it didn't exist.  The
  *      #LassoFederation is internally allocated.  It must not be freed,
  *      modified or stored.
  **/

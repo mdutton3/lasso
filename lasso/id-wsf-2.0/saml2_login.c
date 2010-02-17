@@ -81,6 +81,7 @@ lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *ur
 	/* Check for the presence of an assertion */
 	assertion = (LassoSaml2Assertion*) lasso_login_get_assertion (login);
 	if (! LASSO_IS_SAML2_ASSERTION (assertion)) {
+		lasso_release_gobject(assertion);
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 	}
 	lasso_extract_node_or_fail(server, login->parent.server, SERVER,
@@ -119,6 +120,7 @@ lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *ur
 	
 
 cleanup:
+	lasso_release_gobject(assertion);
 	lasso_release_gobject(epr);
 	lasso_release_gobject(metadata);
 	lasso_release_gobject(attributeStatement);

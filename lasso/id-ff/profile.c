@@ -92,7 +92,7 @@ cleanup:
  * identifier (which is actually a #LassoSamlNameIdentifier in ID-FF 1.2 and
  * #LassoSaml2NameID in SAML 2.0).
  *
- * Return value: the name identifier or NULL if none was found.  The #LassoNode
+ * Return value:(transfer none): the name identifier or NULL if none was found.  The #LassoNode
  *     object is internally allocated and must not be freed by the caller.
  **/
 LassoNode*
@@ -276,7 +276,7 @@ lasso_profile_is_liberty_query(const gchar *query)
  *
  * Gets the identity bound to @profile.
  *
- * Return value: the identity or NULL if it none was found.  The #LassoIdentity
+ * Return value:(transfer none): the identity or NULL if it none was found.  The #LassoIdentity
  *      object is internally allocated and must not be freed by the caller.
  **/
 LassoIdentity*
@@ -294,7 +294,7 @@ lasso_profile_get_identity(LassoProfile *profile)
  *
  * Gets the session bound to @profile.
  *
- * Return value: the session or NULL if it none was found.  The #LassoSession
+ * Return value:(transfer none): the session or NULL if it none was found.  The #LassoSession
  *      object is internally allocated and must not be freed by the caller.
  **/
 LassoSession*
@@ -464,7 +464,7 @@ lasso_profile_set_artifact_message(LassoProfile *profile, char *message)
  * Return the #LassoServer linked to this profile object. A profile object should always contains
  * one. It allows to find metadatas of other providers and to know our own metadatas.
  *
- * Return value: a #LassoServer or NULL if profile is not a #LassoProfile or no #LassoServer object
+ * Return value: (transfer none): a #LassoServer or NULL if profile is not a #LassoProfile or no #LassoServer object
  * was setup at the creation of this profile.
  */
 LassoServer*
