@@ -48,6 +48,8 @@
 #include "../utils.h"
 #include "../registry.h"
 #include "../debug.h"
+#include "./soap-1.1/soap_envelope.h"
+#include "./soap-1.1/soap_body.h"
 
 static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump);
@@ -138,6 +140,21 @@ lasso_get_prefix_for_idwsf2_dst_service_href(const gchar *href)
 /* virtual public methods                                                    */
 /*****************************************************************************/
 
+static char*
+_lasso_node_export_to_xml(LassoNode *node, gboolean format, gboolean dump)
+{
+	xmlNode *xmlnode;
+	char *ret;
+
+	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+	xmlnode = lasso_node_get_xmlNode(node, dump);
+	ret = lasso_xmlnode_to_string(xmlnode, format);
+	xmlFreeNode(xmlnode);
+
+	return ret;
+}
+
 /**
  * lasso_node_dump:
  * @node: a #LassoNode
@@ -150,29 +167,7 @@ lasso_get_prefix_for_idwsf2_dst_service_href(const gchar *href)
 char*
 lasso_node_dump(LassoNode *node)
 {
-	xmlNode *xmlnode;
-	char *ret;
-	xmlOutputBuffer *buf;
-
-	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-	buf = xmlAllocOutputBuffer(NULL);
-	if (buf == NULL) {
-		return NULL;
-	}
-	xmlnode = lasso_node_get_xmlNode(node, TRUE);
-	xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
-	xmlOutputBufferFlush(buf);
-	if (buf->conv != NULL) {
-		ret = g_strdup((char*)buf->conv->content);
-	} else {
-		ret = g_strdup((char*)buf->buffer->content);
-	}
-	xmlOutputBufferClose(buf);
-
-	xmlFreeNode(xmlnode);
-
-	return ret;
+	return _lasso_node_export_to_xml(node, FALSE, TRUE);
 }
 
 /**
@@ -205,27 +200,14 @@ lasso_node_destroy(LassoNode *node)
 char*
 lasso_node_export_to_base64(LassoNode *node)
 {
-	xmlNode *message;
-	xmlOutputBufferPtr buf;
-	xmlCharEncodingHandlerPtr handler = NULL;
-	xmlChar *buffer;
+	char *str;
 	char *ret;
 
 	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
-	message = lasso_node_get_xmlNode(node, FALSE);
-
-	handler = xmlFindCharEncodingHandler("utf-8");
-	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, message, 0, 0, "utf-8");
-	xmlOutputBufferFlush(buf);
-	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
-
-	ret = (char*)xmlSecBase64Encode(buffer, strlen((char*)buffer), 0);
-	xmlOutputBufferClose(buf);
-
-	xmlFreeNode(message);
-
+	str = lasso_node_export_to_xml(node);
+	ret = (char*)xmlSecBase64Encode(BAD_CAST str, strlen(str), 0);
+	lasso_release_string(str);
 	return ret;
 }
 
@@ -243,8 +225,6 @@ lasso_node_export_to_ecp_soap_response(LassoNode *node, const char *assertionCon
 {
 	xmlNode *envelope, *body, *message, *header, *ecp_response;
 	xmlNs *soap_env_ns, *ecp_ns;
-	xmlOutputBuffer *buf;
-	xmlCharEncodingHandler *handler;
 	char *ret;
 
 	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
@@ -273,13 +253,8 @@ lasso_node_export_to_ecp_soap_response(LassoNode *node, const char *assertionCon
 	body = xmlNewTextChild(envelope, NULL, (xmlChar*)"Body", NULL);
 	xmlAddChild(body, message);
 
-	handler = xmlFindCharEncodingHandler("utf-8");
-	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, envelope, 0, 0, "utf-8");
-	xmlOutputBufferFlush(buf);
-	ret = g_strdup( (char*)(buf->conv ? buf->conv->content : buf->buffer->content) );
-	xmlOutputBufferClose(buf);
-
+	/* dump */
+	ret = lasso_xmlnode_to_string(envelope, FALSE);
 	xmlFreeNode(envelope);
 
 	return ret;
@@ -300,8 +275,6 @@ lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
 {
 	xmlNode *envelope, *body, *header, *paos_request, *ecp_request, *ecp_relay_state, *message;
 	xmlNs *soap_env_ns, *saml_ns, *ecp_ns;
-	xmlOutputBuffer *buf;
-	xmlCharEncodingHandler *handler;
 	char *ret;
 
 	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
@@ -358,12 +331,7 @@ lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
 	body = xmlNewTextChild(envelope, NULL, (xmlChar*)"Body", NULL);
 	xmlAddChild(body, message);
 
-	handler = xmlFindCharEncodingHandler("utf-8");
-	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, envelope, 0, 0, "utf-8");
-	xmlOutputBufferFlush(buf);
-	ret = g_strdup( (char*)(buf->conv ? buf->conv->content : buf->buffer->content) );
-	xmlOutputBufferClose(buf);
+	ret = lasso_xmlnode_to_string(envelope, FALSE);
 
 	xmlFreeNode(envelope);
 
@@ -413,23 +381,7 @@ lasso_node_export_to_query(LassoNode *node,
 gchar*
 lasso_node_export_to_xml(LassoNode *node)
 {
-	xmlNode *message;
-	xmlOutputBuffer *buf;
-	xmlCharEncodingHandler *handler;
-	gchar *ret;
-
-	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
-
-	message = lasso_node_get_xmlNode(node, FALSE);
-
-	handler = xmlFindCharEncodingHandler("utf-8");
-	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, message, 0, 0, "utf-8");
-	xmlOutputBufferFlush(buf);
-	ret = g_strdup((gchar*)(buf->conv ? buf->conv->content : buf->buffer->content));
-	xmlOutputBufferClose(buf);
-
-	return ret;
+	return _lasso_node_export_to_xml(node, FALSE, FALSE);
 }
 
 /**
@@ -444,31 +396,17 @@ lasso_node_export_to_xml(LassoNode *node)
 char*
 lasso_node_export_to_soap(LassoNode *node)
 {
-	xmlNode *envelope, *body, *message;
-	xmlOutputBuffer *buf;
-	xmlCharEncodingHandler *handler;
+	LassoSoapEnvelope *envelope;
+	LassoSoapBody *body;
 	char *ret;
 
 	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
-	message = lasso_node_get_xmlNode(node, FALSE);
-
-	envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
-	xmlSetNs(envelope, xmlNewNs(envelope,
-				(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX));
-
-	body = xmlNewTextChild(envelope, NULL, (xmlChar*)"Body", NULL);
-	xmlAddChild(body, message);
-
-	handler = xmlFindCharEncodingHandler("utf-8");
-	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, envelope, 0, 0, "utf-8");
-	xmlOutputBufferFlush(buf);
-	ret = g_strdup( (char*)(buf->conv ? buf->conv->content : buf->buffer->content) );
-	xmlOutputBufferClose(buf);
-
-	xmlFreeNode(envelope);
-
+	body = lasso_soap_body_new();
+	envelope = lasso_soap_envelope_new(body);
+	lasso_list_add_gobject(body->any, node);
+	ret = lasso_node_export_to_xml((LassoNode*)envelope);
+	lasso_release_gobject(envelope);
 	return ret;
 }
 
