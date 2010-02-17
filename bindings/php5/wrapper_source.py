@@ -137,10 +137,10 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 raise Exception('unknown element-type: ' + repr(type))
             if is_cstring(elem_type):
                 function = 'set_array_from_list_of_strings'
-                free_function = 'free_glist(%(c_variable)s, (GFunc)free);'
+                free_function = 'free_glist(&%(c_variable)s, (GFunc)free);'
             elif arg_type(elem_type).startswith('xmlNode'):
                 function = 'set_array_from_list_of_xmlnodes'
-                free_function = 'free_glist(%(c_variable)s, (GFunc)xmlFree);'
+                free_function = 'free_glist(&%(c_variable)s, (GFunc)xmlFree);'
             elif is_object(elem_type):
                 function = 'set_array_from_list_of_objects'
                 free_function = 'g_list_free(%(c_variable)s);'
