@@ -448,16 +448,26 @@ lasso_profile_is_saml_query(const gchar *query)
 
 static void
 lasso_saml20_profile_set_session_from_dump_decrypt(
-		LassoSaml2Assertion *assertion, G_GNUC_UNUSED gpointer data)
+		LassoSaml2Assertion *assertion, LassoProfile *profile)
 {
 	if (LASSO_IS_SAML2_ASSERTION(assertion) == FALSE) {
 		return;
 	}
 
-	if (assertion->Subject != NULL && assertion->Subject->EncryptedID != NULL) {
-		lasso_assign_gobject(assertion->Subject->NameID,
-			assertion->Subject->EncryptedID->original_data);
+	if (assertion->Subject != NULL && ! assertion->Subject->NameID && assertion->Subject->EncryptedID != NULL) {
+		if (assertion->Subject->EncryptedID->original_data) { /* already decrypted */
+			lasso_assign_gobject(assertion->Subject->NameID,
+				assertion->Subject->EncryptedID->original_data);
 		lasso_release_gobject(assertion->Subject->EncryptedID);
+		} else { /* decrypt */
+			int rc;
+			rc = lasso_saml2_encrypted_element_decrypt(assertion->Subject->EncryptedID, lasso_server_get_encryption_private_key(profile->server), (LassoNode**) &assertion->Subject->NameID);
+			if (rc == 0) {
+				lasso_release_gobject(assertion->Subject->EncryptedID);
+			} else {
+				message(G_LOG_LEVEL_WARNING, "Could not decrypt EncrypteID from assertion in session dump: %s", lasso_strerror(rc));
+			}
+		}
 	}
 }
 
@@ -473,7 +483,7 @@ lasso_saml20_profile_set_session_from_dump(LassoProfile *profile)
 
 		g_list_foreach(assertions,
 				(GFunc)lasso_saml20_profile_set_session_from_dump_decrypt,
-				NULL);
+				profile);
 		lasso_release_list(assertions);
 	}
 
