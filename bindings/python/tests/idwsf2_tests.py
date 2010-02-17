@@ -44,6 +44,7 @@ except NameError:
 
 idpSoapEndpoint = 'http://idp1/soapEndpoint'
 spSoapEndpoint = 'http://sp1/soapEndpoint'
+spInteractionUrl = 'http://sp1/askMeAQuestion'
 
 class IdWsf2TestCase(unittest.TestCase):
     def getWspServer(self):
@@ -233,85 +234,6 @@ class MetadataTestCase(IdWsf2TestCase):
         self.failUnless(len(wsp_disco.metadatas) == 1, 'missing svcMDID')
         self.failUnless(wsp_disco.metadatas[0].svcMDID, 'missing svcMDID')
 
-    def test01(self):
-        """Test metadata register with redirection"""
-        idp = self.getIdpServer()
-        wsp = self.getWspServer()
-        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump, dst_epr = self.login(wsp, idp)
-
-        wsp_disco = lasso.IdWsf2Discovery(wsp)
-        wsp_disco.setEpr(dst_epr)
-
-        abstract = 'Personal Profile service'
-        wsp_disco.initMetadataRegister()
-        self.failUnless(wsp_disco.request is not None)
-        wsp_disco.addSimpleServiceMetadata(service_types = 
-                (lasso.PP11_HREF,), abstract = abstract,
-                provider_id = wsp.providerId, address = spSoapEndpoint,
-                security_mech_ids = (lasso.SECURITY_MECH_BEARER,))
-        self.failUnlessEqual(len(wsp_disco.metadatas), 1)
-        metadata = wsp_disco.metadatas[0]
-        self.failUnlessEqual(metadata.abstract, abstract)
-        self.failUnlessEqual(metadata.providerId, wsp.providerId)
-        self.failUnlessEqual(len(metadata.serviceContext), 1)
-        self.failUnlessEqual(len(metadata.serviceContext[0].serviceType), 1)
-        self.failUnlessEqual(metadata.serviceContext[0].serviceType[0],
-                lasso.PP11_HREF)
-        self.failUnlessEqual(len(metadata.serviceContext[0].endpointContext), 1)
-        self.failUnlessEqual(
-                len(metadata.serviceContext[0].endpointContext[0].address),
-                1)
-        self.failUnlessEqual(metadata.serviceContext[0].endpointContext[0].address[0],
-                spSoapEndpoint)
-        self.failUnlessEqual(
-                len(metadata.serviceContext[0].endpointContext[0].securityMechId),
-                1)
-        self.failUnlessEqual(
-                metadata.serviceContext[0].endpointContext[0].securityMechId[0],
-                lasso.SECURITY_MECH_BEARER)
-        self.failUnless(metadata.svcMDID is None)
-        wsp_disco.buildRequestMsg()
-        self.failUnlessEqual(wsp_disco.msgUrl, idpSoapEndpoint)
-        self.failUnless(wsp_disco.msgBody is not None)
-
-        idp_disco = lasso.IdWsf2Discovery(idp)
-        self.failUnless(idp_disco is not None)
-        idp_disco.processRequestMsg(wsp_disco.msgBody)
-        self.failUnless(idp_disco.request is not None)
-        self.failUnlessEqual(len(idp_disco.request.svcMD), 1)
-        self.failUnless(idp_disco.request.svcMD[0].svcMDID is None)
-        idp_disco.validateRequest()
-        self.failUnless(idp_disco.response is not None)
-        self.failUnlessEqual(len(idp_disco.metadatas), 1)
-        metadata = idp_disco.metadatas[0]
-        self.failUnlessEqual(metadata.abstract, abstract)
-        self.failUnlessEqual(metadata.providerId, wsp.providerId)
-        self.failUnlessEqual(len(metadata.serviceContext), 1)
-        self.failUnlessEqual(len(metadata.serviceContext[0].serviceType), 1)
-        self.failUnlessEqual(metadata.serviceContext[0].serviceType[0],
-                lasso.PP11_HREF)
-        self.failUnlessEqual(len(metadata.serviceContext[0].endpointContext), 1)
-        self.failUnlessEqual(
-                len(metadata.serviceContext[0].endpointContext[0].address),
-                1)
-        self.failUnlessEqual(metadata.serviceContext[0].endpointContext[0].address[0],
-                spSoapEndpoint)
-        self.failUnlessEqual(
-                len(metadata.serviceContext[0].endpointContext[0].securityMechId),
-                1)
-        self.failUnlessEqual(
-                metadata.serviceContext[0].endpointContext[0].securityMechId[0],
-                lasso.SECURITY_MECH_BEARER)
-        idp_disco.buildResponseMsg()
-        self.failUnless(metadata.svcMDID is not None)
-        self.failUnless(idp_disco.msgUrl is None)
-        self.failUnless(idp_disco.msgBody is not None)
-
-        wsp_disco.processResponseMsg(idp_disco.msgBody)
-
-        self.failUnless(len(wsp_disco.metadatas) == 1, 'missing svcMDID')
-        self.failUnless(wsp_disco.metadatas[0].svcMDID, 'missing svcMDID')
-
     def test02(self):
         "Test failure by IdP for register request"
         idp = self.getIdpServer()
@@ -351,7 +273,6 @@ class MetadataTestCase(IdWsf2TestCase):
         wsp_disco.buildRequestMsg()
         self.failUnlessEqual(wsp_disco.msgUrl, idpSoapEndpoint)
         self.failUnless(wsp_disco.msgBody is not None)
-        print wsp_disco.dump()
 
         idp_disco = lasso.IdWsf2Discovery(idp)
         self.failUnless(idp_disco is not None)
@@ -373,6 +294,100 @@ class MetadataTestCase(IdWsf2TestCase):
             pass
         except lasso.Error, e:
             self.fail(e)
+
+    def test03(self):
+        """Test metadata register with redirection"""
+        idp = self.getIdpServer()
+        wsp = self.getWspServer()
+        wsp_identity_dump, wsp_session_dump, idp_identity_dump, idp_session_dump, dst_epr = self.login(wsp, idp)
+
+        wsp_disco = lasso.IdWsf2Discovery(wsp)
+        wsp_disco.setEpr(dst_epr)
+
+        abstract = 'Personal Profile service'
+        wsp_disco.initMetadataRegister()
+        soap_envelope = wsp_disco.getSoapEnvelopeRequest()
+        soap_envelope.setSb2UserInteractionHint(lasso.IDWSF2_SB2_USER_INTERACTION_HINT_INTERACT_IF_NEEDED)
+        self.failUnless(isinstance(soap_envelope.header, lasso.SoapHeader))
+        self.failUnless(len(soap_envelope.header.other) > 0)
+        self.failUnlessEqual(soap_envelope.getSb2UserInteractionHint(), lasso.IDWSF2_SB2_USER_INTERACTION_HINT_INTERACT_IF_NEEDED)
+        self.failUnless(wsp_disco.request is not None)
+        wsp_disco.addSimpleServiceMetadata(service_types = 
+                (lasso.PP11_HREF,), abstract = abstract,
+                provider_id = wsp.providerId, address = spSoapEndpoint,
+                security_mech_ids = (lasso.SECURITY_MECH_BEARER,))
+        self.failUnlessEqual(len(wsp_disco.metadatas), 1)
+        metadata = wsp_disco.metadatas[0]
+        self.failUnlessEqual(metadata.abstract, abstract)
+        self.failUnlessEqual(metadata.providerId, wsp.providerId)
+        self.failUnlessEqual(len(metadata.serviceContext), 1)
+        self.failUnlessEqual(len(metadata.serviceContext[0].serviceType), 1)
+        self.failUnlessEqual(metadata.serviceContext[0].serviceType[0],
+                lasso.PP11_HREF)
+        self.failUnlessEqual(len(metadata.serviceContext[0].endpointContext), 1)
+        self.failUnlessEqual(
+                len(metadata.serviceContext[0].endpointContext[0].address),
+                1)
+        self.failUnlessEqual(metadata.serviceContext[0].endpointContext[0].address[0],
+                spSoapEndpoint)
+        self.failUnlessEqual(
+                len(metadata.serviceContext[0].endpointContext[0].securityMechId),
+                1)
+        self.failUnlessEqual(
+                metadata.serviceContext[0].endpointContext[0].securityMechId[0],
+                lasso.SECURITY_MECH_BEARER)
+        self.failUnless(metadata.svcMDID is None)
+        wsp_disco.buildRequestMsg()
+        self.failUnlessEqual(wsp_disco.msgUrl, idpSoapEndpoint)
+        self.failUnless(wsp_disco.msgBody is not None)
+
+        idp_disco = lasso.IdWsf2Discovery(idp)
+        self.failUnless(idp_disco is not None)
+        idp_disco.processRequestMsg(wsp_disco.msgBody)
+        self.failUnless(idp_disco.request is not None)
+        self.failUnlessEqual(len(idp_disco.request.svcMD), 1)
+        self.failUnless(idp_disco.request.svcMD[0].svcMDID is None)
+        soap_envelope = idp_disco.getSoapEnvelopeRequest()
+        self.failUnless(soap_envelope is not None)
+        self.failUnless(soap_envelope.getMessageId() is not None)
+        # redirect
+        interactionUrl = spInteractionUrl
+        idp_disco.redirectUserForInteraction(interactionUrl, False)
+        response = idp_disco.response
+        self.failUnless(isinstance(response, lasso.SoapFault))
+        self.failUnless(response.detail is not None)
+        self.failUnlessEqual(len(response.detail.any), 1)
+        self.failUnless(isinstance(response.detail.any[0], lasso.IdWsf2Sb2RedirectRequest))
+        self.failUnless(response.detail.any[0].redirectURL.startswith(interactionUrl + '?transactionID='))
+        try:
+            idp_disco.buildResponseMsg()
+        except lasso.Error, e:
+            self.fail(e)
+        self.failUnless(idp_disco.msgBody is not None)
+
+
+        self.failUnless(idp_disco.msgUrl is None)
+        self.failUnless(idp_disco.msgBody is not None)
+
+        try:
+            wsp_disco.processResponseMsg(idp_disco.msgBody)
+        except lasso.WsfprofileRedirectRequestError:
+            pass
+        except lasso.Error, e:
+            self.fail(e)
+        response_envelope = wsp_disco.getSoapEnvelopeResponse()
+        self.failUnless(response_envelope.sb2GetRedirectRequestUrl().startswith(interactionUrl + '?transactionID='))
+        # Here keep information about the request associated to ID: response_envelope.getMessageId().content
+        wsp_disco_dump = wsp_disco.dump()
+        print wsp_disco_dump
+        wsp_disco = lasso.Node.newFromDump(wsp_disco_dump)
+        request_envelope = wsp_disco.getSoapEnvelopeRequest()
+        self.failUnless(request_envelope is not None)
+        relates_to = request_envelope.getRelatesTo(True)
+        self.failUnless(relates_to is not None)
+        relates_to.content = response_envelope.getMessageId().content
+        wsp_disco.buildRequestMsg()
+        print wsp_disco.msgBody, wsp_disco.msgUrl
 
 class MetadataAssociationAddTestCase(IdWsf2TestCase):
     def test01(self):
