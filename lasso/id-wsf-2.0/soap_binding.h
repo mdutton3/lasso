@@ -33,6 +33,7 @@ extern "C" {
 #include "../xml/soap-1.1/soap_envelope.h"
 #include "../xml/soap-1.1/soap_fault.h"
 #include "../xml/id-wsf-2.0/sb2_target_identity.h"
+#include "../xml/id-wsf-2.0/sb2_user_interaction_header.h"
 #include "../xml/ws/wsse_security_header.h"
 #include "../xml/ws/wsa_attributed_uri.h"
 #include "../xml/ws/wsa_relates_to.h"
@@ -77,6 +78,10 @@ LASSO_EXPORT GList* lasso_soap_envelope_get_body_content(LassoSoapEnvelope *soap
 
 LASSO_EXPORT void lasso_soap_fault_add_to_detail(LassoSoapFault *soap_fault,
 		LassoNode *node);
+
+LASSO_EXPORT LassoIdWsf2Sb2UserInteractionHeader *
+		lasso_soap_envelope_get_sb2_user_interaction_header(
+				LassoSoapEnvelope *soap_envelope, gboolean create);
 
 LASSO_EXPORT LassoIdWsf2Sb2UserInteractionHint
 		lasso_soap_envelope_get_sb2_user_interaction_hint( LassoSoapEnvelope *soap_envelope);

@@ -371,15 +371,12 @@ lasso_soap_fault_add_to_detail(LassoSoapFault *soap_fault,
 	}
 }
 
-static LassoIdWsf2Sb2UserInteractionHeader *
-lasso_soap_envelope_get_sb2_user_interaction_header(LassoSoapEnvelope *soap_envelope)
+LassoIdWsf2Sb2UserInteractionHeader *
+lasso_soap_envelope_get_sb2_user_interaction_header(LassoSoapEnvelope *soap_envelope, gboolean create)
 {
-	get_header(LASSO_IS_IDWSF2_SB2_USER_INTERACTION_HEADER);
-
-	if (i) {
-		return (LassoIdWsf2Sb2UserInteractionHeader*)i->data;
-	}
-	return NULL;
+	return (LassoIdWsf2Sb2UserInteractionHeader*)_lasso_soap_envelope_get_header(soap_envelope,
+			LASSO_TYPE_IDWSF2_SB2_USER_INTERACTION_HEADER, NULL, NULL, NULL,
+			create);
 }
 
 LassoIdWsf2Sb2UserInteractionHint
@@ -388,7 +385,7 @@ lasso_soap_envelope_get_sb2_user_interaction_hint(LassoSoapEnvelope *soap_envelo
 	const char *hint;
 	LassoIdWsf2Sb2UserInteractionHeader *header;
 
-	header = lasso_soap_envelope_get_sb2_user_interaction_header(soap_envelope);
+	header = lasso_soap_envelope_get_sb2_user_interaction_header(soap_envelope, FALSE);
 	if (header) {
 		hint = header->interact;
 		if (g_strcmp0(hint, LASSO_SB2_USER_INTERACTION_INTERACT_IF_NEEDED) == 0)
@@ -408,11 +405,7 @@ lasso_soap_envelope_set_sb2_user_interaction_hint(LassoSoapEnvelope *soap_envelo
 {
 	LassoIdWsf2Sb2UserInteractionHeader *user_interaction;
 
-	user_interaction = lasso_soap_envelope_get_sb2_user_interaction_header(soap_envelope);
-	if (! user_interaction) {
-		user_interaction = lasso_idwsf2_sb2_user_interaction_header_new();
-		lasso_list_add_new_gobject(soap_envelope->Header->Other, user_interaction);
-	}
+	user_interaction = lasso_soap_envelope_get_sb2_user_interaction_header(soap_envelope, TRUE);
 	switch (hint) {
 		case LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_INTERACT_IF_NEEDED:
 			lasso_assign_string(user_interaction->interact,
