@@ -406,6 +406,7 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 			lasso_security_mech_id_is_bearer_authentication(security_mech_id)) {
 		LassoSaml2Assertion *assertion;
 		LassoProvider *issuer;
+		char *provider_id;
 
 		assertion = lasso_soap_envelope_get_saml2_security_token (envelope);
 		if (assertion == NULL)
@@ -416,6 +417,15 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 		if (! issuer || issuer->role != LASSO_PROVIDER_ROLE_IDP)
 			goto cleanup;
 		if (lasso_provider_verify_single_node_signature(issuer, (LassoNode*)assertion, "ID") != 0)
+			goto cleanup;
+		/* check that the SPQualifier of the assertion is the same as the sender header */
+		provider_id = lasso_soap_envelope_sb2_get_provider_id(envelope);
+		if (! provider_id)
+			goto cleanup;
+		if (! assertion || ! assertion->Subject || ! assertion->Subject->NameID
+				|| ! assertion->Subject->NameID->SPNameQualifier)
+			goto cleanup;
+		if (g_strcmp0(provider_id, assertion->Subject->NameID->SPNameQualifier) != 0)
 			goto cleanup;
 	} else {
 		message(G_LOG_LEVEL_WARNING, "Only Bearer mechanism is supported!");
