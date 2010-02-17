@@ -24,6 +24,9 @@
 
 /* permit importation of strptime for glibc2 */
 #define _XOPEN_SOURCE
+/* permit importation of timegm for glibc2, wait for people to complain it does not work on their
+ * system. */
+#define _BSD_SOURCE
 #include "private.h"
 #include <string.h>
 #include <time.h>
