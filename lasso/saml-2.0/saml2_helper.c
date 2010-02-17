@@ -420,11 +420,11 @@ lasso_saml2_assertion_validate_conditions(LassoSaml2Assertion *saml2_assertion, 
 	lasso_foreach_full_begin (LassoSaml2AudienceRestriction*, saml2_audience_restriction, it,
 			saml2_conditions->AudienceRestriction)
 		did_audience = TRUE;
-		if (g_strcmp0(saml2_audience_restriction->Audience, relaying_party_providerID)) {
+		if (g_strcmp0(saml2_audience_restriction->Audience, relaying_party_providerID) == 0) {
 			found_audience = TRUE;
 		}
 	lasso_foreach_full_end()
-	if (did_audience ^ found_audience) {
+	if (did_audience && ! found_audience) {
 		return LASSO_SAML2_ASSERTION_INVALID;
 	}
 
