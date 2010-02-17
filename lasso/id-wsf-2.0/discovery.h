@@ -139,6 +139,7 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_fail_request(LassoIdWsf2Discovery *disc
 LASSO_EXPORT gint lasso_idwsf2_discovery_process_response_msg(LassoIdWsf2Discovery *discovery,
 		const char *msg);
 LASSO_EXPORT GList* lasso_idwsf2_discovery_get_endpoint_references(LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT GList* lasso_idwsf2_discovery_get_svcmdids(LassoIdWsf2Discovery *discovery);
 
 
 #ifdef __cplusplus
