@@ -89,7 +89,7 @@ gboolean lasso_flag_verify_signature = TRUE;
 gboolean lasso_flag_memory_debug = FALSE;
 /* set to true, it activates more strict validation of messages */
 gboolean lasso_flag_strict_checking = FALSE;
-/* set to false, it do not sign messages */
+/* set to false, it does not sign messages */
 gboolean lasso_flag_add_signature = TRUE;
 static void lasso_flag_parse_environment_variable();
 /* do not sign messages */
