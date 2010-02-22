@@ -369,6 +369,204 @@ lasso_saml2_assertion_add_proxy_limit (LassoSaml2Assertion *saml2_assertion, int
 }
 
 /**
+ * lasso_saml2_assertion_validate_time_checks:
+ * @saml2_assertion: a #LassoSaml2Assertion object
+ * @tolerance: a duration as seconds
+ * @now:(default 0): the current time as seconds since EPOCH or 0 to use the system time.
+ *
+ * Check if the @saml2_assertion conditions about NotBefore and NotOnOrAfter are valid with respect
+ * to the @now time or the current time. @tolerance allows to loosely check for validatity, i.e.
+ * start time is decreased of @tolerance seconds and end time is increased of @tolerance seconds.
+ *
+ * Return value: a value among #LassoSaml2AssertionValidationState.
+ */
+LassoSaml2AssertionValidationState
+lasso_saml2_assertion_validate_time_checks(LassoSaml2Assertion *saml2_assertion,
+		unsigned int tolerance,
+		time_t now)
+{
+	LassoSaml2Conditions *saml2_conditions;
+
+	g_return_val_if_fail (LASSO_SAML2_ASSERTION (saml2_assertion), LASSO_SAML2_ASSERTION_INDETERMINATE);
+	saml2_conditions = lasso_saml2_assertion_get_conditions(saml2_assertion, FALSE);
+
+	if (saml2_conditions == NULL)
+		return LASSO_SAML2_ASSERTION_VALID;
+
+	if (now == 0)
+		now = time(NULL);
+
+	if (saml2_conditions->NotBefore) {
+		time_t a = lasso_iso_8601_gmt_to_time_t (saml2_conditions->NotBefore);
+		a -= tolerance;
+		if (a == -1)
+			return LASSO_SAML2_ASSERTION_INDETERMINATE;
+		if (now < a) {
+			return LASSO_SAML2_ASSERTION_INVALID;
+		}
+	}
+	if (saml2_conditions->NotOnOrAfter) {
+		time_t b = lasso_iso_8601_gmt_to_time_t (saml2_conditions->NotOnOrAfter);
+		b += tolerance;
+		if (b == -1)
+			return LASSO_SAML2_ASSERTION_INDETERMINATE;
+		if (now >= b) {
+			return LASSO_SAML2_ASSERTION_INVALID;
+		}
+	}
+	return LASSO_SAML2_ASSERTION_VALID;
+}
+
+/**
+ * lasso_saml2_assertion_has_one_time_use:
+ * @saml2_assertion: a #LassoSaml2Assertion object
+ *
+ * Return whether this assertion has the OneTimeUse property.
+ *
+ * In this case the relaying party must add the assertion ID to a OneTimeUser cache and discards any
+ * assertion received in the future with the same ID.
+ *
+ * Return value: TRUE if this assertion has the property OneTimeUse, FALSE otherwise.
+ */
+gboolean
+lasso_saml2_assertion_has_one_time_use(LassoSaml2Assertion *saml2_assertion)
+{
+	LassoSaml2Conditions *saml2_conditions;
+
+	g_return_val_if_fail (LASSO_SAML2_ASSERTION (saml2_assertion), FALSE);
+	saml2_conditions = lasso_saml2_assertion_get_conditions(saml2_assertion, FALSE);
+
+	if (saml2_conditions == NULL)
+		return FALSE;
+	if (saml2_conditions->OneTimeUse)
+		return TRUE;
+	return FALSE;
+}
+
+/**
+ * lasso_saml2_assertion_allows_proxying:
+ * @saml2_assertion: a #LassoSaml2Assertion object
+ *
+ * <para>Test whether this @saml2_assertion allows to mint new assertion on the basis of it.</para>
+ * <para>It verifies that the proxying count is positive (or absent).</para>
+ *
+ * Return value: a value among #LassoSaml2AssertionValidationState enumeration.
+ * #LASSO_SAML2_ASSERTION_INDETERMINATE usually means that an element was not conform to the XML
+ * Schema for SAML 2.0.
+ */
+LassoSaml2AssertionValidationState
+lasso_saml2_assertion_allows_proxying(LassoSaml2Assertion *saml2_assertion)
+{
+	LassoSaml2Conditions *saml2_conditions;
+	LassoSaml2ProxyRestriction *proxy_restriction;
+
+	g_return_val_if_fail (LASSO_SAML2_ASSERTION (saml2_assertion), LASSO_SAML2_ASSERTION_INDETERMINATE);
+	saml2_conditions = lasso_saml2_assertion_get_conditions(saml2_assertion, FALSE);
+
+	if (saml2_conditions == NULL)
+		return LASSO_SAML2_ASSERTION_VALID;
+	if (! saml2_conditions->ProxyRestriction)
+		return LASSO_SAML2_ASSERTION_VALID;
+	if (! LASSO_IS_SAML2_PROXY_RESTRICTION(saml2_conditions->ProxyRestriction->data) || saml2_conditions->ProxyRestriction->next)
+		return LASSO_SAML2_ASSERTION_INDETERMINATE;
+	proxy_restriction = saml2_conditions->ProxyRestriction->data;
+
+	if (proxy_restriction == NULL)
+		return LASSO_SAML2_ASSERTION_VALID;
+
+	if (proxy_restriction->Count) {
+		long int count;
+
+		if (! lasso_string_to_xsd_integer(proxy_restriction->Count, &count) || count < 0) {
+			return LASSO_SAML2_ASSERTION_INDETERMINATE;
+		}
+		if (count == 0) {
+			return LASSO_SAML2_ASSERTION_INVALID;
+		}
+	}
+	return LASSO_SAML2_ASSERTION_VALID;
+}
+
+/**
+ * lasso_saml2_assertion_allows_proxying_to:
+ * @saml2_assertion: a #LassoSaml2Assertion object
+ * @audience:(allow-none): the relaying party which we want to proxy to
+ *
+ * <para>Test whether this @saml2_assertion allows to mint new assertion on the basis of it targetted for
+ * @audience. </para><para>It verifies that if @audience is
+ * non-NULL it is part of the proxy Audience restriction. If @audience is NULL, it checks that no
+ * proxying Audience restriction is present.</para>
+ *
+ * Return value: a value among #LassoSaml2AssertionValidationState enumeration.
+ * #LASSO_SAML2_ASSERTION_INDETERMINATE usually means that an element was not conform to the XML
+ * Schema for SAML 2.0.
+ */
+LassoSaml2AssertionValidationState
+lasso_saml2_assertion_allows_proxying_to(LassoSaml2Assertion *saml2_assertion, const char *audience)
+{
+	LassoSaml2Conditions *saml2_conditions;
+	LassoSaml2ProxyRestriction *proxy_restriction;
+
+	g_return_val_if_fail (LASSO_SAML2_ASSERTION (saml2_assertion), LASSO_SAML2_ASSERTION_INDETERMINATE);
+	saml2_conditions = lasso_saml2_assertion_get_conditions(saml2_assertion, FALSE);
+
+	if (saml2_conditions == NULL)
+		return LASSO_SAML2_ASSERTION_VALID;
+	if (! saml2_conditions->ProxyRestriction)
+		return LASSO_SAML2_ASSERTION_VALID;
+	if (! LASSO_IS_SAML2_PROXY_RESTRICTION(saml2_conditions->ProxyRestriction->data) || saml2_conditions->ProxyRestriction->next)
+		return LASSO_SAML2_ASSERTION_INDETERMINATE;
+	proxy_restriction = saml2_conditions->ProxyRestriction->data;
+
+	if (proxy_restriction == NULL)
+		return LASSO_SAML2_ASSERTION_VALID;
+
+	/* FIXME: Change saml2:ProxyRestriction class */
+	if (g_strcmp0(proxy_restriction->Audience, audience) != 0) {
+		return LASSO_SAML2_ASSERTION_INVALID;
+	}
+
+	return LASSO_SAML2_ASSERTION_VALID;
+}
+
+/**
+ * lasso_saml2_assertion_validate_audience:
+ * @saml2_assertion: a #LassoSaml2Assertion object
+ * @audience: the name of an entity
+ *
+ * Check if the @saml2_assertion is directed to a given @audience.
+ *
+ * Return value: a value among #LassoSaml2AssertionValidationState enumeration.
+ */
+LassoSaml2AssertionValidationState
+lasso_saml2_assertion_validate_audience(LassoSaml2Assertion *saml2_assertion,
+		const gchar *audience)
+{
+	LassoSaml2Conditions *saml2_conditions;
+	gboolean did_audience = FALSE;
+	gboolean found_audience = FALSE;
+
+	g_return_val_if_fail (LASSO_SAML2_ASSERTION (saml2_assertion), LASSO_SAML2_ASSERTION_INDETERMINATE);
+	saml2_conditions = lasso_saml2_assertion_get_conditions(saml2_assertion, FALSE);
+
+	if (saml2_conditions == NULL)
+		return LASSO_SAML2_ASSERTION_VALID;
+
+	lasso_foreach_full_begin (LassoSaml2AudienceRestriction*, saml2_audience_restriction, it,
+			saml2_conditions->AudienceRestriction)
+		did_audience = TRUE;
+		if (g_strcmp0(saml2_audience_restriction->Audience, audience) == 0) {
+			found_audience = TRUE;
+		}
+	lasso_foreach_full_end()
+	if (did_audience && ! found_audience) {
+		return LASSO_SAML2_ASSERTION_INVALID;
+	}
+
+	return LASSO_SAML2_ASSERTION_VALID;
+}
+
+/**
  * lasso_saml2_assertion_validate_conditions:
  * @saml2_assertion: a #LassoSaml2Assertion object
  * @relaying_party_providerID:(allow-none): the providerID of the current relaying party, use to
@@ -385,52 +583,15 @@ lasso_saml2_assertion_add_proxy_limit (LassoSaml2Assertion *saml2_assertion, int
 LassoSaml2AssertionValidationState
 lasso_saml2_assertion_validate_conditions(LassoSaml2Assertion *saml2_assertion, const char *relaying_party_providerID)
 {
-	/* FIXME: should allow to give a tolerance for date matching */
-	LassoSaml2Conditions *saml2_conditions;
-	time_t a, b, now;
-	gboolean did_audience = FALSE;
-	gboolean found_audience = FALSE;
+	LassoSaml2AssertionValidationState state;
 
-	g_return_val_if_fail (LASSO_SAML2_ASSERTION (saml2_assertion), LASSO_SAML2_ASSERTION_INDETERMINATE);
-	saml2_conditions = lasso_saml2_assertion_get_conditions(saml2_assertion, FALSE);
+	state = lasso_saml2_assertion_validate_time_checks(saml2_assertion, 0, 0);
+	if (state != LASSO_SAML2_ASSERTION_VALID)
+		return state;
 
-	if (saml2_conditions == NULL)
-		return LASSO_SAML2_ASSERTION_VALID;
+	state = lasso_saml2_assertion_validate_audience(saml2_assertion, relaying_party_providerID);
 
-	now = time(NULL);
-
-	if (saml2_conditions->NotBefore) {
-		a = lasso_iso_8601_gmt_to_time_t (saml2_conditions->NotBefore);
-		if (a == -1)
-			return LASSO_SAML2_ASSERTION_INDETERMINATE;
-		if (now < a) {
-			return LASSO_SAML2_ASSERTION_INVALID;
-		}
-	}
-	if (saml2_conditions->NotOnOrAfter) {
-		b = lasso_iso_8601_gmt_to_time_t (saml2_conditions->NotOnOrAfter);
-		if (b == -1)
-			return LASSO_SAML2_ASSERTION_INDETERMINATE;
-		if (now >= b) {
-			return LASSO_SAML2_ASSERTION_INVALID;
-		}
-	}
-	/* FIXME: treat other kinds of conditions when they appear */
-	if (saml2_conditions->Condition) {
-		return LASSO_SAML2_ASSERTION_INDETERMINATE;
-	}
-	lasso_foreach_full_begin (LassoSaml2AudienceRestriction*, saml2_audience_restriction, it,
-			saml2_conditions->AudienceRestriction)
-		did_audience = TRUE;
-		if (g_strcmp0(saml2_audience_restriction->Audience, relaying_party_providerID) == 0) {
-			found_audience = TRUE;
-		}
-	lasso_foreach_full_end()
-	if (did_audience && ! found_audience) {
-		return LASSO_SAML2_ASSERTION_INVALID;
-	}
-
-	return LASSO_SAML2_ASSERTION_VALID;
+	return state;
 }
 
 /**

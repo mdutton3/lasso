@@ -125,6 +125,23 @@ LASSO_EXPORT int lasso_saml2_encrypted_element_server_decrypt(
 LASSO_EXPORT int lasso_saml2_assertion_decrypt_subject(LassoSaml2Assertion *assertion,
 		LassoServer *server);
 
+LASSO_EXPORT LassoSaml2AssertionValidationState lasso_saml2_assertion_validate_time_checks(
+		LassoSaml2Assertion *saml2_assertion,
+		unsigned int tolerance,
+		time_t now);
+
+LASSO_EXPORT LassoSaml2AssertionValidationState lasso_saml2_assertion_validate_audience(
+		LassoSaml2Assertion *saml2_assertion,
+		const gchar *audience);
+
+LASSO_EXPORT gboolean lasso_saml2_assertion_has_one_time_use(LassoSaml2Assertion *saml2_assertion);
+
+LASSO_EXPORT LassoSaml2AssertionValidationState lasso_saml2_assertion_allows_proxying(
+		LassoSaml2Assertion *saml2_assertion);
+
+LASSO_EXPORT LassoSaml2AssertionValidationState lasso_saml2_assertion_allows_proxying_to(
+		LassoSaml2Assertion *saml2_assertion, const char *audience);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
