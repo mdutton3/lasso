@@ -30,6 +30,8 @@ def convert_type_from_gobject_annotation(type):
     return _mapping_convert_type_from_gobject_annotation.get(type, type)
 
 def clean_type(type):
+    if not type:
+        return type
     type = type.strip()
     type = re.sub('\s+', ' ', type)
     return re.sub('\s*\*\s*', '*', type)
