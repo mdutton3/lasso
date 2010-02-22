@@ -180,11 +180,14 @@ def arg_default(arg):
     return arg[2].get('default')
 
 def remove_modifiers(type):
-    type = re.sub(r'\s*\bunsigned\b\s*', ' ', type).strip()
-    type = re.sub(r'\s*\bconst\b\s*', ' ', type).strip()
-    type = re.sub(r'\s*\bsigned\b\s*', ' ', type).strip()
-    type = re.sub(r'\s*\bvolatile\b\s*', ' ', type).strip()
-    return clean_type(type)
+    if isinstance(type, str):
+        type = re.sub(r'\s*\bunsigned\b\s*', ' ', type).strip()
+        type = re.sub(r'\s*\bconst\b\s*', ' ', type).strip()
+        type = re.sub(r'\s*\bsigned\b\s*', ' ', type).strip()
+        type = re.sub(r'\s*\bvolatile\b\s*', ' ', type).strip()
+        return clean_type(type)
+    else:
+        return type
 
 def is_const(arg):
     return bool(re.search(r'\bconst\b', arg_type(arg)))
@@ -213,7 +216,7 @@ def is_rc(arg):
     return arg_type(arg) in [ 'int', 'gint' ]
 
 def is_int(arg, binding_data):
-    return arg_type(arg) in [ 'time_t', 'int', 'gint', 'long', 'glong'] + binding_data.enums
+    return remove_modifiers(arg_type(arg)) in [ 'time_t', 'int', 'gint', 'long', 'glong'] + binding_data.enums
 
 def is_time_t_pointer(arg):
     return re.match(r'\btime_t\*', unconstify(arg_type(arg)))
