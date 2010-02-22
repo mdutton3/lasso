@@ -574,12 +574,12 @@ lasso_is_empty_string(const char *str) {
 /* Get a printable extract for error messages */
 char* lasso_safe_prefix_string(const char *str, gsize length);
 int lasso_gobject_is_of_type(GObject *a, GType b);
+GObject *lasso_extract_gtype_from_list(GType type, GList *list);
 
 /* Get first node of this type in a list */
 /* ex: lasso_extract_node (LassoNode, LASSO_TYPE_NODE, list) */
 #define lasso_extract_gobject_from_list(type, gobjecttype, list) \
-	(type*) g_list_find_custom(list, \
-			(gconstpointer)gobjecttype, (GCompareFunc)lasso_gobject_is_of_type);
+	((type*) lasso_extract_gtype_from_list(gobjecttype, list))
 
 /*
  * Simplify simple accessors argument checking.
