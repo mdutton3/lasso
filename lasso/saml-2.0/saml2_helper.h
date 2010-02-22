@@ -118,6 +118,13 @@ LASSO_EXPORT LassoSaml2SubjectConfirmationData*
 
 LASSO_EXPORT const char* lasso_saml2_assertion_get_in_response_to(LassoSaml2Assertion *assertion);
 
+LASSO_EXPORT int lasso_saml2_encrypted_element_server_decrypt(
+		LassoSaml2EncryptedElement* encrypted_element, LassoServer *server,
+		LassoNode** decrypted_node);
+
+LASSO_EXPORT int lasso_saml2_assertion_decrypt_subject(LassoSaml2Assertion *assertion,
+		LassoServer *server);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

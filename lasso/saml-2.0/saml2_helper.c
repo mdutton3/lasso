@@ -24,6 +24,8 @@
 
 #include "./saml2_helper.h"
 
+#include "../id-ff/server.h"
+#include "../id-ff/serverprivate.h"
 #include "../xml/saml-2.0/saml2_audience_restriction.h"
 #include "../xml/saml-2.0/saml2_one_time_use.h"
 #include "../xml/saml-2.0/saml2_proxy_restriction.h"
@@ -546,4 +548,45 @@ lasso_saml2_assertion_get_in_response_to(LassoSaml2Assertion *assertion)
 	if (! scd)
 		return NULL;
 	return scd->InResponseTo;
+}
+
+/**
+ * lasso_saml2_encrypted_element_server_decrypt:
+ * @encrypted_element:
+ * @server: a #LassoServer object
+ * @decrypted_node:(out): an output arg for a #LassoNode
+ *
+ * Decrypt the given encrypted element using the encryption private key of the @server object
+ *
+ * Return value: 0 if successful, an error code otherwise. See
+ * lasso_saml2_encrypted_element_server_decrypt().
+ */
+int
+lasso_saml2_encrypted_element_server_decrypt(LassoSaml2EncryptedElement* encrypted_element, LassoServer *server, LassoNode** decrypted_node)
+{
+	lasso_bad_param(SERVER, server);
+
+	return lasso_saml2_encrypted_element_decrypt(encrypted_element, lasso_server_get_encryption_private_key(server), decrypted_node);
+}
+
+/**
+ * lasso_saml2_assertion_decrypt_subject:
+ * @assertion: a #LassoSaml2Assertion object
+ * @server: a #LassoServer object
+ *
+ * Decipher (if needed) the EncryptedID of the Subject.
+ *
+ * Return value: 0 if successful, an error code otherwise. See
+ * lasso_saml2_encrypted_element_server_decrypt().
+ */
+int
+lasso_saml2_assertion_decrypt_subject(LassoSaml2Assertion *assertion, LassoServer *server)
+{
+	lasso_bad_param(SAML2_ASSERTION, assertion);
+	lasso_bad_param(SERVER, server);
+
+	if (assertion->Subject && ! assertion->Subject->NameID && assertion->Subject->EncryptedID) {
+		return lasso_saml2_encrypted_element_server_decrypt(assertion->Subject->EncryptedID, server, (LassoNode**)&assertion->Subject->NameID);
+	}
+	return 0;
 }
