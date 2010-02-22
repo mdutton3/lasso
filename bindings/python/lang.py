@@ -263,6 +263,16 @@ def session_get_provider_ids(self):
     return self.assertions.keys()
 Session.providerIds = property(session_get_provider_ids)
 
+def LassoNode__getstate__(self):
+    return { '__dump__': self.dump() }
+
+def LassoNode__setstate__(self, d):
+    dump = d['__dump__']
+    self._cptr = _lasso.node_new_from_dump(dump)
+
+Node.__getstate__ = LassoNode__getstate__
+Node.__setstate__ = LassoNode__setstate__
+
 Samlp2AuthnRequest.nameIDPolicy = Samlp2AuthnRequest.nameIdPolicy
 LibAuthnRequest.nameIDPolicy = LibAuthnRequest.nameIdPolicy
 Saml2Subject.nameID = Saml2Subject.nameId
