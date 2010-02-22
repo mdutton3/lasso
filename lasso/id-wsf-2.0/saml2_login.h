@@ -30,14 +30,23 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "../id-ff/login.h"
+#include "../id-ff/provider.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
+#include "../xml/saml-2.0/saml2_name_id.h"
 #include "../xml/ws/wsa_endpoint_reference.h"
 
 LASSO_EXPORT int lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *url,
-		const char *abstract, const char *security_mech_id);
-
+		const char *abstract, GList *security_mechanisms, int tolerance, int duration);
+ 
 LASSO_EXPORT LassoWsAddrEndpointReference *lasso_login_idwsf2_get_discovery_bootstrap_epr(
 		LassoLogin *login);
+
+LASSO_EXPORT LassoWsAddrEndpointReference*
+	lasso_saml2_assertion_idwsf2_get_discovery_bootstrap_epr(LassoSaml2Assertion *assertion);
+
+LASSO_EXPORT LassoSaml2Assertion* lasso_server_create_assertion_as_idwsf2_security_token(
+		LassoServer *server, LassoSaml2NameID *name_id, int tolerance, int duration,
+		gboolean cipher, LassoProvider *audience);
 
 #ifdef __cplusplus
 }

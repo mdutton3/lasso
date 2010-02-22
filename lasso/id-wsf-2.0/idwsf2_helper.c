@@ -279,7 +279,7 @@ lasso_wsa_endpoint_reference_new_for_idwsf2_service(const char *address,
  * lasso_wsa_endpoint_reference_add_security_token:
  * @epr: a #LassoWsAddrEndpointReference object
  * @security_token: a security token as a #LassoNode object
- * @security_mechanisms:(in)(transfer none)(array zero-terminated=1): a list of security mechanism
+ * @security_mechanisms:(element-type utf8): a list of security mechanism
  * for whom the token is made
  *
  * Add a new security context declaration for the given security mechanisms identifiers and populate
@@ -289,7 +289,7 @@ lasso_wsa_endpoint_reference_new_for_idwsf2_service(const char *address,
  */
 int
 lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *epr,
-		LassoNode *security_token, const char **security_mechanisms)
+		LassoNode *security_token, GList *security_mechanisms)
 {
 	LassoIdWsf2SecToken *sec_token = NULL;
 	LassoWsAddrMetadata *metadata = NULL;
@@ -298,10 +298,6 @@ lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *ep
 
 	lasso_bad_param(WSA_ENDPOINT_REFERENCE, epr);
 	lasso_bad_param(NODE, security_token);
-	lasso_null_param(security_mechanisms);
-	if (security_mechanisms[0] == NULL) {
-		return LASSO_PARAM_ERROR_INVALID_VALUE;
-	}
 
 	lasso_extract_node_or_fail(metadata, epr->Metadata, WSA_METADATA, LASSO_PARAM_ERROR_INVALID_VALUE);
 
@@ -310,10 +306,8 @@ lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *ep
 	lasso_assign_string(sec_token->usage, LASSO_IDWSF2_SEC_TOKEN_USAGE_SECURITY_TOKEN);
 
 	security_context = lasso_idwsf2_disco_security_context_new();
-	while (security_mechanisms[0] != NULL) {
-		lasso_list_add_string(security_context->SecurityMechID, security_mechanisms[0]);
-		++security_mechanisms;
-	}
+	lasso_assign_list_of_strings(security_context->SecurityMechID,
+			security_mechanisms);
 	lasso_list_add_new_gobject(security_context->Token, sec_token);
 	lasso_list_add_new_gobject(metadata->any, security_context);
 cleanup:

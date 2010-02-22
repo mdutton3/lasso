@@ -28,6 +28,7 @@
 #include "session.h"
 #include "../id-ff/login.h"
 #include "../saml-2.0/saml2_helper.h"
+#include "../saml-2.0/provider.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
 #include "../xml/ws/wsa_endpoint_reference.h"
 #include "../xml/id-wsf-2.0/disco_abstract.h"
@@ -47,19 +48,87 @@
 
 
 /**
+ * lasso_server_create_assertion_as_idwsf2_security_token:
+ * @server: a #LassoServer object
+ * @name_id: a #LassoSaml2NameID object
+ * @tolerance: tolerance around the normal duration which is accepted
+ * @duration: life duration for this assertion in seconds
+ * @cipher: whether to cipher the NameID
+ * @audience:(allow-none)(optional): if @cipher is true, the provider for which to encrypt the NameID
+ *
+ * Create a new assertion usable as a security token in an ID-WSF 2.0 EndpointReference. See
+ * lasso_saml2_assertion_set_basic_conditions() for detail about @tolerance and @duration.
+ *
+ * Return value:(transfer full)(allow-none): a newly allocated #LassoSaml2Assertion object, or NULL.
+ */
+LassoSaml2Assertion*
+lasso_server_create_assertion_as_idwsf2_security_token(LassoServer *server,
+		LassoSaml2NameID *name_id,
+		int tolerance,
+		int duration,
+		gboolean cipher,
+		LassoProvider *audience)
+{
+	LassoSaml2Assertion *assertion;
+	int rc;
+
+	if (! LASSO_IS_SERVER(server))
+		return NULL;
+	if (! LASSO_IS_SAML2_NAME_ID(name_id))
+		return NULL;
+	if (cipher && ! LASSO_IS_PROVIDER(audience))
+		return NULL;
+
+	assertion = (LassoSaml2Assertion*)lasso_saml2_assertion_new();
+	assertion->ID = lasso_build_unique_id(32);
+	assertion->Issuer = (LassoSaml2NameID*)lasso_saml2_name_id_new_with_string(server->parent.ProviderID);
+	assertion->Subject = (LassoSaml2Subject*)lasso_saml2_subject_new();
+	if (cipher) {
+		LassoSaml2EncryptedElement *encrypted_id =
+			lasso_provider_saml2_node_encrypt(audience, (LassoNode*)name_id);
+		if (! encrypted_id) {
+			lasso_release_gobject(assertion);
+			goto cleanup;
+		}
+		lasso_assign_gobject(assertion->Subject->EncryptedID, encrypted_id);
+	} else {
+		lasso_assign_new_gobject(assertion->Subject->NameID, name_id);
+	}
+	lasso_saml2_assertion_set_basic_conditions(assertion,
+			tolerance, duration, FALSE);
+	rc = lasso_server_saml2_assertion_setup_signature(server, assertion);
+	if (rc != 0) {
+		lasso_release_gobject(assertion);
+	}
+cleanup:
+	return assertion;
+}
+
+
+
+
+/**
  * lasso_login_idwsf2_add_discovery_bootstrap_epr:
  * @login: a #LassoLogin object
+ * @url: the Disco service address
+ * @abstract: the Disco service description
+ * @security_mechanisms:(allow-none)(element-type utf8): the list of supported security mechanisms
+ * @tolerance:(default -1): see lasso_saml2_assertion_set_basic_conditions().
+ * @duration:(default 0): see lasso_saml2_assertion_set_basic_conditions().
  *
  * Add the needed bootstrap attribute to the #LassoSaml2Assertion currently container in the
  * #LassoLogin object. This function should be called after lasso_login_build_assertion() by an IdP
  * also having the Discovery service role.
+ *
+ * The default @tolerance and @duration are respectively ten minutes and two days.
  *
  * Return value: 0 if successfull, otherwise #LASSO_PROFILE_ERROR_MISSING_ASSERTION if no assertion is present
  * in the #LassoLogin object, #LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin
  * object.
  */
 int
-lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *url, const char *abstract, const char *security_mech_id)
+lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *url,
+		const char *abstract, GList *security_mechanisms, int tolerance, int duration)
 {
 	LassoWsAddrEndpointReference *epr = NULL;
 	LassoWsAddrMetadata *metadata = NULL;
@@ -71,8 +140,8 @@ lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *ur
 	LassoSaml2Assertion *assertion_identity_token = NULL;
 	LassoSaml2Assertion *assertion = NULL;
 	LassoServer *server = NULL;
+	LassoSaml2NameID *name_id = NULL;
 	int rc = 0;
-	const char *security_mechanisms[] = { security_mech_id, NULL };
 
 	lasso_bad_param(LOGIN, login);
 	lasso_null_param(url);
@@ -97,21 +166,26 @@ lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *ur
 			url, LASSO_IDWSF2_DISCOVERY_HREF, server->parent.ProviderID, abstract);
 
 	/* Security/Identity token */
-	assertion_identity_token = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
-	assertion_identity_token->ID = lasso_build_unique_id(32);
-	assertion_identity_token->Issuer = (LassoSaml2NameID*)lasso_saml2_name_id_new_with_string(server->parent.ProviderID);
-	lasso_assign_gobject(assertion_identity_token->Subject,
-			assertion->Subject);
-	lasso_saml2_assertion_set_basic_conditions(assertion_identity_token,
-			5, 2*LASSO_DURATION_DAY, FALSE);
-
-	/* Do we sign the assertion ? */
-	if (lasso_security_mech_id_is_saml_authentication(security_mech_id) || lasso_security_mech_id_is_bearer_authentication(security_mech_id)) {
-		lasso_check_good_rc(lasso_server_saml2_assertion_setup_signature(login->parent.server,
-				assertion_identity_token));
+	if (duration <= 0) {
+		duration = 2 * LASSO_DURATION_DAY;
 	}
+	if (tolerance < 0) {
+		tolerance = 10*LASSO_DURATION_MINUTE;
+	}
+	/* If the NameID is encrypted try to get to he unencrypted one */
+	if (assertion->Subject->NameID) {
+		name_id = assertion->Subject->NameID;
+	} else if (assertion->Subject->EncryptedID &&
+			LASSO_IS_SAML2_NAME_ID(assertion->Subject->EncryptedID->original_data)) {
+		name_id = (LassoSaml2NameID*)assertion->Subject->EncryptedID->original_data;
+	}
+	goto_cleanup_if_fail_with_rc (name_id, LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER);
+	assertion_identity_token = lasso_server_create_assertion_as_idwsf2_security_token(server,
+			name_id, tolerance, duration, TRUE, &server->parent);
 
-	rc = lasso_wsa_endpoint_reference_add_security_token(epr, (LassoNode*)assertion_identity_token, security_mechanisms);
+	/* Add the assertion to the EPR */
+	rc = lasso_wsa_endpoint_reference_add_security_token(epr,
+			(LassoNode*)assertion_identity_token, security_mechanisms);
 	goto_cleanup_if_fail(rc == 0);
 
 	/* Add the EPR to the assertion as a SAML attribute */
@@ -133,29 +207,22 @@ cleanup:
 }
 
 /**
- * lasso_login_idwsf2_get_discovery_bootstrap_epr:
- * @login: a #LassoLogin object
+ * lasso_saml2_assertion_idwsf2_get_discovery_bootstrap_epr:
+ * @assertion: a #LassoSaml2Assertion object
  *
- * Extract the Discovery boostrap EPR from the attribute named #LASSO_SAML2_ATTRIBUTE_NAME_EPR.
+ * Extract the Discovery bootstrap EPR from @assertion.
  *
- * Return value: a caller owned #LassoWsAddrEndpointReference object, or NULL if none can be found.
+ * Return value:(transfer none): a #LassoWsAddrEndpointReference or NULL if no bootstrap EPR is found.
  */
-LassoWsAddrEndpointReference *
-lasso_login_idwsf2_get_discovery_bootstrap_epr(LassoLogin *login)
+LassoWsAddrEndpointReference*
+lasso_saml2_assertion_idwsf2_get_discovery_bootstrap_epr(LassoSaml2Assertion *assertion)
 {
-	LassoProfile *profile = NULL;
-	LassoSession *session = NULL;
-	LassoSaml2Assertion *assertion = NULL;
 	LassoSaml2AttributeStatement *attribute_statement = NULL;
 	LassoSaml2Attribute *attribute = NULL;
 	LassoSaml2AttributeValue *attribute_value = NULL;
 	GList *i = NULL, *j = NULL, *k = NULL;
 	LassoWsAddrEndpointReference *rc = NULL;
 
-	g_return_val_if_fail (LASSO_IS_LOGIN (login), NULL);
-	profile = &login->parent;
-	lasso_extract_node_or_fail (session, profile->session, SESSION, NULL);
-	assertion = (LassoSaml2Assertion*)lasso_login_get_assertion(login);
 	if (! LASSO_IS_SAML2_ASSERTION (assertion)) {
 		return NULL;
 	}
@@ -197,5 +264,30 @@ lasso_login_idwsf2_get_discovery_bootstrap_epr(LassoLogin *login)
 	}
 
 cleanup:
+	return rc;
+
+}
+
+/**
+ * lasso_login_idwsf2_get_discovery_bootstrap_epr:
+ * @login: a #LassoLogin object
+ *
+ * Extract the Discovery boostrap EPR from the attribute named #LASSO_SAML2_ATTRIBUTE_NAME_EPR.
+ *
+ * Return value:(transfer none): a caller owned #LassoWsAddrEndpointReference object, or NULL if none can be found.
+ */
+LassoWsAddrEndpointReference *
+lasso_login_idwsf2_get_discovery_bootstrap_epr(LassoLogin *login)
+{
+	LassoProfile *profile = NULL;
+	LassoSaml2Assertion *assertion = NULL;
+	LassoWsAddrEndpointReference *rc = NULL;
+
+	g_return_val_if_fail (LASSO_IS_LOGIN (login), NULL);
+	profile = &login->parent;
+	assertion = (LassoSaml2Assertion*)lasso_login_get_assertion(login);
+	rc = lasso_saml2_assertion_idwsf2_get_discovery_bootstrap_epr(assertion);
+	lasso_release_gobject(assertion);
+
 	return rc;
 }

@@ -105,6 +105,7 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_init_query(LassoIdWsf2Discovery *discov
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_query(LassoIdWsf2Discovery *discovery);
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_register(LassoIdWsf2Discovery *discovery);
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_replace(LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_delete(LassoIdWsf2Discovery *discovery);
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_association_add(
 		LassoIdWsf2Discovery *discovery);
 LASSO_EXPORT gint lasso_idwsf2_discovery_init_metadata_association_delete(
@@ -118,18 +119,20 @@ LASSO_EXPORT int lasso_idwsf2_discovery_add_service_metadata(
 LASSO_EXPORT int lasso_idwsf2_discovery_add_simple_service_metadata(
 		LassoIdWsf2Discovery *idwsf2_discovery, const char *abstract,
 		const char *provider_id, GList *service_types, GList *options, const char *address,
-		GList *security_mech_ids);
+		GList *security_mechanisms);
 LASSO_EXPORT GList* lasso_idwsf2_discovery_get_metadatas(LassoIdWsf2Discovery *discovery);
 LASSO_EXPORT gint lasso_idwsf2_discovery_add_requested_service(LassoIdWsf2Discovery *discovery,
-		GList *service_types, GList *provider_ids, GList *options, GList *security_mech_ids,
+		GList *service_types, GList *provider_ids, GList *options, GList *security_mechanisms,
 		GList *frameworks, GList *actions, LassoIdWsf2DiscoveryQueryResultType result_type,
 		const char *req_id);
 
 /* Build the request message */
 LASSO_EXPORT gint lasso_idwsf2_discovery_build_request_msg(LassoIdWsf2Discovery *discovery,
-		const char *security_mech_id);
+		const char *security_mechanism);
 
 /* Handle a request */
+LASSO_EXPORT int lasso_idwsf2_discovery_process_request_msg(LassoIdWsf2Discovery *discovery,
+		const char *message);
 LASSO_EXPORT LassoIdWsf2DiscoveryRequestType lasso_idwsf2_discovery_get_request_type(LassoIdWsf2Discovery *discovery);
 LASSO_EXPORT gint lasso_idwsf2_discovery_validate_request(LassoIdWsf2Discovery *discovery);
 LASSO_EXPORT gint lasso_idwsf2_discovery_fail_request(LassoIdWsf2Discovery *discovery,
@@ -140,6 +143,7 @@ LASSO_EXPORT gint lasso_idwsf2_discovery_process_response_msg(LassoIdWsf2Discove
 		const char *msg);
 LASSO_EXPORT GList* lasso_idwsf2_discovery_get_endpoint_references(LassoIdWsf2Discovery *discovery);
 LASSO_EXPORT GList* lasso_idwsf2_discovery_get_svcmdids(LassoIdWsf2Discovery *discovery);
+LASSO_EXPORT void lasso_idwsf2_discovery_set_svcmdids(LassoIdWsf2Discovery *discovery, GList *svcmdids);
 
 
 #ifdef __cplusplus

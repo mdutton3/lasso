@@ -34,8 +34,7 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include "discovery.h"
-#include "data_service.h"
+#include "./data_service.h"
 
 #include "../xml/id-wsf-2.0/disco_service_type.h"
 #include "../xml/id-wsf-2.0/dstref_query.h"

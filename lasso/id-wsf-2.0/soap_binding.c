@@ -199,6 +199,8 @@ lasso_soap_envelope_get_saml2_security_token(LassoSoapEnvelope *soap_envelope)
 	GList *it;
 
 	security = lasso_soap_envelope_wssec_get_security_header (soap_envelope);
+	if (! security)
+		return NULL;
 	lasso_foreach (it, security->any) {
 		if (LASSO_IS_SAML2_ASSERTION (it->data)) {
 			return (LassoSaml2Assertion*)g_object_ref(it->data);

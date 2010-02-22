@@ -422,6 +422,9 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 		provider_id = lasso_soap_envelope_sb2_get_provider_id(envelope);
 		if (! provider_id)
 			goto cleanup;
+		if (! profile->parent.server)
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_SERVER);
+		lasso_check_good_rc(lasso_saml2_assertion_decrypt_subject(assertion, profile->parent.server));
 		if (! assertion || ! assertion->Subject || ! assertion->Subject->NameID
 				|| ! assertion->Subject->NameID->SPNameQualifier)
 			goto cleanup;

@@ -165,6 +165,8 @@ prepare_saml2_authn_request(LassoLogin *splogin, LassoLogin *idplogin)
 static void
 process_authn_request(LassoLogin *splogin, LassoLogin *idplogin)
 {
+	GList node = { .data = LASSO_SECURITY_MECH_BEARER, .next = NULL };
+
 	check_good_rc(lasso_login_process_authn_request_msg(idplogin, strchr(splogin->parent.msg_url,'?')+1));
 	lasso_login_must_authenticate(idplogin);
 	check_false(lasso_login_must_ask_for_consent(idplogin));
@@ -177,7 +179,7 @@ process_authn_request(LassoLogin *splogin, LassoLogin *idplogin)
 			"FIXME: notOnOrAfter"));
 	check_good_rc(lasso_login_idwsf2_add_discovery_bootstrap_epr(idplogin,
 				"http://example.com/disco", "Discovery Service Description",
-				LASSO_SECURITY_MECH_BEARER));
+				&node, -1, 0));
 	check_good_rc(lasso_login_build_artifact_msg(idplogin, LASSO_HTTP_METHOD_ARTIFACT_GET));
 }
 

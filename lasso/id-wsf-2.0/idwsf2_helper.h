@@ -59,7 +59,7 @@ LASSO_EXPORT LassoWsAddrEndpointReference* lasso_wsa_endpoint_reference_new_for_
 		const char *abstract);
 
 LASSO_EXPORT int lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *epr,
-		LassoNode *security_token, const char **security_mechanisms);
+		LassoNode *security_token, GList *security_mechanisms);
 
 LASSO_EXPORT LassoIdWsf2Profile *lasso_wsa_endpoint_reference_get_service(
 		LassoWsAddrEndpointReference *epr);
