@@ -10,16 +10,21 @@ srcdir = sys.argv[1]
 
 hlines = file('%s/errors.h' % srcdir,'r').readlines()
 messages = dict()
-description = None
+description = ''
 
 for line in hlines:
+    m = re.match(r'^ \* LASSO.*ERROR', line)
+    if m:
+        description = ''
+        continue
     m = re.match(r'^ \* (.*[^:])$', line)
     if m:
-        description = m.group(1)
+        description += m.group(1)
     m = re.match(r'#define (LASSO_\w*ERROR\w+)', line)
     if m and description:
+        description = re.sub(r'[ \n]+', ' ', description).strip()
         messages[m.group(1)] = description
-        description = None
+        description = ''
     else:
         m = re.match(r'#define (LASSO_\w*ERROR\w+)',line)
         if m:

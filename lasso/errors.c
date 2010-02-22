@@ -156,7 +156,7 @@ lasso_strerror(int error_code)
 		case LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
 			return "Invalid NameIDPolicy in lib:AuthnRequest";
 		case LASSO_LOGIN_ERROR_INVALID_SIGNATURE:
-			return "unknown key.";
+			return "The signature of a message or of an assertion is invalid. That is badly computed or with an unknown key.";
 		case LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT:
 			return "No default endpoint";
 		case LASSO_LOGIN_ERROR_REQUEST_DENIED:
@@ -274,7 +274,7 @@ lasso_strerror(int error_code)
 		case LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL:
 			return "Unable to find Profile URL in metadata";
 		case LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER:
-			return "The issuer of the message is unknown to us";
+			return "@Deprecated: Since 2.2.3 The issuer of the message is unknown to us";
 		case LASSO_PROFILE_ERROR_UNSUPPORTED_BINDING:
 			return "The responder reported that he does not support this binding";
 		case LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE:
@@ -286,11 +286,11 @@ lasso_strerror(int error_code)
 		case LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED:
 			return "Failed to add new provider.";
 		case LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH:
-			return "metadata for ID-FF 1.2 with metadata for SAML 2.0.";
+			return "Failed to add new provider (protocol mismatch). It means that you tried to add a provider supporting a protocol imcompatible with the protocol declared for your #LassoServer, for example metadata for ID-FF 1.2 with metadata for SAML 2.0.";
 		case LASSO_SERVER_ERROR_INVALID_XML:
 			return "Parsed XML is invalid.";
 		case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
-			return "lasso_server_add_provider_from_buffer().";
+			return "The identifier of a provider is unknown to #LassoServer. To register a provider in a #LassoServer object, you must use the methods lasso_server_add_provider() or lasso_server_add_provider_from_buffer().";
 		case LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED:
 			return "Failed to load encryption private key.";
 		case LASSO_SOAP_ERROR_MISSING_BODY:
@@ -322,13 +322,13 @@ lasso_strerror(int error_code)
 		case LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST:
 			return "The last parsed response contained a SOAP fault with a RedirectRequest element.";
 		case LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST_UNSUPPORTED_BY_REQUESTER:
-			return "possible to use lasso_idwsf2_profile_redirect_user_for_interaction().";
+			return "The requester does not support SOAP Fault containing RedirectRequest elements. So it is not possible to use lasso_idwsf2_profile_redirect_user_for_interaction().";
 		case LASSO_WSF_PROFILE_ERROR_SECURITY_MECHANISM_CHECK_FAILED:
 			return "Check for a security mechanism upon a received request failed.";
 		case LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED:
 			return "A interaction is required but the sender did not allow use to make interact redirect requests.";
 		case LASSO_WSF_PROFILE_ERROR_SERVER_INTERACTION_REQUIRED_FOR_DATA:
-			return "redirect requests.";
+			return "A interaction is required to get fresh datas but the sender did not allow use to make interact redirect requests.";
 		case LASSO_WSF_PROFILE_ERROR_SOAP_FAULT:
 			return "SOAP ID-WSF binding returned a SOAP fault";
 		case LASSO_WSF_PROFILE_ERROR_UNKNOWN_STATUS_CODE:
