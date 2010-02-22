@@ -259,40 +259,44 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         parse_tuple_format = []
         parse_tuple_args = []
         for arg in m.args:
-            arg_type, arg_name, arg_options = arg
             if is_out(arg):
-                print >> self.fd, '   zval *php_out_%s = NULL;' % arg_name
-                print >> self.fd, '   %s %s;' % (var_type(arg), arg_name)
+                print >> self.fd, '   zval *php_out_%s = NULL;' % arg_name(arg)
+                print >> self.fd, '   %s %s;' % (var_type(arg), arg_name(arg))
                 parse_tuple_format.append('z!')
-                parse_tuple_args.append('&php_out_%s' % arg_name)
-            elif arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
-                arg_type = arg_type.replace('const ', '')
+                parse_tuple_args.append('&php_out_%s' % arg_name(arg))
+            elif is_cstring(arg):
                 parse_tuple_format.append('s!')
-                parse_tuple_args.append('&%s_str, &%s_len' % (arg_name, arg_name))
-                print >> self.fd, '    %s %s = NULL;' % ('char*', arg_name)
-                print >> self.fd, '    %s %s_str = NULL;' % ('char*', arg_name)
-                print >> self.fd, '    %s %s_len = 0;' % ('int', arg_name)
-            elif arg_type in ['time_t', 'int', 'gint', 'GType', 'gboolean', 'const gboolean'] + self.binding_data.enums:
+                parse_tuple_args.append('&%s_str, &%s_len' % (arg_name(arg), arg_name(arg)))
+                print >> self.fd, '    %s %s = NULL;' % ('char*', arg_name(arg))
+                print >> self.fd, '    %s %s_str = NULL;' % ('char*', arg_name(arg))
+                print >> self.fd, '    %s %s_len = 0;' % ('int', arg_name(arg))
+            elif is_int(arg, self.binding_data) or is_boolean(arg):
                 parse_tuple_format.append('l')
-                parse_tuple_args.append('&%s' % arg_name)
-                print >> self.fd, '    %s %s;' % ('long', arg_name)
-            elif arg_type == 'xmlNode*':
+                parse_tuple_args.append('&%s' % arg_name(arg))
+                print >> self.fd, '    %s %s;' % ('long', arg_name(arg))
+            elif is_time_t_pointer(arg):
+                parse_tuple_format.append('l')
+                parse_tuple_args.append('&%s' % (arg_name(arg),))
+                print >>self.fd,  '    time_t %s = 0;' % (arg_name(arg),)
+            elif is_xml_node(arg):
                 parse_tuple_format.append('s!')
-                parse_tuple_args.append('&%s_str, &%s_len' % (arg_name, arg_name))
-                print >> self.fd, '    %s %s = NULL;' % ('xmlNode*', arg_name)
-                print >> self.fd, '    %s %s_str = NULL;'  % ('char*', arg_name)
-                print >> self.fd, '    %s %s_len = 0;' % ('int', arg_name)
-            elif arg_type == 'GList*':
+                parse_tuple_args.append('&%s_str, &%s_len' % (arg_name(arg), arg_name(arg)))
+                print >> self.fd, '    %s %s = NULL;' % ('xmlNode*', arg_name(arg))
+                print >> self.fd, '    %s %s_str = NULL;'  % ('char*', arg_name(arg))
+                print >> self.fd, '    %s %s_len = 0;' % ('int', arg_name(arg))
+            elif is_glist(arg):
                 parse_tuple_format.append('a!')
-                parse_tuple_args.append('&zval_%s' % arg_name)
-                print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', arg_name)
-                print >> self.fd, '    %s %s = NULL;' % ('GList*', arg_name)
-            else:
+                parse_tuple_args.append('&zval_%s' % arg_name(arg))
+                print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', arg_name(arg))
+                print >> self.fd, '    %s %s = NULL;' % ('GList*', arg_name(arg))
+            elif is_object(arg):
                 parse_tuple_format.append('r')
-                parse_tuple_args.append('&zval_%s' % arg_name)
-                print >> self.fd, '    %s %s = NULL;' % (arg_type, arg_name)
-                print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', arg_name)
-                print >> self.fd, '    %s cvt_%s = NULL;' % ('PhpGObjectPtr*', arg_name)
+                parse_tuple_args.append('&zval_%s' % arg_name(arg))
+                print >> self.fd, '    %s %s = NULL;' % (arg_type(arg), arg_name(arg))
+                print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', arg_name(arg))
+                print >> self.fd, '    %s cvt_%s = NULL;' % ('PhpGObjectPtr*', arg_name(arg))
+            else:
+                raise Exception('Unsupported type %s %s' % (arg, m))
 
         if m.return_type:
             print >> self.fd, '    %s return_c_value;' % m.return_type
@@ -313,7 +317,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         for f, arg in zip(parse_tuple_format, m.args):
             if is_out(arg):
                 continue
-            elif arg[0] == 'xmlNode*':
+            elif is_xml_node(arg):
                 print >> self.fd, '''\
         %(name)s = get_xml_node_from_string(%(name)s_str);''' % {'name': arg[1]}
             elif f.startswith('s'):
@@ -342,7 +346,12 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 print >> self.fd, '(%s)' % m.return_type,
         else:
             print >> self.fd, '   ',
-        print >> self.fd, '%s(%s);' % (m.name, ', '.join([ref_name(x) for x in m.args]))
+        def special(x):
+            if is_time_t_pointer(x):
+                return '%(name)s ? &%(name)s : NULL' % { 'name': arg_name(x) }
+            else:
+                return ref_name(x)
+        print >> self.fd, '%s(%s);' % (m.name, ', '.join([special(x) for x in m.args]))
         # Free the converted arguments
 
         for f, arg in zip(parse_tuple_format, m.args):
