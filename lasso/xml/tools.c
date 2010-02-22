@@ -2132,3 +2132,35 @@ lasso_xmlnode_to_string(xmlNode *node, gboolean format)
 
 	return str;
 }
+
+/**
+ * lasso_string_to_xsd_integer:
+ * @saml2_assertion: a #LassoSaml2Assertion object
+ * @integer: a long int variable to store the result
+ *
+ * Parse a string using the xsd:integer schema.
+ *
+ * Return value: TRUE if successful, FALSE otherwise.
+ */
+gboolean
+lasso_string_to_xsd_integer(const char *str, long int *integer)
+{
+	const char *save = str;
+
+	if (! str)
+		return FALSE;
+	while (isspace(*str))
+		str++;
+	if (*str == '+' || *str == '-')
+		str++;
+	while (isdigit(*str))
+		str++;
+	while (isspace(*str))
+		str++;
+	if (*str)
+		return FALSE;
+	*integer = strtol(save, NULL, 10);
+	if ((*integer == LONG_MAX || *integer == LONG_MIN) && errno == ERANGE)
+		return FALSE;
+	return TRUE;
+}
