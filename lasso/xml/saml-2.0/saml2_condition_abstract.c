@@ -70,7 +70,8 @@ class_init(LassoSaml2ConditionAbstractClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "ConditionAbstract");
+	nclass->node_data->keep_xmlnode = TRUE;
+	lasso_node_class_set_nodename(nclass, "Condition");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
