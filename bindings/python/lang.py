@@ -67,9 +67,6 @@ class Binding:
         self.binding_data = binding_data
         self.src_dir = os.path.dirname(__file__)
 
-    def is_pygobject(self, t):
-        return t and is_object((t,'',{})) and t not in self.binding_data.enums
-
     def free_value(self, fd, type, name = None):
         if not name:
             name = arg_anme(type)
@@ -326,14 +323,12 @@ if WSF_SUPPORT:
             if m.name == method_prefix + 'new':
                 c_args = []
                 py_args = []
-                for o in m.args:
-                    type, aname, arg_options = o
-                    py_args.append(get_python_arg_decl(o))
-
-                    if self.is_pygobject(type):
-                        c_args.append('%s and %s._cptr' % (aname, aname))
+                for arg in m.args:
+                    py_args.append(get_python_arg_decl(arg))
+                    if not is_int(arg, self.binding_data) and is_object(arg):
+                        c_args.append('%(name)s and %(name)s._cptr' % { 'name' : arg_name(arg) })
                     else:
-                        c_args.append(aname)
+                        c_args.append(arg_name(arg))
                 py_args = remove_bad_optional(py_args)
 
                 c_args = ', '.join(c_args)
@@ -352,11 +347,11 @@ if WSF_SUPPORT:
                 constructor_name = format_as_camelcase(m.name[len(method_prefix):])
                 c_args = []
                 py_args = []
-                for o in m.args:
-                    type, aname, arg_options = o
-                    py_args.append(get_python_arg_decl(o))
+                for arg in m.args:
+                    aname = arg_name(arg)
+                    py_args.append(get_python_arg_decl(arg))
 
-                    if self.is_pygobject(type):
+                    if not is_int(arg, self.binding_data) and is_object(arg):
                         c_args.append('%s and %s._cptr' % (aname, aname))
                     else:
                         c_args.append(aname)
@@ -392,7 +387,7 @@ if WSF_SUPPORT:
                     pass
                 elif is_xml_node(el_type):
                     pass
-                elif is_object(element_type(m)):
+                elif is_object(el_type):
                     print >> fd, '        if not t: return t'
                     print >> fd, '        t = tuple([cptrToPy(x) for x in t])'
                 else:
@@ -456,21 +451,22 @@ if WSF_SUPPORT:
             py_args = []
             c_args = []
             outarg = None
-            for o in m.args[1:]:
-                type, aname, arg_options = o
-                if is_out(o):
+            for arg in m.args[1:]:
+                if is_out(arg):
                     assert not outarg
-                    outarg = o
-                    outvar = '_%s_out' % aname
+                    outarg = arg
+                    outvar = '_%s_out' % arg_name(arg)
                 else:
-                    py_args.append(get_python_arg_decl(o))
+                    py_args.append(get_python_arg_decl(arg))
 
-                if is_out(o):
+                if is_out(arg):
                     c_args.append(outvar)
-                elif not self.is_pygobject(type):
-                    c_args.append(aname)
+                elif is_xml_node(arg) or is_boolean(arg) or is_cstring(arg) or is_int(arg, self.binding_data) or is_glist(arg) or is_hashtable(arg) or is_time_t_pointer(arg):
+                    c_args.append(arg_name(arg))
+                elif is_object(arg):
+                    c_args.append('%(name)s and %(name)s._cptr' % { 'name': arg_name(arg) })
                 else:
-                    c_args.append('%s and %s._cptr' % (aname, aname))
+                    raise Exception('Does not handle argument of type: %s' % ((m, arg),))
             # check py_args
             py_args = remove_bad_optional(py_args)
             opt = False
@@ -731,19 +727,12 @@ register_constants(PyObject *d)
             print >> fd, ''
             print >> fd, '    if (! PyArg_ParseTuple(args, "O", &cvt_this)) return NULL;'
             print >> fd, '    this = (%s*)cvt_this->obj;' % klassname
-
-            if is_cstring(m):
-                print >> fd, '    return_value = this->%s;' % arg_name(m)
-            elif is_object(m):
-                print >> fd, '    return_value = this->%s;' % m[1];
-            else:
-                print >> fd, '    return_value = this->%s;' % m[1];
+            print >> fd, '    return_value = this->%s;' % arg_name(m)
             try:
                 self.return_value(fd, m)
             except:
                 print >>sys.stderr, 'W: cannot make an assignment for', c, m
                 raise
-
             print >> fd, '    return return_pyvalue;'
             print >> fd, '}'
             print >> fd, ''
@@ -888,26 +877,27 @@ register_constants(PyObject *d)
         parse_tuple_format = []
         parse_tuple_args = []
         for arg in m.args:
-            arg_type, aname, arg_options = arg
+            atype = arg_type(arg)
+            aname = arg_name(arg)
             arg_def = None
             python_cvt_def = None
             defval = None
-            if arg_options.get('optional'):
+            if is_optional(arg):
                 if not '|' in parse_tuple_format:
                     parse_tuple_format.append('|')
-            if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*'):
-                arg_type = arg_type.replace('const ', '')
-                if arg_options.get('optional'):
+            if is_cstring(arg):
+                atype = unconstify(atype) 
+                if is_optional(arg):
                     parse_tuple_format.append('z')
                 else:
                     parse_tuple_format.append('s')
                 parse_tuple_args.append('&%s' % aname)
                 arg_def = '    %s %s = NULL;' % (arg[0], arg[1])
-            elif arg_type in ['GType', 'int', 'gint', 'gboolean', 'const gboolean', 'time_t'] + self.binding_data.enums:
+            elif is_int(arg, self.binding_data) or is_boolean(arg):
                 parse_tuple_format.append('i')
                 parse_tuple_args.append('&%s' % aname)
-                if arg_options.get('default'):
-                    defval = arg_options.get('default')
+                if arg_default(arg):
+                    defval = arg_default(arg)
                     if defval.startswith('b:'):
                         defval = defval[2:].upper()
                     else:
