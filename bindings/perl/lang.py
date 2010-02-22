@@ -260,27 +260,41 @@ INCLUDE: LassoNode.xs
                 raise
         self.xs.p(name + '(')
         arg_list = []
+        out_list = []
+        arg_names = []
         if name.endswith('_new'):
             arg_list.append('char *cls')
+            arg_names.append('cls')
         for arg in func.args:
             decl = ''
-            if is_cstring(arg):
-                if is_optional(arg):
-                    decl = 'string_or_null %s' % arg_name(arg)
+            aname = arg_name(arg)
+            if is_out(arg):
+                arg_names.append(aname)
+                if not is_int(arg, self.binding_data) and is_object(arg):
+                    decl = unconstify(arg_type(arg))[:-1] + ' &' + aname + ' = NO_INIT'
+                    out_list.append(aname)
                 else:
-                    decl = 'string_non_null %s' % arg_name(arg)
-            elif not is_glist(arg):
-                decl = '%s %s' % (unconstify(arg_type(arg)), arg_name(arg))
+                    raise Exception('Out arg of type: %s is not supported' % (arg,))
             else:
-                decl = '%s %s' % (self.glist_type(arg), arg_name(arg))
-            if is_optional(arg):
-                if arg_default(arg):
-                    decl += ' = ' + self.default_value(arg)
-                else:
-                    if is_cstring(arg) or is_glist(arg) or is_xml_node(arg) or is_object(arg):
-                        decl += ' = NULL'
+                if is_cstring(arg):
+                    if is_optional(arg):
+                        decl = 'string_or_null %s' % aname
                     else:
-                        raise Exception('Do not know what to do for optional: %s' % arg)
+                        decl = 'string_non_null %s' % aname
+                elif not is_glist(arg):
+                    decl = '%s %s' % (unconstify(arg_type(arg)), aname)
+                else:
+                    decl = '%s %s' % (self.glist_type(arg), aname)
+                if is_optional(arg):
+                    if arg_default(arg):
+                        arg_names.append(aname + ' = ' + self.default_value(arg))
+                    else:
+                        if is_cstring(arg) or is_glist(arg) or is_xml_node(arg) or is_object(arg):
+                            arg_names.append(aname + ' = NULL')
+                        else:
+                            raise Exception('Do not know what to do for optional: %s' % arg)
+                else:
+                    arg_names.append(aname)
             arg_list.append(decl)
             # Cleanup code, for by-reference arguments
             if is_glist(arg) and not is_transfer_full(arg):
@@ -289,10 +303,10 @@ INCLUDE: LassoNode.xs
                     cleanup.append('lasso_release_xml_node(%s)' % arg_name(arg))
             if is_hashtable(arg):
                 raise Exception("No cleanup code generation for GHashTable")
-
-        self.xs.p(','.join(arg_list))
+        self.xs.p(','.join(arg_names))
         self.xs.pn(')')
-
+        for decl in arg_list:
+            self.xs.pn('  %s' % (decl,))
         if name.endswith('_new'):
             self.xs.pn('  INIT:')
             self.xs.pn('    cls = NULL;')
@@ -304,6 +318,13 @@ INCLUDE: LassoNode.xs
                 'first_arg': arg_name(func.args[0]),
                 'gtype': prefix + 'get_type()' 
                 } )
+        if out_list:
+            self.xs.pn('  INIT:')
+            for o in out_list:
+                self.xs.pn('    %s = NULL;' % o)
+            self.xs.pn('  OUTPUT:')
+            for o in out_list:
+                self.xs.pn('    %s' % o)
         need_prototype = False
         for x in func.args:
             if is_glist(x):

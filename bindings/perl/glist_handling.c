@@ -94,7 +94,7 @@ pv_to_xmlnode(SV *value) {
  *
  * Return value: a newly create #GList
  */
-static GList*
+G_GNUC_UNUSED static GList*
 array_to_glist_string(AV *array)
 {
 	I32 len, i;
