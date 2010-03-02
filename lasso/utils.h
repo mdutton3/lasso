@@ -375,6 +375,12 @@
 		} \
 	}
 
+/* List element removal */
+#define lasso_list_remove_gobject(list, gobject) \
+	do { void *__tmp = gobject; GList **__tmp_list = &(list); \
+		*__tmp_list = g_list_remove(*__tmp_list, __tmp); \
+		lasso_unref(__tmp); } while(0)
+
 /* Pointer ownership transfer */
 
 /* lasso_transfer_xxx macros are like lasso_assign_xxx but they do not increment reference count or
