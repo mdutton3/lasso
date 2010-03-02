@@ -148,23 +148,7 @@ function test06() {
     $attribute2_string = "second string";
     $attribute3_string = "third string";
 
-    $expected_assertion_dump = '<saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" SignType="0" SignMethod="0" EncryptionActivated="false" EncryptionSymKeyType="0">
-  <saml:AttributeStatement>
-    <saml:Attribute Name="first attribute">
-      <saml:AttributeValue>
-        <XXX>first string</XXX>
-      </saml:AttributeValue>
-    </saml:Attribute>
-    <saml:Attribute Name="second attribute">
-      <saml:AttributeValue>
-        <XXX>second string</XXX>
-      </saml:AttributeValue>
-      <saml:AttributeValue>
-        <XXX>third string</XXX>
-      </saml:AttributeValue>
-    </saml:Attribute>
-  </saml:AttributeStatement>
-</saml:Assertion>';
+    $expected_assertion_dump = '<saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" SignType="0" SignMethod="0" EncryptionActivated="false" EncryptionSymKeyType="0"><saml:AttributeStatement><saml:Attribute Name="first attribute"><saml:AttributeValue><XXX>first string</XXX></saml:AttributeValue></saml:Attribute><saml:Attribute Name="second attribute"><saml:AttributeValue><XXX>second string</XXX></saml:AttributeValue><saml:AttributeValue><XXX>third string</XXX></saml:AttributeValue></saml:Attribute></saml:AttributeStatement></saml:Assertion>';
 
     $text_node1 = new LassoMiscTextNode();
     $text_node1->content = $attribute1_string;
