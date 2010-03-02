@@ -133,7 +133,8 @@ WSF_H_FILES = \
 	soap_binding_ext_service_instance_update.h \
 	soap_binding_ext_timeout.h \
 	soap_binding.h \
-	utility_status.h
+	utility_status.h \
+	tools.h
 endif
 
 liblasso_xml_la_SOURCES = \

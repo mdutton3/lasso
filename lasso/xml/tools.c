@@ -107,7 +107,7 @@ lasso_build_random_sequence(char *buffer, unsigned int size)
  *
  * Builds an ID which has an unicity probability of 2^(-size*4).
  *
- * Return value: a "unique" ID (begin always with _ character)
+ * Return value:(transfer full): a "unique" ID (begin always with _ character)
  **/
 char*
 lasso_build_unique_id(unsigned int size)
@@ -140,7 +140,7 @@ lasso_build_unique_id(unsigned int size)
  *
  * Format the given time as an ISO 8601 date-time value in UTC.
  *
- * Return value: an ISO 9601 formatted string.
+ * Return value:(transfer full): an ISO 9601 formatted string.
  */
 char*
 lasso_time_to_iso_8601_gmt(time_t now)
