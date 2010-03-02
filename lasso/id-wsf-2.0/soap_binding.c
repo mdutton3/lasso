@@ -345,6 +345,33 @@ lasso_soap_envelope_get_relates_to(LassoSoapEnvelope *soap_envelope, gboolean cr
 }
 
 /**
+ * lasso_soap_envelope_set_relates_to:
+ * @soap_envelope: a #LassoSoapEnvelope object
+ * @value:(allow-none): the value to set into the new header
+ * @relationship:(allow-none): kind of the relationship
+ *
+ * Set the value of the RelatesTo header, if it does not exist it is created. If @value is NULL, the
+ * header is removed.
+ */
+void
+lasso_soap_envelope_set_relates_to(LassoSoapEnvelope *soap_envelope, char *value, char *relationship)
+{
+	LassoWsAddrRelatesTo *relates_to;
+	if (! LASSO_IS_SOAP_ENVELOPE(soap_envelope))
+		return;
+
+
+	relates_to = lasso_soap_envelope_get_relates_to(soap_envelope, TRUE);
+	if (value) {
+		g_return_if_fail(relates_to);
+		lasso_assign_string(relates_to->content, value);
+		lasso_assign_string(relates_to->RelationshipType, relationship);
+	} else if (relates_to) {
+		lasso_list_remove_gobject(soap_envelope->Header->Other, relates_to);
+	}
+}
+
+/**
  * lasso_soap_envelope_get_body_content:
  * @soap_envelope: a #LassoSoapEnvelope object
  *

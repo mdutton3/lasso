@@ -98,6 +98,8 @@ LASSO_EXPORT LassoSoapDetail *lasso_soap_fault_get_detail(LassoSoapFault *soap_f
 LASSO_EXPORT LassoSoapFault* lasso_soap_envelope_get_soap_fault(LassoSoapEnvelope *soap_envelope,
 		gboolean create);
 
+LASSO_EXPORT void lasso_soap_envelope_set_relates_to(LassoSoapEnvelope *soap_envelope, char *value, char *relationship);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
