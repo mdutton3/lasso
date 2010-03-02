@@ -439,10 +439,11 @@ lasso_idwsf2_data_service_add_namespace(LassoIdWsf2DataService *service, const c
 }
 
 /**
- * lasso_idwsf2_data_service_build_request:
+ * lasso_idwsf2_data_service_build_request_msg:
  * @service: a #LassoIdWsf2DataService object
+ * @security_mech_id:(allow-none): the security mechanism to employ, default is Bearer mechanism.
  *
- * Build the request messages
+ * Build the request message.
  *
  * Return value: 0 if successful, an error code otherwise.
  */
