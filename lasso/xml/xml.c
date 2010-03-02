@@ -141,7 +141,7 @@ lasso_get_prefix_for_idwsf2_dst_service_href(const gchar *href)
 /*****************************************************************************/
 
 static char*
-_lasso_node_export_to_xml(LassoNode *node, gboolean format, gboolean dump)
+_lasso_node_export_to_xml(LassoNode *node, gboolean format, gboolean dump, int level)
 {
 	xmlNode *xmlnode;
 	char *ret;
@@ -149,7 +149,7 @@ _lasso_node_export_to_xml(LassoNode *node, gboolean format, gboolean dump)
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
 	xmlnode = lasso_node_get_xmlNode(node, dump);
-	ret = lasso_xmlnode_to_string(xmlnode, format);
+	ret = lasso_xmlnode_to_string(xmlnode, format, level);
 	xmlFreeNode(xmlnode);
 
 	return ret;
@@ -167,7 +167,23 @@ _lasso_node_export_to_xml(LassoNode *node, gboolean format, gboolean dump)
 char*
 lasso_node_dump(LassoNode *node)
 {
-	return _lasso_node_export_to_xml(node, FALSE, TRUE);
+	return _lasso_node_export_to_xml(node, FALSE, TRUE, 0);
+}
+
+/**
+ * laso_node_debug:
+ * @node: a #LassoNode
+ *
+ * Create a debug dump for @node, it is pretty printed so any contained signature will be
+ * uncheckable.
+ *
+ * Return value: a full indented and so human readable dump of @node. The string must be freed by
+ * the caller.
+ */
+char*
+lasso_node_debug(LassoNode *node)
+{
+	return _lasso_node_export_to_xml(node, TRUE, TRUE, 5);
 }
 
 /**
@@ -254,7 +270,7 @@ lasso_node_export_to_ecp_soap_response(LassoNode *node, const char *assertionCon
 	xmlAddChild(body, message);
 
 	/* dump */
-	ret = lasso_xmlnode_to_string(envelope, FALSE);
+	ret = lasso_xmlnode_to_string(envelope, FALSE, 0);
 	xmlFreeNode(envelope);
 
 	return ret;
@@ -331,7 +347,7 @@ lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
 	body = xmlNewTextChild(envelope, NULL, (xmlChar*)"Body", NULL);
 	xmlAddChild(body, message);
 
-	ret = lasso_xmlnode_to_string(envelope, FALSE);
+	ret = lasso_xmlnode_to_string(envelope, FALSE, 0);
 
 	xmlFreeNode(envelope);
 
@@ -381,7 +397,7 @@ lasso_node_export_to_query(LassoNode *node,
 gchar*
 lasso_node_export_to_xml(LassoNode *node)
 {
-	return _lasso_node_export_to_xml(node, FALSE, FALSE);
+	return _lasso_node_export_to_xml(node, FALSE, FALSE, 0);
 }
 
 /**

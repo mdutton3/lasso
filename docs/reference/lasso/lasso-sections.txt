@@ -1024,6 +1024,7 @@ lasso_node_new_from_xmlNode
 lasso_node_cleanup_original_xmlnodes
 lasso_node_destroy
 lasso_node_dump
+lasso_node_debug
 lasso_node_export_to_base64
 lasso_node_export_to_query
 lasso_node_export_to_soap

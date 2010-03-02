@@ -2111,7 +2111,7 @@ cleanup:
  * Return value: a newly allocated C string
  */
 char*
-lasso_xmlnode_to_string(xmlNode *node, gboolean format)
+lasso_xmlnode_to_string(xmlNode *node, gboolean format, int level)
 {
 	xmlOutputBufferPtr buf;
 	xmlCharEncodingHandlerPtr handler = NULL;
@@ -2123,7 +2123,7 @@ lasso_xmlnode_to_string(xmlNode *node, gboolean format)
 
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, node, 0, format ? 1 : 0, "utf-8");
+	xmlNodeDumpOutput(buf, NULL, node, level, format ? 1 : 0, "utf-8");
 	xmlOutputBufferFlush(buf);
 	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
 	/* do not mix XML and GLib strings, so we must copy */
