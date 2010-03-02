@@ -2717,7 +2717,7 @@ xml_insure_namespace(xmlNode *xmlnode, xmlNs *ns, gboolean force, gchar *ns_href
 
 	if (ns == NULL) {
 		for (ns = xmlnode->nsDef; ns; ns = ns->next) {
-			if (strcmp((gchar*)ns->href, ns_href) == 0) {
+			if (ns->href && g_strcmp0((gchar*)ns->href, ns_href) == 0) {
 				break;
 			}
 		}
