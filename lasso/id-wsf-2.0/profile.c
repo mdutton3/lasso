@@ -716,7 +716,8 @@ lasso_idwsf2_profile_get_soap_envelope_response(LassoIdWsf2Profile *idwsf2_profi
  * @idwsf2_profile: a #LassoIdWsf2Profile object
  *
  * Return the NameIdentifier found in a WS-Security authentication token, when Bearer or SAML
- * security mechanism is used.
+ * security mechanism is used. This method does not validate any security conditions on the
+ * assertion.
  *
  * Return value:(transfer full)(allow-none): a #LassoNode object or NULL.
  */
@@ -727,7 +728,6 @@ lasso_idwsf2_profile_get_name_identifier(LassoIdWsf2Profile *idwsf2_profile)
 	LassoSaml2NameID *nameID = NULL;
 	LassoIdWsf2Sb2TargetIdentity *target_identity = NULL;
 	LassoSaml2EncryptedElement *encryptedID = NULL;
-
 
 	if (! LASSO_IS_IDWSF2_PROFILE(idwsf2_profile))
 		return NULL;
@@ -741,22 +741,14 @@ lasso_idwsf2_profile_get_name_identifier(LassoIdWsf2Profile *idwsf2_profile)
 		(lasso_idwsf2_profile_get_soap_envelope_request(idwsf2_profile));
 	if (assertion && assertion->Subject) {
 
-		/* We need a server object to check for audience and decrypt encrypted NameIDs */
-		if (! LASSO_IS_SERVER(idwsf2_profile->parent.server)) {
-			goto cleanup;
-		}
-
-		/* Check validity of the assertion */
-		/* FIXME: get tolerance from profile */
-		if (lasso_saml2_assertion_validate_conditions(assertion,
-					idwsf2_profile->parent.server->parent.ProviderID) !=
-				LASSO_SAML2_ASSERTION_VALID) {
+		if (lasso_saml2_assertion_decrypt_subject(assertion,
+					idwsf2_profile->parent.server) != 0) {
 			goto cleanup;
 		}
 
 		lasso_assign_gobject (nameID, assertion->Subject->NameID);
-		lasso_assign_gobject (encryptedID, assertion->Subject->EncryptedID);
 	}
+	/* We found nothing */
 	if (!nameID && !encryptedID) {
 		GList *it;
 		/* Go look at the target identity */
@@ -775,16 +767,18 @@ lasso_idwsf2_profile_get_name_identifier(LassoIdWsf2Profile *idwsf2_profile)
 				}
 			}
 		}
-
 	}
 
-	if (lasso_saml20_profile_process_name_identifier_decryption(&idwsf2_profile->parent, &nameID,
-				&encryptedID) != 0) {
-		g_warning("process_name_identifier_decryption failed "\
-				"when retrieving name identifier for ID-WSF profile");
-	}
-	if (nameID) {
-		goto cleanup;
+	if (!nameID && encryptedID) {
+		/* We need a server object to check for audience and decrypt encrypted NameIDs */
+		if (! LASSO_IS_SERVER(idwsf2_profile->parent.server)) {
+			goto cleanup;
+		}
+		if (lasso_saml20_profile_process_name_identifier_decryption(&idwsf2_profile->parent, &nameID,
+					&encryptedID) != 0) {
+			g_warning("process_name_identifier_decryption failed "\
+					"when retrieving name identifier for ID-WSF profile");
+		}
 	}
 
 cleanup:
