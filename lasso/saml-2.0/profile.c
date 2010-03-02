@@ -411,7 +411,7 @@ lasso_saml20_profile_process_artifact_response(LassoProfile *profile, const char
 			critical_error(LASSO_PROFILE_ERROR_INVALID_RESPONSE));
 	if (artifact_response->any == NULL) {
 		lasso_release_gobject(profile->response);
-		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_ARTIFACT);
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_RESPONSE);
 	}
 	lasso_assign_gobject(profile->response, artifact_response->any);
 
