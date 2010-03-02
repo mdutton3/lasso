@@ -598,17 +598,35 @@ lasso_idwsf2_data_service_init_response(LassoIdWsf2DataService *service)
 	LassoIdWsf2DstRefModifyResponse *modify_response;
 	LassoNode *response = NULL;
 	int rc = 0;
+	const char *service_type = NULL;
+	const char *prefix = NULL;
 
 	lasso_bad_param(IDWSF2_DATA_SERVICE, service);
 
 	lasso_check_good_rc(lasso_idwsf2_profile_init_response(&service->parent));
+	if (service_type) {
+		const char *prefix = lasso_get_prefix_for_idwsf2_dst_service_href(service_type);
+		if (! prefix)
+			prefix = "dstref";
+	} else {
+		service_type = service->private_data->service_type;
+		prefix = service->private_data->service_type_prefix;
+	}
 	switch (lasso_idwsf2_data_service_get_request_type(service)) {
 		case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_QUERY:
 			query_response = lasso_idwsf2_dstref_query_response_new();
+			if (service_type) {
+				lasso_idwsf2_data_service_set_dst_service_type(query_response,
+						service_type, prefix);
+			}
 			response = (LassoNode*)query_response;
 			break;
 		case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_MODIFY:
 			modify_response = lasso_idwsf2_dstref_modify_response_new();
+			if (service_type) {
+				lasso_idwsf2_data_service_set_dst_service_type(modify_response,
+						service_type, prefix);
+			}
 			response = (LassoNode*)modify_response;
 			break;
 		default:
@@ -645,6 +663,10 @@ lasso_idwsf2_data_service_set_status_code(LassoIdWsf2DataService *service,
 	LassoSoapFault *fault;
 	int rc = 0;
 
+
+	response = service->parent.parent.response;
+	if (! LASSO_IS_IDWSF2_UTIL_RESPONSE(response))
+		return LASSO_PROFILE_ERROR_MISSING_RESPONSE;
 	switch (lasso_idwsf2_data_service_get_request_type(service)) {
 		case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_QUERY:
 			status = &LASSO_IDWSF2_UTIL_RESPONSE(response)->Status;
@@ -788,6 +810,8 @@ lasso_idwsf2_data_service_process_response_msg(
 
 	lasso_bad_param(IDWSF2_DATA_SERVICE, service);
 
+	lasso_check_good_rc(lasso_idwsf2_profile_process_response_msg(&service->parent, msg));
+
 	status = lasso_idwsf2_data_service_get_response_status(service);
 
 	if (! status || ! status->code) {
@@ -803,7 +827,6 @@ lasso_idwsf2_data_service_process_response_msg(
 		rc = LASSO_IDWSF2_DST_ERROR_UNKNOWN_STATUS_CODE;
 	}
 
-	lasso_check_good_rc(lasso_idwsf2_profile_process_response_msg(&service->parent, msg));
 	switch (lasso_idwsf2_data_service_get_request_type(service)) {
 		case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_QUERY:
 			query_response = (LassoIdWsf2DstRefQueryResponse*)service->parent.parent.response;
