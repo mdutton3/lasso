@@ -1117,11 +1117,9 @@ lasso_idwsf2_discovery_validate_request(LassoIdWsf2Discovery *discovery)
 			md_association_query_response =
 				lasso_idwsf2_disco_svc_md_association_query_response_new();
 			response = (LassoNode*)md_association_query_response;
-			lasso_foreach(i, discovery->private_data->metadatas) {
-				if (LASSO_IS_IDWSF2_DISCO_SVC_METADATA(i->data)) {
-					lasso_list_add_string(md_association_query_response->SvcMDID,
-							((LassoIdWsf2DiscoSvcMetadata*)i->data)->svcMDID);
-				}
+			lasso_foreach(i, discovery->private_data->svcmdids) {
+				lasso_list_add_string(md_association_query_response->SvcMDID,
+						i->data);
 			}
 			status = &md_association_query_response->Status;
 			break;
@@ -1296,38 +1294,50 @@ lasso_idwsf2_discovery_process_response_msg(LassoIdWsf2Discovery *discovery,
 			if (! LASSO_IDWSF2_DISCO_SVC_MD_QUERY_RESPONSE(response))
 				goto bad_response;
 			md_query_response = (LassoIdWsf2DiscoSvcMDQueryResponse*)response;
-			lasso_check_good_rc(lasso_idwsf2_discovery_status2rc(md_query_response->Status));
-			lasso_assign_list_of_gobjects(discovery->private_data->metadatas, md_query_response->SvcMD);
+			lasso_check_good_rc(lasso_idwsf2_discovery_status2rc(
+						md_query_response->Status));
+			lasso_assign_list_of_gobjects(discovery->private_data->metadatas,
+					md_query_response->SvcMD);
 			break;
 		case LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_REPLACE:
 			if (! LASSO_IDWSF2_DISCO_SVC_MD_REPLACE_RESPONSE(response))
 				goto bad_response;
 			md_replace_response = (LassoIdWsf2DiscoSvcMDReplaceResponse*)response;
-			rc = lasso_idwsf2_discovery_status2rc(md_replace_response->Status);
+			lasso_check_good_rc(lasso_idwsf2_discovery_status2rc(
+						md_replace_response->Status));
 			break;
 		case LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_DELETE:
 			if (! LASSO_IDWSF2_DISCO_SVC_MD_DELETE_RESPONSE(response))
 				goto bad_response;
 			md_delete_response = (LassoIdWsf2DiscoSvcMDDeleteResponse*)response;
-			rc = lasso_idwsf2_discovery_status2rc(md_delete_response->Status);
+			lasso_check_good_rc(lasso_idwsf2_discovery_status2rc(
+						md_delete_response->Status));
 			break;
 		case LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_ASSOCIATION_ADD:
 			if (! LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_ADD_RESPONSE(response))
 				goto bad_response;
-			md_association_add_response = (LassoIdWsf2DiscoSvcMDAssociationAddResponse*)response;
-			rc = lasso_idwsf2_discovery_status2rc(md_association_add_response->Status);
+			md_association_add_response =
+				(LassoIdWsf2DiscoSvcMDAssociationAddResponse*)response;
+			lasso_check_good_rc(lasso_idwsf2_discovery_status2rc(
+						md_association_add_response->Status));
 			break;
 		case LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_ASSOCIATION_DELETE:
 			if (! LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_DELETE_RESPONSE(response))
 				goto bad_response;
-			md_association_delete_response = (LassoIdWsf2DiscoSvcMDAssociationDeleteResponse*)response;
-			rc = lasso_idwsf2_discovery_status2rc(md_association_delete_response->Status);
+			md_association_delete_response =
+				(LassoIdWsf2DiscoSvcMDAssociationDeleteResponse*)response;
+			lasso_check_good_rc(lasso_idwsf2_discovery_status2rc(
+						md_association_delete_response->Status));
 			break;
 		case LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_MD_ASSOCIATION_QUERY:
 			if (! LASSO_IDWSF2_DISCO_SVC_MD_ASSOCIATION_QUERY_RESPONSE(response))
 				goto bad_response;
-			md_association_query_response = (LassoIdWsf2DiscoSvcMDAssociationQueryResponse*)response;
-			rc = lasso_idwsf2_discovery_status2rc(md_association_query_response->Status);
+			md_association_query_response =
+				(LassoIdWsf2DiscoSvcMDAssociationQueryResponse*)response;
+			lasso_check_good_rc(lasso_idwsf2_discovery_status2rc(
+						md_association_query_response->Status));
+			lasso_assign_list_of_strings(discovery->private_data->svcmdids,
+					md_association_query_response->SvcMDID);
 			break;
 		case LASSO_IDWSF2_DISCOVERY_REQUEST_TYPE_UNKNOWN:
 		default:
