@@ -545,7 +545,7 @@ if WSF_SUPPORT:
             setter_suffix = 'set_' + suffix
             setter = None
             for n in methods:
-                if n.name.endswith(setter_suffix):
+                if n.name.endswith(setter_suffix) and len(n.args) == 2:
                     setter = n
             pname = format_as_camelcase(name[len(method_prefix)+len('get_'):])
             fname = format_as_camelcase(name[len(method_prefix):])
