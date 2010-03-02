@@ -388,7 +388,8 @@ cleanup:
  * @security_mech_id:(allow-none): the security mechanism to enforce, if none is provided Bearer is
  * assumed.
  *
- * Check ID-WSF 2.0 Security Mechanism upon the received request.
+ * Check ID-WSF 2.0 Security Mechanism upon the received request. It is mandatory that a
+ * #LassoServer is setted for the @profile object.
  *
  * Return value: 0 if the request passed the check, an error code otherwise.
  */
@@ -399,41 +400,66 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 	LassoSoapEnvelope *envelope = NULL;
 	int rc = LASSO_WSF_PROFILE_ERROR_SECURITY_MECHANISM_CHECK_FAILED;
 
+	if (! LASSO_IS_SERVER(profile->parent.server))
+		return LASSO_PROFILE_ERROR_MISSING_SERVER;
+
 	lasso_bad_param(IDWSF2_PROFILE, profile);
 	envelope = _get_soap_envelope_request(profile);
 	/* Verify security mechanism */
 	if (security_mech_id == NULL ||
-			lasso_security_mech_id_is_bearer_authentication(security_mech_id)) {
+			lasso_security_mech_id_is_bearer_authentication(security_mech_id) || lasso_security_mech_id_is_saml_authentication(security_mech_id)) {
 		LassoSaml2Assertion *assertion;
 		LassoProvider *issuer;
-		char *provider_id;
+		const char *sender_id = NULL, *local_service_id = NULL;
+		const char *name_qualifier = NULL, *sp_name_qualifier = NULL;
+		LassoSaml2AssertionValidationState validation_state;
 
 		assertion = lasso_soap_envelope_get_saml2_security_token (envelope);
 		if (assertion == NULL)
-			goto cleanup;
-		if (lasso_saml2_assertion_validate_conditions(assertion, NULL) != LASSO_SAML2_ASSERTION_VALID)
-			goto cleanup;
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_ASSERTION);
+		validation_state = lasso_saml2_assertion_validate_conditions(assertion, NULL);
+		if (validation_state != LASSO_SAML2_ASSERTION_VALID)
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_ASSERTION_CONDITIONS);
 		issuer = lasso_saml2_assertion_get_issuer_provider(assertion, profile->parent.server);
-		if (! issuer || issuer->role != LASSO_PROVIDER_ROLE_IDP)
-			goto cleanup;
-		if (lasso_provider_verify_single_node_signature(issuer, (LassoNode*)assertion, "ID") != 0)
-			goto cleanup;
-		/* check that the SPQualifier of the assertion is the same as the sender header */
-		provider_id = lasso_soap_envelope_sb2_get_provider_id(envelope);
-		if (! provider_id)
-			goto cleanup;
+		if (! issuer)
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_UNKNOWN_ISSUER);
+		if (issuer->role != LASSO_PROVIDER_ROLE_IDP)
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_ISSUER_IS_NOT_AN_IDP);
+		lasso_check_good_rc(lasso_provider_verify_single_node_signature(issuer,
+					(LassoNode*)assertion, "ID"));
+		lasso_check_good_rc(lasso_saml2_assertion_decrypt_subject(assertion,
+					profile->parent.server));
+		if (assertion && assertion->Subject && assertion->Subject->NameID) {
+			name_qualifier = assertion->Subject->NameID->NameQualifier;
+			sp_name_qualifier = assertion->Subject->NameID->SPNameQualifier;
+		}
+		if (! name_qualifier || g_strcmp0(name_qualifier, issuer->ProviderID) != 0)
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_ASSERTION);
+		/** There is two cases for the NameID of the security assertion:
+		 * - we are the IdP and the Wsp, so the NameQualifier is us and the SPNameQualifier is the
+		 *   Sender
+		 * - we are a simple Wsp, so the NameQualifier is an IdP we know and the
+		 *   SPNameQualifier is us.
+		 */
 		if (! profile->parent.server)
 			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_SERVER);
-		lasso_check_good_rc(lasso_saml2_assertion_decrypt_subject(assertion, profile->parent.server));
-		if (! assertion || ! assertion->Subject || ! assertion->Subject->NameID
-				|| ! assertion->Subject->NameID->SPNameQualifier)
-			goto cleanup;
-		if (g_strcmp0(provider_id, assertion->Subject->NameID->SPNameQualifier) != 0)
-			goto cleanup;
-	} else {
+		local_service_id = profile->parent.server->parent.ProviderID;
+		sender_id = lasso_soap_envelope_sb2_get_provider_id(envelope);
+		if (! sender_id)
+			goto_cleanup_with_rc(LASSO_WSF_PROFILE_ERROR_MISSING_SENDER_ID);
+		if (local_service_id && g_strcmp0(local_service_id, name_qualifier) == 0 &&
+				sp_name_qualifier && g_strcmp0(sp_name_qualifier, sender_id) == 0) {
+			/* Ok. */
+		} else if (sp_name_qualifier && g_strcmp0(sp_name_qualifier, local_service_id) == 0) {
+			/* Ok. */
+		} else {
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_ASSERTION);
+		}
+	}
+
+	if (security_mech_id != NULL && ! lasso_security_mech_id_is_bearer_authentication(security_mech_id)) {
 		message(G_LOG_LEVEL_WARNING, "Only Bearer mechanism is supported!");
-		rc = LASSO_ERROR_UNIMPLEMENTED;
-		goto cleanup;
+		goto_cleanup_with_rc(LASSO_ERROR_UNIMPLEMENTED);
 	}
 	rc = 0;
 cleanup:
