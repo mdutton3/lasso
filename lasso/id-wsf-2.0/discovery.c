@@ -103,7 +103,7 @@ struct _LassoIdWsf2DiscoveryPrivate
 
 static int
 lasso_idwsf2_discovery_add_identity_to_epr(LassoIdWsf2Discovery *discovery,
-		LassoWsAddrMetadata *epr_metadata,
+		LassoWsAddrEndpointReference *epr,
 		const char *provider_id,
 		const char *security_mechanism)
 {
@@ -111,8 +111,7 @@ lasso_idwsf2_discovery_add_identity_to_epr(LassoIdWsf2Discovery *discovery,
 	LassoFederation *federation = NULL;
 	LassoSaml2Assertion *assertion;
 	LassoProvider *provider = NULL;
-	LassoIdWsf2DiscoSecurityContext *security_context;
-	LassoIdWsf2SecToken *sec_token;
+	GList security_mechanisms = { .data = (char*)security_mechanism, .next = NULL, .prev = NULL };
 
 	if (! LASSO_IS_IDENTITY(identity))
 		return LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND;
@@ -131,16 +130,12 @@ lasso_idwsf2_discovery_add_identity_to_epr(LassoIdWsf2Discovery *discovery,
 				LASSO_DURATION_HOUR, 2 * LASSO_DURATION_DAY, provider ? TRUE :
 				FALSE, provider);
 
-	sec_token = (LassoIdWsf2SecToken*)lasso_idwsf2_sec_token_new();
-	sec_token->any = (LassoNode*)assertion;
-	security_context = (LassoIdWsf2DiscoSecurityContext*)
-		lasso_idwsf2_disco_security_context_new();
-	lasso_list_add_string(security_context->SecurityMechID,
-			security_mechanism);
-	lasso_list_add_new_gobject(security_context->Token, sec_token);
-	lasso_list_add_new_gobject(epr_metadata->any, security_context);
+	if (assertion == NULL ) {
+		return LASSO_ERROR_UNDEFINED;
+	}
 
-	return 0;
+	return lasso_wsa_endpoint_reference_add_security_token(epr,
+			(LassoNode*)assertion, &security_mechanisms);
 }
 
 
@@ -168,6 +163,7 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2Discovery *discovery,
 	epr->Address = lasso_wsa_attributed_uri_new_with_string(
 		(gchar*)endpoint_context->Address->data);
 	metadata = lasso_wsa_metadata_new();
+	epr->Metadata = metadata;
 	/* Abstract */
 	if (svc_metadata->Abstract) {
 		abstract = lasso_idwsf2_disco_abstract_new_with_string(svc_metadata->Abstract);
@@ -193,13 +189,17 @@ lasso_idwsf2_discovery_build_epr(LassoIdWsf2Discovery *discovery,
 	/* Identity token */
 	lasso_foreach(i, endpoint_context->SecurityMechID)
 	{
-		lasso_idwsf2_discovery_add_identity_to_epr(discovery,
-				metadata,
+		int rc = lasso_idwsf2_discovery_add_identity_to_epr(discovery,
+				epr,
 				svc_metadata->ProviderID,
 				(char*)i->data);
+		if (rc != 0) {
+			message(G_LOG_LEVEL_WARNING,
+				"%s cannot add identity token to epr: %s", __func__, lasso_strerror(rc));
+			lasso_release_gobject(epr);
+			return NULL;
+		}
 	}
-
-	epr->Metadata = metadata;
 	return epr;
 }
 
