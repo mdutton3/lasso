@@ -460,10 +460,10 @@ lasso_is_empty_string(const char *str) {
  *
  */
 #define goto_cleanup_with_rc(rc_value) \
-	{\
+	do {\
 		rc = (rc_value); \
 		goto cleanup; \
-	}
+	} while(0);
 
 /**
  * goto_cleanup_if_fail:
