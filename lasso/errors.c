@@ -211,6 +211,10 @@ lasso_strerror(int error_code)
 			return "Identity not found";
 		case LASSO_PROFILE_ERROR_INVALID_ARTIFACT:
 			return "Invalid artifact";
+		case LASSO_PROFILE_ERROR_INVALID_ASSERTION:
+			return "The assertion is malformed, Issuer differs from NameQualifier of the subject, signature cannot be verified.";
+		case LASSO_PROFILE_ERROR_INVALID_ASSERTION_CONDITIONS:
+			return "An assertion conditions could not be validated.";
 		case LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD:
 			return "Invalid HTTP method";
 		case LASSO_PROFILE_ERROR_INVALID_ISSUER:
@@ -229,10 +233,12 @@ lasso_strerror(int error_code)
 			return "Received request is not of the expected type.";
 		case LASSO_PROFILE_ERROR_INVALID_SOAP_MSG:
 			return "Invalid SOAP message";
+		case LASSO_PROFILE_ERROR_ISSUER_IS_NOT_AN_IDP:
+			return "The issuer of an assertion is not considered as an IdP";
 		case LASSO_PROFILE_ERROR_MISSING_ARTIFACT:
 			return "Missing SAML artifact";
 		case LASSO_PROFILE_ERROR_MISSING_ASSERTION:
-			return "Missing assertion";
+			return "When looking for an assertion we did not found it.";
 		case LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY:
 			return "Found an encrypted element but encryption private key is not set";
 		case LASSO_PROFILE_ERROR_MISSING_ENDPOINT_REFERENCE:
@@ -271,6 +277,8 @@ lasso_strerror(int error_code)
 			return "Session not found";
 		case LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS:
 			return "Status code is not success";
+		case LASSO_PROFILE_ERROR_UNKNOWN_ISSUER:
+			return "The issuer of an assertion is unkown to us.";
 		case LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL:
 			return "Unable to find Profile URL in metadata";
 		case LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER:
@@ -319,6 +327,8 @@ lasso_strerror(int error_code)
 			return "The necessary ResourceID or EncryptedResourceID for calling an ID-WSF service is missing.";
 		case LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY:
 			return "Security SOAP Header is missing";
+		case LASSO_WSF_PROFILE_ERROR_MISSING_SENDER_ID:
+			return "The received ID-WSF request miss a Sender id.";
 		case LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST:
 			return "The last parsed response contained a SOAP fault with a RedirectRequest element.";
 		case LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST_UNSUPPORTED_BY_REQUESTER:

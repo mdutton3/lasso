@@ -446,7 +446,7 @@
 /**
  * LASSO_PROFILE_ERROR_MISSING_ASSERTION:
  *
- * Missing assertion
+ * When looking for an assertion we did not found it.
  */
 #define LASSO_PROFILE_ERROR_MISSING_ASSERTION -427
 /**
@@ -559,6 +559,31 @@
  * The responder reported that he does not support this binding
  */
 #define LASSO_PROFILE_ERROR_UNSUPPORTED_BINDING 445
+/**
+ * LASSO_PROFILE_ERROR_INVALID_ASSERTION_CONDITIONS:
+ *
+ * An assertion conditions could not be validated.
+ */
+#define LASSO_PROFILE_ERROR_INVALID_ASSERTION_CONDITIONS 446
+/**
+ * LASSO_PROFILE_ERROR_INVALID_ASSERTION:
+ *
+ * The assertion is malformed, Issuer differs from NameQualifier of the subject, signature cannot be
+ * verified.
+ */
+#define LASSO_PROFILE_ERROR_INVALID_ASSERTION 447
+/**
+ * LASSO_PROFILE_ERROR_UNKNOWN_ISSUER:
+ *
+ * The issuer of an assertion is unkown to us.
+ */
+#define LASSO_PROFILE_ERROR_UNKNOWN_ISSUER 448
+/**
+ * LASSO_PROFILE_ERROR_ISSUER_IS_NOT_AN_IDP
+ *
+ * The issuer of an assertion is not considered as an IdP
+ */
+#define LASSO_PROFILE_ERROR_ISSUER_IS_NOT_AN_IDP 449
 
 
 /* functions/methods parameters checking */
@@ -819,6 +844,13 @@
  * possible to use lasso_idwsf2_profile_redirect_user_for_interaction().
  */
 #define LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST_UNSUPPORTED_BY_REQUESTER 1116
+/**
+ * LASSO_WSF_PROFILE_ERROR_MISSING_SENDER_ID:
+ *
+ * The received ID-WSF request miss a Sender id.
+ */
+#define LASSO_WSF_PROFILE_ERROR_MISSING_SENDER_ID 1117
+
 
 /* ID-WSF 2 Discovery */
 /**
