@@ -63,7 +63,6 @@ class_init(LassoIdWsf2SubsRefAppDataClass *klass)
 	lasso_node_class_set_nodename(nclass, "NewData");
 	lasso_node_class_set_ns(nclass, LASSO_IDWSF2_SUBSREF_HREF, LASSO_IDWSF2_SUBSREF_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
-	lasso_registry_default_add_direct_mapping(LASSO_IDWSF2_SUBSREF_HREF, "NewData", LASSO_LASSO_HREF, "LassoIdWsf2SubsRefAppData");
 }
 
 GType
@@ -87,6 +86,8 @@ lasso_idwsf2_subsref_app_data_get_type()
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
 				"LassoIdWsf2SubsRefAppData", &this_info, 0);
+		lasso_registry_default_add_direct_mapping(LASSO_IDWSF2_SUBSREF_HREF, "NewData",
+				LASSO_LASSO_HREF, "LassoIdWsf2SubsRefAppData");
 	}
 	return this_type;
 }

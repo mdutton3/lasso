@@ -83,14 +83,6 @@ class_init(LassoSaml2EncryptedElementClass *klass)
 	lasso_node_class_set_nodename(nclass, "EncryptedElement");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
-	lasso_registry_default_add_direct_mapping(LASSO_SAML2_ASSERTION_HREF, "EncryptedID",
-			LASSO_LASSO_HREF, "LassoSaml2EncryptedElement");
-	lasso_registry_default_add_direct_mapping(LASSO_SAML2_ASSERTION_HREF, "EncryptedAttribute",
-			LASSO_LASSO_HREF, "LassoSaml2EncryptedElement");
-	lasso_registry_default_add_direct_mapping(LASSO_SAML2_ASSERTION_HREF, "EncryptedAssertion",
-			LASSO_LASSO_HREF, "LassoSaml2EncryptedElement");
-	lasso_registry_default_add_direct_mapping(LASSO_SAML2_PROTOCOL_HREF, "NewEncryptedID",
-			LASSO_LASSO_HREF, "LassoSaml2EncryptedElement");
 }
 
 GType
@@ -114,6 +106,16 @@ lasso_saml2_encrypted_element_get_type()
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
 				"LassoSaml2EncryptedElement", &this_info, 0);
+		lasso_registry_default_add_direct_mapping(LASSO_SAML2_ASSERTION_HREF, "EncryptedID",
+				LASSO_LASSO_HREF, "LassoSaml2EncryptedElement");
+		lasso_registry_default_add_direct_mapping(LASSO_SAML2_ASSERTION_HREF,
+				"EncryptedAttribute", LASSO_LASSO_HREF,
+				"LassoSaml2EncryptedElement");
+		lasso_registry_default_add_direct_mapping(LASSO_SAML2_ASSERTION_HREF,
+				"EncryptedAssertion", LASSO_LASSO_HREF,
+				"LassoSaml2EncryptedElement");
+		lasso_registry_default_add_direct_mapping(LASSO_SAML2_PROTOCOL_HREF,
+				"NewEncryptedID", LASSO_LASSO_HREF, "LassoSaml2EncryptedElement");
 	}
 	return this_type;
 }

@@ -65,7 +65,6 @@ class_init(LassoDiscoSendSingleLogoutClass *klass)
 	lasso_node_class_set_nodename(nclass, "SendSingleLogOut");
 	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
-	lasso_registry_default_add_direct_mapping(LASSO_DISCO_HREF, "SendSingleLogOut", LASSO_LASSO_HREF, "LassoDiscoSendSingleLogout");
 }
 
 GType
@@ -89,6 +88,8 @@ lasso_disco_send_single_logout_get_type()
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
 				"LassoDiscoSendSingleLogout", &this_info, 0);
+		lasso_registry_default_add_direct_mapping(LASSO_DISCO_HREF, "SendSingleLogOut",
+				LASSO_LASSO_HREF, "LassoDiscoSendSingleLogout");
 	}
 	return this_type;
 }

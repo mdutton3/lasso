@@ -75,8 +75,6 @@ class_init(LassoSaml2ConditionAbstractClass *klass)
 	lasso_node_class_set_nodename(nclass, "Condition");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
-	lasso_registry_default_add_direct_mapping(LASSO_SAML2_ASSERTION_HREF, "Condition",
-			LASSO_LASSO_HREF, "LassoSaml2ConditionAbstract");
 }
 
 GType
@@ -100,6 +98,8 @@ lasso_saml2_condition_abstract_get_type()
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
 				"LassoSaml2ConditionAbstract", &this_info, 0);
+		lasso_registry_default_add_direct_mapping(LASSO_SAML2_ASSERTION_HREF, "Condition",
+				LASSO_LASSO_HREF, "LassoSaml2ConditionAbstract");
 	}
 	return this_type;
 }
