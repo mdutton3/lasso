@@ -173,6 +173,7 @@ lasso_node_dump(LassoNode *node)
 /**
  * laso_node_debug:
  * @node: a #LassoNode
+ * @level:(default 10): the indentation depth, i.e. the depth of the last nodes to be indented.
  *
  * Create a debug dump for @node, it is pretty printed so any contained signature will be
  * uncheckable.
@@ -181,9 +182,9 @@ lasso_node_dump(LassoNode *node)
  * the caller.
  */
 char*
-lasso_node_debug(LassoNode *node)
+lasso_node_debug(LassoNode *node, int level)
 {
-	return _lasso_node_export_to_xml(node, TRUE, TRUE, 5);
+	return _lasso_node_export_to_xml(node, TRUE, TRUE, level);
 }
 
 /**

@@ -178,7 +178,7 @@ LASSO_EXPORT void lasso_register_idwsf2_dst_service(const gchar *prefix, const g
 
 LASSO_EXPORT gchar* lasso_get_prefix_for_idwsf2_dst_service_href(const gchar *href);
 
-LASSO_EXPORT char* lasso_node_debug(LassoNode *node);
+LASSO_EXPORT char* lasso_node_debug(LassoNode *node, int level);
 
 #ifdef __cplusplus
 }
