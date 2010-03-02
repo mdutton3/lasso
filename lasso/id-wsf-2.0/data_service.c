@@ -675,10 +675,8 @@ lasso_idwsf2_data_service_set_status_code(LassoIdWsf2DataService *service,
 			status = &LASSO_IDWSF2_UTIL_RESPONSE(response)->Status;
 			break;
 		default:
-			lasso_check_good_rc(lasso_idwsf2_profile_init_soap_fault_response(&service->parent));
+			lasso_check_good_rc(lasso_idwsf2_profile_init_soap_fault_response(&service->parent, LASSO_SOAP_FAULT_CODE_CLIENT, "Unkown Request Type", NULL));
 			fault = (LassoSoapFault*)service->parent.parent.response;
-			lasso_assign_string(fault->faultcode, LASSO_SOAP_FAULT_CODE_CLIENT);
-			lasso_assign_string(fault->faultstring, "Client Error");
 			lasso_soap_fault_add_to_detail(fault, 
 				(LassoNode*)lasso_idwsf2_util_status_new_with_code(
 					status_code, status_code2));

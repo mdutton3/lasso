@@ -45,6 +45,7 @@
 #include "../saml-2.0/profileprivate.h"
 #include "../xml/saml-2.0/saml2_name_id.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
+#include "../xml/soap-1.1/soap_fault.h"
 #include "../utils.h"
 #include "../debug.h"
 
@@ -622,6 +623,41 @@ lasso_profile_get_signature_hint(LassoProfile *profile)
 	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
 		return LASSO_PROFILE_SIGNATURE_HINT_MAYBE;
 	return profile->private_data->signature_hint;
+}
+
+/**
+ * lasso_profile_set_soap_fault_response:
+ * @profile: a #LassoProfile object
+ * @faultcode: the code for the SOAP fault
+ * @faultstring:(allow-none): the description for the SOAP fault
+ * @details:(element-type LassoNode)(allow-none): a list of nodes to add as details
+ *
+ * Set the response to a SOAP fault, using @faultcode, @faultstring, and @details to initialize it.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+gint
+lasso_profile_set_soap_fault_response(LassoProfile *profile, const char *faultcode,
+		const char *faultstring, GList *details)
+{
+	LassoSoapFault *fault;
+
+	if (! LASSO_IS_SOAP_FAULT(profile->response)) {
+		lasso_release_gobject(profile->response);
+		profile->response = (LassoNode*)lasso_soap_fault_new();
+	}
+	fault = (LassoSoapFault*)profile->response;
+	lasso_assign_string(fault->faultcode, faultcode);
+	lasso_assign_string(fault->faultstring, faultstring);
+	if (details) {
+		if (! fault->Detail) {
+			fault->Detail = lasso_soap_detail_new();
+		}
+		lasso_assign_list_of_gobjects(fault->Detail->any, details);
+	} else {
+		lasso_release_gobject(fault->Detail);
+	}
+	return 0;
 }
 
 /*****************************************************************************/

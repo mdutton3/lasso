@@ -183,6 +183,8 @@ LASSO_EXPORT LassoServer* lasso_profile_get_server(LassoProfile *profile);
 LASSO_EXPORT void lasso_profile_set_signature_hint(LassoProfile *profile,
 		LassoProfileSignatureHint signature_hint);
 LASSO_EXPORT LassoProfileSignatureHint lasso_profile_get_signature_hint(LassoProfile *profile);
+LASSO_EXPORT gint lasso_profile_set_soap_fault_response(LassoProfile *profile, const char
+		*faultcode, const char *faultstring, GList *details);
 
 #ifdef __cplusplus
 }

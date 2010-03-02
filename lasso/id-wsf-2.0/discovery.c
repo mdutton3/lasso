@@ -653,6 +653,12 @@ lasso_idwsf2_discovery_process_request_msg(LassoIdWsf2Discovery *discovery, cons
 						lasso_list_get_first_child(content))->SvcMDID;
 			break;
 		default:
+				lasso_check_good_rc(
+						lasso_idwsf2_profile_init_soap_fault_response(
+							idwsf2_profile,
+							LASSO_SOAP_FAULT_CODE_CLIENT,
+							"Unknown Request Type", NULL));
+				rc = LASSO_PROFILE_ERROR_INVALID_REQUEST;
 			break;
 	}
 	if (discovery->private_data && svc_md_ids) {

@@ -88,7 +88,9 @@ LASSO_EXPORT LassoNode *lasso_idwsf2_profile_get_name_identifier(
 
 /* Initialize response */
 LASSO_EXPORT gint lasso_idwsf2_profile_init_response(LassoIdWsf2Profile *profile);
-LASSO_EXPORT gint lasso_idwsf2_profile_init_soap_fault_response(LassoIdWsf2Profile *profile);
+LASSO_EXPORT gint lasso_idwsf2_profile_init_soap_fault_response(LassoIdWsf2Profile *profile,
+		const char *faultcode, const char *faultstring,
+		GList *details);
 LASSO_EXPORT gint lasso_idwsf2_profile_redirect_user_for_interaction(LassoIdWsf2Profile *profile,
 		const gchar *redirect_url, gboolean for_data);
 

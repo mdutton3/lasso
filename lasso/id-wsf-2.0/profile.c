@@ -470,24 +470,28 @@ cleanup:
 /**
  * lasso_idwsf2_profile_init_soap_fault_response:
  * @profile: a #LassoIdWsf2Profile object
+ * @faultcode: a SOAP fault code, see #LASSO_SOAP_FAULT_CLIENT, #LASSO_SOAP_FAULT_SERVER.
+ * @faultstring:(allow-none): a human description of the error
+ * @details:(allow-none)(element-type LassoNode): complementary data describing the error, you can use
+ * #LassoIdWsf2UtilStatus.
  *
  * Initialize a new SOAP 1.1 fault.
  *
  * Return value: 0 if successful, an error code otherwise.
  */
 gint
-lasso_idwsf2_profile_init_soap_fault_response(LassoIdWsf2Profile *profile)
+lasso_idwsf2_profile_init_soap_fault_response(LassoIdWsf2Profile *profile, const char *faultcode,
+		const char *faultstring, GList *details)
 {
 	int rc = 0;
 	LassoSoapEnvelope *envelope;
-	LassoSoapFault *fault;
 
 	lasso_check_good_rc(lasso_idwsf2_profile_init_response(profile));
+	lasso_check_good_rc(lasso_profile_set_soap_fault_response(&profile->parent, faultcode,
+				faultstring, details));
 	envelope = lasso_idwsf2_profile_get_soap_envelope_response(profile);
 	if (envelope) {
-		fault = lasso_soap_fault_new();
-		lasso_list_add_new_gobject(envelope->Body->any, fault);
-		lasso_assign_gobject(profile->parent.response, fault);
+		lasso_list_add_gobject(envelope->Body->any, profile->parent.response);
 	}
 cleanup:
 	return rc;
@@ -541,10 +545,6 @@ lasso_idwsf2_profile_redirect_user_for_interaction(
 		goto_cleanup_with_rc(LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST_UNSUPPORTED_BY_REQUESTER);
 	}
 
-	lasso_check_good_rc(lasso_idwsf2_profile_init_soap_fault_response(profile));
-	fault = (LassoSoapFault*)profile->parent.response;
-	lasso_assign_string(fault->faultcode, LASSO_SOAP_FAULT_CODE_SERVER);
-	lasso_assign_string(fault->faultstring, "Server error");
 	messageID = lasso_soap_envelope_get_message_id(_get_soap_envelope_response(profile), FALSE);
 	if (! messageID || ! messageID->content) {
 		goto_cleanup_with_rc(
@@ -557,13 +557,14 @@ lasso_idwsf2_profile_redirect_user_for_interaction(
 	}
 	redirect_request = lasso_idwsf2_sb2_redirect_request_new_full(url);
 	g_free(url);
-	lasso_soap_fault_add_to_detail(fault, (LassoNode*)redirect_request);
+	lasso_check_good_rc(lasso_idwsf2_profile_init_soap_fault_response(profile,
+				LASSO_SOAP_FAULT_CODE_SERVER, "Server Error", &(GList){ .data =
+				redirect_request, .next = NULL, .prev = NULL } ));
 
 cleanup:
 	if (rc) {
 		LassoIdWsf2UtilStatus *status;
 		const char *status_code = NULL;
-		lasso_idwsf2_profile_init_soap_fault_response(profile);
 		fault = (LassoSoapFault*)profile->parent.response;
 		lasso_assign_string(fault->faultcode, LASSO_SOAP_FAULT_CODE_SERVER);
 		switch (rc) {
@@ -582,9 +583,14 @@ cleanup:
 		}
 		if (status_code) {
 			status = lasso_idwsf2_util_status_new_with_code(status_code, NULL);
-			fault->Detail = lasso_soap_detail_new();
-			lasso_list_add_gobject(fault->Detail->any, status);
+			lasso_idwsf2_profile_init_soap_fault_response(profile,
+					LASSO_SOAP_FAULT_CODE_SERVER, NULL, 
+					&(GList){ .data = status, .next = NULL, .prev = NULL});
+		} else {
+			lasso_idwsf2_profile_init_soap_fault_response(profile,
+					LASSO_SOAP_FAULT_CODE_SERVER, NULL, NULL);
 		}
+
 	}
 	lasso_release_gobject(redirect_request);
 	return rc;
