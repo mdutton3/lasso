@@ -187,11 +187,11 @@ cleanup:
 int
 lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *authn_request_msg)
 {
-	LassoNode *request;
+	LassoNode *request = NULL;
 	LassoProfile *profile = LASSO_PROFILE(login);
-	LassoSamlp2StatusResponse *response;
-	LassoSamlp2AuthnRequest *authn_request;
-	gchar *protocol_binding;
+	LassoSamlp2StatusResponse *response = NULL;
+	LassoSamlp2AuthnRequest *authn_request = NULL;
+	gchar *protocol_binding = NULL;
 	int rc = 0;
 
 	if (authn_request_msg == NULL) {
