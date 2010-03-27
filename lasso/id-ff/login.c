@@ -841,15 +841,44 @@ lasso_login_build_assertion_artifact(LassoLogin *login)
  * @msg_relayState (POST).
  *
  * Return value: 0 on success; or
+ * <itemizedlist>
+ * <listitem><para>
  * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * </para></listitem>
+ * <listitem><para>
  * LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if no remote provider ID was setup in the login
+ * </para></listitem>
+ * <listitem><para>
  * profile object, it's usually done by lasso_login_process_authn_request_msg,
+ * </para></listitem>
+ * <listitem><para>
  * LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD if the HTTP method is neither LASSO_HTTP_METHOD_REDIRECT
+ * </para></listitem>
+ * <listitem><para>
  * or LASSO_HTTP_METHOD_POST (ID-FF 1.2 case) or neither LASSO_HTTP_METHOD_ARTIFACT_GET or
+ * </para></listitem>
+ * <listitem><para>
  * LASSO_HTTP_METHOD_ARTIFACT_POST (SAML 2.0 case) for SAML 2.0),
+ * </para></listitem>
+ * <listitem><para>
  * LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE if the current protocolProfile is not
+ * </para></listitem>
+ * <listitem><para>
  * LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART (only for ID-FF 1.2),
- * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the remote provider is not known to our server object.
+ * </para></listitem>
+ * <listitem><para>
+ * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the remote provider is not known to our server object
+ * </para></listitem>
+ * <listitem><para>
+ * which impeach us to find a service endpoint,
+ * </para></listitem>
+ * <listitem><para>
+ * LASSO_PROFILE_ERROR_MISSING_RESPONSE if the response object is missing,
+ * </para></listitem>
+ * <listitem><para>
+ * LASSO_PROFILE_ERROR_MISSING_STATUS_CODE if the response object is missing a status code,
+ * </para></listitem>
+ *</itemizedlist>
  *
  **/
 gint
