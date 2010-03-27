@@ -46,4 +46,18 @@
 	fail_unless(__rc == how, "%s:%i: " #what " is not %s(%i), rc = %s(%i)", __func__, __LINE__, lasso_strerror(how), how, lasso_strerror(__rc), __rc); \
 }
 
+#define check_equals(what,to) \
+{	typeof(what) __tmp1, __tmp2; \
+	__tmp1 = (what); \
+	__tmp2 = (to); \
+	fail_unless(__tmp1 == __tmp2, "%s:%i: " #what " is not equal to " #to "(%p)", __func__, __LINE__, (void*)__tmp2); \
+}
+
+#define check_not_equals(what,to) \
+{	typeof(what) __tmp1, __tmp2; \
+	__tmp1 = (what); \
+	__tmp2 = (to); \
+	fail_unless(__tmp1 != __tmp2, "%s:%i: " #what " is equal to " #to "(%p)", __func__, __LINE__, (void*)__tmp2); \
+}
+
 #endif /*__TESTS_H__ */
