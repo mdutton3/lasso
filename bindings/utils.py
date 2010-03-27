@@ -36,6 +36,30 @@ def clean_type(type):
     type = re.sub('\s+', ' ', type)
     return re.sub('\s*\*\s*', '*', type)
 
+
+def camelcase_to_list(varname):
+    ''' convert 'camlCaseISTheThing' to ['caml', 'Case', 'IS', 'The', 'Thing']'''
+    l = [[]]
+    last = None
+    for x in varname:
+        if last:
+            if last.isupper() and x.isupper():
+                pass
+            elif not last.isupper() and x.isupper():
+                l.append([])
+            elif last.isupper() and x.islower():
+                y = l[-1][-1]
+                del l[-1][-1]
+                if not l[-1]:
+                    del l[-1]
+                l.append([y])
+            l[-1].append(x)
+        else:
+            l[-1].append(x)
+        last = x 
+    return map(str.lower,map(''.join,l))
+
+
 def format_as_camelcase(var):
     '''Format an identifier name into CamelCase'''
     if '_' in var:
@@ -47,9 +71,7 @@ def format_as_camelcase(var):
 
 def format_as_underscored(var):
     '''Format an identifier name into underscored_name'''
-    def rep(s):
-        return s.group(0)[0] + '_' + s.group(1).lower()
-    var = re.sub(r'[a-z0-9]([A-Z])', rep, var).lower()
+    var = '_'.join(camelcase_to_list(var))
     var = var.replace('id_wsf2_', 'idwsf2_')
     var = var.replace('_saslresponse', '_sasl_response')
     var = var.replace('ws_addr_', 'wsa_')
@@ -235,3 +257,6 @@ _not_objects = ( 'GHashTable', 'GList', 'GType' )
 def is_object(arg):
     t = unconstify(arg_type(arg))
     return t and t[0] in string.uppercase and not [ x for x in _not_objects if x in t ]
+
+if __name__ == '__main__':
+    print camelcase_to_list('Samlp2IDPList')
