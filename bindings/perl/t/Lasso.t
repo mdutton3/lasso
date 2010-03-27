@@ -33,7 +33,7 @@ $login = new Lasso::Login $server;
 
 # Test error reporting
 eval { $login->init_authn_request; };
-ok($@->{code} == -409);
+ok($@->{code} == -408); # Missing Remote Provider ID (IDP was added with SP role)
 
 $server = new Lasso::Server($SRCDIR . "/tests/data/sp5-saml2/metadata.xml", $SRCDIR . "/tests/data/sp5-saml2/private-key.pem");
 ok($server);
