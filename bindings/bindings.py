@@ -557,7 +557,7 @@ def parse_headers(srcdir):
 
     exclusion = ('xml_idff.h', 'xml_idwsf.h', 'xml_saml2.h', \
             'xml_idwsf2.h', 'xml_soap11.h',
-            'lasso_config.h' )
+            'lasso_config.h', 'saml2_xsd.h' )
     if not binding.options.idwsf:
         exclusion += ( 'idwsf_strings.h', )
     for base, dirnames, filenames in os.walk(srcdir):

@@ -115,5 +115,5 @@ liblassoinclude_HEADERS = \
 	samlp2_status_response.h \
 	samlp2_subject_query_abstract.h \
 	samlp2_terminate.h \
-	saml2_strings.h
-
+	saml2_strings.h \
+	saml2_xsd.h
