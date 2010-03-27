@@ -1176,13 +1176,47 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
  * into the @msg_body member.
  *
  * Return value: 0 on success; or
+ * <itemizedlist>
+ * <listitem><para>
  * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * </para></listitem>
+ * <listitem><para>
  * LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE if the current protocol profile is not
+ * </para></listitem>
+ * <listitem><para>
  * LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST or LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP,
+ * </para></listitem>
+ * <listitem><para>
  * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the remote provider ID is not registered in the server
  * object,
+ * </para></listitem>
+ * <listitem><para>
  * LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL if the metadata of the remote provider does not contain
- * an URL for the assertion consuming service.
+ * an URL for the assertion consuming service,
+ * </para></listitem>
+ * <listitem><para>
+ * LASSO_PROFILE_ERROR_MISSING_SERVER the server object is needed to sign a message and it is
+ * missing,
+ * </para></listitem>
+ * <listitem><para>
+ * LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED the private key for signing could not be found,
+ * </para></listitem>
+ * <listitem><para>
+ * LASSO_PROFILE_ERROR_MISSING_RESPONSE if the response object is missing,
+ * </para></listitem>
+ * <listitem><para>
+ * LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE if the SSO profile is not supported by the targeted
+ * provider,
+ * </para></listitem>
+ * <listitem><para>
+ * LASSO_PROFILE_BUILDING_QUERY_FAILED if using #LASSO_HTTP_METHOD_REDIRECT building of the redirect
+ * URL failed,
+ * </para></listitem>
+ * <listitem><para>
+ * LASSO_PROFILE_BUILDING_MSG_FAILED if using #LASSO_HTTP_METHOD_POST, #LASSO_HTTP_METHOD_SOAP or
+ * #LASSO_HTTP_METHOD_PAOS and building the @msg_body failed.
+ * </para></listitem>
+ * </itemizedlist>
  *
  **/
 gint
