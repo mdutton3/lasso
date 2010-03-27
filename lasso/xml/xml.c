@@ -2041,11 +2041,45 @@ lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix)
 	klass->node_data->ns = xmlNewNs(NULL, (xmlChar*)href, (xmlChar*)prefix);
 }
 
+static xmlNs *
+get_or_define_ns(xmlNode *xmlnode, xmlChar *ns_uri) {
+	xmlNs *ns;
+	char prefix[10];
+	int i = 1;
+
+	ns = xmlSearchNsByHref(NULL, xmlnode, ns_uri);
+	if (ns)
+		return ns;
+	do {
+		sprintf(prefix, "ns%u", i);
+		i++;
+		ns = xmlSearchNs(NULL, xmlnode, BAD_CAST prefix);
+	} while (ns);
+	return xmlNewNs(xmlnode, ns_uri, BAD_CAST prefix);
+}
 
 static void
 snippet_dump_any(gchar *key, gchar *value, xmlNode *xmlnode)
 {
-	xmlSetProp(xmlnode, (xmlChar*)key, (xmlChar*)value);
+	if (! key)
+		return;
+	if (! value)
+		return;
+	/* element tree syntax for setting namespaces */
+	if (key && key[0] == '{') {
+		char *end = strchr(key, '}');
+		char *ns_uri;
+		xmlNs *ns;
+		if (! end) {
+			message(G_LOG_LEVEL_WARNING, "Invalid attribute name: %s", key);
+			return;
+		}
+		ns_uri = strndup(key+1, end-(key+1));
+		ns = get_or_define_ns(xmlnode, BAD_CAST ns_uri);
+		xmlSetNsProp(xmlnode, ns, BAD_CAST key, BAD_CAST value);
+	} else {
+		xmlSetProp(xmlnode, BAD_CAST key, BAD_CAST value);
+	}
 }
 
 
@@ -2104,8 +2138,9 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				{
 					xmlNode *t2;
 					t2 = lasso_node_get_xmlNode(LASSO_NODE(value), lasso_dump);
-					if (snippet->class_name)
+					if (snippet->name) {
 						xmlNodeSetName(t2, (xmlChar*)snippet->name);
+					}
 					xmlAddChild(xmlnode, t2);
 				} break;
 			case SNIPPET_CONTENT:
