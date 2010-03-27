@@ -401,4 +401,11 @@
 #define LASSO_SAML2_FIELD_SIGNATURE "Signature"
 #define LASSO_SAML2_FIELD_SIGALG "SigAlg"
 
+/* SAML 2.0 Attribute Profiles */
+
+#define LASSO_SAML2_ATTRIBUTE_PROFILE_BASIC "urn:oasis:names:tc:SAML:2.0:profiles:attribute:basic"
+#define LASSO_SAML2_ATTRIBUTE_PROFILE_X500 "urn:oasis:names:tc:SAML:2.0:profiles:attribute:X500"
+#define LASSO_SAML2_ATTRIBUTE_PROFILE_UUID "urn:oasis:names:tc:SAML:2.0:profiles:attribute:UUID"
+#define LASSO_SAML2_ATTRIBUTE_PROFILE_DCE "urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE"
+
 #endif /* __LASSO_SAML2_STRINGS_H__ */
