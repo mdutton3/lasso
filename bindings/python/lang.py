@@ -311,16 +311,14 @@ if WSF_SUPPORT:
             parentname = clss.parent[5:]
 
         print >> fd, '''class %(klassname)s(%(parentname)s):''' % locals()
-        if not clss.members and not clss.methods:
-            print >> fd, '    pass'
-            print >> fd, ''
-            return
 
         methods = clss.methods[:]
         # constructor(s)
         method_prefix = 'lasso_' + format_as_underscored(klassname) + '_'
+        empty = True
         for m in self.binding_data.functions:
             if m.name == method_prefix + 'new':
+                empty = False
                 c_args = []
                 py_args = []
                 for arg in m.args:
@@ -344,6 +342,7 @@ if WSF_SUPPORT:
 
         for m in self.binding_data.functions:
             if m.name.startswith(method_prefix + 'new_'):
+                empty = False
                 constructor_name = format_as_camelcase(m.name[len(method_prefix):])
                 c_args = []
                 py_args = []
@@ -371,6 +370,7 @@ if WSF_SUPPORT:
 
         # create properties for members
         for m in clss.members:
+            empty = False
             mname = format_as_camelcase(m[1])
             options = m[2]
             # getter
@@ -435,6 +435,7 @@ if WSF_SUPPORT:
         # first pass on methods, getting accessors
         # second pass on methods, real methods
         for m in methods:
+            empty = False
             if m.name.endswith('_new') or m.name.endswith('_new_from_dump') or \
                     m.name.endswith('_new_full'):
                 continue
@@ -554,7 +555,8 @@ if WSF_SUPPORT:
             else:
                 f2name = format_as_camelcase(setter.name[len(method_prefix):])
                 print >> fd, '    %s = property(%s, %s)' % (pname, fname, f2name)
-
+        if empty:
+            print >> fd, '    pass'
         print >> fd, ''
 
     def format_docstring(self, func, method_name, indent):
