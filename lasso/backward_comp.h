@@ -24,6 +24,7 @@
  */
 
 #ifndef BACKWARD_COMP_H
+#define BACKWARD_COMP_H 1
 
 /* This file contains re-implementations of functions which only exists in recent version of our
  * dependencies, like GLib, OpenSSL or libxml.
@@ -47,4 +48,4 @@ static inline int g_strcmp0(const char *str1, const char *str2) {
 }
 #endif
 
-#endif
+#endif /* BACKWARD_COMP_H */
