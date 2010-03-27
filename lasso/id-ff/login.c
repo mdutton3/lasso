@@ -1018,19 +1018,44 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
  * @msg_body member.
  *
  * Return value: 0 on success; or
- * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
- * LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if not remote provider ID was setup -- it usually
- * means that lasso_login_init_request was not called before,
- * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the remote provider ID is not registered in the server
+ * <itemizedlist>
+ * <listitem><para>
+ * #LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if not remote provider ID was setup&nbps;— it usually
+ * means that lasso_login_init_request() was not called before,
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the remote provider ID is not registered in the server
  * object,
- * LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE if the SSO profile is not supported by the targeted
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE if the SSO profile is not supported by the targeted
  * provider,
- * LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED if the building of the query part of the
- * redirect URL or of the body of the POST content failed -- it only happens with
- * LASSO_HTTP_METHOD_REDIRECT of LASSO_HTTP_METHOD_POST --,
- * LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL if the metadata of the remote provider does not contain
- * an url for the SSO profile.
- *
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED if the building of the query part of the redirect URL
+ * or of the body of the POST content failed&nbsp;— it only happens with the #LASSO_HTTP_METHOD_REDIRECT,
+ * #LASSO_HTTP_METHOD_POST, #LASSO_HTTP_METHOD_ARTIFACT_GET and
+ * #LASSO_HTTP_METHOD_ARTIFACT_POST bindings&nbsp;—,
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL if the metadata of the remote provider does not contain
+ * an url for the SSO profile,
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_PROFILE_ERROR_INVALID_REQUEST if the request object is not of the needed type, is usually
+ * means that lasso_login_init_request() was not called before,
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_PROFILE_MISSING_REQUEST if the request object is missing,
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD if the current setted @http_method on the #LassoLogin
+ * object is invalid.
+ * </para></listitem>
+ * </itemizedlist>
  **/
 gint
 lasso_login_build_authn_request_msg(LassoLogin *login)
