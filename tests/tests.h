@@ -60,4 +60,16 @@
 	fail_unless(__tmp1 != __tmp2, "%s:%i: " #what " is equal to " #to "(%p)", __func__, __LINE__, (void*)__tmp2); \
 }
 
+#define check_str_equals(what, to) \
+{	typeof(what) __tmp; \
+	__tmp = (what); \
+	fail_unless(g_strcmp0(__tmp, to) == 0, "%s:%i: " #what " (%s) is not equal to %s", __func__, __LINE__, __tmp, to); \
+}
+
+#define check_str_not_equals(what, to) \
+{	typeof(what) __tmp; \
+	__tmp = (what); \
+	fail_unless(g_strcmp0(__tmp, to) != 0, "%s:%i: " #what " is equal to %s", __func__, __LINE__, to); \
+}
+
 #endif /*__TESTS_H__ */
