@@ -246,8 +246,6 @@ static void lasso_login_build_assertion_artifact(LassoLogin *login);
 /* static methods/functions */
 /*****************************************************************************/
 
-
-
 /**
  * lasso_login_build_assertion:
  * @login: a #LassoLogin
@@ -261,10 +259,34 @@ static void lasso_login_build_assertion_artifact(LassoLogin *login);
  * @notOnOrAfter may be NULL.  If @authenticationInstant is NULL, the current
  * time will be used.  Time values must be encoded in UTC.
  *
+ * Construct the authentication assertion for the response. It must be called after validating the
+ * request using lasso_login_validate_request_msg(). The created assertion is accessed using
+ * lasso_login_get_assertion().
+ *
  * Return value: 0 on success; or
- * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
- * LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND if no identity object was found in the login profile
- * object.
+ * <itemizedlist>
+ * <listitem><para>
+ * #LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND if no identity object was found in the login profile object.
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_PROFILE_ERROR_MISSING_RESPONSE if no response object is present ( it is normally initialized
+ * </para></listitem>
+ * <listitem><para>
+ * by lasso_login_process_authn_request_msg() )
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND if a #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT or #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED NameID format is asked and no corresponding federation was found in the #LassoIdentity object,
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if encryption is needed and the request issuing provider is unknown (it as not been registered in the #LassoServer object),
+ * </para></listitem>
+ * <listitem><para>
+ * #LASSO_DS_ERROR_ENCRYPTION_FAILED if encryption is needed but it failed,
+ * </para></listitem>
+ * </itemizedlist>
  *
  **/
 int
