@@ -98,7 +98,7 @@ typedef enum {
  * @LASSO_PROFILE_SIGNATURE_HINT_FORCE: generate and validate all signatures.
  * @LASSO_PROFILE_SIGNATURE_HINT_FORBID: do not generate or validate any signature.
  *
- * Advice a #LassoProfile object about the policy for generating and validating request and response
+ * Advice a #LassoProfile object about the policy for generating request and response
  * signatures.
  */
 typedef enum {
@@ -106,6 +106,21 @@ typedef enum {
 	LASSO_PROFILE_SIGNATURE_HINT_FORCE  = 1,
 	LASSO_PROFILE_SIGNATURE_HINT_FORBID = 2
 } LassoProfileSignatureHint;
+
+/**
+ * LassoProfileSignatureVerifyHint:
+ * @LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE: let Lasso decide what to do.
+ * @LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE: check signatures but do not stop protocol handling
+ * on failures. The result of signature checking is still available in
+ * #LassoProfile.signature_status
+ *
+ * Advice a #LassoProfile object about the policy checking request and response
+ * signatures.
+ */
+typedef enum {
+	LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE = 0,
+	LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE = 1
+} LassoProfileSignatureVerifyHint;
 
 /**
  * LassoProfile:
@@ -185,6 +200,9 @@ LASSO_EXPORT void lasso_profile_set_signature_hint(LassoProfile *profile,
 LASSO_EXPORT LassoProfileSignatureHint lasso_profile_get_signature_hint(LassoProfile *profile);
 LASSO_EXPORT gint lasso_profile_set_soap_fault_response(LassoProfile *profile, const char
 		*faultcode, const char *faultstring, GList *details);
+LASSO_EXPORT void lasso_profile_set_signature_verify_hint(LassoProfile *profile,
+		LassoProfileSignatureVerifyHint signature_verify_hint);
+LASSO_EXPORT LassoProfileSignatureVerifyHint lasso_profile_get_signature_verify_hint(LassoProfile *profile);
 
 #ifdef __cplusplus
 }

@@ -87,6 +87,8 @@ lasso_profile_set_artifact_message
 lasso_profile_get_server
 lasso_profile_set_signature_hint
 lasso_profile_get_signature_hint
+lasso_profile_set_signature_verify_hint
+lasso_profile_get_signature_verify_hint
 LassoProfileSignatureHint
 <SUBSECTION Standard>
 LASSO_PROFILE

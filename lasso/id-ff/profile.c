@@ -626,6 +626,41 @@ lasso_profile_get_signature_hint(LassoProfile *profile)
 }
 
 /**
+ * lasso_profile_set_signature_verify_hint:
+ * @profile: a #LassoProfile object
+ * @signature_verify_hint: whether next received message signatures should be checked or not (or let
+ * Lasso choose from implicit information).
+ *
+ * By default each profile will choose to sign or not its messages, this method allow to force or
+ * forbid the signature of messages, on a per transaction basis.
+ */
+void
+lasso_profile_set_signature_verify_hint(LassoProfile *profile, LassoProfileSignatureVerifyHint signature_verify_hint)
+{
+	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
+		return;
+	profile->private_data->signature_verify_hint = signature_verify_hint;
+}
+
+/**
+ * lasso_profile_get_signature_verify_hint:
+ * @profile: a #LassoProfile object
+ *
+ * Return the value of the signature verify hint attribute (see
+ * lasso_profile_set_signature_verify_hint()).
+ *
+ * Return value: a value in the enum type #LassoProfileSignatureVerifyHint.
+ */
+LassoProfileSignatureVerifyHint
+lasso_profile_get_signature_verify_hint(LassoProfile *profile)
+{
+	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
+		return LASSO_PROFILE_SIGNATURE_HINT_MAYBE;
+	return profile->private_data->signature_verify_hint;
+}
+
+
+/**
  * lasso_profile_set_soap_fault_response:
  * @profile: a #LassoProfile object
  * @faultcode: the code for the SOAP fault
