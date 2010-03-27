@@ -118,10 +118,12 @@ typedef enum {
  * assertion providing authorization about a principal acessing a resource,
  * @LASSO_PROVIDER_ROLE_ATTRIBUTE_AUTHORITY: an attribute authority, i.e. an endpoint able to return
  * attributes aboute a principal,
- * @LASSO_PROVIDER_ROLE_LAST: all value in the enumeration are garanteed to be < to
+ * @LASSO_PROVIDER_ROLE_LAST: all values in the enumeration are guaranteed to be < to
  * @LASSO_PROVIDER_ROLE_LAST.
  *
- * #LassoProviderRole is an enumeration allowing to precise the roles handled by a provider.
+ * #LassoProviderRole is an enumeration allowing to enumerate the roles handled by a provider, it
+ * can be used in a bitmask as each value is a power of 2 (except #LASSO_PROVIDER_ROLE_ANY which is
+ * the full bitmask and LASSO_PROVIDER_ROLE_NONE).
  **/
 typedef enum {
 	LASSO_PROVIDER_ROLE_ANY = -1,
@@ -169,6 +171,22 @@ typedef enum {
 } LassoEncryptionMode;
 
 
+/**
+ * LassoProvider:
+ * @ProviderID: the identifier URI of this provider
+ * @role: the role prescribed when this #LassoProvider was built
+ * @metadata_filename: file path or content of the metadata description for this provider.
+ * @public_key: file path or content of the public key file for this provider.
+ * @ca_cert_chain: file path or content of the CA cert chain used to validate signature of this
+ * provider (can be used instead of a public key to limit the need for metadata updates).
+ *
+ * <para>Any kind of provider, identity provider, service provider, attribute authority, authorization
+ * authority will be represented by a #LassoProvider object. This object will holds public keys,
+ * certificate chains and metadata informations. The ID-FF 1.2 and SAML 2.0 metadata files are
+ * flattened inside a key-value map that you can access using the functions
+ * lasso_provider_get_metadata_one_for_role(), lasso_provider_get_metadata_list_for_role(),
+ * lasso_provider_get_metadata_keys_for_role().</para>
+ */
 struct _LassoProvider {
 	LassoNode parent;
 
@@ -193,21 +211,21 @@ LASSO_EXPORT LassoProvider* lasso_provider_new(LassoProviderRole role, const cha
 		const char *public_key, const char *ca_cert_chain);
 LASSO_EXPORT LassoProvider* lasso_provider_new_from_buffer(LassoProviderRole role,
 		const char *metadata, const char *public_key, const char *ca_cert_chain);
-LASSO_EXPORT gchar* lasso_provider_get_assertion_consumer_service_url(const LassoProvider *provider,
+LASSO_EXPORT gchar* lasso_provider_get_assertion_consumer_service_url(LassoProvider *provider,
 		const char *service_id);
-LASSO_EXPORT gchar* lasso_provider_get_metadata_one(const LassoProvider *provider, const char *name);
-LASSO_EXPORT const GList* lasso_provider_get_metadata_list(const LassoProvider *provider, const char *name);
+LASSO_EXPORT gchar* lasso_provider_get_metadata_one(LassoProvider *provider, const char *name);
+LASSO_EXPORT GList* lasso_provider_get_metadata_list(LassoProvider *provider, const char *name);
 
 LASSO_EXPORT LassoProvider* lasso_provider_new_from_dump(const gchar *dump);
 
 LASSO_EXPORT LassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
-		const LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
+		LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
 
 LASSO_EXPORT gboolean lasso_provider_accept_http_method(LassoProvider *provider,
-		const LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
+		LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
 		LassoHttpMethod http_method, gboolean initiate_profile);
 
-LASSO_EXPORT gboolean lasso_provider_has_protocol_profile(const LassoProvider *provider,
+LASSO_EXPORT gboolean lasso_provider_has_protocol_profile(LassoProvider *provider,
 		LassoMdProtocolType protocol_type, const char *protocol_profile);
 
 LASSO_EXPORT gchar* lasso_provider_get_base64_succinct_id(const LassoProvider *provider);
@@ -225,12 +243,31 @@ LASSO_EXPORT LassoEncryptionMode lasso_provider_get_encryption_mode(LassoProvide
 LASSO_EXPORT void lasso_provider_set_encryption_sym_key_type(LassoProvider *provider,
 		LassoEncryptionSymKeyType encryption_sym_key_type);
 
-LASSO_EXPORT gchar* lasso_provider_get_default_name_id_format(const LassoProvider *provider);
+LASSO_EXPORT gchar* lasso_provider_get_default_name_id_format(LassoProvider *provider);
 
 LASSO_EXPORT const char* lasso_provider_get_sp_name_qualifier(LassoProvider *provider);
 
 LASSO_EXPORT int lasso_provider_verify_single_node_signature (LassoProvider *provider,
 		LassoNode *node, const char *id_attr_name);
+
+LASSO_EXPORT GList* lasso_provider_get_idp_supported_attributes(LassoProvider *provider);
+
+LASSO_EXPORT char* lasso_provider_get_valid_until(LassoProvider *provider);
+
+LASSO_EXPORT char* lasso_provider_get_cache_duration(LassoProvider *provider);
+
+LASSO_EXPORT char* lasso_provider_get_metadata_one_for_role(LassoProvider *provider,
+		LassoProviderRole role, const char *name);
+
+LASSO_EXPORT GList* lasso_provider_get_metadata_list_for_role(const LassoProvider *provider,
+		LassoProviderRole role, const char *name);
+
+LASSO_EXPORT GList *lasso_provider_get_metadata_keys_for_role(LassoProvider *provider,
+		LassoProviderRole role);
+
+LASSO_EXPORT LassoProviderRole lasso_provider_get_roles(LassoProvider *provider);
+
+LASSO_EXPORT gboolean lasso_provider_match_conformance(LassoProvider *provider, LassoProvider *another_provider);
 
 #ifdef __cplusplus
 }

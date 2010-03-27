@@ -26,7 +26,27 @@
  * SECTION:provider
  * @short_description: Service or identity provider
  *
- * It holds all the data about a provider.
+ * <para>The #LassoProvider object holds metadata about a provider. Metadata are sorted into descriptors,
+ * each descriptor being assigned a role. We refer you to <CiteTitle>Liberty Metadata Description
+ * and Discovery
+Specification </CiteTitle> and <CiteTitle>Metadata for the OASIS Security Assertion Markup Language
+(SAML) V2.0</CiteTitle>.</para>
+
+<para>Roles are represented by the enumeration #LassoProviderRole, you can access descriptors
+content using lasso_provider_get_metadata_list_by_role() and lasso_provider_get_metadata_by_role().
+Descriptors resources are flattened inside a simple hashtable. For example to get the URL(s) for the
+SAML 2.0 single logout response endpoint using binding HTTP-POST of the SP descriptor of a provider
+called x, you would call:</para>
+
+<programlisting>
+GList *urls = lasso_provider_get_metadata_list_by_role(x, LASSO_PROVIDER_ROLE_SP, "SingleLogoutService HTTP-POST ResponseLocation");
+</programlisting>
+
+<para>A provider usually possess a default role stored in the #LassoProvider.role field, which is
+initialized by the lasso_server_add_provider() method when registering a new remote provider to our
+current provider. The methods lasso_provider_get_metadata() and lasso_provider_get_metadata_list()
+use this default role to access descriptors.</para>
+
  **/
 
 #include "../xml/private.h"
@@ -62,14 +82,19 @@ static char *protocol_md_nodename[LASSO_MD_PROTOCOL_TYPE_LAST] = {
 	"SingleSignOnProtocolProfile"
 };
 static char *protocol_roles[LASSO_PROVIDER_ROLE_LAST] = {
-	NULL, "sp", "idp",
+	NULL, "idp", "sp",
 	"authn-authority", "pdp", "attribute-authority"
 };
 char *protocol_methods[LASSO_HTTP_METHOD_LAST] = {
 	"", "", "", "",
 	"", "-http", "-soap"
 };
-static gboolean lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc);
+
+static gboolean _lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc);
+static int _lasso_provider_get_role_index(LassoProviderRole role);
+void _lasso_provider_add_metadata_value_for_role(LassoProvider *provider,
+		LassoProviderRole role, const char *name, const char *value);
+typedef int LassoProviderRoleIndex;
 
 /*****************************************************************************/
 /* public methods */
@@ -87,28 +112,115 @@ static gboolean lasso_provider_load_metadata_from_doc(LassoProvider *provider, x
  *      string must be freed by the caller.
  **/
 gchar*
-lasso_provider_get_assertion_consumer_service_url(const LassoProvider *provider, const char *service_id)
+lasso_provider_get_assertion_consumer_service_url(LassoProvider *provider, const char *service_id)
 {
-	GHashTable *descriptor;
+	char *name = NULL;
+	char *assertion_consumer_service_url = NULL;
+
+	if (service_id == NULL)
+		service_id = provider->private_data->default_assertion_consumer;
+	name = g_strdup_printf("AssertionConsumerServiceURL %s", service_id);
+	assertion_consumer_service_url = lasso_provider_get_metadata_one_for_role(provider, LASSO_PROVIDER_ROLE_SP, name);
+	g_free(name);
+
+	return assertion_consumer_service_url;
+}
+
+static LassoProviderRoleIndex
+_lasso_provider_get_role_index(LassoProviderRole role) {
+	switch (role) {
+		case LASSO_PROVIDER_ROLE_IDP:
+			return 1;
+		case LASSO_PROVIDER_ROLE_SP:
+			return 2;
+		case LASSO_PROVIDER_ROLE_AUTHN_AUTHORITY:
+			return 3;
+		case LASSO_PROVIDER_ROLE_AUTHZ_AUTHORITY:
+			return 4;
+		case LASSO_PROVIDER_ROLE_ATTRIBUTE_AUTHORITY:
+			return 5;
+		default:
+			return 0;
+		}
+}
+
+void
+_lasso_provider_add_metadata_value_for_role(LassoProvider *provider, LassoProviderRole role, const char *name, const char *value)
+{
 	GList *l;
-	char *sid = (char*)service_id;
-	char *name;
+	GHashTable *descriptor;
+	char *symbol;
+	LassoProviderRoleIndex role_index;
 
-	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
-	if (sid == NULL)
-		sid = provider->private_data->default_assertion_consumer;
+	g_return_if_fail(LASSO_IS_PROVIDER(provider) && name && value);
+	role_index = _lasso_provider_get_role_index(role);
+	g_return_if_fail ( role_index);
+	descriptor = provider->private_data->Descriptors; /* default to SP */
+	g_return_if_fail (descriptor);
+	l = (GList*)lasso_provider_get_metadata_list_for_role(provider, role, name);
+	lasso_list_add_string(l, value);
+	symbol = g_strdup_printf("%s %s", protocol_roles[role_index], name);
+	g_hash_table_insert(descriptor, symbol, l);
+}
 
-	descriptor = provider->private_data->Descriptors;
+/**
+ * lasso_provider_get_metadata_list_for_role:
+ * @provider: a #LassoProvider
+ * @role: a #LassoProviderRole value
+ * @name: the element name
+ *
+ * Extracts zero to many elements from the @provider descriptor for the given @role.
+ *
+ * Return value:(transfer none)(element-type string): a #GList with the elements.  This GList is internally
+ *      allocated and points to internally allocated strings.  It must
+ *      not be freed, modified or stored.
+ **/
+GList*
+lasso_provider_get_metadata_list_for_role(const LassoProvider *provider, LassoProviderRole role, const char *name)
+{
+	GList *l;
+	GHashTable *descriptor;
+	char *symbol;
+	LassoProviderRoleIndex role_index;
+
+	g_return_val_if_fail(LASSO_IS_PROVIDER(provider) && name, NULL);
+
+	role_index = _lasso_provider_get_role_index(role);
+	if (! role_index)
+		return NULL;
+
+	descriptor = provider->private_data->Descriptors; /* default to SP */
 	if (descriptor == NULL)
 		return NULL;
 
-	name = g_strdup_printf("AssertionConsumerServiceURL %s", sid);
-	l = g_hash_table_lookup(descriptor, name);
-	g_free(name);
-	if (l == NULL)
-		return NULL;
+	symbol = g_strdup_printf("%s %s", protocol_roles[role_index], name);
+	l = g_hash_table_lookup(descriptor, symbol);
+	g_free(symbol);
 
-	return g_strdup(l->data);
+	return l;
+}
+
+/**
+ * lasso_provider_get_metadata_one_for_role:
+ * @provider: a #LassoProvider object
+ * @role: a #LassoProviderRole value
+ * @name: a metadata information name
+ *
+ * Return the given information extracted from the metadata of the given #LassoProvider for the
+ * given @role descriptor.
+ *
+ * Retun value: a newly allocated string or NULL. If non-NULL must be freed by the caller.
+ */
+char*
+lasso_provider_get_metadata_one_for_role(LassoProvider *provider, LassoProviderRole role, const char *name)
+{
+	const GList *l;
+
+	l = lasso_provider_get_metadata_list_for_role(provider, role, name);
+
+	if (l)
+		return g_strdup(l->data);
+	return NULL;
 }
 
 /**
@@ -122,23 +234,10 @@ lasso_provider_get_assertion_consumer_service_url(const LassoProvider *provider,
  *      string must be freed by the caller.
  **/
 gchar*
-lasso_provider_get_metadata_one(const LassoProvider *provider, const char *name)
+lasso_provider_get_metadata_one(LassoProvider *provider, const char *name)
 {
-	GList *l;
-	GHashTable *descriptor;
-
-	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
-
-	descriptor = provider->private_data->Descriptors; /* default to SP */
-	if (descriptor == NULL)
-		return NULL;
-	l = g_hash_table_lookup(descriptor, name);
-	if (l)
-		return g_strdup(l->data);
-
-	return NULL;
+	return lasso_provider_get_metadata_one_for_role(provider, provider->role, name);
 }
-
 
 /**
  * lasso_provider_get_metadata_list:
@@ -151,17 +250,11 @@ lasso_provider_get_metadata_one(const LassoProvider *provider, const char *name)
  *      allocated and points to internally allocated strings.  It must
  *      not be freed, modified or stored.
  **/
-const GList*
-lasso_provider_get_metadata_list(const LassoProvider *provider, const char *name)
+GList*
+lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
 {
-	GHashTable *descriptor;
-
-        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
-	descriptor = provider->private_data->Descriptors;
-
-	return g_hash_table_lookup(descriptor, name);
+	return lasso_provider_get_metadata_list_for_role(provider, provider->role, name);
 }
-
 
 /**
  * lasso_provider_get_first_http_method:
@@ -176,7 +269,7 @@ lasso_provider_get_metadata_list(const LassoProvider *provider, const char *name
  **/
 LassoHttpMethod
 lasso_provider_get_first_http_method(LassoProvider *provider,
-		const LassoProvider *remote_provider, const LassoMdProtocolType protocol_type)
+		LassoProvider *remote_provider, LassoMdProtocolType protocol_type)
 {
 	char *protocol_profile_prefix;
 	const GList *local_supported_profiles;
@@ -245,7 +338,7 @@ lasso_provider_get_first_http_method(LassoProvider *provider,
  * Return value: %TRUE if it is appropriate
  **/
 gboolean
-lasso_provider_accept_http_method(LassoProvider *provider, const LassoProvider *remote_provider,
+lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote_provider,
 		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,
 		gboolean initiate_profile)
 {
@@ -302,7 +395,7 @@ lasso_provider_accept_http_method(LassoProvider *provider, const LassoProvider *
  * Return value: %TRUE if it is supported
  **/
 gboolean
-lasso_provider_has_protocol_profile(const LassoProvider *provider,
+lasso_provider_has_protocol_profile(LassoProvider *provider,
 		LassoMdProtocolType protocol_type, const char *protocol_profile)
 {
 	const GList *supported;
@@ -339,7 +432,6 @@ lasso_provider_get_base64_succinct_id(const LassoProvider *provider)
 	return ret;
 }
 
-
 /**
  * lasso_provider_get_organization
  * @provider: a #LassoProvider
@@ -375,6 +467,14 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
+/**
+ * lasso_provider_get_public_key:
+ * @provider: a #LassoProvider object
+ *
+ * Return the public key associated with this provider.
+ *
+ * Return value: an #xmlSecKey object.
+ */
 xmlSecKey*
 lasso_provider_get_public_key(const LassoProvider *provider)
 {
@@ -403,56 +503,47 @@ lasso_provider_get_encryption_public_key(const LassoProvider *provider)
 }
 
 static void
-load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provider)
+_lasso_provider_load_endpoint_type(LassoProvider *provider, xmlNode *endpoint,
+		LassoProviderRole role)
+{
+	char *name = (char*)endpoint->name;
+	xmlChar *value = NULL;
+
+	if (strcmp(name, "AssertionConsumerServiceURL") == 0) {
+		char *isDefault = (char*)xmlGetProp(endpoint, (xmlChar*)"isDefault");
+		char *id = (char*)xmlGetProp(endpoint, (xmlChar*)"id");
+		name = g_strdup_printf("%s %s", name, id);
+		if (isDefault) {
+			if (strcmp(isDefault, "true") == 0 || strcmp(isDefault, "1") == 0)
+				lasso_assign_string(provider->private_data->default_assertion_consumer,
+					id);
+			xmlFree(isDefault);
+		}
+		xmlFree(id);
+	} else {
+		name = g_strdup_printf("%s", (char*)name);
+	}
+	value = xmlNodeGetContent(endpoint);
+	_lasso_provider_add_metadata_value_for_role(provider, role, name, (char*)value);
+	lasso_release_string(name);
+	xmlFree(value);
+}
+
+static void
+_lasso_provider_load_descriptor(LassoProvider *provider, xmlNode *xmlnode, LassoProviderRole role)
 {
 	xmlNode *t;
-	GList *elements;
-	char *name;
-	xmlChar *value;
-	xmlChar *use;
 
-	t = xmlnode->children;
+	t = xmlSecGetNextElementNode(xmlnode->children);
 	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-		if (strcmp((char*)t->name, "KeyDescriptor") == 0) {
-			use = xmlGetProp(t, (xmlChar*)"use");
-			if (use == NULL || strcmp((char*)use, "signing") == 0) {
-				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
-			}
-			if (use == NULL || strcmp((char*)use, "encryption") == 0) {
-				provider->private_data->encryption_key_descriptor =
-					xmlCopyNode(t, 1);
-			}
-			if (use) {
-				xmlFree(use);
-			}
-			t = t->next;
-			continue;
-		}
-		if (strcmp((char*)t->name, "AssertionConsumerServiceURL") == 0) {
-			char *isDefault = (char*)xmlGetProp(t, (xmlChar*)"isDefault");
-			char *id = (char*)xmlGetProp(t, (xmlChar*)"id");
-			name = g_strdup_printf("%s %s", t->name, id);
-			if (isDefault) {
-				if (strcmp(isDefault, "true") == 0 || strcmp(isDefault, "1") == 0)
-					lasso_assign_string(provider->private_data->default_assertion_consumer,
-						id);
-				xmlFree(isDefault);
-			}
-			xmlFree(id);
+		if (xmlSecCheckNodeName(t,
+					BAD_CAST "KeyDescriptor",
+					BAD_CAST LASSO_METADATA_HREF)) {
+			_lasso_provider_load_key_descriptor(provider, t);
 		} else {
-			name = g_strdup((char*)t->name);
+			_lasso_provider_load_endpoint_type(provider, t, role);
 		}
-		elements = g_hash_table_lookup(descriptor, name);
-		value = xmlNodeGetContent(t);
-		elements = g_list_append(elements, g_strdup((char*)value));
-		// Do not mix g_free strings with xmlFree strings
-		xmlFree(value);
-		g_hash_table_insert(descriptor, name, elements);
-		t = t->next;
+		t = xmlSecGetNextElementNode(t->next);
 	}
 }
 
@@ -461,8 +552,20 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	LassoProvider *provider = LASSO_PROVIDER(node);
-	char *roles[LASSO_PROVIDER_ROLE_LAST] = { "None", "SP", "IdP", "AuthnAuthority", "PDP", "AttributeAuthority"};
-	char *encryption_mode[] = { "None", "NameId", "Assertion", "Both" };
+	char *roles[LASSO_PROVIDER_ROLE_LAST] = {
+		"None",
+		"SP",
+		"IdP",
+		"AuthnAuthority",
+		"PDP",
+		"AttributeAuthority"
+	};
+	char *encryption_mode[] = {
+		"None",
+		"NameId",
+		"Assertion",
+		"Both"
+	};
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 
@@ -479,12 +582,39 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	return xmlnode;
 }
 
+void
+_lasso_provider_load_key_descriptor(LassoProvider *provider, xmlNode *key_descriptor)
+{
+	LassoProviderPrivate *private_data;
+	xmlChar *use;
+
+	g_return_if_fail(LASSO_IS_PROVIDER(provider));
+	g_return_if_fail(provider->private_data);
+
+	private_data = provider->private_data;
+	use = xmlGetProp(key_descriptor, (xmlChar*)"use");
+	if (use == NULL || g_strcmp0((char*)use, "signing") == 0) {
+		lasso_assign_xml_node(private_data->signing_key_descriptor, key_descriptor);
+	}
+	if (use == NULL || strcmp((char*)use, "encryption") == 0) {
+		lasso_assign_xml_node(private_data->encryption_key_descriptor, key_descriptor);
+	}
+	lasso_release_xml_string(use);
+}
+
 
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoProvider *provider = LASSO_PROVIDER(node);
-	char *roles[LASSO_PROVIDER_ROLE_LAST] = { "None", "SP", "IdP", "AuthnAuthority", "PDP", "AttributeAuthority"};
+	static char * const roles[LASSO_PROVIDER_ROLE_LAST] = {
+		"None",
+		"SP",
+		"IdP",
+		"AuthnAuthority",
+		"PDP",
+		"AttributeAuthority"
+	};
 	xmlChar *s;
 	int i;
 
@@ -497,16 +627,16 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	/* Load provider role */
 	s = xmlGetProp(xmlnode, (xmlChar*)"ProviderRole");
 	provider->role = LASSO_PROVIDER_ROLE_NONE;
-	i = LASSO_PROVIDER_ROLE_NONE;
-	while (i < LASSO_PROVIDER_ROLE_LAST) {
-		if (strcmp((char*)s, roles[i]) == 0) {
-			provider->role = i;
-			break;
+	if (s) {
+		i = LASSO_PROVIDER_ROLE_NONE;
+		while (i < LASSO_PROVIDER_ROLE_LAST) {
+			if (strcmp((char*)s, roles[i]) == 0) {
+				provider->role = i;
+				break;
+			}
+			i++;
 		}
-		i++;
-	}
-	if (s != NULL) {
-		xmlFree(s);
+		lasso_release_xml_string(s);
 	}
 
 	/* Load encryption mode */
@@ -539,6 +669,67 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	return 0;
 }
+
+static void*
+_lasso_provider_get_pdata_thing(LassoProvider *provider, ptrdiff_t offset)
+{
+	LassoProviderPrivate *pdata;
+
+	lasso_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+	pdata = provider->private_data;
+	if (pdata)
+		return G_STRUCT_MEMBER_P(pdata, offset);
+
+	return NULL;
+}
+
+/**
+ * lasso_provider_get_idp_supported_attributes:
+ * @provider: a #LassoProvider object
+ *
+ * If the provider supports the IDP SSO role, then return the list of Attribute definition that this
+ * provider declared supporting.
+ *
+ * Return value:(transfer none)(element-type LassoNode): a list of #LassoSaml2Attribute or #LassoSamlAttribute
+ */
+GList*
+lasso_provider_get_idp_supported_attributes(LassoProvider *provider)
+{
+	return _lasso_provider_get_pdata_thing(provider, G_STRUCT_OFFSET(LassoProviderPrivate,
+				attributes));
+}
+
+/**
+ * lasso_provider_get_valid_until:
+ * @provider: a #LassoProvider object
+ *
+ * Return the time after which the metadata for this provider will become invalid. This is an
+ * ISO-8601 formatted string.
+ *
+ * Return value:(transfer none): an internally allocated string, you can copy it but not store it.
+ */
+char*
+lasso_provider_get_valid_until(LassoProvider *provider)
+{
+	return _lasso_provider_get_pdata_thing(provider,
+			G_STRUCT_OFFSET(LassoProviderPrivate, valid_until));
+}
+
+/**
+ * lasso_provider_get_cache_duration:
+ * @provider: a #LassoProvider object
+ *
+ * Return the time during which the metadata for this provider can be kept.
+ *
+ * Return value:(transfer none): an internally allocated string, you can copy it but not store it.
+ */
+char*
+lasso_provider_get_cache_duration(LassoProvider *provider)
+{
+	return _lasso_provider_get_pdata_thing(provider,
+			G_STRUCT_OFFSET(LassoProviderPrivate, cache_duration));
+}
+
 
 /*****************************************************************************/
 /* overridden parent class methods	                                     */
@@ -727,7 +918,7 @@ _lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *
 	if (doc == NULL) {
 		return FALSE;
 	}
-	goto_cleanup_if_fail_with_rc (lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
+	goto_cleanup_if_fail_with_rc (_lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
 	lasso_assign_string(provider->metadata_filename, metadata);
 cleanup:
 	lasso_release_doc(doc);
@@ -774,7 +965,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 }
 
 static gboolean
-lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
+_lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 {
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
@@ -833,8 +1024,8 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 
 	xpathObj = xmlXPathEvalExpression((xmlChar*)xpath_idp, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
-		load_descriptor(xpathObj->nodesetval->nodeTab[0],
-				provider->private_data->Descriptors, provider);
+		_lasso_provider_load_descriptor(provider, xpathObj->nodesetval->nodeTab[0],
+				LASSO_PROVIDER_ROLE_IDP);
 		if (provider->private_data->conformance < LASSO_PROTOCOL_LIBERTY_1_2) {
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;
@@ -853,8 +1044,8 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 
 	xpathObj = xmlXPathEvalExpression((xmlChar*)xpath_sp, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
-		load_descriptor(xpathObj->nodesetval->nodeTab[0],
-				provider->private_data->Descriptors, provider);
+		_lasso_provider_load_descriptor(provider, xpathObj->nodesetval->nodeTab[0],
+				LASSO_PROVIDER_ROLE_SP);
 		if (provider->private_data->conformance < LASSO_PROTOCOL_LIBERTY_1_2) {
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;
@@ -890,8 +1081,9 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
  * Help to factorize common code.
  */
 static LassoProvider*
-lasso_provider_new_helper(LassoProviderRole role, const char *metadata,
-		const char *public_key, const char *ca_cert_chain, gboolean (*loader)(LassoProvider *provider, const gchar *metadata))
+_lasso_provider_new_helper(LassoProviderRole role, const char *metadata,
+		const char *public_key, const char *ca_cert_chain, gboolean (*loader)(
+			LassoProvider *provider, const gchar *metadata))
 {
 	LassoProvider *provider;
 
@@ -936,7 +1128,7 @@ LassoProvider*
 lasso_provider_new(LassoProviderRole role, const char *metadata,
 		const char *public_key, const char *ca_cert_chain)
 {
-	return lasso_provider_new_helper(role, metadata, public_key, ca_cert_chain,
+	return _lasso_provider_new_helper(role, metadata, public_key, ca_cert_chain,
 			lasso_provider_load_metadata);
 }
 
@@ -955,7 +1147,7 @@ LassoProvider*
 lasso_provider_new_from_buffer(LassoProviderRole role, const char *metadata,
 		const char *public_key, const char *ca_cert_chain)
 {
-	return lasso_provider_new_helper(role, metadata, public_key, ca_cert_chain,
+	return _lasso_provider_new_helper(role, metadata, public_key, ca_cert_chain,
 			lasso_provider_load_metadata_from_buffer);
 }
 
@@ -1321,7 +1513,7 @@ lasso_provider_verify_query_signature(LassoProvider *provider, const char *messa
  * Return value:(transfer full)(allow-none): a NameIDFormat URI or NULL, the returned value must be freed by the caller.
  */
 gchar*
-lasso_provider_get_default_name_id_format(const LassoProvider *provider)
+lasso_provider_get_default_name_id_format(LassoProvider *provider)
 {
 	return lasso_provider_get_metadata_one(provider, "NameIDFormat");
 }
@@ -1383,4 +1575,85 @@ lasso_provider_verify_single_node_signature (LassoProvider *provider, LassoNode 
 		return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
 	}
 	return lasso_verify_signature(xmlnode, NULL, id_attr_name, NULL, xmlseckey, NO_SINGLE_REFERENCE, NULL);
+}
+
+struct AddForRoleHelper {
+	GList *l;
+	LassoProviderRole role;
+};
+
+
+static void
+_add_for_role(gpointer key, G_GNUC_UNUSED gpointer data, struct AddForRoleHelper *helper)
+{
+	char role_prefix[64];
+	int l;
+
+	l = sprintf(role_prefix, "%s ", protocol_roles[helper->role]);
+
+	if (key && strncmp(key, role_prefix, l) == 0) {
+		lasso_list_add_string(helper->l, ((char*)key) + l);
+	}
+}
+
+/**
+ * lasso_provider_get_metadata_keys_for_role:
+ * @provider: a #LassoProvider object
+ * @role: a #LassoProviderRole value
+ *
+ * Returns the list of metadata keys existing for the given provider.
+ *
+ * Return value:(element-type utf8)(transfer full): a newly allocated list of strings
+ */
+GList*
+lasso_provider_get_metadata_keys_for_role(LassoProvider *provider, LassoProviderRole role)
+{
+	struct AddForRoleHelper helper = { NULL, role };
+
+	lasso_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+	lasso_return_val_if_fail(provider->private_data != NULL, NULL);
+	lasso_return_val_if_fail(role > LASSO_PROVIDER_ROLE_NONE && role < LASSO_PROVIDER_ROLE_LAST, NULL);
+
+	g_hash_table_foreach(provider->private_data->Descriptors, (GHFunc)_add_for_role, &helper);
+
+	return helper.l;
+}
+
+/**
+ * lasso_provider_get_roles:
+ * @provider: a #LassoProvider object
+ *
+ * Return the bitmask of the supported roles.
+ *
+ * Return value: a #LassoProviderRole enumeration value.
+ */
+LassoProviderRole
+lasso_provider_get_roles(LassoProvider *provider)
+{
+	lasso_return_val_if_fail(LASSO_IS_PROVIDER(provider) && provider->private_data, LASSO_PROVIDER_ROLE_NONE);
+
+	return provider->private_data->roles;
+}
+
+/**
+ * lasso_provider_match_conformance:
+ * @provider: a #LassoProvider object
+ * @another_provider: a #LassoProvider object
+ *
+ * Return whether the two provider support a same protocol.
+ * See also #LassoProtocolConformance.
+ *
+ * Return value: TRUE or FALSE.
+ */
+gboolean
+lasso_provider_match_conformance(LassoProvider *provider, LassoProvider *another_provider)
+{
+	lasso_return_val_if_fail(LASSO_IS_PROVIDER(provider)
+			&& LASSO_IS_PROVIDER(another_provider),
+			FALSE);
+
+	int conformance1 = lasso_provider_get_protocol_conformance(provider);
+	int conformance2 = lasso_provider_get_protocol_conformance(another_provider);
+
+	return (conformance1 & conformance2) != 0;
 }

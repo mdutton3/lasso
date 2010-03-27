@@ -340,6 +340,8 @@ lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char 
 	LassoProvider *remote_provider;
 	int rc;
 
+	/* FIXME: parse only one time the message, reuse the parsed document for signature
+	 * validation */
 	lasso_assign_new_gobject(profile->request, lasso_node_new_from_soap(msg));
 	if (profile->request == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
@@ -643,7 +645,6 @@ cleanup:
 	lasso_release_doc(doc);
 	return rc;
 }
-
 
 int
 lasso_saml20_profile_process_soap_request(LassoProfile *profile,
@@ -1165,7 +1166,7 @@ lasso_saml20_profile_build_response_msg(LassoProfile *profile, char *service,
 	}
 
 	/* if not explicitely given, automatically determine an URI from the metadatas */
-	if (url == NULL && service) {
+	if (url == NULL && service && method != LASSO_HTTP_METHOD_SOAP) {
 		made_url = url = get_response_url(provider, service, http_method_to_binding(method));
 	}
 
@@ -1482,6 +1483,29 @@ lasso_profile_saml20_setup_message_signature(LassoProfile *profile, LassoNode *r
 		return LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ;
 	}
 	return 0;
+}
+
+/**
+ * lasso_saml20_profile_setup_subject:
+ * @profile: a #LassoProfile object
+ * @subject: a #LassoSaml2Subject object
+ *
+ * Encrypt subject if necessary.
+ */
+int
+lasso_saml20_profile_setup_subject(LassoProfile *profile,
+		LassoSaml2Subject *subject)
+{
+	LassoProvider *remote_provider;
+
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+	g_return_val_if_fail (LASSO_IS_PROVIDER(remote_provider), LASSO_ERROR_CAST_FAILED);
+	if (! (lasso_provider_get_encryption_mode(remote_provider) & LASSO_ENCRYPTION_MODE_NAMEID)) {
+		return 0;
+	}
+	return lasso_saml20_profile_setup_encrypted_node(remote_provider,
+			(LassoNode**)subject->NameID,
+			(LassoNode**)subject->EncryptedID);
 }
 
 gint

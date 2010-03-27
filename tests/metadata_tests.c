@@ -28,6 +28,9 @@
 
 #include <../lasso/lasso.h>
 #include <../lasso/id-ff/provider.h>
+#include "../lasso/utils.h"
+#include "./tests.h"
+#include "../lasso/xml/saml-2.0/saml2_xsd.h"
 
 START_TEST(test01_metadata_load_der_certificate_from_x509_cert)
 {
@@ -83,6 +86,29 @@ START_TEST(test06_metadata_load_public_key_from_rsa_keyvalue)
 }
 END_TEST
 
+START_TEST(test07_metadata_role_descriptors)
+{
+	LassoProvider *provider = (LassoProvider*)lasso_provider_new(LASSO_PROVIDER_ROLE_IDP, TESTSDATADIR "/idp6-saml2/metadata.xml",
+			NULL, NULL);
+	GList *l, *q;
+	int i = 0;
+
+	check_not_null(provider);
+	for (i = LASSO_PROVIDER_ROLE_ANY+1; i < LASSO_PROVIDER_ROLE_LAST; i++) {
+		l = lasso_provider_get_metadata_keys_for_role(provider, i);
+		lasso_foreach(q, l) {
+			printf("%i %s\n", i, (char*)q->data);
+		}
+	}
+	l = lasso_provider_get_metadata_list_for_role(provider, LASSO_PROVIDER_ROLE_IDP,
+			LASSO_SAML2_METADATA_ATTRIBUTE_WANT_AUTHN_REQUEST_SIGNED);
+	check_not_null(l);
+	check_null(l->next);
+	check_str_equals(l->data, "true");
+	lasso_release_gobject(provider);
+}
+END_TEST
+
 Suite*
 metadata_suite()
 {
@@ -99,12 +125,16 @@ metadata_suite()
 		tcase_create("Load DER public key from <ds:X509Certificate>");
 	TCase *tc_metadata_load_public_key_from_rsa_keyvalue =
 		tcase_create("Load RSAKeyValue public key");
+	TCase *tc_metadata_role_descriptors =
+		tcase_create("Lookup different role descriptors datas");
+
 	suite_add_tcase(s, tc_metadata_load_der_certificate_from_x509_cert);
 	suite_add_tcase(s, tc_metadata_load_pem_certificate_from_x509_cert);
 	suite_add_tcase(s, tc_metadata_load_der_public_key_from_keyvalue);
 	suite_add_tcase(s, tc_metadata_load_pem_public_key_from_keyvalue);
 	suite_add_tcase(s, tc_metadata_load_public_key_from_x509_cert);
 	suite_add_tcase(s, tc_metadata_load_public_key_from_rsa_keyvalue);
+	suite_add_tcase(s, tc_metadata_role_descriptors);
 	tcase_add_test(tc_metadata_load_der_certificate_from_x509_cert,
 		test01_metadata_load_der_certificate_from_x509_cert);
 	tcase_add_test(tc_metadata_load_pem_certificate_from_x509_cert,
@@ -117,5 +147,7 @@ metadata_suite()
 		test05_metadata_load_public_key_from_x509_cert);
 	tcase_add_test(tc_metadata_load_public_key_from_rsa_keyvalue,
 		test06_metadata_load_public_key_from_rsa_keyvalue);
+	tcase_add_test(tc_metadata_role_descriptors,
+			test07_metadata_role_descriptors);
 	return s;
 }

@@ -34,6 +34,7 @@ extern "C" {
 #include "../xml/saml-2.0/saml2_encrypted_element.h"
 #include "../xml/saml-2.0/samlp2_status_response.h"
 #include "../xml/saml-2.0/samlp2_request_abstract.h"
+#include "../xml/saml-2.0/saml2_subject.h"
 #include "../id-ff/provider.h"
 
 int lasso_saml20_profile_init_request(LassoProfile *profile, const char *remote_provider_id,
@@ -77,6 +78,7 @@ gint lasso_profile_saml20_setup_message_signature(LassoProfile *profile,
 		LassoNode *request_or_response);
 gint lasso_saml20_profile_setup_encrypted_node(LassoProvider *provider,
 		LassoNode **node_to_encrypt, LassoNode **node_destination);
+int lasso_saml20_profile_setup_subject(LassoProfile *profile, LassoSaml2Subject *subject);
 
 #ifdef __cplusplus
 }

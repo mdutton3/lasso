@@ -117,6 +117,13 @@
 #define LASSO_SAML2_METADATA_BINDING_PAOS "urn:oasis:names:tc:SAML:2.0:bindings:PAOS"
 
 /**
+ * LASSO_SAML2_METADATA_BINDING_URI:
+ *
+ * URI for the URI special binding.
+ */
+#define LASSO_SAML2_METADATA_BINDING_URI "urn:oasis:names:tc:SAML:2.0:bindings:URI"
+
+/**
  * LASSO_SAML2_DEFLATE_ENCODING:
  *
  * URI for URL-Encoding of kind DEFLATE (compress message content before encoding in the URI).

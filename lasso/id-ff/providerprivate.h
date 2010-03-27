@@ -46,6 +46,7 @@ struct _LassoProviderPrivate
 {
 	gboolean dispose_has_run;
 
+	LassoProviderRole roles;
 	LassoProtocolConformance conformance;
 	GHashTable *Descriptors;
 	GList *attributes; /* of LassoSaml2Attribute */
@@ -62,6 +63,8 @@ struct _LassoProviderPrivate
 	xmlSecKey *encryption_public_key;
 	LassoEncryptionMode encryption_mode;
 	LassoEncryptionSymKeyType encryption_sym_key_type;
+	char *valid_until;
+	char *cache_duration;
 };
 
 
@@ -76,6 +79,9 @@ xmlSecKey* lasso_provider_get_encryption_public_key(const LassoProvider *provide
 LassoEncryptionSymKeyType lasso_provider_get_encryption_sym_key_type(const LassoProvider* provider);
 int lasso_provider_verify_saml_signature(LassoProvider *provider, xmlNode *signed_node, xmlDoc *doc);
 int lasso_provider_verify_query_signature(LassoProvider *provider, const char *message);
+void _lasso_provider_load_key_descriptor(LassoProvider *provider, xmlNode *key_descriptor);
+void _lasso_provider_add_metadata_value_for_role(LassoProvider *provider,
+		LassoProviderRole role, const char *name, const char *value);
 
 
 #ifdef __cplusplus
