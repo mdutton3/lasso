@@ -229,6 +229,7 @@ xmlDocPtr lasso_xml_parse_memory_with_error(const char *buffer, int size, xmlErr
 xmlSecKeyPtr lasso_xmlsec_load_key_info(xmlNode *key_descriptor);
 char* lasso_xmlnode_to_string(xmlNode *node, gboolean format, int level);
 gboolean lasso_string_to_xsd_integer(const char *str, long int *integer);
+void lasso_set_string_from_prop(char **str, xmlNode *node, xmlChar *name, xmlChar *ns);
 
 #ifdef __cplusplus
 }

@@ -2164,3 +2164,17 @@ lasso_string_to_xsd_integer(const char *str, long int *integer)
 		return FALSE;
 	return TRUE;
 }
+
+void
+lasso_set_string_from_prop(char **str, xmlNode *node, xmlChar *name, xmlChar *ns)
+{
+	xmlChar *value;
+
+	g_assert(str);
+	g_assert(node);
+	value = xmlGetNsProp(node, name, ns);
+	if (value) {
+		lasso_assign_string(*str, (char*)value);
+	}
+	lasso_release_xml_string(value);
+}
