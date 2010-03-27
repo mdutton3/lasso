@@ -352,7 +352,16 @@ lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char 
 			profile->request)->Issuer->content);
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 
-	rc = lasso_provider_verify_signature(remote_provider, msg, "ID", LASSO_MESSAGE_FORMAT_SOAP);
+	profile->signature_status = lasso_provider_verify_signature(remote_provider, msg, "ID",
+			LASSO_MESSAGE_FORMAT_SOAP);
+
+	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+			rc = profile->signature_status;
+			break;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+			break;
+	}
 
 	lasso_assign_string(profile->private_data->artifact,
 			LASSO_SAMLP2_ARTIFACT_RESOLVE(profile->request)->Artifact);
@@ -659,8 +668,16 @@ lasso_saml20_profile_process_soap_request(LassoProfile *profile,
 	rc = get_provider(profile, &remote_provider);
 	goto_cleanup_if_fail(rc == 0);
 
-	rc = profile->signature_status = lasso_provider_verify_signature(
+	profile->signature_status = lasso_provider_verify_signature(
 			remote_provider, request_msg, "ID", LASSO_MESSAGE_FORMAT_SOAP);
+
+	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+			rc = profile->signature_status;
+			break;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+			break;
+	}
 
 cleanup:
 	return rc;
@@ -1288,17 +1305,24 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 	} else {
 		profile->signature_status = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
 	}
-	goto_cleanup_if_fail(! profile->signature_status);
+	/* propagate signature status ? */
+	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+			rc = profile->signature_status;
+			break;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+			break;
+	}
 
 	/* verify status code */
 	lasso_extract_node_or_fail(status, status_response->Status, SAMLP2_STATUS,
 			LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
 	lasso_extract_node_or_fail(status_code1, status->StatusCode, SAMLP2_STATUS_CODE,
 			LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
-	goto_cleanup_if_fail_with_rc (status_code1->Value != NULL,
+	goto_cleanup_if_fail_with_rc (! rc && status_code1->Value != NULL,
 		LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
 
-	if (strcmp(status_code1->Value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
+	if (! rc && strcmp(status_code1->Value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
 		rc = LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 
@@ -1352,8 +1376,15 @@ lasso_saml20_profile_process_soap_response(LassoProfile *profile,
 		goto cleanup;
 	}
 
-	rc = profile->signature_status = lasso_provider_verify_signature(
+	profile->signature_status = lasso_provider_verify_signature(
 			remote_provider, response_msg, "ID", LASSO_MESSAGE_FORMAT_SOAP);
+	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+			rc = profile->signature_status;
+			break;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+			break;
+	}
 
 cleanup:
 	return rc;

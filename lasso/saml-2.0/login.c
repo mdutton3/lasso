@@ -51,6 +51,7 @@
 #include "../xml/saml-2.0/saml2_attribute_statement.h"
 #include "../xml/saml-2.0/saml2_attribute_value.h"
 #include "../xml/saml-2.0/saml2_name_id.h"
+#include "../xml/saml-2.0/saml2_xsd.h"
 
 #include "../utils.h"
 
@@ -105,6 +106,28 @@ cleanup:
 	return rc;
 }
 
+static gboolean want_authn_request_signed(LassoProvider *provider) {
+	char *s;
+
+	s = lasso_provider_get_metadata_one_for_role(provider, LASSO_PROVIDER_ROLE_IDP,
+			LASSO_SAML2_METADATA_ATTRIBUTE_WANT_AUTHN_REQUEST_SIGNED);
+	if (g_strcmp0(s, "false") == 0) {
+		return FALSE;
+	}
+	return TRUE;
+}
+
+static gboolean authn_request_signed(LassoProvider *provider) {
+	char *s;
+
+	s = lasso_provider_get_metadata_one_for_role(provider, LASSO_PROVIDER_ROLE_SP,
+			LASSO_SAML2_METADATA_ATTRIBUTE_AUTHN_REQUEST_SIGNED);
+	if (g_strcmp0(s, "true") == 0) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
 static gboolean
 _lasso_login_must_sign_non_authn_request(LassoLogin *profile)
 {
@@ -123,16 +146,21 @@ _lasso_login_must_sign_non_authn_request(LassoLogin *profile)
 static gboolean
 _lasso_login_must_sign(LassoProfile *profile)
 {
-	char *md_authnRequestsSigned;
 	gboolean ret;
+	LassoProvider *remote_provider;
+
+	remote_provider = lasso_server_get_provider(profile->server,
+			profile->remote_providerID);
 
 	switch (lasso_profile_get_signature_hint(profile)) {
 		case LASSO_PROFILE_SIGNATURE_HINT_MAYBE:
-			md_authnRequestsSigned = lasso_provider_get_metadata_one(
-					LASSO_PROVIDER(profile->server), "AuthnRequestsSigned");
-			/* default is to sign ! */
-			ret = ! md_authnRequestsSigned || g_strcmp0(md_authnRequestsSigned, "false") != 0;
-			lasso_release_string(md_authnRequestsSigned);
+			/* If our metadatas say that we sign, then we sign,
+			 * If the IdP does not says that he doesn't want our signature, then we sign
+			 * (I decided to not follow the metadata specification and to always sign by
+			 * default).
+			 */
+			ret = authn_request_signed(&profile->server->parent)
+				|| want_authn_request_signed(remote_provider);
 			return ret;
 		case LASSO_PROFILE_SIGNATURE_HINT_FORCE:
 			return TRUE;
@@ -257,6 +285,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 
 
 	response = (LassoSamlp2StatusResponse*) lasso_samlp2_response_new();
+	lasso_assign_string(response->InResponseTo, LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
 	if (profile->signature_status) {
 		lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
 					LASSO_SAML2_STATUS_CODE_REQUESTER,
@@ -266,7 +295,6 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
 					LASSO_SAML2_STATUS_CODE_SUCCESS, NULL));
 	}
-	lasso_assign_string(response->InResponseTo, LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
 
 cleanup:
 	lasso_release_gobject(response);
@@ -965,11 +993,17 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 	if (rc2) {
 		return rc2;
 	}
-	if (message_signature_status) {
-		return message_signature_status;
-	}
-	if (profile->signature_status) {
-		return profile->signature_status;
+	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+			if (message_signature_status) {
+				return message_signature_status;
+			}
+			if (profile->signature_status) {
+				return profile->signature_status;
+			}
+			break;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+			break;
 	}
 	return 0;
 }
@@ -1184,8 +1218,14 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 			}
 		}
 
-		goto_cleanup_if_fail_with_rc (profile->signature_status == 0,
-				LASSO_LOGIN_ERROR_INVALID_ASSERTION_SIGNATURE);
+		switch (lasso_profile_get_signature_verify_hint(profile)) {
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+				goto_cleanup_if_fail_with_rc (profile->signature_status == 0,
+						LASSO_LOGIN_ERROR_INVALID_ASSERTION_SIGNATURE);
+				break;
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+				break;
+		}
 		lasso_extract_node_or_fail(subject, assertion->Subject, SAML2_SUBJECT,
 				LASSO_PROFILE_ERROR_MISSING_SUBJECT);
 
