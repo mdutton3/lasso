@@ -2082,7 +2082,6 @@ snippet_dump_any(gchar *key, gchar *value, xmlNode *xmlnode)
 	}
 }
 
-
 static void
 lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump)
@@ -2138,7 +2137,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				{
 					xmlNode *t2;
 					t2 = lasso_node_get_xmlNode(LASSO_NODE(value), lasso_dump);
-					if (snippet->name) {
+					if (snippet->name && ! (snippet->type & SNIPPET_ANY)) {
 						xmlNodeSetName(t2, (xmlChar*)snippet->name);
 					}
 					xmlAddChild(xmlnode, t2);
