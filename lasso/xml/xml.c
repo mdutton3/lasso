@@ -358,8 +358,8 @@ lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
 /**
  * lasso_node_export_to_query:
  * @node: a #LassoNode
- * @sign_method: the Signature transform method
- * @private_key_file: the path to the private key (may be NULL)
+ * @sign_method:(default 1): the Signature transform method
+ * @private_key_file:(allow-none): the path to the private key (may be NULL)
  *
  * Exports @node to a HTTP query string.  If @private_key_file is NULL,
  * query won't be signed.
