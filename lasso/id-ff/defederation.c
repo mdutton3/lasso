@@ -171,6 +171,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	LassoFederation *federation;
 	LassoSamlNameIdentifier *nameIdentifier;
 	LassoNode *nameIdentifier_n;
+	gint rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_DEFEDERATION(defederation),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -183,10 +184,19 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	if (remote_providerID != NULL) {
 		lasso_assign_string(profile->remote_providerID, remote_providerID);
 	} else {
-		lasso_assign_new_string(profile->remote_providerID, lasso_server_get_first_providerID(profile->server));
-		if (profile->remote_providerID == NULL) {
-			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+		LassoProvider *my_provider;
+		LassoProviderRole role = LASSO_PROVIDER_ROLE_IDP;
+
+		lasso_extract_node_or_fail(my_provider, profile->server, PROVIDER,
+				LASSO_PROFILE_ERROR_MISSING_SERVER);
+		if (my_provider->role == LASSO_PROVIDER_ROLE_IDP) {
+			role = LASSO_PROVIDER_ROLE_SP;
 		}
+		lasso_assign_new_string(profile->remote_providerID,
+				lasso_server_get_first_providerID_by_role(profile->server, role));
+	}
+	if (profile->remote_providerID == NULL) {
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
@@ -276,7 +286,8 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	/* Save notification method */
 	profile->http_request_method = http_method;
 
-	return 0;
+cleanup:
+	return rc;
 }
 
 /**

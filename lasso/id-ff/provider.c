@@ -47,22 +47,28 @@
 #include "../utils.h"
 #include "../debug.h"
 
-static char *protocol_uris[] = {
+static char *protocol_uris[LASSO_MD_PROTOCOL_TYPE_LAST] = {
 	"http://projectliberty.org/profiles/fedterm",
 	"http://projectliberty.org/profiles/nim",
 	"http://projectliberty.org/profiles/rni",
 	"http://projectliberty.org/profiles/slo",
 	NULL /* none for single sign on */
 };
-static char *protocol_md_nodename[] = {
+static char *protocol_md_nodename[LASSO_MD_PROTOCOL_TYPE_LAST] = {
 	"FederationTerminationNotificationProtocolProfile",
 	"NameIdentifierMappingProtocolProfile",
 	"RegisterNameIdentifierProtocolProfile",
 	"SingleLogoutProtocolProfile",
 	"SingleSignOnProtocolProfile"
 };
-static char *protocol_roles[] = { NULL, "sp", "idp"};
-char *protocol_methods[] = {"", "", "", "", "", "-http", "-soap"};
+static char *protocol_roles[LASSO_PROVIDER_ROLE_LAST] = {
+	NULL, "sp", "idp",
+	"authn-authority", "pdp", "attribute-authority"
+};
+char *protocol_methods[LASSO_HTTP_METHOD_LAST] = {
+	"", "", "", "",
+	"", "-http", "-soap"
+};
 static gboolean lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc);
 
 /*****************************************************************************/
@@ -92,7 +98,7 @@ lasso_provider_get_assertion_consumer_service_url(const LassoProvider *provider,
 	if (sid == NULL)
 		sid = provider->private_data->default_assertion_consumer;
 
-	descriptor = provider->private_data->SPDescriptor;
+	descriptor = provider->private_data->Descriptors;
 	if (descriptor == NULL)
 		return NULL;
 
@@ -122,12 +128,10 @@ lasso_provider_get_metadata_one(const LassoProvider *provider, const char *name)
 	GHashTable *descriptor;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
-	descriptor = provider->private_data->SPDescriptor; /* default to SP */
-	if (provider->role == LASSO_PROVIDER_ROLE_IDP)
-		descriptor = provider->private_data->IDPDescriptor;
+
+	descriptor = provider->private_data->Descriptors; /* default to SP */
 	if (descriptor == NULL)
 		return NULL;
-
 	l = g_hash_table_lookup(descriptor, name);
 	if (l)
 		return g_strdup(l->data);
@@ -152,10 +156,8 @@ lasso_provider_get_metadata_list(const LassoProvider *provider, const char *name
 {
 	GHashTable *descriptor;
 
-	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
-	descriptor = provider->private_data->SPDescriptor; /* default to SP */
-	if (provider->role == LASSO_PROVIDER_ROLE_IDP)
-		descriptor = provider->private_data->IDPDescriptor;
+        g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+	descriptor = provider->private_data->Descriptors;
 
 	return g_hash_table_lookup(descriptor, name);
 }
@@ -459,7 +461,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	LassoProvider *provider = LASSO_PROVIDER(node);
-	char *roles[] = { "None", "SP", "IdP"};
+	char *roles[LASSO_PROVIDER_ROLE_LAST] = { "None", "SP", "IdP", "AuthnAuthority", "PDP", "AttributeAuthority"};
 	char *encryption_mode[] = { "None", "NameId", "Assertion", "Both" };
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
@@ -482,7 +484,9 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoProvider *provider = LASSO_PROVIDER(node);
+	char *roles[LASSO_PROVIDER_ROLE_LAST] = { "None", "SP", "IdP", "AuthnAuthority", "PDP", "AttributeAuthority"};
 	xmlChar *s;
+	int i;
 
 	parent_class->init_from_xml(node, xmlnode);
 
@@ -492,10 +496,14 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	/* Load provider role */
 	s = xmlGetProp(xmlnode, (xmlChar*)"ProviderRole");
-	if (s != NULL && strcmp((char*)s, "SP") == 0) {
-		provider->role = LASSO_PROVIDER_ROLE_SP;
-	} else if (s != NULL && strcmp((char*)s, "IdP") == 0) {
-		provider->role = LASSO_PROVIDER_ROLE_IDP;
+	provider->role = LASSO_PROVIDER_ROLE_NONE;
+	i = LASSO_PROVIDER_ROLE_NONE;
+	while (i < LASSO_PROVIDER_ROLE_LAST) {
+		if (strcmp((char*)s, roles[i]) == 0) {
+			provider->role = i;
+			break;
+		}
+		i++;
 	}
 	if (s != NULL) {
 		xmlFree(s);
@@ -553,19 +561,12 @@ dispose(GObject *object)
 	}
 	provider->private_data->dispose_has_run = TRUE;
 
-	if (provider->private_data->IDPDescriptor) {
-		g_hash_table_foreach(provider->private_data->IDPDescriptor,
+	if (provider->private_data->Descriptors) {
+		g_hash_table_foreach(provider->private_data->Descriptors,
 				(GHFunc)free_list_strings, NULL);
-		g_hash_table_destroy(provider->private_data->IDPDescriptor);
+		g_hash_table_destroy(provider->private_data->Descriptors);
 	}
-	provider->private_data->IDPDescriptor = NULL;
-
-	if (provider->private_data->SPDescriptor) {
-		g_hash_table_foreach(provider->private_data->SPDescriptor,
-				(GHFunc)free_list_strings, NULL);
-		g_hash_table_destroy(provider->private_data->SPDescriptor);
-	}
-	provider->private_data->SPDescriptor = NULL;
+	provider->private_data->Descriptors = NULL;
 
 	if (provider->private_data->organization) {
 		xmlFreeNode(provider->private_data->organization);
@@ -649,10 +650,9 @@ instance_init(LassoProvider *provider)
 	provider->private_data->encryption_sym_key_type = LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128;
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
-	provider->private_data->IDPDescriptor = g_hash_table_new_full(
+	provider->private_data->Descriptors = g_hash_table_new_full(
 			g_str_hash, g_str_equal, g_free, NULL);
-	provider->private_data->SPDescriptor = g_hash_table_new_full(
-			g_str_hash, g_str_equal, g_free, NULL);
+	provider->private_data->attributes = NULL;
 }
 
 static void
@@ -834,7 +834,7 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 	xpathObj = xmlXPathEvalExpression((xmlChar*)xpath_idp, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
-				provider->private_data->IDPDescriptor, provider);
+				provider->private_data->Descriptors, provider);
 		if (provider->private_data->conformance < LASSO_PROTOCOL_LIBERTY_1_2) {
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;
@@ -854,7 +854,7 @@ lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 	xpathObj = xmlXPathEvalExpression((xmlChar*)xpath_sp, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
-				provider->private_data->SPDescriptor, provider);
+				provider->private_data->Descriptors, provider);
 		if (provider->private_data->conformance < LASSO_PROTOCOL_LIBERTY_1_2) {
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;

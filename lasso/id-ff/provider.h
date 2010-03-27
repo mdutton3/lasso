@@ -98,7 +98,11 @@ typedef enum {
 	LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON,
 	LASSO_MD_PROTOCOL_TYPE_ARTIFACT_RESOLUTION,
 	LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID,
-	LASSO_MD_PROTOCOL_TYPE_ASSERTION_ID_REQUEST
+	LASSO_MD_PROTOCOL_TYPE_ASSERTION_ID_REQUEST,
+	LASSO_MD_PROTOCOL_TYPE_AUTHN_QUERY,
+	LASSO_MD_PROTOCOL_TYPE_AUTHZ,
+	LASSO_MD_PROTOCOL_TYPE_ATTRIBUTE,
+	LASSO_MD_PROTOCOL_TYPE_LAST
 } LassoMdProtocolType;
 
 
@@ -108,14 +112,27 @@ typedef enum {
  * @LASSO_PROVIDER_ROLE_SP: service provider.
  * @LASSO_PROVIDER_ROLE_IDP: identity provider.
  * @LASSO_PROVIDER_ROLE_BOTH: service&identity provider.
+ * @LASSO_PROVIDER_ROLE_AUTHN_AUTHORITY: an authentification authority, i.e. an endpoint able to
+ * return previously returned assertion,
+ * @LASSO_PROVIDER_ROLE_AUTHZ_AUTHORITY: an authorization authority, i.e. an endpoint able to return
+ * assertion providing authorization about a principal acessing a resource,
+ * @LASSO_PROVIDER_ROLE_ATTRIBUTE_AUTHORITY: an attribute authority, i.e. an endpoint able to return
+ * attributes aboute a principal,
+ * @LASSO_PROVIDER_ROLE_LAST: all value in the enumeration are garanteed to be < to
+ * @LASSO_PROVIDER_ROLE_LAST.
  *
- * Provider Role.
+ * #LassoProviderRole is an enumeration allowing to precise the roles handled by a provider.
  **/
 typedef enum {
+	LASSO_PROVIDER_ROLE_ANY = -1,
 	LASSO_PROVIDER_ROLE_NONE = 0,
-	LASSO_PROVIDER_ROLE_SP,
-	LASSO_PROVIDER_ROLE_IDP,
-	LASSO_PROVIDER_ROLE_BOTH
+	LASSO_PROVIDER_ROLE_IDP = 1,
+	LASSO_PROVIDER_ROLE_SP = 2,
+	LASSO_PROVIDER_ROLE_BOTH = 3,
+	LASSO_PROVIDER_ROLE_AUTHN_AUTHORITY = 4,
+	LASSO_PROVIDER_ROLE_AUTHZ_AUTHORITY = 8,
+	LASSO_PROVIDER_ROLE_ATTRIBUTE_AUTHORITY = 16,
+	LASSO_PROVIDER_ROLE_LAST = 17
 } LassoProviderRole;
 
 

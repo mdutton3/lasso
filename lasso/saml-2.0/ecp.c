@@ -179,7 +179,7 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	xmlOutputBufferClose(buf);
 	lasso_release_doc(doc);
 
-	profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
+	profile->remote_providerID = lasso_server_get_first_providerID_by_role(profile->server, LASSO_PROVIDER_ROLE_IDP);
 	if (profile->remote_providerID == NULL) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}

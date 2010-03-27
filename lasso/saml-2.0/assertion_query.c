@@ -22,6 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "../id-ff/session.h"
 #include "../xml/private.h"
 #include "assertion_query.h"
 #include "providerprivate.h"
@@ -31,6 +32,7 @@
 #include "../id-ff/identityprivate.h"
 #include "../id-ff/serverprivate.h"
 #include "../xml/xml_enc.h"
+#include "../xml/saml-2.0/saml2_assertion.h"
 #include "../xml/saml-2.0/samlp2_assertion_id_request.h"
 #include "../xml/saml-2.0/samlp2_authn_query.h"
 #include "../xml/saml-2.0/samlp2_attribute_query.h"
@@ -53,12 +55,15 @@ struct _LassoAssertionQueryPrivate
 /**
  * lasso_assertion_query_init_request:
  * @assertion_query: a #LassoAssertionQuery
- * @remote_provider_id: the providerID of the remote provider.
+ * @remote_provider_id: (allow-none): the providerID of the remote provider.
  * @http_method: if set, then it get the protocol profile in metadata
  *     corresponding of this HTTP request method.
  * @query_request_type: the type of request.
  *
  * Initializes a new Assertion Query Request.
+ * For the AssertionID request type, the remote_provider_id is mandatory, for all other kind of
+ * request it is optional if we can find a provider supporting the associated role, i.e.
+ * IDP; authentication, attribute and authorization authority.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -72,10 +77,13 @@ lasso_assertion_query_init_request(LassoAssertionQuery *assertion_query,
 	LassoProvider *remote_provider;
 	LassoFederation *federation;
 	LassoSamlp2RequestAbstract *request;
+	gint ret = 0;
 
+	g_return_val_if_fail(http_method == LASSO_HTTP_METHOD_ANY ||
+			http_method == LASSO_HTTP_METHOD_SOAP,
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(LASSO_IS_ASSERTION_QUERY(assertion_query),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
-	g_return_val_if_fail(remote_provider_id != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(assertion_query);
 
@@ -85,14 +93,36 @@ lasso_assertion_query_init_request(LassoAssertionQuery *assertion_query,
 	}
 
 	/* set the remote provider id */
-	profile->remote_providerID = g_strdup(remote_provider_id);
+	profile->remote_providerID = NULL;
+	if (remote_provider_id) {
+		profile->remote_providerID = g_strdup(remote_provider_id);
+	} else {
+		LassoProviderRole role = LASSO_PROVIDER_ROLE_NONE;
+		switch (query_request_type) {
+			case LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHN:
+				role = LASSO_PROVIDER_ROLE_AUTHN_AUTHORITY;
+				break;
+			case LASSO_ASSERTION_QUERY_REQUEST_TYPE_ATTRIBUTE:
+				role = LASSO_PROVIDER_ROLE_ATTRIBUTE_AUTHORITY;
+				break;
+			case LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHZ_DECISION:
+				role = LASSO_PROVIDER_ROLE_PDP;
+				break;
+			/* other request types should not happen or should not go there */
+			default:
+				return critical_error(LASSO_PARAM_ERROR_INVALID_VALUE);
+		}
+		profile->remote_providerID =
+			lasso_server_get_first_providerID_by_role(profile->server,
+								role);
+	}
+	g_return_val_if_fail(profile->remote_providerID != NULL,
+		LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
-
-	/* XXX: check HTTP method is supported */
 
 	assertion_query->private_data->query_request_type = query_request_type;
 	switch (query_request_type) {
@@ -113,23 +143,38 @@ lasso_assertion_query_init_request(LassoAssertionQuery *assertion_query,
 	}
 
 	if (query_request_type != LASSO_ASSERTION_QUERY_REQUEST_TYPE_ASSERTION_ID) {
+		LassoSaml2NameID *nameID = NULL;
 		/* fill <Subject> */
 		LassoSamlp2SubjectQueryAbstract *subject_query;
 
 		/* Get federation */
-		federation = g_hash_table_lookup(profile->identity->federations,
-				profile->remote_providerID);
-		if (LASSO_IS_FEDERATION(federation) == FALSE) {
-			return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
-		} /* XXX: should support looking up transient id */
+		if (profile->session) {
+			GList *assertions;
+			LassoSaml2Assertion *assertion = NULL;
 
+			assertions = lasso_session_get_assertions(profile->session,
+					(gchar*)profile->remote_providerID);
+			/* multiple assertions, take the first */
+			if (assertions && LASSO_IS_SAML2_ASSERTION(assertions->data)) {
+				assertion = (LassoSaml2Assertion*)assertions->data;
+			}
+			if (assertion && assertion->Subject) {
+				nameID = assertion->Subject->NameID;
+			}
+		}
+		if (nameID == NULL) {
+			federation = g_hash_table_lookup(profile->identity->federations,
+					profile->remote_providerID);
+			if (LASSO_IS_FEDERATION(federation) == FALSE) {
+				return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
+			} /* XXX: should support looking up transient id */
+			nameID = LASSO_SAML2_NAME_ID(lasso_profile_get_nameIdentifier(profile));
+		}
 		subject_query = LASSO_SAMLP2_SUBJECT_QUERY_ABSTRACT(profile->request);
 		subject_query->Subject = LASSO_SAML2_SUBJECT(lasso_saml2_subject_new());
-		subject_query->Subject->NameID =LASSO_SAML2_NAME_ID(
-				lasso_profile_get_nameIdentifier(profile));
-
+		subject_query->Subject->NameID = g_object_ref(nameID);
 	}
-
+        /* Setup usual request attributes */
 	request = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request);
 	request->ID = lasso_build_unique_id(32);
 	request->Version = g_strdup("2.0");
@@ -137,9 +182,18 @@ lasso_assertion_query_init_request(LassoAssertionQuery *assertion_query,
 			LASSO_PROVIDER(profile->server)->ProviderID));
 	request->IssueInstant = lasso_get_current_time();
 
+	request->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
+	if (profile->server->certificate) {
+		request->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+	} else {
+		request->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
+	}
+	request->private_key_file = g_strdup(profile->server->private_key);
+	request->certificate_file = g_strdup(profile->server->certificate);
+
 	profile->http_request_method = http_method;
 
-	return 0;
+	return ret;
 }
 
 
@@ -167,17 +221,23 @@ lasso_assertion_query_build_request_msg(LassoAssertionQuery *assertion_query)
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
-
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
-		if (assertion_query->private_data->query_request_type == \
-				LASSO_ASSERTION_QUERY_REQUEST_TYPE_ASSERTION_ID) {
-			profile->msg_url = lasso_provider_get_metadata_one(remote_provider,
-					"AssertionIDRequestService SOAP");
-		} else {
-			profile->msg_url = lasso_provider_get_metadata_one(remote_provider,
-					"AttributeService SOAP");
+		LassoAssertionQueryRequestType type;
+		/* XXX: support only SOAP */
+		static const gchar *servicepoints[LASSO_ASSERTION_QUERY_REQUEST_TYPE_LAST] = {
+			"AssertionIDRequestService SOAP",
+			"AuthnQueryService SOAP",
+			"AuthzService SOAP",
+			"AttributeService SOAP"
+		};
+		type = assertion_query->private_data->query_request_type;
+		if (type <= LASSO_ASSERTION_QUERY_REQUEST_TYPE_ASSERTION_ID ||
+		    type >= LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHZ_DECISION) {
+			return LASSO_PARAM_ERROR_INVALID_VALUE;
 		}
-		/* XXX set private key so message is signed */
+		profile->msg_url = lasso_provider_get_metadata_one(remote_provider,
+					servicepoints[type]);
+		lasso_saml20_profile_setup_request_signing(profile);
 		profile->msg_body = lasso_node_export_to_soap(profile->request);
 		return 0;
 	}

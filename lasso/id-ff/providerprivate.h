@@ -47,9 +47,9 @@ struct _LassoProviderPrivate
 	gboolean dispose_has_run;
 
 	LassoProtocolConformance conformance;
-	GHashTable *SPDescriptor;
+	GHashTable *Descriptors;
+	GList *attributes; /* of LassoSaml2Attribute */
 	char *default_assertion_consumer;
-	GHashTable *IDPDescriptor;
 	xmlNode *organization;
 
 	char *affiliation_owner_id;

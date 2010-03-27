@@ -29,17 +29,23 @@
 #include "../id-ff/providerprivate.h"
 #include "../utils.h"
 #include "./provider.h"
+#include "../xml/saml-2.0/saml2_attribute.h"
 
-const char *profile_names[] = {
+const char *profile_names[LASSO_MD_PROTOCOL_TYPE_LAST] = {
 	"", /* No fedterm in SAML 2.0 */
-	"NameIDMappingService",
+	"NameIDMappingService",  /*IDPSSODescriptor*/
 	"", /* No rni in SAML 2.0 */
-	"SingleLogoutService",
-	"SingleSignOnService",
-	"ArtifactResolutionService",
-	"ManageNameIDService",
-	"AssertionIDRequestService",
-	NULL
+	"SingleLogoutService",   /*SSODescriptor*/
+	"SingleSignOnService",  /*IDPSSODescriptor*/
+	"ArtifactResolutionService",  /*SSODescriptor*/
+	"ManageNameIDService",    /*SSODescriptor*/
+	"AssertionIDRequestService", /* IDPSSODescriptor,
+                                        AuthnAuhtorityDescriptor,
+                                        PDPDescriptor,
+                                        AttributeAuthorityDescriptor */
+	"AuthnQueryService",  /*AuthnAuthorityDescriptor*/
+	"AuthzService",  /*PDPDescriptor*/
+	"AttributeService" /*AttributeAuthorityDescriptor*/
 };
 
 static void add_assertion_consumer_url_to_list(gchar *key, G_GNUC_UNUSED gpointer value, GList **list);
@@ -75,6 +81,15 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 				xmlFree(use);
 			}
 			t = t->next;
+			continue;
+		}
+		if (strcmp((char*)t->name, "Attribute") == 0) {
+			LassoSaml2Attribute *attribute;
+			attribute = LASSO_SAML2_ATTRIBUTE(lasso_node_new_from_xmlNode(t));
+			if (attribute) {
+				provider->private_data->attributes =
+					g_list_append(provider->private_data->attributes, attribute);
+			}
 			continue;
 		}
 		binding = (char*)xmlGetProp(t, (xmlChar*)"Binding");
@@ -114,7 +129,8 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 				name = g_strdup_printf("%s %s %s", t->name, binding_s, index);
 				xmlFree(index);
 				xmlFree(is_default);
-			} else {
+			}
+			else {
 				name = g_strdup_printf("%s %s", t->name, binding_s);
 			}
 			xmlFree(binding);
@@ -192,15 +208,36 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 
 		if (strcmp((char*)descriptor_node->name, "IDPSSODescriptor") == 0) {
 			load_descriptor(descriptor_node,
-					provider->private_data->IDPDescriptor, provider);
+					provider->private_data->Descriptors, provider);
 			provider->role = LASSO_PROVIDER_ROLE_IDP;
 			continue;
 		}
 
 		if (strcmp((char*)descriptor_node->name, "SPSSODescriptor") == 0) {
 			load_descriptor(descriptor_node,
-					provider->private_data->SPDescriptor, provider);
+					provider->private_data->Descriptors, provider);
 			provider->role = LASSO_PROVIDER_ROLE_SP;
+			continue;
+		}
+
+	       if (strcmp((char*)descriptor_node->name, "AttributeAuthorityDescriptor") == 0) {
+			load_descriptor(descriptor_node,
+					provider->private_data->Descriptors, provider);
+			provider->role = LASSO_PROVIDER_ROLE_ATTRIBUTE_AUTHORITY;
+			continue;
+		}
+
+	       if (strcmp((char*)descriptor_node->name, "PDPDescriptor") == 0) {
+			load_descriptor(descriptor_node,
+					provider->private_data->Descriptors, provider);
+			provider->role = LASSO_PROVIDER_ROLE_PDP;
+			continue;
+		}
+
+	       if (strcmp((char*)descriptor_node->name, "AuthnAuthorityDescriptor") == 0) {
+			load_descriptor(descriptor_node,
+					provider->private_data->Descriptors, provider);
+			provider->role = LASSO_PROVIDER_ROLE_AUTHN_AUTHORITY;
 			continue;
 		}
 
@@ -228,12 +265,6 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 	LassoHttpMethod method_bindings[] = {
 		LASSO_HTTP_METHOD_SOAP, LASSO_HTTP_METHOD_REDIRECT, LASSO_HTTP_METHOD_POST
 	};
-
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP)
-		provider->role = LASSO_PROVIDER_ROLE_IDP;
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP)
-		provider->role = LASSO_PROVIDER_ROLE_SP;
-
 	for (i=0; possible_bindings[i] && method == LASSO_HTTP_METHOD_NONE; i++) {
 		char *s;
 		const GList *l1, *l2;
@@ -320,7 +351,7 @@ lasso_saml20_provider_get_assertion_consumer_service_url(const LassoProvider *pr
 		sid = g_strdup_printf("%d", service_id);
 	}
 
-	descriptor = provider->private_data->SPDescriptor;
+	descriptor = provider->private_data->Descriptors;
 	if (descriptor == NULL)
 		return NULL;
 
@@ -357,7 +388,7 @@ lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(const LassoP
 	char *binding_s = NULL;
 	int lname;
 
-	descriptor = provider->private_data->SPDescriptor;
+	descriptor = provider->private_data->Descriptors;
 	if (descriptor == NULL)
 		return NULL;
 
@@ -420,7 +451,7 @@ lasso_saml20_provider_get_assertion_consumer_service_binding(const LassoProvider
 		sid = g_strdup_printf("%d", service_id);
 	}
 
-	descriptor = provider->private_data->SPDescriptor;
+	descriptor = provider->private_data->Descriptors;
 	if (descriptor == NULL)
 		return NULL;
 
@@ -443,9 +474,8 @@ lasso_saml20_provider_accept_http_method(LassoProvider *provider, const LassoPro
 		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,
 		gboolean initiate_profile)
 {
-	LassoProviderRole initiating_role;
 	char *protocol_profile;
-	char *http_methods[] = {
+	const static char *http_methods[] = {
 		NULL,
 		NULL,
 		NULL,

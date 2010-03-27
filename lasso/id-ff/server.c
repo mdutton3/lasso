@@ -326,6 +326,39 @@ get_first_providerID(gchar *key, G_GNUC_UNUSED gpointer value, char **providerID
 	return TRUE;
 }
 
+static gboolean
+get_first_providerID_by_role(G_GNUC_UNUSED gchar *key, gpointer value, LassoProviderRole role) {
+	LassoProvider *provider = (LassoProvider*)value;
+	if (provider->role == role || role == LASSO_PROVIDER_ROLE_ANY) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * lasso_server_get_first_providerID_by_role
+ * @server: a #LassoServer
+ * @role: the #LassoProviderRole of the researched provider
+ *
+ * Looks up and returns the provider ID of known provider with the given role.
+ *
+ * Return value: the provider ID, NULL if there are no providers. This string
+ *     must be freed by the caller.
+ */
+gchar *
+lasso_server_get_first_providerID_by_role(const LassoServer *server, LassoProviderRole role)
+{
+	LassoProvider *a_provider;
+	a_provider = LASSO_PROVIDER(g_hash_table_find(server->providers,
+		(GHRFunc) get_first_providerID_by_role,
+		(gpointer)role));
+	if (a_provider) {
+		return g_strdup(a_provider->ProviderID);
+	} else {
+		return NULL;
+	}
+}
+
 /**
  * lasso_server_get_first_providerID:
  * @server: a #LassoServer
