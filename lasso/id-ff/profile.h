@@ -203,6 +203,7 @@ LASSO_EXPORT gint lasso_profile_set_soap_fault_response(LassoProfile *profile, c
 LASSO_EXPORT void lasso_profile_set_signature_verify_hint(LassoProfile *profile,
 		LassoProfileSignatureVerifyHint signature_verify_hint);
 LASSO_EXPORT LassoProfileSignatureVerifyHint lasso_profile_get_signature_verify_hint(LassoProfile *profile);
+LASSO_EXPORT LassoProviderRole lasso_profile_sso_role_with(LassoProfile *profile, const char *remote_provider_id);
 
 #ifdef __cplusplus
 }

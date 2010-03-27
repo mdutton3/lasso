@@ -44,6 +44,7 @@
 
 #include "../saml-2.0/profileprivate.h"
 #include "../xml/saml-2.0/saml2_name_id.h"
+#include "../xml/saml_name_identifier.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
 #include "../xml/soap-1.1/soap_fault.h"
 #include "../utils.h"
@@ -693,6 +694,61 @@ lasso_profile_set_soap_fault_response(LassoProfile *profile, const char *faultco
 		lasso_release_gobject(fault->Detail);
 	}
 	return 0;
+}
+
+/**
+ * lasso_profile_sso_role_with:
+ * @profile: a #LassoProfile object
+ * @remote_provider_id: the identifier of a provider
+ *
+ * Returns whether the current provider is a service provider relatively to another provider. It
+ * uses the #LassoProfile.identity to find if a federation qualifier by the given provider exists or
+ * the reverse.
+ *
+ * Return value: #LASSO_PROVIDER_ROLE_NONE if nothing can be said, #LASSO_PROVIDER_ROLE_SP if a
+ * federation qualifier by @remote_provider_id exists or #LASSO_PROVIDER_ROLE_IDP if a federation
+ * qualifier by our own #LassoProvider.providerID exists.
+ */
+LassoProviderRole lasso_profile_sso_role_with(LassoProfile *profile, const char *remote_provider_id)
+{
+	LassoFederation *federation = NULL;
+	const char *name_qualifier = NULL;
+	const char *provider_id = NULL;
+
+
+	g_return_val_if_fail(LASSO_IS_PROFILE(profile) && remote_provider_id,
+			LASSO_PROVIDER_ROLE_NONE);
+
+	if (profile->server) {
+		provider_id = profile->server->parent.ProviderID;
+	}
+
+	federation = lasso_identity_get_federation(profile->identity, remote_provider_id);
+	if (! federation)
+		return LASSO_PROVIDER_ROLE_NONE;
+
+	/* coherency check */
+	g_return_val_if_fail(g_strcmp0(federation->remote_providerID, remote_provider_id) == 0,
+			LASSO_PROVIDER_ROLE_NONE);
+
+	if (LASSO_IS_SAML2_NAME_ID(federation->local_nameIdentifier)) {
+		LassoSaml2NameID *name_id = (LassoSaml2NameID*)federation->local_nameIdentifier;
+		name_qualifier = name_id->NameQualifier;
+	} else if (LASSO_IS_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier)) {
+		LassoSamlNameIdentifier *name_id;
+
+		name_id = (LassoSamlNameIdentifier*)federation->local_nameIdentifier;
+		name_qualifier = name_id->NameQualifier;
+	} else {
+		message(G_LOG_LEVEL_WARNING, "a federation without a NameID was found");
+		return LASSO_PROVIDER_ROLE_NONE;
+	}
+	if (g_strcmp0(remote_provider_id, name_qualifier) == 0) {
+		return LASSO_PROVIDER_ROLE_SP;
+	} else if (g_strcmp0(provider_id, name_qualifier) == 0) {
+		return LASSO_PROVIDER_ROLE_IDP;
+	}
+	return LASSO_PROVIDER_ROLE_NONE;
 }
 
 /*****************************************************************************/
