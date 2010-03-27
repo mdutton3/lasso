@@ -1366,7 +1366,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 void
 lasso_login_destroy(LassoLogin *login)
 {
-	lasso_node_destroy(LASSO_NODE(login));
+	lasso_release_gobject(login);
 }
 
 /**
