@@ -851,6 +851,11 @@ lasso_saml20_profile_build_request_msg(LassoProfile *profile, const char *servic
 		made_url = url = get_url(provider, service, http_method_to_binding(method));
 	}
 
+	if (url) {
+		lasso_assign_string(((LassoSamlp2RequestAbstract*)profile->request)->Destination,
+				url);
+	}
+
 	switch (method) {
 		case LASSO_HTTP_METHOD_SOAP:
 			rc = lasso_saml20_profile_build_soap_request_msg(profile, url);
