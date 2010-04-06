@@ -113,13 +113,6 @@ lasso_register_idwsf2_dst_service(const gchar *prefix, const gchar *href)
 gchar*
 lasso_get_prefix_for_dst_service_href(const gchar *href)
 {
-	if (strcmp(href, LASSO_PP10_HREF) == 0)
-		return g_strdup(LASSO_PP10_PREFIX);
-	if (strcmp(href, LASSO_PP11_HREF) == 0)
-		return g_strdup(LASSO_PP11_PREFIX);
-	if (strcmp(href, LASSO_EP_HREF) == 0)
-		return g_strdup(LASSO_EP_PREFIX);
-
 	if (dst_services_by_href == NULL)
 		return NULL;
 
