@@ -50,7 +50,7 @@
 {	typeof(what) __tmp1, __tmp2; \
 	__tmp1 = (what); \
 	__tmp2 = (to); \
-	fail_unless(__tmp1 == __tmp2, "%s:%i: " #what " is not equal to " #to "(%p)", __func__, __LINE__, (void*)__tmp2); \
+	fail_unless(__tmp1 == __tmp2, "%s:%i: " #what " is not equal to " #to "(%p) but to %p", __func__, __LINE__, (void*)__tmp2, (void*)__tmp1); \
 }
 
 #define check_not_equals(what,to) \
