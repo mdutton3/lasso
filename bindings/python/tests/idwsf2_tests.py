@@ -771,7 +771,7 @@ class DstTestCase(IdWsf2TestCase):
             for found in result:
                 wsp_dst.setQueryItemResult(item.itemId, ET.tostring(found), True)
         wsp_dst.setServiceType(lasso.PP11_PREFIX, lasso.PP11_HREF)
-        wsp_dst.initResponse()
+        wsp_dst.validateRequest()
         wsp_dst.buildResponseMsg()
         wsc_dst.processResponseMsg(wsp_dst.msgBody)
 
