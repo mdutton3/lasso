@@ -144,22 +144,26 @@ _lasso_provider_get_role_index(LassoProviderRole role) {
 		}
 }
 
+const char *role_to_prefix(LassoProviderRole role) {
+	return protocol_roles[_lasso_provider_get_role_index(role)];
+}
+
 void
 _lasso_provider_add_metadata_value_for_role(LassoProvider *provider, LassoProviderRole role, const char *name, const char *value)
 {
 	GList *l;
 	GHashTable *descriptor;
 	char *symbol;
-	LassoProviderRoleIndex role_index;
+	const char *role_prefix;
 
 	g_return_if_fail(LASSO_IS_PROVIDER(provider) && name && value);
-	role_index = _lasso_provider_get_role_index(role);
-	g_return_if_fail ( role_index);
 	descriptor = provider->private_data->Descriptors; /* default to SP */
 	g_return_if_fail (descriptor);
 	l = (GList*)lasso_provider_get_metadata_list_for_role(provider, role, name);
 	lasso_list_add_string(l, value);
-	symbol = g_strdup_printf("%s %s", protocol_roles[role_index], name);
+	role_prefix = role_to_prefix(role);
+	g_return_if_fail(role_prefix);
+	symbol = g_strdup_printf("%s %s", role_prefix, name);
 	g_hash_table_insert(descriptor, symbol, l);
 }
 
@@ -181,19 +185,18 @@ lasso_provider_get_metadata_list_for_role(const LassoProvider *provider, LassoPr
 	GList *l;
 	GHashTable *descriptor;
 	char *symbol;
-	LassoProviderRoleIndex role_index;
+	const char *role_prefix;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider) && name, NULL);
-
-	role_index = _lasso_provider_get_role_index(role);
-	if (! role_index)
-		return NULL;
+	g_return_val_if_fail(_lasso_provider_get_role_index(role), NULL);
 
 	descriptor = provider->private_data->Descriptors; /* default to SP */
 	if (descriptor == NULL)
 		return NULL;
 
-	symbol = g_strdup_printf("%s %s", protocol_roles[role_index], name);
+	role_prefix = role_to_prefix(role);
+	g_return_val_if_fail(role_prefix, NULL);
+	symbol = g_strdup_printf("%s %s", role_prefix, name);
 	l = g_hash_table_lookup(descriptor, symbol);
 	g_free(symbol);
 
@@ -276,6 +279,7 @@ lasso_provider_get_first_http_method(LassoProvider *provider,
 	const GList *remote_supported_profiles;
 	const GList *t1, *t2 = NULL;
 	gboolean found;
+	const gchar *role_prefix;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_HTTP_METHOD_NONE);
 	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
@@ -288,8 +292,10 @@ lasso_provider_get_first_http_method(LassoProvider *provider,
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP)
 		provider->role = LASSO_PROVIDER_ROLE_SP;
 
+	role_prefix = role_to_prefix(provider->role);
+	g_return_val_if_fail(role_prefix, LASSO_HTTP_METHOD_NONE);
 	protocol_profile_prefix = g_strdup_printf("%s-%s",
-			protocol_uris[protocol_type], protocol_roles[provider->role]);
+			protocol_uris[protocol_type], role_prefix);
 
 	local_supported_profiles = lasso_provider_get_metadata_list(
 			provider, protocol_md_nodename[protocol_type]);
@@ -344,6 +350,7 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
 {
 	LassoProviderRole initiating_role;
 	char *protocol_profile;
+	const gchar *role_prefix;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE); /* Be conservative */
 	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
@@ -362,9 +369,11 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
 	if (initiate_profile)
 		initiating_role = provider->role;
 
+	role_prefix = role_to_prefix(initiating_role);
+	g_return_val_if_fail(role_prefix, FALSE);
 	protocol_profile = g_strdup_printf("%s-%s%s",
 			protocol_uris[protocol_type],
-			protocol_roles[initiating_role],
+			role_prefix,
 			protocol_methods[http_method+1]);
 
 	if (lasso_provider_has_protocol_profile(provider,
@@ -1589,7 +1598,7 @@ _add_for_role(gpointer key, G_GNUC_UNUSED gpointer data, struct AddForRoleHelper
 	char role_prefix[64];
 	int l;
 
-	l = sprintf(role_prefix, "%s ", protocol_roles[helper->role]);
+	l = sprintf(role_prefix, "%s ", role_to_prefix(helper->role));
 
 	if (key && strncmp(key, role_prefix, l) == 0) {
 		lasso_list_add_string(helper->l, ((char*)key) + l);
@@ -1613,6 +1622,7 @@ lasso_provider_get_metadata_keys_for_role(LassoProvider *provider, LassoProvider
 	lasso_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
 	lasso_return_val_if_fail(provider->private_data != NULL, NULL);
 	lasso_return_val_if_fail(role > LASSO_PROVIDER_ROLE_NONE && role < LASSO_PROVIDER_ROLE_LAST, NULL);
+	g_return_val_if_fail(role_to_prefix(role) != NULL, NULL);
 
 	g_hash_table_foreach(provider->private_data->Descriptors, (GHFunc)_add_for_role, &helper);
 
