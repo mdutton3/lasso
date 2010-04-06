@@ -686,8 +686,13 @@ xmlNode*
 lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoNodeClass *class;
+	xmlNode *original_xmlnode;
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 	class = LASSO_NODE_GET_CLASS(node);
+	original_xmlnode = lasso_node_get_original_xmlnode(node);
+	if (original_xmlnode) {
+		return xmlCopyNode(original_xmlnode, 1);
+	}
 	return class->get_xmlNode(node, lasso_dump);
 }
 
