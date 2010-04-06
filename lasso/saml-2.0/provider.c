@@ -129,7 +129,7 @@ load_endpoint_type(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole 
 		xmlChar *index = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_INDEX);
 		xmlChar *is_default = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_ISDEFAULT);
 
-		if (xsdIsTrue(is_default)) {
+		if (xsdIsTrue(is_default) && ! private_data->default_assertion_consumer) {
 			lasso_assign_string(private_data->default_assertion_consumer, (char*)index);
 		}
 		name = g_strdup_printf(LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE 
