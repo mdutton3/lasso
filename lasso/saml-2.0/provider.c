@@ -99,6 +99,14 @@ xsdIsTrue(xmlChar *value)
 	return FALSE;
 }
 
+static gboolean
+xsdIsFalse(xmlChar *value)
+{
+	if (value && strcmp((char*)value, "false") == 0)
+		return TRUE;
+	return FALSE;
+}
+
 static void
 load_endpoint_type(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole role)
 {
@@ -161,6 +169,61 @@ cleanup:
 	lasso_release_string(response_name);
 }
 
+/**
+ * Apply algorithm for find a default assertion consumer when no declared assertion consumer has the
+ * isDefault attribute */
+static gboolean
+load_default_assertion_consumer(xmlNode *descriptor, LassoProvider *provider)
+{
+	xmlChar *index = NULL;
+	xmlChar *is_default = NULL;
+	xmlNode *t = NULL;
+	LassoProviderPrivate *pdata = provider->private_data;
+
+	g_return_val_if_fail(pdata, FALSE);
+	if (provider->private_data->default_assertion_consumer) {
+		return TRUE;
+	}
+
+	t = xmlSecGetNextElementNode(descriptor->children);
+	while (t) {
+		if (checkSaml2MdNode(t,
+				LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE)) {
+			lasso_release_xml_string(is_default);
+			is_default = getSaml2MdProp(t, LASSO_SAML2_METADATA_ATTRIBUTE_ISDEFAULT);
+			if (! xsdIsFalse(is_default)) {
+				index = getSaml2MdProp(t, LASSO_SAML2_METADATA_ATTRIBUTE_INDEX);
+				if (! index) {
+					t = xmlSecGetNextElementNode(t->next);
+					continue;
+				}
+				lasso_assign_string(pdata->default_assertion_consumer, (char*)index);
+				lasso_release_xml_string(index);
+				break;
+			}
+		}
+		t = xmlSecGetNextElementNode(t->next);
+	}
+	lasso_release_xml_string(is_default);
+	if (provider->private_data->default_assertion_consumer) {
+		return TRUE;
+	}
+	t = xmlSecFindChild(descriptor,
+			BAD_CAST LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE,
+			BAD_CAST LASSO_SAML2_METADATA_HREF);
+	if (! t) {
+		return FALSE;
+	}
+	index = getSaml2MdProp(t, LASSO_SAML2_METADATA_ATTRIBUTE_INDEX);
+	if (! index) {
+		return FALSE;
+	}
+	lasso_assign_string( pdata->default_assertion_consumer, (char*)index);
+	lasso_release_xml_string(index);
+	return TRUE;
+
+}
+
 static gboolean
 load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole role)
 {
@@ -216,7 +279,6 @@ load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole rol
 		}
 		t = xmlSecGetNextElementNode(t->next);
 	}
-
 	for (i = 0; descriptor_attrs[i]; i++) {
 		value = getSaml2MdProp(xmlnode, descriptor_attrs[i]);
 		if (value == NULL) {
@@ -226,6 +288,12 @@ load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole rol
 				(char*)value);
 		lasso_release_xml_string(value);
 	}
+
+	if (! load_default_assertion_consumer(xmlnode, provider) && role == LASSO_PROVIDER_ROLE_SP) {
+		message(G_LOG_LEVEL_WARNING, "Could not find a default assertion consumer, check the metadata file");
+		return FALSE;
+	}
+
 	return TRUE;
 }
 
