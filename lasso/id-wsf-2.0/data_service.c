@@ -251,7 +251,7 @@ lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const 
 	lasso_check_non_empty_string(item_query);
 
 	if (item_id == NULL) {
-		item_id = lasso_build_unique_id(10);
+		item_id = lasso_build_unique_id(32);
 	}
 	/* Check duplicates */
 	lasso_foreach(i, service->private_data->query_items) {
@@ -592,7 +592,7 @@ cleanup:
  * Return value: 0 if successful, or LASSO_PROFILE_ERROR_INVALID_REQUEST.
  */
 gint
-lasso_idwsf2_data_service_init_response(LassoIdWsf2DataService *service)
+lasso_idwsf2_data_service_validate_request(LassoIdWsf2DataService *service)
 {
 	LassoIdWsf2DstRefQueryResponse *query_response;
 	LassoIdWsf2DstRefModifyResponse *modify_response;
@@ -897,6 +897,45 @@ lasso_idwsf2_data_service_get_query_item_result(LassoIdWsf2DataService *service,
 		}
 	}
 	return NULL;
+}
+
+/**
+ * lasso_idwsf2_data_service_get_query_item_result_content:
+ * @service: a #LassoIdWsf2DataService object
+ * @item_id:(allow-none): the identifier of the result asked, if NULL and there is only one respone,
+ * returns it.
+ *
+ * Returns the text content of the query item result identified by @item_id or the only query item
+ * result if @item_id is NULL.
+ * <para>If @item_id is NULL and there is multiple results, returns NULL.</para>
+ *
+ * Return value:(transfer full): the text content of the query item result.
+ */
+char*
+lasso_idwsf2_data_service_get_query_item_result_content(LassoIdWsf2DataService *service,
+		const char *item_id)
+{
+	LassoIdWsf2DstRefData *data = NULL;
+	LassoIdWsf2DstRefAppData *app_data = NULL;
+	GList *i = NULL;
+	GString *gstr = NULL;
+	char *result = NULL;
+
+	data = lasso_idwsf2_data_service_get_query_item_result(service, item_id);
+	if (! data)
+		return NULL;
+	app_data = (LassoIdWsf2DstRefAppData*)data;
+	gstr = g_string_sized_new(128);
+	lasso_foreach(i, app_data->any) {
+		xmlNode *node = (xmlNode*)i->data;
+		xmlChar *content;
+		content = xmlNodeGetContent(node);
+		g_string_append(gstr, (char*)content);
+		xmlFree(content);
+	}
+	result = gstr->str;
+	g_string_free(gstr, FALSE);
+	return result;
 }
 
 /**

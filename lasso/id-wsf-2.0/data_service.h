@@ -114,7 +114,7 @@ LASSO_EXPORT LassoNode* lasso_idwsf2_data_service_get_item(LassoIdWsf2DataServic
 		const char *item_id);
 
 /* Reponse initialization */
-LASSO_EXPORT gint lasso_idwsf2_data_service_init_response(LassoIdWsf2DataService *service);
+LASSO_EXPORT gint lasso_idwsf2_data_service_validate_request(LassoIdWsf2DataService *service);
 LASSO_EXPORT gint lasso_idwsf2_data_service_set_status_code(LassoIdWsf2DataService *service,
 		const char *status_code, const char *status_code2);
 
@@ -132,6 +132,8 @@ LASSO_EXPORT gint lasso_idwsf2_data_service_process_response_msg(
 LASSO_EXPORT LassoIdWsf2UtilStatus *lasso_idwsf2_data_service_get_response_status(
 		LassoIdWsf2DataService *service);
 LASSO_EXPORT LassoIdWsf2DstRefData* lasso_idwsf2_data_service_get_query_item_result(
+		LassoIdWsf2DataService *service, const char *item_id);
+LASSO_EXPORT char* lasso_idwsf2_data_service_get_query_item_result_content(
 		LassoIdWsf2DataService *service, const char *item_id);
 LASSO_EXPORT GList* lasso_idwsf2_data_service_get_query_item_results(
 		LassoIdWsf2DataService *service);
