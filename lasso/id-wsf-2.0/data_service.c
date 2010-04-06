@@ -593,11 +593,11 @@ cleanup:
 }
 
 /**
- * lasso_idwsf2_data_service_init_response:
+ * lasso_idwsf2_data_service_validate_request:
  * @service: a #LassoIdWsf2DataService object
  *
  * Initialize a new response object corresponding to the current request. If not request if found or
- * the request is invalid, an failure response is created.
+ * the request is invalid, a failure response is created.
  *
  * Return value: 0 if successful, or LASSO_PROFILE_ERROR_INVALID_REQUEST.
  */
@@ -661,8 +661,8 @@ cleanup:
  * @status_code: a first level status code
  * @status_code2: a second level status code
  *
- * Set the status code for the current response, if no response exists, create start one using
- * lasso_idwsf2_data_service_init_response(), if it fails, resport a SOAP Fault.
+ * Set the status code for the current response, if no response exists, it starts one using
+ * lasso_idwsf2_data_service_validate_request(), if it fails, report a SOAP Fault.
  */
 gint
 lasso_idwsf2_data_service_set_status_code(LassoIdWsf2DataService *service,
@@ -670,33 +670,37 @@ lasso_idwsf2_data_service_set_status_code(LassoIdWsf2DataService *service,
 {
 	LassoNode *response;
 	LassoIdWsf2UtilStatus **status = NULL;
-	LassoSoapFault *fault;
+	LassoIdWsf2UtilStatus *new_status = NULL;
 	int rc = 0;
 
 
 	response = service->parent.parent.response;
-	if (! LASSO_IS_IDWSF2_UTIL_RESPONSE(response))
-		return LASSO_PROFILE_ERROR_MISSING_RESPONSE;
-	switch (lasso_idwsf2_data_service_get_request_type(service)) {
-		case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_QUERY:
-			status = &LASSO_IDWSF2_UTIL_RESPONSE(response)->Status;
-			break;
-		case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_MODIFY:
-			status = &LASSO_IDWSF2_UTIL_RESPONSE(response)->Status;
-			break;
-		default:
-			lasso_check_good_rc(lasso_idwsf2_profile_init_soap_fault_response(&service->parent, LASSO_SOAP_FAULT_CODE_CLIENT, "Unkown Request Type", NULL));
-			fault = (LassoSoapFault*)service->parent.parent.response;
-			lasso_soap_fault_add_to_detail(fault, 
-				(LassoNode*)lasso_idwsf2_util_status_new_with_code(
-					status_code, status_code2));
-			return 0;
+	if (LASSO_IS_IDWSF2_UTIL_RESPONSE(response)) {
+		switch (lasso_idwsf2_data_service_get_request_type(service)) {
+			case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_QUERY:
+				status = &LASSO_IDWSF2_UTIL_RESPONSE(response)->Status;
+				break;
+			case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_MODIFY:
+				status = &LASSO_IDWSF2_UTIL_RESPONSE(response)->Status;
+				break;
+			default:
+				break;
+		}
 	}
-	if (status) {
-		lasso_assign_new_gobject(*status,
-				lasso_idwsf2_util_status_new_with_code(status_code, status_code2));
+
+	new_status = lasso_idwsf2_util_status_new_with_code(status_code, status_code2);
+
+	if (! LASSO_IS_IDWSF2_UTIL_RESPONSE(response) || ! status) {
+		GList details = { .data = new_status, .next = NULL, .prev = NULL };
+
+		lasso_check_good_rc(lasso_idwsf2_profile_init_soap_fault_response(&service->parent,
+					LASSO_SOAP_FAULT_CODE_CLIENT, "Unknown Request Type",
+					&details));
+	} else {
+		lasso_assign_gobject(*status, new_status);
 	}
 cleanup:
+	lasso_release_gobject(new_status);
 	return rc;
 }
 
