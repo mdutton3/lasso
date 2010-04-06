@@ -37,6 +37,7 @@
 #include "../lasso/utils.h"
 #include "../lasso/xml/private.h"
 #include <libxml/tree.h>
+#include "./tests.h"
 
 START_TEST(test01_server_load_dump_empty_string)
 {
@@ -1896,6 +1897,46 @@ START_TEST(test11_get_default_name_id_format)
 	lasso_release_gobject(provider);
 }
 END_TEST
+#define SHOW_NAMESPACES 0
+
+#if SHOW_NAMESPACES
+static void
+print_namespace(const char *prefix, const char *href, G_GNUC_UNUSED gpointer data)
+{
+	printf("Prefix: %s Href: %s\n", prefix, href);
+}
+#endif
+
+/* test custom namespace handling */
+START_TEST(test12_custom_namespace)
+{
+	LassoNode *node;
+	LassoIdWsf2DstRefResultQuery *result_query;
+	char *dump;
+
+	node = (LassoNode*)lasso_idwsf2_dstref_result_query_new();
+	check_not_null(node);
+	lasso_node_add_custom_namespace(node, "example", "http://example.com");
+	lasso_node_set_custom_namespace(node, "example2", "http://example.com");
+	lasso_register_idwsf2_dst_service("example2", "http://example.com");
+
+	dump = lasso_node_dump(node);
+	check_not_null(dump);
+#if SHOW_NAMESPACES
+	printf("%s\n", dump);
+#endif
+	result_query = LASSO_IDWSF2_DSTREF_RESULT_QUERY(lasso_node_new_from_dump(dump));
+	check_not_null(result_query);
+	check_not_null(result_query->namespaces);
+	check_str_equals(g_hash_table_lookup(result_query->namespaces, "example"), "http://example.com");
+	check_str_equals(g_hash_table_lookup(result_query->namespaces, "example2"), "http://example.com");
+	check_str_equals(g_hash_table_lookup(result_query->namespaces, "dst"), LASSO_IDWSF2_DST_HREF);
+#if SHOW_NAMESPACES
+	g_hash_table_foreach(result_query->namespaces, (GHFunc)print_namespace, NULL);
+#endif
+	lasso_release_string(dump);
+}
+END_TEST
 
 Suite*
 basic_suite()
@@ -1910,6 +1951,7 @@ basic_suite()
 	TCase *tc_registry_functional_mapping = tcase_create("Test QName registry with functional mapping");
 	TCase *tc_registry_new_from_xmlNode = tcase_create("Test parsing a node that has a mapping to Lasso Object in the registry");
 	TCase *tc_response_new_from_xmlNode = tcase_create("Test parsing a message from Ping Federate");
+	TCase *tc_custom_namespace = tcase_create("Test custom namespace handling");
 
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
@@ -1920,6 +1962,7 @@ basic_suite()
 	suite_add_tcase(s, tc_registry_functional_mapping);
 	suite_add_tcase(s, tc_registry_new_from_xmlNode);
 	suite_add_tcase(s, tc_response_new_from_xmlNode);
+	suite_add_tcase(s, tc_custom_namespace);
 
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
@@ -1932,6 +1975,7 @@ basic_suite()
 	tcase_add_test(tc_response_new_from_xmlNode, test09_test_deserialization);
 	tcase_add_test(tc_response_new_from_xmlNode, test10_test_alldumps);
 	tcase_add_test(tc_response_new_from_xmlNode, test11_get_default_name_id_format);
+	tcase_add_test(tc_custom_namespace, test12_custom_namespace);
 	return s;
 }
 
