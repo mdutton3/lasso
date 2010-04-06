@@ -4,6 +4,9 @@ import sys
 import os.path
 import re
 
+if len(sys.argv) < 3:
+    print "Usage: check-lasso-sections.py lasso docs/referenrece/lasso/lasso-sections.txt"
+    sys.exit(1)
 source=sys.argv[1]
 lasso_sections_txt=sys.argv[2]
 
