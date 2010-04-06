@@ -56,6 +56,7 @@ def __LINE__():
         raise Exception
     except:
         return sys.exc_info()[2].tb_frame.f_back.f_lineno
+lasso.registerDstService('pp10', lasso.PP10_HREF)
 
 class IdWsf1TestCase(unittest.TestCase):
     def get_wsp_server(self):
