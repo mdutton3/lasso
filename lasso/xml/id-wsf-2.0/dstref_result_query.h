@@ -64,6 +64,7 @@ struct _LassoIdWsf2DstRefResultQuery {
 	/* elements */
 	char *Select;
 	char *Sort;
+	GHashTable *namespaces;
 };
 
 

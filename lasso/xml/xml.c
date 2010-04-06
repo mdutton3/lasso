@@ -1032,11 +1032,6 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					snippet_any = snippet;
 				}
 
-				if (snippet->name && snippet->name[0] == '\0' && snippet->type ==
-						SNIPPET_COLLECT_NAMESPACES) {
-					snippet_collect_namespaces = snippet;
-				}
-
 				if (strcmp((char*)t->name, snippet->name) != 0 && snippet->name[0])
 					continue;
 
@@ -1166,6 +1161,11 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			type = snippet->type & 0xff;
 
 			value = G_STRUCT_MEMBER_P(node, snippet->offset);
+			if (snippet->name && snippet->name[0] == '\0' && type ==
+					SNIPPET_COLLECT_NAMESPACES) {
+				snippet_collect_namespaces = snippet;
+			}
+
 			if (type == SNIPPET_ATTRIBUTE) {
 				if (snippet->type & SNIPPET_ANY) {
 					snippet_any_attribute = snippet;
