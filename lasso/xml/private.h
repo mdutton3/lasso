@@ -232,6 +232,8 @@ char* lasso_xmlnode_to_string(xmlNode *node, gboolean format, int level);
 gboolean lasso_string_to_xsd_integer(const char *str, long int *integer);
 void lasso_set_string_from_prop(char **str, xmlNode *node, xmlChar *name, xmlChar *ns);
 
+void lasso_node_add_custom_namespace(LassoNode *node, const char *prefix, const char *href);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

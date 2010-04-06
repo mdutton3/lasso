@@ -759,12 +759,14 @@ struct _CustomElement {
 	char *prefix;
 	char *href;
 	char *nodename;
+	GHashTable *namespaces;
 };
 
 static struct _CustomElement *
 _lasso_node_new_custom_element()
 {
 	struct _CustomElement *ret = g_new0(struct _CustomElement, 1);
+	ret->namespaces = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 	return ret;
 }
 
@@ -774,6 +776,7 @@ _lasso_node_free_custom_element(struct _CustomElement *custom_element)
 	lasso_release_string(custom_element->prefix);
 	lasso_release_string(custom_element->href);
 	lasso_release_string(custom_element->nodename);
+	g_hash_table_destroy(custom_element->namespaces);
 	lasso_release(custom_element);
 }
 
@@ -850,6 +853,25 @@ lasso_node_set_custom_nodename(LassoNode *node, const char *nodename)
 	g_return_if_fail (custom_element != NULL);
 
 	lasso_assign_string(custom_element->nodename, nodename);
+}
+
+/**
+ * lasso_node_add_custom_namespace:
+ * @prefix: prefix name
+ * @href: href url
+ *
+ * Add a custom namespace declaration at this node level
+ */
+void
+lasso_node_add_custom_namespace(LassoNode *node, const char *prefix,
+		const char *href)
+{
+	struct _CustomElement *custom_element;
+
+	custom_element = _lasso_node_get_custom_element_or_create(node);
+	g_return_if_fail(custom_element != NULL);
+
+	g_hash_table_insert(custom_element->namespaces, g_strdup(prefix), g_strdup(href));
 }
 
 /*****************************************************************************/
@@ -1280,6 +1302,23 @@ lasso_node_remove_signature(LassoNode *node) {
 /* private methods                                                           */
 /*****************************************************************************/
 
+static void
+_xmlnode_add_custom_namespace(const char *prefix, const char *href, xmlNode *xmlnode)
+{
+	xmlNs *existing = NULL;
+
+	existing = xmlSearchNs(NULL, xmlnode, BAD_CAST prefix);
+	if (existing) {
+		if (g_strcmp0((char*)existing->href, href) != 0) {
+			message(G_LOG_LEVEL_CRITICAL, "Cannot add namespace %s='%s' to node %s, "
+					"namespace already exists with another href", prefix, href,
+					(char*)xmlnode->name);
+		}
+		return;
+	}
+	xmlNewNs(xmlnode, BAD_CAST href, BAD_CAST prefix);
+}
+
 static char*
 lasso_node_impl_build_query(LassoNode *node)
 {
@@ -1355,6 +1394,8 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		if (custom_element->nodename) {
 			xmlNodeSetName(xmlnode, BAD_CAST (custom_element->nodename));
 		}
+		g_hash_table_foreach(custom_element->namespaces,
+				(GHFunc)_xmlnode_add_custom_namespace, xmlnode);
 	}
 
 

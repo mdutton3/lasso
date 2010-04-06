@@ -51,6 +51,7 @@
 
 #include "../xml/soap-1.1/soap_envelope.h"
 #include "../xml/soap-1.1/soap_fault.h"
+#include "../xml/private.h"
 #include "../utils.h"
 #include "./private.h"
 #include "./idwsf2_helper.h"
@@ -438,6 +439,12 @@ lasso_idwsf2_data_service_add_namespace(LassoIdWsf2DataService *service, const c
 	return 0;
 }
 
+static void
+add_custom_namespace(const char *prefix, const char *href, LassoNode *node)
+{
+	lasso_node_add_custom_namespace(node, prefix, href);
+}
+
 /**
  * lasso_idwsf2_data_service_build_request_msg:
  * @service: a #LassoIdWsf2DataService object
@@ -478,6 +485,9 @@ lasso_idwsf2_data_service_build_request_msg(LassoIdWsf2DataService *service,
 				lasso_idwsf2_data_service_set_dst_service_type(query, service_type, prefix);
 			}
 			lasso_assign_list_of_gobjects(query->QueryItem, service->private_data->query_items);
+			g_hash_table_foreach(service->private_data->namespaces,
+					(GHFunc)add_custom_namespace,
+					query);
 			break;
 		case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_MODIFY:
 			if (service_type) {
