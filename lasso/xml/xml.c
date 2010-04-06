@@ -171,7 +171,7 @@ lasso_node_dump(LassoNode *node)
 }
 
 /**
- * laso_node_debug:
+ * lasso_node_debug:
  * @node: a #LassoNode
  * @level:(default 10): the indentation depth, i.e. the depth of the last nodes to be indented.
  *
