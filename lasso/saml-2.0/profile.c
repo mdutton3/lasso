@@ -1320,12 +1320,12 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 			LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
 	lasso_extract_node_or_fail(status_code1, status->StatusCode, SAMLP2_STATUS_CODE,
 			LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
-	goto_cleanup_if_fail_with_rc (! rc && status_code1->Value != NULL,
+	goto_cleanup_if_fail_with_rc (rc || status_code1->Value != NULL,
 		LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
 
-	if (! rc && strcmp(status_code1->Value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
-		rc = LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
-	}
+	goto_cleanup_if_fail_with_rc ( rc || strcmp(status_code1->Value,
+				LASSO_SAML2_STATUS_CODE_SUCCESS) == 0,
+			LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS);
 
 cleanup:
 	lasso_release_doc(doc);
