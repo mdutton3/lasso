@@ -164,9 +164,10 @@ class Error(Exception):
     @staticmethod
     def raise_on_rc(rc):
         global exceptions_dict
-        exception = exceptions_dict.get(rc, Error())
-        exception.code = rc
-        raise exception
+        if rc != 0:
+            exception = exceptions_dict.get(rc, Error())
+            exception.code = rc
+            raise exception
 
     def __str__(self):
         return '<lasso.%s(%s): %s>' % (self.__class__.__name__, self.code, _lasso.strError(self.code))
@@ -264,8 +265,7 @@ def LassoNode__getstate__(self):
     return { '__dump__': self.dump() }
 
 def LassoNode__setstate__(self, d):
-    dump = d['__dump__']
-    self._cptr = _lasso.node_new_from_dump(dump)
+    self._cptr = _lasso.node_new_from_dump(d.pop('__dump__'))
 
 Node.__getstate__ = LassoNode__getstate__
 Node.__setstate__ = LassoNode__setstate__
@@ -504,8 +504,7 @@ if WSF_SUPPORT:
             elif is_rc(m.return_arg):
                 print >> fd, '        rc = _lasso.%s(self._cptr%s)' % (
                         function_name, c_args)
-                print >> fd, '        if rc != 0:'
-                print >> fd, '            raise Error.raise_on_rc(rc)'
+                print >> fd, '        Error.raise_on_rc(rc)'
             elif is_int(m.return_arg, self.binding_data) or is_xml_node(m.return_arg) or is_cstring(m.return_arg) or is_boolean(m.return_arg):
                 print >> fd, '        return _lasso.%s(self._cptr%s)' % (
                         function_name, c_args)
