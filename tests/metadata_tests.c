@@ -90,15 +90,20 @@ START_TEST(test07_metadata_role_descriptors)
 {
 	LassoProvider *provider = (LassoProvider*)lasso_provider_new(LASSO_PROVIDER_ROLE_IDP, TESTSDATADIR "/idp6-saml2/metadata.xml",
 			NULL, NULL);
-	GList *l, *q;
+	GList *l;
 	int i = 0;
 
 	check_not_null(provider);
 	for (i = LASSO_PROVIDER_ROLE_ANY+1; i < LASSO_PROVIDER_ROLE_LAST; i++) {
 		l = lasso_provider_get_metadata_keys_for_role(provider, i);
-		lasso_foreach(q, l) {
-			printf("%i %s\n", i, (char*)q->data);
+		if (i == LASSO_PROVIDER_ROLE_IDP) {
+			check_equals(g_list_length(l), 10);
+		} else if (i == LASSO_PROVIDER_ROLE_AUTHN_AUTHORITY ||
+				i == LASSO_PROVIDER_ROLE_AUTHZ_AUTHORITY ||
+				i == LASSO_PROVIDER_ROLE_ATTRIBUTE_AUTHORITY) {
+			check_equals(g_list_length(l), 3);
 		}
+		lasso_release_list_of_strings(l);
 	}
 	l = lasso_provider_get_metadata_list_for_role(provider, LASSO_PROVIDER_ROLE_IDP,
 			LASSO_SAML2_METADATA_ATTRIBUTE_WANT_AUTHN_REQUEST_SIGNED);
