@@ -341,13 +341,13 @@ get_list_of_strings(const GList *a_list) {
 	PyObject *a_tuple = NULL;
 	int i = 0;
 
-	if (! a_list) {
-		return noneRef();
-	}
-    /* Cast because g_list_length does not take const but is a const function */
+	/* Cast because g_list_length does not take const but is a const function */
 	a_tuple = PyTuple_New(g_list_length((GList*)a_list));
 	if (! a_tuple)
 		goto failure;
+	if (! a_list) {
+		return a_tuple;
+	}
 	while (a_list) {
 		if (a_list->data) {
 			PyObject *str = PyString_FromString((const char*)a_list->data);
@@ -376,13 +376,13 @@ get_list_of_xml_nodes(const GList *a_list) {
 	PyObject *a_tuple = NULL;
 	int i = 0;
 
-	if (! a_list) {
-		return noneRef();
-	}
-    /* Cast because g_list_length does not take const but is a const function */
+	/* Cast because g_list_length does not take const but is a const function */
 	a_tuple = PyTuple_New(g_list_length((GList*)a_list));
 	if (! a_tuple)
 		goto failure;
+	if (! a_list) {
+		return a_tuple;
+	}
 	while (a_list) {
 		if (a_list->data) {
 			PyObject *str = get_pystring_from_xml_node((xmlNode*)a_list->data);
@@ -413,13 +413,13 @@ get_list_of_pygobject(const GList *a_list) {
 	PyObject *a_tuple = NULL;
 	int i = 0;
 
-	if (! a_list) {
-		return noneRef();
-	}
-    /* Cast because g_list_length does not take const but is a const function */
+	/* Cast because g_list_length does not take const but is a const function */
 	a_tuple = PyTuple_New(g_list_length((GList*)a_list));
 	if (! a_tuple)
 		goto failure;
+	if (! a_list) {
+		return a_tuple;
+	}
 	while (a_list) {
 		if (a_list->data) {
 			PyObject *pygobject;

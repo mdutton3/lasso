@@ -81,7 +81,7 @@ class BindingTestCase(unittest.TestCase):
 
         authnRequest = lasso.LibAuthnRequest()
 
-        self.failUnlessEqual(authnRequest.respondWith, None)
+        self.failUnlessEqual(authnRequest.respondWith, ())
 
         respondWith = []
         self.failUnlessEqual(len(respondWith), 0)
@@ -117,7 +117,7 @@ class BindingTestCase(unittest.TestCase):
         self.failUnlessEqual(authnRequest.respondWith[1], 'second string')
         self.failUnlessEqual(authnRequest.respondWith[2], 'third string')
         authnRequest.respondWith = None
-        self.failUnlessEqual(authnRequest.respondWith, None)
+        self.failUnlessEqual(authnRequest.respondWith, ())
 
         del authnRequest
 
@@ -126,7 +126,7 @@ class BindingTestCase(unittest.TestCase):
 
         response = lasso.SamlpResponse()
 
-        self.failUnlessEqual(response.assertion, None)
+        self.failUnlessEqual(response.assertion, ())
 
         assertions = []
         self.failUnlessEqual(len(assertions), 0)
@@ -169,7 +169,7 @@ class BindingTestCase(unittest.TestCase):
         self.failUnlessEqual(response.assertion[1].assertionId, 'assertion 2')
         self.failUnlessEqual(response.assertion[2].assertionId, 'assertion 3')
         response.assertion = None
-        self.failUnlessEqual(response.assertion, None)
+        self.failUnlessEqual(response.assertion, ())
 
         del response
 
@@ -178,7 +178,7 @@ class BindingTestCase(unittest.TestCase):
 
         authnRequest = lasso.LibAuthnRequest()
 
-        self.failUnlessEqual(authnRequest.extension, None)
+        self.failUnlessEqual(authnRequest.extension, ())
 
         actionString1 = """\
 <lib:Extension xmlns:lib="urn:liberty:iff:2003-08">
@@ -227,7 +227,7 @@ class BindingTestCase(unittest.TestCase):
         self.failUnlessEqual(authnRequest.extension[1], actionString2)
         self.failUnlessEqual(authnRequest.extension[2], actionString3)
         authnRequest.extension = None
-        self.failUnlessEqual(authnRequest.extension, None)
+        self.failUnlessEqual(authnRequest.extension, ())
 
         del authnRequest
 
