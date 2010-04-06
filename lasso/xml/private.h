@@ -48,6 +48,7 @@ typedef enum {
 	SNIPPET_SIGNATURE,
 	SNIPPET_LIST_XMLNODES,
 	SNIPPET_XMLNODE,
+	SNIPPET_COLLECT_NAMESPACES,
 
 	/* transformers for content transformation */
 	SNIPPET_STRING  = 1 << 0, /* default, can be omitted */
@@ -58,7 +59,7 @@ typedef enum {
 	SNIPPET_OPTIONAL_NEG = 1 << 24, /* optional, ignored if -1 */
 	SNIPPET_ANY = 1 << 25, /* ##any node */
 	SNIPPET_ALLOW_TEXT = 1 << 26, /* allow text childs in list of nodes */
-	SNIPPET_KEEP_XMLNODE = 1 << 27 /* force keep xmlNode */
+	SNIPPET_KEEP_XMLNODE = 1 << 27, /* force keep xmlNode */
 } SnippetType;
 
 typedef enum {

@@ -925,6 +925,35 @@ lasso_node_impl_destroy(LassoNode *node)
 #define trace_snippet(format, args...) \
 	lasso_trace(format "%s.%s\n", ## args, G_OBJECT_TYPE_NAME(node), snippet->name)
 
+/**
+ * _lasso_node_collect_namespaces:
+ * @namespaces: a pointer to a pointer on a #GHashTable
+ * @node: an #xmlNode pointer
+ *
+ * Follow the parent link of the @node to collect all declared namespaces, it is usefull for content
+ * that need to be interpreted with respect to declared namespaces (XPath for example).
+ */
+void
+_lasso_node_collect_namespaces(GHashTable **namespaces, xmlNode *node)
+{
+	if (*namespaces == NULL) {
+		*namespaces = g_hash_table_new_full( g_str_hash, g_str_equal, g_free, g_free);
+	}
+	while (node) {
+		if (node->type == XML_ELEMENT_NODE) {
+			xmlNs *nsDef = node->nsDef;
+			while (nsDef) {
+				if (nsDef->prefix && nsDef->href) {
+					g_hash_table_insert(*namespaces, g_strdup((char*)nsDef->prefix),
+							g_strdup((char*)nsDef->href));
+				}
+				nsDef = nsDef->next;
+			}
+		}
+		node = node->parent;
+	}
+}
+
 /** FIXME: return a real error code */
 static int
 lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
@@ -936,6 +965,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	SnippetType type;
 	struct XmlSnippet *snippet_any = NULL;
 	struct XmlSnippet *snippet_any_attribute = NULL;
+	struct XmlSnippet *snippet_collect_namespaces = NULL;
 	GSList *unknown_nodes = NULL;
 	GSList *known_attributes = NULL;
 
@@ -1002,6 +1032,11 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					snippet_any = snippet;
 				}
 
+				if (snippet->name && snippet->name[0] == '\0' && snippet->type ==
+						SNIPPET_COLLECT_NAMESPACES) {
+					snippet_collect_namespaces = snippet;
+				}
+
 				if (strcmp((char*)t->name, snippet->name) != 0 && snippet->name[0])
 					continue;
 
@@ -1063,6 +1098,9 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					trace_snippet("   adding xmlNode %p to ", g_list_last(*location)->data);
 				} else if (type == SNIPPET_XMLNODE) {
 					tmp = xmlCopyNode(t, 1);
+				} else if (type == SNIPPET_COLLECT_NAMESPACES) {
+					/* Collect namespaces on the children t */
+					_lasso_node_collect_namespaces(value, t);
 				}
 
 				if (tmp == NULL)
@@ -1163,6 +1201,12 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 
 		class = g_type_class_peek_parent(class);
+	}
+
+	/* Collect namespaces on the current node */
+	if (snippet_collect_namespaces) {
+		void *value = G_STRUCT_MEMBER_P(node, snippet_collect_namespaces->offset);
+		_lasso_node_collect_namespaces(value, xmlnode);
 	}
 
 	if (unknown_nodes && snippet_any) {
@@ -1425,6 +1469,11 @@ lasso_node_dispose(GObject *object)
 							} break;
 				case SNIPPET_SIGNATURE:
 							break; /* no real element here */
+				case SNIPPET_COLLECT_NAMESPACES:
+					if (*value) {
+						g_hash_table_destroy(*value);
+					}
+					break;
 				default:
 							fprintf(stderr, "%d\n", type);
 							g_assert_not_reached();
@@ -2204,6 +2253,8 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				break;
 			case SNIPPET_SIGNATURE:
 				lasso_node_add_signature_template(node, xmlnode, snippet);
+				break;
+			case SNIPPET_COLLECT_NAMESPACES:
 				break;
 			case SNIPPET_INTEGER:
 			case SNIPPET_BOOLEAN:
