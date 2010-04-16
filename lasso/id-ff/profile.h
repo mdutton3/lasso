@@ -110,6 +110,7 @@ typedef enum {
 /**
  * LassoProfileSignatureVerifyHint:
  * @LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE: let Lasso decide what to do.
+ * @LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE: always check signatures.
  * @LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE: check signatures but do not stop protocol handling
  * on failures. The result of signature checking is still available in
  * #LassoProfile.signature_status
@@ -119,7 +120,8 @@ typedef enum {
  */
 typedef enum {
 	LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE = 0,
-	LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE = 1
+	LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE = 1,
+	LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST
 } LassoProfileSignatureVerifyHint;
 
 /**

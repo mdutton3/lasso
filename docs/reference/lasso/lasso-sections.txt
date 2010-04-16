@@ -72,6 +72,8 @@ LASSO_NAME_REGISTRATION_GET_CLASS
 <TITLE>LassoProfile</TITLE>
 LassoProfile
 LassoRequestType
+LassoProfileSignatureHint
+LassoProfileSignatureVerifyHint
 lasso_profile_get_request_type_from_soap_msg
 lasso_profile_set_soap_fault_response
 lasso_profile_is_liberty_query

@@ -1004,6 +1004,8 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 			break;
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
 			break;
+		default:
+			g_assert(0);
 	}
 	return 0;
 }
@@ -1225,6 +1227,8 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 				break;
 			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
 				break;
+			default:
+				g_assert(0);
 		}
 		lasso_extract_node_or_fail(subject, assertion->Subject, SAML2_SUBJECT,
 				LASSO_PROFILE_ERROR_MISSING_SUBJECT);

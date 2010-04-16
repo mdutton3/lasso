@@ -94,7 +94,7 @@ START_TEST(test07_metadata_role_descriptors)
 	int i = 0;
 
 	check_not_null(provider);
-	for (i = LASSO_PROVIDER_ROLE_ANY+1; i < LASSO_PROVIDER_ROLE_LAST; i++) {
+	for (i = 1; i < LASSO_PROVIDER_ROLE_LAST; i *= 2) {
 		l = lasso_provider_get_metadata_keys_for_role(provider, i);
 		if (i == LASSO_PROVIDER_ROLE_IDP) {
 			check_equals(g_list_length(l), 10);

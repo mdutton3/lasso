@@ -495,8 +495,8 @@ lasso_profile_set_artifact_message(LassoProfile *profile, const char *message)
  * Return the #LassoServer linked to this profile object. A profile object should always contains
  * one. It allows to find metadatas of other providers and to know our own metadatas.
  *
- * Return value: (transfer none): a #LassoServer or NULL if profile is not a #LassoProfile or no #LassoServer object
- * was setup at the creation of this profile.
+ * Return value: (transfer none): a #LassoServer or NULL if profile is not a #LassoProfile or no
+ * #LassoServer object was setup at the creation of this profile.
  */
 LassoServer*
 lasso_profile_get_server(LassoProfile *profile)
@@ -524,10 +524,12 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Response", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoProfile, response), NULL, NULL, NULL},
 	{ "NameIdentifier", SNIPPET_NODE_IN_CHILD,
 		G_STRUCT_OFFSET(LassoProfile, nameIdentifier), NULL, NULL, NULL},
-	{ "RemoteProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, remote_providerID), NULL, NULL, NULL},
+	{ "RemoteProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, remote_providerID),
+		NULL, NULL, NULL},
 	{ "MsgUrl", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_url), NULL, NULL, NULL},
 	{ "MsgBody", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_body), NULL, NULL, NULL},
-	{ "MsgRelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_relayState), NULL, NULL, NULL},
+	{ "MsgRelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_relayState), NULL,
+		NULL, NULL},
 	{ "HttpRequestMethod", SNIPPET_CONTENT | SNIPPET_INTEGER,
 		G_STRUCT_OFFSET(LassoProfile, http_request_method), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
@@ -621,8 +623,15 @@ lasso_profile_set_signature_hint(LassoProfile *profile, LassoProfileSignatureHin
 LassoProfileSignatureHint
 lasso_profile_get_signature_hint(LassoProfile *profile)
 {
+	LassoProfileSignatureVerifyHint signature_verify_hint;
 	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
 		return LASSO_PROFILE_SIGNATURE_HINT_MAYBE;
+	signature_verify_hint = profile->private_data->signature_verify_hint;
+	if (signature_verify_hint >= LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST) {
+		message(G_LOG_LEVEL_WARNING, "%u is an invalid signature verify hint",
+				signature_verify_hint);
+		return LASSO_PROFILE_SIGNATURE_HINT_MAYBE;
+	}
 	return profile->private_data->signature_hint;
 }
 
@@ -632,14 +641,20 @@ lasso_profile_get_signature_hint(LassoProfile *profile)
  * @signature_verify_hint: whether next received message signatures should be checked or not (or let
  * Lasso choose from implicit information).
  *
- * By default each profile will choose to sign or not its messages, this method allow to force or
+ * By default each profile will choose to verify or not its messages, this method allow to force or
  * forbid the signature of messages, on a per transaction basis.
  */
 void
-lasso_profile_set_signature_verify_hint(LassoProfile *profile, LassoProfileSignatureVerifyHint signature_verify_hint)
+lasso_profile_set_signature_verify_hint(LassoProfile *profile,
+		LassoProfileSignatureVerifyHint signature_verify_hint)
 {
 	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
 		return;
+	if (signature_verify_hint >= LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST) {
+		message(G_LOG_LEVEL_WARNING, "%i is an invalid argument for " __FUNCTION__,
+				signature_verify_hint);
+		return;
+	}
 	profile->private_data->signature_verify_hint = signature_verify_hint;
 }
 

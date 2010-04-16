@@ -363,6 +363,9 @@ lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char 
 			break;
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
 			break;
+		default:
+			g_assert(0);
+			break;
 	}
 
 	lasso_assign_string(profile->private_data->artifact,
@@ -472,11 +475,14 @@ lasso_saml20_profile_set_session_from_dump_decrypt(
 		lasso_release_gobject(assertion->Subject->EncryptedID);
 		} else { /* decrypt */
 			int rc;
-			rc = lasso_saml2_encrypted_element_decrypt(assertion->Subject->EncryptedID, lasso_server_get_encryption_private_key(profile->server), (LassoNode**) &assertion->Subject->NameID);
+			rc = lasso_saml2_encrypted_element_decrypt(assertion->Subject->EncryptedID,
+					lasso_server_get_encryption_private_key(profile->server),
+					(LassoNode**) &assertion->Subject->NameID);
 			if (rc == 0) {
 				lasso_release_gobject(assertion->Subject->EncryptedID);
 			} else {
-				message(G_LOG_LEVEL_WARNING, "Could not decrypt EncrypteID from assertion in session dump: %s", lasso_strerror(rc));
+				message(G_LOG_LEVEL_WARNING, "Could not decrypt EncrypteID from"
+						" assertion in session dump: %s", lasso_strerror(rc));
 			}
 		}
 	}
@@ -678,6 +684,8 @@ lasso_saml20_profile_process_soap_request(LassoProfile *profile,
 			break;
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
 			break;
+		default:
+			g_assert(0);
 	}
 
 cleanup:
@@ -997,8 +1005,8 @@ lasso_saml20_profile_validate_request(LassoProfile *profile, gboolean needs_iden
 	lasso_saml20_profile_init_response(profile, status_response,
 			LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
 
-	if (profile->signature_status) {
-		message(G_LOG_LEVEL_WARNING, "Request signature is invalid");
+	if (lasso_profile_get_signature_verify_hint(profile) == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE &&
+			profile->signature_status) {
 		lasso_saml20_profile_set_response_status(profile,
 				LASSO_SAML2_STATUS_CODE_REQUESTER,
 				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
@@ -1256,6 +1264,7 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 	LassoSamlp2StatusCode *status_code1 = NULL;
 	LassoMessageFormat format;
 	gboolean missing_issuer = FALSE;
+	LassoProfileSignatureVerifyHint signature_verify_hint;
 
 	xmlDoc *doc = NULL;
 	xmlNode *content = NULL;
@@ -1263,6 +1272,7 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 	lasso_bad_param(PROFILE, profile);
 	lasso_bad_param(SAMLP2_STATUS_RESPONSE, status_response);
 
+	signature_verify_hint = lasso_profile_get_signature_verify_hint(profile);
 	/* reset signature_status */
 	profile->signature_status = 0;
 	format = lasso_node_init_from_message_with_format((LassoNode*)status_response,
@@ -1293,31 +1303,25 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 			LASSO_PROFILE_ERROR_MISSING_SERVER);
 	if (_lasso_saml20_is_valid_issuer(response_abstract->Issuer)) {
 		lasso_assign_string(profile->remote_providerID, response_abstract->Issuer->content);
+		remote_provider = lasso_server_get_provider(server, profile->remote_providerID);
 	} else {
-		/* no issuer ? use implicit provider id */
 		missing_issuer = TRUE;
 	}
 
-	remote_provider = lasso_server_get_provider(server, profile->remote_providerID);
-	goto_cleanup_if_fail_with_rc(remote_provider != NULL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-
-	/* verify the signature at the message level */
-	if (content && doc && format != LASSO_MESSAGE_FORMAT_QUERY) {
-		profile->signature_status =
-			lasso_provider_verify_saml_signature(remote_provider, content, doc);
-	} else if (format == LASSO_MESSAGE_FORMAT_QUERY) {
-		profile->signature_status =
-			lasso_provider_verify_query_signature(remote_provider, response_msg);
+	if (remote_provider) {
+		/* verify the signature at the message level */
+		if (content && doc && format != LASSO_MESSAGE_FORMAT_QUERY) {
+			profile->signature_status =
+				lasso_provider_verify_saml_signature(remote_provider, content, doc);
+		} else if (format == LASSO_MESSAGE_FORMAT_QUERY) {
+			profile->signature_status =
+				lasso_provider_verify_query_signature(remote_provider, response_msg);
+		} else {
+			profile->signature_status = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
+		}
 	} else {
-		profile->signature_status = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
-	}
-	/* propagate signature status ? */
-	switch (lasso_profile_get_signature_verify_hint(profile)) {
-		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
-			rc = profile->signature_status;
-			break;
-		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
-			break;
+		rc = LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
+		profile->signature_status = LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 	}
 
 	/* verify status code */
@@ -1337,7 +1341,8 @@ cleanup:
 	if (rc) {
 		return rc;
 	}
-	if (profile->signature_status) {
+	if ((signature_verify_hint == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE) &&
+			profile->signature_status) {
 		return LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
 	}
 	if (missing_issuer) {
@@ -1389,6 +1394,9 @@ lasso_saml20_profile_process_soap_response(LassoProfile *profile,
 			rc = profile->signature_status;
 			break;
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+			break;
+		default:
+			g_assert(0);
 			break;
 	}
 
