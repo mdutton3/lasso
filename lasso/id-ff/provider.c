@@ -27,10 +27,10 @@
  * @short_description: Service or identity provider
  *
  * <para>The #LassoProvider object holds metadata about a provider. Metadata are sorted into descriptors,
- * each descriptor being assigned a role. We refer you to <CiteTitle>Liberty Metadata Description
+ * each descriptor being assigned a role. We refer you to <citetitle>Liberty Metadata Description
  * and Discovery
-Specification </CiteTitle> and <CiteTitle>Metadata for the OASIS Security Assertion Markup Language
-(SAML) V2.0</CiteTitle>.</para>
+Specification </citetitle> and <citetitle>Metadata for the OASIS Security Assertion Markup Language
+(SAML) V2.0</citetitle>.</para>
 
 <para>Roles are represented by the enumeration #LassoProviderRole, you can access descriptors
 content using lasso_provider_get_metadata_list_by_role() and lasso_provider_get_metadata_by_role().
@@ -233,8 +233,8 @@ lasso_provider_get_metadata_one_for_role(LassoProvider *provider, LassoProviderR
  *
  * Extracts the element @name from the provider metadata descriptor.
  *
- * Return value:(transfer full)(allow-none): the element value, NULL if the element was not found.  This
- *      string must be freed by the caller.
+ * Return value:(transfer full)(allow-none): the element value, NULL if the element was not found.
+ * This string must be freed by the caller.
  **/
 gchar*
 lasso_provider_get_metadata_one(LassoProvider *provider, const char *name)

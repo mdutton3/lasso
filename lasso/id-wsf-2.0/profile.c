@@ -435,7 +435,7 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 		}
 		if (! name_qualifier || g_strcmp0(name_qualifier, issuer->ProviderID) != 0)
 			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_ASSERTION);
-		/** There is two cases for the NameID of the security assertion:
+		/* There is two cases for the NameID of the security assertion:
 		 * - we are the IdP and the Wsp, so the NameQualifier is us and the SPNameQualifier is the
 		 *   Sender
 		 * - we are a simple Wsp, so the NameQualifier is an IdP we know and the

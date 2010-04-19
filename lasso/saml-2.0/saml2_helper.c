@@ -714,7 +714,7 @@ lasso_saml2_assertion_get_in_response_to(LassoSaml2Assertion *assertion)
 
 /**
  * lasso_saml2_encrypted_element_server_decrypt:
- * @encrypted_element:
+ * @encrypted_element: a #LassoSaml2EncryptedElement object
  * @server: a #LassoServer object
  * @decrypted_node:(out): an output arg for a #LassoNode
  *

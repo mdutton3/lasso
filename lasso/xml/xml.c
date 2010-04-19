@@ -1770,7 +1770,7 @@ prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 	return prefix;
 }
 
-/**
+/*
  * _type_name_from_href_and_nodename:
  * @href: the href part of a QName
  * @nodename: the name part of a QName

@@ -169,7 +169,7 @@ cleanup:
 	lasso_release_string(response_name);
 }
 
-/**
+/*
  * Apply algorithm for find a default assertion consumer when no declared assertion consumer has the
  * isDefault attribute */
 static gboolean

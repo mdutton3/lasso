@@ -741,7 +741,7 @@ cleanup:
  * <listitem><para>
  * #LASSO_LOGIN_ERROR_ASSERTION_REPLAY if the assertion has already been used.
  * </para></listitem>
- * <itemizedlist>
+ * </itemizedlist>
  **/
 gint
 lasso_login_accept_sso(LassoLogin *login)
@@ -1023,7 +1023,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
  * #LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
  * </para></listitem>
  * <listitem><para>
- * #LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if not remote provider ID was setup&nbps;- it usually
+ * #LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if not remote provider ID was setup&160;- it usually
  * means that lasso_login_init_request() was not called before,
  * </para></listitem>
  * <listitem><para>
@@ -1036,9 +1036,9 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
  * </para></listitem>
  * <listitem><para>
  * #LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED if the building of the query part of the redirect URL
- * or of the body of the POST content failed&nbsp;- it only happens with the #LASSO_HTTP_METHOD_REDIRECT,
+ * or of the body of the POST content failed&160;- it only happens with the #LASSO_HTTP_METHOD_REDIRECT,
  * #LASSO_HTTP_METHOD_POST, #LASSO_HTTP_METHOD_ARTIFACT_GET and
- * #LASSO_HTTP_METHOD_ARTIFACT_POST bindings&nbsp;-,
+ * #LASSO_HTTP_METHOD_ARTIFACT_POST bindings&160;-,
  * </para></listitem>
  * <listitem><para>
  * #LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL if the metadata of the remote provider does not contain

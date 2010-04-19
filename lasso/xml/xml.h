@@ -106,7 +106,9 @@ typedef struct _LassoNodeClass LassoNodeClass;
 typedef struct _LassoNodeClassData LassoNodeClassData;
 
 /**
- * _LassoNode:
+ * LassoNode:
+ *
+ * Base type for all XML contents, or for object using serialization to XML.
  **/
 struct _LassoNode {
 	GObject parent;

@@ -93,7 +93,6 @@ lasso_profile_get_signature_hint
 lasso_profile_set_signature_verify_hint
 lasso_profile_get_signature_verify_hint
 lasso_profile_sso_role_with
-LassoProfileSignatureHint
 <SUBSECTION Standard>
 LASSO_PROFILE
 LASSO_IS_PROFILE
@@ -1890,7 +1889,6 @@ LASSO_LIB_LOGOUT_REQUEST_GET_CLASS
 <FILE>soap_binding_ext_credentials_context</FILE>
 <TITLE>LassoSoapBindingExtCredentialsContext</TITLE>
 LassoSoapBindingExtCredentialsContext
-lasso_soap_binding_ext_credentials_context_new
 <SUBSECTION Standard>
 LASSO_SOAP_BINDING_EXT_CREDENTIALS_CONTEXT
 LASSO_IS_SOAP_BINDING_EXT_CREDENTIALS_CONTEXT
@@ -2179,7 +2177,6 @@ LASSO_LIB_AUTHN_REQUEST_GET_CLASS
 <FILE>disco_authenticate_session_context</FILE>
 <TITLE>LassoDiscoAuthenticateSessionContext</TITLE>
 LassoDiscoAuthenticateSessionContext
-lasso_disco_authenticate_session_context_new
 <SUBSECTION Standard>
 LASSO_DISCO_AUTHENTICATE_SESSION_CONTEXT
 LASSO_IS_DISCO_AUTHENTICATE_SESSION_CONTEXT
@@ -2239,7 +2236,6 @@ LASSO_IS_REDIRECT_REQUEST_GET_CLASS
 <FILE>soap_binding_ext_credential</FILE>
 <TITLE>LassoSoapBindingExtCredential</TITLE>
 LassoSoapBindingExtCredential
-lasso_soap_binding_ext_credential_new
 <SUBSECTION Standard>
 LASSO_SOAP_BINDING_EXT_CREDENTIAL
 LASSO_IS_SOAP_BINDING_EXT_CREDENTIAL
@@ -2561,7 +2557,6 @@ LASSO_IS_INTERACTION_REQUEST_GET_CLASS
 <FILE>soap_binding_ext_service_instance_update</FILE>
 <TITLE>LassoSoapBindingExtServiceInstanceUpdate</TITLE>
 LassoSoapBindingExtServiceInstanceUpdate
-lasso_soap_binding_ext_service_instance_update_new
 <SUBSECTION Standard>
 LASSO_SOAP_BINDING_EXT_SERVICE_INSTANCE_UPDATE
 LASSO_IS_SOAP_BINDING_EXT_SERVICE_INSTANCE_UPDATE
@@ -6135,4 +6130,3 @@ lasso_soap_envelope_sb2_get_redirect_request_url
 lasso_soap_envelope_sb2_get_target_identity_header
 lasso_soap_envelope_get_sb2_user_interaction_header
 </SECTION>
-
