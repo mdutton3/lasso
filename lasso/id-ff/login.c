@@ -62,7 +62,7 @@
  * <example>
  * <title>Service Provider Login URL</title>
  * <programlisting>
- * #LassoLogin *login;
+ * LassoLogin *login;
  * int rc; // hold return codes
  *
  * login = lasso_login_new(server);
@@ -75,18 +75,18 @@
  * // customize AuthnRequest
  * // protocolProfile is the protocolProfile of the provider http://identity-provider-id/
  * if (protocolProfile == LASSO_LIBERTY_1_2) {
- *         #LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
+ *         LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
  *         request->NameIDPolicy = strdup(LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
  *         request->ForceAuthn = TRUE;
  *         request->IsPassive = FALSE;
  *         // tell the IdP how to return the response
  *         request->ProtocolProfile = strdup(LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART);
  * } else if (protocolProfile == LASSO_SAML_2_0) {
- *         #LassoSamlp2AuthnRequest *request = #LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
+ *         LassoSamlp2AuthnRequest *request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
  *         if (request->NameIDPolicy->Format) {
  *                 g_free(request->NameIDPolicy->Format);
  *         }
- *         request->NameIDPolicy->Format = g_strdup(#LASSO_NAME_IDENTIFIER_FORMAT_PERSISTENT);
+ *         request->NameIDPolicy->Format = g_strdup(LASSO_NAME_IDENTIFIER_FORMAT_PERSISTENT);
  *         request->NameIDPolicy->AllowCreate = 1;
  *         request->ForceAuthn = TRUE;
  *         request->IsPassive = FALSE;
@@ -95,18 +95,18 @@
  *                  g_free(request->ProtocolBinding);
  *         }
  *         // here we expect an artifact response, it could be post, redirect or PAOS.
- *         request->ProtocolBinding = g_strdup(#LASSO_SAML2_METADATA_BINDING_ARTIFACT);
+ *         request->ProtocolBinding = g_strdup(LASSO_SAML2_METADATA_BINDING_ARTIFACT);
    }
  * // Lasso will choose whether to sign the request by looking at the IdP
  * // metadatas and at our metadatas, but you can always force him to sign or to
  * // not sign using the method lasso_profile_set_signature_hint() on the
- * // #LassoLogin object.
+ * // LassoLogin object.
  *
  * rc = lasso_login_build_authn_request_msg(login);
  * if (rc != 0) {
       .... // handle errors
-      // could be that the requested binding (POST, Redirect, etc..) is not supported (#LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE)
-      // or that we could not sign the request (#LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED).
+      // could be that the requested binding (POST, Redirect, etc..) is not supported (LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE)
+      // or that we could not sign the request (LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED).
  * }
  *
  * // redirect user to identity provider
