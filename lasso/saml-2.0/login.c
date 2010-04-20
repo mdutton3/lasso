@@ -624,62 +624,49 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 		profile->identity = lasso_identity_new();
 	}
 
-	name_id_policy = LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy;
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+	if (! LASSO_IS_PROVIDER(remote_provider)) {
+		goto_cleanup_with_rc (LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER);
+	}
+
+	if (! LASSO_IS_SAMLP2_AUTHN_REQUEST(profile->request)) {
+		goto_cleanup_with_rc(critical_error(LASSO_PROFILE_ERROR_INVALID_REQUEST));
+	}
+
+	name_id_policy = ((LassoSamlp2AuthnRequest*)profile->request)->NameIDPolicy;
+
 	if (name_id_policy) {
 		name_id_policy_format = name_id_policy->Format;
-	} else {
-		name_id_policy_format = LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT;
+	}
+
+	if (! name_id_policy_format) {
+		name_id_policy_format = lasso_provider_get_default_name_id_format(remote_provider);
 	}
 
 	lasso_assign_string(login->nameIDPolicy, name_id_policy_format);
 
-	if (name_id_policy_format && g_strcmp0(name_id_policy_format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
-		goto_cleanup_with_rc (0)
-	}
-
-	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-	if (! LASSO_IS_PROVIDER(remote_provider)) {
-		goto_cleanup_with_rc (LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND)
-	}
-	name_id_sp_name_qualifier = lasso_provider_get_sp_name_qualifier(remote_provider);
-	if (name_id_sp_name_qualifier == NULL) {
-		goto_cleanup_with_rc (LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND)
-	}
-
-	/* search a federation in the identity */
-	federation = g_hash_table_lookup(profile->identity->federations, name_id_sp_name_qualifier);
-	if (name_id_policy == NULL || name_id_policy->AllowCreate == FALSE) {
-		if (LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy == NULL) {
-			/* it tried to get a federation, it failed, this is not
-			 * a problem */
-			goto_cleanup_with_rc (0)
-		}
-		/* a federation MUST exist */
-		if (federation == NULL) {
-			goto_cleanup_with_rc (LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND)
-		}
-	}
-
-	if (federation == NULL &&
-			LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy == NULL) {
-		/* it didn't find a federation, and name id policy was not
-		 * specified, don't create a federation */
-		goto_cleanup_with_rc (0)
-	}
-
-	if (federation && LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy == NULL) {
-		lasso_assign_new_gobject(LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy,
-				LASSO_SAMLP2_NAME_ID_POLICY(lasso_samlp2_name_id_policy_new()));
-		lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy->Format,
-			LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
-	}
-
 	if (lasso_saml20_login_must_ask_for_consent_private(login) && !is_consent_obtained) {
 		goto_cleanup_with_rc (LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED)
 	}
+	if (g_strcmp0(name_id_policy_format,
+				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) != 0) {
+		/* non persistent case, TRANSIENT is handled by lasso_login_build_assertion() and
+		 * other format are the sole responsibility of the caller */
+		goto_cleanup_with_rc (0)
+	}
 
-	if (federation == NULL) {
+	/* PERSISTENT case, try to federation or find an existing federation */
+	name_id_sp_name_qualifier = lasso_provider_get_sp_name_qualifier(remote_provider);
+	if (name_id_sp_name_qualifier == NULL) {
+		goto_cleanup_with_rc (LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER);
+	}
+
+	/* search a federation in the identity */
+	federation = lasso_identity_get_federation(profile->identity, name_id_sp_name_qualifier);
+	if (! federation && ( ! name_id_policy || name_id_policy->AllowCreate == FALSE)) {
+		goto_cleanup_with_rc (LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND)
+	}
+	if (! federation && name_id_policy && name_id_policy->AllowCreate) {
 		federation = lasso_federation_new(name_id_sp_name_qualifier);
 		lasso_saml20_federation_build_local_name_identifier(federation,
 				LASSO_PROVIDER(profile->server)->ProviderID,
