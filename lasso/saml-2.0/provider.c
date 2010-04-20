@@ -73,6 +73,25 @@ binding_uri_to_identifier(const char *uri)
 	return NULL;
 }
 
+static const char*
+identifier_to_binding_uri(const char *identifier)
+{
+	if (strcmp(identifier, "SOAP") == 0) {
+		return LASSO_SAML2_METADATA_BINDING_SOAP;
+	} else if (strcmp(identifier, "HTTP-Redirect") == 0) {
+		return LASSO_SAML2_METADATA_BINDING_REDIRECT;
+	} else if (strcmp(identifier, "HTTP-POST") == 0) {
+		return LASSO_SAML2_METADATA_BINDING_POST;
+	} else if (strcmp(identifier, "HTTP-Artifact") == 0) {
+		return LASSO_SAML2_METADATA_BINDING_ARTIFACT;
+	} else if (strcmp(identifier, "PAOS") == 0) {
+		return LASSO_SAML2_METADATA_BINDING_PAOS;
+	} else if (strcmp(identifier, "URI") == 0) {
+		return LASSO_SAML2_METADATA_BINDING_URI;
+	}
+	return NULL;
+}
+
 static gboolean
 checkSaml2MdNode(xmlNode *t, char *name)
 {
@@ -492,12 +511,53 @@ lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider
 	return NULL;
 }
 
+#define ACS_KEY "sp " LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE
+
 static void
 add_assertion_consumer_url_to_list(gchar *key, G_GNUC_UNUSED gpointer value, GList **list)
 {
-	if (strncmp(key, "sp AssertionConsumerService", 24) == 0) {
+	if (strncmp(key, ACS_KEY, sizeof(ACS_KEY)-1) == 0) {
 		lasso_list_add_new_string(*list, key);
 	}
+}
+
+struct HelperBindingByUrl {
+	const char *binding;
+	const char *url;
+};
+
+void
+helper_binding_by_url(char *key, GList *value, struct HelperBindingByUrl *data)
+{
+	if (strncmp(key, ACS_KEY, sizeof(ACS_KEY)-1) != 0) {
+		return;
+	}
+
+	if (data->binding == NULL && g_list_find_custom(value, data->url, (GCompareFunc)g_strcmp0) != NULL) {
+		char *end;
+		// URL was found for the first time
+		key += sizeof(ACS_KEY);
+		end = strchr(key, ' ');
+		if (end) {
+			key = g_strndup(key, (ptrdiff_t)(end-key));
+			data->binding = identifier_to_binding_uri(key);
+			g_free(key);
+		} else {
+			data->binding = identifier_to_binding_uri(key);
+		}
+	}
+
+}
+
+const gchar*
+lasso_saml20_provider_get_assertion_consumer_service_binding_by_url(LassoProvider *provider, const char *url)
+{
+	struct HelperBindingByUrl _helper_binding_by_url = { .binding = NULL, .url = url };
+
+	g_hash_table_foreach(provider->private_data->Descriptors, (GHFunc)helper_binding_by_url,
+			&_helper_binding_by_url);
+
+	return _helper_binding_by_url.binding;
 }
 
 gchar*
