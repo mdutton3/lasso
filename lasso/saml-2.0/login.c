@@ -60,6 +60,8 @@ static gboolean lasso_saml20_login_must_ask_for_consent_private(LassoLogin *logi
 static gint lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login);
 static char* lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 		LassoProvider *remote_provider);
+static gboolean _lasso_login_must_verify_signature(LassoProfile *profile);
+static gboolean _lasso_login_must_verify_authn_request_signature(LassoProfile *profile);
 
 /* No need to check type of arguments, it has been done in lasso_login_* methods */
 
@@ -166,9 +168,52 @@ _lasso_login_must_sign(LassoProfile *profile)
 			return TRUE;
 		case LASSO_PROFILE_SIGNATURE_HINT_FORBID:
 			return FALSE;
-		default:
-			return TRUE;
 	}
+	g_assert(0);
+	return TRUE;
+}
+
+static gboolean
+_lasso_login_must_verify_authn_request_signature(LassoProfile *profile) {
+	LassoProvider *remote_provider;
+
+	remote_provider = lasso_server_get_provider(profile->server,
+			profile->remote_providerID);
+
+	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+			return want_authn_request_signed(&profile->server->parent) ||
+				authn_request_signed(remote_provider);
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+			return FALSE;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
+			return TRUE;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST:
+			break;
+	}
+	g_assert(0);
+	return TRUE;
+}
+
+static gboolean
+_lasso_login_must_verify_signature(LassoProfile *profile) {
+	LassoProvider *remote_provider;
+
+	remote_provider = lasso_server_get_provider(profile->server,
+			profile->remote_providerID);
+
+	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+			return lasso_flag_verify_signature;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+			return FALSE;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
+			return TRUE;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST:
+			break;
+	}
+	g_assert(0);
+	return TRUE;
 }
 
 gint
