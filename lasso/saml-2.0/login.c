@@ -60,7 +60,7 @@ static gboolean lasso_saml20_login_must_ask_for_consent_private(LassoLogin *logi
 static gint lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login);
 static char* lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 		LassoProvider *remote_provider);
-static gboolean _lasso_login_must_verify_signature(LassoProfile *profile);
+static gboolean _lasso_login_must_verify_signature(LassoProfile *profile) G_GNUC_UNUSED;
 static gboolean _lasso_login_must_verify_authn_request_signature(LassoProfile *profile);
 
 /* No need to check type of arguments, it has been done in lasso_login_* methods */
@@ -264,7 +264,10 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoSamlp2StatusResponse *response = NULL;
 	LassoSamlp2AuthnRequest *authn_request = NULL;
-	gchar *protocol_binding = NULL;
+	LassoProvider *remote_provider = NULL;
+	const gchar *protocol_binding = NULL;
+	const char *status1 = LASSO_SAML2_STATUS_CODE_RESPONDER;
+	const char *status2 = NULL;
 	int rc = 0;
 
 	if (authn_request_msg == NULL) {
@@ -272,15 +275,47 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 			return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
 		}
 
-		/* AuthnRequest already set by .._init_idp_initiated_authn_request */
+		/* AuthnRequest already set by .._init_idp_initiated_authn_request, or from a
+		 * previously failed call to process_authn_request that we retry. */
 		request = profile->request;
 	} else {
 		request = lasso_samlp2_authn_request_new();
 		lasso_check_good_rc(lasso_saml20_profile_process_any_request(profile, request, authn_request_msg));
 	}
+	if (! LASSO_IS_SAMLP2_AUTHN_REQUEST(request)) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
+	}
 	authn_request = LASSO_SAMLP2_AUTHN_REQUEST(request);
+	/* intialize the response */
+	response = (LassoSamlp2StatusResponse*) lasso_samlp2_response_new();
+	lasso_assign_string(response->InResponseTo,
+			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
+	/* reset response binding */
+	login->protocolProfile = 0;
+
+	/* find the remote provider */
+	if (! authn_request->parent.Issuer || ! authn_request->parent.Issuer->content) {
+		rc = LASSO_PROFILE_ERROR_INVALID_REQUEST;
+		goto cleanup;
+	}
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+	if (remote_provider == NULL) {
+		rc = LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
+		goto cleanup;
+	}
+
+	/* all those attributes are mutually exclusive */
+	if (((authn_request->ProtocolBinding != NULL) ||
+			(authn_request->AssertionConsumerServiceURL != NULL)) &&
+			(authn_request->AssertionConsumerServiceIndex != -1))
+	{
+		rc = LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT;
+		goto cleanup;
+	}
+
+	/* try to find a protocol profile for sending the response */
 	protocol_binding = authn_request->ProtocolBinding;
-	if (protocol_binding == NULL) {
+	if (protocol_binding == NULL && authn_request->AssertionConsumerServiceIndex) {
 		/* protocol binding not set; so it will look into
 		 * AssertionConsumingServiceIndex
 		 * Also, if AssertionConsumerServiceIndex is not set in request,
@@ -288,13 +323,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		 * default assertion consumer...  (convenient)
 		 */
 		gchar *binding;
-		LassoProvider *remote_provider;
 		int service_index = authn_request->AssertionConsumerServiceIndex;
-
-		remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-		if (remote_provider == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
-		}
 
 		binding = lasso_saml20_provider_get_assertion_consumer_service_binding(
 				remote_provider, service_index);
@@ -313,34 +342,43 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 		}
 		lasso_release_string(binding);
-	} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_ARTIFACT) == 0) {
-		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
-	} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_POST) == 0) {
-		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
-	} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_SOAP) == 0) {
-		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
-	} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_REDIRECT) == 0) {
-		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT;
-	} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
-		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 	} else {
-		message(G_LOG_LEVEL_CRITICAL,
-				"unhandled protocol binding: %s", protocol_binding);
+		// If we just received an URL, try to find the corresponding protocol binding
+		if (protocol_binding == NULL && authn_request->AssertionConsumerServiceURL) {
+			protocol_binding =
+				lasso_saml20_provider_get_assertion_consumer_service_binding_by_url(
+						remote_provider,
+						authn_request->AssertionConsumerServiceURL);
+		}
+		if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_ARTIFACT) == 0) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
+		} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_POST) == 0) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
+		} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_SOAP) == 0) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
+		} else if (g_strcmp0(protocol_binding,
+					LASSO_SAML2_METADATA_BINDING_REDIRECT) == 0) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT;
+		} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
+		} else {
+			rc = LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
+			goto cleanup;
+		}
 	}
 
 
-	response = (LassoSamlp2StatusResponse*) lasso_samlp2_response_new();
-	lasso_assign_string(response->InResponseTo, LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-	if (profile->signature_status) {
-		lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
-					LASSO_SAML2_STATUS_CODE_REQUESTER,
-					LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE));
+	if (_lasso_login_must_verify_authn_request_signature(profile) && profile->signature_status)
+	{
+		status1 = LASSO_SAML2_STATUS_CODE_REQUESTER;
+		status2 = LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE;
 		rc = profile->signature_status;
 	} else {
-		lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
-					LASSO_SAML2_STATUS_CODE_SUCCESS, NULL));
+		status1 = LASSO_SAML2_STATUS_CODE_SUCCESS;
+		status2 = NULL;
 	}
-
+	lasso_saml20_profile_init_response(profile, response,
+				status1, status2);
 cleanup:
 	lasso_release_gobject(response);
 	return rc;
