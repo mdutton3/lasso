@@ -172,6 +172,9 @@
 #define lasso_release_sec_key(dest) \
 	lasso_release_full2(dest, xmlSecKeyDestroy, xmlSecKeyPtr)
 
+#define lasso_release_ghashtable(dest) \
+	lasso_release_full2(dest, g_hash_table_destroy, GHashTable*)
+
 /* Assignment and list appending */
 /*
  * lasso_assign_xxx macros ensure that you dot leak previous value of assigned things, they use
