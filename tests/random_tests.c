@@ -321,6 +321,7 @@ LlTxKnCrWAXftSm1rNtewTsF\n\
 	/* test reordering and semi-colon separator support */
 	fail_unless(lasso_saml2_query_verify_signature(query2, key) == 0, "Disordered signature was not validated");
 	fail_unless(lasso_saml2_query_verify_signature(query3, key) != 0, "Altered signature was validated");
+	xmlSecKeyDestroy(key);
 }
 END_TEST
 
