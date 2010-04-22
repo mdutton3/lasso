@@ -773,10 +773,12 @@ _lasso_node_new_custom_element()
 static void
 _lasso_node_free_custom_element(struct _CustomElement *custom_element)
 {
-	lasso_release_string(custom_element->prefix);
-	lasso_release_string(custom_element->href);
-	lasso_release_string(custom_element->nodename);
-	g_hash_table_destroy(custom_element->namespaces);
+	if (custom_element) {
+		lasso_release_string(custom_element->prefix);
+		lasso_release_string(custom_element->href);
+		lasso_release_string(custom_element->nodename);
+		lasso_release_ghashtable(custom_element->namespaces);
+	}
 	lasso_release(custom_element);
 }
 
