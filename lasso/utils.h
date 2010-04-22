@@ -247,6 +247,14 @@
 		dest = __tmp; \
 	}
 
+#define lasso_assign_list(dest, src) \
+	{ \
+		GList **__tmp = &(dest); \
+		if (*__tmp) \
+			g_list_free(*__tmp); \
+		*__tmp = g_list_copy((src)); \
+	}
+
 #define lasso_assign_new_list_of_gobjects(dest, src) \
 	{ \
 		GList *__tmp = (src); \
