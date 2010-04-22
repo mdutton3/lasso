@@ -760,10 +760,7 @@ dispose(GObject *object)
 	}
 	provider->private_data->dispose_has_run = TRUE;
 
-	if (provider->private_data->Descriptors) {
-		g_hash_table_destroy(provider->private_data->Descriptors);
-	}
-	provider->private_data->Descriptors = NULL;
+	lasso_release_ghashtable(provider->private_data->Descriptors);
 
 	if (provider->private_data->organization) {
 		xmlFreeNode(provider->private_data->organization);

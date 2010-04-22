@@ -626,24 +626,17 @@ dispose(GObject *object)
 {
 	LassoSession *session = LASSO_SESSION(object);
 
-	if (session->private_data->dispose_has_run == TRUE)
+	if (! session->private_data || session->private_data->dispose_has_run == TRUE)
 		return;
 	session->private_data->dispose_has_run = TRUE;
 
-	g_hash_table_destroy(session->assertions);
-	session->assertions = NULL;
-
-	g_hash_table_destroy(session->private_data->status);
-	session->private_data->status = NULL;
-
+	lasso_release_ghashtable(session->assertions);
+	lasso_release_ghashtable(session->private_data->status);
 	lasso_release_list_of_strings(session->private_data->providerIDs);
-
-	g_hash_table_destroy(session->private_data->assertions_by_id);
-	session->private_data->assertions_by_id = NULL;
+	lasso_release_ghashtable(session->private_data->assertions_by_id);
 
 #ifdef LASSO_WSF_ENABLED
-	g_hash_table_destroy(session->private_data->eprs);
-	session->private_data->eprs = NULL;
+	lasso_release_ghashtable(session->private_data->eprs);
 #endif
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);

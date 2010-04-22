@@ -23,8 +23,9 @@
  */
 
 #include <glib.h>
-#include "registry-private.h"
+#include "./registry-private.h"
 #include "./errors.h"
+#include "./utils.h"
 
 
 /**
@@ -183,10 +184,8 @@ void lasso_registry_destroy(LassoRegistry *registry)
 {
 	g_return_if_fail(registry);
 
-	g_hash_table_destroy(registry->direct_mapping);
-	registry->direct_mapping = NULL;
-	g_hash_table_destroy(registry->functional_mapping);
-	registry->functional_mapping = NULL;
+	lasso_release_ghashtable(registry->direct_mapping);
+	lasso_release_ghashtable(registry->functional_mapping);
 	lasso_release(registry);
 }
 

@@ -449,7 +449,7 @@ dispose(GObject *object)
 {
 	LassoServer *server = LASSO_SERVER(object);
 
-	if (server->private_data->dispose_has_run == TRUE) {
+	if (! server->private_data || server->private_data->dispose_has_run == TRUE) {
 		return;
 	}
 	server->private_data->dispose_has_run = TRUE;
@@ -458,17 +458,11 @@ dispose(GObject *object)
 
 	lasso_release_list_of_gobjects(server->private_data->svc_metadatas);
 
-	if (server->services) {
-		g_hash_table_destroy(server->services);
-		server->services = NULL;
-	}
+	lasso_release_ghashtable(server->services);
 
 	/* free allocated memory for hash tables */
 	lasso_mem_debug("LassoServer", "Providers", server->providers);
-	if (server->providers) {
-		g_hash_table_destroy(server->providers);
-		server->providers = NULL;
-	}
+	lasso_release_ghashtable(server->providers);
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(server));
 }

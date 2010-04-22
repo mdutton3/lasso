@@ -173,7 +173,7 @@
 	lasso_release_full2(dest, xmlSecKeyDestroy, xmlSecKeyPtr)
 
 #define lasso_release_ghashtable(dest) \
-	lasso_release_full2(dest, g_hash_table_destroy, GHashTable*)
+	lasso_release_full(dest, g_hash_table_destroy)
 
 #define lasso_release_gstring(dest, b) \
 	{ \

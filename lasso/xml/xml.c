@@ -1497,7 +1497,7 @@ lasso_node_dispose(GObject *object)
 				case SNIPPET_ATTRIBUTE: {
 								if (snippet->type & SNIPPET_ANY) {
 									if (*value) {
-										g_hash_table_destroy(*value);
+										lasso_release_ghashtable(*value);
 									}
 								} else {
 									lasso_release_string(*(char**)value);
@@ -1507,7 +1507,7 @@ lasso_node_dispose(GObject *object)
 							break; /* no real element here */
 				case SNIPPET_COLLECT_NAMESPACES:
 					if (*value) {
-						g_hash_table_destroy(*value);
+						lasso_release_ghashtable(*value);
 					}
 					break;
 				default:

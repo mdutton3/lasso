@@ -83,6 +83,7 @@ lasso_idwsf2_data_service_clean_private_data(LassoIdWsf2DataService *service)
 	lasso_release_string(pdata->service_type_prefix);
 	lasso_release_list_of_gobjects(pdata->query_items);
 	lasso_release_list_of_gobjects(pdata->modify_items);
+	lasso_release_ghashtable(pdata->namespaces);
 }
 
 
@@ -977,13 +978,11 @@ dispose(GObject *object)
 	LassoIdWsf2DataService *service = LASSO_IDWSF2_DATA_SERVICE(object);
 	LassoIdWsf2DataServicePrivate *pdata = service->private_data;
 
-	if (pdata->dispose_has_run == TRUE)
+	if (!pdata || pdata->dispose_has_run == TRUE)
 		return;
 	pdata->dispose_has_run = TRUE;
 
 	lasso_idwsf2_data_service_clean_private_data(service);
-	g_hash_table_destroy(pdata->namespaces);
-	pdata->namespaces = NULL;
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
