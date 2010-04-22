@@ -98,7 +98,7 @@ lasso_safe_prefix_string(const gchar *str, gsize length)
 		break;
 	}
 	ret = output->str;
-	g_string_free(output, FALSE);
+	lasso_release_gstring(output, FALSE);
 	return ret;
 }
 

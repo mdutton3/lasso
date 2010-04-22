@@ -393,7 +393,7 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 				goto cleanup;
 			}
 			certificates++;
-			g_string_free(cert, TRUE);
+			lasso_release_gstring(cert, TRUE);
 			cert = NULL;
 		} else if (cert != NULL && line != NULL && line[0] != '\0') {
 			g_string_append(cert, line);
@@ -408,7 +408,7 @@ cleanup:
 		g_io_channel_unref(gioc);
 	}
 	if (cert)
-		g_string_free(cert, TRUE);
+		lasso_release_gstring(cert, TRUE);
 	if (certificates == 0)
 		lasso_release_key_manager(keys_mngr);
 	lasso_release_string(line);

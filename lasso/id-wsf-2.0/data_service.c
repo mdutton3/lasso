@@ -948,7 +948,7 @@ lasso_idwsf2_data_service_get_query_item_result_content(LassoIdWsf2DataService *
 		xmlFree(content);
 	}
 	result = gstr->str;
-	g_string_free(gstr, FALSE);
+	lasso_release_gstring(gstr, FALSE);
 	return result;
 }
 

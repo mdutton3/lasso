@@ -2491,7 +2491,7 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 			value = g_list_next(value);
 		}
 		if (result->len == 0) {
-			g_string_free(result, TRUE);
+			lasso_release_gstring(result, TRUE);
 			return NULL;
 		}
 		return g_string_free(result, FALSE);
@@ -2506,7 +2506,7 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 			value = value->next;
 		}
 		if (result->len == 0) {
-			g_string_free(result, TRUE);
+			lasso_release_gstring(result, TRUE);
 			return NULL;
 		}
 		return g_string_free(result, FALSE);

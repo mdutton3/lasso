@@ -22,6 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "../utils.h"
 #include "private.h"
 #include "samlp_status.h"
 
@@ -72,7 +73,7 @@ build_query(LassoNode *node)
 	}
 
 	t = s->str;
-	g_string_free(s, FALSE);
+	lasso_release_gstring(s, FALSE);
 	return t;
 }
 
