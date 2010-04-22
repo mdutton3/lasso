@@ -383,6 +383,10 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 	profile = LASSO_PROFILE(logout);
 	lasso_profile_clean_msg_info(profile);
 
+	if (! profile->private_data || ! logout->private_data) {
+		return LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT;
+	}
+
 	IF_SAML2(profile) {
 		return lasso_saml20_logout_build_response_msg(logout);
 	}
