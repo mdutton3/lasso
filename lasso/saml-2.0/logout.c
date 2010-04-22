@@ -327,6 +327,11 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 	/* SP initiated logout */
 	if (logout->initial_remote_providerID) {
 		LassoProvider* remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+
+		if (! remote_provider) {
+			return LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
+		}
+
 		if (remote_provider->role & LASSO_PROVIDER_ROLE_SP) {
 			lasso_transfer_string(profile->remote_providerID,
 					logout->initial_remote_providerID);
