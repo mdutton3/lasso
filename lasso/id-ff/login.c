@@ -87,6 +87,8 @@
  *                 g_free(request->NameIDPolicy->Format);
  *         }
  *         request->NameIDPolicy->Format = g_strdup(LASSO_NAME_IDENTIFIER_FORMAT_PERSISTENT);
+ *         // Allow creation of new federation
+ *         // 
  *         request->NameIDPolicy->AllowCreate = 1;
  *         request->ForceAuthn = TRUE;
  *         request->IsPassive = FALSE;
@@ -204,6 +206,38 @@
  * </programlisting>
  * </example>
  *
+ * <p>The implement an IdP you must create a single sign-on service endpoint, the needed APIs for
+ * this are lasso_login_process_authn_request_msg(), lasso_login_validate_request_msg(),
+ * lasso_login_build_assertion(), lasso_login_build_authn_response_msg() and
+ * lasso_login_build_artifact_msg(). You will have to chose between
+ * lasso_login_build_authn_response_msg() and lasso_login_build_artifact_msg() depending on the
+ * requested protocol for the response by the service provider</p>
+ *
+ * <example>
+ * <title>Identity provider single sign-on service</title>
+ * <programlisting>
+ * LassoLogin *login;
+ * char *request_method = getenv("REQUEST_METHOD");
+ * char *artifact_msg = NULL, *lares = NULL, *lareq = NULL;
+ * char *name_identifier;
+ * lassoHttpMethod method;
+ * int rc = 0;
+ *
+ * login = lasso_login_new(server);
+ * if (strcmp(request_method, 'GET')) { // AuthnRequest send with the HTTP-Redirect binding
+ *     //
+ *     lasso_profile_set_signature_verify_hint(LASSO_PROFILE(login),
+ *             LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE);
+ *     rc = lasso_process_authn_request_msg(login, getenv("QUERY_STRING"));
+ *     if (rc != 0) {
+ *         // handle errors
+ *     }
+ *
+ *
+ * } else {
+ *
+ * </programlisting>
+ * </example>
  *
  */
 
