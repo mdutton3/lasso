@@ -1137,7 +1137,7 @@ dispose(GObject *object)
 static void
 finalize(GObject *object)
 {
-	g_free(((LassoDataService*)object)->private_data);
+	lasso_release(((LassoDataService*)object)->private_data);
 
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }

@@ -1064,7 +1064,7 @@ static void
 finalize(GObject *object)
 {
 	LassoWsfProfile *profile = LASSO_WSF_PROFILE(object);
-	g_free(profile->private_data);
+	lasso_release(profile->private_data);
 	profile->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }

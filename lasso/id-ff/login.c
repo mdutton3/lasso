@@ -84,7 +84,7 @@
  * } else if (protocolProfile == LASSO_SAML_2_0) {
  *         LassoSamlp2AuthnRequest *request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
  *         if (request->NameIDPolicy->Format) {
- *                 g_free(request->NameIDPolicy->Format);
+ *                 lasso_release(request->NameIDPolicy->Format);
  *         }
  *         request->NameIDPolicy->Format = g_strdup(LASSO_NAME_IDENTIFIER_FORMAT_PERSISTENT);
  *         // Allow creation of new federation
@@ -94,7 +94,7 @@
  *         request->IsPassive = FALSE;
  *         // tell the IdP how to return the response
  *         if (request->ProtocolBinding) {
- *                  g_free(request->ProtocolBinding);
+ *                  lasso_release(request->ProtocolBinding);
  *         }
  *         // here we expect an artifact response, it could be post, redirect or PAOS.
  *         request->ProtocolBinding = g_strdup(LASSO_SAML2_METADATA_BINDING_ARTIFACT);

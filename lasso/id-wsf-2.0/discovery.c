@@ -1372,7 +1372,7 @@ static void
 finalize(GObject *object)
 {
 	LassoIdWsf2Discovery *discovery = LASSO_IDWSF2_DISCOVERY(object);
-	g_free(discovery->private_data);
+	lasso_release(discovery->private_data);
 	discovery->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }

@@ -121,7 +121,7 @@ lasso_provider_get_assertion_consumer_service_url(LassoProvider *provider, const
 		service_id = provider->private_data->default_assertion_consumer;
 	name = g_strdup_printf("AssertionConsumerServiceURL %s", service_id);
 	assertion_consumer_service_url = lasso_provider_get_metadata_one_for_role(provider, LASSO_PROVIDER_ROLE_SP, name);
-	g_free(name);
+	lasso_release(name);
 
 	return assertion_consumer_service_url;
 }
@@ -198,7 +198,7 @@ lasso_provider_get_metadata_list_for_role(const LassoProvider *provider, LassoPr
 	g_return_val_if_fail(role_prefix, NULL);
 	symbol = g_strdup_printf("%s %s", role_prefix, name);
 	l = g_hash_table_lookup(descriptor, symbol);
-	g_free(symbol);
+	lasso_release(symbol);
 
 	return l;
 }
@@ -317,7 +317,7 @@ lasso_provider_get_first_http_method(LassoProvider *provider,
 		}
 		t1 = g_list_next(t1);
 	}
-	g_free(protocol_profile_prefix);
+	lasso_release(protocol_profile_prefix);
 
 	if (found) {
 		if (g_str_has_suffix(t2->data, "http"))
@@ -378,17 +378,17 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
 
 	if (lasso_provider_has_protocol_profile(provider,
 				protocol_type, protocol_profile) == FALSE) {
-		g_free(protocol_profile);
+		lasso_release(protocol_profile);
 		return FALSE;
 	}
 
 	if (lasso_provider_has_protocol_profile(remote_provider,
 				protocol_type, protocol_profile) == FALSE) {
-		g_free(protocol_profile);
+		lasso_release(protocol_profile);
 		return FALSE;
 	}
 
-	g_free(protocol_profile);
+	lasso_release(protocol_profile);
 
 	return TRUE;
 }
@@ -745,7 +745,7 @@ lasso_provider_get_cache_duration(LassoProvider *provider)
 /*****************************************************************************/
 
 static void
-free_list_strings(G_GNUC_UNUSED gchar *key, GList *list, G_GNUC_UNUSED gpointer data)
+free_list_strings(GList *list)
 {
 	g_list_foreach(list, (GFunc)g_free, NULL);
 	g_list_free(list);
@@ -774,7 +774,7 @@ dispose(GObject *object)
 	}
 
 	if (provider->private_data->default_assertion_consumer) {
-		g_free(provider->private_data->default_assertion_consumer);
+		lasso_release(provider->private_data->default_assertion_consumer);
 		provider->private_data->default_assertion_consumer = NULL;
 	}
 
@@ -794,7 +794,7 @@ dispose(GObject *object)
 	}
 
 	if (provider->private_data->encryption_public_key_str) {
-		g_free(provider->private_data->encryption_public_key_str);
+		lasso_release(provider->private_data->encryption_public_key_str);
 		provider->private_data->encryption_public_key_str = NULL;
 	}
 
@@ -803,9 +803,9 @@ dispose(GObject *object)
 		provider->private_data->encryption_public_key = NULL;
 	}
 
-	g_free(provider->private_data->affiliation_id);
+	lasso_release(provider->private_data->affiliation_id);
 	provider->private_data->affiliation_id = NULL;
-	g_free(provider->private_data->affiliation_owner_id);
+	lasso_release(provider->private_data->affiliation_owner_id);
 	provider->private_data->affiliation_owner_id = NULL;
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
@@ -816,7 +816,7 @@ finalize(GObject *object)
 {
 	LassoProvider *provider = LASSO_PROVIDER(object);
 
-	g_free(provider->private_data);
+	lasso_release(provider->private_data);
 	provider->private_data = NULL;
 
 	G_OBJECT_CLASS(parent_class)->finalize(G_OBJECT(provider));
@@ -851,7 +851,7 @@ instance_init(LassoProvider *provider)
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->Descriptors = g_hash_table_new_full(
-			g_str_hash, g_str_equal, g_free, NULL);
+			g_str_hash, g_str_equal, g_free, (GFreeFunc)free_list_strings);
 	provider->private_data->attributes = NULL;
 }
 

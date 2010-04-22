@@ -330,13 +330,13 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 				profile->server->signature_method,
 				profile->server->private_key);
 		if (query == NULL) {
-			g_free(url);
+			lasso_release(url);
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 		/* build the msg_url */
 		lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
-		g_free(url);
-		g_free(query);
+		lasso_release(url);
+		lasso_release(query);
 		lasso_release_string(profile->msg_body);
 		return 0;
 	}
@@ -557,7 +557,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 
 	/* get the remote provider id
 	   If remote_providerID is NULL, then get the first remote provider id in session */
-	g_free(profile->remote_providerID);
+	lasso_release(profile->remote_providerID);
 	if (remote_providerID == NULL) {
 		lasso_assign_new_string(profile->remote_providerID, lasso_session_get_provider_index(session, 0));
 	} else {
@@ -1294,7 +1294,7 @@ static void
 finalize(GObject *object)
 {
 	LassoLogout *logout = LASSO_LOGOUT(object);
-	g_free(logout->private_data);
+	lasso_release(logout->private_data);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 

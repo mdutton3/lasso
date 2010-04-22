@@ -30,6 +30,7 @@
  * provider and a service provider. Instance of this class are usually never accessed directly.
  **/
 
+#include "../utils.h"
 #include "../xml/private.h"
 #include "federation.h"
 #include "provider.h"
@@ -208,7 +209,7 @@ static void
 finalize(GObject *object)
 {
 	LassoFederation *federation = LASSO_FEDERATION(object);
-	g_free(federation->private_data);
+	lasso_release(federation->private_data);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 

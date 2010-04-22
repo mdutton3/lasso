@@ -409,7 +409,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 			gchar *url;
 			gchar *query = g_strdup_printf("RelayState=%s", profile->msg_relayState);
 			url = lasso_concat_url_query(profile->msg_url, query);
-			g_free(query);
+			lasso_release(query);
 			lasso_assign_new_string(profile->msg_url, url);
 		}
 	}

@@ -22,6 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "../utils.h"
 #include "./authentication.h"
 #include "../xml/private.h"
 #include "../xml/sa_sasl_request.h"
@@ -153,7 +154,7 @@ lasso_authentication_client_start(LassoAuthentication *authentication)
 
 	/* mechusing is th resulting best mech to use, so copy it in SASLRequest element */
 	if (mechusing != NULL) {
-		g_free(request->mechanism);
+		lasso_release(request->mechanism);
 		request->mechanism = g_strdup(mechusing);
 	}
 
@@ -531,13 +532,13 @@ lasso_authentication_server_start(LassoAuthentication *authentication)
 		}
 	}
 	if (chosen == NULL) {
-		g_free(response->Status->code);
+		lasso_release(response->Status->code);
 		response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
 		return res;
 	}
 
 	if (nbmech > 1 && request->Data != NULL) {
-		g_free(response->Status->code);
+		lasso_release(response->Status->code);
 		response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
 		return res;
 	}
@@ -560,7 +561,7 @@ lasso_authentication_server_start(LassoAuthentication *authentication)
 
 	/* set status code in SASLResponse message if not ok */
 	if (res != SASL_OK) {
-		g_free(response->Status->code);
+		lasso_release(response->Status->code);
 
 		/* continue, set Data in response */
 		if (res == SASL_CONTINUE) {
@@ -602,7 +603,7 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 
 	/* If mechanism is NULL, thene client wants to abort authentication exchange */
 	if (g_str_equal(request->mechanism, "") == TRUE) {
-		g_free(response->Status->code);
+		lasso_release(response->Status->code);
 		response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
 
 		return 0;
@@ -621,7 +622,7 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 			&outlen);
 
 	if (res != SASL_OK) {
-		g_free(response->Status->code);
+		lasso_release(response->Status->code);
 
 		if (res == SASL_CONTINUE) {
 			/* authentication exchange must continue */
@@ -694,7 +695,7 @@ static void
 finalize(GObject *object)
 {
 	LassoAuthentication *authentication = LASSO_AUTHENTICATION(object);
-	g_free(authentication->private_data);
+	lasso_release(authentication->private_data);
 	authentication->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }

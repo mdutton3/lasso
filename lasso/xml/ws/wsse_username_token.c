@@ -243,7 +243,7 @@ _lasso_wsse_username_token_compute_digest(LassoWsseUsernameToken *wsse_username_
 	memcpy(buffer + nonce_len, wsse_username_token->Created, created_len);
 	memcpy(buffer + nonce_len + created_len, password, password_len);
 	result = g_base64_encode((guchar*)buffer, nonce_len + created_len + password_len);
-	g_free(buffer);
+	lasso_release(buffer);
 
 	return result;
 }
@@ -297,7 +297,7 @@ lasso_wsse_username_token_check_password(LassoWsseUsernameToken *wsse_username_t
 			if (strcmp(private->Password, digest) != 0) {
 				rc = LASSO_WSSEC_ERROR_BAD_PASSWORD;
 			}
-			g_free(digest);
+			lasso_release(digest);
 			break;
 		case LASSO_WSSE_USERNAME_TOKEN_PASSWORD_TYPE_TEXT:
 			if (strcmp(private->Password, password) != 0) {
@@ -360,12 +360,12 @@ lasso_wsse_username_token_derive_key(LassoWsseUsernameToken *wsse_username_token
 		}
 		iteration--;
 	}
-	g_free(buffer);
+	lasso_release(buffer);
 	result = g_malloc(20);
 	memcpy(result, hash1, 20);
 
 exit:
-	g_free(salt);
+	lasso_release(salt);
 	return result;
 
 }

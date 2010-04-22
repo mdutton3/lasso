@@ -187,7 +187,7 @@ void lasso_registry_destroy(LassoRegistry *registry)
 	registry->direct_mapping = NULL;
 	g_hash_table_destroy(registry->functional_mapping);
 	registry->functional_mapping = NULL;
-	g_free(registry);
+	lasso_release(registry);
 }
 
 static LassoRegistryTranslationFunction lasso_registry_get_translation_function(GHashTable *functional_mappings, GQuark from_ns_quark, GQuark to_ns_quark)

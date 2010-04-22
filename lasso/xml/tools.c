@@ -520,10 +520,10 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 	}
 
 done:
-	g_free(new_query);
+	lasso_release(new_query);
 	xmlFree(digest);
 	BIO_free(bio);
-	g_free(sigret);
+	lasso_release(sigret);
 	xmlFree(b64_sigret);
 	xmlFree(e_b64_sigret);
 
@@ -1074,14 +1074,14 @@ lasso_node_build_deflated_query(LassoNode *node)
 		}
 	}
 	if (rc != Z_OK) {
-		g_free(ret);
+		lasso_release(ret);
 		message(G_LOG_LEVEL_CRITICAL, "Failed to deflate");
 		return NULL;
 	}
 
 	b64_ret = xmlSecBase64Encode(ret, stream.total_out, 0);
 	xmlOutputBufferClose(buf);
-	g_free(ret);
+	lasso_release(ret);
 
 	ret = xmlURIEscapeStr(b64_ret, NULL);
 	rret = g_strdup((char*)ret);
@@ -1417,7 +1417,7 @@ lasso_xml_parse_message(const char *message, LassoMessageFormat constraint, xmlD
 			if (rc >= 0) {
 				b64 = TRUE;
 			} else {
-				g_free(msg);
+				lasso_release(msg);
 				msg = (char*)message;
 			}
 		}
@@ -1451,7 +1451,7 @@ lasso_xml_parse_message(const char *message, LassoMessageFormat constraint, xmlD
 					goto cleanup;
 				}
 				if (b64) {
-					g_free(msg);
+					lasso_release(msg);
 					rc = LASSO_MESSAGE_FORMAT_BASE64;
 					goto cleanup;
 				}
@@ -1760,7 +1760,7 @@ lasso_xml_parse_file(const char *filepath)
 		xmlDocPtr ret;
 
 		ret = lasso_xml_parse_memory(file_content, file_length);
-		g_free(file_content);
+		lasso_release(file_content);
 		return ret;
 	} else {
 		message(G_LOG_LEVEL_CRITICAL, "Cannot read XML file %s: %s", filepath, error->message);

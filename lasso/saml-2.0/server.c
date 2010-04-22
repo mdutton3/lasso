@@ -22,6 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "../utils.h"
 #include "../xml/private.h"
 #include "serverprivate.h"
 #include "../id-ff/serverprivate.h"
@@ -70,7 +71,7 @@ lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node)
 				message(G_LOG_LEVEL_WARNING,
 						"Provider %s in more than one affiliation",
 						provider->ProviderID);
-				g_free(provider->private_data->affiliation_owner_id);
+				lasso_release_string(provider->private_data->affiliation_owner_id);
 			}
 			provider->private_data->affiliation_owner_id = g_strdup(owner_id);
 			provider->private_data->affiliation_id = g_strdup(affiliation_id);

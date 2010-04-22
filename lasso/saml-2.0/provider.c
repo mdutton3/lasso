@@ -464,7 +464,7 @@ lasso_saml20_provider_check_assertion_consumer_service_url(LassoProvider *provid
 				candidate = NULL;
 		}
 	}
-	g_free(name);
+	lasso_release(name);
 	g_list_free(r);
 
 	if (candidate)
@@ -541,7 +541,7 @@ helper_binding_by_url(char *key, GList *value, struct HelperBindingByUrl *data)
 		if (end) {
 			key = g_strndup(key, (ptrdiff_t)(end-key));
 			data->binding = identifier_to_binding_uri(key);
-			g_free(key);
+			lasso_release(key);
 		} else {
 			data->binding = identifier_to_binding_uri(key);
 		}

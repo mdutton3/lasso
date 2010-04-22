@@ -274,9 +274,8 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 	GList *element;
 	int length;
 
-	if (session == NULL) {
-		return NULL;
-	}
+	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
+	g_return_val_if_fail(session->private_data, NULL);
 
 	length = g_hash_table_size(session->assertions);
 
@@ -661,7 +660,7 @@ finalize(GObject *object)
 {
 	LassoSession *session = LASSO_SESSION(object);
 
-	g_free(session->private_data);
+	lasso_release(session->private_data);
 	session->private_data = NULL;
 
 	G_OBJECT_CLASS(parent_class)->finalize(object);

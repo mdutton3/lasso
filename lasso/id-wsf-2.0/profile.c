@@ -109,7 +109,7 @@ _add_fault_for_rc(LassoIdWsf2Profile *profile, int rc)
 	if (rc) {
 		code = g_strdup_printf("LASSO_ERROR_%i", rc);
 		fault = lasso_soap_fault_new_full(code, lasso_strerror(rc));
-		g_free(code);
+		lasso_release(code);
 		lasso_release_list_of_gobjects(_get_soap_envelope_response(profile)->Header->Other);
 		lasso_soap_envelope_add_to_body(_get_soap_envelope_response(profile), (LassoNode*)fault);
 	}
@@ -556,7 +556,7 @@ lasso_idwsf2_profile_redirect_user_for_interaction(
 		url = g_strconcat(redirect_url, "?transactionID=", messageID->content, NULL);
 	}
 	redirect_request = lasso_idwsf2_sb2_redirect_request_new_full(url);
-	g_free(url);
+	lasso_release(url);
 	lasso_check_good_rc(lasso_idwsf2_profile_init_soap_fault_response(profile,
 				LASSO_SOAP_FAULT_CODE_SERVER, "Server Error", &(GList){ .data =
 				redirect_request, .next = NULL, .prev = NULL } ));

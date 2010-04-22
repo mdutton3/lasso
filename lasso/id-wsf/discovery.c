@@ -425,7 +425,7 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 
 	if (new_entry_ids) {
 		response->newEntryIDs = g_strdup(new_entry_ids);
-		g_free(new_entry_ids);
+		lasso_release(new_entry_ids);
 	}
 
 	if (res != 0) {
@@ -1247,7 +1247,7 @@ static void
 finalize(GObject *object)
 {
 	LassoDiscovery *discovery = LASSO_DISCOVERY(object);
-	g_free(discovery->private_data);
+	lasso_release(discovery->private_data);
 	discovery->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }

@@ -21,7 +21,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+#include "../utils.h"
 #include "private.h"
 #include "lib_federation_termination_notification.h"
 #include <libxml/uri.h>
@@ -98,7 +98,7 @@ build_query(LassoNode *node)
 		t = xmlURIEscapeStr((xmlChar*)request->RelayState, NULL);
 		s = g_strdup_printf((char*)t, "%s&RelayState=%s", query, request->RelayState);
 		xmlFree(t);
-		g_free(query);
+		lasso_release(query);
 		query = s;
 	}
 

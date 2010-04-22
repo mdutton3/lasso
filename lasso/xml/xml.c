@@ -620,7 +620,7 @@ lasso_node_init_from_query(LassoNode *node, const char *query)
 		xmlFree(query_fields[i]);
 		query_fields[i] = NULL;
 	}
-	g_free(query_fields);
+	lasso_release(query_fields);
 	return rc;
 }
 
@@ -1570,9 +1570,9 @@ base_class_finalize(LassoNodeClass *class)
 			xmlFreeNs(data->ns);
 		}
 		if (data->node_name) {
-			g_free(data->node_name);
+			lasso_release(data->node_name);
 		}
-		g_free(class->node_data);
+		lasso_release(class->node_data);
 		class->node_data = NULL;
 	}
 }
@@ -1988,7 +1988,7 @@ lasso_node_init_from_message_with_format(LassoNode *node, const char *message, L
 			if (rc >= 0) {
 				b64 = TRUE;
 			} else {
-				g_free(msg);
+				lasso_release(msg);
 				msg = (char*)message;
 			}
 		}
@@ -2024,7 +2024,7 @@ lasso_node_init_from_message_with_format(LassoNode *node, const char *message, L
 					goto cleanup;
 				}
 				if (b64) {
-					g_free(msg);
+					lasso_release(msg);
 					rc = LASSO_MESSAGE_FORMAT_BASE64;
 					goto cleanup;
 				}
@@ -2107,7 +2107,7 @@ void
 lasso_node_class_set_nodename(LassoNodeClass *klass, char *name)
 {
 	if (klass->node_data->node_name)
-		g_free(klass->node_data->node_name);
+		lasso_release(klass->node_data->node_name);
 	klass->node_data->node_name = g_strdup(name);
 }
 
@@ -2303,7 +2303,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				g_assert_not_reached();
 		}
 		if (snippet->type & SNIPPET_INTEGER)
-			g_free(str);
+			lasso_release(str);
 	}
 
 	if (snippet_any_attribute) {
@@ -2361,7 +2361,7 @@ void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 	uri = g_strdup_printf("#%s", id);
 	reference = xmlSecTmplSignatureAddReference(signature,
 			xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
-	g_free(uri);
+	lasso_release(uri);
 
 	/* add enveloped transform */
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
@@ -2591,7 +2591,7 @@ lasso_node_build_query_from_snippets(LassoNode *node)
 			if (s->len)
 				g_string_append(s, "&");
 			g_string_append(s, v);
-			g_free(v);
+			lasso_release(v);
 			continue;
 		}
 		if (v) {
@@ -2607,7 +2607,7 @@ lasso_node_build_query_from_snippets(LassoNode *node)
 			xmlFree(t);
 		}
 		if (v)
-			g_free(v);
+			lasso_release(v);
 	}
 
 	return g_string_free(s, FALSE);

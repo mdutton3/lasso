@@ -991,7 +991,7 @@ static void
 finalize(GObject *object)
 {
 	LassoIdWsf2DataService *service = LASSO_IDWSF2_DATA_SERVICE(object);
-	g_free(service->private_data);
+	lasso_release(service->private_data);
 	service->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }

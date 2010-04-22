@@ -479,16 +479,16 @@ finalize(GObject *object)
 	LassoServer *server = LASSO_SERVER(object);
 	int i = 0;
 
-	g_free(server->private_key);
+	lasso_release(server->private_key);
 	if (server->private_key_password) {
 		/* don't use memset() because it may be optimised away by
 		 * compiler (since the string is freed just after */
 		while (server->private_key_password[i])
 			server->private_key_password[i++] = 0;
-		g_free(server->private_key_password);
+		lasso_release(server->private_key_password);
 	}
-	g_free(server->certificate);
-	g_free(server->private_data);
+	lasso_release(server->certificate);
+	lasso_release(server->private_data);
 
 	G_OBJECT_CLASS(parent_class)->finalize(G_OBJECT(server));
 }

@@ -107,7 +107,7 @@ build_query(LassoNode *node)
 		return NULL;
 	}
 	ret = g_strdup_printf(LASSO_SAML2_FIELD_RESPONSE "=%s", deflated_message);
-	g_free(deflated_message);
+	lasso_release(deflated_message);
 	return ret;
 }
 

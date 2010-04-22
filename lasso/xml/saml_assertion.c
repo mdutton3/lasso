@@ -136,8 +136,8 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 							(xmlChar*)typename);
 				}
 			}
-			g_free(gtypename);
-			g_free(typename);
+			lasso_release(gtypename);
+			lasso_release(typename);
 		}
 
 		insure_namespace(t, ns);

@@ -92,7 +92,7 @@ static void
 finalize(GObject *object)
 {
 	LassoEcp *ecp = LASSO_ECP(object);
-	g_free(ecp->private_data);
+	lasso_release(ecp->private_data);
 	ecp->private_data = NULL;
 
 	G_OBJECT_CLASS(parent_class)->finalize(object);

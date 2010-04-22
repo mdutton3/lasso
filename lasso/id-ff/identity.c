@@ -279,7 +279,7 @@ static void
 finalize(GObject *object)
 {
 	LassoIdentity *identity = LASSO_IDENTITY(object);
-	g_free(identity->private_data);
+	lasso_release(identity->private_data);
 	identity->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
