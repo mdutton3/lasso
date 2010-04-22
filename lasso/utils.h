@@ -175,6 +175,15 @@
 #define lasso_release_ghashtable(dest) \
 	lasso_release_full2(dest, g_hash_table_destroy, GHashTable*)
 
+#define lasso_release_gstring(dest, b) \
+	{ \
+		GString **__tmp = &(dest); \
+		if (*__tmp) {\
+			g_string_free(*__tmp, (b)); \
+			*__tmp = NULL; \
+		} \
+	}
+
 /* Assignment and list appending */
 /*
  * lasso_assign_xxx macros ensure that you dot leak previous value of assigned things, they use
