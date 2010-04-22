@@ -326,29 +326,21 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 
 	/* SP initiated logout */
 	if (logout->initial_remote_providerID) {
-		LassoProvider* remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-
-		if (! remote_provider) {
-			return LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
-		}
-
-		if (remote_provider->role & LASSO_PROVIDER_ROLE_SP) {
-			lasso_transfer_string(profile->remote_providerID,
-					logout->initial_remote_providerID);
-			lasso_transfer_gobject(profile->request, logout->initial_request);
-			lasso_transfer_gobject(profile->response, logout->initial_response);
-			/* if some of the logout failed, set a partial logout status code */
-			if (logout->private_data->partial_logout) {
-				/* reset the partial logout status */
-				logout->private_data->partial_logout = FALSE;
-				lasso_saml20_profile_set_response_status(profile,
-						LASSO_SAML2_STATUS_CODE_SUCCESS,
-						LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT);
-			}
+		lasso_transfer_string(profile->remote_providerID,
+				logout->initial_remote_providerID);
+		lasso_transfer_gobject(profile->request, logout->initial_request);
+		lasso_transfer_gobject(profile->response, logout->initial_response);
+		/* if some of the logout failed, set a partial logout status code */
+		if (logout->private_data->partial_logout) {
+			/* reset the partial logout status */
+			logout->private_data->partial_logout = FALSE;
+			lasso_saml20_profile_set_response_status(profile,
+					LASSO_SAML2_STATUS_CODE_SUCCESS,
+					LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT);
 		}
 	}
 
-	if (profile->response == NULL) {
+	if (! LASSO_IS_SAMLP2_STATUS_RESPONSE(profile->response)) {
 		/* no response set here means request denied */
 		response = (LassoSamlp2StatusResponse*) lasso_samlp2_logout_response_new();
 		lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
