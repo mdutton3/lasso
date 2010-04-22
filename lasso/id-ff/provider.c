@@ -161,10 +161,12 @@ _lasso_provider_add_metadata_value_for_role(LassoProvider *provider, LassoProvid
 	g_return_if_fail (descriptor);
 	l = (GList*)lasso_provider_get_metadata_list_for_role(provider, role, name);
 	lasso_list_add_string(l, value);
-	role_prefix = role_to_prefix(role);
-	g_return_if_fail(role_prefix);
-	symbol = g_strdup_printf("%s %s", role_prefix, name);
-	g_hash_table_insert(descriptor, symbol, l);
+	if (! l->next) { /* first element added to this key */
+		role_prefix = role_to_prefix(role);
+		g_return_if_fail(role_prefix);
+		symbol = g_strdup_printf("%s %s", role_prefix, name);
+		g_hash_table_insert(descriptor, symbol, l);
+	}
 }
 
 /**
@@ -182,7 +184,7 @@ _lasso_provider_add_metadata_value_for_role(LassoProvider *provider, LassoProvid
 GList*
 lasso_provider_get_metadata_list_for_role(const LassoProvider *provider, LassoProviderRole role, const char *name)
 {
-	GList *l;
+	GList *l = NULL;
 	GHashTable *descriptor;
 	char *symbol;
 	const char *role_prefix;
