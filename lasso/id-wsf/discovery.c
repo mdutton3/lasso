@@ -1044,7 +1044,7 @@ lasso_discovery_get_resource_offering_auto(LassoDiscovery *discovery, const gcha
 	}
 
 cleanup:
-	g_list_free(assertions);
+	lasso_release_list(assertions);
 	return resource_offering;
 }
 

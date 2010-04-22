@@ -1358,7 +1358,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		xmlNewNs(xmlnode, ns->href, ns->prefix);
 		t = g_list_next(t);
 	}
-	g_list_free(list_ns);
+	lasso_release_list(list_ns);
 	/* first NS defined is the namespace of the element */
 	xmlSetNs(xmlnode, xmlnode->nsDef);
 
@@ -1408,7 +1408,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 				class->node_data->snippets, lasso_dump);
 		t = g_list_previous(t);
 	}
-	g_list_free(list_classes);
+	lasso_release_list(list_classes);
 
 	xmlCleanNs(xmlnode);
 

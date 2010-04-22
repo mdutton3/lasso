@@ -465,7 +465,7 @@ lasso_saml20_provider_check_assertion_consumer_service_url(LassoProvider *provid
 		}
 	}
 	lasso_release(name);
-	g_list_free(r);
+	lasso_release_list(r);
 
 	if (candidate)
 		return TRUE;

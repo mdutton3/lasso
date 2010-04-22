@@ -441,11 +441,6 @@ lasso_login_build_assertion(LassoLogin *login,
 		ss->Subject = LASSO_SAML_SUBJECT(lasso_saml_subject_new());
 		ss->Subject->NameIdentifier = g_object_ref(profile->nameIdentifier);
 		ss->Subject->SubjectConfirmation = lasso_saml_subject_confirmation_new();
-		if (ss->Subject->SubjectConfirmation->ConfirmationMethod) {
-			/* we know it will only have one element */
-			lasso_release_string(ss->Subject->SubjectConfirmation->ConfirmationMethod->data);
-			g_list_free(ss->Subject->SubjectConfirmation->ConfirmationMethod);
-		}
 		/* liberty-architecture-bindings-profiles-v1.1.pdf, page 24, line 729 */
 		lasso_list_add_string(ss->Subject->SubjectConfirmation->ConfirmationMethod,
 			LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01);
@@ -1877,7 +1872,7 @@ lasso_login_must_authenticate(LassoLogin *login)
 		matched = (profile->session != NULL && \
 				lasso_session_count_assertions(profile->session) > 0);
 	}
-	g_list_free(assertions);
+	lasso_release_list(assertions);
 
 	if (matched == FALSE && request->IsPassive == FALSE)
 		return TRUE;

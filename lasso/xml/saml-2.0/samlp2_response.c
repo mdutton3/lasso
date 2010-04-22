@@ -93,8 +93,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 
 	if (lasso_dump == FALSE) {
 		lasso_release_list_of_gobjects(response->EncryptedAssertion);
-		g_list_free(response->Assertion);
-		response->Assertion = Assertion_save;
+		lasso_assign_list(response->Assertion, Assertion_save);
 	}
 
 	return result;

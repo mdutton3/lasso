@@ -260,16 +260,11 @@ dispose(GObject *object)
 	if (identity->private_data->dispose_has_run == FALSE) {
 		identity->private_data->dispose_has_run = TRUE;
 #ifdef LASSO_WSF_ENABLED
-		if (identity->private_data->svcMDID != NULL) {
-			g_list_foreach(identity->private_data->svcMDID, (GFunc)g_free, NULL);
-			g_list_free(identity->private_data->svcMDID);
-			identity->private_data->svcMDID = NULL;
-		}
-		g_hash_table_destroy(identity->private_data->resource_offerings_map);
+		lasso_release_list_of_strings(identity->private_data->svcMDID);
+		lasso_release_ghashtable(identity->private_data->resource_offerings_map);
 #endif
 
-		g_hash_table_destroy(identity->federations);
-		identity->federations = NULL;
+		lasso_release_ghashtable(identity->federations);
 
 		G_OBJECT_CLASS(parent_class)->dispose(object);
 	}

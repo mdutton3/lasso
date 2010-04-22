@@ -254,8 +254,7 @@ lasso_session_get_status(LassoSession *session, const gchar *providerID)
 static void
 add_providerID(gchar *key, G_GNUC_UNUSED LassoLibAssertion *assertion, LassoSession *session)
 {
-	session->private_data->providerIDs = g_list_append(
-			session->private_data->providerIDs, key);
+	lasso_list_add_string(session->private_data->providerIDs, key);
 }
 
 /**
@@ -283,7 +282,7 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 		return NULL;
 
 	if (session->private_data->providerIDs == NULL) {
-		g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
+		lasso_session_init_provider_ids(session);
 	}
 
 	element = g_list_nth(session->private_data->providerIDs, index);
@@ -304,14 +303,10 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 void
 lasso_session_init_provider_ids(LassoSession *session)
 {
-	if (session == NULL) {
-		return;
-	}
+	g_return_if_fail(LASSO_IS_SESSION(session));
+	g_return_if_fail(session->private_data);
 
-	if (session->private_data->providerIDs) {
-		g_list_free(session->private_data->providerIDs);
-		session->private_data->providerIDs = NULL;
-	}
+	lasso_release_list_of_strings(session->private_data->providerIDs);
 	g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
 }
 
@@ -641,8 +636,7 @@ dispose(GObject *object)
 	g_hash_table_destroy(session->private_data->status);
 	session->private_data->status = NULL;
 
-	g_list_free(session->private_data->providerIDs);
-	session->private_data->providerIDs = NULL;
+	lasso_release_list_of_strings(session->private_data->providerIDs);
 
 	g_hash_table_destroy(session->private_data->assertions_by_id);
 	session->private_data->assertions_by_id = NULL;

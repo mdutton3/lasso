@@ -747,8 +747,7 @@ lasso_provider_get_cache_duration(LassoProvider *provider)
 static void
 free_list_strings(GList *list)
 {
-	g_list_foreach(list, (GFunc)g_free, NULL);
-	g_list_free(list);
+	lasso_release_list_of_strings(list);
 }
 
 static void
@@ -762,8 +761,6 @@ dispose(GObject *object)
 	provider->private_data->dispose_has_run = TRUE;
 
 	if (provider->private_data->Descriptors) {
-		g_hash_table_foreach(provider->private_data->Descriptors,
-				(GHFunc)free_list_strings, NULL);
 		g_hash_table_destroy(provider->private_data->Descriptors);
 	}
 	provider->private_data->Descriptors = NULL;

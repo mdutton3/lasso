@@ -476,7 +476,7 @@ lasso_saml20_login_must_authenticate(LassoLogin *login)
 				lasso_session_count_assertions(profile->session) > 0);
 	}
 	if (assertions) {
-		g_list_free(assertions);
+		lasso_release_list(assertions);
 	}
 	if (matched == FALSE && request->IsPassive == FALSE)
 		return TRUE;
@@ -1350,11 +1350,11 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 		ta = t->data;
 
 		if (g_strcmp0(ta->ID, assertion->ID) == 0) {
-			g_list_free(previous_assertions);
+			lasso_release_list(previous_assertions);
 			return LASSO_LOGIN_ERROR_ASSERTION_REPLAY;
 		}
 	}
-	g_list_free(previous_assertions);
+	lasso_release_list(previous_assertions);
 
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			LASSO_NODE(assertion));

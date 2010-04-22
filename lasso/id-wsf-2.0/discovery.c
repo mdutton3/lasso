@@ -899,7 +899,7 @@ lasso_idwsf2_discovery_match_request_service_and_metadata2(
 				break;
 			}
 		}
-		g_list_free(service_options);
+		lasso_release_list(service_options);
 		result = result && option_result;
 	}
 	if (result) {
