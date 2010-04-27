@@ -84,35 +84,23 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 
 	/* set the nameid */
 	lasso_assign_gobject(logout_request->NameID, profile->nameIdentifier);
+
 	/* Encrypt NameID */
 	if (lasso_provider_get_encryption_mode(remote_provider) == LASSO_ENCRYPTION_MODE_NAMEID) {
 		lasso_check_good_rc(lasso_saml20_profile_setup_encrypted_node(remote_provider,
 					(LassoNode**)&logout_request->NameID,
 					(LassoNode**)&logout_request->EncryptedID));
 	}
+
 	/* set the session index if one is found */
 	lasso_assign_string(logout_request->SessionIndex,
 			_lasso_saml2_assertion_get_session_index(assertion));
 
 cleanup:
-	/* special case: we suppose REDIRECT is the last resort method, so we force assertion
-	 * removal and create a possible response message with a second level status of PARTIAL. */
-	if (rc == LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE
-			&& http_method == LASSO_HTTP_METHOD_REDIRECT) {
-		lasso_session_remove_assertion(profile->session,
+	/* all is going well, remove the assertion */
+	if (rc == 0) {
+		lasso_session_remove_assertion(session,
 				profile->remote_providerID);
-		if (logout->initial_remote_providerID && logout->initial_request) {
-			LassoSamlp2StatusResponse *response;
-
-			logout->private_data->partial_logout = TRUE;
-			lasso_assign_string(profile->remote_providerID,
-					logout->initial_remote_providerID);
-			response = (LassoSamlp2StatusResponse*) lasso_samlp2_logout_response_new();
-			/* ignore return code */
-			lasso_saml20_profile_init_response(profile, response, LASSO_SAML2_STATUS_CODE_SUCCESS,
-					LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT);
-			lasso_release_gobject(response);
-		}
 	}
 	lasso_release_gobject(logout_request);
 	lasso_release_gobject(assertion_n);
