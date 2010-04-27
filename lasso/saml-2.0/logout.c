@@ -305,6 +305,34 @@ check_soap_support(G_GNUC_UNUSED gchar *key, LassoProvider *provider, LassoProfi
 	LASSO_LOGOUT(profile)->private_data->all_soap = FALSE;
 }
 
+
+/* If at IDP and if there is no more assertion, IDP has logged out every SPs, return the initial
+ * response to initial SP.  Caution: We can't use the test (remote_provider->role ==
+ * LASSO_PROVIDER_ROLE_SP) to know whether the server is acting as an IDP or a SP, because it can be
+ * a proxy. So we have to use the role of the initial remote provider instead.
+	 */
+static void
+lasso_saml20_logout_restore_initial_state(LassoLogout *logout) {
+	LassoProfile *profile = &logout->parent;
+
+	if (logout->initial_remote_providerID) {
+		lasso_transfer_string(profile->remote_providerID,
+				logout->initial_remote_providerID);
+		lasso_transfer_gobject(profile->request, logout->initial_request);
+		lasso_transfer_gobject(profile->response, logout->initial_response);
+		/* if some of the logout failed, set a partial logout status code */
+		if (logout->private_data->partial_logout ||
+				lasso_session_count_assertions(profile->session) > 0) {
+			/* reset the partial logout status */
+			logout->private_data->partial_logout = FALSE;
+			lasso_saml20_profile_set_response_status(profile,
+					LASSO_SAML2_STATUS_CODE_SUCCESS,
+					LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT);
+		}
+	}
+}
+
+
 int
 lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 {
@@ -313,20 +341,7 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 	int rc = 0;
 
 	/* SP initiated logout */
-	if (logout->initial_remote_providerID) {
-		lasso_transfer_string(profile->remote_providerID,
-				logout->initial_remote_providerID);
-		lasso_transfer_gobject(profile->request, logout->initial_request);
-		lasso_transfer_gobject(profile->response, logout->initial_response);
-		/* if some of the logout failed, set a partial logout status code */
-		if (logout->private_data->partial_logout) {
-			/* reset the partial logout status */
-			logout->private_data->partial_logout = FALSE;
-			lasso_saml20_profile_set_response_status(profile,
-					LASSO_SAML2_STATUS_CODE_SUCCESS,
-					LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT);
-		}
-	}
+	lasso_saml20_logout_restore_initial_state(logout);
 
 	if (! LASSO_IS_SAMLP2_STATUS_RESPONSE(profile->response)) {
 		/* no response set here means request denied */
@@ -354,79 +369,42 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 	LassoHttpMethod response_method;
 	LassoProvider *remote_provider = NULL;
 	LassoSamlp2StatusResponse *response = NULL;
-	char *status_code_value = NULL;
 	int rc = 0;
 
 	response = (LassoSamlp2StatusResponse*) lasso_samlp2_logout_response_new();
-	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile, response, &response_method, response_msg));
+	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile, response,
+				&response_method, response_msg));
 
-	remote_provider = lasso_server_get_provider(logout->parent.server, logout->parent.remote_providerID);
+	remote_provider = lasso_server_get_provider(logout->parent.server,
+			logout->parent.remote_providerID);
 	goto_cleanup_if_fail_with_rc(LASSO_IS_PROVIDER(remote_provider),
 			LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+cleanup:
+	/* Not Success find finer error */
+	while (rc == LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS) {
+		LassoSamlp2StatusCode *sub_status_code;
+		char *value;
 
-	status_code_value = response->Status->StatusCode->Value;
-	/* So we received an error... */
-	while (status_code_value && strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
-		/* If at SP, if the request method was a SOAP type, then
-		 * rebuild the request message with HTTP method */
-		/* XXX is this still what to do for SAML 2.0? */
 		logout->private_data->partial_logout = TRUE;
+		sub_status_code = response->Status->StatusCode->StatusCode;
+		if (! sub_status_code)
+			break;
 
-		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_RESPONDER) == 0) {
-			/* Responder -> look inside */
-			if (response->Status->StatusCode->StatusCode) {
-				status_code_value = response->Status->StatusCode->StatusCode->Value;
-			}
-			if (status_code_value == NULL) {
-				rc = LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
-				break;
-			}
-		}
-		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED) == 0) {
-			/* assertion no longer on IdP so removing it locally
-			 * too */
+		value = sub_status_code->Value;
+
+		if (g_strcmp0(value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED) == 0) {
 			rc = LASSO_LOGOUT_ERROR_REQUEST_DENIED;
 			break;
 		}
-		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
+		if (g_strcmp0(value, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
 			rc = LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
 			break;
 		}
-		rc = LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 		break;
 	}
-	/* if at the idp, we do not care about the return code, just remove the assertion */
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP || rc == 0) {
-		lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+	if (lasso_session_count_assertions(profile->session) == 0) {
+		lasso_saml20_logout_restore_initial_state(logout);
 	}
-
-	/* If at IDP and if there is no more assertion, IDP has logged out
-	 * every SPs, return the initial response to initial SP.  Caution: We
-	 * can't use the test (remote_provider->role == LASSO_PROVIDER_ROLE_SP)
-	 * to know whether the server is acting as an IDP or a SP, because it
-	 * can be a proxy. So we have to use the role of the initial remote
-	 * provider instead.
-	 */
-	if (logout->initial_remote_providerID &&
-			lasso_session_count_assertions(profile->session) == 0) {
-		remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-		if (remote_provider->role & LASSO_PROVIDER_ROLE_SP) {
-			lasso_transfer_string(profile->remote_providerID,
-					logout->initial_remote_providerID);
-			lasso_transfer_gobject(profile->request, logout->initial_request);
-			lasso_transfer_gobject(profile->response, logout->initial_response);
-			/* if some of the logout failed, set a partial logout status code */
-			if (logout->private_data->partial_logout) {
-				/* reset the partial logout status */
-				logout->private_data->partial_logout = FALSE;
-				lasso_saml20_profile_set_response_status(profile,
-						LASSO_SAML2_STATUS_CODE_SUCCESS,
-						LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT);
-			}
-		}
-	}
-
-cleanup:
 	lasso_release_gobject(response);
 	return rc;
 
