@@ -1320,6 +1320,7 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 	} else {
 		rc = LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 		profile->signature_status = LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
+		goto cleanup;
 	}
 
 	/* verify status code */
@@ -1327,12 +1328,19 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 			LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
 	lasso_extract_node_or_fail(status_code1, status->StatusCode, SAMLP2_STATUS_CODE,
 			LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
-	goto_cleanup_if_fail_with_rc (rc || status_code1->Value != NULL,
-		LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
+	if (g_strcmp0(status_code1->Value,
+				LASSO_SAML2_STATUS_CODE_SUCCESS) != 0)
+	{
+		LassoSamlp2StatusCode *status_code2 = status_code1->StatusCode;
+		rc = LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 
-	goto_cleanup_if_fail_with_rc ( rc || strcmp(status_code1->Value,
-				LASSO_SAML2_STATUS_CODE_SUCCESS) == 0,
-			LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS);
+		if (!status_code2)
+			goto cleanup;
+
+		if (!status_code2->Value)
+			goto cleanup;
+		/* FIXME: what to do with secondary status code ? */
+	}
 
 cleanup:
 	lasso_release_doc(doc);
