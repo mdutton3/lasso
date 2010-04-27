@@ -396,6 +396,7 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 		LassoProvider *remote_provider, LassoMdProtocolType protocol_type)
 {
 	LassoHttpMethod method = LASSO_HTTP_METHOD_NONE;
+	LassoProviderRole our_role = LASSO_PROVIDER_ROLE_SP;
 	int i;
 	const char *possible_bindings[] = {
 		"HTTP-POST",
@@ -412,6 +413,17 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 		LASSO_HTTP_METHOD_SOAP,
 		LASSO_HTTP_METHOD_PAOS
 	};
+
+	switch (remote_provider->role) {
+		case LASSO_PROVIDER_ROLE_IDP:
+			our_role = LASSO_PROVIDER_ROLE_SP;
+			break;
+		case LASSO_PROVIDER_ROLE_SP:
+			our_role = LASSO_PROVIDER_ROLE_IDP;
+			break;
+		default:
+			return LASSO_HTTP_METHOD_NONE;
+	}
 	for (i=0; possible_bindings[i] && method == LASSO_HTTP_METHOD_NONE; i++) {
 		char *s;
 		const GList *l1, *l2;
@@ -419,7 +431,7 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 		s = g_strdup_printf("%s %s",
 				profile_names[protocol_type],
 				possible_bindings[i]);
-		l1 = lasso_provider_get_metadata_list(provider, s);
+		l1 = lasso_provider_get_metadata_list_for_role(provider, our_role, s);
 		l2 = lasso_provider_get_metadata_list(remote_provider, s);
 		if (l1 && l2) {
 			method = method_bindings[i];
