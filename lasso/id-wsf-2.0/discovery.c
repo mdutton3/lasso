@@ -613,7 +613,7 @@ lasso_idwsf2_discovery_process_request_msg(LassoIdWsf2Discovery *discovery, cons
 	LassoIdWsf2Profile *idwsf2_profile;
 	GList *content;
 	GList **svc_md_ids = NULL, **metadatas = NULL, **service_types = NULL;
-	int rc;
+	int rc = 0;
 
 	lasso_bad_param(IDWSF2_DISCOVERY, discovery);
 	idwsf2_profile = &discovery->parent;
