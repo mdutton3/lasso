@@ -342,15 +342,15 @@ lasso_session_is_empty(LassoSession *session)
  *
  * Return the number of assertion currently recored in the session.
  *
- * Return value: a positive value or -1 if session is an invalid #LassoSession object, or -2 if the
- * number is unknown.
+ * Return value: a positive value or -1 if session is an invalid #LassoSession object.
  */
 gint
 lasso_session_count_assertions(LassoSession *session)
 {
 	GHashTable *hashtable;
 
-	lasso_return_val_if_invalid_param(SESSION, session, -1);
+	if (! LASSO_IS_SESSION(session))
+		return -1;
 	hashtable = session->assertions;
 
 	return hashtable ? g_hash_table_size(hashtable) : 0;
