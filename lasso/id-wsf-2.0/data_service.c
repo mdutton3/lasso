@@ -767,21 +767,23 @@ lasso_idwsf2_data_service_build_response_msg(LassoIdWsf2DataService *service)
 	int rc = 0;
 
 	lasso_bad_param(IDWSF2_DATA_SERVICE, service);
-	switch (lasso_idwsf2_data_service_get_request_type(service)) {
-		case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_QUERY:
-			goto_cleanup_if_fail_with_rc(
-					LASSO_IS_IDWSF2_DSTREF_QUERY_RESPONSE(
-						service->parent.parent.response),
-					LASSO_PROFILE_ERROR_INVALID_RESPONSE);
-			query_response = (LassoIdWsf2DstRefQueryResponse*)service->parent.parent.response;
-			datas = lasso_idwsf2_data_service_get_query_item_results(service);
-			lasso_assign_list_of_gobjects(query_response->Data, datas);
-			break;
-		case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_MODIFY:
-			goto_cleanup_with_rc(LASSO_ERROR_UNIMPLEMENTED);
-			break;
-		default:
-			break;
+	if (! LASSO_IS_SOAP_FAULT(service->parent.parent.response)) {
+		switch (lasso_idwsf2_data_service_get_request_type(service)) {
+			case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_QUERY:
+				goto_cleanup_if_fail_with_rc(
+						LASSO_IS_IDWSF2_DSTREF_QUERY_RESPONSE(
+							service->parent.parent.response),
+						LASSO_PROFILE_ERROR_INVALID_RESPONSE);
+				query_response = (LassoIdWsf2DstRefQueryResponse*)service->parent.parent.response;
+				datas = lasso_idwsf2_data_service_get_query_item_results(service);
+				lasso_assign_list_of_gobjects(query_response->Data, datas);
+				break;
+			case LASSO_IDWSF2_DATA_SERVICE_REQUEST_TYPE_MODIFY:
+				goto_cleanup_with_rc(LASSO_ERROR_UNIMPLEMENTED);
+				break;
+			default:
+				break;
+		}
 	}
 	rc = lasso_idwsf2_profile_build_response_msg(&service->parent);
 cleanup:
