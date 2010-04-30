@@ -1910,10 +1910,10 @@ print_namespace(const char *prefix, const char *href, G_GNUC_UNUSED gpointer dat
 /* test custom namespace handling */
 START_TEST(test12_custom_namespace)
 {
+#ifdef LASSO_WSF_ENABLED
 	LassoNode *node;
 	LassoIdWsf2DstRefResultQuery *result_query;
 	char *dump;
-
 	node = (LassoNode*)lasso_idwsf2_dstref_result_query_new();
 	check_not_null(node);
 	lasso_node_add_custom_namespace(node, "example", "http://example.com");
@@ -1935,6 +1935,7 @@ START_TEST(test12_custom_namespace)
 	g_hash_table_foreach(result_query->namespaces, (GHFunc)print_namespace, NULL);
 #endif
 	lasso_release_string(dump);
+#endif
 }
 END_TEST
 
