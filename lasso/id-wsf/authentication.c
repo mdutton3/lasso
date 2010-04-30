@@ -665,7 +665,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	int rc;
+	int rc = 0;
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc) return rc;

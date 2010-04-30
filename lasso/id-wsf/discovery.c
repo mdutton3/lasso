@@ -454,7 +454,7 @@ lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gch
 {
 	LassoWsfProfile *profile = NULL;
 	LassoDiscoModifyResponse *response = NULL;
-	int rc;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);

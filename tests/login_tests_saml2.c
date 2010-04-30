@@ -141,7 +141,7 @@ START_TEST(test02_saml2_serviceProviderLogin)
 	LassoLogin *spLoginContext = NULL, *idpLoginContext = NULL;
 	LassoLogout *spLogoutContext = NULL, *idpLogoutContext = NULL;
 	LassoSamlp2AuthnRequest *request = NULL;
-	int rc;
+	int rc = 0;
 	char *relayState = NULL;
 	char *authnRequestUrl = NULL, *authnRequestQuery = NULL;
 	char *logoutRequestUrl = NULL, *logoutRequestQuery = NULL;
@@ -352,7 +352,7 @@ START_TEST(test03_saml2_serviceProviderLogin)
 	char *spIdentityContextDump = NULL;
 	char *spSessionDump = NULL;
 	char *idpLoginDump = NULL;
-	int rc;
+	int rc = 0;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);

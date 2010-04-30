@@ -1030,7 +1030,7 @@ lasso_node_build_deflated_query(LassoNode *node)
 	xmlChar *ret, *b64_ret;
 	char *rret;
 	unsigned long in_len;
-	int rc;
+	int rc = 0;
 	z_stream stream;
 
 	xmlnode = lasso_node_get_xmlNode(node, FALSE);

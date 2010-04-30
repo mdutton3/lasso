@@ -103,7 +103,7 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoDstQuery *query = LASSO_DST_QUERY(node);
-	int rc;
+	int rc = 0;
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc) {

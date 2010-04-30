@@ -811,7 +811,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	LassoHttpMethod response_method;
 	LassoMessageFormat format;
 	LassoLibStatusResponse *response;
-	int rc;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -1260,7 +1260,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	int rc;
+	int rc = 0;
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc == 0) {

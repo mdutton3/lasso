@@ -90,7 +90,7 @@ static struct XmlSnippet schema_snippets[] = {
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	int rc;
+	int rc = 0;
 	xmlNode *password;
 	xmlChar *kind;
 	LassoWsseUsernameTokenPrivate *private = LASSO_WSSE_USERNAME_TOKEN_GET_PRIVATE(node);

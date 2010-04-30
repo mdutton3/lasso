@@ -89,7 +89,7 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoMiscTextNode *n = LASSO_MISC_TEXT_NODE(node);
-	int rc;
+	int rc = 0;
 
 	if (xmlnode->type == XML_TEXT_NODE) {
 		n->text_child = TRUE;

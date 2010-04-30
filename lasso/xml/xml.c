@@ -1911,7 +1911,7 @@ lasso_node_new_from_xmlNode_with_type(xmlNode *xmlnode, char *typename)
 {
 	GType gtype;
 	LassoNode *node;
-	int rc;
+	int rc = 0;
 
 	if (typename == NULL)
 		return lasso_node_new_from_xmlNode(xmlnode); /* will auto-detect */
@@ -1981,7 +1981,7 @@ lasso_node_init_from_message_with_format(LassoNode *node, const char *message, L
 	/* BASE64 case */
 	if (any || constraint == LASSO_MESSAGE_FORMAT_BASE64) {
 		if (message[0] != 0 && is_base64(message)) {
-			int rc;
+			int rc = 0;
 
 			msg = g_malloc(strlen(message));
 			rc = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));

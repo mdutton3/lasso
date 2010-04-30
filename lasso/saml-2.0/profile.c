@@ -338,7 +338,7 @@ int
 lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char *msg)
 {
 	LassoProvider *remote_provider;
-	int rc;
+	int rc = 0;
 
 	/* FIXME: parse only one time the message, reuse the parsed document for signature
 	 * validation */
@@ -474,7 +474,7 @@ lasso_saml20_profile_set_session_from_dump_decrypt(
 				assertion->Subject->EncryptedID->original_data);
 		lasso_release_gobject(assertion->Subject->EncryptedID);
 		} else { /* decrypt */
-			int rc;
+			int rc = 0;
 			rc = lasso_saml2_encrypted_element_decrypt(assertion->Subject->EncryptedID,
 					lasso_server_get_encryption_private_key(profile->server),
 					(LassoNode**) &assertion->Subject->NameID);

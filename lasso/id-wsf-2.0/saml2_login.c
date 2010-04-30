@@ -70,7 +70,7 @@ lasso_server_create_assertion_as_idwsf2_security_token(LassoServer *server,
 		LassoProvider *audience)
 {
 	LassoSaml2Assertion *assertion;
-	int rc;
+	int rc = 0;
 
 	if (! LASSO_IS_SERVER(server))
 		return NULL;

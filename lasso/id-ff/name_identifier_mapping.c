@@ -353,7 +353,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 	LassoProvider *remote_provider;
 	LassoMessageFormat format;
 	LassoLibNameIdentifierMappingResponse *response;
-	int rc;
+	int rc = 0;
 	char *statusCodeValue;
 
 	g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping),

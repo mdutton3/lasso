@@ -1725,7 +1725,7 @@ gint
 lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
 		const gchar *remote_providerID)
 {
-	int rc;
+	int rc = 0;
 	LassoProfile *profile;
 
 	profile = LASSO_PROFILE(login);
@@ -2253,7 +2253,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLogin *login = LASSO_LOGIN(node);
 	xmlNode *t;
-	int rc;
+	int rc = 0;
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc) return rc;

@@ -139,7 +139,7 @@ START_TEST(test02_serviceProviderLogin)
 	LassoServer *spContext, *idpContext;
 	LassoLogin *spLoginContext, *idpLoginContext;
 	LassoLibAuthnRequest *request;
-	int rc;
+	int rc = 0;
 	char *relayState;
 	char *authnRequestUrl, *authnRequestQuery;
 	char *responseUrl, *responseQuery;
@@ -315,7 +315,7 @@ START_TEST(test03_serviceProviderLogin)
 	LassoServer *spContext, *idpContext;
 	LassoLogin *spLoginContext, *idpLoginContext;
 	LassoLibAuthnRequest *request;
-	int rc;
+	int rc = 0;
 	char *relayState;
 	char *authnRequestUrl, *authnRequestQuery;
 	char *responseUrl, *responseQuery;

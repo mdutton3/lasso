@@ -453,7 +453,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	LassoHttpMethod response_method;
 	LassoLibStatusResponse *response;
 	LassoMessageFormat format;
-	int rc;
+	int rc = 0;
 	char *statusCodeValue;
 
 	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration),

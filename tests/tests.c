@@ -57,7 +57,7 @@ SuiteFunction suites[] = {
 int
 main(int argc, char *argv[])
 {
-	int rc;
+	int rc = 0;
 	SRunner *sr;
 	int i;
 	int dont_fork = 0;

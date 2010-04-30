@@ -34,7 +34,7 @@ create_authn_response_msg(char *query)
 	LassoServer *server;
 	LassoLogin *login;
 	char *t;
-	int rc;
+	int rc = 0;
 
 	server = lasso_server_new(
 			TESTSDATADIR "/idp1-la/metadata.xml",

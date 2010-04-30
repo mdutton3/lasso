@@ -304,7 +304,7 @@ lasso_assertion_query_validate_request(LassoAssertionQuery *assertion_query)
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
 	LassoSamlp2StatusResponse *response;
-	int rc;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_ASSERTION_QUERY(assertion_query),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -335,7 +335,7 @@ lasso_assertion_query_build_response_msg(LassoAssertionQuery *assertion_query)
 {
 	LassoProfile *profile;
 	LassoSamlp2StatusResponse *response;
-	int rc;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_ASSERTION_QUERY(assertion_query),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -380,7 +380,7 @@ lasso_assertion_query_process_response_msg(
 {
 	LassoProfile *profile;
 	LassoSamlp2StatusResponse *response;
-	int rc;
+	int rc = 0;
 
 	lasso_bad_param(ASSERTION_QUERY, assertion_query);
 	profile = &assertion_query->parent;

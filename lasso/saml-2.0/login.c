@@ -954,7 +954,7 @@ gint
 lasso_saml20_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 {
 	LassoProfile *profile = LASSO_PROFILE(login);
-	int rc;
+	int rc = 0;
 
 	rc = lasso_saml20_profile_process_artifact_resolve(profile, request_msg);
 	if (rc != 0) {
@@ -1082,7 +1082,7 @@ gint
 lasso_saml20_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 {
 	LassoProfile *profile = LASSO_PROFILE(login);
-	int rc;
+	int rc = 0;
 
 	rc = lasso_saml20_profile_process_artifact_response(profile, response_msg);
 	if (rc) {
