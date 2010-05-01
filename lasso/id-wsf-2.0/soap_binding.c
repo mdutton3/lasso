@@ -71,17 +71,17 @@ lasso_soap_envelope_sb2_get_provider_id(LassoSoapEnvelope *soap_envelope)
  * lasso_soap_envelope_sb2_get_redirect_request_url:
  * @soap_envelope: a #LassoSoapEnvelope object
  *
- * <p>Return the redirect request URL from the sb2:RedirectRequest SOAP Fault detail.</p>
+ * <para>Return the redirect request URL from the sb2:RedirectRequest SOAP Fault detail.</para>
  *
- * <p>The WSC MUST verify that this URL belong to the WSP. You can do this by comparing the domain
- * with the one in the @LassoProfile.msg_url field</p>
- * <p>The WSC MUST redirect the User Agent to this URL with a GET or POST request. It MUST add a
+ * <para>The WSC MUST verify that this URL belong to the WSP. You can do this by comparing the domain
+ * with the one in the @LassoProfile.msg_url field</para>
+ * <para>The WSC MUST redirect the User Agent to this URL with a GET or POST request. It MUST add a
  * parameter named ReturnToURL giving the URL where the WSP will send the User Agent after the
  * interaction. It MAY add an IDP parameter indicating to the WSP how to authenticate the principal
- * if no preexisting session with the User Agent exists</p>
- *<p>The WSP must check that the ReturnToURL belon to the WSP, by using the providerID URL for example.</p>
-  <p>After the interaction the WSC must redirect the User Agent to the ReturnToURL URL adding a parameter named ResendMessage. If ResendMessage is 0 or false, it means that the principal refused to continue the process. Any other value means that the prinicpal accepted and so the WSC can try again its request.</p>
-  <p>In order to succeed the request need to refer to the SOAP Fault response containing the RedirectRequest element. See lasso_soap_envelope_get_relates_to(), and #LassoWsAddrAttributedURI.</p>
+ * if no preexisting session with the User Agent exists</para>
+ *<para>The WSP must check that the ReturnToURL belon to the WSP, by using the providerID URL for example.</para>
+  <para>After the interaction the WSC must redirect the User Agent to the ReturnToURL URL adding a parameter named ResendMessage. If ResendMessage is 0 or false, it means that the principal refused to continue the process. Any other value means that the prinicpal accepted and so the WSC can try again its request.</para>
+  <para>In order to succeed the request need to refer to the SOAP Fault response containing the RedirectRequest element. See lasso_soap_envelope_get_relates_to(), and #LassoWsAddrAttributedURI.</para>
  *
  * Return value:(transfer none)(allow-none): the redirect URL string or NULL if no sb2:RedirectRequest detail is present.
  */

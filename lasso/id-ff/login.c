@@ -206,12 +206,12 @@
  * </programlisting>
  * </example>
  *
- * <p>The implement an IdP you must create a single sign-on service endpoint, the needed APIs for
+ * <para>The implement an IdP you must create a single sign-on service endpoint, the needed APIs for
  * this are lasso_login_process_authn_request_msg(), lasso_login_validate_request_msg(),
  * lasso_login_build_assertion(), lasso_login_build_authn_response_msg() and
  * lasso_login_build_artifact_msg(). You will have to chose between
  * lasso_login_build_authn_response_msg() and lasso_login_build_artifact_msg() depending on the
- * requested protocol for the response by the service provider</p>
+ * requested protocol for the response by the service provider</para>
  *
  * <example>
  * <title>Identity provider single sign-on service</title>
