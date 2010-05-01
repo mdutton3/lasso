@@ -766,6 +766,22 @@ LassoProviderRole lasso_profile_sso_role_with(LassoProfile *profile, const char 
 	return LASSO_PROVIDER_ROLE_NONE;
 }
 
+/**
+ * lasso_profile_get_signature_status:
+ * @profile: a #LassoProfile object
+ *
+ * Returns the signature status from the last parsed message.
+ *
+ * Return value: 0 if no error from signature checking occurred, an error code otherwise.
+ */
+gint
+lasso_profile_get_signature_status(LassoProfile *profile)
+{
+	lasso_bad_param(PROFILE, profile);
+
+	return profile->signature_status;
+}
+
 /*****************************************************************************/
 /* overridden parent class methods                                           */
 /*****************************************************************************/

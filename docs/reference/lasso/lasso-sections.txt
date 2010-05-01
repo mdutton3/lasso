@@ -93,6 +93,7 @@ lasso_profile_get_signature_hint
 lasso_profile_set_signature_verify_hint
 lasso_profile_get_signature_verify_hint
 lasso_profile_sso_role_with
+lasso_profile_get_signature_status
 <SUBSECTION Standard>
 LASSO_PROFILE
 LASSO_IS_PROFILE
