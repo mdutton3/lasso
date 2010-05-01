@@ -142,6 +142,9 @@ LASSO_EXPORT LassoSaml2AssertionValidationState lasso_saml2_assertion_allows_pro
 LASSO_EXPORT LassoSaml2AssertionValidationState lasso_saml2_assertion_allows_proxying_to(
 		LassoSaml2Assertion *saml2_assertion, const char *audience);
 
+LASSO_EXPORT void lasso_saml2_assertion_set_one_time_use(LassoSaml2Assertion *saml2_assertion,
+		gboolean one_time_use);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

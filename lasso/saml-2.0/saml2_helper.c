@@ -310,8 +310,31 @@ lasso_saml2_assertion_set_basic_conditions(LassoSaml2Assertion *saml2_assertion,
 
 	saml2_conditions = lasso_saml2_assertion_get_conditions (saml2_assertion, TRUE);
 	set_notbefore_and_notonorafter (saml2_assertion->Conditions, tolerance, length);
+	lasso_saml2_assertion_set_one_time_use(saml2_assertion, one_time_use);
+}
+
+/**
+ * lasso_saml2_assertion_set_one_time_use:
+ * @saml2_assertion: a #LassoSaml2Assertion object
+ * @one_time_use: is this assertion to be used one time only ?
+ *
+ * Set the one time use condition on this assertion.
+ */
+void
+lasso_saml2_assertion_set_one_time_use(LassoSaml2Assertion *saml2_assertion,
+		gboolean one_time_use)
+{
+	LassoSaml2Conditions * saml2_conditions;
+
+	g_return_if_fail (LASSO_IS_SAML2_ASSERTION (saml2_assertion));
+
+	saml2_conditions = lasso_saml2_assertion_get_conditions(saml2_assertion, TRUE);
+	lasso_list_add_new_gobject (saml2_conditions->OneTimeUse, lasso_saml2_one_time_use_new());
 	if (one_time_use) {
-		lasso_list_add_new_gobject (saml2_conditions->OneTimeUse, lasso_saml2_one_time_use_new());
+		lasso_list_add_new_gobject(saml2_conditions->OneTimeUse,
+				lasso_saml2_one_time_use_new());
+	} else {
+		lasso_release_list_of_gobjects(saml2_conditions->OneTimeUse);
 	}
 }
 
