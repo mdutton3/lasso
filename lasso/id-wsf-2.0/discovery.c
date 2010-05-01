@@ -209,7 +209,7 @@ lasso_idwsf2_discovery_status2rc(LassoIdWsf2UtilStatus *status)
 	size_t i = 0;
 	static struct {
 		const char *code;
-		int rc = 0;
+		int rc;
 	} code2rc[] = {
 		{ LASSO_IDWSF2_DISCOVERY_STATUS_CODE_OK, 0},
 		{ LASSO_IDWSF2_DISCOVERY_STATUS_CODE_FAILED, LASSO_IDWSF2_DISCOVERY_ERROR_FAILED },
