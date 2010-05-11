@@ -1048,10 +1048,6 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 		authn_response_msg);
 
 	message_signature_status = profile->signature_status;
-	if (message_signature_status) {
-		message(G_LOG_LEVEL_WARNING, "Validation of the AuthnResponse message signature failed: %s", lasso_strerror(message_signature_status));
-	}
-
 	rc2 = lasso_saml20_login_process_response_status_and_assertion(login);
 	/** The more important signature errors */
 	lasso_release_gobject(samlp2_response);
