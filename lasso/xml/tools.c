@@ -1828,7 +1828,7 @@ lasso_get_relaystate_from_query(const char *query) {
 
 		end = strchr(start, '&');
 		end2 = strchr(start, ';');
-		if ((end2 != NULL) && (end2 < end)) {
+		if ((end2 != NULL) && ((end == NULL) || (end2 < end))) {
 			end = end2;
 		}
 		if (end) {
