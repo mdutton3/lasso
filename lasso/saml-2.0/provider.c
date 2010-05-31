@@ -669,7 +669,7 @@ lasso_saml20_provider_accept_http_method(LassoProvider *provider, LassoProvider 
 		NULL,
 		NULL,
 		NULL,
-		"HTTP-Post",
+		"HTTP-POST",
 		"HTTP-Redirect",
 		"SOAP",
 		"HTTP-Artifact",
