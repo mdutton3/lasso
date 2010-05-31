@@ -46,6 +46,8 @@ url http://localhost:10002
 go http://localhost:10001
 fv 2 slo 'Single Logout'
 submit 'Single Logout'
+follow 'singleLogout'
+go http://localhost:10001/saml/singleLogoutFinish
 url http://localhost:10001
 find password
 go http://localhost:10002
