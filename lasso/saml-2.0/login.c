@@ -703,9 +703,6 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 		const char *notOnOrAfter)
 {
 	LassoProfile *profile = &login->parent;
-#if 0
-	LassoFederation *federation = NULL;
-#endif
 	LassoSaml2Assertion *assertion = NULL;
 	LassoSaml2AudienceRestriction *audience_restriction = NULL;
 	LassoSamlp2NameIDPolicy *name_id_policy = NULL;
@@ -822,7 +819,6 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 	authentication_statement = LASSO_SAML2_AUTHN_STATEMENT(lasso_saml2_authn_statement_new());
 	authentication_statement->AuthnInstant = g_strdup(authenticationInstant);
-	authentication_statement->SessionNotOnOrAfter = g_strdup(notOnOrAfter);
 	authentication_statement->AuthnContext = LASSO_SAML2_AUTHN_CONTEXT(
 			lasso_saml2_authn_context_new());
 	authentication_statement->AuthnContext->AuthnContextClassRef = g_strdup(
