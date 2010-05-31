@@ -741,6 +741,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
 			LASSO_PROVIDER(profile->server)->ProviderID));
 	assertion->Conditions = LASSO_SAML2_CONDITIONS(lasso_saml2_conditions_new());
+	lasso_assign_string(assertion->Conditions->NotOnOrAfter, notOnOrAfter);
+	lasso_assign_string(assertion->Conditions->NotBefore, notBefore);
 
 	audience_restriction = LASSO_SAML2_AUDIENCE_RESTRICTION(
 			lasso_saml2_audience_restriction_new());
@@ -755,10 +757,6 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Subject->SubjectConfirmation->SubjectConfirmationData =
 		LASSO_SAML2_SUBJECT_CONFIRMATION_DATA(
 			lasso_saml2_subject_confirmation_data_new());
-	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotBefore = g_strdup(
-		notBefore);
-	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter = g_strdup(
-		notOnOrAfter);
 
 	/* If request is present, refer to it in the response */
 	if (authn_request) {
