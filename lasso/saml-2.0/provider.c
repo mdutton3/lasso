@@ -697,18 +697,9 @@ lasso_saml20_provider_accept_http_method(LassoProvider *provider, LassoProvider 
 	protocol_profile = g_strdup_printf("%s %s", profile_names[protocol_type],
 			http_methods[http_method+1]);
 
-	/* special hack for single sign on */
-	if (protocol_type == LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON) {
-		/* no need to check for the response, it uses another canal
-		 * (AssertionConsumerService) */
-		rc = (lasso_provider_get_metadata_list(remote_provider, protocol_profile) != NULL);
-
-	} else {
-		if (lasso_provider_get_metadata_list(provider, protocol_profile) &&
-				lasso_provider_get_metadata_list(remote_provider, protocol_profile)) {
-			rc = TRUE;
-		}
-	}
+	/* just check if remote provider can receive the request, remote provider will have to check
+	 * how to return the response itself */
+	rc = (lasso_provider_get_metadata_list(remote_provider, protocol_profile) != NULL);
 	lasso_release_string(protocol_profile);
 	return rc;
 }
