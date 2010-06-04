@@ -33,13 +33,13 @@ Specification </citetitle> and <citetitle>Metadata for the OASIS Security Assert
 (SAML) V2.0</citetitle>.</para>
 
 <para>Roles are represented by the enumeration #LassoProviderRole, you can access descriptors
-content using lasso_provider_get_metadata_list_by_role() and lasso_provider_get_metadata_by_role().
+content using lasso_provider_get_metadata_list_for_role() and lasso_provider_get_metadata_by_role().
 Descriptors resources are flattened inside a simple hashtable. For example to get the URL(s) for the
 SAML 2.0 single logout response endpoint using binding HTTP-POST of the SP descriptor of a provider
 called x, you would call:</para>
 
 <programlisting>
-GList *urls = lasso_provider_get_metadata_list_by_role(x, LASSO_PROVIDER_ROLE_SP, "SingleLogoutService HTTP-POST ResponseLocation");
+GList *urls = lasso_provider_get_metadata_list_for_role(x, LASSO_PROVIDER_ROLE_SP, "SingleLogoutService HTTP-POST ResponseLocation");
 </programlisting>
 
 <para>A provider usually possess a default role stored in the #LassoProvider.role field, which is
