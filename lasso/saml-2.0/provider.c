@@ -270,7 +270,6 @@ load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole rol
 	}
 	if (g_strcmp0(token, LASSO_SAML2_PROTOCOL_HREF) != 0) {
 		lasso_release_xml_string(value);
-		message(G_LOG_LEVEL_WARNING, "%s descriptor does not support SAML 2.0 protocol", xmlnode->name);
 		return FALSE;
 	}
 	lasso_release_xml_string(value);
@@ -308,8 +307,10 @@ load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole rol
 		lasso_release_xml_string(value);
 	}
 
-	if (! load_default_assertion_consumer(xmlnode, provider) && role == LASSO_PROVIDER_ROLE_SP) {
-		message(G_LOG_LEVEL_WARNING, "Could not find a default assertion consumer, check the metadata file");
+	if (! load_default_assertion_consumer(xmlnode, provider) && role == LASSO_PROVIDER_ROLE_SP)
+	{
+		message(G_LOG_LEVEL_WARNING, "Could not find a default assertion consumer, "
+				"check the metadata file");
 		return FALSE;
 	}
 
@@ -338,6 +339,7 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 			LASSO_PROVIDER_ROLE_AUTHN_AUTHORITY },
 		{ NULL, 0 }
 	};
+	gboolean loaded_one_or_more_descriptor = False;
 
 	/* find a root node for the metadata file */
 	if (xmlSecCheckNodeName(root_node,
@@ -375,7 +377,8 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 			LassoProviderRole role = descriptors[i].role;
 
 			if (checkSaml2MdNode(descriptor_node, name)) {
-				load_descriptor(descriptor_node,
+				loaded_one_or_more_descriptor |=
+					load_descriptor(descriptor_node,
 						provider,
 						role);
 			}
@@ -386,6 +389,12 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 					LASSO_SAML2_METADATA_ELEMENT_ORGANIZATION)) {
 			lasso_assign_xml_node(pdata->organization, descriptor_node); }
 		descriptor_node = xmlSecGetNextElementNode(descriptor_node->next);
+	}
+
+	if (! loaded_one_or_more_descriptor || (pdata->roles & provider->role) == 0) {
+		/* We must at least load one descriptor, and we must load a descriptor for our
+		 * assigned role or we fail. */
+		return FALSE;
 	}
 
 	return TRUE;
