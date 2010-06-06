@@ -56,12 +56,15 @@ def camelcase_to_list(varname):
             l[-1].append(x)
         else:
             l[-1].append(x)
-        last = x 
+        last = x
     return map(str.lower,map(''.join,l))
 
 
 def format_as_camelcase(var):
     '''Format an identifier name into CamelCase'''
+    if var[0].isupper():
+        l = camelcase_to_list(var)
+        return l[0] + ''.join(map(str.capitalize, l[1:]))
     if '_' in var:
         return format_underscore_as_camelcase(var)
     if var[0] in string.uppercase:
