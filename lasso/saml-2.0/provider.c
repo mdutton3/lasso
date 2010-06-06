@@ -29,6 +29,7 @@
 #include <xmlsec/xmltree.h>
 
 #include "providerprivate.h"
+#include "../id-ff/server.h"
 #include "../id-ff/providerprivate.h"
 #include "../utils.h"
 #include "./provider.h"
@@ -339,7 +340,7 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 			LASSO_PROVIDER_ROLE_AUTHN_AUTHORITY },
 		{ NULL, 0 }
 	};
-	gboolean loaded_one_or_more_descriptor = False;
+	gboolean loaded_one_or_more_descriptor = FALSE;
 
 	/* find a root node for the metadata file */
 	if (xmlSecCheckNodeName(root_node,
@@ -391,7 +392,8 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 		descriptor_node = xmlSecGetNextElementNode(descriptor_node->next);
 	}
 
-	if (! loaded_one_or_more_descriptor || (pdata->roles & provider->role) == 0) {
+	if (! LASSO_IS_SERVER(provider) &&
+			(! loaded_one_or_more_descriptor || (pdata->roles & provider->role) == 0)) {
 		/* We must at least load one descriptor, and we must load a descriptor for our
 		 * assigned role or we fail. */
 		return FALSE;
