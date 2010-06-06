@@ -286,7 +286,7 @@ protected static native void destroy(long cptr);
 
     def JNI_member_function_prefix(self,c,m):
         klassname = c.name[5:]
-        mname = format_as_camelcase(m[1])
+        mname = old_format_as_camelcase(m[1])
         return '%s_%s' % (klassname,mname)
 
     def generate_JNI_member(self, c, fd):
@@ -804,7 +804,9 @@ protected static native void destroy(long cptr);
             for m in c.members:
                 type, name, options = m
                 prefix = self.JNI_member_function_prefix(c,m)
-                jname = format_as_camelcase('_'+name)
+                jname = format_as_camelcase(name)
+                jname = jname[0].capitalize() + jname[1:]
+                old_jname = old_format_as_camelcase('_' + name)
                 jtype = self.JNI_member_type(m)
                 if type == 'GList*' or type == 'const GList*':
                     print >> fd, '    public void set%s(List list) {' % jname
@@ -829,6 +831,20 @@ protected static native void destroy(long cptr);
                         print >> fd, '    public void removeFrom%s(%s value) {' % (jname,jtype)
                         print >> fd, '        LassoJNI.%s_remove(this, value);' % prefix
                         print >> fd, '    }'
+                    if old_jname != jname:
+                        print >> fd, '    public void set%s(List list) {' % old_jname
+                        print >> fd, '        this.set%s(list);' % jname
+                        print >> fd, '    }'
+                        print >> fd, '    public List get%s() {' % old_jname
+                        print >> fd, '        return this.get%s();' % jname
+                        print >> fd, '    }'
+                        print >> fd, '    public void addTo%s(%s value) {' % (old_jname,jtype)
+                        print >> fd, '        this.addTo%s(value);' % jname
+                        print >> fd, '    }'
+                        if m[2].get('element-type') not in ('xmlNode*',):
+                            print >> fd, '    public void removeFrom%s(%s value) {' % (old_jname,jtype)
+                            print >> fd, '        this.removeFrom%s(value);' % jname
+                            print >> fd, '    }'
                 elif type == 'GHashTable*':
                     print >> fd, '    public void set%s(Map map) {' % jname
                     print >> fd, '        %s[] arr = null;' % jtype
@@ -848,6 +864,13 @@ protected static native void destroy(long cptr);
                     print >> fd, '    public %s get%s() {' % (jtype,jname)
                     print >> fd, '        return LassoJNI.%s_get(this);' % prefix
                     print >> fd, '    }'
+                    if old_jname != jname:
+                        print >> fd, '    public void set%s(%s value) {' % (old_jname,jtype)
+                        print >> fd, '        this.set%s(value);' % jname
+                        print >> fd, '    }'
+                        print >> fd, '    public %s get%s() {' % (jtype,old_jname)
+                        print >> fd, '        return this.get%s();' % jname
+                        print >> fd, '    }'
             print >> fd, '    /* Methods */'
             for m in c.methods:
                 return_type = self.JNI_return_type(m.return_type)

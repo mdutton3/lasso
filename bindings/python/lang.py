@@ -430,6 +430,9 @@ if WSF_SUPPORT:
             print >> fd, '        _lasso.%s_%s_set(self._cptr, value)' % (
                     klassname, mname)
             print >> fd, '    %s = property(get_%s, set_%s)' % (mname, mname, mname)
+            old_mname = old_format_as_camelcase(m[1])
+            if mname != old_mname:
+                print >> fd, '    %s = %s' % (old_mname, mname)
             print >> fd, ''
 
         # first pass on methods, getting accessors
