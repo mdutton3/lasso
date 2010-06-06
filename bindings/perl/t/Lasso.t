@@ -28,7 +28,7 @@ ok($l[2] eq 'z');
 
 $server = new Lasso::Server($SRCDIR . "/tests/data/sp5-saml2/metadata.xml", $SRCDIR . "/tests/data/sp5-saml2/private-key.pem");
 ok($server);
-$server->add_provider(Lasso::Constants::PROVIDER_ROLE_SP, $SRCDIR . "/tests/data/idp5-saml2/metadata.xml");
+$server->add_provider(Lasso::Constants::PROVIDER_ROLE_SP, $SRCDIR . "/tests/data/sp5-saml2/metadata.xml");
 $login = new Lasso::Login $server;
 
 # Test error reporting
