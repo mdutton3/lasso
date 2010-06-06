@@ -1925,13 +1925,6 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 
 		/* LibAuthnRequest already set by lasso_login_init_idp_initiated_authn_request() */
 		request = LASSO_LIB_AUTHN_REQUEST(profile->request);
-
-		/* verify that NameIDPolicy is 'any' */
-		if (request->NameIDPolicy == NULL)
-			return LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY;
-
-		if (strcmp(request->NameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY) != 0)
-			return LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY;
 	} else {
 		request = lasso_lib_authn_request_new();
 		format = lasso_node_init_from_message(LASSO_NODE(request), authn_request_msg);
