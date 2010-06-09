@@ -26,5 +26,7 @@
 #define __LASSO_TOOLS_H__
 
 LASSO_EXPORT char* lasso_build_unique_id(unsigned int size);
+LASSO_EXPORT guint lasso_log_set_handler(GLogLevelFlags log_levels, GLogFunc log_func, gpointer user_data);
+LASSO_EXPORT void lasso_log_remove_handler(guint handler_id);
 
 #endif /* __LASSO_TOOLS_H__ */

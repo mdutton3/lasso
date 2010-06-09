@@ -2178,3 +2178,41 @@ lasso_set_string_from_prop(char **str, xmlNode *node, xmlChar *name, xmlChar *ns
 	}
 	lasso_release_xml_string(value);
 }
+
+
+/**
+ * lasso_log_set_handler:
+ * @log_levels: the log levels to apply the log handler for. To handle fatal
+ *   and recursive messages as well, combine the log levels with the
+ *   #G_LOG_FLAG_FATAL and #G_LOG_FLAG_RECURSION bit flags.
+ * @log_func: the log handler function.
+ * @user_data: data passed to the log handler.
+ *
+ * Sets the log handler for a domain and a set of log levels.  To handle fatal
+ * and recursive messages the @log_levels parameter must be combined with the
+ * #G_LOG_FLAG_FATAL and #G_LOG_FLAG_RECURSION bit flags.
+ *
+ * Note that since the #G_LOG_LEVEL_ERROR log level is always fatal, if you
+ * want to set a handler for this log level you must combine it with
+ * #G_LOG_FLAG_FATAL.
+ *
+ * Returns: the id of the new handler.
+ **/
+guint
+lasso_log_set_handler(GLogLevelFlags log_levels, GLogFunc log_func, gpointer user_data)
+{
+	return g_log_set_handler("Lasso", log_levels, log_func, user_data);
+}
+
+/**
+ * lasso_log_remove_handler:
+ * @handler_id: the id of the handler, which was returned in
+ *   lasso_log_set_handler().
+ *
+ * Removes the log handler.
+ **/
+void
+lasso_log_remove_handler(guint handler_id)
+{
+	g_log_remove_handler("Lasso", handler_id);
+}

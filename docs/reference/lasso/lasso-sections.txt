@@ -6132,3 +6132,10 @@ lasso_soap_envelope_sb2_get_redirect_request_url
 lasso_soap_envelope_sb2_get_target_identity_header
 lasso_soap_envelope_get_sb2_user_interaction_header
 </SECTION>
+
+<SECTION>
+<FILE>logging</FILE>
+<TITLE>Logging</TITLE>
+lasso_log_set_handler
+lasso_log_remove_handler
+</SECTION>
