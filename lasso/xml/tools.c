@@ -1656,18 +1656,27 @@ cleanup:
 	return rc;
 }
 
+static void xml_logv(int log_level, const char *msg, va_list arg_ptr) {
+	char buffer[512], *escaped;
+
+	vsnprintf(buffer, 512, msg, arg_ptr);
+	escaped = g_strescape(buffer, NULL);
+	g_log("Lasso", log_level, "libxml2: %s", escaped);
+	lasso_release_string(escaped);
+}
+
 static void __xmlWarningFunc(G_GNUC_UNUSED void *userData, const char *msg, ...) {
 	va_list arg_ptr;
 
 	va_start(arg_ptr, msg);
-	g_logv("Lasso", G_LOG_LEVEL_WARNING, msg, arg_ptr);
+	xml_logv(G_LOG_LEVEL_WARNING, msg, arg_ptr);
 }
 
 static void __xmlErrorFunc(G_GNUC_UNUSED void *userData, const char *msg, ...) {
 	va_list arg_ptr;
 
 	va_start(arg_ptr, msg);
-	g_logv("Lasso", G_LOG_LEVEL_CRITICAL, msg, arg_ptr);
+	xml_logv(G_LOG_LEVEL_CRITICAL, msg, arg_ptr);
 }
 
 /**
