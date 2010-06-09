@@ -19,6 +19,9 @@ liblasso_saml_20_la_SOURCES = \
 	logout.c \
 	name_id_management.c \
 	server.c \
+	saml2_conditions_addons.c \
+	saml2_assertion_addons.c \
+	samlp2_authn_request_addons.c \
 	saml2_helper.c
 
 liblassoinclude_HEADERS = \
@@ -27,6 +30,9 @@ liblassoinclude_HEADERS = \
 	profile.h \
 	name_id_management.h \
 	provider.h \
+	saml2_conditions_addons.h \
+	saml2_assertion_addons.h \
+	samlp2_authn_request_addons.h \
 	saml2_helper.h
 
 lasso_private_h_sources = \

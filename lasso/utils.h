@@ -599,8 +599,12 @@ lasso_is_empty_string(const char *str) {
 
 /* Get a printable extract for error messages */
 char* lasso_safe_prefix_string(const char *str, gsize length);
+
 int lasso_gobject_is_of_type(GObject *a, GType b);
+
 GObject *lasso_extract_gtype_from_list(GType type, GList *list);
+
+GObject * lasso_extract_gtype_from_list_or_new(GType type, GList **list, gboolean create);
 
 /* Get first node of this type in a list */
 /* ex: lasso_extract_node (LassoNode, LASSO_TYPE_NODE, list) */

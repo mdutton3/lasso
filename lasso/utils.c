@@ -127,10 +127,37 @@ lasso_extract_gtype_from_list(GType type, GList *list)
 {
 	GList *needle;
 
-
 	needle = g_list_find_custom(list, (gconstpointer)type, (GCompareFunc)lasso_gobject_is_of_type);
 	if (needle) {
 		return needle->data;
 	}
 	return NULL;
+}
+
+/**
+ * lasso_extract_gtype_from_list_or_new:
+ * @type: a #GType
+ * @list: a pointer to a #GList pointer variable
+ * @create: whether to look up an object whose #GType is type, or to just create it.
+ * 
+ * If create is TRUE, add a new object of type @type to @list and return it.
+ * Otherwise try to look up an object of type @type, and if none is found add a new one and return
+ * it.
+ *
+ * Return value: a #GObject of type @type.
+ */
+GObject *
+lasso_extract_gtype_from_list_or_new(GType type, GList **list, gboolean create)
+{
+	GObject *result = NULL;
+	g_assert (list);
+
+	if (! create) {
+		result = lasso_extract_gtype_from_list(type, *list);
+	}
+	if (result == NULL) {
+		result = g_object_new(type, NULL);
+		lasso_list_add_new_gobject(*list, result);
+	}
+	return result;
 }
