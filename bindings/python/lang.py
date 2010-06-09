@@ -115,8 +115,6 @@ class Binding:
 
 import _lasso
 
-_lasso.init()
-
 def cptrToPy(cptr):
     if cptr is None:
         return None

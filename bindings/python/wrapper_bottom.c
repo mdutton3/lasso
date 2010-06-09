@@ -14,6 +14,7 @@ init_lasso(void)
 
 	Py_INCREF(&PyGObjectPtrType);
 	PyModule_AddObject(m, "PyGObjectPtr", (PyObject *)&PyGObjectPtrType);
+	lasso_init();
 	lasso_log_set_handler(G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION | G_LOG_LEVEL_MASK,
 			lasso_python_log, NULL);
 }
