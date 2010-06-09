@@ -598,3 +598,45 @@ set_object_field(GObject **a_gobject_ptr, PyGObjectPtr *a_pygobject) {
 		*a_gobject_ptr = g_object_ref(a_pygobject->obj);
 	}
 }
+
+static PyObject *_logger_object = NULL;
+
+static PyObject *get_logger_object() {
+	if (_logger_object == NULL) {
+		PyObject *logging_module = PyImport_ImportModule("logging");
+		_logger_object = PyObject_CallMethod(logging_module, "getLogger",
+				"s#", "lasso", sizeof("lasso")-1);
+		Py_DECREF(logging_module);
+	}
+	return _logger_object;
+}
+
+static void
+lasso_python_log(G_GNUC_UNUSED const char *domain, GLogLevelFlags log_level, const gchar *message,
+		G_GNUC_UNUSED gpointer user_data)
+{
+	PyObject *logger_object = get_logger_object();
+	char *method = NULL;
+
+	switch (log_level) {
+		case G_LOG_LEVEL_DEBUG:
+			method = "debug";
+			break;
+		case G_LOG_LEVEL_INFO:
+		case G_LOG_LEVEL_MESSAGE:
+			method = "info";
+			break;
+		case G_LOG_LEVEL_WARNING:
+			method = "warning";
+			break;
+		case G_LOG_LEVEL_CRITICAL:
+			method = "error";
+			break;
+		case G_LOG_LEVEL_ERROR:
+			method = "critical";
+			break;
+		default:
+			return;
+	}
+	PyObject_CallMethod(logger_object, method, "s#s", "%s", 2, message);
+}
