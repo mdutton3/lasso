@@ -133,7 +133,7 @@ lasso_wsa_endpoint_reference_get_idwsf2_security_context_for_security_mechanism(
 		lasso_list_add_new_gobject (epr->Metadata->any, created);
 	}
 	if (create && ! security_mech_id) {
-		g_warning ("cannot create a LassoIdWsf2DiscoSecurityContext withou a security_mech_id");
+		message(G_LOG_LEVEL_WARNING, "cannot create a LassoIdWsf2DiscoSecurityContext withou a security_mech_id");
 	}
 
 	return created;
@@ -168,7 +168,7 @@ lasso_wsa_endpoint_reference_get_token_by_usage(
 			if (LASSO_IS_NODE(token->any)) {
 				return (LassoNode*)token->any;
 			} else if (token->ref) {
-				g_warning ("sec:Token ref attribute is not supported");
+				message(G_LOG_LEVEL_WARNING, "sec:Token ref attribute is not supported");
 				return NULL;
 			}
 		}

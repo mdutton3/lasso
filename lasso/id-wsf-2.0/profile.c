@@ -290,15 +290,15 @@ lasso_idwsf2_profile_build_request_msg(LassoIdWsf2Profile *profile, const char *
 					lasso_release_gobject(misc);
 				}
 			} else {
-				g_warning ("No security mechanism specified, " \
+				message(G_LOG_LEVEL_WARNING, "No security mechanism specified, " \
 						"failed to find security token for Bearer mechanism");
 			}
 			if (lasso_wsa_endpoint_reference_get_target_identity_token(epr,
 					lasso_security_mech_id_is_bearer_authentication, NULL) != NULL) {
-				g_critical("TargetIdentity token are not supported");
+				message(G_LOG_LEVEL_CRITICAL, "TargetIdentity token are not supported");
 			}
 		} else {
-			g_critical("Only Bearer security mechanism is supported by ID-WSF 2.0 module of Lasso");
+			message(G_LOG_LEVEL_CRITICAL, "Only Bearer security mechanism is supported by ID-WSF 2.0 module of Lasso");
 		}
 	}
 
@@ -782,7 +782,7 @@ lasso_idwsf2_profile_get_name_identifier(LassoIdWsf2Profile *idwsf2_profile)
 		}
 		if (lasso_saml20_profile_process_name_identifier_decryption(&idwsf2_profile->parent, &nameID,
 					&encryptedID) != 0) {
-			g_warning("process_name_identifier_decryption failed "\
+			message(G_LOG_LEVEL_WARNING, "process_name_identifier_decryption failed "\
 					"when retrieving name identifier for ID-WSF profile");
 		}
 	}

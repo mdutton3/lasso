@@ -572,7 +572,7 @@ lasso_idwsf2_discovery_build_request_msg(LassoIdWsf2Discovery *discovery,
 			lasso_foreach(i, discovery->private_data->metadatas) {
 				LassoIdWsf2DiscoSvcMetadata *metadata = (LassoIdWsf2DiscoSvcMetadata *)i->data;
 				if (lasso_is_empty_string(metadata->svcMDID)) {
-					g_warning("disco:MetadataReplace method called with " \
+					message(G_LOG_LEVEL_WARNING, "disco:MetadataReplace method called with " \
 							"non registered metadatas " \
 							"(svcMDID attribute is missing)");
 				} else {

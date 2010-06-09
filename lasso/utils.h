@@ -109,7 +109,7 @@
 		if (G_IS_OBJECT(dest) || dest == NULL) { \
 			lasso_release_full(dest, g_object_unref); \
 		} else { \
-			g_critical("Trying to unref a non GObject pointer file=%s:%u pointerbybname=%s pointer=%p", __FILE__, __LINE__, #dest, dest); \
+			message(G_LOG_LEVEL_CRITICAL, "Trying to unref a non GObject pointer file=%s:%u pointerbybname=%s pointer=%p", __FILE__, __LINE__, #dest, dest); \
 		} \
 	}
 
@@ -333,7 +333,7 @@
 		if (__tmp_non_null_src != NULL) { \
 			dest = g_list_append(dest, __tmp_non_null_src); \
 		} else { \
-			g_critical("Adding a NULL value to a non-NULL content list: dest=%s src=%s", #dest, #src); \
+			message(G_LOG_LEVEL_CRITICAL, "Adding a NULL value to a non-NULL content list: dest=%s src=%s", #dest, #src); \
 		} \
 	}
 
@@ -360,7 +360,7 @@
 		if (G_IS_OBJECT(__tmp_src)) { \
 			dest = g_list_append(dest, g_object_ref(__tmp_src)); \
 		} else { \
-			g_critical("Trying to add to a GList* a non GObject pointer dest=%s src=%s", #dest, #src); \
+			message(G_LOG_LEVEL_CRITICAL, "Trying to add to a GList* a non GObject pointer dest=%s src=%s", #dest, #src); \
 		} \
 	}
 
@@ -370,7 +370,7 @@
 		if (G_IS_OBJECT(__tmp_src)) { \
 			dest = g_list_append(dest, __tmp_src); \
 		} else { \
-			g_critical("Trying to add to a GList* a non GObject pointer dest=%s src=%s", #dest, #src); \
+			message(G_LOG_LEVEL_CRITICAL, "Trying to add to a GList* a non GObject pointer dest=%s src=%s", #dest, #src); \
 		} \
 	}
 
@@ -534,7 +534,7 @@ lasso_is_empty_string(const char *str) {
 #define goto_cleanup_if_fail_with_rc_with_warning(condition, rc_value) \
 	{\
 		if (! (condition) ) {\
-			g_warning("%s failed, returning %s", #condition, #rc_value);\
+			message(G_LOG_LEVEL_WARNING, "%s failed, returning %s", #condition, #rc_value);\
 			rc = (rc_value); \
 			goto cleanup; \
 		} \

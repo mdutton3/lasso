@@ -254,7 +254,7 @@ xmlSecKeyPtr lasso_get_public_key_from_pem_file(const char *file) {
 	file_type = lasso_get_pem_file_type(file);
 	switch (file_type) {
 		case LASSO_PEM_FILE_TYPE_UNKNOWN:
-			message(G_LOG_LEVEL_WARNING, "PEM file type unknown: %s", file);
+			message(G_LOG_LEVEL_CRITICAL, "PEM file type unknown: %s", file);
 			break; /* with a warning ? */
 		case LASSO_PEM_FILE_TYPE_CERT:
 			pub_key = lasso_get_public_key_from_pem_cert_file(file);
@@ -358,7 +358,7 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 	goto_cleanup_if_fail (pem_certs_chain_file && strlen(pem_certs_chain_file) != 0);
 	gioc = g_io_channel_new_file(pem_certs_chain_file, "r", NULL);
 	if (! gioc) {
-		message(G_LOG_LEVEL_WARNING, "Cannot open chain file %s", pem_certs_chain_file);
+		message(G_LOG_LEVEL_CRITICAL, "Cannot open chain file %s", pem_certs_chain_file);
 		goto cleanup;
 	}
 
@@ -746,7 +746,7 @@ lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_pu
 #undef value
 
 	if (! saml_request_response) {
-		message(G_LOG_LEVEL_WARNING, "SAMLRequest or SAMLResponse missing in query");
+		message(G_LOG_LEVEL_CRITICAL, "SAMLRequest or SAMLResponse missing in query");
 		ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
 		goto done;
 	}
@@ -1219,7 +1219,7 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformSha1Id) < 0) ||
 			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformRsaSha1Id) < 0)) {
 
-		g_warning("Error: failed to limit allowed signature transforms");
+		message(G_LOG_LEVEL_CRITICAL, "Error: failed to limit allowed signature transforms");
 		return FALSE;
 	}
 	if((xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformInclC14NId) < 0) ||
@@ -1227,7 +1227,7 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 			(xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformSha1Id) < 0) ||
 			(xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformEnvelopedId) < 0)) {
 
-		g_warning("Error: failed to limit allowed reference transforms");
+		message(G_LOG_LEVEL_CRITICAL, "Error: failed to limit allowed reference transforms");
 		return FALSE;
 	}
 
@@ -1235,7 +1235,7 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 	if((xmlSecPtrListAdd(&(dsigCtx->keyInfoReadCtx.enabledKeyData), BAD_CAST xmlSecKeyDataX509Id) < 0) ||
 			(xmlSecPtrListAdd(&(dsigCtx->keyInfoReadCtx.enabledKeyData), BAD_CAST xmlSecKeyDataRsaId) < 0) ||
 			(xmlSecPtrListAdd(&(dsigCtx->keyInfoReadCtx.enabledKeyData), BAD_CAST xmlSecKeyDataDsaId) < 0)) {
-		g_warning("Error: failed to limit allowed key data");
+		message(G_LOG_LEVEL_CRITICAL, "Error: failed to limit allowed key data");
 		return FALSE;
 	}
 	return TRUE;
@@ -1341,7 +1341,7 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 
 			dsig_reference_ctx = (xmlSecDSigReferenceCtx*)xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), i);
 			if (dsig_reference_ctx->uri == NULL) {
-				g_warning("dsig_reference_ctx->uri cannot be null");
+				message(G_LOG_LEVEL_CRITICAL, "dsig_reference_ctx->uri cannot be null");
 				continue;
 			}
 			lasso_list_add_xml_string(*uri_references, dsig_reference_ctx->uri);

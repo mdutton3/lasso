@@ -157,7 +157,7 @@ lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *ur
 			LASSO_PROFILE_ERROR_MISSING_SERVER);
 	/* Warn if the assertion is not a fresh one, we should not modify received assertion */
 	if (lasso_node_get_original_xmlnode((LassoNode*)assertion) != NULL) {
-		g_warning("%s should only be called after lasso_login_build_assertion", __func__);
+		message(G_LOG_LEVEL_WARNING, "%s should only be called after lasso_login_build_assertion", __func__);
 	}
 
 

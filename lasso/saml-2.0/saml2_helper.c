@@ -218,7 +218,7 @@ lasso_saml2_assertion_set_subject_name_id(LassoSaml2Assertion *saml2_assertion, 
 	} else if (LASSO_IS_SAML2_ENCRYPTED_ELEMENT(node)) {
 		lasso_assign_gobject(saml2_subject->EncryptedID, node)
 	} else {
-		g_warning("Cannot set subject name id, since node is neither an EncryptedElement or a NameID");
+		message(G_LOG_LEVEL_WARNING, "Cannot set subject name id, since node is neither an EncryptedElement or a NameID");
 	}
 }
 
@@ -243,7 +243,7 @@ lasso_saml2_assertion_set_subject_confirmation_name_id(LassoSaml2Assertion *saml
 	} else if (LASSO_IS_SAML2_ENCRYPTED_ELEMENT(node)) {
 		lasso_assign_gobject(saml2_subject_confirmation->EncryptedID, node)
 	} else {
-		g_warning("Cannot set subject name id, since node is neither an EncryptedElement or a NameID");
+		message(G_LOG_LEVEL_WARNING, "Cannot set subject name id, since node is neither an EncryptedElement or a NameID");
 	}
 }
 
@@ -386,7 +386,7 @@ lasso_saml2_assertion_add_proxy_limit (LassoSaml2Assertion *saml2_assertion, int
 	if (proxy_audiences) {
 		lasso_assign_string (saml2_proxy_restriction->Audience, proxy_audiences->data);
 		if (proxy_audiences->next) {
-			g_warning ("Trying to set multiple proxy_audience restriction is not possible with currrent version of Lasso");
+			message(G_LOG_LEVEL_WARNING, "Trying to set multiple proxy_audience restriction is not possible with currrent version of Lasso");
 		}
 	}
 }

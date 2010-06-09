@@ -1417,7 +1417,7 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 			http_method = LASSO_HTTP_METHOD_REDIRECT;
 			break;
 		default:
-			g_critical("Cannot happen");
+			message(G_LOG_LEVEL_CRITICAL, "Cannot happen");
 			break;
 	}
 	lasso_check_good_rc(lasso_saml20_profile_build_response_msg(profile, NULL, http_method, url));
