@@ -909,7 +909,7 @@ _debug(GLogLevelFlags level, const char *filename, int line,
 	strftime(date, 20, "%Y-%m-%d %H:%M:%S", localtime(&ts));
 
 	if (level == G_LOG_LEVEL_DEBUG || level == G_LOG_LEVEL_CRITICAL) {
-		g_log("Lasso", level, "%s (%s/%s:%d)\n======> %s",
+		g_log("Lasso", level, "%s (%s/%s:%d) %s",
 				date, filename, function, line, debug_string);
 	} else {
 		g_log("Lasso", level, "%s\t%s", date, debug_string);
