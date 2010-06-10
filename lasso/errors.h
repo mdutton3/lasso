@@ -1037,3 +1037,17 @@
  * The item_id was not found in the current query request.
  */
 #define LASSO_IDWSF2_DST_ERROR_ITEM_NOT_FOUND 1804
+
+/**
+ * LASSO_ASSERTION_QUERY_ERROR_ATTRIBUTE_REQUEST_ALREADY_EXIST:
+ *
+ * Tried to add the same attribute request a second time.
+ */
+#define LASSO_ASSERTION_QUERY_ERROR_ATTRIBUTE_REQUEST_ALREADY_EXIST 1901
+
+/**
+ * LASSO_ASSERTION_QUERY_ERROR_NOT_AN_ATTRIBUTE_QUERY
+ *
+ * The current assertion query does not contain an attribute query.
+ */
+#define LASSO_ASSERTION_QUERY_ERROR_NOT_AN_ATTRIBUTE_QUERY 1902

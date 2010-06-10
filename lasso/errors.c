@@ -41,6 +41,10 @@ const char*
 lasso_strerror(int error_code)
 {
 	switch (error_code) {
+		case LASSO_ASSERTION_QUERY_ERROR_ATTRIBUTE_REQUEST_ALREADY_EXIST:
+			return "Tried to add the same attribute request a second time.";
+		case LASSO_ASSERTION_QUERY_ERROR_NOT_AN_ATTRIBUTE_QUERY:
+			return "The current assertion query does not contain an attribute query.";
 		case LASSO_DATA_SERVICE_ERROR_CANNOT_ADD_ITEM:
 			return "LASSO_DATA_SERVICE_ERROR_CANNOT_ADD_ITEM";
 		case LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST:

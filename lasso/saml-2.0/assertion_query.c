@@ -396,6 +396,104 @@ cleanup:
 	return rc;
 }
 
+static LassoSaml2Attribute*
+lasso_assertion_query_lookup_attribute(LassoAssertionQuery *assertion_query, char *format, char *name)
+{
+	LassoSaml2Attribute *result = NULL;
+	LassoSamlp2AttributeQuery *query = NULL;
+
+	g_return_val_if_fail(LASSO_IS_ASSERTION_QUERY(assertion_query) || ! format || ! name,
+			NULL);
+
+	query = (LassoSamlp2AttributeQuery*) assertion_query->parent.request;
+	g_return_val_if_fail(LASSO_IS_SAMLP2_ATTRIBUTE_QUERY(query), NULL);
+
+	lasso_foreach_full_begin(LassoSaml2Attribute*, attribute, it, query->Attribute)
+	{
+		if (LASSO_IS_SAML2_ATTRIBUTE(attribute) &&
+				g_strcmp0(attribute->NameFormat, format) == 0 &&
+				g_strcmp0(attribute->Name, name) == 0)
+		{
+			result = attribute;
+			break;
+		}
+	}
+	lasso_foreach_full_end()
+
+	return result;
+}
+
+/**
+ * lasso_assertion_query_add_attribute_request:
+ * @assertion_query: a #LassoAssertionQuery object
+ * @attribute_format: the attribute designator format
+ * @attribute_name: the attribute designator name
+ *
+ * Append a new attribute designator to the current attribute request.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+int
+lasso_assertion_query_add_attribute_request(LassoAssertionQuery *assertion_query,
+		char *format, char *name)
+{
+	int rc = 0;
+	LassoSaml2Attribute *attribute = NULL;
+	LassoSamlp2AttributeQuery *query = NULL;
+
+	lasso_bad_param(ASSERTION_QUERY, assertion_query);
+	lasso_null_param(format);
+	lasso_null_param(name);
+	query = (LassoSamlp2AttributeQuery*) assertion_query->parent.request;
+	g_return_val_if_fail(LASSO_IS_SAMLP2_ATTRIBUTE_QUERY(query),
+			LASSO_ASSERTION_QUERY_ERROR_NOT_AN_ATTRIBUTE_QUERY);
+
+	/* Check unicity */
+	attribute = lasso_assertion_query_lookup_attribute(assertion_query, format, name);
+	if (attribute != NULL) {
+		return LASSO_ASSERTION_QUERY_ERROR_ATTRIBUTE_REQUEST_ALREADY_EXIST;
+	}
+	/* Do the work */
+	attribute = (LassoSaml2Attribute*)lasso_saml2_attribute_new();
+	lasso_assign_string(attribute->NameFormat, format);
+	lasso_assign_string(attribute->Name, name);
+	lasso_list_add_new_gobject(query->Attribute, attribute);
+
+	return rc;
+}
+
+/**
+ * lasso_assertion_query_get_request_type:
+ * @assertion_query: a #LassoAssertionQuery object
+ *
+ * Return the type of the last processed request.
+ *
+ * Return value: a #LassoAssertionQueryRequestType value
+ */
+LassoAssertionQueryRequestType
+lasso_assertion_query_get_request_type(LassoAssertionQuery *assertion_query)
+{
+	LassoNode *request;
+	GType type;
+
+	g_return_val_if_fail(LASSO_IS_ASSERTION_QUERY(assertion_query),
+			LASSO_ASSERTION_QUERY_REQUEST_TYPE_UNSET);
+
+	request = assertion_query->parent.request;
+	if (! G_IS_OBJECT(request))
+		return LASSO_ASSERTION_QUERY_REQUEST_TYPE_UNSET;
+	type = G_OBJECT_TYPE(request);
+	if (type == LASSO_TYPE_SAMLP2_ASSERTION_ID_REQUEST)
+		return LASSO_ASSERTION_QUERY_REQUEST_TYPE_ASSERTION_ID;
+	if (type == LASSO_TYPE_SAMLP2_AUTHN_QUERY)
+		return LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHN;
+	if (type == LASSO_TYPE_SAMLP2_ATTRIBUTE_QUERY)
+		return LASSO_ASSERTION_QUERY_REQUEST_TYPE_ATTRIBUTE;
+	if (type == LASSO_TYPE_SAMLP2_AUTHZ_DECISION_QUERY)
+		return LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHZ_DECISION;
+	return LASSO_ASSERTION_QUERY_REQUEST_TYPE_UNSET;
+}
+
 
 /*****************************************************************************/
 /* private methods                                                           */

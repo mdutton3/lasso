@@ -86,6 +86,7 @@ struct _LassoAssertionQueryClass {
 LASSO_EXPORT GType lasso_assertion_query_get_type(void);
 
 LASSO_EXPORT LassoAssertionQuery *lasso_assertion_query_new(LassoServer *server);
+
 LASSO_EXPORT void lasso_assertion_query_destroy(LassoAssertionQuery *assertion_query);
 
 LASSO_EXPORT gint lasso_assertion_query_init_request(
@@ -93,20 +94,29 @@ LASSO_EXPORT gint lasso_assertion_query_init_request(
 		char *remote_provider_id,
 		LassoHttpMethod http_method,
 		LassoAssertionQueryRequestType query_request_type);
+
 LASSO_EXPORT gint lasso_assertion_query_validate_request(
 		LassoAssertionQuery *assertion_query);
+
 LASSO_EXPORT gint lasso_assertion_query_build_request_msg(
 		LassoAssertionQuery *assertion_query);
 
 LASSO_EXPORT gint lasso_assertion_query_process_request_msg(
 		LassoAssertionQuery *assertion_query,
 		gchar *request_msg);
+
 LASSO_EXPORT int lasso_assertion_query_build_response_msg(
 		LassoAssertionQuery *assertion_query);
+
 LASSO_EXPORT gint lasso_assertion_query_process_response_msg(
 		LassoAssertionQuery *assertion_query,
 		gchar *response_msg);
 
+LASSO_EXPORT int lasso_assertion_query_add_attribute_request(LassoAssertionQuery *assertion_query,
+		char *format, char *name);
+
+LASSO_EXPORT LassoAssertionQueryRequestType lasso_assertion_query_get_request_type(
+		LassoAssertionQuery *assertion_query);
 
 #ifdef __cplusplus
 }
