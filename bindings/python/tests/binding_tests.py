@@ -274,6 +274,18 @@ class BindingTestCase(unittest.TestCase):
                 identity.federations['http://idp1.lasso.lan'].localNameIdentifier.content,
                 'first name id')
 
+    def test10(self):
+        '''Test Server.setEncryptionPrivateKeyWithPassword'''
+        pkey_path = os.path.join(
+            dataDir, 'idp5-saml2', 'private-key.pem')
+        server = lasso.Server(os.path.join(dataDir, 'idp5-saml2', 'metadata.xml'),
+                pkey_path)
+        # from file
+        server.setEncryptionPrivateKeyWithPassword(pkey_path)
+        # from buffer
+        server.setEncryptionPrivateKeyWithPassword(open(pkey_path).read())
+        # reset
+        server.setEncryptionPrivateKeyWithPassword()
 
 bindingSuite = unittest.makeSuite(BindingTestCase, 'test')
 
