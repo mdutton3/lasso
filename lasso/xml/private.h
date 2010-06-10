@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_TOOLS_H__
-#define __LASSO_TOOLS_H__
+#ifndef __LASSO_XML_PRIVATE_H__
+#define __LASSO_XML_PRIVATE_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -238,4 +238,4 @@ void lasso_node_add_custom_namespace(LassoNode *node, const char *prefix, const 
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_TOOLS_H__ */
+#endif /* __LASSO_XML_PRIVATE_H__ */
