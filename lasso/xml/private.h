@@ -117,7 +117,7 @@ void  lasso_build_random_sequence(char *buffer, unsigned int size);
 char* lasso_build_unique_id(unsigned int size);
 char* lasso_get_current_time(void);
 char* lasso_time_to_iso_8601_gmt(time_t now);
-time_t lasso_iso_8601_gmt_to_time_t(char *xsdtime);
+time_t lasso_iso_8601_gmt_to_time_t(const char *xsdtime);
 LassoPemFileType lasso_get_pem_file_type(const char *file);
 
 xmlSecKeyPtr lasso_get_public_key_from_pem_file(const char *file);

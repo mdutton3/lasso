@@ -154,6 +154,7 @@ lasso_time_to_iso_8601_gmt(time_t now)
 
 	return ret;
 }
+
 /**
  * lasso_get_current_time:
  *
@@ -167,6 +168,34 @@ lasso_get_current_time()
 	return lasso_time_to_iso_8601_gmt(time(NULL));
 }
 
+static const char xsdtime_format1[] = "dddd-dd-ddTdd:dd:ddZ";
+static const char xsdtime_format2[] = "dddd-dd-ddTdd:dd:dd.?Z";
+
+static gboolean
+xsdtime_match_format(const char *xsdtime, const char *format)
+{
+	while (*format && *xsdtime) {
+		if (*format == 'd' && isdigit(*xsdtime)) {
+			++format;
+			++xsdtime;
+		} else if (*format == '?') {
+			while (isdigit(*xsdtime))
+				++xsdtime;
+			++format;
+		} else if (*format == *xsdtime) {
+			++format;
+			++xsdtime;
+		} else {
+			break;
+		}
+	}
+	if (*format == '\0' && *xsdtime == '\0') {
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
+
 /**
  * lasso_iso_8601_gmt_to_time_t:
  * @xsdtime: an xsd time value
@@ -174,7 +203,7 @@ lasso_get_current_time()
  * Return value: a corresponding time_t value if possible.
  */
 time_t
-lasso_iso_8601_gmt_to_time_t(char *xsdtime)
+lasso_iso_8601_gmt_to_time_t(const char *xsdtime)
 {
 	struct tm tm;
 	char *strptime_ret;
@@ -182,9 +211,17 @@ lasso_iso_8601_gmt_to_time_t(char *xsdtime)
 	if (xsdtime == NULL) {
 		return -1;
 	}
-	strptime_ret = strptime (xsdtime, "%Y-%m-%dT%H:%M:%SZ", &tm);
-	if (strptime_ret == NULL) {
-		return -1;
+
+	if (xsdtime_match_format(xsdtime, xsdtime_format1)) {
+		strptime_ret = strptime (xsdtime, "%Y-%m-%dT%H:%M:%SZ", &tm);
+		if (strptime_ret == NULL) {
+			return -1;
+		}
+	} else if (xsdtime_match_format(xsdtime, xsdtime_format2)) {
+		strptime_ret = strptime (xsdtime, "%Y-%m-%dT%H:%M:%S.", &tm);
+		if (strptime_ret == NULL) {
+			return -1;
+		}
 	}
 	return timegm(&tm);
 }
