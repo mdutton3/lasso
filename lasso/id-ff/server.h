@@ -96,9 +96,12 @@ LASSO_EXPORT LassoProvider* lasso_server_get_provider(const LassoServer *server,
 		const gchar *providerID);
 
 LASSO_EXPORT int lasso_server_set_encryption_private_key(LassoServer *server,
-		const gchar *filename);
+		const gchar *filename_or_buffer);
 
 LASSO_EXPORT int lasso_server_load_affiliation(LassoServer *server, const gchar* filename);
+
+LASSO_EXPORT int lasso_server_set_encryption_private_key_with_password(LassoServer *server,
+		const gchar *filename_or_buffer, const gchar *password);
 
 #ifdef __cplusplus
 }

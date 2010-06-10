@@ -140,18 +140,44 @@ lasso_server_destroy(LassoServer *server)
 /**
  * lasso_server_set_encryption_private_key:
  * @server: a #LassoServer
- * @filename:(allow-none): file name of the encryption key to load
+ * @filename_or_buffer:(allow-none): file name of the encryption key to load or its content as a
+ * NULL-terminated string.
  *
  * Load an encryption private key from a file and set it in the server object
  *
+ * If @filename_or_buffer is NULL, it frees the currently setted key.
+ *
  * Return value: 0 on success; another value if an error occured.
+ * Deprecated: 2.3: Use lasso_server_set_encryption_private_key_with_password() instead.
  **/
 int
-lasso_server_set_encryption_private_key(LassoServer *server, const gchar *filename)
+lasso_server_set_encryption_private_key(LassoServer *server, const gchar *filename_or_buffer)
 {
-	/* FIXME: add a password argument */
-	if (filename) {
-		xmlSecKey *key = lasso_xmlsec_load_private_key(filename, NULL);
+	return lasso_server_set_encryption_private_key_with_password(server, filename_or_buffer,
+			NULL);
+}
+
+/**
+ * lasso_server_set_encryption_private_key_with_password:
+ * @server: a #LassoServer
+ * @filename_or_buffer:(allow-none): file name of the encryption key to load or its content as a
+ * NULL-terminated string.
+ * @password:(allow-none): an optional password to decrypt the encryption key.
+ *
+ * Load an encryption private key from a file and set it in the server object. If @password is
+ * non-NULL try to decrypt the key with it.
+ *
+ * If @filename_or_buffer is NULL, it frees the currently setted key.
+ *
+ * Return value: 0 on success; another value if an error occured.
+ * Since: 2.3
+ **/
+int
+lasso_server_set_encryption_private_key_with_password(LassoServer *server,
+		const gchar *filename_or_buffer, const gchar *password)
+{
+	if (filename_or_buffer) {
+		xmlSecKey *key = lasso_xmlsec_load_private_key(filename_or_buffer, password);
 		if (! key || ! (xmlSecKeyGetType(key) & xmlSecKeyDataTypePrivate)) {
 			return LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED;
 		}
@@ -163,7 +189,6 @@ lasso_server_set_encryption_private_key(LassoServer *server, const gchar *filena
 
 	return 0;
 }
-
 
 /**
  * lasso_server_load_affiliation:
