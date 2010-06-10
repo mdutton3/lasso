@@ -288,7 +288,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	rc = parent_class->init_from_xml(node, xmlnode);
 
 	if (server->private_key) {
-		server->private_data->encryption_private_key = lasso_xmlsec_load_private_key(server->private_key, NULL);
+		server->private_data->encryption_private_key =
+			lasso_xmlsec_load_private_key(server->private_key, NULL);
 	}
 	if (rc)
 		return rc;
@@ -390,8 +391,8 @@ lasso_server_get_first_providerID_by_role(const LassoServer *server, LassoProvid
  *
  * Looks up and returns the provider ID of a known provider
  *
- * Return value:(transfer full)(allow-none): the provider ID, NULL if there are no providers.  This string
- *      must be freed by the caller.
+ * Return value:(transfer full)(allow-none): the provider ID, NULL if there are no providers.  This
+ * string must be freed by the caller.
  **/
 gchar*
 lasso_server_get_first_providerID(LassoServer *server)
@@ -634,8 +635,10 @@ lasso_server_new(const gchar *metadata,
  * lasso_server_new_from_buffers:
  * @metadata: NULL terminated string containing the content of an ID-FF 1.2 metadata file
  * @private_key_content:(allow-none): NULL terminated string containing a PEM formatted private key
- * @private_key_password:(allow-none): a NULL terminated string which is the optional password of the private key
- * @certificate_content:(allow-none): NULL terminated string containing a PEM formatted X509 certificate
+ * @private_key_password:(allow-none): a NULL terminated string which is the optional password of
+ * the private key
+ * @certificate_content:(allow-none): NULL terminated string containing a PEM formatted X509
+ * certificate
  *
  * Creates a new #LassoServer.
  *
@@ -730,7 +733,8 @@ lasso_server_get_private_key(LassoServer *server)
  * lasso_server_get_encryption_private_key:
  * @server: a #LassoServer object
  *
- * Return:(transfer none): a xmlSecKey object, it is owned by the #LassoServer object, so do not free it.
+ * Return:(transfer none): a xmlSecKey object, it is owned by the #LassoServer object, so do not
+ * free it.
  */
 xmlSecKey*
 lasso_server_get_encryption_private_key(LassoServer *server)
