@@ -197,19 +197,21 @@ lasso_assertion_query_build_request_msg(LassoAssertionQuery *assertion_query)
 		LassoSamlp2SubjectQueryAbstract *subject_query;
 
 		subject_query = (LassoSamlp2SubjectQueryAbstract*)profile->request;
-		if (subject_query->Subject &&
-				(subject_query->Subject->NameID ||
-				 subject_query->Subject->EncryptedID)) {
+		if (! LASSO_IS_SAML2_SUBJECT(subject_query->Subject)) {
+			lasso_assign_new_gobject(subject_query->Subject,
+					lasso_saml2_subject_new());
+		}
+		if ( (! LASSO_IS_SAML2_NAME_ID(subject_query->Subject->NameID) &&
+		      ! LASSO_IS_SAML2_ENCRYPTED_ELEMENT(subject_query->Subject->EncryptedID)))
+		{
 
 			nameID = (LassoSaml2NameID*)lasso_profile_get_nameIdentifier(profile);
 			if (! LASSO_IS_SAML2_NAME_ID(nameID))
 				return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
-			subject_query = LASSO_SAMLP2_SUBJECT_QUERY_ABSTRACT(profile->request);
-			subject_query->Subject->NameID = g_object_ref(nameID);
+			lasso_assign_gobject(subject_query->Subject->NameID, nameID);
 		}
-		if (! subject_query->Subject)
-			return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
-		lasso_check_good_rc(lasso_saml20_profile_setup_subject(profile, subject_query->Subject));
+		lasso_check_good_rc(lasso_saml20_profile_setup_subject(profile,
+					subject_query->Subject));
 	} while(FALSE);
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
