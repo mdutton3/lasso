@@ -599,14 +599,23 @@ set_object_field(GObject **a_gobject_ptr, PyGObjectPtr *a_pygobject) {
 	}
 }
 
-static PyObject *_logger_object = NULL;
 
 static PyObject *get_logger_object() {
-	if (_logger_object == NULL) {
-		PyObject *logging_module = PyImport_ImportModule("logging");
-		_logger_object = PyObject_CallMethod(logging_module, "getLogger",
-				"s#", "lasso", sizeof("lasso")-1);
-		Py_DECREF(logging_module);
+	static PyObject *_logger_object = NULL;
+
+	PyObject *logging_module = PyImport_ImportModule("lasso");
+	_logger_object = PyObject_GetAttrString(logging_module, "logger");
+	if (_logger_object)
+		goto exit;
+	Py_DECREF(logging_module);
+	logging_module = PyImport_ImportModule("logging");
+	_logger_object = PyObject_CallMethod(logging_module, "getLogger",
+			"s#", "lasso", sizeof("lasso")-1);
+exit:
+	Py_DECREF(logging_module);
+	if (_logger_object == Py_None) {
+		Py_DECREF(_logger_object);
+		_logger_object = NULL;
 	}
 	return _logger_object;
 }
@@ -615,9 +624,14 @@ static void
 lasso_python_log(G_GNUC_UNUSED const char *domain, GLogLevelFlags log_level, const gchar *message,
 		G_GNUC_UNUSED gpointer user_data)
 {
-	PyObject *logger_object = get_logger_object();
+	PyObject *logger_object = get_logger_object(), *result;
 	char *method = NULL;
 
+	if (! logger_object) {
+		PyErr_SetString(PyExc_RuntimeError, "both lasso.logger and "
+				"loggin.getLogger('lasso') did not return a logger");
+		return;
+	}
 	switch (log_level) {
 		case G_LOG_LEVEL_DEBUG:
 			method = "debug";
@@ -638,5 +652,11 @@ lasso_python_log(G_GNUC_UNUSED const char *domain, GLogLevelFlags log_level, con
 		default:
 			return;
 	}
-	PyObject_CallMethod(logger_object, method, "s#s", "%s", 2, message);
+	result = PyObject_CallMethod(logger_object, method, "s#s", "%s", 2, message);
+	if (result) {
+		Py_DECREF(result);
+	} else {
+		PyErr_Format(PyExc_RuntimeError, "lasso could not call method %s on its logger",
+				method);
+	}
 }
