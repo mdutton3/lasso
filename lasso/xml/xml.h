@@ -170,8 +170,6 @@ LASSO_EXPORT LassoMessageFormat lasso_node_init_from_message(LassoNode *node, co
 LASSO_EXPORT gboolean lasso_node_init_from_query(LassoNode *node, const char *query);
 LASSO_EXPORT int lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode);
 
-LASSO_EXPORT const char* lasso_strerror(int error_code);
-
 LASSO_EXPORT void lasso_register_dst_service(const char *prefix, const char *href);
 
 LASSO_EXPORT char* lasso_get_prefix_for_dst_service_href(const char *href);
