@@ -344,15 +344,72 @@ class IdentityTestCase(unittest.TestCase):
         newIdentityDump = identity.dump()
         self.failUnlessEqual(identityDump, newIdentityDump)
 
+class AttributeAuthorityTestCase(unittest.TestCase):
+    def test01(self):
+        '''Attribute request and response test between sp5 and idp6'''
+        s = lasso.Server(
+                os.path.join(dataDir, 'sp5-saml2/metadata.xml'),
+                os.path.join(dataDir, 'sp5-saml2/private-key.pem'))
+        s.addProvider(lasso.PROVIDER_ROLE_ATTRIBUTE_AUTHORITY,
+                os.path.join(dataDir, 'idp6-saml2/metadata.xml'))
+
+        s2 = lasso.Server(
+                os.path.join(dataDir, 'idp6-saml2/metadata.xml'),
+                os.path.join(dataDir, 'idp6-saml2/private-key.pem'))
+        s2.addProvider(lasso.PROVIDER_ROLE_SP,
+                os.path.join(dataDir, 'sp5-saml2/metadata.xml'))
+
+        aq = lasso.AssertionQuery(s)
+        rpid = s.providers.keys()[0]
+        aq.initRequest(rpid,
+                lasso.HTTP_METHOD_SOAP,
+                lasso.ASSERTION_QUERY_REQUEST_TYPE_ATTRIBUTE)
+        assert aq.request
+        assert aq.remoteProviderId == rpid
+        nid = lasso.Saml2NameID.newWithPersistentFormat(
+                lasso.buildUniqueId(32),
+                s.providerId, s2.providerId)
+        aq.nameIdentifier = nid
+        aq.addAttributeRequest(
+                lasso.SAML2_ATTRIBUTE_NAME_FORMAT_BASIC,
+                'testAttribute')
+        aq.buildRequestMsg()
+        assert aq.msgUrl
+        assert aq.msgBody
+
+        aq2 = lasso.AssertionQuery(s2)
+        aq2.processRequestMsg(aq.msgBody)
+        assert aq.request
+        aq2.validateRequest()
+        assert aq2.response
+        assertion = lasso.Saml2Assertion()
+        aq2.response.assertion = (assertion, )
+        for attribute in aq2.request.attribute:
+            content = lasso.MiscTextNode.newWithString("xxx")
+            content.textChild = True
+            assertion.addAttributeWithNode(attribute.name, attribute.nameFormat,
+                    content)
+            assertion.addAttributeWithNode(attribute.name, attribute.nameFormat,
+                    content)
+        assertion.subject = aq.request.subject
+        s2.saml2AssertionSetupSignature(assertion)
+        aq2.buildResponseMsg()
+        aq.processResponseMsg(aq2.msgBody)
+        assert aq.response
+        assert aq.response.assertion[0]
+        assert aq.response.assertion[0].attributeStatement[0]
+        assert aq.response.assertion[0].attributeStatement[0].attribute[0]
+        assert aq.response.assertion[0].attributeStatement[0].attribute[0].attributeValue[0]
 
 serverSuite = unittest.makeSuite(ServerTestCase, 'test')
 loginSuite = unittest.makeSuite(LoginTestCase, 'test')
 logoutSuite = unittest.makeSuite(LogoutTestCase, 'test')
 defederationSuite = unittest.makeSuite(DefederationTestCase, 'test')
 identitySuite = unittest.makeSuite(IdentityTestCase, 'test')
+attributeSuite = unittest.makeSuite(AttributeAuthorityTestCase, 'test')
 
 allTests = unittest.TestSuite((serverSuite, loginSuite, logoutSuite, defederationSuite,
-                               identitySuite))
+                               identitySuite, attributeSuite))
 
 if __name__ == '__main__':
     sys.exit(not unittest.TextTestRunner(verbosity = 2).run(allTests).wasSuccessful())
