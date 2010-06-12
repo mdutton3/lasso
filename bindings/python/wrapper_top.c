@@ -604,15 +604,20 @@ static PyObject *get_logger_object() {
 	static PyObject *_logger_object = NULL;
 
 	PyObject *logging_module = PyImport_ImportModule("lasso");
-	_logger_object = PyObject_GetAttrString(logging_module, "logger");
-	if (_logger_object)
-		goto exit;
-	Py_DECREF(logging_module);
+
+	if (logging_module) {
+		_logger_object = PyObject_GetAttrString(logging_module, "logger");
+		Py_DECREF(logging_module);
+		if (_logger_object)
+			goto exit;
+	}
 	logging_module = PyImport_ImportModule("logging");
-	_logger_object = PyObject_CallMethod(logging_module, "getLogger",
-			"s#", "lasso", sizeof("lasso")-1);
+	if (logging_module) {
+		_logger_object = PyObject_CallMethod(logging_module, "getLogger",
+				"s#", "lasso", sizeof("lasso")-1);
+		Py_DECREF(logging_module);
+	}
 exit:
-	Py_DECREF(logging_module);
 	if (_logger_object == Py_None) {
 		Py_DECREF(_logger_object);
 		_logger_object = NULL;
@@ -653,6 +658,7 @@ lasso_python_log(G_GNUC_UNUSED const char *domain, GLogLevelFlags log_level, con
 			return;
 	}
 	result = PyObject_CallMethod(logger_object, method, "s#s", "%s", 2, message);
+	Py_DECREF(logger_object);
 	if (result) {
 		Py_DECREF(result);
 	} else {
