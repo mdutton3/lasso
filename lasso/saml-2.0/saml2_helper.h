@@ -145,6 +145,9 @@ LASSO_EXPORT LassoSaml2AssertionValidationState lasso_saml2_assertion_allows_pro
 LASSO_EXPORT void lasso_saml2_assertion_set_one_time_use(LassoSaml2Assertion *saml2_assertion,
 		gboolean one_time_use);
 
+LASSO_EXPORT LassoSaml2NameID* lasso_saml2_name_id_new_with_persistent_format(const char *id,
+		const char *idpID, const char *providerID);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

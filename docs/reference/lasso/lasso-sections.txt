@@ -2727,6 +2727,7 @@ lasso_saml2_name_id_new
 lasso_saml2_name_id_new_with_string
 lasso_saml2_name_id_build_persistent
 lasso_saml2_name_id_equals
+lasso_saml2_name_id_new_with_persistent_format
 <SUBSECTION Standard>
 LASSO_SAML2_NAME_ID
 LASSO_IS_SAML2_NAME_ID

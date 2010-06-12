@@ -95,6 +95,24 @@ lasso_saml2_assertion_is_audience_restricted(LassoSaml2Assertion *saml2_assertio
 }
 
 /**
+ * lasso_saml2_name_id_new_with_persistent_format:
+ * @id: the identifier for the princiapl
+ * @idpID: the entity ID of the IdP
+ * @providerID: the entity ID of the provider
+ *
+ * Create a new #LassoSaml2NameID object, which the #LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT
+ * format, @id as content, @idpID as NameQualifier and @providerID as SPNameQualifier.
+ *
+ * Since: 2.3
+ * Return value: a newly created #LassoSaml2NameID
+ */
+LassoSaml2NameID*
+lasso_saml2_name_id_new_with_persistent_format(const char *id, const char *idpID, const char *providerID)
+{
+	return lasso_saml2_name_id_build_persistent(id, idpID, providerID);
+}
+
+/**
  * lasso_saml2_name_id_build_persistent:
  * @id: the identifier for the princiapl
  * @idpID: the entity ID of the IdP
@@ -104,6 +122,7 @@ lasso_saml2_assertion_is_audience_restricted(LassoSaml2Assertion *saml2_assertio
  * format, @id as content, @idpID as NameQualifier and @providerID as SPNameQualifier.
  *
  * Return value: a newly created #LassoSaml2NameID
+ * Deprecated: 2.3: use lasso_saml2_name_id_new_with_persistent_format() instead.
  */
 LassoSaml2NameID*
 lasso_saml2_name_id_build_persistent(const char *id, const char *idpID, const char *providerID)
