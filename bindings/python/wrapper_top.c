@@ -611,6 +611,10 @@ static PyObject *get_logger_object() {
 		if (_logger_object)
 			goto exit;
 	}
+	/* XXX: needed so that PyImport_ImportModule("logging") always works */
+	logging_module = PyImport_ImportModule("sys");
+	if (logging_module)
+		Py_DECREF(logging_module);
 	logging_module = PyImport_ImportModule("logging");
 	if (logging_module) {
 		_logger_object = PyObject_CallMethod(logging_module, "getLogger",
@@ -633,8 +637,8 @@ lasso_python_log(G_GNUC_UNUSED const char *domain, GLogLevelFlags log_level, con
 	char *method = NULL;
 
 	if (! logger_object) {
-		PyErr_SetString(PyExc_RuntimeError, "both lasso.logger and "
-				"loggin.getLogger('lasso') did not return a logger");
+		PyErr_SetString(PyExc_RuntimeError, "neither lasso.logger nor "
+				"logging.getLogger('lasso') did return a logger");
 		return;
 	}
 	switch (log_level) {
