@@ -32,6 +32,7 @@
 #include "./backward_comp.h"
 #include "./xml/private.h"
 #include "./xml/tools.h"
+#include "./logging.h"
 
 #ifdef LASSO_DEBUG
 #ifdef __GNUC__

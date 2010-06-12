@@ -929,47 +929,6 @@ urlencoded_to_strings(const char *str)
 	return result;
 }
 
-void
-_debug(GLogLevelFlags level, const char *filename, int line,
-		const char *function, const char *format, ...)
-{
-	char debug_string[1024];
-	time_t ts;
-	char date[20];
-	va_list args;
-
-	va_start(args, format);
-	g_vsnprintf(debug_string, 1024, format, args);
-	va_end(args);
-
-	time(&ts);
-	strftime(date, 20, "%Y-%m-%d %H:%M:%S", localtime(&ts));
-
-	if (level == G_LOG_LEVEL_DEBUG || level == G_LOG_LEVEL_CRITICAL) {
-		g_log("Lasso", level, "%s (%s/%s:%d) %s",
-				date, filename, function, line, debug_string);
-	} else {
-		g_log("Lasso", level, "%s\t%s", date, debug_string);
-	}
-}
-
-int
-error_code(G_GNUC_UNUSED GLogLevelFlags level, int error, ...)
-{
-	const char *format;
-	char message[1024];
-	va_list args;
-
-	format = lasso_strerror(error);
-
-	va_start(args, error);
-	g_vsnprintf(message, 1024, format, args);
-	va_end(args);
-
-	return error;
-}
-
-
 /**
  * lasso_sign_node:
  * @xmlnode: the xmlnode to sign

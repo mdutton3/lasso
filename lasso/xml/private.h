@@ -171,51 +171,8 @@ xmlNode* lasso_xml_get_soap_content(xmlNode *root);
 
 gboolean lasso_xml_is_soap(xmlNode *root);
 
-void _debug(GLogLevelFlags level, const char *filename, int line,
-		const char *function, const char *format, ...);
-
-int error_code(GLogLevelFlags level, int error, ...);
-
 gboolean lasso_eval_xpath_expression(xmlXPathContextPtr xpath_ctx, const char *expression,
 		xmlXPathObjectPtr *xpath_object_ptr, int *xpath_error_code);
-
-#if defined(LASSO_DEBUG) && defined(__GNUC__)
-#  define debug(format, args...) \
-	_debug(G_LOG_LEVEL_DEBUG, __FILE__, __LINE__,__FUNCTION__, format, ##args)
-#elif defined(HAVE_VARIADIC_MACROS)
-#  define debug(...)     ;
-#else
-static inline void debug(const char *format, ...)
-{
-	va_list ap;
-	va_start(ap, format);
-	va_end(ap);
-}
-#endif
-
-#ifndef __FUNCTION__
-#  define __FUNCTION__  ""
-#endif
-
-#if defined(__GNUC__)
-#  define message(level, format, args...) \
-	_debug(level, __FILE__, __LINE__, __FUNCTION__, format, ##args)
-#elif defined(HAVE_VARIADIC_MACROS)
-#  define message(level, ...) \
-	_debug(level, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
-#else
-static inline void message(GLogLevelFlags level, const char *format, ...)
-{
-	va_list ap;
-	char s[1024];
-	va_start(ap, format);
-	g_vsnprintf(s, 1024, format, ap);
-	va_end(ap);
-	_debug(level, __FILE__, __LINE__, __FUNCTION__, s);
-}
-#endif
-
-#define critical_error(rc) error_code(G_LOG_LEVEL_CRITICAL, rc)
 
 #define IF_SAML2(profile) \
 	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \

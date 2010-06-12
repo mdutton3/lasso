@@ -28,6 +28,7 @@
  *
  **/
 
+#include "../utils.h"
 #include "../xml/private.h"
 #include "name_identifier_mapping.h"
 

@@ -20,10 +20,10 @@ lib_LTLIBRARIES = liblasso.la
 
 liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h \
 			  registry.h
-nodist_liblassoinclude_HEADERS = debug.h utils.h registry-private.h
+nodist_liblassoinclude_HEADERS = debug.h utils.h registry-private.h logging.h backward_comp.h
 BUILT_SOURCES = types.c errors.c symbols.sym
 
-liblasso_la_SOURCES = lasso.c errors.c registry.c utils.c debug.h
+liblasso_la_SOURCES = lasso.c errors.c registry.c utils.c logging.c
 
 if WSF_ENABLED
 SYMBOLS_ARGS = -wsf
@@ -42,8 +42,8 @@ MAINTAINERCLEANFILES = \
 clean-local:
 	-rm -f types.c symbols.sym errors.c
 
-EXTRA_DIST = utils.h extract_types.py extract_symbols.py build_strerror.py \
-	     registry-private.h errors.c.in backward_comp.h extract_sections.py
+EXTRA_DIST = $(nodist_liblassoinclude_HEADERS) extract_types.py extract_symbols.py build_strerror.py \
+	     errors.c.in extract_sections.py
 
 if WSF_ENABLED
 WSF_LIB_FILE = $(top_builddir)/lasso/id-wsf/liblasso-id-wsf.la
