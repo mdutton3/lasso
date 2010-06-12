@@ -201,11 +201,15 @@ lasso_assertion_query_build_request_msg(LassoAssertionQuery *assertion_query)
 			lasso_assign_new_gobject(subject_query->Subject,
 					lasso_saml2_subject_new());
 		}
+		/* verify that there is a NameID */
 		if ( (! LASSO_IS_SAML2_NAME_ID(subject_query->Subject->NameID) &&
 		      ! LASSO_IS_SAML2_ENCRYPTED_ELEMENT(subject_query->Subject->EncryptedID)))
 		{
-
-			nameID = (LassoSaml2NameID*)lasso_profile_get_nameIdentifier(profile);
+			/* if not try to get the local profile one */
+			nameID = (LassoSaml2NameID*)profile->nameIdentifier;
+			if (! LASSO_IS_SAML2_NAME_ID(nameID))
+				nameID = (LassoSaml2NameID*)lasso_profile_get_nameIdentifier(profile);
+			/* if none found, try to get the identity object or session object one */
 			if (! LASSO_IS_SAML2_NAME_ID(nameID))
 				return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 			lasso_assign_gobject(subject_query->Subject->NameID, nameID);
