@@ -69,7 +69,7 @@ class Binding:
 
     def free_value(self, fd, type, name = None):
         if not name:
-            name = arg_anme(type)
+            name = arg_name(type)
         if not name:
             raise Exception('Cannot free, missing a name')
         if is_cstring(type):
@@ -81,9 +81,9 @@ class Binding:
         elif is_glist(type):
             etype = element_type(type)
             if is_cstring(etype):
-                '   lasso_release_list_of_strings(%s);' % name
+                print >> fd, '    lasso_release_list_of_strings(%s);' % name
             elif is_object(etype):
-                '   lasso_release_list_of_gobjects(%s);' % name
+                print >> fd, '    lasso_release_list_of_gobjects(%s);' % name
             else:
                 raise Exception('Unsupported caller owned return type %s' % ((repr(type), name),))
         elif is_hashtable(type):
