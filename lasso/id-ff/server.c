@@ -289,7 +289,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (server->private_key) {
 		server->private_data->encryption_private_key =
-			lasso_xmlsec_load_private_key(server->private_key, NULL);
+			lasso_xmlsec_load_private_key(server->private_key, server->private_key_password);
 	}
 	if (rc)
 		return rc;
