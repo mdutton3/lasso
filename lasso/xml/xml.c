@@ -985,6 +985,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	struct XmlSnippet *snippet_collect_namespaces = NULL;
 	GSList *unknown_nodes = NULL;
 	GSList *known_attributes = NULL;
+	gboolean keep_xmlnode = FALSE;
 
 	class = LASSO_NODE_GET_CLASS(node);
 
@@ -998,15 +999,15 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		return 0;
 	}
 
-	if (class->node_data->keep_xmlnode) {
-		lasso_node_set_original_xmlnode(node, xmlnode);
-	}
 	if (lasso_flag_memory_debug == TRUE) {
 		fprintf(stderr, "Initializing %s (at %p)\n", G_OBJECT_TYPE_NAME(node), node);
 	}
 
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 		lasso_trace(" initializing %s\n", G_OBJECT_CLASS_NAME(class));
+
+		/* reduce keep_xmlnode flags */
+		keep_xmlnode |= class->node_data->keep_xmlnode;
 
 		for (t = xmlnode->children; t; t = t->next) {
 			if (t->type == XML_TEXT_NODE) {
@@ -1218,6 +1219,11 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 
 		class = g_type_class_peek_parent(class);
+	}
+
+	/* If any parent asked for keeping the current xmlnode, keep it around */
+	if (keep_xmlnode) {
+		lasso_node_set_original_xmlnode(node, xmlnode);
 	}
 
 	/* Collect namespaces on the current node */
