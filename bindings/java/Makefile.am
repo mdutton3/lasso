@@ -9,6 +9,7 @@ INCLUDES = \
 CLASSPATH_ENV= CLASSPATH=.:$(CLASSPATH_JUNIT)
 CLASSPATH=.:tests
 
+if HAVE_AM_SILENT_RULES
 AM_V_JAVAC = $(am__v_JAVAC_$(V))
 am__v_JAVAC_ = $(am__v_JAVAC_$(AM_DEFAULT_VERBOSITY))
 am__v_JAVAC_0 = @echo "  JAVAC    " $@;
@@ -16,6 +17,7 @@ am__v_JAVAC_0 = @echo "  JAVAC    " $@;
 AM_V_JAR = $(am__v_JAR_$(V))
 am__v_JAR_ = $(am__v_JAR_$(AM_DEFAULT_VERBOSITY))
 am__v_JAR_0 = @echo "  JAR    " $@;
+endif
 
 java_extension_LTLIBRARIES = libjnilasso.la
 java_extensiondir = ${libdir}/java

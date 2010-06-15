@@ -31,6 +31,8 @@ dnl Run many macros mostly needed by configure.ac.
 AM_INIT_AUTOMAKE([foreign tar-pax])
 dnl Support automake 1.11 silent mode
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+m4_ifdef([AM_SILENT_RULES],[HAVE_AM_SILENT_RULES=yes])
+AM_CONDITIONAL(HAVE_AM_SILENT_RULES, test x$HAVE_AM_SILENT_RULES != x)
 dnl Create rules to automaticaly regenerate the config header.
 AM_CONFIG_HEADER([config.h lasso/lasso_config.h])
 dnl Add --enable-maintainer-mode option to configure.

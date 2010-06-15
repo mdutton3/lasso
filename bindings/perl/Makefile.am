@@ -1,3 +1,4 @@
+if HAVE_AM_SILENT_RULES
 AM_V_SUBMAKE = $(am__v_SUBMAKE_$(V))
 am__v_SUBMAKE_ = $(am__v_SUBMAKE_$(AM_DEFAULT_VERBOSITY))
 am__v_SUBMAKE_0 = @echo "  SUBMAKE    " $@; LOG=`mktemp`; (
@@ -5,6 +6,7 @@ am__v_SUBMAKE_0 = @echo "  SUBMAKE    " $@; LOG=`mktemp`; (
 AM_V_SUBMAKE_POSTFIX = $(am__v_SUBMAKE_POSTFIX_$(V))
 am__v_SUBMAKE_POSTFIX_ = $(am__v_SUBMAKE_POSTFIX_$(AM_DEFAULT_VERBOSITY))
 am__v_SUBMAKE_POSTFIX_0 = 2>&1 >$$LOG && rm $$LOG ) || ( cat $$LOG; rm $$LOG )
+endif
 
 MAINTAINERCLEANFILES = Makefile.in
 MOSTLYCLEANFILES =
