@@ -142,6 +142,9 @@ _lasso_node_export_to_xml(LassoNode *node, gboolean format, gboolean dump, int l
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
 	xmlnode = lasso_node_get_xmlNode(node, dump);
+	if (xmlnode == NULL) {
+		return NULL;
+	}
 	ret = lasso_xmlnode_to_string(xmlnode, format, level);
 	xmlFreeNode(xmlnode);
 
