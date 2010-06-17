@@ -296,6 +296,10 @@ lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
 
 	message = lasso_node_get_xmlNode(node, FALSE);
 
+	if (message == NULL) {
+		return NULL;
+	}
+
 	envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
 	soap_env_ns = xmlNewNs(envelope,
 			(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX);
