@@ -219,6 +219,8 @@ lasso_node_export_to_base64(LassoNode *node)
 	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
 	str = lasso_node_export_to_xml(node);
+	if (str == NULL)
+		return NULL;
 	ret = (char*)xmlSecBase64Encode(BAD_CAST str, strlen(str), 0);
 	lasso_release_string(str);
 	return ret;
