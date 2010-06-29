@@ -250,6 +250,18 @@
 		dest = __tmp; \
 	}
 
+#define lasso_assign_xml_node_list(dest,src) \
+	{ \
+		xmlNode *__tmp = (src); \
+		lasso_check_type_equality(dest, src); \
+		if (dest) \
+			xmlFreeNode(dest); \
+		dest = xmlCopyNodeList(__tmp); \
+	}
+
+#define lasso_assign_new_xml_node_list(dest,src) \
+	lasso_assign_new_xml(dest, src)
+
 #define lasso_assign_list(dest, src) \
 	{ \
 		GList **__tmp = &(dest); \
@@ -388,6 +400,15 @@
 		xmlNode *__tmp_src = src; \
 		lasso_list_add_non_null(dest, __tmp_src); \
 	}
+
+#define lasso_list_add_xml_node_list(dest, src) \
+	{ \
+		xmlNode *__tmp_src = xmlCopyNodeList(src); \
+		lasso_list_add_non_null(dest, __tmp_src); \
+	}
+
+#define lasso_list_add_new_xml_node_list(dest, src) \
+	lasso_list_add_new_xml_node(dest, src)
 
 #define lasso_list_add_gstrv(dest, src) \
 	{ \
