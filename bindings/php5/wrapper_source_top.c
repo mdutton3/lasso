@@ -8,6 +8,7 @@
 #include "php_lasso.h"
 #include "../ghashtable.h"
 #include "../../lasso/utils.h"
+#include "../utils.c"
 
 /* utility functions */
 static void free_glist(GList **list, GFunc free_function);
@@ -126,17 +127,7 @@ get_string_from_xml_node(xmlNode *xmlnode)
 static xmlNode*
 get_xml_node_from_string(char *string)
 {
-	xmlDoc *doc;
-	xmlNode *node;
-
-	doc = xmlReadDoc((xmlChar*)string, NULL, NULL, XML_PARSE_NONET);
-	node = xmlDocGetRootElement(doc);
-	if (node != NULL) {
-		node = xmlCopyNode(node, 1);
-	}
-	lasso_release_doc(doc);
-
-	return node;
+	return lasso_string_fragment_to_xmlnode(string, 0);
 }
 
 static GList*

@@ -5,6 +5,7 @@
 #include "../ghashtable.h"
 #include "../../lasso/debug.h"
 #include "../../lasso/utils.h"
+#include "../utils.c"
 
 #if PY_VERSION_HEX < 0x02050000 && !defined(PY_SSIZE_T_MIN)
 typedef int Py_ssize_t;
@@ -323,18 +324,10 @@ failure:
 
 static xmlNode*
 get_xml_node_from_pystring(PyObject *string) {
-	xmlDoc *doc;
-	xmlNode *node;
-
-	doc = xmlReadDoc((xmlChar*)PyString_AsString(string), NULL, NULL, XML_PARSE_NONET);
-	node = xmlDocGetRootElement(doc);
-	if (node != NULL) {
-		node = xmlCopyNode(node, 1);
-	}
-	lasso_release_doc(doc);
-
-	return node;
+	return lasso_string_fragment_to_xmlnode(PyString_AsString(string),
+			PyString_Size(string));
 }
+
 /** Return a tuple containing the string contained in a_list */
 static PyObject *
 get_list_of_strings(const GList *a_list) {

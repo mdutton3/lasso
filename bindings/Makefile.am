@@ -21,5 +21,6 @@ EXTRA_DIST = bindings.py \
 	overrides.xml \
 	utils.py \
 	utility-scripts/error-analyzer.pl \
-	ghashtable.h
+	ghashtable.h \
+	utils.c
 

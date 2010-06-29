@@ -7,6 +7,7 @@
 #include <string.h>
 #include "../ghashtable.h"
 #include "../../lasso/utils.h"
+#include "../utils.c"
 
 #define LASSO_ROOT "com/entrouvert/lasso/"
 #define check_exception (*env)->ExceptionCheck(env)
@@ -324,18 +325,10 @@ jstring_to_xml_node(JNIEnv *env, jstring jstr, xmlNode **xmlnode) {
     lasso_return_val_if_fail(jstring_to_local_string(env, jstr, &local_str), 0);
 
     if (local_str) {
-        doc = xmlReadDoc((unsigned char *)local_str, NULL, NULL, XML_PARSE_NONET);
-        if (!doc) {
-            exception(env, "could not read an xml document");
-            ret = 0;
-            goto out;
-        }
-        node = xmlDocGetRootElement(doc);
+        node = lasso_string_fragment_to_xmlnode(local_str, 0);
     }
-out:
-    lasso_assign_xml_node(*xmlnode, node)
-    if (doc)
-        lasso_release_doc(doc);
+    lasso_assign_new_xml_node(*xmlnode, node)
+    lasso_release_doc(doc);
     if (jstr && local_str)
         release_local_string(env, jstr, local_str);
     return ret;

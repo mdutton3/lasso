@@ -27,6 +27,7 @@
 #include <glib-object.h>
 #include <lasso/xml/xml.h>
 #include <lasso/utils.h>
+#include "../utils.c"
 
 /**
  * xmlnode_to_pv:
@@ -67,23 +68,15 @@ xmlnode_to_pv(xmlNode *node, gboolean do_free)
 
 static xmlNode *
 pv_to_xmlnode(SV *value) {
-	char *string;
-	xmlDoc *doc;
-	xmlNode *node = NULL;
+	int size;
 
 	if (! SvPOK(value))
 		return NULL;
-	string = SvPV_nolen(value);
+	string = SvPV(value, len);
 	if (! string)
 		return NULL;
 
-	doc = xmlReadDoc(BAD_CAST string, NULL, NULL, XML_PARSE_NONET);
-	if (! doc)
-		return NULL;
-	lasso_assign_xml_node(node, xmlDocGetRootElement(doc));
-	lasso_release_doc(doc);
-
-	return node;
+	return lasso_string_fragment_to_xmlnode(string, len);
 }
 
 /**
