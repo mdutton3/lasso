@@ -61,6 +61,7 @@ class IdWsf2TestCase(unittest.TestCase):
         idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
 
         server = lasso.Server(wsp_metadata, wsp_private_key, None, None)
+        server.role = lasso.PROVIDER_ROLE_SP
         server.addProvider(lasso.PROVIDER_ROLE_IDP, idp_metadata, None, None)
         server.setEncryptionPrivateKey(wsp_private_key);
 
@@ -72,6 +73,7 @@ class IdWsf2TestCase(unittest.TestCase):
         idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
 
         server = lasso.Server(wsc_metadata, wsc_private_key, None, None)
+        server.role = lasso.PROVIDER_ROLE_SP
         server.addProvider(lasso.PROVIDER_ROLE_IDP, idp_metadata, None, None)
 
         return server;
@@ -79,6 +81,7 @@ class IdWsf2TestCase(unittest.TestCase):
     def getIdpServer(self):
         if hasattr(self, 'idp_server_dump') and self.idp_server_dump is not None:
             server = lasso.Server.newFromDump(self.idp_server_dump)
+            server.role = lasso.PROVIDER_ROLE_IDP
         else:
             idp_metadata = os.path.join(dataDir, 'idp5-saml2/metadata.xml')
             idp_private_key = os.path.join(dataDir, 'idp5-saml2/private-key.pem')
@@ -86,6 +89,7 @@ class IdWsf2TestCase(unittest.TestCase):
             wsc_metadata = os.path.join(dataDir, 'sp6-saml2/metadata.xml')
 
             server = lasso.Server(idp_metadata, idp_private_key, None, None)
+            server.role = lasso.PROVIDER_ROLE_IDP
             server.addProvider(lasso.PROVIDER_ROLE_SP, wsp_metadata, None, None)
             server.getProvider(server.providerIds[0]).setEncryptionMode(lasso.ENCRYPTION_MODE_NAMEID);
             server.addProvider(lasso.PROVIDER_ROLE_SP, wsc_metadata, None, None)
@@ -580,7 +584,7 @@ class MetadataTestCase(IdWsf2TestCase):
         idp_disco = lasso.IdWsf2Discovery(idp)
         idp_disco.processRequestMsg(wsp_disco.msgBody)
         idp_disco.checkSecurityMechanism()
-        self.failUnlessEqual(idp_disco.svcmdids, None)
+        self.failUnlessEqual(idp_disco.svcmdids, ())
         sender = idp_disco.getSoapEnvelopeRequest().sb2GetProviderId()
         for svcMDID in service_map.get(sender, []):
             idp_disco.addServiceMetadata(service_map.get(svcMDID))
@@ -676,7 +680,7 @@ class MetadataAssociationTestCase(IdWsf2TestCase):
         idp_disco = lasso.IdWsf2Discovery(idp)
         idp_disco.processRequestMsg(wsp_disco.msgBody)
         idp_disco.checkSecurityMechanism()
-        self.failUnlessEqual(idp_disco.svcmdids, None)
+        self.failUnlessEqual(idp_disco.svcmdids, ())
         f = self.nid2tuple(idp_disco.getNameIdentifier())
         uid = federations[f]
         result = []
