@@ -146,6 +146,9 @@
 #define lasso_release_xml_node(node) \
 	lasso_release_full2(node, xmlFreeNode, xmlNodePtr)
 
+#define lasso_release_xml_node_list(node) \
+	lasso_release_full2(node, xmlFreeNodeList, xmlNodePtr)
+
 #define lasso_release_doc(doc) \
 	lasso_release_full2(doc, xmlFreeDoc, xmlDocPtr)
 
