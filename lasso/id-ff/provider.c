@@ -96,6 +96,34 @@ void _lasso_provider_add_metadata_value_for_role(LassoProvider *provider,
 		LassoProviderRole role, const char *name, const char *value);
 typedef int LassoProviderRoleIndex;
 
+static int
+lasso_provider_try_loading_public_key(LassoProvider *provider, xmlSecKeyPtr *public_key, gboolean mandatory) {
+	if (provider->public_key || provider->private_data->signing_key_descriptor) {
+		*public_key = lasso_provider_get_public_key(provider);
+		if (*public_key == NULL)
+			return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+	} else {
+		*public_key = NULL;
+	}
+	if (*public_key == NULL && mandatory)
+		return LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY;
+	return 0;
+}
+
+static int
+lasso_provider_try_loading_ca_cert_chain(LassoProvider *provider, xmlSecKeysMngrPtr *keys_mngr)
+{
+	if (provider->ca_cert_chain != NULL) {
+		*keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
+				provider->ca_cert_chain);
+		if (*keys_mngr == NULL)
+			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
+	} else {
+		*keys_mngr = NULL;
+	}
+	return 0;
+}
+
 /*****************************************************************************/
 /* public methods */
 /*****************************************************************************/
@@ -1105,13 +1133,7 @@ _lasso_provider_new_helper(LassoProviderRole role, const char *metadata,
 	provider->public_key = g_strdup(public_key);
 	provider->ca_cert_chain = g_strdup(ca_cert_chain);
 
-	if (lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to load signing public key for %s.",
-				provider->ProviderID);
-		lasso_node_destroy(LASSO_NODE(provider));
-		return NULL;
-	}
-
+	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING);
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
@@ -1245,30 +1267,23 @@ lasso_provider_verify_saml_signature(LassoProvider *provider,
 	g_return_val_if_fail((signed_node->doc && doc) || ! signed_node->doc, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	/* ID-FF 1.2 Signatures case */
-	if (xmlSecCheckNodeName(signed_node, (xmlChar*)"Request", (xmlChar*)LASSO_SAML_PROTOCOL_HREF)) {
-		id_attribute_name = "RequestID";
-	}
-	if (xmlSecCheckNodeName(signed_node, (xmlChar*)"Response", (xmlChar*)LASSO_SAML_PROTOCOL_HREF)) {
-		id_attribute_name = "ResponseID";
-	}
-	if (xmlSecCheckNodeName(signed_node, (xmlChar*)"Assertion", (xmlChar*)LASSO_SAML_ASSERTION_HREF)) {
-		id_attribute_name = "AssertionID";
-	}
-	/* SAML 2.0 signature case */
 	node_ns = xmlSecGetNodeNsHref(signed_node);
 	if ((strcmp((char*)node_ns, LASSO_SAML2_PROTOCOL_HREF) == 0) ||
 			(strcmp((char*)node_ns, LASSO_SAML2_ASSERTION_HREF) == 0)) {
 		id_attribute_name = "ID";
+	} else if (xmlSecCheckNodeName(signed_node, (xmlChar*)"Request", (xmlChar*)LASSO_SAML_PROTOCOL_HREF)) {
+		id_attribute_name = "RequestID";
+	} else if (xmlSecCheckNodeName(signed_node, (xmlChar*)"Response", (xmlChar*)LASSO_SAML_PROTOCOL_HREF)) {
+		id_attribute_name = "ResponseID";
+	} else if (xmlSecCheckNodeName(signed_node, (xmlChar*)"Assertion", (xmlChar*)LASSO_SAML_ASSERTION_HREF)) {
+		id_attribute_name = "AssertionID";
 	}
 	goto_cleanup_if_fail_with_rc(id_attribute_name, LASSO_PARAM_ERROR_INVALID_VALUE);
 	/* Get provider credentials */
-	public_key = lasso_provider_get_public_key(provider);
-	keys_manager = lasso_load_certs_from_pem_certs_chain_file(provider->ca_cert_chain);
-	goto_cleanup_if_fail_with_rc_with_warning(public_key || keys_manager,
-			LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
+	lasso_check_good_rc(lasso_provider_try_loading_ca_cert_chain(provider, &keys_manager));
+	lasso_check_good_rc(lasso_provider_try_loading_public_key(provider, &public_key, keys_manager == NULL));
 	rc = lasso_verify_signature(signed_node, doc, id_attribute_name, keys_manager, public_key,
 			NO_OPTION, NULL);
-	lasso_release_key_manager(keys_manager);
 cleanup:
 	lasso_release_key_manager(keys_manager);
 	return rc;
@@ -1281,7 +1296,6 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	/* this duplicates some code from lasso_node_init_from_message;
 	 * reflection about code reuse is under way...
 	 */
-	char *msg = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *xmlnode = NULL, *sign = NULL, *x509data = NULL;
 	xmlSecKeysMngr *keys_mngr = NULL;
@@ -1289,13 +1303,14 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	int rc = 0;
 	xmlXPathContext *xpathCtx = NULL;
 	xmlXPathObject *xpathObj = NULL;
+	xmlSecKey *public_key = NULL;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (lasso_flag_verify_signature == FALSE)
 		return 0;
 
-	msg = (char*)message;
+
 	if (message == NULL)
 		return LASSO_PROFILE_ERROR_INVALID_MSG;
 
@@ -1305,31 +1320,34 @@ lasso_provider_verify_signature(LassoProvider *provider,
 		return LASSO_PROFILE_ERROR_INVALID_MSG;
 
 	if (format == LASSO_MESSAGE_FORMAT_QUERY) {
+		lasso_check_good_rc(lasso_provider_try_loading_public_key(provider, &public_key, TRUE));
+
 		switch (lasso_provider_get_protocol_conformance(provider)) {
 			case LASSO_PROTOCOL_LIBERTY_1_0:
 			case LASSO_PROTOCOL_LIBERTY_1_1:
 			case LASSO_PROTOCOL_LIBERTY_1_2:
-				return lasso_query_verify_signature(message,
-						lasso_provider_get_public_key(provider));
+				return lasso_query_verify_signature(message, public_key);
 			case LASSO_PROTOCOL_SAML_2_0:
-				return lasso_saml2_query_verify_signature(message,
-						lasso_provider_get_public_key(provider));
+				return lasso_saml2_query_verify_signature(message, public_key);
 			default:
 				return LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
 		}
 	}
+	lasso_check_good_rc(lasso_provider_try_loading_ca_cert_chain(provider, &keys_mngr));
+	/* public key is mandatory if no keys manager is present */
+	lasso_check_good_rc(lasso_provider_try_loading_public_key(provider, &public_key, keys_mngr == NULL));
 
 	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
 		int len;
-		msg = g_malloc(strlen(message));
+		char *msg = g_malloc(strlen(message));
 		len = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
 		if (len < 0) {
 			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
 		doc = lasso_xml_parse_memory(msg, strlen(msg));
+		lasso_release_string(msg);
 	} else {
-		doc = lasso_xml_parse_memory(msg, strlen(msg));
-		msg = NULL;
+		doc = lasso_xml_parse_memory(message, strlen(message));
 	}
 
 	if (format == LASSO_MESSAGE_FORMAT_SOAP) {
@@ -1378,19 +1396,17 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	}
 
 	x509data = xmlSecFindNode(xmlnode, xmlSecNodeX509Data, xmlSecDSigNs);
-	if (x509data != NULL && provider->ca_cert_chain != NULL) {
-		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
-				provider->ca_cert_chain);
-		goto_cleanup_if_fail_with_rc (keys_mngr != NULL, LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED);
+	if (x509data == NULL) { /* no need for a keys mngr if there is no X509 data */
+		lasso_release_key_manager(keys_mngr);
 	}
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
-	if (keys_mngr == NULL) {
-		dsigCtx->signKey = xmlSecKeyDuplicate(lasso_provider_get_public_key(provider));
-		goto_cleanup_if_fail_with_rc (dsigCtx->signKey != NULL, LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
+	if (public_key) {
+		dsigCtx->signKey = xmlSecKeyDuplicate(public_key);
 	}
 
-	goto_cleanup_if_fail_with_rc (xmlSecDSigCtxVerify(dsigCtx, sign) >= 0, LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
+	goto_cleanup_if_fail_with_rc (xmlSecDSigCtxVerify(dsigCtx, sign) >= 0,
+			LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
 
 	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
 		rc = LASSO_DS_ERROR_INVALID_SIGNATURE;
@@ -1398,7 +1414,6 @@ lasso_provider_verify_signature(LassoProvider *provider,
 	}
 
 cleanup:
-	lasso_release_string(msg);
 	lasso_release_key_manager(keys_mngr);
 	lasso_release_signature_context(dsigCtx);
 	if (xpathCtx)
@@ -1489,24 +1504,25 @@ lasso_provider_get_encryption_sym_key_type(const LassoProvider *provider)
 int
 lasso_provider_verify_query_signature(LassoProvider *provider, const char *message)
 {
-	const xmlSecKey *provider_public_key;
+	xmlSecKey *provider_public_key;
+	int rc = 0;
 
 	lasso_bad_param(PROVIDER, provider);
-	provider_public_key = lasso_provider_get_public_key(provider);
+	lasso_check_good_rc(lasso_provider_try_loading_public_key(provider, &provider_public_key, TRUE));
 	g_return_val_if_fail(provider_public_key, LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY);
 
 	switch (lasso_provider_get_protocol_conformance(provider)) {
 		case LASSO_PROTOCOL_LIBERTY_1_0:
 		case LASSO_PROTOCOL_LIBERTY_1_1:
 		case LASSO_PROTOCOL_LIBERTY_1_2:
-			return lasso_query_verify_signature(message,
-					lasso_provider_get_public_key(provider));
+			return lasso_query_verify_signature(message, provider_public_key);
 		case LASSO_PROTOCOL_SAML_2_0:
-			return lasso_saml2_query_verify_signature(message,
-					lasso_provider_get_public_key(provider));
+			return lasso_saml2_query_verify_signature(message, provider_public_key);
 		default:
 			return LASSO_ERROR_UNIMPLEMENTED;
 	}
+cleanup:
+	return rc;
 }
 
 /**
@@ -1569,17 +1585,21 @@ int
 lasso_provider_verify_single_node_signature (LassoProvider *provider, LassoNode *node, const char *id_attr_name)
 {
 	xmlNode *xmlnode = NULL;
-	xmlSecKey *xmlseckey = NULL;
+	xmlSecKey *public_key = NULL;
+	xmlSecKeysMngr *keys_mngr = NULL;
+	int rc = 0;
 
 	xmlnode = lasso_node_get_original_xmlnode (node);
 	if (xmlnode == NULL) {
 		return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
 	}
-	xmlseckey = lasso_provider_get_public_key (provider);
-	if (xmlseckey == NULL) {
-		return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-	}
-	return lasso_verify_signature(xmlnode, NULL, id_attr_name, NULL, xmlseckey, NO_SINGLE_REFERENCE, NULL);
+	lasso_check_good_rc(lasso_provider_try_loading_ca_cert_chain(provider, &keys_mngr));
+	lasso_check_good_rc(lasso_provider_try_loading_public_key(provider, &public_key,
+				keys_mngr == NULL));
+	rc = lasso_verify_signature(xmlnode, NULL, id_attr_name, keys_mngr, public_key,
+			NO_SINGLE_REFERENCE, NULL);
+cleanup:
+	return rc;
 }
 
 struct AddForRoleHelper {
