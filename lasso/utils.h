@@ -140,6 +140,9 @@
 #define lasso_release_list_of_xml_node(dest) \
 	lasso_release_list_of_full(dest, xmlFreeNode)
 
+#define lasso_release_list_of_xml_node_list(dest) \
+	lasso_release_list_of_full(dest, xmlFreeNodeList)
+
 #define lasso_release_xml_node(node) \
 	lasso_release_full2(node, xmlFreeNode, xmlNodePtr)
 
