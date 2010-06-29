@@ -3402,6 +3402,8 @@ LASSO_SAMLP2_NAME_ID_MAPPING_REQUEST_GET_CLASS
 <TITLE>LassoSamlp2LogoutRequest</TITLE>
 LassoSamlp2LogoutRequest
 lasso_samlp2_logout_request_new
+lasso_samlp2_logout_request_get_session_indexes
+lasso_samlp2_logout_request_set_session_indexes
 <SUBSECTION Standard>
 LASSO_SAMLP2_LOGOUT_REQUEST
 LASSO_IS_SAMLP2_LOGOUT_REQUEST

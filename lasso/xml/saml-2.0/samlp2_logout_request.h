@@ -78,9 +78,15 @@ struct _LassoSamlp2LogoutRequestClass {
 };
 
 LASSO_EXPORT GType lasso_samlp2_logout_request_get_type(void);
+
 LASSO_EXPORT LassoNode* lasso_samlp2_logout_request_new(void);
 
+LASSO_EXPORT GList* lasso_samlp2_logout_request_get_session_indexes(
+		LassoSamlp2LogoutRequest *logout_request);
 
+LASSO_EXPORT void lasso_samlp2_logout_request_set_session_indexes(
+		LassoSamlp2LogoutRequest *logout_request,
+		GList *session_index);
 
 #ifdef __cplusplus
 }
