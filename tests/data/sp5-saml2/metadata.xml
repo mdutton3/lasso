@@ -64,6 +64,9 @@ LlTxKnCrWAXftSm1rNtewTsF
       </ds:KeyInfo>
     </KeyDescriptor>
   
+    <ArtifactResolutionService isDefault="true" index="0"
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+      Location="http://sp5/artifact" />
     <SingleLogoutService
       Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
       Location="http://sp5/singleLogoutSOAP" />

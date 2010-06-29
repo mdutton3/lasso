@@ -424,10 +424,16 @@ lasso_saml20_profile_process_artifact_response(LassoProfile *profile, const char
 	goto_cleanup_if_fail_with_rc(profile->response != NULL,
 			critical_error(LASSO_PROFILE_ERROR_INVALID_RESPONSE));
 	if (artifact_response->any == NULL) {
-		lasso_release_gobject(profile->response);
-		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_RESPONSE);
+		rc = LASSO_PROFILE_ERROR_MISSING_RESPONSE;
+	} else {
+		if (LASSO_IS_SAMLP2_REQUEST_ABSTRACT(artifact_response->any)) {
+			lasso_assign_gobject(profile->request, artifact_response->any);
+		} else if (LASSO_IS_SAMLP2_STATUS_RESPONSE(artifact_response->any)) {
+			lasso_assign_gobject(profile->response, artifact_response->any);
+		} else {
+			rc = LASSO_PROFILE_ERROR_INVALID_RESPONSE;
+		}
 	}
-	lasso_assign_gobject(profile->response, artifact_response->any);
 
 cleanup:
 	lasso_release_gobject(artifact_response);

@@ -208,6 +208,42 @@ class LoginTestCase(unittest.TestCase):
         self.failUnless('<action2>do action 2</action2>' in extensionsList[0])
         self.failUnless('<action3>do action 3</action3>' in extensionsList[0])
 
+    def test05(self):
+        '''SAMLv2 Authn request emitted and received using Artifact binding'''
+
+        sp = lasso.Server(
+            os.path.join(dataDir, 'sp5-saml2/metadata.xml'),
+            os.path.join(dataDir, 'sp5-saml2/private-key.pem'))
+        assert sp
+        sp.addProvider(
+            lasso.PROVIDER_ROLE_IDP,
+            os.path.join(dataDir, 'idp5-saml2/metadata.xml'))
+        sp_login = lasso.Login(sp)
+        assert sp_login
+        sp_login.initAuthnRequest(None, lasso.HTTP_METHOD_ARTIFACT_GET)
+        sp_login.buildAuthnRequestMsg()
+        sp_login_dump = sp_login.dump()
+        idp = lasso.Server(
+            os.path.join(dataDir, 'idp5-saml2/metadata.xml'),
+            os.path.join(dataDir, 'idp5-saml2/private-key.pem'))
+        idp.addProvider(
+            lasso.PROVIDER_ROLE_SP,
+            os.path.join(dataDir, 'sp5-saml2/metadata.xml'))
+        idp_login = lasso.Login(idp)
+        idp_login.initRequest(sp_login.msgUrl.split('?')[1], lasso.HTTP_METHOD_ARTIFACT_GET)
+        idp_login.buildRequestMsg()
+        sp_login2 = lasso.Login.newFromDump(sp, sp_login_dump)
+        assert isinstance(sp_login2, lasso.Login)
+        assert idp_login.msgBody
+        sp_login2.processRequestMsg(idp_login.msgBody)
+        sp_login2.buildResponseMsg()
+        assert sp_login2.msgBody
+        try:
+            idp_login.processResponseMsg(sp_login2.msgBody)
+        except:
+            print idp_login.response
+            raise
+        assert isinstance(idp_login.request, lasso.Samlp2AuthnRequest)
 
 class LogoutTestCase(unittest.TestCase):
     def test01(self):
@@ -293,21 +329,6 @@ class LogoutTestCase(unittest.TestCase):
                 raise
         else:
             self.fail('Logout processResponseMsg should have failed.')
-
-    def test05(self):
-        """IDP logout; testing logout dump & newFromDump()."""
-
-        lassoServer = lasso.Server(
-            os.path.join(dataDir, 'idp1-la/metadata.xml'),
-            os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
-            None,
-            os.path.join(dataDir, 'idp1-la/certificate.pem'))
-        lassoServer.addProvider(
-            lasso.PROVIDER_ROLE_SP,
-            os.path.join(dataDir, 'sp1-la/metadata.xml'),
-            os.path.join(dataDir, 'sp1-la/public-key.pem'),
-            os.path.join(dataDir, 'sp1-la/certificate.pem'))
-
 
 class DefederationTestCase(unittest.TestCase):
     def test01(self):

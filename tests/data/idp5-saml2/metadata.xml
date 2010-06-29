@@ -82,6 +82,9 @@ LlTxKnCrWAXftSm1rNtewTsF
   <SingleSignOnService
     Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
     Location="http://idp5/singleSignOnSOAP" />
+  <SingleSignOnService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+    Location="http://idp5/singleSignOnArtifact" />
 </IDPSSODescriptor>
 <Organization>
    <OrganizationName xml:lang="en">Entr'ouvert</OrganizationName>

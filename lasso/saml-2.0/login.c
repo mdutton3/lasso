@@ -52,6 +52,7 @@
 #include "../xml/saml-2.0/saml2_attribute_value.h"
 #include "../xml/saml-2.0/saml2_name_id.h"
 #include "../xml/saml-2.0/saml2_xsd.h"
+#include "../xml/saml-2.0/samlp2_artifact_response.h"
 
 #include "../utils.h"
 
@@ -1078,8 +1079,11 @@ lasso_saml20_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 	if (rc) {
 		return rc;
 	}
-
-	return lasso_saml20_login_process_response_status_and_assertion(login);
+	if (LASSO_IS_SAMLP2_ARTIFACT_RESPONSE(login->parent.response)) {
+		return lasso_saml20_login_process_authn_request_msg(login, NULL);
+	} else {
+		return lasso_saml20_login_process_response_status_and_assertion(login);
+	}
 }
 
 static gint

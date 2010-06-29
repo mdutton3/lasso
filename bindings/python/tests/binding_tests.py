@@ -293,7 +293,6 @@ class BindingTestCase(unittest.TestCase):
         mdata = os.path.join(dataDir, 'sp7-saml2', 'metadata.xml')
         password = file(os.path.join(dataDir, 'sp7-saml2', 'password')).read().strip()
         server = lasso.Server(mdata, pkey, password)
-        print server
         assert isinstance(server, lasso.Server)
         server_dump = server.dump()
         assert server_dump
