@@ -41,7 +41,7 @@ Makefile.perl: $(srcdir)/Makefile.PL Lasso.xs Lasso.pm
 		done; \
 		chmod -R u+rwX $(TOCOPY); \
 	fi;
-	$(AM_V_SUBMAKE) $(PERL) Makefile.PL PREFIX=$(prefix) CCFLAGS="$(LASSO_XS_CFLAGS)" INC="-I. -I$(top_srcdir)" LIBS="`$(top_builddir)/lasso-src-config --libs`" OPTIMIZE="-g" $(AM_V_SUBMAKE_POSTFIX)
+	$(AM_V_SUBMAKE) $(PERL) Makefile.PL PREFIX=$(prefix) CCFLAGS="$(LASSO_XS_CFLAGS)" INC="-I. -I$(top_srcdir) -I$(srcdir)" LIBS="`$(top_builddir)/lasso-src-config --libs`" OPTIMIZE="-g" $(AM_V_SUBMAKE_POSTFIX)
 
 Lasso.xs Lasso.pm: lang.py typemap-in typemap-out
 	$(AM_V_GEN) $(PYTHON) $(top_srcdir)/bindings/bindings.py -l perl --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)

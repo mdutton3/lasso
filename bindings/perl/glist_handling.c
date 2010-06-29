@@ -68,15 +68,16 @@ xmlnode_to_pv(xmlNode *node, gboolean do_free)
 
 static xmlNode *
 pv_to_xmlnode(SV *value) {
-	int size;
+	unsigned int size;
+	char *string;
 
 	if (! SvPOK(value))
 		return NULL;
-	string = SvPV(value, len);
+	string = SvPV(value, size);
 	if (! string)
 		return NULL;
 
-	return lasso_string_fragment_to_xmlnode(string, len);
+	return lasso_string_fragment_to_xmlnode(string, size);
 }
 
 /**
