@@ -656,6 +656,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	};
 	xmlChar *s;
 	int i;
+	int rc = 0;
 
 	parent_class->init_from_xml(node, xmlnode);
 
@@ -703,10 +704,18 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	}
 
 	/* Load signing and encryption public keys */
-	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING);
-	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
+	if (!lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING)) {
+		message(G_LOG_LEVEL_WARNING, "Could not load public signing key of %s",
+				provider->ProviderID);
+		rc = 1;
+	}
+	if (!lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION)) {
+		message(G_LOG_LEVEL_WARNING, "Could not load public encryption key of %s",
+				provider->ProviderID);
+		rc = 1;
+	}
 
-	return 0;
+	return rc;
 }
 
 static void*
@@ -1118,27 +1127,35 @@ _lasso_provider_new_helper(LassoProviderRole role, const char *metadata,
 		const char *public_key, const char *ca_cert_chain, gboolean (*loader)(
 			LassoProvider *provider, const gchar *metadata))
 {
-	LassoProvider *provider;
+	LassoProvider *provider = NULL, *ret = NULL;
 
-	provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
+	provider = (LassoProvider*)g_object_new(LASSO_TYPE_PROVIDER, NULL);
 	provider->role = role;
 	if (loader(provider, metadata) == FALSE) {
 		if (loader == lasso_provider_load_metadata) {
 			message(G_LOG_LEVEL_WARNING, "Cannot load metadata from %s", metadata);
 		}
-		lasso_node_destroy(LASSO_NODE(provider));
-		return NULL;
+		goto cleanup;
 	}
 
-	provider->public_key = g_strdup(public_key);
-	provider->ca_cert_chain = g_strdup(ca_cert_chain);
-
-	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING);
-	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
+	lasso_assign_string(provider->public_key, public_key);
+	lasso_assign_string(provider->ca_cert_chain, ca_cert_chain);
+	if (!lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING)) {
+		message(G_LOG_LEVEL_WARNING, "Could not load public signing key of %s",
+				provider->ProviderID);
+		goto cleanup;
+	}
+	if (!lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION)) {
+		message(G_LOG_LEVEL_WARNING, "Could not load public encryption key of %s",
+				provider->ProviderID);
+		goto cleanup;
+	}
 
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
-
-	return provider;
+	lasso_transfer_gobject(ret, provider);
+cleanup:
+	lasso_release_gobject(provider);
+	return ret;
 }
 /**
  * lasso_provider_new:
@@ -1203,7 +1220,7 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 	}
 
 	if (public_key == NULL && key_descriptor == NULL) {
-		return FALSE;
+		return TRUE;
 	}
 
 	if (public_key == NULL) {
