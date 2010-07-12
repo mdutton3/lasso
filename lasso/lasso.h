@@ -68,7 +68,7 @@ typedef enum {
 } LassoCheckVersionMode;
 
 
-LASSO_EXPORT lasso_error_t lasso_check_version(
+LASSO_EXPORT int lasso_check_version(
 		int major, int minor, int subminor, LassoCheckVersionMode mode);
 
 LASSO_EXPORT void lasso_set_flag(char *flag);
