@@ -31,6 +31,7 @@
 #include "../lasso/xml/saml-2.0/samlp2_authn_request.h"
 #include "../lasso/utils.h"
 #include "../lasso/backward_comp.h"
+#include "../lasso/xml/saml-2.0/samlp2_logout_request.h"
 
 #include "./tests.h"
 
@@ -479,6 +480,208 @@ START_TEST(test03_saml2_serviceProviderLogin)
 	g_object_unref(idpLoginContext);
 }
 END_TEST
+
+START_TEST(test04_sso_then_slo_soap)
+{
+	char *serviceProviderContextDump = NULL, *identityProviderContextDump = NULL;
+	LassoServer *spContext = NULL, *idpContext = NULL;
+	LassoLogin *spLoginContext = NULL, *idpLoginContext = NULL;
+	LassoLogout *spLogoutContext = NULL, *idpLogoutContext = NULL;
+	LassoSamlp2AuthnRequest *request = NULL;
+	int rc = 0;
+	char *relayState = NULL;
+	char *authnRequestUrl = NULL, *authnRequestQuery = NULL;
+	char *logoutRequestSoapMessage = NULL;
+	char *logoutResponseSoapMessage = NULL;
+	char *responseUrl = NULL, *responseQuery = NULL;
+	char *idpIdentityContextDump = NULL, *idpSessionContextDump = NULL;
+	char *serviceProviderId = NULL, *soapRequestMsg = NULL, *soapResponseMsg = NULL;
+	char *spIdentityContextDump = NULL;
+	char *spSessionDump = NULL;
+	char *spLoginDump = NULL, *idpLoginDump = NULL;
+	char *found = NULL;
+	LassoSaml2Assertion *assertion;
+
+	serviceProviderContextDump = generateServiceProviderContextDump();
+	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
+	spLoginContext = lasso_login_new(spContext);
+	fail_unless(spLoginContext != NULL,
+			"lasso_login_new() shouldn't have returned NULL");
+	rc = lasso_login_init_authn_request(spLoginContext, "http://idp5/metadata",
+			LASSO_HTTP_METHOD_REDIRECT);
+	fail_unless(rc == 0, "lasso_login_init_authn_request failed");
+	request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(spLoginContext)->request);
+	fail_unless(LASSO_IS_SAMLP2_AUTHN_REQUEST(request), "request should be authn_request");
+	request->IsPassive = 0;
+	lasso_assign_string(request->NameIDPolicy->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
+	request->NameIDPolicy->AllowCreate = 1;
+	relayState = "fake[]";
+	lasso_assign_string(LASSO_PROFILE(spLoginContext)->msg_relayState, relayState);
+	rc = lasso_login_build_authn_request_msg(spLoginContext);
+	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
+	authnRequestUrl = LASSO_PROFILE(spLoginContext)->msg_url;
+	fail_unless(authnRequestUrl != NULL,
+			"authnRequestUrl shouldn't be NULL");
+	authnRequestQuery = strchr(authnRequestUrl, '?')+1;
+	fail_unless(strlen(authnRequestQuery) > 0,
+			"authnRequestQuery shouldn't be an empty string");
+	spLoginDump = lasso_node_dump(LASSO_NODE(spLoginContext));
+	fail_unless(strstr(authnRequestQuery, "RelayState") != NULL,
+			"authnRequestQuery should contain a RelayState parameter");
+	fail_unless(strstr(authnRequestQuery, "fake%5B%5D") != NULL,
+			"authnRequestQuery RelayState parameter should be encoded");
+
+	/* Identity provider singleSignOn, for a user having no federation. */
+	identityProviderContextDump = generateIdentityProviderContextDump();
+	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
+	idpLoginContext = lasso_login_new(idpContext);
+	fail_unless(idpLoginContext != NULL,
+			"lasso_login_new() shouldn't have returned NULL");
+	check_good_rc(lasso_login_process_authn_request_msg(idpLoginContext, authnRequestQuery));
+	check_true(lasso_login_must_authenticate(idpLoginContext));
+	check_equals(idpLoginContext->protocolProfile, LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART);
+	check_false(lasso_login_must_ask_for_consent(idpLoginContext));
+	check_not_null(idpLoginContext->parent.msg_relayState);
+	check_equals(g_strcmp0(idpLoginContext->parent.msg_relayState, relayState), 0);
+	check_good_rc(lasso_login_validate_request_msg(idpLoginContext,
+			1, /* authentication_result */
+		        0 /* is_consent_obtained */
+			));
+
+	check_good_rc(lasso_login_build_assertion(idpLoginContext,
+			LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD,
+			"FIXME: authenticationInstant",
+			"FIXME: reauthenticateOnOrAfter",
+			"FIXME: notBefore",
+			"FIXME: notOnOrAfter"));
+	assertion = (LassoSaml2Assertion*)lasso_login_get_assertion(idpLoginContext);
+	check_true(LASSO_IS_SAML2_ASSERTION(assertion));
+	lasso_saml2_assertion_set_basic_conditions(LASSO_SAML2_ASSERTION(assertion), 60, 120, FALSE);
+	lasso_release_gobject(assertion);
+	check_good_rc(lasso_login_build_artifact_msg(idpLoginContext, LASSO_HTTP_METHOD_ARTIFACT_GET));
+
+	idpIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(idpLoginContext)->identity);
+	check_not_null(idpIdentityContextDump);
+	idpSessionContextDump = lasso_session_dump(LASSO_PROFILE(idpLoginContext)->session);
+	check_not_null(idpSessionContextDump);
+	responseUrl = LASSO_PROFILE(idpLoginContext)->msg_url;
+	check_not_null(responseUrl);
+	responseQuery = strchr(responseUrl, '?')+1;
+	fail_unless(strlen(responseQuery) > 0,
+			"responseQuery shouldn't be an empty string");
+	check_not_null(strstr(responseQuery, "RelayState"));
+	check_not_null(strstr(responseQuery, "fake%5B%5D"));
+	lasso_assign_string(serviceProviderId, LASSO_PROFILE(idpLoginContext)->remote_providerID);
+	check_not_null(serviceProviderId);
+
+	/* Service provider assertion consumer */
+	lasso_server_destroy(spContext);
+	lasso_login_destroy(spLoginContext);
+
+	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
+	spLoginContext = lasso_login_new_from_dump(spContext, spLoginDump);
+	check_good_rc(lasso_login_init_request(spLoginContext,
+			responseQuery,
+			LASSO_HTTP_METHOD_ARTIFACT_GET));
+	check_not_null(spLoginContext->parent.msg_relayState);
+	check_equals(g_strcmp0(spLoginContext->parent.msg_relayState, relayState), 0);
+	check_good_rc(lasso_login_build_request_msg(spLoginContext));
+	soapRequestMsg = LASSO_PROFILE(spLoginContext)->msg_body;
+	check_not_null(soapRequestMsg);
+
+	/* Identity provider SOAP endpoint */
+	lasso_server_destroy(idpContext);
+	idpLoginDump = lasso_node_dump(LASSO_NODE(idpLoginContext));
+	lasso_login_destroy(idpLoginContext);
+
+	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
+	idpLoginContext = lasso_login_new_from_dump(idpContext, idpLoginDump);
+	check_good_rc(lasso_login_process_request_msg(idpLoginContext, soapRequestMsg));
+
+	check_good_rc(lasso_profile_set_session_from_dump(LASSO_PROFILE(idpLoginContext),
+						 idpSessionContextDump));
+	check_good_rc(lasso_login_build_response_msg(idpLoginContext, serviceProviderId));
+	soapResponseMsg =  LASSO_PROFILE(idpLoginContext)->msg_body;
+	check_not_null(soapResponseMsg);
+
+	/* Service provider assertion consumer (step 2: process SOAP response) */
+	check_good_rc(lasso_login_process_response_msg(spLoginContext, soapResponseMsg));
+	check_good_rc(lasso_login_accept_sso(spLoginContext));
+	assertion = (LassoSaml2Assertion*)lasso_login_get_assertion(spLoginContext);
+	check_true(LASSO_IS_SAML2_ASSERTION(assertion));
+	check_equals(lasso_saml2_assertion_validate_conditions(assertion,
+				spLoginContext->parent.server->parent.ProviderID),
+			LASSO_SAML2_ASSERTION_VALID);
+	check_equals(lasso_saml2_assertion_validate_conditions(assertion, "coin"), LASSO_SAML2_ASSERTION_INVALID);
+	lasso_release_gobject(assertion);
+	check_not_null(LASSO_PROFILE(spLoginContext)->identity);
+	spIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(spLoginContext)->identity);
+	check_not_null(spIdentityContextDump);
+	spSessionDump = lasso_session_dump(LASSO_PROFILE(spLoginContext)->session);
+
+	/* Test InResponseTo checking */
+	if (! strstr(soapResponseMsg, "EncryptedAssertion")) {
+		found = strstr(soapResponseMsg, "Assertion");
+		check_not_null(found);
+		found = strstr(found, "InResponseTo=\"");
+		check_not_null(found);
+		found[sizeof("InResponseTo=\"")] = '?';
+		lasso_set_flag("no-verify-signature");
+		check_not_equals(lasso_login_process_response_msg(spLoginContext, soapResponseMsg), 0);
+		lasso_set_flag("verify-signature");
+		check_not_equals(lasso_login_accept_sso(spLoginContext), 0);
+	}
+
+	/* logout test */
+	/* generate a logout request */
+	check_not_null(idpLogoutContext = lasso_logout_new(idpContext));
+	check_good_rc(lasso_profile_set_session_from_dump(&idpLogoutContext->parent, idpSessionContextDump));
+	check_good_rc(lasso_logout_init_request(idpLogoutContext, NULL, LASSO_HTTP_METHOD_SOAP));
+	check_good_rc(lasso_logout_build_request_msg(idpLogoutContext));
+	check_not_null(idpLogoutContext->parent.msg_url);
+	check_not_null(idpLogoutContext->parent.msg_body);
+	printf("Request: %s\n", idpLogoutContext->parent.msg_body);
+	printf("SessionIndex: %s\n", ((LassoSamlp2LogoutRequest*)idpLogoutContext->parent.request)->SessionIndex);
+	check_null(idpLogoutContext->parent.msg_relayState);
+	lasso_assign_string(logoutRequestSoapMessage, idpLogoutContext->parent.msg_body);
+	check_not_null(logoutRequestSoapMessage);
+
+	/* process the logout request */
+	check_not_null(spLogoutContext = lasso_logout_new(spContext));
+	check_good_rc(lasso_profile_set_session_from_dump(&spLogoutContext->parent, spSessionDump));
+	check_good_rc(lasso_logout_process_request_msg(spLogoutContext, logoutRequestSoapMessage));
+	lasso_release(logoutRequestSoapMessage);
+	check_good_rc(lasso_logout_validate_request(spLogoutContext));
+	check_good_rc(lasso_logout_build_response_msg(spLogoutContext));
+	check_not_null(spLogoutContext->parent.msg_body);
+	check_null(spLogoutContext->parent.msg_url);
+	check_null(spLogoutContext->parent.msg_relayState);
+	lasso_assign_string(logoutResponseSoapMessage, spLogoutContext->parent.msg_body);
+	lasso_release_gobject(spLogoutContext);
+
+	/* process the response */
+	check_not_null(idpLogoutContext = lasso_logout_new(idpContext));
+	check_good_rc(lasso_profile_set_session_from_dump(&idpLogoutContext->parent, idpSessionContextDump));
+	check_good_rc(lasso_logout_process_response_msg(idpLogoutContext, logoutResponseSoapMessage));
+	lasso_release_gobject(idpLogoutContext);
+	lasso_release_string(logoutResponseSoapMessage);
+
+	g_free(idpLoginDump);
+	g_free(serviceProviderId);
+	g_free(serviceProviderContextDump);
+	g_free(identityProviderContextDump);
+	g_free(idpSessionContextDump);
+	g_free(idpIdentityContextDump);
+	g_free(spIdentityContextDump);
+	g_free(spSessionDump);
+	g_free(spLoginDump);
+	g_object_unref(spContext);
+	g_object_unref(idpContext);
+	g_object_unref(spLoginContext);
+	g_object_unref(idpLoginContext);
+}
+END_TEST
+
 Suite*
 login_saml2_suite()
 {
@@ -486,12 +689,15 @@ login_saml2_suite()
 	TCase *tc_generate = tcase_create("Generate Server Contexts");
 	TCase *tc_spLogin = tcase_create("Login initiated by service provider");
 	TCase *tc_spLoginMemory = tcase_create("Login initiated by service provider without key loading");
+	TCase *tc_spSloSoap = tcase_create("Login initiated by service provider without key loading and with SLO SOAP");
 	suite_add_tcase(s, tc_generate);
 	suite_add_tcase(s, tc_spLogin);
 	suite_add_tcase(s, tc_spLoginMemory);
+	suite_add_tcase(s, tc_spSloSoap);
 	tcase_add_test(tc_generate, test01_saml2_generateServersContextDumps);
 	tcase_add_test(tc_spLogin, test02_saml2_serviceProviderLogin);
 	tcase_add_test(tc_spLoginMemory, test03_saml2_serviceProviderLogin);
+	tcase_add_test(tc_spSloSoap, test04_sso_then_slo_soap);
 	return s;
 }
 
