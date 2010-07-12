@@ -19,7 +19,7 @@ lasso.rc.lo: $(top_srcdir)/win32/lasso.rc
 lib_LTLIBRARIES = liblasso.la
 
 liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h \
-			  registry.h
+			  registry.h ctypes.h
 nodist_liblassoinclude_HEADERS = debug.h utils.h registry-private.h logging.h backward_comp.h
 BUILT_SOURCES = types.c errors.c symbols.sym
 
