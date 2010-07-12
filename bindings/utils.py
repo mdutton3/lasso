@@ -249,7 +249,7 @@ def is_rc(arg):
     return arg_type(arg) in [ 'int', 'gint' ]
 
 def is_int(arg, binding_data):
-    return remove_modifiers(arg_type(arg)) in [ 'time_t', 'int', 'gint', 'long', 'glong'] + binding_data.enums
+    return remove_modifiers(arg_type(arg)) in [ 'time_t', 'int', 'gint', 'long', 'glong', 'lasso_error_t'] + binding_data.enums
 
 def is_time_t_pointer(arg):
     return re.match(r'\btime_t\*', unconstify(arg_type(arg)))
