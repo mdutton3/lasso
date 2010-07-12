@@ -111,7 +111,7 @@ GHashTable*\tT_PTRREF
 
 ''')
         # Map integer types
-        for int in [ 'int', 'gint', 'long', 'glong'] + self.binding_data.enums:
+        for int in [ 'lasso_error_t', 'int', 'gint', 'long', 'glong'] + self.binding_data.enums:
             self.typemap.pn('%-30s T_IV' % int)
 
         # Map object types
