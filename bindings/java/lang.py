@@ -136,9 +136,6 @@ class Binding:
         print
         print
 
-    def is_int_type(self, type):
-        return type in ['gboolean','int','gint'] + self.binding_data.enums
-
 
     def is_gobject_type(self, t):
         return t not in ['char*', 'const char*', 'gchar*', 'const gchar*',
@@ -247,7 +244,7 @@ protected static native void destroy(long cptr);
             vtype = m.group(1)
         if vtype == 'gboolean':
             return 'boolean'
-        elif vtype in ['int','gint'] + self.binding_data.enums:
+        elif is_int(vtype, self.binding_data):
             return 'int'
         elif vtype in ('guchar*', 'char*', 'gchar*'):
             return 'String'
@@ -522,7 +519,7 @@ protected static native void destroy(long cptr);
             for  arg in m.args:
                 arg_type, arg_name, arg_options = arg
                 arglist = arglist + ', %s' % arg_name
-                if self.is_int_type(arg_type):
+                if is_int(arg_type, self.binding_data):
                     print >> fd, '%i',
                 elif is_cstring(arg_type):
                     print >> fd, '%s',
