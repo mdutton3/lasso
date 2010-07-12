@@ -340,7 +340,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
                     format_underscore_as_camelcase(mname), php_args)
             if m.return_type == 'void':
                 print >> self.fd, '        %s($this->_cptr%s);' % (cname, c_args)
-            elif m.return_type in ('gint', 'int'):
+            elif is_rc(m.return_type):
                 print >> self.fd, '        $rc = %s($this->_cptr%s);' % (cname, c_args)
                 print >> self.fd, '        if ($rc == 0) {'
                 print >> self.fd, '            return 0;'
