@@ -30,8 +30,7 @@ class PhpCode:
         self.fd = fd
 
     def is_object(self, t):
-        return t not in ['char*', 'const char*', 'gchar*', 'const gchar*', 'GList*', 'GHashTable*',
-                'xmlNode*', 'int', 'gint', 'gboolean', 'const gboolean'] + self.binding_data.enums
+        return is_object(t) and not is_int(t, self.binding_data)
 
     def generate(self):
         self.generate_header()
