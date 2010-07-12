@@ -822,6 +822,12 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 			lasso_saml2_authn_context_new());
 	authentication_statement->AuthnContext->AuthnContextClassRef = g_strdup(
 			authenticationMethod);
+
+	/* if remote provider supports logout profile, add a session index == ID of the assertion */
+	if (lasso_provider_get_first_http_method(&login->parent.server->parent,
+				provider, LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT) != LASSO_HTTP_METHOD_NONE) {
+		lasso_assign_string(authentication_statement->SessionIndex, assertion->ID);
+	}
 	lasso_list_add_new_gobject(assertion->AuthnStatement, authentication_statement);
 
 	/* Save signing material in assertion private datas to be able to sign later */
