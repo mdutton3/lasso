@@ -246,7 +246,7 @@ def is_list(arg):
     return unconstify(arg_type(arg)).startswith('GList')
 
 def is_rc(arg):
-    return arg_type(arg) in [ 'int', 'gint', 'lasso_error_t' ]
+    return arg_type(arg) in [ 'lasso_error_t' ]
 
 def is_int(arg, binding_data):
     return remove_modifiers(arg_type(arg)) in [ 'time_t', 'int', 'gint', 'long', 'glong', 'lasso_error_t'] + binding_data.enums
