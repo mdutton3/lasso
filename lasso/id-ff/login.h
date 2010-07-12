@@ -109,48 +109,48 @@ struct _LassoLoginClass {
 LASSO_EXPORT GType lasso_login_get_type(void);
 LASSO_EXPORT LassoLogin* lasso_login_new(LassoServer *server);
 LASSO_EXPORT LassoLogin* lasso_login_new_from_dump(LassoServer *server, const gchar *dump);
-LASSO_EXPORT gint lasso_login_accept_sso(LassoLogin *login);
+LASSO_EXPORT lasso_error_t lasso_login_accept_sso(LassoLogin *login);
 
-LASSO_EXPORT gint lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method);
+LASSO_EXPORT lasso_error_t lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method);
 
-LASSO_EXPORT int lasso_login_build_assertion(LassoLogin *login,
+LASSO_EXPORT lasso_error_t lasso_login_build_assertion(LassoLogin *login,
 		const char *authenticationMethod, const char *authenticationInstant,
 		const char *reauthenticateOnOrAfter,
 		const char *notBefore, const char *notOnOrAfter);
 
-LASSO_EXPORT gint lasso_login_build_authn_request_msg(LassoLogin *login);
+LASSO_EXPORT lasso_error_t lasso_login_build_authn_request_msg(LassoLogin *login);
 
-LASSO_EXPORT gint lasso_login_build_authn_response_msg(LassoLogin *login);
+LASSO_EXPORT lasso_error_t lasso_login_build_authn_response_msg(LassoLogin *login);
 
-LASSO_EXPORT gint lasso_login_build_request_msg(LassoLogin *login);
-LASSO_EXPORT gint lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID);
+LASSO_EXPORT lasso_error_t lasso_login_build_request_msg(LassoLogin *login);
+LASSO_EXPORT lasso_error_t lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID);
 LASSO_EXPORT void lasso_login_destroy(LassoLogin *login);
 LASSO_EXPORT gchar* lasso_login_dump(LassoLogin *login);
-LASSO_EXPORT gint lasso_login_init_authn_request(LassoLogin *login,
+LASSO_EXPORT lasso_error_t lasso_login_init_authn_request(LassoLogin *login,
 		const gchar *remote_providerID, LassoHttpMethod http_method);
 
-LASSO_EXPORT gint lasso_login_init_request(LassoLogin *login, gchar *response_msg,
+LASSO_EXPORT lasso_error_t lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 		LassoHttpMethod response_http_method);
 
-LASSO_EXPORT gint lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
+LASSO_EXPORT lasso_error_t lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
 		const gchar *remote_providerID);
 
 LASSO_EXPORT gboolean lasso_login_must_ask_for_consent(LassoLogin *login);
 LASSO_EXPORT gboolean lasso_login_must_authenticate(LassoLogin *login);
 
-LASSO_EXPORT int lasso_login_process_authn_request_msg(LassoLogin *login,
+LASSO_EXPORT lasso_error_t lasso_login_process_authn_request_msg(LassoLogin *login,
 		const char *authn_request_msg);
 
-LASSO_EXPORT gint lasso_login_process_authn_response_msg(LassoLogin *login,
+LASSO_EXPORT lasso_error_t lasso_login_process_authn_response_msg(LassoLogin *login,
 		gchar *authn_response_msg);
 
-LASSO_EXPORT gint lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg);
-LASSO_EXPORT gint lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg);
+LASSO_EXPORT lasso_error_t lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg);
+LASSO_EXPORT lasso_error_t lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg);
 
-LASSO_EXPORT int lasso_login_validate_request_msg(LassoLogin *login,
+LASSO_EXPORT lasso_error_t lasso_login_validate_request_msg(LassoLogin *login,
 		gboolean authentication_result, gboolean is_consent_obtained);
 
-LASSO_EXPORT int lasso_login_process_paos_response_msg(LassoLogin *login, gchar *msg);
+LASSO_EXPORT lasso_error_t lasso_login_process_paos_response_msg(LassoLogin *login, gchar *msg);
 
 LASSO_EXPORT LassoNode *lasso_login_get_assertion(LassoLogin *login);
 

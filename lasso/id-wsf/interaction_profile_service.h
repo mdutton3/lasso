@@ -65,18 +65,18 @@ LASSO_EXPORT GType lasso_interaction_profile_service_get_type(void);
 LASSO_EXPORT LassoInteractionProfileService* lasso_interaction_profile_service_new(
 	LassoServer *server);
 
-LASSO_EXPORT gint lasso_interaction_profile_service_init_request(
+LASSO_EXPORT lasso_error_t lasso_interaction_profile_service_init_request(
 	LassoInteractionProfileService *service);
 
-LASSO_EXPORT gint lasso_interaction_profile_service_process_request_msg(
+LASSO_EXPORT lasso_error_t lasso_interaction_profile_service_process_request_msg(
 	LassoInteractionProfileService *service,
 	const gchar *request_msg);
 
-LASSO_EXPORT gint lasso_interaction_profile_service_process_response_msg(
+LASSO_EXPORT lasso_error_t lasso_interaction_profile_service_process_response_msg(
 	LassoInteractionProfileService *service,
 	const gchar *response_msg);
 
-LASSO_EXPORT gint lasso_wsf_profile_init_interaction_service_redirect(
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_init_interaction_service_redirect(
 		LassoWsfProfile *profile, char *redirect_url);
 
 

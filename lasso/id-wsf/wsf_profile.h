@@ -83,35 +83,35 @@ struct _LassoWsfProfileClass {
 
 LASSO_EXPORT GType lasso_wsf_profile_get_type(void);
 
-G_GNUC_DEPRECATED LASSO_EXPORT gint lasso_wsf_profile_move_credentials(LassoWsfProfile *src,
+G_GNUC_DEPRECATED LASSO_EXPORT lasso_error_t lasso_wsf_profile_move_credentials(LassoWsfProfile *src,
 	LassoWsfProfile *dest);
 
 LASSO_EXPORT LassoIdentity* lasso_wsf_profile_get_identity(const LassoWsfProfile *profile);
 LASSO_EXPORT LassoSession* lasso_wsf_profile_get_session(const LassoWsfProfile *profile);
 LASSO_EXPORT gboolean lasso_wsf_profile_is_identity_dirty(const LassoWsfProfile *profile);
 LASSO_EXPORT gboolean lasso_wsf_profile_is_session_dirty(const LassoWsfProfile *profile);
-LASSO_EXPORT gint lasso_wsf_profile_set_identity_from_dump(LassoWsfProfile *profile,
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_set_identity_from_dump(LassoWsfProfile *profile,
 	const gchar *dump);
-LASSO_EXPORT gint lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile,
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile,
 	const gchar *dump);
 
 G_GNUC_DEPRECATED LASSO_EXPORT LassoSoapEnvelope* lasso_wsf_profile_build_soap_envelope(
 	const char *refToMessageId,
 	const char *providerId);
 
-LASSO_EXPORT gint lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile);
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile);
 
-LASSO_EXPORT gint lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile);
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile);
 
-LASSO_EXPORT gint lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request);
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request);
 
-LASSO_EXPORT gint lasso_wsf_profile_init_soap_response(LassoWsfProfile *profile,
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_init_soap_response(LassoWsfProfile *profile,
 		LassoNode *response);
 
-LASSO_EXPORT gint lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
 	const gchar *message, const gchar *security_mech_id);
 
-LASSO_EXPORT gint lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile,
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile,
 	const gchar *message);
 
 G_GNUC_DEPRECATED LASSO_EXPORT LassoSoapBindingProvider* lasso_wsf_profile_set_provider_soap_request(
@@ -125,10 +125,10 @@ LASSO_EXPORT LassoWsfProfile* lasso_wsf_profile_new_full(LassoServer *server,
 G_GNUC_DEPRECATED LASSO_EXPORT gboolean lasso_wsf_profile_principal_is_online(
 	LassoWsfProfile *profile);
 
-G_GNUC_DEPRECATED LASSO_EXPORT gint lasso_wsf_profile_add_credential(LassoWsfProfile *profile,
+G_GNUC_DEPRECATED LASSO_EXPORT lasso_error_t lasso_wsf_profile_add_credential(LassoWsfProfile *profile,
 	xmlNode *credential);
 
-LASSO_EXPORT gint lasso_wsf_profile_set_description_from_offering(
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_set_description_from_offering(
 		LassoWsfProfile *profile,
 		const LassoDiscoResourceOffering *offering,
 		const char *security_mech_id);
@@ -142,28 +142,28 @@ LASSO_EXPORT LassoDiscoDescription *lasso_wsf_profile_get_description(
 LASSO_EXPORT LassoDiscoResourceOffering *lasso_wsf_profile_get_resource_offering(
 	LassoWsfProfile *profile);
 
-LASSO_EXPORT gint lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
 	const char *security_mech_id);
 
 LASSO_EXPORT const char *lasso_wsf_profile_get_security_mech_id(LassoWsfProfile *profile);
 
-LASSO_EXPORT gint lasso_wsf_profile_init(LassoWsfProfile *profile, LassoServer *server,
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_init(LassoWsfProfile *profile, LassoServer *server,
 	LassoDiscoResourceOffering *offering);
 
-LASSO_EXPORT gint lasso_wsf_profile_get_remote_provider(LassoWsfProfile *wsf_profile,
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_get_remote_provider(LassoWsfProfile *wsf_profile,
 		LassoProvider **provider);
 
 LASSO_EXPORT const char* lasso_wsf_profile_get_remote_provider_id(LassoWsfProfile *wsf_profile);
 
 LASSO_EXPORT LassoSoapFault* lasso_wsf_profile_get_soap_fault(LassoWsfProfile *wsf_profile);
 
-LASSO_EXPORT gint lasso_wsf_profile_set_soap_fault(LassoWsfProfile *wsf_profile, LassoSoapFault *soap_fault);
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_set_soap_fault(LassoWsfProfile *wsf_profile, LassoSoapFault *soap_fault);
 
-LASSO_EXPORT gint lasso_wsf_profile_set_status_code(LassoWsfProfile *wsf_profile, const char *code);
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_set_status_code(LassoWsfProfile *wsf_profile, const char *code);
 
 LASSO_EXPORT const char* lasso_wsf_profile_get_status_code(LassoWsfProfile *wsf_profile);
 
-LASSO_EXPORT gint lasso_wsf_profile_set_msg_url_from_description(LassoWsfProfile *wsf_profile);
+LASSO_EXPORT lasso_error_t lasso_wsf_profile_set_msg_url_from_description(LassoWsfProfile *wsf_profile);
 
 LASSO_EXPORT void lasso_wsf_profile_set_resource_offering(LassoWsfProfile *profile,
 		LassoDiscoResourceOffering *offering);

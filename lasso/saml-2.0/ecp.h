@@ -62,10 +62,10 @@ LASSO_EXPORT GType lasso_ecp_get_type(void);
 
 LASSO_EXPORT LassoEcp* lasso_ecp_new(LassoServer *server);
 
-LASSO_EXPORT int lasso_ecp_process_authn_request_msg(LassoEcp *ecp,
+LASSO_EXPORT lasso_error_t lasso_ecp_process_authn_request_msg(LassoEcp *ecp,
 		const char *authn_request_msg);
 
-LASSO_EXPORT int lasso_ecp_process_response_msg(LassoEcp *ecp,
+LASSO_EXPORT lasso_error_t lasso_ecp_process_response_msg(LassoEcp *ecp,
 		const char *response_msg);
 
 LASSO_EXPORT void lasso_ecp_destroy(LassoEcp *ecp);

@@ -70,16 +70,16 @@ LASSO_EXPORT LassoWsAddrEndpointReference* lasso_idwsf2_profile_get_epr(
 		LassoIdWsf2Profile *idwsf2_profile);
 
 /* Initialize requests */
-LASSO_EXPORT gint lasso_idwsf2_profile_init_request(LassoIdWsf2Profile *profile);
+LASSO_EXPORT lasso_error_t lasso_idwsf2_profile_init_request(LassoIdWsf2Profile *profile);
 
 /* Build request message */
-LASSO_EXPORT gint lasso_idwsf2_profile_build_request_msg(LassoIdWsf2Profile *profile,
+LASSO_EXPORT lasso_error_t lasso_idwsf2_profile_build_request_msg(LassoIdWsf2Profile *profile,
 		const char *security_mech_id);
 
 /* Handle request */
-LASSO_EXPORT gint lasso_idwsf2_profile_process_request_msg(LassoIdWsf2Profile *profile,
+LASSO_EXPORT lasso_error_t lasso_idwsf2_profile_process_request_msg(LassoIdWsf2Profile *profile,
 		const char *msg);
-LASSO_EXPORT gint lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
+LASSO_EXPORT lasso_error_t lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 		const char *security_mech_id);
 LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_request(
 		LassoIdWsf2Profile *idwsf2_profile);
@@ -87,18 +87,18 @@ LASSO_EXPORT LassoNode *lasso_idwsf2_profile_get_name_identifier(
 		LassoIdWsf2Profile *idwsf2_profile);
 
 /* Initialize response */
-LASSO_EXPORT gint lasso_idwsf2_profile_init_response(LassoIdWsf2Profile *profile);
-LASSO_EXPORT gint lasso_idwsf2_profile_init_soap_fault_response(LassoIdWsf2Profile *profile,
+LASSO_EXPORT lasso_error_t lasso_idwsf2_profile_init_response(LassoIdWsf2Profile *profile);
+LASSO_EXPORT lasso_error_t lasso_idwsf2_profile_init_soap_fault_response(LassoIdWsf2Profile *profile,
 		const char *faultcode, const char *faultstring,
 		GList *details);
-LASSO_EXPORT gint lasso_idwsf2_profile_redirect_user_for_interaction(LassoIdWsf2Profile *profile,
+LASSO_EXPORT lasso_error_t lasso_idwsf2_profile_redirect_user_for_interaction(LassoIdWsf2Profile *profile,
 		const gchar *redirect_url, gboolean for_data);
 
 /* Build response message */
-LASSO_EXPORT gint lasso_idwsf2_profile_build_response_msg(LassoIdWsf2Profile *profile);
+LASSO_EXPORT lasso_error_t lasso_idwsf2_profile_build_response_msg(LassoIdWsf2Profile *profile);
 
 /* Handle response */
-LASSO_EXPORT gint lasso_idwsf2_profile_process_response_msg(LassoIdWsf2Profile *profile,
+LASSO_EXPORT lasso_error_t lasso_idwsf2_profile_process_response_msg(LassoIdWsf2Profile *profile,
 		const char *msg);
 LASSO_EXPORT LassoSoapEnvelope* lasso_idwsf2_profile_get_soap_envelope_response(
 		LassoIdWsf2Profile *idwsf2_profile);

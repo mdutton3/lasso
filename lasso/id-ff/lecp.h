@@ -66,26 +66,26 @@ LASSO_EXPORT GType lasso_lecp_get_type(void);
 
 LASSO_EXPORT LassoLecp* lasso_lecp_new(LassoServer *server);
 
-LASSO_EXPORT int lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp);
+LASSO_EXPORT lasso_error_t lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp);
 
-LASSO_EXPORT int lasso_lecp_build_authn_request_msg(LassoLecp *lecp);
+LASSO_EXPORT lasso_error_t lasso_lecp_build_authn_request_msg(LassoLecp *lecp);
 
-LASSO_EXPORT int lasso_lecp_build_authn_response_msg(LassoLecp *lecp);
+LASSO_EXPORT lasso_error_t lasso_lecp_build_authn_response_msg(LassoLecp *lecp);
 
-LASSO_EXPORT int  lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp);
+LASSO_EXPORT lasso_error_t  lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp);
 
 LASSO_EXPORT void lasso_lecp_destroy(LassoLecp *lecp);
 
-LASSO_EXPORT int lasso_lecp_init_authn_request(LassoLecp *lecp,
+LASSO_EXPORT lasso_error_t lasso_lecp_init_authn_request(LassoLecp *lecp,
 		const char *remote_providerID);
 
-LASSO_EXPORT int lasso_lecp_process_authn_request_msg(LassoLecp *lecp,
+LASSO_EXPORT lasso_error_t lasso_lecp_process_authn_request_msg(LassoLecp *lecp,
 		const char *authn_request_msg);
 
-LASSO_EXPORT int lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp,
+LASSO_EXPORT lasso_error_t lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp,
 		const char *request_msg);
 
-LASSO_EXPORT int lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp,
+LASSO_EXPORT lasso_error_t lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp,
 		const char *response_msg);
 
 

@@ -69,22 +69,22 @@ LASSO_EXPORT char* lasso_name_id_management_dump(LassoNameIdManagement *name_id_
 
 LASSO_EXPORT void lasso_name_id_management_destroy(LassoNameIdManagement *name_id_management);
 
-LASSO_EXPORT gint lasso_name_id_management_init_request(
+LASSO_EXPORT lasso_error_t lasso_name_id_management_init_request(
 		LassoNameIdManagement *name_id_management,
 		char *remote_provider_id,
 		char *new_name_id,
 		LassoHttpMethod http_method);
-LASSO_EXPORT gint lasso_name_id_management_build_request_msg(
+LASSO_EXPORT lasso_error_t lasso_name_id_management_build_request_msg(
 		LassoNameIdManagement *name_id_management);
 
-LASSO_EXPORT gint lasso_name_id_management_process_request_msg(
+LASSO_EXPORT lasso_error_t lasso_name_id_management_process_request_msg(
 		LassoNameIdManagement *name_id_management,
 		gchar *request_msg);
-LASSO_EXPORT gint lasso_name_id_management_validate_request(
+LASSO_EXPORT lasso_error_t lasso_name_id_management_validate_request(
 		LassoNameIdManagement *name_id_management);
-LASSO_EXPORT int lasso_name_id_management_build_response_msg(
+LASSO_EXPORT lasso_error_t lasso_name_id_management_build_response_msg(
 		LassoNameIdManagement *name_id_management);
-LASSO_EXPORT gint lasso_name_id_management_process_response_msg(
+LASSO_EXPORT lasso_error_t lasso_name_id_management_process_response_msg(
 		LassoNameIdManagement *name_id_management,
 		gchar *response_msg);
 

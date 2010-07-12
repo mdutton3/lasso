@@ -190,8 +190,8 @@ LASSO_EXPORT LassoSession* lasso_profile_get_session(LassoProfile *profile);
 LASSO_EXPORT gboolean lasso_profile_is_identity_dirty(LassoProfile *profile);
 LASSO_EXPORT gboolean lasso_profile_is_session_dirty(LassoProfile *profile);
 
-LASSO_EXPORT gint lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump);
-LASSO_EXPORT gint lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump);
+LASSO_EXPORT lasso_error_t lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump);
+LASSO_EXPORT lasso_error_t lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump);
 LASSO_EXPORT LassoNode* lasso_profile_get_nameIdentifier(LassoProfile *profile);
 
 LASSO_EXPORT char* lasso_profile_get_artifact(LassoProfile *profile);
@@ -201,14 +201,14 @@ LASSO_EXPORT LassoServer* lasso_profile_get_server(LassoProfile *profile);
 LASSO_EXPORT void lasso_profile_set_signature_hint(LassoProfile *profile,
 		LassoProfileSignatureHint signature_hint);
 LASSO_EXPORT LassoProfileSignatureHint lasso_profile_get_signature_hint(LassoProfile *profile);
-LASSO_EXPORT gint lasso_profile_set_soap_fault_response(LassoProfile *profile, const char
+LASSO_EXPORT lasso_error_t lasso_profile_set_soap_fault_response(LassoProfile *profile, const char
 		*faultcode, const char *faultstring, GList *details);
 LASSO_EXPORT void lasso_profile_set_signature_verify_hint(LassoProfile *profile,
 		LassoProfileSignatureVerifyHint signature_verify_hint);
 LASSO_EXPORT LassoProfileSignatureVerifyHint lasso_profile_get_signature_verify_hint(LassoProfile *profile);
 LASSO_EXPORT LassoProviderRole lasso_profile_sso_role_with(LassoProfile *profile,
 		const char *remote_provider_id);
-LASSO_EXPORT gint lasso_profile_get_signature_status(LassoProfile *profile);
+LASSO_EXPORT lasso_error_t lasso_profile_get_signature_status(LassoProfile *profile);
 
 #ifdef __cplusplus
 }

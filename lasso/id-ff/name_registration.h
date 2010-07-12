@@ -71,26 +71,26 @@ LASSO_EXPORT LassoNameRegistration* lasso_name_registration_new(LassoServer *ser
 LASSO_EXPORT LassoNameRegistration* lasso_name_registration_new_from_dump(
 		LassoServer *server, const char *dump);
 
-LASSO_EXPORT gint lasso_name_registration_build_request_msg(
+LASSO_EXPORT lasso_error_t lasso_name_registration_build_request_msg(
 		LassoNameRegistration *name_registration);
 
-LASSO_EXPORT gint lasso_name_registration_build_response_msg(
+LASSO_EXPORT lasso_error_t lasso_name_registration_build_response_msg(
 		LassoNameRegistration *name_registration);
 
 LASSO_EXPORT void lasso_name_registration_destroy(LassoNameRegistration *name_registration);
 
 LASSO_EXPORT gchar* lasso_name_registration_dump(LassoNameRegistration *name_registration);
 
-LASSO_EXPORT gint lasso_name_registration_init_request(LassoNameRegistration *name_registration,
+LASSO_EXPORT lasso_error_t lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 		char *remote_providerID, LassoHttpMethod http_method);
 
-LASSO_EXPORT gint lasso_name_registration_process_request_msg(
+LASSO_EXPORT lasso_error_t lasso_name_registration_process_request_msg(
 		LassoNameRegistration *name_registration, gchar *request_msg);
 
-LASSO_EXPORT gint lasso_name_registration_process_response_msg(
+LASSO_EXPORT lasso_error_t lasso_name_registration_process_response_msg(
 		LassoNameRegistration *name_registration, gchar *response_msg);
 
-LASSO_EXPORT gint lasso_name_registration_validate_request(
+LASSO_EXPORT lasso_error_t lasso_name_registration_validate_request(
 		LassoNameRegistration *name_registration);
 
 #ifdef __cplusplus

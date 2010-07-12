@@ -76,9 +76,9 @@ LASSO_EXPORT void lasso_wsse_username_token_reset_nonce(LassoWsseUsernameToken *
 
 LASSO_EXPORT void lasso_wsse_username_token_set_password_kind(LassoWsseUsernameToken *wsse_username_token, LassoWsseUsernameTokenPasswordType password_type);
 
-LASSO_EXPORT int lasso_wsse_username_token_set_password(LassoWsseUsernameToken *wsse_username_token, char *password);
+LASSO_EXPORT lasso_error_t lasso_wsse_username_token_set_password(LassoWsseUsernameToken *wsse_username_token, char *password);
 
-LASSO_EXPORT int lasso_wsse_username_token_check_password(LassoWsseUsernameToken *wsse_username_token, char *password);
+LASSO_EXPORT lasso_error_t lasso_wsse_username_token_check_password(LassoWsseUsernameToken *wsse_username_token, char *password);
 
 LASSO_EXPORT guchar* lasso_wsse_username_token_derive_key(LassoWsseUsernameToken *wsse_username_token, char *password);
 

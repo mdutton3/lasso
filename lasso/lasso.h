@@ -50,8 +50,8 @@ extern "C" {
 #include "saml-2.0/saml2_helper.h"
 #include "saml-2.0/profile.h"
 
-LASSO_EXPORT int lasso_init(void);
-LASSO_EXPORT int lasso_shutdown(void);
+LASSO_EXPORT lasso_error_t lasso_init(void);
+LASSO_EXPORT lasso_error_t lasso_shutdown(void);
 
 /**
  * LassoCheckVersionMode:
@@ -68,7 +68,7 @@ typedef enum {
 } LassoCheckVersionMode;
 
 
-LASSO_EXPORT int lasso_check_version(
+LASSO_EXPORT lasso_error_t lasso_check_version(
 		int major, int minor, int subminor, LassoCheckVersionMode mode);
 
 LASSO_EXPORT void lasso_set_flag(char *flag);

@@ -81,10 +81,10 @@ LASSO_EXPORT LassoServer* lasso_server_new_from_buffers(const gchar *metadata,
 
 LASSO_EXPORT LassoServer* lasso_server_new_from_dump(const gchar *dump);
 
-LASSO_EXPORT gint lasso_server_add_provider (LassoServer *server,
+LASSO_EXPORT lasso_error_t lasso_server_add_provider (LassoServer *server,
 		LassoProviderRole role, const gchar *metadata,
 		const gchar *public_key, const gchar *ca_cert_chain);
-LASSO_EXPORT gint lasso_server_add_provider_from_buffer (LassoServer *server,
+LASSO_EXPORT lasso_error_t lasso_server_add_provider_from_buffer (LassoServer *server,
 		LassoProviderRole role, const gchar *metadata,
 		const gchar *public_key, const gchar *ca_cert_chain);
 
@@ -95,12 +95,12 @@ LASSO_EXPORT gchar* lasso_server_dump(LassoServer *server);
 LASSO_EXPORT LassoProvider* lasso_server_get_provider(const LassoServer *server,
 		const gchar *providerID);
 
-LASSO_EXPORT int lasso_server_set_encryption_private_key(LassoServer *server,
+LASSO_EXPORT lasso_error_t lasso_server_set_encryption_private_key(LassoServer *server,
 		const gchar *filename_or_buffer);
 
-LASSO_EXPORT int lasso_server_load_affiliation(LassoServer *server, const gchar* filename);
+LASSO_EXPORT lasso_error_t lasso_server_load_affiliation(LassoServer *server, const gchar* filename);
 
-LASSO_EXPORT int lasso_server_set_encryption_private_key_with_password(LassoServer *server,
+LASSO_EXPORT lasso_error_t lasso_server_set_encryption_private_key_with_password(LassoServer *server,
 		const gchar *filename_or_buffer, const gchar *password);
 
 #ifdef __cplusplus

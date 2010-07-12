@@ -33,7 +33,7 @@ extern "C" {
 #include "../xml/saml-2.0/saml2_assertion.h"
 #include "../xml/ws/wsa_endpoint_reference.h"
 
-LASSO_EXPORT gint lasso_session_add_endpoint_reference(LassoSession *session,
+LASSO_EXPORT lasso_error_t lasso_session_add_endpoint_reference(LassoSession *session,
 	LassoWsAddrEndpointReference *epr);
 
 LASSO_EXPORT LassoWsAddrEndpointReference* lasso_session_get_endpoint_reference(

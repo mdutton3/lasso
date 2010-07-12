@@ -58,13 +58,13 @@ LASSO_EXPORT LassoWsAddrEndpointReference* lasso_wsa_endpoint_reference_new_for_
 		const char *address, const char *service_ype, const char *provider_id,
 		const char *abstract);
 
-LASSO_EXPORT int lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *epr,
+LASSO_EXPORT lasso_error_t lasso_wsa_endpoint_reference_add_security_token(LassoWsAddrEndpointReference *epr,
 		LassoNode *security_token, GList *security_mechanisms);
 
 LASSO_EXPORT LassoIdWsf2Profile *lasso_wsa_endpoint_reference_get_service(
 		LassoWsAddrEndpointReference *epr);
 
-LASSO_EXPORT int lasso_wsa_endpoint_reference_associate_service_to_type(
+LASSO_EXPORT lasso_error_t lasso_wsa_endpoint_reference_associate_service_to_type(
 		const char *service_type_uri, GType g_type);
 
 #ifdef __cplusplus

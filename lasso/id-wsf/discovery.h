@@ -78,30 +78,30 @@ LASSO_EXPORT LassoDiscovery* lasso_discovery_new(LassoServer *server);
 LASSO_EXPORT LassoDiscovery* lasso_discovery_new_full(LassoServer *server,
 		LassoDiscoResourceOffering *offering);
 
-LASSO_EXPORT gint lasso_discovery_init_modify(LassoDiscovery *discovery,
+LASSO_EXPORT lasso_error_t lasso_discovery_init_modify(LassoDiscovery *discovery,
 	const char *security_mech_id);
 
-LASSO_EXPORT gint lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
+LASSO_EXPORT lasso_error_t lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
 	LassoDiscoServiceInstance *serviceInstance, LassoDiscoResourceID *resourceId);
 
-LASSO_EXPORT gint lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
+LASSO_EXPORT lasso_error_t lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 	const gchar *entryID);
 
-LASSO_EXPORT gint lasso_discovery_init_query(LassoDiscovery *discovery,
+LASSO_EXPORT lasso_error_t lasso_discovery_init_query(LassoDiscovery *discovery,
 	const gchar *security_mech_id);
 
-LASSO_EXPORT gint lasso_discovery_add_requested_service_type(
+LASSO_EXPORT lasso_error_t lasso_discovery_add_requested_service_type(
 	LassoDiscovery *discovery, const gchar *service_type, const gchar *option);
 
-LASSO_EXPORT gint lasso_discovery_process_request_msg(LassoDiscovery *discovery,
+LASSO_EXPORT lasso_error_t lasso_discovery_process_request_msg(LassoDiscovery *discovery,
 	const gchar *message, const gchar *security_mech_id);
 
-LASSO_EXPORT gint lasso_discovery_build_response_msg(LassoDiscovery *discovery);
+LASSO_EXPORT lasso_error_t lasso_discovery_build_response_msg(LassoDiscovery *discovery);
 
-LASSO_EXPORT gint lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery,
+LASSO_EXPORT lasso_error_t lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery,
 	const gchar *message);
 
-LASSO_EXPORT gint lasso_discovery_process_query_response_msg(LassoDiscovery *discovery,
+LASSO_EXPORT lasso_error_t lasso_discovery_process_query_response_msg(LassoDiscovery *discovery,
 	const gchar *message);
 
 LASSO_EXPORT LassoWsfProfile* lasso_discovery_get_service(LassoDiscovery *discovery,

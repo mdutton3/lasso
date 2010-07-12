@@ -33,7 +33,7 @@ extern "C" {
 #include "../export.h"
 #include <glib.h>
 
-LASSO_EXPORT gint lasso_identity_add_svc_md_id(LassoIdentity *identity, gchar *svcMDID);
+LASSO_EXPORT lasso_error_t lasso_identity_add_svc_md_id(LassoIdentity *identity, gchar *svcMDID);
 
 LASSO_EXPORT GList* lasso_identity_get_svc_md_ids(LassoIdentity *identity);
 

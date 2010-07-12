@@ -34,7 +34,7 @@ extern "C" {
 #include "../id-ff/server.h"
 #include "../xml/id-wsf-2.0/disco_svc_metadata.h"
 
-LASSO_EXPORT gint lasso_server_add_svc_metadata(LassoServer *server,
+LASSO_EXPORT lasso_error_t lasso_server_add_svc_metadata(LassoServer *server,
 	LassoIdWsf2DiscoSvcMetadata *metadata);
 
 LASSO_EXPORT const GList *lasso_server_get_svc_metadatas(LassoServer *server);

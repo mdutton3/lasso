@@ -35,10 +35,10 @@ extern "C" {
 
 typedef const char *(*LassoRegistryTranslationFunction)(const char *from_namespace, const char *from_name, const char *to_namespace);
 
-LASSO_EXPORT gint lasso_registry_default_add_direct_mapping(const char *from_namespace,
+LASSO_EXPORT lasso_error_t lasso_registry_default_add_direct_mapping(const char *from_namespace,
 		const char *from_name, const char *to_namespace, const char *to_name);
 
-LASSO_EXPORT gint lasso_registry_default_add_functional_mapping(const char*from_namespace, const char *to_namespace, LassoRegistryTranslationFunction translation_function);
+LASSO_EXPORT lasso_error_t lasso_registry_default_add_functional_mapping(const char*from_namespace, const char *to_namespace, LassoRegistryTranslationFunction translation_function);
 
 LASSO_EXPORT const char* lasso_registry_default_get_mapping(const char *from_namespace,
 		const char *from_name, const char *to_namespace);

@@ -84,26 +84,26 @@ LASSO_EXPORT LassoAuthentication* lasso_authentication_new(LassoServer *server);
 
 LASSO_EXPORT void lasso_authentication_destroy(LassoAuthentication *authentication);
 
-LASSO_EXPORT gint lasso_authentication_client_start(LassoAuthentication *authentication);
+LASSO_EXPORT lasso_error_t lasso_authentication_client_start(LassoAuthentication *authentication);
 
-LASSO_EXPORT gint lasso_authentication_client_step(LassoAuthentication *authentication);
+LASSO_EXPORT lasso_error_t lasso_authentication_client_step(LassoAuthentication *authentication);
 
 LASSO_EXPORT char *lasso_authentication_get_mechanism_list(LassoAuthentication *authentication);
 
-LASSO_EXPORT gint lasso_authentication_init_request(LassoAuthentication *authentication,
+LASSO_EXPORT lasso_error_t lasso_authentication_init_request(LassoAuthentication *authentication,
 						    LassoDiscoDescription *description,
 						    const gchar *mechanisms,
 						    LassoUserAccount *account);
 
-LASSO_EXPORT gint lasso_authentication_process_request_msg(LassoAuthentication *authentication,
+LASSO_EXPORT lasso_error_t lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 							   const gchar *soap_msg);
 
-LASSO_EXPORT gint lasso_authentication_process_response_msg(LassoAuthentication *authentication,
+LASSO_EXPORT lasso_error_t lasso_authentication_process_response_msg(LassoAuthentication *authentication,
 							    const gchar *soap_msg);
 
-LASSO_EXPORT gint lasso_authentication_server_start(LassoAuthentication *authentication);
+LASSO_EXPORT lasso_error_t lasso_authentication_server_start(LassoAuthentication *authentication);
 
-LASSO_EXPORT gint lasso_authentication_server_step(LassoAuthentication *authentication);
+LASSO_EXPORT lasso_error_t lasso_authentication_server_step(LassoAuthentication *authentication);
 
 #ifdef __cplusplus
 }

@@ -35,7 +35,7 @@ extern "C" {
 #include "../xml/saml-2.0/saml2_name_id.h"
 #include "../xml/ws/wsa_endpoint_reference.h"
 
-LASSO_EXPORT int lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *url,
+LASSO_EXPORT lasso_error_t lasso_login_idwsf2_add_discovery_bootstrap_epr(LassoLogin *login, const char *url,
 		const char *abstract, GList *security_mechanisms, int tolerance, int duration);
  
 LASSO_EXPORT LassoWsAddrEndpointReference *lasso_login_idwsf2_get_discovery_bootstrap_epr(

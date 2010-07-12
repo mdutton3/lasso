@@ -106,10 +106,10 @@ LASSO_EXPORT LassoSaml2AssertionValidationState lasso_saml2_assertion_validate_c
 LASSO_EXPORT LassoProvider* lasso_saml2_assertion_get_issuer_provider(
 		const LassoSaml2Assertion *saml2_assertion, const LassoServer *server);
 
-LASSO_EXPORT int lasso_server_saml2_assertion_setup_signature(LassoServer *server,
+LASSO_EXPORT lasso_error_t lasso_server_saml2_assertion_setup_signature(LassoServer *server,
 		LassoSaml2Assertion *saml2_assertion);
 
-LASSO_EXPORT int lasso_saml2_assertion_add_attribute_with_node(LassoSaml2Assertion *assertion, const
+LASSO_EXPORT lasso_error_t lasso_saml2_assertion_add_attribute_with_node(LassoSaml2Assertion *assertion, const
 		char *name, const char *nameformat, LassoNode *content);
 
 LASSO_EXPORT LassoSaml2SubjectConfirmationData*
@@ -118,11 +118,11 @@ LASSO_EXPORT LassoSaml2SubjectConfirmationData*
 
 LASSO_EXPORT const char* lasso_saml2_assertion_get_in_response_to(LassoSaml2Assertion *assertion);
 
-LASSO_EXPORT int lasso_saml2_encrypted_element_server_decrypt(
+LASSO_EXPORT lasso_error_t lasso_saml2_encrypted_element_server_decrypt(
 		LassoSaml2EncryptedElement* encrypted_element, LassoServer *server,
 		LassoNode** decrypted_node);
 
-LASSO_EXPORT int lasso_saml2_assertion_decrypt_subject(LassoSaml2Assertion *assertion,
+LASSO_EXPORT lasso_error_t lasso_saml2_assertion_decrypt_subject(LassoSaml2Assertion *assertion,
 		LassoServer *server);
 
 LASSO_EXPORT LassoSaml2AssertionValidationState lasso_saml2_assertion_validate_time_checks(
