@@ -942,10 +942,10 @@ protected static native void destroy(long cptr);
                     arglist = generate_arg_list2(args[1:])
                     if arglist:
                         arglist = ', ' + arglist
-                    if m.errors:
+                    if is_rc(m.return_type):
                         print >> fd, 'LassoException.throwError(',
                     print >> fd,'LassoJNI.%s(this%s)' % (jni_name,arglist),
-                    if m.errors:
+                    if is_rc(m.return_type):
                         print >> fd, ');'
                     else:
                         print >> fd, ';'
