@@ -88,6 +88,8 @@ struct _LassoNodeClassData
 	struct QuerySnippet *query_snippets;
 	char *node_name;
 	xmlNs *ns;
+	char *id_attribute_name;
+	int id_attribute_offset;
 	int sign_type_offset;
 	int sign_method_offset;
 	int private_key_file_offset;
@@ -190,6 +192,10 @@ gboolean lasso_string_to_xsd_integer(const char *str, long int *integer);
 void lasso_set_string_from_prop(char **str, xmlNode *node, xmlChar *name, xmlChar *ns);
 
 void lasso_node_add_custom_namespace(LassoNode *node, const char *prefix, const char *href);
+
+void lasso_apply_signature(LassoNode *node, gboolean lasso_dump,
+		xmlNode **xmlnode, char *id_attribute, char *id_value, LassoSignatureType sign_type,
+		char *private_key_file, char *certificate_file);
 
 #ifdef __cplusplus
 }

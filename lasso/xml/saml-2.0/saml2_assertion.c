@@ -118,9 +118,7 @@ static LassoNodeClass *parent_class = NULL;
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
-	LassoSaml2Assertion *assertion = LASSO_SAML2_ASSERTION(node);
 	xmlNode *xmlnode, *original_xmlnode;
-	int rc = 0;
 
 	/* If assertion has been deserialized and contain a signature, dump it from the
 	 * original xmlnode. */
@@ -139,22 +137,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	}
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-
-	if (lasso_dump == FALSE && assertion->sign_type) {
-		if (assertion->private_key_file == NULL) {
-			message(G_LOG_LEVEL_WARNING,
-					"No Private Key set for signing saml2:Assertion");
-		} else {
-			rc = lasso_sign_node(xmlnode, "ID", assertion->ID,
-				assertion->private_key_file, assertion->certificate_file);
-			if (rc != 0) {
-				message(G_LOG_LEVEL_WARNING, "Signing of saml2:Assertion failed: %s", lasso_strerror(rc));
-			}
-		}
-		if (rc != 0) {
-			lasso_release_xml_node(xmlnode);
-		}
-	}
 
 	return xmlnode;
 }
@@ -183,6 +165,8 @@ class_init(LassoSaml2AssertionClass *klass)
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 
+	nclass->node_data->id_attribute_name = "ID";
+	nclass->node_data->id_attribute_offset = G_STRUCT_OFFSET(LassoSaml2Assertion, ID);
 	nclass->node_data->sign_type_offset = G_STRUCT_OFFSET(
 			LassoSaml2Assertion, sign_type);
 	nclass->node_data->sign_method_offset = G_STRUCT_OFFSET(

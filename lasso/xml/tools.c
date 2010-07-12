@@ -2221,3 +2221,32 @@ lasso_log_remove_handler(guint handler_id)
 {
 	g_log_remove_handler("Lasso", handler_id);
 }
+
+void
+lasso_apply_signature(LassoNode *node, gboolean lasso_dump,
+		xmlNode **xmlnode, char *id_attribute, char *id_value, LassoSignatureType sign_type, char *private_key_file, char *certificate_file)
+{
+	int rc = 0;
+
+	if (lasso_dump == FALSE && sign_type) {
+		char *node_name;
+		char *prefix;
+
+		node_name = LASSO_NODE_GET_CLASS(node)->node_data->node_name;
+		prefix = (char*)LASSO_NODE_GET_CLASS(node)->node_data->ns->prefix;
+
+		if (private_key_file == NULL) {
+			message(G_LOG_LEVEL_WARNING,
+					"No Private Key set for signing %s:%s", prefix, node_name);
+		} else {
+			rc = lasso_sign_node(*xmlnode, id_attribute, id_value, private_key_file,
+					certificate_file);
+			if (rc != 0) {
+				message(G_LOG_LEVEL_WARNING, "Signing of %s:%s: %s", prefix, node_name, lasso_strerror(rc));
+			}
+		}
+		if (rc != 0) {
+			lasso_release_xml_node(*xmlnode);
+		}
+	}
+}

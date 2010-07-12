@@ -82,34 +82,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-static xmlNode*
-get_xmlNode(LassoNode *node, gboolean lasso_dump)
-{
-	LassoSamlpResponseAbstract *response = LASSO_SAMLP_RESPONSE_ABSTRACT(node);
-	xmlNode *xmlnode;
-	int rc = -1;
-
-	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-
-	if (lasso_dump == FALSE && response->sign_type) {
-		if (response->private_key_file == NULL) {
-			message(G_LOG_LEVEL_WARNING,
-					"No Private Key set for signing samlp:ResponseAbstract");
-		} else {
-			rc = lasso_sign_node(xmlnode, "ResponseID", response->ResponseID,
-					response->private_key_file, response->certificate_file);
-			if (rc != 0) {
-				message(G_LOG_LEVEL_WARNING, "Signing of samlp:ResponseAbstract failed: %s", lasso_strerror(rc));
-			}
-		}
-		if (rc != 0) {
-			lasso_release_xml_node(xmlnode);
-		}
-	}
-
-	return xmlnode;
-}
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -126,11 +98,13 @@ class_init(LassoSamlpResponseAbstractClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "ResponseAbstract");
 	lasso_node_class_set_ns(nclass, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	nclass->node_data->id_attribute_name = "ResponseID";
+	nclass->node_data->id_attribute_offset = G_STRUCT_OFFSET(LassoSamlpResponseAbstract,
+			ResponseID);
 	nclass->node_data->sign_type_offset = G_STRUCT_OFFSET(LassoSamlpResponseAbstract,
 			sign_type);
 	nclass->node_data->sign_method_offset = G_STRUCT_OFFSET(LassoSamlpResponseAbstract,

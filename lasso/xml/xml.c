@@ -688,9 +688,37 @@ xmlNode*
 lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoNodeClass *class;
+	xmlNode *xmlnode;
+	LassoNodeClassData *node_data = NULL;
+
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 	class = LASSO_NODE_GET_CLASS(node);
-	return class->get_xmlNode(node, lasso_dump);
+	xmlnode = class->get_xmlNode(node, lasso_dump);
+
+	/* find a class defining a signature */
+	while (class && LASSO_IS_NODE_CLASS(class)) {
+		if (class->node_data && class->node_data->sign_type_offset) {
+			node_data = class->node_data;
+			break;
+		}
+		class = g_type_class_peek_parent(class);
+	}
+
+	/* add signature */
+	if (xmlnode && node_data && node_data->sign_type_offset) {
+		LassoSignatureType sign_type = G_STRUCT_MEMBER(LassoSignatureType, node,
+				node_data->sign_type_offset);
+		char *id_attribute = G_STRUCT_MEMBER(char*, node,  node_data->id_attribute_offset);
+		char *private_key_file = G_STRUCT_MEMBER(char*, node,
+				node_data->private_key_file_offset);
+		char *certificate_file = G_STRUCT_MEMBER(char*, node,
+				node_data->certificate_file_offset);
+
+		lasso_apply_signature(node, lasso_dump, &xmlnode, node_data->id_attribute_name,
+				id_attribute, sign_type, private_key_file, certificate_file);
+	}
+
+	return xmlnode;
 }
 
 /**
@@ -2883,7 +2911,6 @@ xml_insure_namespace(xmlNode *xmlnode, xmlNs *ns, gboolean force, gchar *ns_href
 xmlNode*
 lasso_node_get_xmlnode_for_any_type(LassoNode *node, xmlNode *cur)
 {
-
 	xmlNode *original_xmlnode;
 
 	original_xmlnode = lasso_node_get_original_xmlnode(node);
