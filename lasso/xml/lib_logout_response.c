@@ -51,6 +51,7 @@ class_init(LassoLibLogoutResponseClass *klass)
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "LogoutResponse");
+	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 }
 
 GType
