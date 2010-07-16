@@ -65,6 +65,7 @@ static void lasso_node_traversal(LassoNode *node, void (*do_to_node)(LassoNode *
 
 static LassoNode* lasso_node_new_from_xmlNode_with_type(xmlNode *xmlnode, char *typename);
 static void lasso_node_remove_original_xmlnode(LassoNode *node, SnippetType type);
+static xmlNs * get_or_define_ns(xmlNode *xmlnode, xmlChar *ns_uri);
 
 GHashTable *dst_services_by_href = NULL; /* ID-WSF 1 extra DST services, indexed on href */
 GHashTable *dst_services_by_prefix = NULL; /* ID-WSF 1 extra DST services, indexed on prefix */
@@ -1362,6 +1363,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		GSList *tmp_attr;
 		xmlAttr *node_attr;
 
+
 		any_attribute = G_STRUCT_MEMBER_P(node, snippet_any_attribute->offset);
 		if (*any_attribute == NULL) {
 			*any_attribute = g_hash_table_new_full(
@@ -1554,6 +1556,36 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 				xmlFree((xmlChar*)xmlnode->ns->href); /* warning: discard const */
 				xmlnode->ns->href = xmlStrdup((xmlChar*)
 						"http://projectliberty.org/schemas/core/2002/12");
+			}
+		}
+	}
+
+	/* store signature parameters */
+	if (lasso_dump)
+	{
+		LassoSignatureType type;
+		LassoSignatureMethod method;
+		const char *private_key = NULL;
+		const char *private_key_password = NULL;
+		const char *certificate = NULL;
+		xmlNsPtr ns = NULL;
+		char buffer[64] = { 0 };
+
+		lasso_node_get_signature(node, &type, &method, (char **)&private_key,
+				(char **)&private_key_password,
+				(char **)&certificate);
+		if (private_key) {
+			ns = get_or_define_ns(xmlnode, BAD_CAST LASSO_LASSO_HREF);
+			sprintf(buffer, "%u", type);
+			xmlSetNsProp(xmlnode, ns, BAD_CAST "SignatureType", BAD_CAST buffer);
+			sprintf(buffer, "%u", method);
+			xmlSetNsProp(xmlnode, ns, BAD_CAST "SignatureMethod", BAD_CAST buffer);
+			xmlSetNsProp(xmlnode, ns, BAD_CAST "PrivateKey", BAD_CAST private_key);
+			if (private_key_password) {
+				xmlSetNsProp(xmlnode, ns, BAD_CAST "PrivateKeyPassword", BAD_CAST private_key_password);
+			}
+			if (certificate) {
+				xmlSetNsProp(xmlnode, ns, BAD_CAST "Certificate", BAD_CAST certificate);
 			}
 		}
 	}
