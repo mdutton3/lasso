@@ -943,6 +943,9 @@ urlencoded_to_strings(const char *str)
 	return result;
 }
 
+void _lasso_xmlsec_password_callback() {
+}
+
 /**
  * lasso_sign_node:
  * @xmlnode: the xmlnode to sign
@@ -960,12 +963,14 @@ urlencoded_to_strings(const char *str)
  */
 int
 lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value,
-		const char *private_key_file, const char *certificate_file)
+		const char *private_key_file, const char *private_key_password,
+		const char *certificate_file)
 {
 	xmlDoc *doc;
 	xmlNode *sign_tmpl, *old_parent;
 	xmlSecDSigCtx *dsig_ctx;
 	xmlAttr *id_attr = NULL;
+	void *password_callback = NULL;
 
 	if (private_key_file == NULL || xmlnode == NULL)
 		return LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ;
@@ -985,14 +990,18 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	}
 
 	dsig_ctx = xmlSecDSigCtxCreate(NULL);
+	if (! private_key_password) {
+		password_callback = _lasso_openssl_pwd_callback;
+	}
 	if (access(private_key_file, R_OK) == 0) {
 		dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
-				xmlSecKeyDataFormatPem,
-				NULL, NULL, NULL);
+				xmlSecKeyDataFormatPem, private_key_password,
+				password_callback, NULL /* password_callback_ctx */);
 	} else {
 		int len = private_key_file ? strlen(private_key_file) : 0;
 		dsig_ctx->signKey = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)private_key_file, len,
-				xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+				xmlSecKeyDataFormatPem, private_key_password,
+				password_callback, NULL /* password_callback_ctx */);
 	}
 	if (dsig_ctx->signKey == NULL) {
 		xmlSecDSigCtxDestroy(dsig_ctx);

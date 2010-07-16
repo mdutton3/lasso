@@ -113,8 +113,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-
-
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
@@ -162,7 +160,7 @@ class_init(LassoSaml2AssertionClass *klass)
 	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Assertion");
-	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
+	lasso_node_class_set_ns(nclass,LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 
 	nclass->node_data->id_attribute_name = "ID";
