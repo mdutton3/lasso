@@ -393,6 +393,43 @@ lasso_node_export_to_query(LassoNode *node,
 }
 
 /**
+ * lasso_node_export_to_query_with_password:
+ * @node: a #LassoNode
+ * @sign_method:(default 1): the Signature transform method
+ * @private_key_file:(allow-none): the path to the private key (may be NULL)
+ * @private_key_file_password:(allow-none): the password needed to decrypt the private key
+ *
+ * Exports @node to a HTTP query string.  If @private_key_file is NULL,
+ * query won't be signed.
+ *
+ * Return value: a HTTP query export of @node.  The string must be freed by the
+ *      caller.
+ **/
+char*
+lasso_node_export_to_query_with_password(LassoNode *node,
+		LassoSignatureMethod sign_method, const char *private_key_file,
+		const char *private_key_file_password)
+{
+	char *unsigned_query, *query = NULL;
+
+	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
+
+	unsigned_query = lasso_node_build_query(node);
+	if (unsigned_query == NULL) {
+		return NULL;
+	}
+	if (private_key_file) {
+		query = lasso_query_sign(unsigned_query, sign_method, private_key_file,
+				private_key_file_password);
+	} else {
+		lasso_transfer_string(query, unsigned_query);
+	}
+	lasso_release(unsigned_query);
+
+	return query;
+}
+
+/**
  * lasso_node_export_to_xml:
  * @node: a #LassoNode
  *

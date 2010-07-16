@@ -140,6 +140,10 @@ LASSO_EXPORT char* lasso_node_export_to_base64(LassoNode *node);
 LASSO_EXPORT char* lasso_node_export_to_query(LassoNode *node,
 		LassoSignatureMethod sign_method, const char *private_key_file);
 
+LASSO_EXPORT char* lasso_node_export_to_query_with_password(LassoNode *node,
+		LassoSignatureMethod sign_method, const char *private_key_file,
+		const char *private_key_file_password);
+
 LASSO_EXPORT char* lasso_node_export_to_soap(LassoNode *node);
 
 LASSO_EXPORT gchar* lasso_node_export_to_xml(LassoNode *node);
