@@ -819,7 +819,7 @@ protected static native void destroy(long cptr);
                     print >> fd, '        if (arr != null)'
                     print >> fd, '            return Arrays.asList(arr);'
                     print >> fd, '        else'
-                    print >> fd, '            return null;'
+                    print >> fd, '            return new ArrayList(0);'
                     print >> fd, '    }'
                     print >> fd, '    public void addTo%s(%s value) {' % (jname,jtype)
                     print >> fd, '        LassoJNI.%s_add(this, value);' % prefix
