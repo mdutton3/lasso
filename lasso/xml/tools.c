@@ -453,18 +453,30 @@ cleanup:
 	return keys_mngr;
 }
 
+static int
+_lasso_openssl_pwd_callback(char *buf, int size, G_GNUC_UNUSED int rwflag, void *u)
+{
+	if (u) {
+		strncpy(buf, u, size);
+		return strlen(u);
+	}
+	return 0;
+}
+
 /*
  * lasso_query_sign:
  * @query: a query (an url-encoded node)
  * @sign_method: the Signature transform method
  * @private_key_file: the private key
+ * @private_key_file_password: the private key password
  *
  * Signs a query (url-encoded message).
  *
  * Return value: a newly allocated query signed or NULL if an error occurs.
  **/
 char*
-lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *private_key_file)
+lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *private_key_file,
+		const char *private_key_file_password)
 {
 	BIO *bio = NULL;
 	char *digest = NULL; /* 160 bit buffer */
@@ -518,7 +530,8 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 	/* calculate signature value */
 	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
 		/* load private key */
-		rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, NULL, NULL);
+		rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, _lasso_openssl_pwd_callback,
+				(void*)private_key_file_password);
 		if (rsa == NULL) {
 			goto done;
 		}
@@ -528,7 +541,8 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 		status = RSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret, &siglen, rsa);
 		RSA_free(rsa);
 	} else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
-		dsa = PEM_read_bio_DSAPrivateKey(bio, NULL, NULL, NULL);
+		dsa = PEM_read_bio_DSAPrivateKey(bio, NULL, _lasso_openssl_pwd_callback,
+				(void*)private_key_file_password);
 		if (dsa == NULL) {
 			goto done;
 		}

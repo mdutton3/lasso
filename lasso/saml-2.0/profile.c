@@ -1059,7 +1059,8 @@ lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, char
 		}
 	}
 	if (signature_method && private_key_file && lasso_flag_add_signature) {
-		result = lasso_query_sign(unsigned_query, signature_method, private_key_file);
+		result = lasso_query_sign(unsigned_query, signature_method, private_key_file,
+				NULL);
 		goto_cleanup_if_fail_with_rc(result != NULL,
 				LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		lasso_transfer_string(*query, result);
