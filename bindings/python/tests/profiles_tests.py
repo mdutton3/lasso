@@ -43,6 +43,16 @@ except NameError:
     srcdir = os.environ.get('TOP_SRCDIR', '.')
     dataDir = '%s/tests/data' % srcdir
 
+def server(local_name, remote_role, remote_name):
+    pwd = os.path.join(dataDir, local_name, 'password')
+    password = None
+    if os.path.exists(pwd):
+        password = file(pwd).read()
+    s = lasso.Server(os.path.join(dataDir, local_name, 'metadata.xml'),
+            os.path.join(dataDir, local_name, 'private-key.pem'),
+            password)
+    s.addProvider(remote_role, os.path.join(dataDir, remote_name, 'metadata.xml'))
+    return s
 
 class ServerTestCase(unittest.TestCase):
     def test01(self):
@@ -210,7 +220,6 @@ class LoginTestCase(unittest.TestCase):
 
     def test05(self):
         '''SAMLv2 Authn request emitted and received using Artifact binding'''
-
         sp = lasso.Server(
             os.path.join(dataDir, 'sp5-saml2/metadata.xml'),
             os.path.join(dataDir, 'sp5-saml2/private-key.pem'))
@@ -241,9 +250,27 @@ class LoginTestCase(unittest.TestCase):
         try:
             idp_login.processResponseMsg(sp_login2.msgBody)
         except:
-            print idp_login.response
             raise
         assert isinstance(idp_login.request, lasso.Samlp2AuthnRequest)
+
+    def test_06(self):
+        '''Login test between SP and IdP with encrypted private keys'''
+        sp_server = server('sp7-saml2', lasso.PROVIDER_ROLE_IDP, 'idp7-saml2')
+        idp_server = server('idp7-saml2', lasso.PROVIDER_ROLE_SP, 'sp7-saml2')
+
+        sp_login = lasso.Login(sp_server)
+        sp_login.initAuthnRequest()
+        sp_login.request.protocolBinding = lasso.SAML2_METADATA_BINDING_POST;
+        sp_login.buildAuthnRequestMsg()
+        idp_login = lasso.Login(idp_server)
+        idp_login.setSignatureVerifyHint(lasso.PROFILE_SIGNATURE_VERIFY_HINT_FORCE)
+        idp_login.processAuthnRequestMsg(sp_login.msgUrl.split('?')[1])
+        idp_login.validateRequestMsg(True, True)
+        idp_login.buildAssertion("None", "None", "None", "None", "None")
+        idp_login.buildAuthnResponseMsg()
+        sp_login.setSignatureVerifyHint(lasso.PROFILE_SIGNATURE_VERIFY_HINT_FORCE)
+        sp_login.processAuthnResponseMsg(idp_login.msgBody)
+        sp_login.acceptSso()
 
 class LogoutTestCase(unittest.TestCase):
     def test01(self):
@@ -434,7 +461,6 @@ class LogoutTestCase(unittest.TestCase):
 
         node = lasso.Samlp2LogoutRequest.newFromXmlNode(content)
         assert isinstance(node, lasso.Samlp2LogoutRequest)
-        print node.sessionIndex
         assert node.sessionIndex == 'id3'
         assert node.sessionIndexes == ('id1', 'id2', 'id3')
 
