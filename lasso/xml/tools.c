@@ -2247,9 +2247,24 @@ lasso_log_remove_handler(guint handler_id)
 
 void
 lasso_apply_signature(LassoNode *node, gboolean lasso_dump,
-		xmlNode **xmlnode, char *id_attribute, char *id_value, LassoSignatureType sign_type, char *private_key_file, char *certificate_file)
+		xmlNode **xmlnode, char *id_attribute, char *id_value, LassoSignatureType old_sign_type, char *old_private_key_file, char *old_certificate_file)
 {
 	int rc = 0;
+	LassoSignatureType sign_type = LASSO_SIGNATURE_TYPE_NONE;
+	LassoSignatureMethod sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
+	char *private_key_file = NULL;
+	char *private_key_password = NULL;
+	char *certificate_file = NULL;
+
+	lasso_node_get_signature(node, &sign_type, &sign_method, &private_key_file, &private_key_password,
+			&certificate_file);
+
+	if (!sign_type) {
+		sign_type = old_sign_type;
+		private_key_password = NULL;
+		private_key_file = old_private_key_file;
+		certificate_file = old_certificate_file;
+	}
 
 	if (lasso_dump == FALSE && sign_type) {
 		char *node_name;
@@ -2263,7 +2278,7 @@ lasso_apply_signature(LassoNode *node, gboolean lasso_dump,
 					"No Private Key set for signing %s:%s", prefix, node_name);
 		} else {
 			rc = lasso_sign_node(*xmlnode, id_attribute, id_value, private_key_file,
-					certificate_file);
+					private_key_password, certificate_file);
 			if (rc != 0) {
 				message(G_LOG_LEVEL_WARNING, "Signing of %s:%s: %s", prefix, node_name, lasso_strerror(rc));
 			}
