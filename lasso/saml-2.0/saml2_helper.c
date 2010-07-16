@@ -690,6 +690,9 @@ lasso_server_saml2_assertion_setup_signature(LassoServer *server,
 			server->private_key);
 	lasso_assign_string(saml2_assertion->certificate_file,
 			server->certificate);
+	lasso_node_set_signature((LassoNode*)saml2_assertion, saml2_assertion->sign_type,
+			saml2_assertion->sign_method, server->private_key,
+			server->private_key_password, server->certificate);
 	if (! saml2_assertion->ID) {
 		lasso_assign_new_string(saml2_assertion->ID, lasso_build_unique_id(32));
 	}

@@ -1059,6 +1059,7 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 		return rc2;
 	}
 	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
 			if (message_signature_status) {
 				return message_signature_status;
@@ -1228,6 +1229,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	LassoProfile *profile;
 	char *status_value;
 	int rc = 0, rc1 = 0, message_signature_status;
+	LassoProfileSignatureVerifyHint verify_hint;
 
 	profile = &login->parent;
 	lasso_extract_node_or_fail(response, profile->response, SAMLP2_STATUS_RESPONSE,
@@ -1271,6 +1273,8 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	goto_cleanup_if_fail_with_rc (samlp2_response->Assertion != NULL,
 			LASSO_PROFILE_ERROR_MISSING_ASSERTION);
 
+	verify_hint = lasso_profile_get_signature_verify_hint(profile);
+
 	lasso_foreach_full_begin(LassoSaml2Assertion*, assertion, it, samlp2_response->Assertion);
 		LassoSaml2Subject *subject = NULL;
 		int rc2 = 0;
@@ -1282,14 +1286,14 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		 * time */
 		if (message_signature_status != 0 
 			|| ! _lasso_check_assertion_issuer(assertion,
-				profile->remote_providerID)) {
+				profile->remote_providerID)
+			|| verify_hint == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE) {
 			rc2 = lasso_saml20_login_check_assertion_signature(login, assertion);
-			if (! profile->signature_status) {
-				profile->signature_status = rc2;
-			}
+			profile->signature_status = rc2;
 		}
 
-		switch (lasso_profile_get_signature_verify_hint(profile)) {
+		switch (verify_hint) {
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
 			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
 				goto_cleanup_if_fail_with_rc (profile->signature_status == 0,
 						LASSO_LOGIN_ERROR_INVALID_ASSERTION_SIGNATURE);
