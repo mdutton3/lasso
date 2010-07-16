@@ -797,6 +797,11 @@ struct _CustomElement {
 	char *href;
 	char *nodename;
 	GHashTable *namespaces;
+	LassoSignatureType signature_type;
+	LassoSignatureMethod signature_method;
+	char *private_key;
+	char *private_key_password;
+	char *certificate;
 };
 
 static struct _CustomElement *
@@ -873,6 +878,81 @@ lasso_node_set_custom_namespace(LassoNode *node, const char *prefix, const char 
 
 	lasso_assign_string(custom_element->prefix, prefix);
 	lasso_assign_string(custom_element->href, href);
+}
+
+/**
+ * lasso_node_set_signature:
+ * @node: a #LassoNode object
+ * @signature_type: a #LassoSignatureType enum
+ * @signature_method: a #LassoSignatureMethod enum
+ * @private_key: a private key as file path or a PEM string
+ * @private_key_password: the password for the private key
+ * @certificate: an eventual certificate to bind with the signature
+ *
+ * Setup a signature on @node.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+int
+lasso_node_set_signature(LassoNode *node, LassoSignatureType type, LassoSignatureMethod method,
+		const char *private_key, const char *private_key_password, const char *certificate)
+{
+	struct _CustomElement *custom_element;
+	int rc = 0;
+
+	lasso_bad_param(NODE, node);
+	custom_element = _lasso_node_get_custom_element_or_create(node);
+	g_return_val_if_fail (custom_element != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	custom_element->signature_type = type;
+	custom_element->signature_method = method;
+	lasso_assign_string(custom_element->private_key, private_key);
+	lasso_assign_string(custom_element->private_key_password, private_key_password);
+	lasso_assign_string(custom_element->certificate, certificate);
+	return rc;
+}
+
+/**
+ * lasso_node_get_signature:
+ * @node: a #LassoNode object
+ * @type: an output for the signature type
+ * @method: an output for the signature method
+ * @private_key: an output for the private key
+ * @private_key_password: an output for the private key password
+ * @certificate: an output for the certificate
+ *
+ * Return signature parameters stored with this node.
+ */
+void
+lasso_node_get_signature(LassoNode *node, LassoSignatureType *type, LassoSignatureMethod *method,
+		char **private_key, char **private_key_password, char **certificate)
+{
+	struct _CustomElement *custom_element;
+
+	g_return_if_fail (LASSO_IS_NODE(node));
+	custom_element = _lasso_node_get_custom_element(node);
+	if (! custom_element) {
+		if (type)
+			*type = 0;
+		if (method)
+			*method = 0;
+		if (private_key)
+			lasso_assign_string(*private_key, NULL);
+		if (private_key_password)
+			lasso_assign_string(*private_key_password, NULL);
+		if (certificate)
+			lasso_assign_string(*certificate, NULL);
+		return;
+	}
+	if (type)
+		*type = custom_element->signature_type;
+	if (method)
+		*method = custom_element->signature_method;
+	if (private_key)
+		*private_key = custom_element->private_key;
+	if (private_key_password)
+		*private_key_password = custom_element->private_key_password;
+	if (certificate)
+		*certificate = custom_element->certificate;
 }
 
 /**
@@ -1341,6 +1421,8 @@ lasso_node_remove_signature(LassoNode *node) {
                }
                klass = g_type_class_peek_parent(klass);
        }
+       lasso_node_set_signature(node, LASSO_SIGNATURE_TYPE_NONE, LASSO_SIGNATURE_METHOD_RSA_SHA1,
+			NULL, NULL, NULL);
 }
 
 /*****************************************************************************/

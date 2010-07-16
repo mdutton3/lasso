@@ -197,6 +197,13 @@ void lasso_apply_signature(LassoNode *node, gboolean lasso_dump,
 		xmlNode **xmlnode, char *id_attribute, char *id_value, LassoSignatureType sign_type,
 		char *private_key_file, char *certificate_file);
 
+int lasso_node_set_signature(LassoNode *node, LassoSignatureType type, LassoSignatureMethod method,
+		const char *private_key, const char *private_key_password, const char *certificate);
+
+void lasso_node_get_signature(LassoNode *node, LassoSignatureType *type, LassoSignatureMethod *method,
+		char **private_key, char **private_key_password,
+		char **certificate);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
