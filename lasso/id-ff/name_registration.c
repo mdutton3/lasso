@@ -104,9 +104,10 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 		if (url == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
-		query = lasso_node_export_to_query(LASSO_NODE(profile->request),
+		query = lasso_node_export_to_query_with_password(LASSO_NODE(profile->request),
 				profile->server->signature_method,
-				profile->server->private_key);
+				profile->server->private_key,
+				profile->server->private_key_password);
 		if (query == NULL) {
 			lasso_release(url);
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
@@ -188,9 +189,10 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 		if (url == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
-		query = lasso_node_export_to_query(LASSO_NODE(profile->response),
+		query = lasso_node_export_to_query_with_password(LASSO_NODE(profile->response),
 				profile->server->signature_method,
-				profile->server->private_key);
+				profile->server->private_key,
+				profile->server->private_key_password);
 		if (query == NULL) {
 			lasso_release(url);
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);

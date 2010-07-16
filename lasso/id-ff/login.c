@@ -1147,12 +1147,13 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	if (login->http_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* REDIRECT -> query */
 		if (must_sign) {
-			query = lasso_node_export_to_query(LASSO_NODE(profile->request),
+			query = lasso_node_export_to_query_with_password(LASSO_NODE(profile->request),
 					profile->server->signature_method,
-					profile->server->private_key);
+					profile->server->private_key,
+					profile->server->private_key_password);
 		} else {
-			query = lasso_node_export_to_query(
-					LASSO_NODE(profile->request), 0, NULL);
+			query = lasso_node_export_to_query_with_password(
+					LASSO_NODE(profile->request), 0, NULL, NULL);
 		}
 		if (query == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);

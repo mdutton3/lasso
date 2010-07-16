@@ -117,9 +117,10 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 		if (url == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
-		query = lasso_node_export_to_query(LASSO_NODE(profile->request),
+		query = lasso_node_export_to_query_with_password(LASSO_NODE(profile->request),
 				profile->server->signature_method,
-				profile->server->private_key);
+				profile->server->private_key,
+				profile->server->private_key_password);
 
 		if (query == NULL) {
 			lasso_release(url);

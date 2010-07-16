@@ -326,9 +326,10 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 		if (url == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
-		query = lasso_node_export_to_query(LASSO_NODE(profile->request),
+		query = lasso_node_export_to_query_with_password(LASSO_NODE(profile->request),
 				profile->server->signature_method,
-				profile->server->private_key);
+				profile->server->private_key,
+				profile->server->private_key_password);
 		if (query == NULL) {
 			lasso_release(url);
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
@@ -452,9 +453,10 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 			 * something like the document root of the other site ? */
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
-		query = lasso_node_export_to_query(profile->response,
+		query = lasso_node_export_to_query_with_password(profile->response,
 				profile->server->signature_method,
-				profile->server->private_key);
+				profile->server->private_key,
+				profile->server->private_key_password);
 		if (query == NULL) {
 			lasso_release(url);
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
@@ -889,9 +891,10 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 			if (url == NULL) {
 				return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 			}
-			query = lasso_node_export_to_query(LASSO_NODE(profile->request),
+			query = lasso_node_export_to_query_with_password(LASSO_NODE(profile->request),
 					profile->server->signature_method,
-					profile->server->private_key);
+					profile->server->private_key,
+					profile->server->private_key_password);
 			if (query == NULL) {
 				lasso_release(url);
 				return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
