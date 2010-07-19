@@ -58,7 +58,8 @@
 
 static int lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obtained);
 static gboolean lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login);
-static gint lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login);
+static gint lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login,
+		lasso_error_t *assertion_signature_status);
 static char* lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 		LassoProvider *remote_provider);
 static gboolean _lasso_login_must_verify_signature(LassoProfile *profile) G_GNUC_UNUSED;
@@ -1014,7 +1015,7 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 
 	profile = LASSO_PROFILE(login);
 	rc1 = lasso_saml20_profile_process_soap_response(profile, msg);
-	rc2 = lasso_saml20_login_process_response_status_and_assertion(login);
+	rc2 = lasso_saml20_login_process_response_status_and_assertion(login, NULL);
 
 	if (rc1) {
 		return rc1;
@@ -1038,6 +1039,7 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 	LassoProfile *profile = NULL;
 	int rc1, rc2, message_signature_status;
 	LassoSamlp2Response *samlp2_response = NULL;
+	LassoHttpMethod response_method = LASSO_HTTP_METHOD_NONE;
 
 	lasso_null_param(authn_response_msg);
 
@@ -1045,11 +1047,17 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 	profile = LASSO_PROFILE(login);
 	samlp2_response = (LassoSamlp2Response*)lasso_samlp2_response_new();
 	rc1 = lasso_saml20_profile_process_any_response(profile,
-		(LassoSamlp2StatusResponse*)samlp2_response, NULL,
+		(LassoSamlp2StatusResponse*)samlp2_response, &response_method,
 		authn_response_msg);
 
+	if (response_method != LASSO_HTTP_METHOD_POST) {
+		/* Only HTTP-Post binding is possible through this method */
+		return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+	}
+
 	message_signature_status = profile->signature_status;
-	rc2 = lasso_saml20_login_process_response_status_and_assertion(login);
+	rc2 = lasso_saml20_login_process_response_status_and_assertion(login,
+			NULL);
 	/** The more important signature errors */
 	lasso_release_gobject(samlp2_response);
 	if (rc1) {
@@ -1060,11 +1068,12 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 	}
 	switch (lasso_profile_get_signature_verify_hint(profile)) {
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
-		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
 			if (message_signature_status) {
 				return message_signature_status;
 			}
-			if (profile->signature_status) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+			if (response_method == LASSO_HTTP_METHOD_POST &&
+					profile->signature_status) {
 				return profile->signature_status;
 			}
 			break;
@@ -1089,7 +1098,7 @@ lasso_saml20_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 	if (LASSO_IS_SAMLP2_ARTIFACT_RESPONSE(login->parent.response)) {
 		return lasso_saml20_login_process_authn_request_msg(login, NULL);
 	} else {
-		return lasso_saml20_login_process_response_status_and_assertion(login);
+		return lasso_saml20_login_process_response_status_and_assertion(login, NULL);
 	}
 }
 
@@ -1222,7 +1231,7 @@ _lasso_saml20_login_decrypt_assertion(LassoLogin *login, LassoSamlp2Response *sa
 }
 
 static gint
-lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
+lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login, lasso_error_t *assertion_signature_status)
 {
 	LassoSamlp2StatusResponse *response;
 	LassoSamlp2Response *samlp2_response = NULL;
@@ -1230,6 +1239,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	char *status_value;
 	int rc = 0, rc1 = 0, message_signature_status;
 	LassoProfileSignatureVerifyHint verify_hint;
+	lasso_error_t _assertion_signature_status = 0;
 
 	profile = &login->parent;
 	lasso_extract_node_or_fail(response, profile->response, SAMLP2_STATUS_RESPONSE,
@@ -1284,11 +1294,13 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		/* If signature has already been verified on the message, and assertion has the same
 		 * issuer as the message, the assertion is covered. So no need to verify a second
 		 * time */
+		_assertion_signature_status = lasso_saml20_login_check_assertion_signature(login,
+				assertion);
 		if (message_signature_status != 0 
 			|| ! _lasso_check_assertion_issuer(assertion,
 				profile->remote_providerID)
 			|| verify_hint == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE) {
-			rc2 = lasso_saml20_login_check_assertion_signature(login, assertion);
+			rc2 = _assertion_signature_status;
 			profile->signature_status = rc2;
 		}
 
@@ -1322,6 +1334,9 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	lasso_foreach_full_end();
 	
 cleanup:
+	if (assertion_signature_status) {
+		*assertion_signature_status = _assertion_signature_status;
+	}
 	return rc;
 }
 
