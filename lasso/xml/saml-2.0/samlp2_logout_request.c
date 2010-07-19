@@ -94,6 +94,14 @@ static LassoNodeClass *parent_class = NULL;
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
+/* GROSS HACK: in order to support multiple session index elements, we use a private field that is
+ * directly parsed or serialized through the overloaded get_xmlNode and init_from_xml virtual
+ * methods.  The structure of LassoSamlp2LogoutRequest is part, until the next major release, of our
+ * public ABI, so we cound not do otherwise.
+ *
+ * The last parsed element is kept in the legacy field logout_request->SessionIndex. At parsing and
+ * serializing time it is separated from other elements. This should keep the old behaviour intact.
+ */
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
