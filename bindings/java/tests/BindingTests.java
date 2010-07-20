@@ -81,7 +81,7 @@ public class BindingTests extends TestCase {
 
 	LibAuthnRequest authnRequest = new LibAuthnRequest();
 
-	assertNull(authnRequest.getRespondWith());
+	assertTrue(authnRequest.getRespondWith().isEmpty());
 
 	List respondWith = new ArrayList();
 	assertEquals(respondWith.size(), 0);
@@ -125,7 +125,7 @@ public class BindingTests extends TestCase {
 	assertEquals(authnRequest.getRespondWith().get(1), "third string");
 	assertEquals(authnRequest.getRespondWith().get(2), "second string");
 	authnRequest.setRespondWith(null);
-	assertNull(authnRequest.getRespondWith());
+	assertTrue(authnRequest.getRespondWith().isEmpty());
 
 	authnRequest = null;
     }
@@ -135,7 +135,7 @@ public class BindingTests extends TestCase {
 
         SamlpResponse response = new SamlpResponse();
 
-        assertNull(response.getAssertion());
+        assertTrue(response.getAssertion().isEmpty());
 
         List assertions = new ArrayList();
         assertEquals(assertions.size(), 0);
@@ -178,7 +178,7 @@ public class BindingTests extends TestCase {
         assertEquals(((SamlAssertion) response.getAssertion().get(1)).getAssertionId(), "assertion 2");
         assertEquals(((SamlAssertion) response.getAssertion().get(2)).getAssertionId(), "assertion 3");
         response.setAssertion(null);
-        assertNull(response.getAssertion());
+        assertTrue(response.getAssertion().isEmpty());
 
 	response = null;
     }
@@ -188,7 +188,7 @@ public class BindingTests extends TestCase {
 
 	LibAuthnRequest authnRequest = new LibAuthnRequest();
 
-	assertNull(authnRequest.getExtension());
+	assertTrue(authnRequest.getExtension().isEmpty());
 
         String actionString1 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n" + "  <action>do 1</action>\n" + "</lib:Extension>";
         String actionString2 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n" + "  <action>do 2</action>\n" + "</lib:Extension>";
@@ -228,7 +228,7 @@ public class BindingTests extends TestCase {
 	assertEquals(authnRequest.getExtension().get(1), actionString2);
 	assertEquals(authnRequest.getExtension().get(2), actionString3);
 	authnRequest.setExtension(null);
-	assertNull(authnRequest.getExtension());
+	assertTrue(authnRequest.getExtension().isEmpty());
 
 	authnRequest = null;
     }
