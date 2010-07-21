@@ -51,6 +51,8 @@ blib/arch/auto/Lasso/Lasso.so: Lasso.xs Lasso.pm Makefile.perl gobject_handling.
 
 CLEANFILES = Lasso.pm Lasso.xs Lasso.so typemap Lasso.o Lasso.bs pm_to_blib Lasso.c
 
+DISTCLEANFILES = Makefile.perl.old
+
 distclean-local:
 	-@if [ "$(srcdir)" != "$(builddir)" ]; then \
 		rm -rf $(TOCOPY); \
