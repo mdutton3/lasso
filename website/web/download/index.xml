@@ -10,7 +10,7 @@
 	<p>
 	  Lasso is licensed under the GNU GPL and the latest release
 	  is available here as a gzipped tarball:
-	  <a href="">Wait for update of 2.3 release sources...</a>
+	  <a href="http://labs.libre-entreprise.org/frs/download.php/806/lasso-2.3.0.tar.gz">lasso-2.3.0.tar.gz</a>
 	</p>
 
 	<h2>Binary Downloads</h2>
@@ -24,8 +24,8 @@
 	</p>
 	 
 	<p>
-		Additionnaly there are <i>lenny</i> abd <i>karmic</i> packages and there may be more
-	  uptodate packages available in our local apt repository.  Pick the
+		Additionnaly there are <i>lenny</i> and <i>karmic</i> packages and there may be more
+	  up-to-date packages available in our local apt repository.  Pick the
 	  one appropriate for your distribution:
 	</p>
 
@@ -48,7 +48,7 @@ deb http://deb.entrouvert.org karmic main
 	</ul>
 
 	<p>
-	  You can also browse the repository on <a
+	  You can also browse the repositories on <a
 	  href="http://deb.entrouvert.org">deb.entrouvert.org</a>
 	</p>
 
