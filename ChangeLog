@@ -1,3 +1,2919 @@
+2010-07-21 17:55  bdauvergne
+
+	* NEWS, abi/abi-2.3, configure.ac, lasso.doap, website/templates/base.ezt,
+	  website/web/doap.rdf, website/web/download/index.xml: [Release] Lasso 2.3
+	  
+	  - update the NEWS file
+	  - add abi-2.3 file
+	  - update DOAP files
+	  - update lasso website template
+	  - add temporary message to download pages, as there are no download
+	  links currently.
+
+2010-07-21 14:54  bdauvergne
+
+	* Makefile.am: [Core] add logos to EXTRA_DIST
+
+2010-07-21 14:54  bdauvergne
+
+	* Makefile.am: [Core] add HACKING to EXTRA_DIST
+
+2010-07-21 14:14  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt: [Documentation] add missing declaration
+	  to lasso-sections.txt
+
+2010-07-21 14:14  bdauvergne
+
+	* tests/data/Makefile.am: [Tests] change the way tests data is distributed
+	  
+	  Instead of using a Makefile.am in each data directory, each data
+	  directoy has been added to the EXTRA_DIST for the parent directory
+	  Makefile.am.
+
+2010-07-21 14:12  bdauvergne
+
+	* .cvsignore, debian/.cvsignore, docs/.cvsignore, docs/lasso-book/.cvsignore,
+	  docs/lasso-book/figures/.cvsignore, docs/reference/.cvsignore, lasso/.cvsignore,
+	  lasso/id-ff/.cvsignore, lasso/id-wsf/.cvsignore, lasso/saml-2.0/.cvsignore,
+	  lasso/xml/.cvsignore, lasso/xml/saml-2.0/.cvsignore, tests/.cvsignore,
+	  tests/data/.cvsignore, tests/data/ca1-la/.cvsignore,
+	  tests/data/idp1-la/.cvsignore, tests/data/lecp1-la/.cvsignore,
+	  tests/data/sp1-la/.cvsignore, win32/.cvsignore, win32/msvc/.cvsignore,
+	  win32/msvc/java/.cvsignore, win32/msvc/php/.cvsignore,
+	  win32/msvc/python/.cvsignore, win32/nsis/.cvsignore: [Core] remove now useless
+	  .cvsignore files
+
+2010-07-21 14:11  bdauvergne
+
+	* ., bindings/perl, bindings/php5/tests, docs/reference/lasso, lasso/xml/soap-1.1,
+	  tests: [SVN] update svn:ignore properties
+
+2010-07-21 14:01  bdauvergne
+
+	* bindings/perl/Makefile.am: [Binding perl] move DISCLEANFILES and CLEANFILES
+	  outside of the condition clauses
+
+2010-07-21 13:57  bdauvergne
+
+	* tests/data/Makefile.am, tests/data/sourceid-2.0beta,
+	  tests/data/sourceid-2.0beta/login-response.xml,
+	  tests/sourceid-2.0beta/login-response.xml: [Tests] move sourceid-2.0beta-data to
+	  data directory
+
+2010-07-21 13:57  bdauvergne
+
+	* tests/format-suppressions.py, tools/format-suppressions.py: [Core] move
+	  format-suppressions.py to tools directory
+
+2010-07-21 13:57  bdauvergne
+
+	* Makefile.am: [Core] add README.JAVA and README.WIN32 files to EXTRA_DIST
+
+2010-07-21 13:57  bdauvergne
+
+	* README.JAVA: [Core] complete README.JAVA about later release of gcj
+
+2010-07-21 13:56  bdauvergne
+
+	* Makefile.am: [Core] add lasso.doap to EXTRA_DIST
+
+2010-07-21 13:56  bdauvergne
+
+	* lasso/Makefile.am: [Core] add errors.c to EXTRA_DIST
+
+2010-07-21 13:56  bdauvergne
+
+	* lasso/build-strerror.pl: [Core] remove unused build-strerror.pl
+
+2010-07-21 13:56  bdauvergne
+
+	* docs/reference/lasso/Makefile.am, docs/reference/lasso/style.css,
+	  docs/reference/style.css: [Doc] move style.css to the reference directory, and
+	  add it to EXTRA_DIST
+
+2010-07-21 13:56  bdauvergne
+
+	* bindings/java/Makefile.am, bindings/perl/Makefile.am, bindings/php5/Makefile.am,
+	  bindings/python/Makefile.am, bindings/python/tests/Makefile.am: [Bindings]
+	  improve cleaning and distribution buiding
+
+2010-07-21 13:56  bdauvergne
+
+	* bindings/java/tests/Test.java: [Tests java] remove Test.java
+	  
+	  Local test file wrongly commited.
+
+2010-07-21 13:56  bdauvergne
+
+	* Makefile.am: [Makefile] add abi to EXTRA_DIST
+
+2010-07-21 13:56  bdauvergne
+
+	* bindings/perl/Makefile.am: [Binding perl] add DISTCLEANFILES for
+	  Makefile.perl.old file
+
+2010-07-21 13:56  bdauvergne
+
+	* tests/login_tests_saml2.c: [Tests] remove debugging printf
+
+2010-07-21 13:56  bdauvergne
+
+	* configure.ac, tests/Makefile.am, tests/data/Makefile.am,
+	  tests/data/ca1-la/Makefile.am, tests/data/idp1-la/Makefile.am,
+	  tests/data/idp5-saml2/Makefile.am, tests/data/idp6-saml2/Makefile.am,
+	  tests/data/idp7-saml2/Makefile.am, tests/data/lecp1-la/Makefile.am,
+	  tests/data/sp1-la/Makefile.am, tests/data/sp5-saml2/Makefile.am,
+	  tests/data/sp6-saml2/Makefile.am, tests/data/sp7-saml2/Makefile.am,
+	  tests/metadata/Makefile.am: [Tests] change the way tests data is distributed
+	  
+	  Instead of using a Makefile.am in each data directory, each data
+	  directoy has been added to the EXTRA_DIST for the parent directory
+	  Makefile.am.
+
+2010-07-20 15:46  bdauvergne
+
+	* bindings/java/tests/BindingTests.java: [Tests] adapt java unit tests to new
+	  semantic for list fields
+	  
+	  GList fields now return an empty list, not null.
+
+2010-07-20 14:15  bdauvergne
+
+	* lasso/saml-2.0/login.c: [SAMLv2] simplify logic for handling AuthnResponse with
+	  binding HTTP-Post
+	  
+	  The logic is now simpler:
+	  - first lasso_saml20_profile_process_any_response check the signature
+	  on the message
+	  - then lasso_saml20_login_process_response_status_and_assertion
+	  traverse all the assertions:
+	  - if the message is signed all assertion from the same issuer are
+	  automatically accepted,
+	  - if the message is not signed, or the signature validation failed,
+	  or the assertion has a different issuer than the message, we check
+	  the signature directly on the assertion. If any of the assertions
+	  fails the signature check, the result will be
+	  LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE.
+	  
+	  The public field profile->signature_status will contain only the message
+	  level signature status, each assertion signature status is not
+	  accessible. That will change when signature and key handling is
+	  reworked.
+
+2010-07-20 14:15  bdauvergne
+
+	* bindings/perl/Makefile.am: [Binding perl] fix broken distclean-local target
+	  
+	  The TOCOPY files need to be cleaned only for out of source directory
+	  builds.
+
+2010-07-19 15:56  bdauvergne
+
+	* lasso/xml/saml-2.0/samlp2_logout_request.c: [SAMLv2] comment on SessionIndex
+	  support hack
+
+2010-07-19 15:45  bdauvergne
+
+	* lasso/saml-2.0/Makefile.am, lasso/saml-2.0/saml2_assertion_addons.c,
+	  lasso/saml-2.0/saml2_assertion_addons.h,
+	  lasso/saml-2.0/saml2_conditions_addons.c,
+	  lasso/saml-2.0/saml2_conditions_addons.h,
+	  lasso/saml-2.0/samlp2_authn_request_addons.c,
+	  lasso/saml-2.0/samlp2_authn_request_addons.h: [SAMLv2] remove empty files,
+	  wrongly committed
+
+2010-07-19 15:27  bdauvergne
+
+	* lasso/saml-2.0/login.c: [SAMLv2/SSO] when processing AuthnResponse with binding
+	  HTTP-Post only the assertion need to be signed
+	  
+	  If the message is signed, the assertion is also covered, but if only the
+	  assertion is signed, there is no error to report. If the caller ask for
+	  forcing the validation of message signature, then we report an error.
+	  
+	  This commit also add checking for the binding used, if it is not
+	  HTTP-Post lasso_login_process_authn_response_msg will now report an
+	  error.
+
+2010-07-16 19:34  bdauvergne
+
+	* bindings/java/lang.py: [Binding java] return empty list for NULL GList value,
+	  not null
+
+2010-07-16 19:34  bdauvergne
+
+	* lasso/xml/lib_logout_response.c,
+	  lasso/xml/lib_register_name_identifier_response.c: [ID-FFv1.2] add missing
+	  namespace declarations
+
+2010-07-16 19:34  bdauvergne
+
+	* lasso/saml-2.0/login.c, lasso/saml-2.0/profile.c, lasso/saml-2.0/saml2_helper.c:
+	  [SAMLv2] add support for encrypted private keys
+	  
+	  * support private key with new internal API in signature setting
+	  methods
+	  
+	  Plug lasso_node_set_signature into
+	  lasso_profile_saml20_setup_message_signature and
+	  lasso_server_saml2_assertion_setup_signature.
+	  
+	  * also use lasso_node_get_signature in has_signature
+	  
+	  * add forgottent LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE in switch
+	  cases
+	  
+	  For AuthnResponse checking the semantic is now that if HINT_FORCE is
+	  used we verify message signature *and* assertion signature. If
+	  HINT_MAYBE is used we check the assertion signature if its issuer
+	  differs from the message issuer.
+
+2010-07-16 19:34  bdauvergne
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	  lasso/id-ff/name_registration.c: [ID-FFv1.2] move all user of
+	  lasso_node_export_to_query to lasso_node_export_to_query_with_password
+
+2010-07-16 19:34  bdauvergne
+
+	* lasso/xml/tools.c: [Core] Change lasso_apply_signature to use quark stored
+	  annotated signature parameters
+	  
+	  The node containing signature do not handle the private keys passwords.
+	  As the fields for signature parameters are part of the public ABI we
+	  cannot add the password field to the public structure for those nodes.
+	  Instead we use the new quark annotation accessed through
+	  lasso_node_get/set_signature, and if the sign_type parameter is non-NULL
+	  we use it instead of the parameters stored in the public structure.
+	  This is a gross hack :( but at least it is documented.
+
+2010-07-16 19:34  bdauvergne
+
+	* lasso/xml/private.h, lasso/xml/saml-2.0/saml2_assertion.c, lasso/xml/tools.c:
+	  [Core] add password parameter to lasso_sign_node
+
+2010-07-16 19:34  bdauvergne
+
+	* lasso/xml/xml.c, lasso/xml/xml.h: [Code] add a
+	  lasso_node_export_to_query_with_password method
+
+2010-07-16 19:34  bdauvergne
+
+	* lasso/saml-2.0/profile.c, lasso/xml/private.h, lasso/xml/tools.c,
+	  lasso/xml/xml.c: [Core] add a password parameter to lasso_query_sign
+	  
+	  We force use of the password through a custom OpenSSL password callback.
+
+2010-07-16 19:34  bdauvergne
+
+	* lasso/xml/xml.c: [Core] dump custom signature parameters in lasso dumps
+	  
+	  The signature parameters are serialized as global attributes from the
+	  http://lasso.entrouvert.org/lasso/namespaces/0.0 named:
+	  SignatureType
+	  SignatureMethod
+	  PrivateKey
+	  PrivateKeyPassword
+	  Certificate
+
+2010-07-16 19:34  bdauvergne
+
+	* bindings/python/tests/profiles_tests.py, tests/data/idp7-saml2,
+	  tests/data/idp7-saml2/Makefile.am, tests/data/idp7-saml2/metadata.xml,
+	  tests/data/idp7-saml2/password, tests/data/idp7-saml2/private-key.pem,
+	  tests/data/sp7-saml2/password: [Tests/python] add test case for WebSSO with
+	  providers using encrypted keys
+
+2010-07-16 19:34  bdauvergne
+
+	* lasso/xml/private.h, lasso/xml/xml.c: [Core] add lasso_node_set_signature and
+	  lasso_node_get_signature
+	  
+	  Those two methods allows to associate signature parameters to any node.
+	  They keep it inside the CustomElement quark. Using a private structure
+	  may be more performant.
+
+2010-07-12 14:09  bdauvergne
+
+	* lasso/xml/private.h, lasso/xml/saml-2.0/saml2_assertion.c,
+	  lasso/xml/saml-2.0/samlp2_request_abstract.c,
+	  lasso/xml/saml-2.0/samlp2_status_response.c, lasso/xml/saml_assertion.c,
+	  lasso/xml/samlp_request_abstract.c, lasso/xml/samlp_response_abstract.c,
+	  lasso/xml/tools.c, lasso/xml/xml.c: [Core] extract signature adding into base
+	  class method lasso_node_get_xmlNode
+	  
+	  In order to permit subclass to modify the base xmlNode created by
+	  lasso_node_impl_get_xmlNode we must defer the concrete to the virtual
+	  method wrapper, lasso_node_get_xmlNode.
+	  
+	  To do that it whas needed to make id_attribute another virtual field of
+	  LassoNode subclasses (it can be accessed through an offset registered in
+	  the class object).
+	  
+	  This commit solves signature validation error since the patch for
+	  managing more than one SessionIndex element in samlp2:LogoutRequest.
+	  
+	  It also factorize the creation of signatures in one place.
+
+2010-07-12 14:09  bdauvergne
+
+	* lasso/saml-2.0/login.c: [SAMLv2] if service provider supports logout, add a
+	  SessionIndex from the assertion ID
+	  
+	  The standard mandate to provide a SessionIndex to service provider
+	  advertaising their support of the logout profile. We follow the
+	  convention of using the assertion ID as a SessionIndex.
+
+2010-07-12 14:09  bdauvergne
+
+	* tests/login_tests_saml2.c: [Tests] add a sso then slo soap test
+
+2010-07-12 14:09  bdauvergne
+
+	* lasso/lasso.h: [Core] lasso_check_version does not return a proper error code
+	  
+	  lasso_check_version returns 0, 1 or -1 and one is not a proper error
+	  code, so the original int return type is kept.
+
+2010-07-12 14:09  bdauvergne
+
+	* bindings/utils.py: [Bindings] make is_rc only check for lasso_error_t type
+
+2010-07-12 14:09  bdauvergne
+
+	* bindings/php5/php_code.py: [Bindings php5] simplify is_object in php_code.py
+
+2010-07-12 14:09  bdauvergne
+
+	* lasso/id-ff/defederation.h, lasso/id-ff/lecp.h, lasso/id-ff/login.h,
+	  lasso/id-ff/logout.h, lasso/id-ff/name_identifier_mapping.h,
+	  lasso/id-ff/name_registration.h, lasso/id-ff/profile.h, lasso/id-ff/provider.h,
+	  lasso/id-ff/server.h, lasso/id-ff/session.h, lasso/id-wsf-2.0/data_service.h,
+	  lasso/id-wsf-2.0/discovery.h, lasso/id-wsf-2.0/identity.h,
+	  lasso/id-wsf-2.0/idwsf2_helper.h, lasso/id-wsf-2.0/profile.h,
+	  lasso/id-wsf-2.0/saml2_login.h, lasso/id-wsf-2.0/server.h,
+	  lasso/id-wsf-2.0/session.h, lasso/id-wsf/authentication.h,
+	  lasso/id-wsf/data_service.h, lasso/id-wsf/discovery.h,
+	  lasso/id-wsf/id_ff_extensions.h, lasso/id-wsf/interaction_profile_service.h,
+	  lasso/id-wsf/wsf_profile.h, lasso/lasso.h, lasso/registry.h,
+	  lasso/saml-2.0/assertion_query.h, lasso/saml-2.0/ecp.h,
+	  lasso/saml-2.0/name_id_management.h, lasso/saml-2.0/saml2_helper.h,
+	  lasso/xml/saml-2.0/saml2_encrypted_element.h,
+	  lasso/xml/ws/wsse_username_token.h, lasso/xml/xml.h: [Core] change return type
+	  of all error returning methods
+	  
+	  The new return type is lasso_error_t, it should allow to pinpoint easily
+	  methods returning an error code in bindings.
+
+2010-07-12 14:09  bdauvergne
+
+	* bindings/java/lang.py: [Bindings java] use is_int instead of custom methods or
+	  code
+
+2010-07-12 14:09  bdauvergne
+
+	* bindings/perl/lang.py: [Bindings perl] add lasso_errot_t to type to map to T_IV
+	  typemap (integer types)
+
+2010-07-12 14:09  bdauvergne
+
+	* bindings/utils.py: [Bindings] add lasso_error_t to return code types
+
+2010-07-12 14:08  bdauvergne
+
+	* bindings/java/lang.py: [Binding java] use is_rc to match error return type
+
+2010-07-12 14:08  bdauvergne
+
+	* bindings/php5/php_code.py: [Binding php5] use is_rc to match error return type
+
+2010-07-12 14:08  bdauvergne
+
+	* bindings/utils.py: [Core] add lasso_error_t to list of integer types
+
+2010-07-12 14:08  bdauvergne
+
+	* lasso/Makefile.am, lasso/ctypes.h, lasso/export.h: [Core] add a lasso_error_t
+	  typedef
+	  
+	  This typedef will serve to mark error returning methods.
+	  The ctypes.h header piggyback on export.h to be included in all public
+	  headers.
+
+2010-07-05 21:27  bdauvergne
+
+	* lasso/id-ff/provider.c: [Provider] Fix loading of provider without a public key
+	  
+	  This commit also emit propre warning when loading fails for a provider
+	  *with* a public key.
+
+2010-07-05 21:24  bdauvergne
+
+	* bindings/python/lang.py: [Python binding] do not throw lasso.Error for python
+	  exceptions
+
+2010-06-29 14:49  bdauvergne
+
+	* bindings/perl/Makefile.am, bindings/perl/glist_handling.c: [Perl binding] make
+	  include from $(srcdir) works in Perl binding
+
+2010-06-29 14:15  bdauvergne
+
+	* bindings/Makefile.am, bindings/java/wrapper_top.c,
+	  bindings/perl/glist_handling.c, bindings/php5/wrapper_source_top.c,
+	  bindings/python/wrapper_top.c, bindings/utils.c: [Bindings] accept simple string
+	  in string<->xmlNode converter
+	  
+	  Some use case ask for passing simple libxml content node (i.e just an
+	  UTF-8 string) when a method argument or a field of the xmlNode* type.
+	  This commit add a static method in bindings/utils.c named
+	  lasso_string_fragment_to_xmlnode which does this transform by trying to
+	  parse an XML document then by trying to parse a well balanced XML
+	  fragment of only one node (if there is more than one node such as in the
+	  string " xxx <tag/> yyy ", we free the node list and return NULL).
+
+2010-06-29 14:15  bdauvergne
+
+	* lasso/utils.h: [Core] add macro to release an xmlNodeList object
+
+2010-06-29 14:15  bdauvergne
+
+	* bindings/python/tests/Makefile.am, bindings/python/tests/idwsf2_tests.py:
+	  [ID-WSF2] add idwsf2 test script to test suite
+	  
+	  Re-activate ID-WSF 2.0 test script. Fix problem with provider issuing
+	  assertion role. Need to be fixed more generally in the future.
+
+2010-06-29 14:14  bdauvergne
+
+	* lasso/utils.h: [Core] add macro to release GList of xmlNodeList
+
+2010-06-29 14:14  bdauvergne
+
+	* lasso/utils.h: [Core] add macros to manipulate xmlNodeList and GList of
+	  xmlNodeList
+	  
+	  The method to copy them is xmlCopyNodeList and not xmlCopyNode, so we
+	  need another set of macros.
+
+2010-06-29 09:15  bdauvergne
+
+	* lasso/id-ff/provider.c: Merge branch 'issue-101'
+
+2010-06-29 09:15  bdauvergne
+
+	* bindings/python/tests/binding_tests.py, bindings/python/tests/profiles_tests.py,
+	  lasso/saml-2.0/login.c, lasso/saml-2.0/profile.c,
+	  tests/data/idp5-saml2/metadata.xml, tests/data/sp5-saml2/metadata.xml: Merge
+	  branch 'issue-88'
+
+2010-06-29 09:15  bdauvergne
+
+	* bindings/python/tests/profiles_tests.py,
+	  docs/reference/lasso/lasso-sections.txt,
+	  lasso/xml/saml-2.0/samlp2_logout_request.c,
+	  lasso/xml/saml-2.0/samlp2_logout_request.h: Merge branch 'issue-86'
+
+2010-06-18 08:05  bdauvergne
+
+	* tests/integration/valgrind-wrapper.sh: [Tests/integration] add
+	  G_DEBUG=gc-friendly env. var to valgrind-wrapper
+	  
+	  It should improve valgrind ability to trace memory origin.
+
+2010-06-17 11:42  bdauvergne
+
+	* lasso/xml/xml.c: [XML] in lasso_node_export_to_paos_request check return value
+	  of lasso_node_get_xmlNode
+
+2010-06-17 11:42  bdauvergne
+
+	* lasso/xml/xml.c: [XML] in _lasso_node_export_to_base64 check return value of
+	  lasso_node_export_to_xml
+
+2010-06-17 11:42  bdauvergne
+
+	* lasso/xml/xml.c: [XML] in _lasso_node_export_to_xml check return value of
+	  lasso_node_get_xmlNode
+
+2010-06-15 11:33  bdauvergne
+
+	* bindings/java/Makefile.am, bindings/perl/Makefile.am, configure.ac: Comment out
+	  custom silent rules if automake < 1.11
+
+2010-06-15 11:33  bdauvergne
+
+	* lasso/xml/xml.c: [Core] do not ignore keep_xmlnode flag inherited from parent
+	  classes
+	  
+	  We only looked to the keep_xmlnode flag in the node data of the top
+	  level class, but any parent class can set this flag and in this case we
+	  must honor it too.
+
+2010-06-14 21:21  bdauvergne
+
+	* bindings/python/tests/binding_tests.py, tests/data/sp7-saml2,
+	  tests/data/sp7-saml2/Makefile.am, tests/data/sp7-saml2/metadata.xml,
+	  tests/data/sp7-saml2/password, tests/data/sp7-saml2/private-key.pem: Test: add
+	  non regression test for reloading a server dump with encrypted keys
+
+2010-06-14 21:21  bdauvergne
+
+	* lasso/id-ff/server.c: Core: when reloading a dump, use the signing private key
+	  password for loading the encryption private key
+	  
+	  We currently do not store the encryption private key, instead on reload
+	  of a dump, we try to use the signing private key as the encryption
+	  private key. But we forgot to use the stored private key password.
+	  That's now fixed.
+	  
+	  Next step would be to keep the encryption private key around also.
+
+2010-06-14 21:21  bdauvergne
+
+	* bindings/python/lang.py: Binding python: fix freeing of list return values for
+	  methods with the transfer full flag
+	  
+	  The output 'print' were missing, oups :(
+
+2010-06-12 00:43  bdauvergne
+
+	* bindings/python/wrapper_top.c: Binding python: find a work around for random
+	  behaviour of PyImport_ImportModule
+	  
+	  * it seems that PyImport_ImportModule is not deterministic. Sometimes it
+	  returns True for modules which we know are present ('logging').
+	  Importing 'sys' first seems to make 'logging' accessible (complete
+	  cargo cult programming).
+
+2010-06-12 00:43  bdauvergne
+
+	* bindings/perl/lang.py, lasso/Makefile.am, lasso/id-ff/name_identifier_mapping.c,
+	  lasso/lasso.c, lasso/lasso_config.h.in, lasso/logging.c, lasso/logging.h,
+	  lasso/utils.h, lasso/xml/private.h, lasso/xml/tools.c: Core: move logging
+	  function and macros to their own module, adapt perl binding
+
+2010-06-12 00:43  bdauvergne
+
+	* lasso/errors.h, lasso/xml/xml.h: Core: move lasso_strerror declaration to
+	  errors.h
+
+2010-06-12 00:43  bdauvergne
+
+	* .gitignore: add .gitignore file
+
+2010-06-12 00:43  bdauvergne
+
+	* tools/check-makefile.sh: Tools: add check-makefile.sh script to tools
+
+2010-06-12 00:43  bdauvergne
+
+	* abi/abi-2.2.91: add abi file for 2.2.91
+
+2010-06-12 00:43  bdauvergne
+
+	* tests/data/idp6-saml2, tests/data/idp6-saml2/Makefile.am,
+	  tests/data/idp6-saml2/metadata.xml, tests/data/idp6-saml2/private-key.pem:
+	  Tests: add idp6-saml2 data
+
+2010-06-12 00:43  bdauvergne
+
+	* bindings/python/tests/profiles_tests.py: Test: add python test for attribute
+	  requesting
+	  
+	  * What's tested:
+	  - request initialization
+	  - adding attribute designators
+	  - building the request message
+	  - processing the request message
+	  - accepting the request
+	  - adding assertion with attributes
+	  - signing the assertion
+	  - building the response
+	  - parsing the response
+
+2010-06-12 00:43  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/saml-2.0/saml2_helper.c,
+	  lasso/saml-2.0/saml2_helper.h: SAMLv2: rename
+	  lasso_saml2_name_id_build_persistent to
+	  lasso_saml2_name_id_new_with_persistent_format
+	  
+	  * keep the old one for compatibility
+	  * new one will be picked by bindings as a constructor
+
+2010-06-12 00:43  bdauvergne
+
+	* lasso/saml-2.0/saml2_helper.c: SAMLv2: when initializing signture on assertion,
+	  setup an ID if there is none
+	  
+	  * without the ID lasso refuse to sign (it's mandatory)
+
+2010-06-12 00:43  bdauvergne
+
+	* lasso/saml-2.0/assertion_query.c: SAMLv2: in
+	  lasso_assertion_query_build_request_msg setup nameid
+	  
+	  * lasso_profile_get_nameIdentifier does not return profile->nameIdentifier
+	  ,
+	  so we first try to use profile->nameIdentifier and if it is NULL we use
+	  lasso_profile_get_nameIdentifier.
+
+2010-06-12 00:42  bdauvergne
+
+	* bindings/python/wrapper_top.c: Binding python: fix bad refcounting in get_logger
+	  and lasso_python_log
+
+2010-06-10 21:26  bdauvergne
+
+	* lasso/xml/private.h, lasso/xml/tools.c: Core: update
+	  lasso_iso_8601_gmt_to_time_t to support milliseconds
+	  
+	  * We now support the two possible formats for xsdtime XSchema datatype:
+	  - dddd-dd-ddTdd:dd:ddZ
+	  - dddd-dd-ddTdd:dd:dd.d*Z
+	  
+	  Where d denotes a digit, and * is the kleene star.
+	  
+	  XSD datetime also supports negative years, but as we cannot represent
+	  them with time_t, we can reject it at the lexical level.
+
+2010-06-10 21:26  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt: Documentation: add new AssertionQuery
+	  methods to documentation
+
+2010-06-10 13:38  bdauvergne
+
+	* bindings/python/tests/binding_tests.py: Tests: new python test for
+	  setEncryptionPrivateKeyWithPassword
+
+2010-06-10 13:38  bdauvergne
+
+	* lasso/id-ff/server.c: Fix long lines in lasso/id-ff/server.c
+
+2010-06-10 13:38  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/id-ff/server.c,
+	  lasso/id-ff/server.h: Core: add method
+	  lasso_server_set_encryption_private_key_with_password
+	  
+	  * fixes #91.
+
+2010-06-10 13:38  bdauvergne
+
+	* lasso/errors.c, lasso/errors.h, lasso/saml-2.0/assertion_query.c,
+	  lasso/saml-2.0/assertion_query.h: SAMLv2: add new methods to class
+	  LassoAssertionQuery
+	  
+	  * lasso_assertion_query_add_attribute_request:
+	  helper to setup request attribute for AttributeQuery messages.
+	  * lasso_assertion_query_get_request_type:
+	  method to find the type of the last received query.
+	  * fixes #90
+
+2010-06-10 13:37  bdauvergne
+
+	* lasso/saml-2.0/assertion_query.c: SAMLv2: fix initialization of subject in
+	  lasso_assertion_query_build_request_msg
+
+2010-06-10 13:37  bdauvergne
+
+	* lasso/utils.h: Import tools in utils.h
+
+2010-06-10 13:37  bdauvergne
+
+	* lasso/xml/private.h: Fix collision between defined symbols in tools.h and
+	  private.h
+
+2010-06-10 07:58  bdauvergne
+
+	* bindings/python/wrapper_top.c: Binding python: if lasso.logger exists use it for
+	  logging
+	  
+	  * There is now two paths to get a logger in the python binding:
+	  - first try to get an objet from lasso.logger
+	  - if it doesn't exist or is None, the try logging.getLogger('lasso')
+
+2010-06-09 16:54  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c, lasso/id-wsf-2.0/idwsf2_helper.c,
+	  lasso/id-wsf-2.0/profile.c, lasso/id-wsf-2.0/saml2_login.c,
+	  lasso/saml-2.0/login.c, lasso/saml-2.0/saml2_helper.c, lasso/utils.h,
+	  lasso/xml/tools.c: Change all logging to use message()
+
+2010-06-09 16:54  bdauvergne
+
+	* lasso/xml/tools.c: Core: in xml error message handler, escape messages to fit on
+	  one line
+
+2010-06-09 16:54  bdauvergne
+
+	* lasso/xml/tools.c: Core: remove arrow in log messages
+
+2010-06-09 16:54  bdauvergne
+
+	* bindings/python/lang.py, bindings/python/wrapper_bottom.c: Binding python: call
+	  lasso_init() first in init_lasso()
+
+2010-06-09 16:54  bdauvergne
+
+	* bindings/python/wrapper_bottom.c, bindings/python/wrapper_top.c: Binding python:
+	  add GLog handler to redirect logs to Python logger named "lasso"
+	  
+	  * fixes #20
+
+2010-06-09 16:54  bdauvergne
+
+	* lasso/saml-2.0/Makefile.am, lasso/saml-2.0/saml2_assertion_addons.c,
+	  lasso/saml-2.0/saml2_assertion_addons.h,
+	  lasso/saml-2.0/saml2_conditions_addons.c,
+	  lasso/saml-2.0/saml2_conditions_addons.h,
+	  lasso/saml-2.0/samlp2_authn_request_addons.c,
+	  lasso/saml-2.0/samlp2_authn_request_addons.h, lasso/utils.c, lasso/utils.h:
+	  Utils: add function to extract/create node in lists
+	  
+	  * lasso_extract_gtype_from_list_or_new will help for method with create
+	  or extend nodes in lists.
+
+2010-06-09 07:51  fpeters
+
+	* bindings/overrides.xml, docs/reference/lasso/lasso-sections.txt,
+	  lasso/xml/tools.c, lasso/xml/tools.h: Add new lasso_log_set_handler and
+	  lasso_log_remove_handler functions
+	  
+	  They are modeled around the g_log... functions of GLib, they just don't
+	  have a domain parameter.
+
+2010-06-06 14:03  bdauvergne
+
+	* bindings/perl/t/Lasso.t: Binding perl: fix test so that it does not raise on
+	  add_provider
+
+2010-06-06 14:03  bdauvergne
+
+	* bindings/java/lang.py, bindings/python/lang.py, bindings/utils.py: Bindings:
+	  keep retro compatibility for member field names
+	  
+	  * Special kludge price go to PHP:
+	  methods name are insensitive so nothing to do here, BUT, if you use
+	  getters/setters then your objects fields can be case insensitive too
+	  ;-) (DNS, dns, DnS, dNs all maps to get_dns ).
+
+2010-06-06 14:03  bdauvergne
+
+	* bindings/utils.py: Bindings: fix camelcasing of id fields
+
+2010-06-06 14:03  bdauvergne
+
+	* lasso/saml-2.0/provider.c: SAMLv2: make role checking inactive for LassoServer
+	  
+	  * LassoServer have no role defined, so checking breaks loading of
+	  metadata for LassoServer.
+
+2010-06-06 14:03  bdauvergne
+
+	* lasso/id-ff/login.c: ID-FFv1.2: for idp initiated sso accept any nameIdPolicy
+	  
+	  * IdP initiated SSO can be of any kind, no need to limit it.
+
+2010-06-04 09:32  bdauvergne
+
+	* lasso/saml-2.0/provider.c: SAML 2.0: add checks for proper loading of role
+	  descriptors
+	  
+	  * remove warning for descriptors supporting non SAML 2.0 protocols
+	  * checks that at least one descriptor was loaded and that it was for
+	  our assigned role.
+
+2010-06-04 09:32  bdauvergne
+
+	* lasso/id-ff/provider.c: SAMLv2: fix error in naming of function in the
+	  documentation
+
+2010-05-31 07:13  bdauvergne
+
+	* lasso/saml-2.0/provider.c: SAMLv2: remove HTTP-Redirect as right binding for
+	  AssertionConsumer
+
+2010-05-31 07:13  bdauvergne
+
+	* lasso/saml-2.0/provider.c: SAMLv2: fix bug giving UnuspportedProfile for
+	  SingleSignOn with HTTP-POST
+	  
+	  * The string constant in lasso_saml20_provider_accept_http_method was
+	  HTTP-Post instead of HTTP-POST.
+
+2010-05-31 07:13  bdauvergne
+
+	* lasso/xml/tools.c: Core: fix extraction of relaystate when URLs contains only
+	  one kind of separators
+
+2010-05-31 07:13  bdauvergne
+
+	* tests/integration/saml2/test_02_slo.py,
+	  tests/integration/saml2/test_03_defederation.py: Integration test: adapt to new
+	  behaviour for federation termination
+
+2010-05-31 07:13  bdauvergne
+
+	* lasso/saml-2.0/provider.c: SAMLv2: simplify
+	  lasso_saml20_provider_accept_http_method by only checking for remote provider
+	  support
+	  
+	  * Whatever we do, with asyncrhonous bindings the remote provider can
+	  return the response with any asynchronous binding.
+
+2010-05-31 07:13  bdauvergne
+
+	* lasso/saml-2.0/login.c: SAML 2.0: in lasso_login_build_assertion set conditions
+	  time limit, no SubjectConfirmationData limits
+
+2010-05-31 07:13  bdauvergne
+
+	* lasso/saml-2.0/login.c: SAML 2.0: in lasso_login_build_assertion do not conflate
+	  sessionNotOnOrAfter with assertion condition notOnOrAfter
+
+2010-05-11 12:03  bdauvergne
+
+	* website/templates/base.ezt, website/web/download/index.xml: Website: add
+	  quicklinks for download links
+
+2010-05-11 08:54  bdauvergne
+
+	* website/web/download/index.xml: Change VCS viewer link to point toward the
+	  redmine browser
+
+2010-05-11 08:54  bdauvergne
+
+	* lasso/saml-2.0/login.c: SAMLv2: conflate Responder and Requester when checking
+	  second level status code
+	  
+	  * lasso/saml-2.0/login.c:
+	  I'm not sure that most IdP really make the semantic distinction
+	  between those two first level status codes, so just conflate them.
+
+2010-05-11 08:54  bdauvergne
+
+	* lasso/saml-2.0/login.c: SAMLv2: remove warning message for invalid signature on
+	  AuthnResponse messages
+	  
+	  * lasso/saml-2.0/login.c:
+	  we already return an error, no need to clutter the output with
+	  warning messages.
+
+2010-05-04 16:46  bdauvergne
+
+	* website/web/documentation/index.xml: Website: add a link to a tarball of the
+	  documentation extracted from the SVN
+
+2010-05-01 05:40  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/saml-2.0/saml2_helper.c,
+	  lasso/saml-2.0/saml2_helper.h: SAML 2.0 Helper: add
+	  lasso_saml2_assertion_set_one_time_use
+
+2010-05-01 05:40  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c: Fix bad initialization of an rc field from
+	  revision 4837
+
+2010-05-01 05:40  bdauvergne
+
+	* lasso/id-ff/login.c, lasso/id-wsf-2.0/soap_binding.c: Change <p> tags to <para>
+
+2010-05-01 05:40  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/id-ff/profile.c,
+	  lasso/id-ff/profile.h: Add a lasso_profile_get_signature_status method
+
+2010-04-30 09:23  bdauvergne
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	  lasso/id-ff/name_identifier_mapping.c, lasso/id-ff/name_registration.c,
+	  lasso/id-wsf-2.0/discovery.c, lasso/id-wsf-2.0/saml2_login.c,
+	  lasso/id-wsf/authentication.c, lasso/id-wsf/discovery.c,
+	  lasso/saml-2.0/assertion_query.c, lasso/saml-2.0/login.c,
+	  lasso/saml-2.0/profile.c, lasso/xml/dst_modify.c,
+	  lasso/xml/dst_modify_response.c, lasso/xml/dst_query.c,
+	  lasso/xml/dst_query_response.c, lasso/xml/misc_text_node.c, lasso/xml/tools.c,
+	  lasso/xml/ws/wsse_username_token.c, lasso/xml/xml.c, tests/login_tests.c,
+	  tests/login_tests_saml2.c, tests/perfs.c, tests/tests.c: Initialize all
+	  uninitialized rc variables
+
+2010-04-30 09:22  bdauvergne
+
+	* tests/basic_tests.c: Test: only test custom namespace if ID-WSF is enabled
+
+2010-04-28 16:52  bdauvergne
+
+	* lasso/id-wsf-2.0/data_service.c: in
+	  lasso_idwsf2_data_service_build_response_msg, allows SOAPFault as responses
+
+2010-04-28 16:52  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c: Fix uninitialized local variable
+
+2010-04-28 16:52  bdauvergne
+
+	* lasso/id-ff/session.c: in lasso_session_count_assertions, do not emit warning if
+	  session is not an object
+
+2010-04-27 22:55  bdauvergne
+
+	* lasso/saml-2.0/logout.c: SAML 2.0: always restart initial request processing in
+	  lasso_logout_build_response_msg
+	  
+	  * Does it also in process_response_msg if no more assertions are
+	  present.
+	  * Take into account that lasso_saml20_profile_process_any_response
+	  already check for the status code, and so specify finer error code in
+	  the cleanup code.
+
+2010-04-27 22:55  bdauvergne
+
+	* lasso/saml-2.0/provider.c: SAML 2.0: fix
+	  lasso_saml20_provider_get_first_http_method
+	  
+	  * LassoServer object can have many roles, use the default role of the
+	  remote provider to decide on which to assume.
+
+2010-04-27 22:55  bdauvergne
+
+	* lasso/saml-2.0/logout.c: SAML 2.0 Logout: in init_request, remove the assertion
+	  anyway
+	  
+	  * lasso/saml-2.0/logout.c:
+	  when initiating a logout, if no problem is found, remove the assertion.
+	  you can always continue by changing profile->http_request_method to
+	  SOAP for example and redo a build_request_msg.
+
+2010-04-27 22:55  bdauvergne
+
+	* lasso/saml-2.0/profile.c: SAML 2.0:
+	  lasso_saml20_profile_process_any_response_msg, change status code checking
+
+2010-04-22 11:19  bdauvergne
+
+	* lasso/saml-2.0/logout.c: SAML 2.0: lasso_logout_build_response_msg, just verify
+	  there is saved data from a previous request before switching them
+	  
+	  * lasso/saml-2.0/logout.c:
+	  There is no need to check what the previous remote provider ID was,
+	  just that initial_remote_providerID is not NULL in order to switch
+	  request, response and remote_providerID.
+
+2010-04-22 11:19  bdauvergne
+
+	* lasso/id-ff/login.c: Fix wrong change g_free -> lasso_release inside example
+	  code
+
+2010-04-22 01:12  bdauvergne
+
+	* lasso/id-ff/provider.c: Provider: fix problem when reusing the same lists nodes
+	  in Descriptors
+
+2010-04-22 00:45  bdauvergne
+
+	* lasso/id-ff/provider.c, lasso/id-ff/server.c, lasso/id-ff/session.c,
+	  lasso/id-wsf-2.0/data_service.c, lasso/registry.c, lasso/utils.h,
+	  lasso/xml/xml.c: Improve safety by replacing all g_hash_table_destroy use by
+	  lasso_release_ghashtable
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/id-ff/identity.c, lasso/id-ff/login.c, lasso/id-ff/provider.c,
+	  lasso/id-ff/session.c, lasso/id-wsf-2.0/discovery.c, lasso/id-wsf/discovery.c,
+	  lasso/saml-2.0/login.c, lasso/saml-2.0/provider.c,
+	  lasso/xml/saml-2.0/samlp2_response.c, lasso/xml/xml.c: Improve safety by
+	  replacing all g_list_free use by lasso_release_list
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/id-wsf-2.0/data_service.c, lasso/utils.c, lasso/xml/samlp_status.c,
+	  lasso/xml/tools.c, lasso/xml/xml.c: Improve safety by replacing all
+	  g_string_free use by lasso_release_gstring
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/federation.c, lasso/id-ff/identity.c,
+	  lasso/id-ff/login.c, lasso/id-ff/logout.c, lasso/id-ff/name_registration.c,
+	  lasso/id-ff/provider.c, lasso/id-ff/server.c, lasso/id-ff/session.c,
+	  lasso/id-wsf-2.0/data_service.c, lasso/id-wsf-2.0/discovery.c,
+	  lasso/id-wsf-2.0/profile.c, lasso/id-wsf/authentication.c,
+	  lasso/id-wsf/data_service.c, lasso/id-wsf/discovery.c,
+	  lasso/id-wsf/wsf_profile.c, lasso/registry.c, lasso/saml-2.0/assertion_query.c,
+	  lasso/saml-2.0/ecp.c, lasso/saml-2.0/provider.c, lasso/saml-2.0/server.c,
+	  lasso/xml/lib_federation_termination_notification.c,
+	  lasso/xml/saml-2.0/samlp2_request_abstract.c,
+	  lasso/xml/saml-2.0/samlp2_status_response.c, lasso/xml/saml_assertion.c,
+	  lasso/xml/tools.c, lasso/xml/ws/wsse_username_token.c, lasso/xml/xml.c: Improve
+	  safety by replacing all g_free use by lasso_release
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/id-ff/login.c: Start an example listing for an IdP SingleSignOn endpoint
+
+2010-04-22 00:44  bdauvergne
+
+	* tests/random_tests.c: Free xmlSecKey
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/xml/xml.c: Fix potential SEGFAULT in _lasso_node_free_custom_element
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/utils.h: Utils: add lasso_assign_list
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/utils.h: Add lasso_release_gstring
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/utils.h: Utils: add lasso_release_ghashtable
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/saml-2.0/profile.c: SAML 2.0 Profile: remove unused must_sign variable
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/id-ff/logout.c: First try to check that objects are fully functionals
+	  before proceeding
+
+2010-04-22 00:44  bdauvergne
+
+	* lasso/saml-2.0/logout.c: Fix potential SEGFAULT of an unknown provider
+
+2010-04-20 09:34  bdauvergne
+
+	* lasso/saml-2.0/login.c: SAML 2.0: in lasso_saml20_process_federation, only
+	  handle the case of PERSISTENT format
+	  
+	  * lasso/saml-2.0/login.c:
+	  in lasso_saml20_process_federation:
+	  - if no name id format can be found by the request, use the default from
+	  the metadata file (first declared NameIDFormat)
+	  - instead of checking if format is TRANSIENT, check if it is PERSISTENT,
+	  and proceed with the federation, if not just return 0.
+	  - return LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER instead of
+	  LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND.
+	  - in any case, check for consent.
+
+2010-04-20 09:34  bdauvergne
+
+	* lasso/saml-2.0/login.c: SAML 2.0: in lasso_saml20_login_validate_request, do not
+	  check signature if not necessary
+
+2010-04-20 09:34  bdauvergne
+
+	* lasso/saml-2.0/login.c: SAML 2.0: find binding when only
+	  AssertionConsumerServiceURL is set, do not check signature on request if asked
+
+2010-04-20 09:34  bdauvergne
+
+	* lasso/saml-2.0/provider.c, lasso/saml-2.0/providerprivate.h: SAML 2.0: add
+	  internal method to retrieve the binding for an URL
+
+2010-04-20 09:34  bdauvergne
+
+	* lasso/id-ff/profile.h, lasso/saml-2.0/login.c: Login: add internal function
+	  _lasso_login_must_verify_*signature
+
+2010-04-19 11:51  bdauvergne
+
+	* lasso/id-ff/login.c: Login: remove symbol markers in example code
+
+2010-04-19 11:30  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/id-ff/login.c,
+	  lasso/id-ff/provider.c, lasso/id-wsf-2.0/profile.c, lasso/saml-2.0/provider.c,
+	  lasso/saml-2.0/saml2_helper.c, lasso/xml/xml.c, lasso/xml/xml.h: Fix
+	  documentation problems
+
+2010-04-16 15:37  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/id-ff/profile.c,
+	  lasso/id-ff/profile.h, lasso/saml-2.0/login.c, lasso/saml-2.0/profile.c,
+	  tests/metadata_tests.c: Ameliorate support for
+	  lasso_profile_set_signature_verify_hint
+	  
+	  * lasso/id-ff/profile.h:
+	  - add end symbol for enum LassoProfileSignatureVerifyHint
+	  * lasso/id-ff/profile.c:
+	  - fix documentation of lasso_profile_set_signature_verify_hint
+	  - do not allow to set or return invalid value for the
+	  signature_verify_hint attribute.
+	  * lasso/saml-2.0/login.c:
+	  - handle new enum value
+	  * lasso/saml-2.0/profile.c:
+	  - handle new enum value
+	  - fix missing catch of signature error reporting when
+	  signature_verify_hint is IGNORE.
+	  * docs/reference/lasso/lasso-sections.txt:
+	  - export enums LassoProfileSignatureHint and
+	  LassoProfileSignatureVerifyHint
+	  * tests/metadata_tests.c:
+	  - fix test of all Role enumerations
+
+2010-04-06 15:00  bdauvergne
+
+	* schemas/saml-2.0/saml-schema-assertion-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-auth-telephony-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-ip-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-ippword-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-kerberos-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-mobileonefactor-reg-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-mobileonefactor-unreg-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-mobiletwofactor-reg-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-mobiletwofactor-unreg-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-nomad-telephony-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-personal-telephony-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-pgp-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-ppt-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-pword-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-session-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-smartcard-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-smartcardpki-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-softwarepki-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-spki-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-srp-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-sslcert-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-telephony-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-timesync-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-types-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-x509-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-xmldsig-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-dce-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-ecp-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-metadata-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-protocol-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-x500-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-xacml-2.0.xsd: Revert "Core: add XML schemas for
+	  SAML 2.0"
+	  
+	  This reverts commit 5250c2c89e3983189a3c52cd85ad221ff7b6f64b.
+
+2010-04-06 15:00  bdauvergne
+
+	* lasso/saml-2.0/profile.c: SAML 2.0: add Destination attribute to requests
+	  
+	  * lasso/saml-2.0/profile.c:
+	  this change make Lasso respect paragraphs 3.4.5.2 (HTTP-Redirect
+	  binding securit considerations ) and 3.5.5.2 (the same for HTTP-Post)
+	  of the saml-bindings-2.0-os.pdf document, and should allow our Authn
+	  Requests to be accepted by shiboleth IdP.
+
+2010-04-06 13:11  bdauvergne
+
+	* tools/check-lasso-sections.py: Tools: add usage statement to
+	  check-lasso-sections.py
+
+2010-04-06 13:11  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt: Docs: add/remove symbols from
+	  lasso-sections.txt
+
+2010-04-06 13:11  bdauvergne
+
+	* lasso/id-wsf-2.0/data_service.c: ID-WSF 2.0 DST: make
+	  lasso_idwsf2_data_service_set_status_code works event if no response is
+	  initialized
+
+2010-04-06 13:11  bdauvergne
+
+	* tests/basic_tests.c: Tests: add tests for custom namespace functions
+
+2010-04-06 13:11  bdauvergne
+
+	* lasso/id-ff/provider.c: ID-FF 1.2 & SAML 2.0: factorize access to role prefix
+
+2010-04-06 13:11  bdauvergne
+
+	* tests/metadata_tests.c: Tests: make role descriptor loading test less verbose
+	  
+	  * tests/metadata_tests.c:
+	  remove printf, add checks
+
+2010-04-06 13:11  bdauvergne
+
+	* tests/tests.h: Tests: show actual value in check_equals test macro
+
+2010-04-06 13:11  bdauvergne
+
+	* lasso/id-wsf-2.0/data_service.c, lasso/xml/private.h, lasso/xml/xml.c: XML: add
+	  custom namespace definition handling
+
+2010-04-06 13:11  bdauvergne
+
+	* lasso/saml-2.0/provider.c: SAML 2.0: fix default assertion consumer handling
+	  when isDefault is missing
+	  
+	  * if no default_assertion_consumer value is set after traversing the
+	  list of endpoint, try to find the first one without isDefault="false"
+	  and finally take the first one.
+
+2010-04-06 13:11  bdauvergne
+
+	* lasso/saml-2.0/provider.c: SAML 2.0: fix default assertion consumer handling
+	  
+	  * the default one is the first with the attribute isDefault not the
+	  last.
+
+2010-04-06 13:11  bdauvergne
+
+	* bindings/python/tests/idwsf1_tests.py: Binding python tests: update idwsf1 to
+	  explicitely register PP10 HREF
+
+2010-04-06 13:11  bdauvergne
+
+	* bindings/python/tests/idwsf2_tests.py: Binding python: update idwsf2 test for
+	  method change dst.initResponse -> validateRequest
+
+2010-04-06 13:11  bdauvergne
+
+	* lasso/xml/xml.c: XML: do not register any DST namespace by default
+
+2010-04-06 13:11  bdauvergne
+
+	* lasso/xml/id-wsf-2.0/dstref_result_query.c,
+	  lasso/xml/id-wsf-2.0/dstref_result_query.h, lasso/xml/xml.c: XML: add a
+	  SNIPPET_COLLECT_NAMESPACES snippet to DstRefResultQuery
+
+2010-04-06 13:11  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/id-wsf-2.0/data_service.c,
+	  lasso/id-wsf-2.0/data_service.h: ID-WSF 2.0 Data Service: new accessor, fix use
+	  of build_unique_id, change init_response to validate_request
+
+2010-04-06 13:11  bdauvergne
+
+	* lasso/xml/private.h, lasso/xml/xml.c: Core: add a SNIPPET_COLLECT_NAMESPACE
+	  snippet type
+	  
+	  * lasso/xml/private.h lasso/xml/xml.c:
+	  add a new primary XmlSnippet type for collecting all namespace
+	  declaration, following parent relation on current node or one of the
+	  child nodes.
+
+2010-04-06 13:11  bdauvergne
+
+	* bindings/python/lang.py: Binding python: fix use of raise_on_rc, simplift
+	  Node.__setstate__
+
+2010-04-06 13:11  bdauvergne
+
+	* lasso/xml/xml.c: Revert "Make lasso_node_get_xmlNode return original_xmlnode if
+	  there is one"
+	  
+	  This reverts commit dfd8f21ab27d2b25a67a52aadd9d4cdce20ebda5.
+
+2010-04-06 13:11  bdauvergne
+
+	* bindings/python/tests/binding_tests.py, bindings/python/wrapper_top.c: Binding
+	  python: for empty GList return empty tuples, not None
+
+2010-04-06 13:11  bdauvergne
+
+	* lasso/id-ff/login.c: Docs: remove from documentation comments characters outside
+	  ASCII for python bindings
+
+2010-04-06 13:10  bdauvergne
+
+	* lasso/saml-2.0/profile.c: Fix return path in lasso_saml20_process_any_response
+	  for signatures checking
+
+2010-04-06 13:10  bdauvergne
+
+	* lasso/xml/xml.c: fix documentation of lasso_node_debug
+
+2010-04-06 13:10  bdauvergne
+
+	* lasso/xml/xml.c: Make lasso_node_get_xmlNode return original_xmlnode if there is
+	  one
+	  
+	  * lasso/xml/xml.c:
+	  this change allow session to contain exact copy of received assertion
+	  (and not the one lacking signatures) and also to put those assertions
+	  directly into message, for example as ID-WSF credentials.
+	  But it could have side effect, so for now I will no merge it.
+
+2010-03-27 17:40  bdauvergne
+
+	* lasso/id-ff/login.c: update documentation of
+	  lasso_login_build_authn_response_msg
+
+2010-03-27 17:40  bdauvergne
+
+	* lasso/id-ff/login.c: update documentation of lasso_login_build_authn_request_msg
+
+2010-03-27 17:40  bdauvergne
+
+	* lasso/id-ff/login.c: improve documentation of lasso_login_build_artifact_msg
+
+2010-03-27 17:39  bdauvergne
+
+	* lasso/id-ff/login.c: use lasso_release_gobject in lasso_login_destroy
+
+2010-03-27 17:39  bdauvergne
+
+	* lasso/id-ff/login.c: update lasso_login_accept_sso documentation
+
+2010-03-27 17:39  bdauvergne
+
+	* lasso/id-ff/login.c: ID-FF&SAML2: complete documentation of
+	  lasso_login_build_assertion
+
+2010-03-27 17:39  bdauvergne
+
+	* lasso/backward_comp.h: Make multiple include loading work in
+	  lasso/backward_comp.h
+	  
+	  * lasso/backward_comp.h
+	  add missing BACKWARD_COMP_H define.
+
+2010-03-27 16:52  bdauvergne
+
+	* bindings/perl/t/Lasso.t: Binding python: fix test file
+
+2010-03-27 16:52  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/id-ff/profile.h,
+	  lasso/id-ff/provider.c, lasso/id-ff/provider.h, lasso/id-ff/providerprivate.h,
+	  lasso/saml-2.0/assertion_query.c, lasso/saml-2.0/profile.c,
+	  lasso/saml-2.0/profileprivate.h, lasso/saml-2.0/provider.c,
+	  lasso/saml-2.0/providerprivate.h, lasso/xml/saml-2.0/saml2_strings.h,
+	  lasso/xml/saml-2.0/saml2_xsd.h, tests/Makefile.am,
+	  tests/assertion_query_saml2.c, tests/metadata_tests.c, tests/tests.c: SAML
+	  2.0&ID-FF 1.2: simplify and complete metadata loading for multi-role support
+
+2010-03-27 16:52  bdauvergne
+
+	* schemas, schemas/saml-2.0, schemas/saml-2.0/saml-schema-assertion-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-auth-telephony-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-ip-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-ippword-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-kerberos-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-mobileonefactor-reg-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-mobileonefactor-unreg-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-mobiletwofactor-reg-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-mobiletwofactor-unreg-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-nomad-telephony-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-personal-telephony-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-pgp-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-ppt-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-pword-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-session-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-smartcard-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-smartcardpki-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-softwarepki-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-spki-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-srp-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-sslcert-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-telephony-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-timesync-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-types-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-x509-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-authn-context-xmldsig-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-dce-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-ecp-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-metadata-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-protocol-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-x500-2.0.xsd,
+	  schemas/saml-2.0/saml-schema-xacml-2.0.xsd: Core: add XML schemas for SAML 2.0
+
+2010-03-27 16:51  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/xml/soap_binding.h: Doc: add all
+	  missing methods to documentation section file
+	  
+	  * add missing LASSO_EXPORT too for functions already present in the
+	  documentation, but not exported previously.
+
+2010-03-27 16:51  bdauvergne
+
+	* tools/check-lasso-sections.py: Tools: add script to check for missing functions
+	  in lasso-sections.txt
+
+2010-03-27 16:51  bdauvergne
+
+	* lasso/xml/xml.c: XML: in lasso_node_build_xmlNode_from_snippets only set child
+	  name if SNIPPET is not of ANY type
+
+2010-03-27 16:51  bdauvergne
+
+	* lasso/xml/private.h, lasso/xml/tools.c: Core: add
+	  lasso_set_string_from_prop(char**,xmlNode*,..) function
+
+2010-03-27 16:51  bdauvergne
+
+	* lasso/id-ff/profile.c, lasso/id-ff/profile.h: Core: add method to check whether
+	  we are IdP or SP of another provider
+	  
+	  * lasso/id-ff/profile.{c,h}:
+	  the method lasso_profile_sso_role_with, evaluate using the current
+	  LassoIdentity content if we are in a relation of IdP or SP toward
+	  another provider. This is based on the existence of a federation with
+	  this provider.
+
+2010-03-27 16:51  bdauvergne
+
+	* lasso/xml/saml-2.0/saml2_strings.h: SAML 2.0: add attribute profiles strings
+
+2010-03-27 16:51  bdauvergne
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c, lasso/id-ff/provider.c,
+	  lasso/id-ff/provider.h, lasso/id-ff/providerprivate.h, lasso/id-ff/server.c,
+	  lasso/id-ff/serverprivate.h, lasso/saml-2.0/assertion_query.c,
+	  lasso/saml-2.0/assertion_query.h, lasso/saml-2.0/ecp.c,
+	  lasso/saml-2.0/provider.c: SAML 2.0: add support for attribute, authentication
+	  and authorization authorities metadata
+	  
+	  * server.c,serverprivate.h: add new private method
+	  lasso_server_get_firs_providerID_by_role(server, role)w
+	  * defederation.c: use new private method
+	  lasso_server_get_first_providerID_by_role for find providerID
+	  when the argument remote_providerID is null in
+	  lasso_defederation_init_notification.
+	  * lasso/id-ff/login.c (lasso_login_init_authn_request): use new private
+	  method lasso_server_get_first_providerID_by_role.
+	  * provider.h: add thre new provider role (authn,pdp,attribute) and
+	  four new services (authn,assertionid,attribute,authz) and also
+	  a ROLE_ANY value (-1) for catchall purpose and a ROLE_LAST for
+	  array sizing.
+	  * provider.h: add a LAST member to LassoMdProtocolType enum.
+	  * providerprivate.h,provider.c:
+	  - removes separate hashtable for descriptors depending on provider role,
+	  use only one table named Descriptors.
+	  - use the LAST members of enumerations to dimention static string arrays.
+	  * provider.h: add a LAST member to the e
+
+2010-03-27 16:51  bdauvergne
+
+	* lasso/xml/xml.c: XML: add support for setting attribute in any namespace using
+	  element tree syntax
+
+2010-03-27 16:51  bdauvergne
+
+	* lasso/saml-2.0/login.c, lasso/saml-2.0/profile.c: Support SignatureVerifyHint in
+	  SAML 2.0 SSO profile and common message handling
+
+2010-03-27 16:51  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/id-ff/profile.c,
+	  lasso/id-ff/profile.h, lasso/id-ff/profileprivate.h: Add signature_verify_hint
+	  accessor methods to LassoProfile
+	  
+	  * lasso/id-ff/profile.{c,h}:
+	  add a LassoProfileSignatureVerifyHint enumeration and two accessor
+	  methods:
+	  - lasso_profile_get_signature_verify_hint
+	  - lasso_profile_set_signature_verify_hint
+	  * lasso/id-ff/profileprivate.h:
+	  add private field signature_verify_hint.
+
+2010-03-27 16:51  bdauvergne
+
+	* bindings/utils.py: Bindings: fix parsing of camelcased ident (Samlp2IDPList ->
+	  samlp2,idp,list)
+
+2010-03-27 16:51  bdauvergne
+
+	* bindings/python/lang.py: Binding python: fix problem of classes without an
+	  initializer
+
+2010-03-27 16:51  bdauvergne
+
+	* tests/tests.h: Tests: add macros to test for string equality
+
+2010-03-27 16:51  bdauvergne
+
+	* tests/login_tests_saml2.c: Tests: in SAML 2.0 tests, use more check_ macros
+
+2010-03-27 16:51  bdauvergne
+
+	* tests/tests.h: Tests: add macros check_equals and check_not_equals
+
+2010-03-27 16:51  bdauvergne
+
+	* lasso/xml/xml.c: Core: change GObjectAnnotation of lasso_node_export_to_query to
+	  state that private_key_file is optional
+
+2010-03-27 16:51  bdauvergne
+
+	* bindings/bindings.py, lasso/xml/saml-2.0/Makefile.am,
+	  lasso/xml/saml-2.0/saml2_xsd.h: SAML 2.0 XML: add header listing strings from
+	  XML schema
+
+2010-03-08 13:19  bdauvergne
+
+	* lasso/saml-2.0/login.c: SAML 2.0: fix uninitialized variable
+
+2010-03-08 13:19  bdauvergne
+
+	* lasso/id-wsf/id_wsf.h: ID-WSF 1.0: fix bad header name in all inclusive header
+	  lasso/id-wsf/id_wsf.h
+
+2010-03-02 11:58  bdauvergne
+
+	* bindings/php5/tests/binding_tests.php: Binding PHP5 tests: fix assertion dump
+	  test
+
+2010-03-02 11:58  bdauvergne
+
+	* lasso/xml/disco_send_single_logout.c,
+	  lasso/xml/id-wsf-2.0/sb2_user_interaction_header.c,
+	  lasso/xml/id-wsf-2.0/subsref_app_data.c, lasso/xml/lib_assertion.c,
+	  lasso/xml/saml-2.0/saml2_condition_abstract.c,
+	  lasso/xml/saml-2.0/saml2_encrypted_element.c, lasso/xml/ws/wsa_attributed_uri.c,
+	  lasso/xml/ws/wsa_endpoint_reference.c: XML: move registry mapping into the
+	  *_get_type() functions
+	  
+	  * lassoxml/disco_send_single_logout.c:
+	  * lassoxml/id-wsf-2.0/sb2_user_interaction_header.c:
+	  * lassoxml/id-wsf-2.0/subsref_app_data.c:
+	  * lassoxml/lib_assertion.c:
+	  * lassoxml/saml-2.0/saml2_condition_abstract.c:
+	  * lassoxml/saml-2.0/saml2_encrypted_element.c:
+	  * lassoxml/ws/wsa_attributed_uri.c:
+	  * lassoxml/ws/wsa_endpoint_reference.c:
+	  class_init is only called the first time an object of the given type
+	  is created, registry mappings must exist before this time, so I moved
+	  the registration code to the _get_type() functions.
+
+2010-03-02 11:58  bdauvergne
+
+	* lasso/xml/xml.c, lasso/xml/xml.h: Core: add a level argument to lasso_node_debug
+
+2010-03-02 11:58  bdauvergne
+
+	* lasso/id-wsf-2.0/soap_binding.c, lasso/id-wsf-2.0/soap_binding.h: ID-WSF 2.0:
+	  add lasso_soap_envelope_set_relates_to method
+
+2010-03-02 11:58  bdauvergne
+
+	* lasso/utils.h: Core: add macro to remove gobject from lists
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/xml/Makefile.am, lasso/xml/tools.c, lasso/xml/tools.h: Core: export
+	  lasso_build_unique_id into public API
+	  
+	  * lasso/xml/tools.h:
+	  add new header to export lasso_build_unique_id as a public API.
+	  
+	  * lasso/xml/Makefile.am:
+	  add tools.h to header list
+	  
+	  * lasso/xml/tools.c:
+	  add GObjectIntrospection annotations to exported functions.
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/saml-2.0/profile.c: SAML 2.0: change error code for empty ArtifactResolve
+	  response to LASSO_PROFILE_ERROR_MISSING_RESPONSE
+
+2010-03-02 11:57  bdauvergne
+
+	* bindings/java/Makefile.am: Bindings java: do not mask errors from the code
+	  generator
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/id-ff/profile.c, lasso/id-ff/profile.h, lasso/id-wsf-2.0/data_service.c,
+	  lasso/id-wsf-2.0/discovery.c, lasso/id-wsf-2.0/profile.c,
+	  lasso/id-wsf-2.0/profile.h: Core: add an helper method to build a SOAP response
+	  in a LassoProfile object
+	  
+	  * lasso/id-ff/profile.{c,h}:
+	  add lasso_profile_add_soap_fault_response(char* code, char *string,
+	  GList *details).
+	  * lasso/id-wsf-2.0/profile.{c,h}:
+	  change signature of lasso_idwsf2_profile_init_soap_fault_response.
+	  * lasso/id-wsf-2.0/data_service.c:
+	  use new function instead of manually intializing soap faults
+	  * lasso/id-wsf-2.0/discovery.c:
+	  init a soap fault when parsed request is of an unknown type, return
+	  proper error.
+
+2010-03-02 11:57  bdauvergne
+
+	* bindings/python/tests/idwsf2_tests.py: ID-WSF 2.0 python tests: finish tests for
+	  new ID-WSF 2.0 API
+	  
+	  * bindings/python/tests/idwsf2_tests.py:
+	  all Discovery service request types are tested, and Data Service
+	  query is tested as well. Data Service testing and API should more
+	  tested, especially failure cases.
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/id-wsf-2.0/data_service.c: ID-WSF 2.0: add service type to response, parse
+	  response before using it
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/xml/xml.c: Core: in xml_insure_namespace do not segfault if ns is NULL
+
+2010-03-02 11:57  bdauvergne
+
+	* bindings/python/lang.py: Binding python: accept a functio as setter, if it has
+	  only two arguments
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/id-wsf-2.0/profile.c: ID-WSF 2.0: in lasso_idwsf2_get_name_identifier, use
+	  lasso_saml2_assertion_decrypt_subject
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/id-wsf-2.0/profile.c: ID-WSF 2.0: in
+	  lasso_idwsf2_profile_check_security_mechanism, add common logic for SAML 2.0
+	  secmech, check for presence of a server object,
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c: ID-WSF 2.0: fix MDAssociationQueryResponse
+	  handling
+	  
+	  * lasso/id-wsf-2.0/discovery.c:
+	  - in lasso_idwsf2_discovery_validate_request, use svcmdids to
+	  intialize response to MSAssociationQuery requests.
+	  - in lasso_idwsf2_discovery_process_response_msg, extract received
+	  svcmdids; use lasso_check_good_rc when needed.
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c: ID-WSF 2.0: change signature of
+	  lasso_idwsf2_discovery_add_identity_to_epr
+	  
+	  * lasso/id-wsf-2.0/discovery.c:
+	  - in lasso_idwsf2_discovery_add_identity_to_epr, receive an Epr
+	  instead of an EprMetadata node, and use
+	  lasso_wsa_endpoint_reference_add_security_token to add the
+	  assertion token instead of duplicating this logic.
+	  - in lasso_idwsf2_discovery_build_epr change the call site.
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/id-wsf-2.0/data_service.c: ID-WSF 2.0: fix documentation of
+	  lasso_idwsf2_data_service_build_request_msg
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/saml-2.0/saml2_helper.c: SAML 2.0: in
+	  lasso_saml2_assertion_get_issuer_provider, check type of server argument
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/utils.h: Core: add do/while(0) around block of goto_cleanup_with_rc
+
+2010-03-02 11:57  bdauvergne
+
+	* lasso/errors.c, lasso/errors.h: Core: add PROFILE errors around assertion
+	  validation
+	  
+	  * lasso/errors.c lasso/errors.h:
+	  - add errors concerning invalid assertion, assertion with invalid
+	  conditions, unknown issuers, or when the issuer is not a provider
+	  we marked as an IdP.
+	  - add error for missing sender id in an ID-WSF message.
+
+2010-03-02 11:57  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/xml/private.h, lasso/xml/tools.c,
+	  lasso/xml/xml.c, lasso/xml/xml.h: Core: add a level argument to
+	  lasso_xmlnode_to_string and _lasso_node_export_to_xml
+
+2010-02-22 15:18  bdauvergne
+
+	* bindings/perl/glist_handling.c, bindings/perl/lang.py: Binding perl: add support
+	  for out parameters
+	  
+	  * bindings/perl/lang.py:
+	  support GObject out parameters.
+
+2010-02-22 15:18  bdauvergne
+
+	* lasso/xml/saml-2.0/saml2_condition_abstract.c: SAML 2.0:
+	  LassoSaml2ConditionAbstract does not match its element name anymore, add a
+	  registry mapping
+	  
+	  * lasso/xml/saml-2.0/saml2_condition_abstract.c:
+	  last commit to this file changed the element name from
+	  ConditionAbstract to Condition so the XML parser cannot find the
+	  corresponding GObject class anymore.
+
+2010-02-22 13:30  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/saml-2.0/saml2_helper.c,
+	  lasso/saml-2.0/saml2_helper.h: SAML 2.0: add more accessors for Conditions
+	  
+	  * lasso/saml-2.0/saml2_helper.{c,h}:
+	  distribute code from lasso_saml2_assertion_validate_conditions to
+	  lasso_saml2_assertion_validate_time_checks and
+	  lasso_saml2_assertion_validate_audience.
+	  add lasso_saml2_assertion_allows_proxying and
+	  lasso_saml2_assertion_allows_proxying_to, to respectively check for
+	  proxying of the current assertion, and for proxying to a specific
+	  provider (you must call both of them to test completely the proxying
+	  status of an assertion).
+	  * docs/reference/lasso/lasso-sections.txt:
+	  reference new functions into documentation.
+
+2010-02-22 13:30  bdauvergne
+
+	* bindings/python/lang.py: Bindings python: use more accessors from utils.py
+	  
+	  * binings/python/lang.py: remove direct access to type tuples in favor
+	  of using accesors from utils.py.
+
+2010-02-22 13:30  bdauvergne
+
+	* bindings/utils.py: Bindings: make is_int more robust, and fix remove_modifiers
+
+2010-02-22 13:30  bdauvergne
+
+	* bindings/php5/wrapper_source.py: Bindings php5: use accessort from
+	  bindings/utils.py
+	  
+	  * bindings/php5/wrapper_source.py:
+	  do not handle 'type/variable' tuple directly, use accessors.
+
+2010-02-22 13:30  bdauvergne
+
+	* bindings/python/lang.py: Binding python: add pickling support to LassoNode
+	  
+	  * bindings/python/lang.py:
+	  support pickling protocol methods __getstate__ and __setstate__
+	  leveraging the lasso_node_dump and lasso_node_new_from_dump methods
+	  from Lasso.
+
+2010-02-22 13:30  bdauvergne
+
+	* lasso/xml/private.h, lasso/xml/tools.c: Add lasso_string_to_xsd_integer, to
+	  parse xsd:integer values
+
+2010-02-22 13:30  bdauvergne
+
+	* lasso/xml/saml-2.0/saml2_condition_abstract.c: SAML 2.0: fix bad name of
+	  Condition element, keep xmlNode as it is abstract
+	  
+	  * lasso/xml/saml-2.0/saml2_condition_abstract.c:
+	  saml2:Condition is an element whose type is abstract, it must be used
+	  as an extension point helped by the xsi:type field. As the content is
+	  unknown before hand we must keep the original xmlNode for later
+	  analysis.
+
+2010-02-22 13:30  bdauvergne
+
+	* bindings/python/tests/idwsf2_tests.py: Bindings python tests: update
+	  idwsf2_tests.py
+
+2010-02-22 13:30  bdauvergne
+
+	* bindings/utils.py: Bindings: in utils.py, make clean_type handle None value
+
+2010-02-22 13:30  bdauvergne
+
+	* lasso/id-wsf-2.0/data_service.c, lasso/id-wsf-2.0/discovery.c,
+	  lasso/id-wsf-2.0/discovery.h, lasso/id-wsf-2.0/idwsf2_helper.c,
+	  lasso/id-wsf-2.0/idwsf2_helper.h, lasso/id-wsf-2.0/profile.c,
+	  lasso/id-wsf-2.0/saml2_login.c, lasso/id-wsf-2.0/saml2_login.h,
+	  lasso/id-wsf-2.0/soap_binding.c, tests/idwsf2_tests.c: ID-WSF 2.0: reorganize
+	  EPR minting, add a process_request method to disco service
+	  
+	  * data_service.c:
+	  remove dependency on discovery.h
+	  * discovery.{c,h}:
+	  - add a lasso_idwsf2_discovery_process_request_msg to extract request
+	  data before validate request (SvcMDID, SvcMD or RequestService).
+	  - store SvcMDID in a private field, add a setter for it.
+	  - SvcMDID is now used for building response to MDAssociationQuery and
+	  parsing request for MDQuery, MDDelete, MDAssociationAdd and
+	  MDAssociationDelete.
+	  * idwsf2_helper.{c,h}:
+	  - change security mechanism argument of
+	  lasso_wsa_endpoint_reference_add_security_token from a NULL
+	  terminated string array to a GList.
+	  * saml2_login.{c,h}:
+	  - add a lasso_server_create_assertion_as_idwsf2_security_token for
+	  minting assertion for ID-WSF 2.0 security, to be used in Discovery
+	  bootstap EPR creation and EPR minting for Discovery service Query
+	  responses.
+	  - add a lasso_saml2_assertion_get_discovery_bootstrap_epr, and
+	  rewirte lasso_login_idwsf2_get_discovery_bootstrap_epr to use it.
+	  - make lasso_login_idwsf2_add_discovery_bootstrap_epr accept a list
+	  of security mechanisms, not just one.
+	  * tests/idwsf2_tests.c:
+	  - adapt to new argument type of
+	  lasso_login_idwsf2_add_discovery_bootstrap_epr.
+
+2010-02-22 13:30  bdauvergne
+
+	* lasso/id-ff/logout.c: Core: add new example to LassoLogout for asynchronous
+	  response handling
+
+2010-02-22 13:30  bdauvergne
+
+	* lasso/build_strerror.py, lasso/errors.c: Support multiline error messages in
+	  build_strerror.py
+
+2010-02-22 13:30  bdauvergne
+
+	* lasso/saml-2.0/saml2_helper.c, lasso/saml-2.0/saml2_helper.h: SAML 2.0: add
+	  lasso_saml2_encrypted_element_server_decrypt and
+	  lasso_saml2_assertion_decrypt_subject
+
+2010-02-22 13:30  bdauvergne
+
+	* tests/data/idp5-saml2/metadata.xml: Fix idp5-saml2 metadatas
+	  
+	  * tests/data/idp5-saml2/metadata.xml:
+	  we do not have the private key for the encryption public key, so I
+	  copied the signing public key.
+
+2010-02-22 13:30  bdauvergne
+
+	* lasso/utils.c, lasso/utils.h: Fix lasso_extract_gobject_from_list
+
+2010-02-21 12:47  mates
+
+	* lasso/lasso.c:
+
+2010-02-17 16:08  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/id-ff/logout.c,
+	  lasso/id-wsf-2.0/profile.c: Documentation: add example to LassoLogout, fix bad
+	  markup in id-wsf-2.0/profile.c
+
+2010-02-17 16:08  bdauvergne
+
+	* lasso/id-wsf-2.0/profile.c: ID-WSF 2.0: also check sender match assertion in
+	  lasso_idwsf2_profile_check_security_mechanism
+	  
+	  * lasso/id-wsf-2.0/profile.c:
+	  for BEARER mechanism, also check that the SPNameQualifier of the
+	  Subject match the Sender of the request.
+
+2010-02-17 16:08  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.h: ID-WSF 2.0: add
+	  lasso_idwsf2_discovery_get_svcmdids to public API
+
+2010-02-17 10:15  bdauvergne
+
+	* tests/integration/saml2/__init__.py: Tests integration: force C locale
+	  
+	  * tests/integration/saml2/__init__.py:
+	  authentic now use 'system locale' by default, so force C locale to
+	  get english IHM string to make twill happy.
+
+2010-02-17 10:15  bdauvergne
+
+	* lasso/xml/saml-2.0/saml2_assertion.c: SAML 2.0: if assertion possess a signed
+	  original_xmlnode return it instead of using get_xmlNode
+	  
+	  * lasso/xml/saml-2.0/saml2_assertion.c:
+	  assertion in lasso when read are not usable anymore because the
+	  signature is lost, this commit allows to keep assertion unaltered
+	  after reading them if they contained a top level signature (a
+	  signature contained in the Assertion node).
+	  This is useful for reusing assertion kept in a LassoSession object
+	  and for using assertion as security token for ID-WSF.
+
+2010-02-17 10:15  bdauvergne
+
+	* lasso/xml/xml.c: Core: use lasso_xmlnode_to_string in LassoNode export functions
+	  
+	  * lasso/xml/xml.c:
+	  remove duplicate codes and use lasso_xmlnode_to_string instead.
+
+2010-02-17 10:15  bdauvergne
+
+	* bindings/python/tests/idwsf2_tests.py: Current state of ID-WSF 2.0 python test
+
+2010-02-17 10:15  bdauvergne
+
+	* bindings/php5/wrapper_source.py: Binding php5: fix generation of list freeing
+	  
+	  * bindings/php5/wrapper_source.py:
+	  free_glist wants a GList** as first argument.
+
+2010-02-17 10:15  bdauvergne
+
+	* lasso/xml/private.h, lasso/xml/tools.c: Core: add a lasso_xmlnode_to_string
+	  function
+	  
+	  * lasso/xml/tools.c lasso/xml/private.h:
+	  lots of functions duplicate this code, so we factorized it there.
+	  It has two parameters, the xmlnode and boolean deciding whether to
+	  format the resulting content (good for reading but bad for
+	  signatures).
+
+2010-02-17 10:15  bdauvergne
+
+	* lasso/saml-2.0/profile.c: SAML 2.0: in
+	  lasso_saml20_profile_set_session_from_dump_decrypt, really decrypt
+	  
+	  * lasso/saml-2.0/profile.c:
+	  dump for already signed assertion containing an EncryptedID as
+	  Subject does not work as before, the decrypted NameID is no more
+	  included in it, so instead of trying to plug it in the NameID field
+	  we resort to really deciphering the EncryptedID.
+	  That could be a performance problem if the session object is stuffed
+	  with a lot of assertions.
+
+2010-02-17 10:15  bdauvergne
+
+	* bindings/python/tests/idwsf2_tests.py: Current state of idwsf2 tests
+
+2010-02-17 10:15  bdauvergne
+
+	* lasso/id-wsf-2.0/data_service.c, lasso/id-wsf-2.0/discovery.c,
+	  lasso/id-wsf-2.0/profile.c: ID-WSF 2.0: fix loading of LassoIdWsf2Discovery
+	  dumps
+
+2010-02-17 10:15  bdauvergne
+
+	* lasso/xml/xml.c: Core: add error exit to lasso_node_new_from_xmlNode
+	  
+	  * lasso/xml/xml.c:
+	  if building of the node fails, we must keep the initialization of
+	  custom nodename and namespace.
+
+2010-02-17 10:15  bdauvergne
+
+	* bindings/python/lang.py: Binding python: simplify special constructor, use
+	  cptrToPy
+
+2010-02-17 10:15  bdauvergne
+
+	* lasso/id-wsf-2.0/profile.c: ID-WSF 2.0: make
+	  lasso_idwsf2_profile_redirect_user_for_interaction add the transactionID to the
+	  URL
+	  
+	  * lasso/id-wsf-2.0/profile.c:
+	  simplify use of lasso_idwsf2_profile_redirect_user_for_interaction by
+	  directly adding the ID of the SOAP response message to the URL.
+	  Report an error if no MessageID can be found.
+
+2010-02-17 10:15  bdauvergne
+
+	* lasso/id-wsf-2.0/soap_binding.c, lasso/id-wsf-2.0/soap_binding.h: ID-WSF 2.0:
+	  rewrite and document lasso_soap_envelope_sb2_get_redirect_request_url
+	  
+	  * lasso/id-wsf-2.0/soap_binding.{c,h}:
+	  fix error in conception of
+	  lasso_soap_envelope_sb2_get_redirect_request_url, RedirectRequest is
+	  part of a SOAP fault not the headers.
+	  Explain in the documentation how to use the RedirectRequest URL.
+	  Change the return type to a const string.
+
+2010-02-17 10:15  bdauvergne
+
+	* lasso/id-wsf-2.0/soap_binding.c, lasso/id-wsf-2.0/soap_binding.h: ID-WSF 2.0:
+	  add a method to retrieve/create a SOAP Fault to SOAP binding module
+	  
+	  * lasso/id-wsf-2.0/soap_binding.{c,h}:
+	  add method lasso_soap_envelope_get_soap_fault which returns/create
+	  the first SOAP fault inside the body of the SOAP envelope.
+
+2010-02-17 10:15  bdauvergne
+
+	* bindings/python/tests/binding_tests.py, bindings/python/tests/profiles_tests.py:
+	  Binding python tests: adapt test to use TOP_SRCDIR env var
+
+2010-02-17 10:15  bdauvergne
+
+	* bindings/python/lang.py: Binding python: factorize value freeing generation code
+	  
+	  * lasso/python/lang.py:
+	  extract value freeing generation code to method free_value,
+	  add proper liberation of values at exit of wrapper functions, remove
+	  g_free call from return_value generated code.
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/id-ff/logout.c, lasso/id-ff/profile.c, lasso/id-ff/profile.h,
+	  lasso/id-ff/provider.c, lasso/id-ff/server.c, lasso/id-ff/session.c,
+	  lasso/id-wsf-2.0/data_service.c, lasso/id-wsf-2.0/discovery.c,
+	  lasso/id-wsf-2.0/profile.c, lasso/id-wsf-2.0/server.c,
+	  lasso/id-wsf/data_service.c, lasso/id-wsf/discovery.c,
+	  lasso/id-wsf/id_ff_extensions.c, lasso/id-wsf/wsf_profile.c: Core: add missing
+	  return value owner semantic annotations to getters
+	  
+	  * lasso/id-ff/provider.c:
+	  fix lasso_provider_get_base64_succinct_id, it returned a libxml
+	  string, copy it with g_strdup before releasing it to stay with GLib
+	  allocated string in return values.
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/id-ff/identity.c, lasso/id-ff/profile.c, lasso/id-wsf-2.0/saml2_login.c:
+	  Core: add annotation to getter function about return value owner semantic
+	  
+	  * lasso/id-ff/identity.c lasso/id-ff/profile.c:
+	  precise owner semantic of lasso_profile_get_identity,
+	  lasso_profile_get_session, lasso_profile_get_server
+	  * lasso/id-wsf-2.0/saml2_login.c tests/login_tests_saml2.c:
+	  in the same vein add missing release of assertion returned by
+	  lasso_login_get_assertion which return a caller owned object.
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/id-wsf-2.0/profile.c: ID-WSF 2.0: make
+	  lasso_idwsf2_profile_redirect_user_for_interaction choke on missing redirect
+	  property on UserInteraction header
+	  
+	  * lasso/id-wsf-2.0/profile.c:
+	  if redirect boolean property is false, refuse to return a redirect
+	  request.
+	  automatically create a SOAP fault to signal to the requester that it
+	  needs to support interaction via redirect.
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/errors.c, lasso/errors.h: ID-WSF 2.0: add error code signaling that the
+	  requester does not support redirect request
+	  
+	  * lasso/errors.c lasso/errors.h:
+	  add
+	  LASSO_WSF_PROFILE_ERROR_REDIRECT_REQUEST_UNSUPPORTED_BY_REQUESTER.
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/id-wsf-2.0/soap_binding.c, lasso/id-wsf-2.0/soap_binding.h: ID-WSF 2.0:
+	  add a create arg to lasso_soap_envelope_get_sb2_user_interaction_header, add it
+	  to public API
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/id-wsf-2.0/idwsf2_helper.c, lasso/id-wsf-2.0/soap_binding.c,
+	  lasso/id-wsf/data_service.c: ID-WSF 2.0: fix lots of bad usage of g_strcmp0
+	  
+	  * lasso/id-wsf-2.0/idwsf2_helper.c lasso/id-wsf-2.0/soap_binding.c
+	  lasso/id-wsf/data_service.:
+	  add missing check for the return value of strcmp, maybe we need a
+	  macro like lasso_strequal.
+
+2010-02-17 10:14  bdauvergne
+
+	* tests/login_tests_saml2.c: Tests: in login_tests_saml2.c, add test for
+	  lasso_saml2_assertion_validate_conditions
+
+2010-02-17 10:14  bdauvergne
+
+	* bindings/python/tests/idwsf2_tests.py: in idwsf2_tests.py, merge test case for
+	  metadata registering, add test case for failure
+
+2010-02-17 10:14  bdauvergne
+
+	* bindings/bindings.py: Bindings: parse defines refering to other defines
+	  
+	  * bindings/bindings.py:
+	  Allow to build constants using other constants (prefix string), the
+	  constant type is retrieved from the prefix existing record.
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/xml/tools.c: in tools.c, add defines to permit import of timegm
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/saml-2.0/saml2_helper.c: SAML 2.0: make
+	  lasso_saml2_assertion_validate_conditions really work
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/xml/tools.c: Core: fix lasso_iso_8601_gmt_to_time_t, use timegm instead of
+	  mktime
+	  
+	  * lasso/xml/tools.c:
+	  mktime convert works on local time, we need timegm to work with GMT
+	  time.
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/id-ff/profile.c, lasso/id-wsf-2.0/idwsf2_helper.c,
+	  lasso/id-wsf-2.0/saml2_login.c, lasso/xml/id-wsf-2.0/disco_abstract.c,
+	  lasso/xml/id-wsf-2.0/disco_endpoint_context.c,
+	  lasso/xml/id-wsf-2.0/disco_keys.c, lasso/xml/id-wsf-2.0/disco_options.c,
+	  lasso/xml/id-wsf-2.0/disco_provider_id.c, lasso/xml/id-wsf-2.0/disco_query.c,
+	  lasso/xml/id-wsf-2.0/disco_query_response.c,
+	  lasso/xml/id-wsf-2.0/disco_requested_service.c,
+	  lasso/xml/id-wsf-2.0/disco_security_context.c,
+	  lasso/xml/id-wsf-2.0/disco_service_context.c,
+	  lasso/xml/id-wsf-2.0/disco_service_type.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_add.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_add_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_delete.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_delete_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_query.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_association_query_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_delete.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_delete_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_query.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_query_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_register.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_register_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_replace.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_md_replace_response.c,
+	  lasso/xml/id-wsf-2.0/disco_svc_metadata.c,
+	  lasso/xml/id-wsf-2.0/idwsf2_strings.h, lasso/xml/xml.c: ID-WSF 2.0: add strings
+	  for Discovery service Actions
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c, lasso/id-wsf-2.0/profile.c: ID-WSF 2.0: add
+	  serialization code for private properties of LassoIdWsf2Profile
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c: ID-WSF 2.0: fix missing initialization of request
+	  field in lasso_idwsf2_discovery_validate_md_register
+
+2010-02-17 10:14  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt: ID-WSF 2.0 Documentation: update
+	  lasso-sections.txt with LassoIdWsf2Profile methods
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c: ID-WSF 2.0: fix
+	  lasso_idwsf2_discovery_add_simple_service_metadata
+	  
+	  * lasso/id-wsf-2.0/discovery.c:
+	  options is a string list, and security_mech_ids too, so employ the
+	  corresponding macros.
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/utils.h: Core: in utils.h, use a temporary to store reference to freed
+	  list
+
+2010-02-17 10:14  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c: ID-WSF 2.0: in lasso_idwsf2_discovery_status2rc,
+	  check second level status code too
+
+2010-02-17 10:14  bdauvergne
+
+	* website/web/documentation/index.xml: Website: add a link to the developement
+	  version documentation
+
+2010-02-15 10:37  bdauvergne
+
+	* bindings/python/lang.py: Binding python: fix leak in string getters
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/saml-2.0/saml2_helper.c: SAML 2.0: fix documentation of
+	  lasso_saml2_assertion_validate_conditions
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c: Add signature on EPR secur token
+
+2010-02-15 10:37  bdauvergne
+
+	* bindings/python/tests/idwsf2_tests.py: Bindings python: udpate id-wsf 2.0 test
+	  file
+	  
+	  * bindings/python/tests/idwsf2_tests.py:
+	  Disco Service registering is working, it now needs a bootstrap epr in
+	  all case (before registering could be done without signatures).
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c: ID-WSF 2.0: add signature to Disco produced EPR
+	  SAML 2.0 security tokens
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/id-wsf-2.0/profile.c: ID-WSF 2.0: in
+	  lasso_idwsf2_profile_build_request_msg, properly handle the security token
+	  
+	  * lasso/id-wsf-2.0/profile.c:
+	  security token is a signed assertion by an IdP or a discovery
+	  service, we must keep as is, that is with the signature, in order to
+	  do that we extract the original xmlNode from the assertion and embed
+	  it in the new message using a LassoMiscTextNode.
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/id-wsf-2.0/saml2_login.c: ID-WSF 2.0: in
+	  lasso_login_idwsf2_get_discovery_bootstrap_epr, better handle attribute content
+	  
+	  * lasso/id-wsf-2.0/saml2_login.c:
+	  LassoSaml2AttributeValue can contain many children, so traverse them
+	  all to find the firs LassoWsAddrEndpointReference among them.
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/id-wsf-2.0/saml2_login.c: ID-WSF 2.0: in
+	  lasso_login_idwsf2_add_discovery_bootstrap_epr, initialize ID and Issuer
+	  property on bootstrap assertion.
+	  
+	  * lasso/id-wsf-2.0/saml2_login.c:
+	  initialization of ID and Issuer properties was missing.
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/xml/tools.c: Core: in lasso_verify_signature, fix conditional about single
+	  reference
+	  
+	  * lasso/xml/toosl.c:
+	  verify that reference is unique if NO_SINGLE_REFERENCE is disabled.
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/saml-2.0/saml2_helper.c: SAML 2.0: in saml2_helper.c, better check issuer
+	  element and also test the LassoServer object for issuance,
+	  lasso_saml2_assertion_get_issuer_provider
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/id-wsf-2.0/idwsf2_helper.c: ID-WSF 2.0: in
+	  lasso_wsa_endpoint_reference_new_for_idwsf2_service, do not forget to add
+	  metadata to epr, fill usage property of token
+	  
+	  * lasso/id-wsf-2.0/idwsf2_helper.c:
+	  add missing initialization code.
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/id-wsf-2.0/idwsf2_helper.c: ID-WSF 2.0: fix bad type checking in
+	  lasso_wsa_endpoint_reference_get_idwsf2_security_context_for_security_mechanism
+	  
+	  * lasso/id-wsf-2.0/idwsf2_helper.c:
+	  SecurityMechID is a list of strings not LassoMiscTextNode.
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/id-wsf-2.0/discovery.c: ID-WSF 2.0: fix bad conditionnal in
+	  lasso_idwsf2_discovery_process_metadata_register_response_msg
+	  
+	  * lasso/id-wsf-2.0/discovery.c:
+	  fix check in
+	  lasso_idwsf2_discovery_process_metadata_register_response_msg
+	  fix duplication of service metadatas inside private list of service
+	  metadatas.
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/id-ff/server.c: in server.c, fix missing loading of public keys in
+	  constructors
+	  
+	  * lasso/id-ff/server.c:
+	  constructor for LassoProvider load public keys but they are not
+	  called by LassoServer constructors, so we have to explicitely
+	  duplicate calls to lasso_provider_load_public_keys.
+
+2010-02-15 10:37  bdauvergne
+
+	* lasso/xml/id-wsf-2.0/Makefile.am, lasso/xml/id-wsf-2.0/idwsf2_strings.h,
+	  lasso/xml/idwsf_strings.h: ID-WSF 2.0: moved strings to their own header
+
+2010-02-12 11:04  bdauvergne
+
+	* lasso/xml/saml-2.0/Makefile.am: Add saml2_strings.h to dist
+
+2010-02-12 09:48  bdauvergne
+
+	* bindings/python/lang.py: Bindings python: remove default argument if there is
+	  parameters without default argument following
+
+2010-02-12 09:48  bdauvergne
+
+	* lasso/xml/xml.c: Use defined symbols instead of magic constants
+
+2010-02-12 09:48  bdauvergne
+
+	* lasso/xml/saml-2.0/saml2_strings.h: Add LASSO_SAML2_FIELD_ENCODING
+	  
+	  * lasso/xml/saml-2.0/saml2_strings.h:
+	  add another field name from SAML 2.0 specifications.
+
+2010-02-12 09:48  bdauvergne
+
+	* lasso/xml/tools.c: Fix lasso_get_relaystate_from_query, support semi-colon and
+	  parameter at beginning
+	  
+	  * lasso/xml/tools.c:
+	  getting first parameter was broken (query_string does not contain '?'
+	  at the beginning) and semi-colon support was missing.
+
+2010-02-10 17:07  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, lasso/xml/saml-2.0/saml2_strings.h:
+	  Documentation: fix typos in saml2_strings.h documentation, add new string
+	  symbols to lasso-sections.txt
+
+2010-02-10 16:00  bdauvergne
+
+	* lasso/xml/saml-2.0/saml2_strings.h, lasso/xml/strings.h: SAML 2.0: move SAML 2.0
+	  strings to their own header, add documentation
+	  
+	  * lasso/xml/strings.h:
+	  remove SAML 2.0 strings
+	  * lasso/xml/saml-2.0/saml2_strings.h:
+	  move them here, document useful ones.
+
+2010-02-10 13:58  bdauvergne
+
+	* lasso/xml/saml-2.0/samlp2_name_id_policy.h: Documentation: document
+	  LsasoSamlp2NameIDPolicy
+
+2010-02-10 13:58  bdauvergne
+
+	* lasso/errors.h, lasso/id-wsf/id_ff_extensions.c, lasso/id-wsf/wsf_profile.c,
+	  lasso/lasso.c, lasso/saml-2.0/saml2_helper.h,
+	  lasso/xml/id-wsf-2.0/disco_abstract.c, lasso/xml/id-wsf-2.0/disco_provider_id.c,
+	  lasso/xml/id-wsf-2.0/disco_service_type.c, lasso/xml/lib_assertion.c,
+	  lasso/xml/lib_authentication_statement.c,
+	  lasso/xml/lib_federation_termination_notification.c,
+	  lasso/xml/lib_logout_request.c, lasso/xml/lib_logout_response.c,
+	  lasso/xml/lib_name_identifier_mapping_request.c,
+	  lasso/xml/lib_name_identifier_mapping_response.c,
+	  lasso/xml/lib_register_name_identifier_request.c,
+	  lasso/xml/lib_register_name_identifier_response.c, lasso/xml/strings.h,
+	  lasso/xml/tools.c, lasso/xml/ws/wsa_attributed_qname.c,
+	  lasso/xml/ws/wsa_attributed_uri.c, lasso/xml/ws/wsa_relates_to.c,
+	  lasso/xml/ws/wsse_username_token.c: Documentation: complete non finished
+	  documentation comments
+	  
+	  * too much warnings when generating doc, now we can concentrate on
+	  undocumented symbols (in
+	  lasso/docs/reference/lasso/lasso-undocumented.txt).
+
+2010-02-10 00:59  bdauvergne
+
+	* bindings/perl/glist_handling.c: Bindings perl: prevent unused functio warning
+	  for array_to_glist_gobject
+
+2010-02-10 00:59  bdauvergne
+
+	* bindings/perl/t/Lasso.t: Tests perl: raise number of tests
+
+2010-02-10 00:35  bdauvergne
+
+	* docs/reference/lasso/lasso-docs.sgml: Docs: reorder sections in chapter "Lasso
+	  Architecture"
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/saml-2.0/login.c: SAML 2.0: separate
+	  lasso_saml20_login_process_response_status_and_assertion into multiple functions
+	  
+	  * lasso/saml-2.0/login.c:
+	  in lasso_saml20_login_process_response_status_and_assertion, extract assertion
+	  decryption, and issuer checking into their own function.
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/xml/tools.c, tests/Makefile.am, tests/random_tests.c: SAML 2.0: when
+	  verifying query signature, do not presume order of field and separator
+	  
+	  * lasso/xml/tools.c:
+	  in lasso_saml2_verify_query_signature, extract needed field and order
+	  them appropriately before computing digest, expect ';' as well as '&'
+	  as separator.
+	  * tests/random_test.c:
+	  add non-regression tests for query signature validation.
+	  * tests/Makefile.am:
+	  make tests link agains static version of liblasso, to get access to
+	  private functions.
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/xml/strings.h: SAML 2.0: complete list of field names for SAML 2.0
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/xml/tools.c: Core: in tools.c, enhance urlencoded_to_string to support
+	  semu-colon separator
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/saml-2.0/saml2_helper.c, lasso/saml-2.0/saml2_helper.h: SAML 2.0: add
+	  helper method lasso_saml2_assertion_get_in_response_to
+	  
+	  * lasso/saml-2.0/saml2_helper.c lasso/saml-2.0/saml2_helper.h:
+	  add a method to access easily the InResponseTo attribute.
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/saml-2.0/login.c: SAML 2.0: in
+	  lasso_saml20_login_process_authn_response_msg always report signatures errors
+	  
+	  * lasso/saml-2.0/login.c:
+	  - in lasso_saml20_login_process_authn_response_msg keep around all error
+	  codes returned by intermediary steps. At the end report the first one.
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/saml-2.0/profile.c: SAML 2.0: in lasso_saml20_profile_process_any_response
+	  do not stop on missing issuer
+	  
+	  * lasso/saml-2.0/profile.c:
+	  Issuer is not a mandatory element of SAML 2.0 response,
+	  but if we do not remember which issuer we sent the request (of if
+	  the response is spontaneous) then we will receive a provider not found
+	  error when trying to check the message signature.
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/saml-2.0/profile.c, lasso/xml/saml-2.0/samlp2_request_abstract.c,
+	  lasso/xml/saml-2.0/samlp2_status_response.c: Use new SAML2 strings instead of
+	  hardcoding query string field names
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/lasso.c: Add documentation about runtime flags
+	  
+	  * lasso/lasso.c:
+	  add a table to Initialization documentation section about
+	  general runtime flags.
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/lasso.c: Remove follow-idwsf-stupid-semantic flag
+	  
+	  * lasso/lasso.c:
+	  this flag is useless, that's me that is stupid.
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/id-ff/server.c, lasso/id-ff/serverprivate.h: Add internal methods to
+	  LassoServer to get the signature and encryption private keys
+	  
+	  * lasso/id-ff/server.c lasso/id-ff/serverprivate.h:
+	  add methods lasso_server_get_private_key and
+	  lasso_server_get_encryption_private_key.
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/id-ff/login.c: Add complete error code listing for
+	  lasso_login_process_response_msg
+	  
+	  * lasso/id-ff/login.c:
+	  list all error codes and their semantic with respect to this call.
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/id-ff/login.c: Update code example for LassoLogin
+	  
+	  * lasso/id-ff/login.c:
+	  add code for intializaing request for SAML 2.0, shows how to handler errors
+	  codes.
+
+2010-02-10 00:34  bdauvergne
+
+	* lasso/Makefile.am, lasso/build_strerror.py, lasso/errors.c, lasso/errors.h: Add
+	  error codes, update error codes documentation, reduce changes in errors.c by
+	  ordering error codes
+	  
+	  * lasso/errors.h lasso/errors.c
+	  - add to report non schema conforming XML trees, decyrption
+	  failure due to missing private keys and invalid signatures on assertions.
+	  - update documentation of LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+	  LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH,
+	  
+	  * lasso/build_strerror.py:
+	  before outputting switch cases, order error codes
+	  name lexically in order to reduce change lines
+	  when adding new error codes.
+
+2010-02-10 00:33  bdauvergne
+
+	* lasso/xml/strings.h: Add strings for SAML2 field names for POST, Redirect and
+	  Artifact bindings
+
+2010-02-10 00:33  bdauvergne
+
+	* lasso/registry.c: Update documentation of the registry module
+
+2010-02-10 00:33  bdauvergne
+
+	* lasso/id-ff/provider.c: Adapt LassoProvider methods to care for protocol profile
+	  version when verifying signature
+	  
+	  * lasso/id-ff/provider.c:
+	  there is now 2 methods to verify signatures, methods calling the old
+	  one must now choose whether to call the liberty one of the SAML 2.0
+	  one.
+
+2010-02-10 00:33  bdauvergne
+
+	* lasso/xml/private.h, lasso/xml/tools.c: Add a function to validate query
+	  signatures using SAML 2.0 semantic
+	  
+	  * lasso/xml/tools.c:
+	  this new function is a placeholder for the new SAML 2.0 semantic
+	  following query signature validation function. It will start with the
+	  old code of lasso_query_verify_signature.
+
+2010-02-10 00:33  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt, tests/basic_tests.c: Propagate change
+	  of name for LASSO_PP_ defines
+
+2010-02-08 09:34  bdauvergne
+
+	* lasso/id-ff/server.c, lasso/id-ff/server.h: Core: in LassoServer constructors,
+	  test if private_key is loadable
+	  
+	  * lasso/id-ff/server.c:
+	  mark private_key as not mandatory as regression tests expect it to
+	  not be mandatory.
+	  test if loading of private key to encryption_private_key private
+	  field worked, if not abort the constructor and return NULL.
+	  * lasso/id-ff/server.h:
+	  fix name of constructors argument to corresponds with comments
+	  (binding generator use this correspondance to apply annotation from
+	  comments to the model obtained by parsing the headers).
+
+2010-02-08 09:34  bdauvergne
+
+	* lasso/xml/tools.c: in lasso_xmlsec_load_private_key_from_buffer, do not let
+	  xmlSecBase64Decode show warnings
+
+2010-02-05 00:44  bdauvergne
+
+	* bindings/bindings.py: fix bad operation in bindings.py
+
+2010-02-04 22:24  bdauvergne
+
+	* bindings/bindings.py, bindings/perl/lang.py, bindings/python/lang.py,
+	  bindings/utils.py: Bindings: restore ID-WSF constants, improve python getters,
+	  
+	  * bindings/bindings.py:
+	  parse idwsf_strings.h to get ID-WSF constants.
+	  * bindings/utils.py:
+	  add an is_rc check function, to check for 'error code' return type.
+	  * bindings/perl/lang.py:
+	  only raise errors for 'int' or 'gint' return type
+	  * bindings/python/lang.py:
+	  - always create a normal function binding.
+	  - for functions starting with 'get' try to create a corresponding
+	  property, but if a corresponding member already exists, fails, and
+	  print a warning about getter function/member field clash.
+	  - make type dispatching on return_type more explicite.
+
+2010-02-04 22:24  bdauvergne
+
+	* lasso/xml/tools.c, tests/metadata/Makefile.am, tests/metadata/metadata_06.xml,
+	  tests/metadata_tests.c: Core: Finish support for all XMLDsig key formats
+	  
+	  * lasso/xml/tools.c:
+	  xmlsec is not able to load a certificate public key without checking
+	  it against trusted root certificate, so we must work around and load
+	  the key by hand.
+	  lasso_xmlsec_load_private_key_from_buffer is made more robust in the
+	  same (loading of the key was extracted inside
+	  _lasso_xmlsec_load_key_from_buffer) and now can load certificates and
+	  keys directly embedded inside KeyValue nodes (in total opposition to
+	  the XMLDsig specification but...), with or without PEM headers.
+	  * tests/metadata/Makefile.am tests/metadata/metadata_06.xml
+	  tests/metadata_tests.c:
+	  add test case for RSAKeyValue public keys.
+
+2010-02-04 01:23  bdauvergne
+
+	* bindings/python/lang.py: Binding python: fix getter for non-object fields
+	  
+	  * bindings/python/lang.py:
+	  transition to bindings/utils.py methods broke getters.
+
+2010-02-04 01:23  bdauvergne
+
+	* lasso/xml/tools.c: Core: in lasso_xmlsec_load_key_info add flag to let xmlSec
+	  load certificates
+	  
+	  * lasso/xml/tools.c:
+	  adding the flag XMLSEC_KEYINFO_FLAGS_X509DATA_DONT_VERIFY_CERTS make
+	  xmlSec able to load certificate, the 'hand made' code to load
+	  certificate is then useless.
+
+2010-02-04 00:02  bdauvergne
+
+	* tests/login_tests.c: Tests: add more checking to dump generation code in
+	  login_tests.c
+
+2010-02-04 00:02  bdauvergne
+
+	* tests/random_tests.c: Tests: adapt server constructor settings to recent changes
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/id-ff/profile.c: Core: in lasso_profile_get_request_type_from_soap_msg use
+	  lasso_xml_parse_memory_with_error
+	  
+	  * lasso/id-ff/profile.c: (lasso_profile_get_request_type_from_soap_msg)
+	  use lasso_xml_parse_memory_with_error instead of xmlParseMemory, use
+	  error code output argument to log error reports.
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/id-ff/provider.c: Core: in provider.c, make
+	  lasso_provider_load_metadata_from_buffer the main metadata loading function
+	  
+	  * (init_from_xml) fail initialization if we cannot load the metadatas,
+	  and log a warning.
+	  * extract _lasso_provider_load_metadata_from_buffer from
+	  lasso_provider_load_metadata_from_buffer, which accept a length
+	  parameter. use it inside lasso_provider_load_metadata, instead of
+	  xmlParseFile.
+	  * (lasso_provider_load_public_key) use lasso_xmlsec_load_key_info and
+	  lasso_xmlsec_load_private_key to load the public keys.
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/id-ff/server.c: Core: use lasso_xml_parse_file to load affiliation file
+
+2010-02-04 00:02  bdauvergne
+
+	* bindings/java/Makefile.am: Binding java: Makefile.am has multiple target rules,
+	  it cannot support parallel builds
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/xml/private.h, lasso/xml/tools.c: Core: in tools.c, add function to load
+	  XML files and KeyInfo nodes
+	  
+	  * tools.c:
+	  add lasso_xml_parse_file, based on g_file_get_contents and
+	  lasso_xml_parse_memory.
+	  add lasso_xml_parse_memory_with_error which instead of logging
+	  errors, can return the xmlError structure.
+	  add lasso_xmlsec_load_key_info, which allows to load keys from
+	  ds:KeyInfo XML nodes. It also support the "Lasso" bug of using
+	  ds:KeyValue directly to store base64 encoded keys and certificates.
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/saml-2.0/name_id_management.c: SAML 2.0: in name_id_management.c, rework
+	  lasso_name_id_management_new_from_dump
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/utils.h, lasso/xml/xml.c: Core: add more memory tracing, add a tracing
+	  macro
+	  
+	  * lasso/utils.h: add lasso_trace, which as a printf signature.
+	  * xml/xml.c: add more trace to node initialization code.
+
+2010-02-04 00:02  bdauvergne
+
+	* tests/valgrind/lasso.supp: Tests: in valgrind suppressions file add more GLib
+	  suppressions
+
+2010-02-04 00:02  bdauvergne
+
+	* tests/basic_tests.c: Tests: in basic_tests.c, re-enable parsing of
+	  LassoWsuTimestamp objects
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/id-ff/identity.c, lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	  lasso/id-ff/provider.c, lasso/id-ff/server.c, lasso/id-ff/session.c: Core: use
+	  lasso_node_new_from_dump to implement _new_from_dump methods
+	  
+	  * provider.c:
+	  add annotation for nullable arguments (necessary for bindings of
+	  new_from_buffer).
+	  * server.c: add annotations, allow to set encryption_private_key from
+	  buffers
+
+2010-02-04 00:02  bdauvergne
+
+	* bindings/perl/lang.py: Binding perl: add cleanup for temporary data of
+	  trampoline code
+	  
+	  * bindings/perl/lang.py:
+	  data type not common to Perl and C must be allocated for the duration
+	  of the call (mainly GList and xmlNode), but after the call they must
+	  be deallocated.
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/xml/saml-2.0/samlp2_response.c: SAML 2.0: in samlp2_response.c, simplify
+	  code path for assertion encryption
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/id-wsf-2.0/profile.c, lasso/saml-2.0/login.c, lasso/xml/tools.c,
+	  lasso/xml/xml.c, tests/basic_tests.c, tests/random_tests.c: Fix leaks
+	  
+	  * lasso/id-wsf-2.0/profile.c: release private data object.
+	  * lasso/saml-2.0/login.c: free NameID content after construction.
+	  * lasso/xml/tools.c: free algorithm attribute content in
+	  lasso_node_decrypt_xmlnode.
+	  * lasso/xml/xml.c: release cutom_element->nodename in destructor.
+	  remove useless finalize method.
+	  * tests/basic_tests.c: release xmldoc after use.
+	  * tests/random_tests.c: free resut of lasso_node_dump.
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/id-ff/federation.c, lasso/id-ff/federation.h, lasso/id-ff/profile.c,
+	  lasso/id-ff/provider.c, lasso/id-ff/provider.h, lasso/saml-2.0/login.c,
+	  lasso/xml/xml.c: Fix leaks, change signature of
+	  lasso_provider_get_sp_name_qualifier, make it return a const char*
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/xml/tools.c: in lasso/xml/tools.c, remove leaks of xmlSecKey and xmlNode
+
+2010-02-04 00:02  bdauvergne
+
+	* lasso/xml/tools.c, lasso/xml/xml.c: in lasso_xmlsec_load_private_key, do not
+	  leak the file buffer, in lasso_node_encrypt do not leak the keys manager
+
+2010-02-01 19:50  bdauvergne
+
+	* bindings/perl/Makefile.am, bindings/perl/glist_handling.c,
+	  bindings/perl/gobject_handling.c, bindings/perl/lang.py,
+	  bindings/perl/t/Lasso.t: Binding perl: many improvements
+	  
+	  * lang.py: use lasso_unref instead of g_object_unref.
+	  * lang.py: handle 'optional' annotation for more types, needed by
+	  ID-WSF bindings.
+	  * lang.py, gobject_handling.c: check object type before making the C
+	  call
+	  * Makefile.am: improve silent rules, hide all normal output, show
+	  errors, and with V=1 shows everything
+	  * glist_handling.c, gobject_handling.c: make local functions static
+	  * t/Lasso.t: add non regression test for method receiver type checking.
+	  * glist_handlind.c; remove unused convertion functions.
+	  * lang.py: clear the semi-assigned list and croak if all list elements
+	  do not convert to non-NULL values.
+
+2010-02-01 19:50  bdauvergne
+
+	* bindings/overrides.xml, bindings/utils.py: Bindings: re-add binding for
+	  lasso_session_get_assertions for perl, special case formatting function for
+	  WsAddressing namespace
+	  
+	  * bindings/utils.py:
+	  type have LassoWsAddr prefix but function have the lasso_wsa_ prefix,
+	  so we have to adjust generated prefix.
+
+2010-02-01 19:50  bdauvergne
+
+	* bindings/ghashtable.h, bindings/java/wrapper_top.c,
+	  bindings/php5/wrapper_source_top.c, bindings/python/wrapper_top.c: Bindings: use
+	  lasso_return_xxx macros instead of GLib ones
+
+2010-02-01 19:50  bdauvergne
+
+	* docs/reference/lasso/lasso-sections.txt,
+	  lasso/id-wsf/interaction_profile_service.c,
+	  lasso/xml/disco_authenticate_requester.c,
+	  lasso/xml/disco_authenticate_requester.h,
+	  lasso/xml/disco_authenticate_session_context.c,
+	  lasso/xml/disco_authenticate_session_context.h,
+	  lasso/xml/disco_authorize_requester.c, lasso/xml/disco_authorize_requester.h,
+	  lasso/xml/disco_encrypt_resource_id.c, lasso/xml/disco_encrypt_resource_id.h,
+	  lasso/xml/disco_generate_bearer_token.c,
+	  lasso/xml/disco_generate_bearer_token.h, lasso/xml/disco_modify.c,
+	  lasso/xml/disco_modify.h, lasso/xml/disco_modify_response.c,
+	  lasso/xml/disco_modify_response.h, lasso/xml/disco_query.c,
+	  lasso/xml/disco_query.h, lasso/xml/disco_query_response.c,
+	  lasso/xml/disco_query_response.h, lasso/xml/disco_send_single_logout.c,
+	  lasso/xml/disco_send_single_logout.h, lasso/xml/is_interaction_request.c,
+	  lasso/xml/is_interaction_request.h, lasso/xml/is_interaction_response.c,
+	  lasso/xml/is_interaction_response.h, lasso/xml/sa_credentials.c,
+	  lasso/xml/sa_credentials.h, lasso/xml/sa_parameter.c, lasso/xml/sa_parameter.h,
+	  lasso/xml/sa_password_transforms.c, lasso/xml/sa_password_transforms.h,
+	  lasso/xml/sa_sasl_request.c, lasso/xml/sa_sasl_request.h,
+	  lasso/xml/sa_sasl_response.c, lasso/xml/sa_sasl_response.h,
+	  lasso/xml/sa_transform.c, lasso/xml/sa_transform.h,
+	  lasso/xml/soap_binding_consent.c, lasso/xml/soap_binding_consent.h,
+	  lasso/xml/soap_binding_correlation.c, lasso/xml/soap_binding_correlation.h,
+	  lasso/xml/soap_binding_ext_credential.c,
+	  lasso/xml/soap_binding_ext_credential.h,
+	  lasso/xml/soap_binding_ext_credentials_context.c,
+	  lasso/xml/soap_binding_ext_credentials_context.h,
+	  lasso/xml/soap_binding_ext_service_instance_update.c,
+	  lasso/xml/soap_binding_ext_service_instance_update.h,
+	  lasso/xml/soap_binding_ext_timeout.c, lasso/xml/soap_binding_ext_timeout.h,
+	  lasso/xml/soap_binding_processing_context.c,
+	  lasso/xml/soap_binding_processing_context.h, lasso/xml/soap_binding_provider.c,
+	  lasso/xml/soap_binding_provider.h, lasso/xml/soap_binding_usage_directive.c,
+	  lasso/xml/soap_binding_usage_directive.h: ID-WSF: remove useless
+	  new_from_message methods
+
+2010-02-01 19:50  bdauvergne
+
+	* lasso/utils.h: Core: in utils.h, add macros to replace verbose
+	  g_return_val_if_fail
+
+2010-02-01 19:50  bdauvergne
+
+	* lasso/id-ff/login.c: Core: document return values of
+	  lasso_login_validate_request_msg
+
+2010-02-01 19:50  bdauvergne
+
+	* lasso/utils.c, lasso/utils.h: Utils: lasso_unref, a safe g_object_unref, and add
+	  some document about existing family of macros
+
+2010-02-01 19:49  bdauvergne
+
+	* lasso/lasso.c: Core: do not emit messages inside lasso_check_version
+
+2010-02-01 01:18  bdauvergne
+
+	* bindings/bindings.py: Bindings: os.path.relpath is only present since python
+	  2.6, add a local implementation for older python versions
+
+2010-02-01 01:06  bdauvergne
+
+	* Makefile.am: Add a dist-hook to remove .svn directories before taring the dist
+
+2010-02-01 00:16  bdauvergne
+
+	* bindings/java/Makefile.am, bindings/perl/Makefile.am, bindings/php5/Makefile.am,
+	  bindings/python/Makefile.am: Bindings: make binding generation more silent
+	  
+	  * bindings/java/Makefile.am bindings/perl/Makefile.am
+	  bindings/php5/Makefile.am bindings/python/Makefile.am:
+	  use AM_V_GEN, or similar variable for all steps of binding
+	  generation, normal output can be activated with the V=1 argument to
+	  the 'make' command.
+
+2010-02-01 00:16  bdauvergne
+
+	* bindings/java/Makefile.am: Binding java: use eager evalutation to get list of
+	  sources files
+	  
+	  * bindings/java/Makefile.am:
+	  use := to provoke eager evaluation so that java-list mode is not
+	  called many times.
+
+2010-01-29 16:42  bdauvergne
+
+	* bindings/bindings.py: Bindings: use 'absolute' header paths to produces bindings
+	  
+	  * bindings/bindings.py:
+	  if files from bindings are using absolute instead of relatives header
+	  paths they can be independant of the lasso source.
+
+2010-01-29 16:42  bdauvergne
+
+	* bindings/perl/Makefile.PL, bindings/perl/Makefile.am: Bindings perl: simplify
+	  Makefile.PL
+	  
+	  * bindings/perl/Makefile.PL:
+	  remove as much special casing as possible so that it could eventually
+	  become a CPAN module.
+	  use pkg-config to find lasso libs if no explicit LIBS command line
+	  argument is used.
+	  * bindings/perl/Makefile.am:
+	  pass parameters using command line argument instead of environment
+	  variable, which needed a special Makefile.PL.
+
+2010-01-29 16:42  bdauvergne
+
+	* bindings/perl/lang.py, bindings/perl/t/Lasso.t: Binding perl: special case for
+	  lasso_check_version
+	  
+	  * bindings/perl/lang.py:
+	  special case lasso_check_version for not raising an error when it
+	  returns 1.
+	  * bindings/perl/t/Lasso.t:
+	  add a non regression test.
+
+2010-01-29 16:42  bdauvergne
+
+	* bindings/perl/gobject_handling.c: Binding perl: remove warning when passing Null
+	  to croak
+	  
+	  * bindings/perl/gobject_handling.c:
+	  croak is aliased to Perl_croak_nocontext which has a gcc attribute
+	  'notnull'. We use Perl_croak and an explicit perl context object, to
+	  work around this warning.
+
+2010-01-29 16:42  bdauvergne
+
+	* bindings/bindings.py: in bindings.py, change header paths
+
+2010-01-29 16:42  bdauvergne
+
+	* NEWS, configure.ac, lasso.doap, website/web/doap.rdf: Update files for a 2.2.91
+	  release
+
+2010-01-29 16:04  bdauvergne
+
+	* ChangeLog: update changelog
+
 2010-01-29 00:58  bdauvergne
 
 	* bindings/python/lang.py: Binding python: make a better use of
