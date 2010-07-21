@@ -37,8 +37,8 @@
 <div id="download">
  <h2>Download</h2>
  <p>
-  The most recent version of Lasso is <strong>2.2.91</strong> and was
-  release on January 26th 2010.
+  The most recent version of Lasso is <strong>2.3</strong> and was
+  release on July 19th 2010.
  </p>
  <h3>Binary packages</h3>
  <p>
@@ -47,8 +47,7 @@
  </p>
  <h3>Source</h3>
  <p>
-  <li><a href="http://labs.libre-entreprise.org/frs/download.php/765/lasso-2.2.91.tar.gz">.tar.gz</a></li>
-  <li><a href="https://dev.entrouvert.org/projects/lasso/repository">Subversion Repository</a></li>
+   <li>Wait for 2.3 updates of download links...</li>
  </p>
 </div>
 [end]

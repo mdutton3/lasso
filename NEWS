@@ -1,6 +1,134 @@
 NEWS
 ====
 
+2.3 - July 19th 2010
+--------------------
+
+391 commits, 332 files changed, 13919 insertions, 7137 deletions
+
+So what's new ?
+
+ * Misc:
+	- a public key is no more mandatory for building a LassoProvider
+	- date parsing now conforms to XSD and ISO8601 specification,
+	  especially with respect to milliseconds (they are just ignored, but
+	  parsing do not fails now).
+	- the encryption private key can be loaded with a password (SAMLv2
+	  support only)
+	- keep on replacing direct glib data structure manipulation function by
+	  safer lasso macros.
+	- remove useless verbosity when there is already some error reporting
+	  through method return value.
+	- add a signature_verify_hint parameter to all profiles, which can be
+	  used to specify the policy for verifying signatures. The choices are:
+	  - maybe, i.e. let Lasso decides,
+	  - force, i.e. always verify, even when it is not needed by the spec,
+	  - ignore, i.e. verify, but do not block processing on signature
+	    verifications error.
+	- add a new snippet type: SNIPPET_COLLECT_NAMESPACES, to collect all
+	  declared namespaces in the context of a node. It is needed for
+	  interpreting a string value which depend on the locally declared
+	  namespaces (like XPath queries).
+	- support full syntax for query strings (lasso missed support for
+	  semi-colon separator between query string key-value pairs).
+	- make LassoServer load its public key like LassoProvider
+	- lasso_build_unique_id is now part of the public API
+	- add lasso_profile_sso_role_with to decide on the role we have toward
+	  another provider (depending on the Identity, the Session or the
+	  Server object in this order).
+	- add a lasso_node_debug method wich output a human friendly dump (i.e.
+	  indented) of a serialized LassoNode, contrary to dump which returns a
+	  computer friendly one (dump will conserve signature values, not
+	  debug).
+
+ * SAMLv2:
+	- constraint on the number of SessionIndex value in a LogoutRequest was
+	  worked-around (see
+	  lasso_samlp2_logout_request_get/set_session_indexes)
+	- full support for encrypted signing key (ID-FFv1.2 is coming in next
+	  release)
+	- The treatment of assertions consumer endpoints metadata was improved to be
+	  what the specification says, i.e find the best default.
+	- lasso_assertion_query_build_request_msg now properly initialize the Subject
+	  of the query from all possibles sources (first profile->nameIdentifier, then
+	  from the identity dump and finally from the session).
+	- when a parsed Assertion contains a signature, we return the
+	  original_xmlnode instead of serializing the LassoNode content when
+	  calling lasso_node_get_xmlNode. This is in order to keep canonical
+	  representation of signed assertions. The result is that parsed and
+	  signed assertions should be considered read-only with respect to
+	  serialization.
+	- lasso_login_build_assertion no longer initialize sessionNotOnOrAfter,
+	  it must be done explicitely by the IdP implementation. Only the
+	  assertion lifetime is set by the arguments.
+	- when loading metadata for a provider, we verify that a role
+	  descriptor exists for the prescribed role: i.e if you do
+	  server.addProvider(lasso.PROVIDER_ROLE_SP, "metadata.xml"), lasso
+	  checks that the metadata contain a descriptor for the role "SPSSO".
+	- new helper methods to manipulate and check conditions on
+	  SAMLv2 assertions.
+	- move strings to their own header (but keep retro-compatibility
+	  through inclusion in xml/strings.h).
+
+ * Bindings:
+	- improve general use of bindings/utils.py module inside the bindings
+	  to share type matching logic.
+
+ * Python binding:
+	- Glib warning are tunneled through python logging API
+	- camelcasing of uppercase starting fields for python and java bindings has
+	  been fixed, old orthograph has been also kept for compatibility. The problem
+	  could be seen on LassoAssertion object where the field ID was renamed iD
+	  which was difficult to guess.
+	- node class now supports pickling by leveraging existing XML
+	  serialization. It posseses the same limitations as the existing XML
+	  serialization, for example serializing a LassProfile is not an
+	  idempotent operation, it will miss the server, identity and session
+	  fields.
+	- empty GList now return an empty tuple, not None (it fixes a lot
+	  list traversal codes)
+	- do not forget to emit 'pass' in declaration of class without any
+	  content (no method, no field, no constructor)
+	- the code to emit 'freeing' code for values was factorized and improved.
+	- for empty lists returns an empty pyhon list, not None.
+
+ * Perl binding:
+	- support for out parameters was added.
+	- better memory freeing
+
+ * Java binding:
+	- finished exception support for error returning methods.
+	- optimize the makefile for file listing generation
+	- for NULL GList returns an empty ArrayList object, not null.
+
+ * Documentation:
+	- add examples to LassoLogout documentation
+	- fix missing or deprecated methods in lasso-sections.txt
+	- document LassoIdWsf2Profile methods
+	- document runtime flags
+
+ * Tests:
+	- new macros to help in testing (see tests/tests.h), they also make
+	  better error reporting (when comparing values, they show the expected
+	  and the obtained value).
+	- SAMLv2 AuthnRequest through HTTP-Artifact binding is tested
+	- SAMLv2 LogoutRequest with multiple SessionIndex is tested
+	- force C locale for integration test (we match UI strings, so it is
+	  needed).
+	- SAMLv2, test websso with encrypted private keys (idp and sp side)
+	- SAMLv2, add a python test for attribute authority
+
+ * ID-WSF 2.0:
+	- constant strings were moved to their own header
+	  (lasso/xml/id-wsf-2.0/idwsf2_strings.h)
+	- add helper method to retrieve the bootstrap EPR from an assertion and
+	  to mint assertion to use as WS-Security tokens.
+	- add method lasso_idwsf2_data_service_get_query_item_result_content to
+	  retrieve DST query result as text
+	- sign SAMLv2 assertion used as WS-Security tokens
+
+And many minor bug-fixes...
+
 2.2.91 - January 26th 2010
 --------------------------
 

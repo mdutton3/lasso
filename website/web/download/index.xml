@@ -10,8 +10,7 @@
 	<p>
 	  Lasso is licensed under the GNU GPL and the latest release
 	  is available here as a gzipped tarball:
-	  <a
-	  href="http://labs.libre-entreprise.org/frs/download.php/765/lasso-2.2.91.tar.gz">lasso-2.2.91.tar.gz</a>
+	  <a href="">Wait for update of 2.3 release sources...</a>
 	</p>
 
 	<h2>Binary Downloads</h2>
@@ -25,14 +24,14 @@
 	</p>
 	 
 	<p>
-	  Additionnaly there are <i>sarge</i> packages and there may be more
+		Additionnaly there are <i>lenny</i> abd <i>karmic</i> packages and there may be more
 	  uptodate packages available in our local apt repository.  Pick the
 	  one appropriate for your distribution:
 	</p>
 
 	<pre>
-deb http://deb.entrouvert.org sarge main
-deb http://deb.entrouvert.org etch main
+deb http://deb.entrouvert.org lenny main
+deb http://deb.entrouvert.org karmic main
 </pre>
 
 	<p>
@@ -42,11 +41,10 @@ deb http://deb.entrouvert.org etch main
 	<ul>
 	 <li>liblasso3: runtime library</li>
 	 <li>liblasso3-dev: C development kit</li>
-	 <li>python2.3-lasso: Python 2.3 bindings</li>
-	 <li>php4-lasso: PHP bindings</li>
+	 <li>python-lasso: Python 2.5 & 2.6 bindings</li>
+	 <li>php5-lasso: PHP bindings</li>
 	 <li>liblasso-java: JAVA bindings</li>
-	 <li>liblasso-perl: Perl bindings</li>
-	 <!--<li>liblasso-cil: .NET bindings</li>-->
+	 <li>liblasso3-perl: Perl bindings</li>
 	</ul>
 
 	<p>
@@ -58,8 +56,8 @@ deb http://deb.entrouvert.org etch main
 	<h3>Fedora Core Packages</h3>
 
 	<p>
-	  There are RPM packages built on Fedora Core 6; <strong>they will soon
-	  be updated for 2.2.1 and a newer Fedora</strong>
+	  There are RPM packages built on Fedora Core 6; <strong>beware that
+		  they are from an old release</strong>
 	</p>
 
 	<ul>
@@ -108,6 +106,10 @@ deb http://deb.entrouvert.org etch main
 	</p>
 
 	<pre> svn checkout svn://labs.libre-entreprise.org/svnroot/lasso/trunk lasso </pre>
+
+	<p> We are actively moving to git for future development, the details
+		will be given here. For people who cannot use git, regular
+		tarbal of the trunk will be made. </p>
 
  </body>
 </html>
