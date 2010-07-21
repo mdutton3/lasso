@@ -1050,6 +1050,7 @@ lasso_node_dump
 lasso_node_debug
 lasso_node_export_to_base64
 lasso_node_export_to_query
+lasso_node_export_to_query_with_password
 lasso_node_export_to_soap
 lasso_node_export_to_xml
 lasso_node_export_to_paos_request
@@ -1891,6 +1892,7 @@ LASSO_LIB_LOGOUT_REQUEST_GET_CLASS
 <FILE>soap_binding_ext_credentials_context</FILE>
 <TITLE>LassoSoapBindingExtCredentialsContext</TITLE>
 LassoSoapBindingExtCredentialsContext
+lasso_soap_binding_ext_credentials_context_new
 <SUBSECTION Standard>
 LASSO_SOAP_BINDING_EXT_CREDENTIALS_CONTEXT
 LASSO_IS_SOAP_BINDING_EXT_CREDENTIALS_CONTEXT
@@ -2179,6 +2181,7 @@ LASSO_LIB_AUTHN_REQUEST_GET_CLASS
 <FILE>disco_authenticate_session_context</FILE>
 <TITLE>LassoDiscoAuthenticateSessionContext</TITLE>
 LassoDiscoAuthenticateSessionContext
+lasso_disco_authenticate_session_context_new
 <SUBSECTION Standard>
 LASSO_DISCO_AUTHENTICATE_SESSION_CONTEXT
 LASSO_IS_DISCO_AUTHENTICATE_SESSION_CONTEXT
@@ -2238,6 +2241,7 @@ LASSO_IS_REDIRECT_REQUEST_GET_CLASS
 <FILE>soap_binding_ext_credential</FILE>
 <TITLE>LassoSoapBindingExtCredential</TITLE>
 LassoSoapBindingExtCredential
+lasso_soap_binding_ext_credential_new
 <SUBSECTION Standard>
 LASSO_SOAP_BINDING_EXT_CREDENTIAL
 LASSO_IS_SOAP_BINDING_EXT_CREDENTIAL
@@ -2559,6 +2563,7 @@ LASSO_IS_INTERACTION_REQUEST_GET_CLASS
 <FILE>soap_binding_ext_service_instance_update</FILE>
 <TITLE>LassoSoapBindingExtServiceInstanceUpdate</TITLE>
 LassoSoapBindingExtServiceInstanceUpdate
+lasso_soap_binding_ext_service_instance_update_new
 <SUBSECTION Standard>
 LASSO_SOAP_BINDING_EXT_SERVICE_INSTANCE_UPDATE
 LASSO_IS_SOAP_BINDING_EXT_SERVICE_INSTANCE_UPDATE
