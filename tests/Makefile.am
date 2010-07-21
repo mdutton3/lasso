@@ -41,9 +41,9 @@ perfs_LDADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 perfs_LDFLAGS = -rpath `cd $(top_builddir)/lasso/.libs/; pwd`
 
 endif
-EXTRA_DIST = valgrind tests.h $(tests_SOURCES)
+EXTRA_DIST = metadata valgrind tests.h $(tests_SOURCES)
 
-SUBDIRS = data metadata
+SUBDIRS = data
 
 CLEANFILES = result.xml
 
