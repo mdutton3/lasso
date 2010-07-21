@@ -43,7 +43,7 @@ clean-local:
 	-rm -f types.c symbols.sym errors.c
 
 EXTRA_DIST = $(nodist_liblassoinclude_HEADERS) extract_types.py extract_symbols.py build_strerror.py \
-	     errors.c.in extract_sections.py
+	     errors.c.in extract_sections.py errors.c
 
 if WSF_ENABLED
 WSF_LIB_FILE = $(top_builddir)/lasso/id-wsf/liblasso-id-wsf.la
