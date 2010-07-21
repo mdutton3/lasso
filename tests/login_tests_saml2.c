@@ -640,8 +640,6 @@ START_TEST(test04_sso_then_slo_soap)
 	check_good_rc(lasso_logout_build_request_msg(idpLogoutContext));
 	check_not_null(idpLogoutContext->parent.msg_url);
 	check_not_null(idpLogoutContext->parent.msg_body);
-	printf("Request: %s\n", idpLogoutContext->parent.msg_body);
-	printf("SessionIndex: %s\n", ((LassoSamlp2LogoutRequest*)idpLogoutContext->parent.request)->SessionIndex);
 	check_null(idpLogoutContext->parent.msg_relayState);
 	lasso_assign_string(logoutRequestSoapMessage, idpLogoutContext->parent.msg_body);
 	check_not_null(logoutRequestSoapMessage);
