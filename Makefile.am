@@ -7,7 +7,7 @@ SUBDIRS		= lasso \
 		  docs
 
 EXTRA_DIST	= COPYING lasso.pc.in lasso-src-config.in autogen.sh tools abi \
-	lasso.doap README.JAVA README.WIN32
+	lasso.doap README.JAVA README.WIN32 HACKING
 
 MAINTAINERCLEANFILES = \
     Makefile.in \
