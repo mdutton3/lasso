@@ -9,7 +9,8 @@ am__v_SUBMAKE_POSTFIX_0 = 2>&1 >$$LOG && rm $$LOG ) || ( cat $$LOG; rm $$LOG )
 endif
 
 MAINTAINERCLEANFILES = Makefile.in
-DISTCLEANFILES = __init__.pyc lang.pyc
+DISTCLEANFILES = __init__.pyc lang.pyc Makefile.perl.old
+CLEANFILES = Lasso.pm Lasso.xs Lasso.so typemap Lasso.o Lasso.bs pm_to_blib Lasso.c
 
 LASSO_XS_CFLAGS = -fno-strict-aliasing $(LASSO_CFLAGS) $(LASSO_CORE_CFLAGS) $(PERL_CFLAGS) $(AM_CFLAGS)
 
@@ -48,10 +49,6 @@ Lasso.xs Lasso.pm: lang.py typemap-in typemap-out
 
 blib/arch/auto/Lasso/Lasso.so: Lasso.xs Lasso.pm Makefile.perl gobject_handling.c LassoNode.xs glist_handling.c
 	$(AM_V_SUBMAKE) make -f Makefile.perl $(AM_V_SUBMAKE_POSTFIX)
-
-CLEANFILES = Lasso.pm Lasso.xs Lasso.so typemap Lasso.o Lasso.bs pm_to_blib Lasso.c
-
-DISTCLEANFILES = Makefile.perl.old
 
 distclean-local:
 	-@if [ "$(srcdir)" != "$(builddir)" ]; then \
