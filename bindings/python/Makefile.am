@@ -1,5 +1,6 @@
 MAINTAINERCLEANFILES = Makefile.in
-MOSTLYCLEANFILES = __init__.pyc lang.pyc
+CLEANFILES = _lasso.c lasso.py
+DISTCLEANFILES = __init__.pyc lasso.pyc lang.pyc
 SUBDIRS = tests
 
 if PYTHON_ENABLED
@@ -38,7 +39,5 @@ endif
 lasso.py _lasso.c: lang.py wrapper_top.c wrapper_bottom.c ../bindings.py
 	$(AM_V_GEN) $(PYTHON) $(top_srcdir)/bindings/bindings.py -l python --src-dir=$(top_srcdir)/lasso/ $(EXTRA_ARGS)
 
-clean-local:
-	-rm -f lasso.py lasso.pyc _lasso.c
 
 endif

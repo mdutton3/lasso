@@ -1,5 +1,5 @@
-MAINTAINERCLEANFILES = Makefile.in
-MOSTLYCLEANFILES = __init__.pyc lang.pyc php_code.pyc wrapper_header.pyc wrapper_top.pyc
+CLEANFILES = lasso.php php_lasso.h _lasso.c
+DISTCLEANFILES = __init__.pyc lang.pyc php_code.pyc wrapper_header.pyc wrapper_top.pyc wrapper_source.pyc
 SUBDIRS = examples tests
 
 INCLUDES = \
@@ -35,8 +35,6 @@ lasso.php _lasso.c: lang.py wrapper_source.py wrapper_header.py wrapper_source_t
 doc:
 	phpdoc -o HTML:frames:earthli -f lasso.php -t docs
 
-clean-local:
-	-rm -f lasso.php php_lasso.h _lasso.c
 
 .PHONY: doc
 

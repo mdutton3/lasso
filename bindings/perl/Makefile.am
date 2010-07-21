@@ -9,7 +9,7 @@ am__v_SUBMAKE_POSTFIX_0 = 2>&1 >$$LOG && rm $$LOG ) || ( cat $$LOG; rm $$LOG )
 endif
 
 MAINTAINERCLEANFILES = Makefile.in
-MOSTLYCLEANFILES =
+DISTCLEANFILES = __init__.pyc lang.pyc
 
 LASSO_XS_CFLAGS = -fno-strict-aliasing $(LASSO_CFLAGS) $(LASSO_CORE_CFLAGS) $(PERL_CFLAGS) $(AM_CFLAGS)
 

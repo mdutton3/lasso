@@ -89,6 +89,8 @@ EXTRA_DIST = \
 	wrapper_bottom.c \
 	wrapper_top.c 
 
+clean-local:
+	-rm -rf com
 
 # Some of the following classes are built only if junit is available
 if JUNIT_ENABLED
