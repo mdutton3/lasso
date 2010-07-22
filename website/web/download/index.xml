@@ -41,7 +41,7 @@ deb http://deb.entrouvert.org karmic main
 	<ul>
 	 <li>liblasso3: runtime library</li>
 	 <li>liblasso3-dev: C development kit</li>
-	 <li>python-lasso: Python 2.5 & 2.6 bindings</li>
+	 <li>python-lasso: Python 2.5 &amp; 2.6 bindings</li>
 	 <li>php5-lasso: PHP bindings</li>
 	 <li>liblasso-java: JAVA bindings</li>
 	 <li>liblasso3-perl: Perl bindings</li>
