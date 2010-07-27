@@ -58,7 +58,7 @@
  <h2>Download</h2>
  <p>
   The most recent version of Lasso is <strong>2.3</strong> and was
-  release on July 19th 2010.
+  release on July 21th 2010.
  </p>
  <h3>Binary packages</h3>
  <p>
@@ -67,7 +67,9 @@
  </p>
  <h3>Source</h3>
  <p>
-   <li>Wait for 2.3 updates of download links...</li>
+   <li><a href="http://labs.libre-entreprise.org/frs/download.php/807/lasso-2.3.0.tar.gz">.tar.gz</a></li>
+   <li><a href="http://dev.entrouvert.org/git/lasso.git>Git repository : http://dev.entrouvert.org/git/lasso.git</a></li>
+   <li><a href="https://dev.entrouvert.org/projects/lasso/repository">Browse git repository</a></git>
  </p>
 </div>
 [end]
