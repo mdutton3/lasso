@@ -134,7 +134,6 @@ re_summary = re.compile('[a-z]+\.[0-9]{4}.xml')
 if not os.path.exists('web-static'):
     os.mkdir('web-static')
 
-
 for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
     if not os.path.exists('web/%s' % BUILDLOGS_DIR):
         continue
@@ -142,7 +141,7 @@ for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
         os.mkdir('web-static/%s' % BUILDLOGS_DIR)
 
     for base, dirs, files in os.walk('web/%s' % BUILDLOGS_DIR):
-        if base.endswith('/CVS') or base.endswith('/.svn'):
+        if base.endswith('/CVS') or base.endswith('/.svn') or base.endswith('/.git'):
             continue
         for dirname in dirs:
             src_file = os.path.join(base, dirname)
@@ -225,9 +224,12 @@ for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
     main_page = main_page[:50]
     builds = []
     for filename in main_page:
-        builds.append( Build(xml.dom.minidom.parse(filename)) )
-        if len(builds) > 1 and builds[-2].date[:8] == builds[-1].date[:8]:
-            builds[-1].display_date = ''
+        try:
+            builds.append( Build(xml.dom.minidom.parse(filename)) )
+            if len(builds) > 1 and builds[-2].date[:8] == builds[-1].date[:8]:
+                builds[-1].display_date = ''
+        except:
+            pass
 
     fd = StringIO()
     buildlog_template.generate(fd, {'build': builds})
@@ -260,7 +262,7 @@ for base, dirs, files in os.walk('web'):
         src_file = os.path.join(base, filename)
         dst_file = 'web-static/' + src_file[4:]
 
-	if os.path.isdir(src_file): continue
+        if os.path.isdir(src_file): continue
 
         if os.path.exists(dst_file) and \
                 os.stat(dst_file)[stat.ST_MTIME] >= os.stat(src_file)[stat.ST_MTIME]:
