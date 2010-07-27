@@ -9,10 +9,10 @@
 
  <p class="changes">
   <strong>What changed ?</strong>
-  <p>This release contains many bugfixes, better support for profiles outside
+  This release contains many bugfixes, better support for profiles outside
 	  of WebSSO (especially Attribute requests), better control over
 	  signatures creation and validation, support for encrypted private
-	  keys, and improved Python, PHP5, Java, and Perl bindings.</p>
+	  keys, and improved Python, PHP5, Java, and Perl bindings.
  </p>
 
 </div>
