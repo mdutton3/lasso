@@ -310,7 +310,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 			(authn_request->AssertionConsumerServiceURL != NULL)) &&
 			(authn_request->AssertionConsumerServiceIndex != -1))
 	{
-		rc = LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT;
+		rc = LASSO_PROFILE_ERROR_INVALID_REQUEST;
 		goto cleanup;
 	}
 
