@@ -319,7 +319,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	protocol_binding = authn_request->ProtocolBinding;
 	if (protocol_binding == NULL && authn_request->AssertionConsumerServiceIndex) {
 		/* protocol binding not set; so it will look into
-		 * AssertionConsumingServiceIndex
+		 * AssertionConsumerServiceIndex
 		 * Also, if AssertionConsumerServiceIndex is not set in request,
 		 * its value will be -1, which is just the right value to get
 		 * default assertion consumer...  (convenient)
