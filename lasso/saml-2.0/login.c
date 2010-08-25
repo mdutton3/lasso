@@ -361,6 +361,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		} else if (g_strcmp0(protocol_binding,
 					LASSO_SAML2_METADATA_BINDING_REDIRECT) == 0) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT;
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 		} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 		} else {
