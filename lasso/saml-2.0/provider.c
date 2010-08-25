@@ -53,8 +53,6 @@ const char *profile_names[LASSO_MD_PROTOCOL_TYPE_LAST] = {
 	"AttributeService" /*AttributeAuthorityDescriptor*/
 };
 
-static void add_assertion_consumer_url_to_list(gchar *key, G_GNUC_UNUSED gpointer value, GList **list);
-
 static const char*
 binding_uri_to_identifier(const char *uri)
 {
@@ -74,23 +72,21 @@ binding_uri_to_identifier(const char *uri)
 	return NULL;
 }
 
-static const char*
-identifier_to_binding_uri(const char *identifier)
+static LassoHttpMethod
+binding_uri_to_http_method(const char *uri)
 {
-	if (strcmp(identifier, "SOAP") == 0) {
-		return LASSO_SAML2_METADATA_BINDING_SOAP;
-	} else if (strcmp(identifier, "HTTP-Redirect") == 0) {
-		return LASSO_SAML2_METADATA_BINDING_REDIRECT;
-	} else if (strcmp(identifier, "HTTP-POST") == 0) {
-		return LASSO_SAML2_METADATA_BINDING_POST;
-	} else if (strcmp(identifier, "HTTP-Artifact") == 0) {
-		return LASSO_SAML2_METADATA_BINDING_ARTIFACT;
-	} else if (strcmp(identifier, "PAOS") == 0) {
-		return LASSO_SAML2_METADATA_BINDING_PAOS;
-	} else if (strcmp(identifier, "URI") == 0) {
-		return LASSO_SAML2_METADATA_BINDING_URI;
+	if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_SOAP) == 0) {
+		return LASSO_HTTP_METHOD_SOAP;
+	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_REDIRECT) == 0) {
+		return LASSO_HTTP_METHOD_REDIRECT;
+	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_POST) == 0) {
+		return LASSO_HTTP_METHOD_NONE;
+	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_ARTIFACT) == 0) {
+		return LASSO_HTTP_METHOD_ARTIFACT_GET;
+	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
+		return LASSO_HTTP_METHOD_PAOS;
 	}
-	return NULL;
+	return LASSO_HTTP_METHOD_NONE;
 }
 
 static gboolean
@@ -127,6 +123,87 @@ xsdIsFalse(xmlChar *value)
 	return FALSE;
 }
 
+static gboolean
+xsdUnsignedShortParse(xmlChar *value, int *out) {
+	int l = strtol((char*)value, NULL, 10);
+
+	if (((l == LONG_MIN || l == LONG_MAX) && errno == ERANGE) ||
+			errno == EINVAL || l < 0 || l >= 65535) {
+		return FALSE;
+	}
+	*out = l;
+	return TRUE;
+}
+
+static void
+load_endpoint_type2(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole role, int *counter)
+{
+	xmlChar *binding = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_BINDING);
+	xmlChar *location = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_LOCATION);
+	xmlChar *response_location = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_RESPONSE_LOCATION);
+	xmlChar *index = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_INDEX);
+	xmlChar *isDefault = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_ISDEFAULT);
+	gboolean indexed_endpoint = FALSE;
+	int idx = *counter++;
+	gboolean is_default = FALSE;
+	EndpointType *endpoint_type;
+
+	if (! binding || ! location) {
+		warning("Invalid endpoint node %s", (char*) xmlnode->name);
+		goto cleanup;
+	}
+	indexed_endpoint = checkSaml2MdNode(xmlnode, LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE);
+	if (indexed_endpoint) {
+		if (! xsdUnsignedShortParse(index, &idx)) {
+			warning("Invalid AssertionConsumerService, no index set");
+			goto cleanup;
+		}
+		is_default = xsdIsTrue(isDefault);
+	}
+	endpoint_type = g_new0(EndpointType, 1);
+	endpoint_type->kind = g_strdup((char*)xmlnode->name);
+	endpoint_type->binding = g_strdup((char*)binding);
+	endpoint_type->url = g_strdup((char*)location);
+	endpoint_type->return_url = g_strdup((char*)response_location);
+	endpoint_type->role = role;
+	endpoint_type->index = idx;
+	endpoint_type->is_default = is_default;
+	lasso_list_add(provider->private_data->endpoints, (void*)endpoint_type);
+
+cleanup:
+	lasso_release_xml_string(binding);
+	lasso_release_xml_string(location);
+	lasso_release_xml_string(response_location);
+	lasso_release_xml_string(isDefault);
+	lasso_release_xml_string(index);
+}
+
+static gint
+compare_endpoint_type(const EndpointType *a, const EndpointType *b) {
+	int c;
+	
+	if (a->role < b->role)
+		return -1;
+	if (a->role > b->role)
+		return +1;
+	c = g_strcmp0(a->kind, b->kind);
+	if (c != 0)
+		return c;
+	c = g_strcmp0(a->binding, b->binding);
+	if (c != 0)
+		return c;
+	if (a->is_default && ! b->is_default)
+		return -1;
+	if (! a->is_default && b->is_default)
+		return +1;
+	if (a->index < b->index)
+		return -1;
+	if (a->index > b->index)
+		return +1;
+	return 0;
+}
+
+
 static void
 load_endpoint_type(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole role)
 {
@@ -141,7 +218,7 @@ load_endpoint_type(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole 
 
 	binding_s = binding_uri_to_identifier((char*)binding);
 	if (! binding_s) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX: unknown binding: %s", binding);
+		critical("XXX: unknown binding: %s", binding);
 		goto cleanup;
 	}
 
@@ -259,6 +336,7 @@ load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole rol
 	xmlChar *value;
 	LassoProviderPrivate *pdata = provider->private_data;
 	char *token, *saveptr;
+	int counter = 0;
 	
 	/* check protocol support enumeration */
 	value = getSaml2MdProp(xmlnode,
@@ -290,6 +368,7 @@ load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole rol
 					attribute);
 		} else if (hasSaml2MdProp(t, LASSO_SAML2_METADATA_ATTRIBUTE_BINDING)) {
 			load_endpoint_type(t, provider, role);
+			load_endpoint_type2(t, provider, role, &counter);
 		} else {
 			value = xmlNodeGetContent(t);
 			_lasso_provider_add_metadata_value_for_role(provider, role, (char*)t->name,
@@ -298,6 +377,8 @@ load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole rol
 		}
 		t = xmlSecGetNextElementNode(t->next);
 	}
+	provider->private_data->endpoints = g_list_sort(provider->private_data->endpoints,
+			(GCompareFunc) compare_endpoint_type);
 	for (i = 0; descriptor_attrs[i]; i++) {
 		value = getSaml2MdProp(xmlnode, descriptor_attrs[i]);
 		if (value == NULL) {
@@ -403,226 +484,141 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 }
 
 LassoHttpMethod
-lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
+lasso_saml20_provider_get_first_http_method(G_GNUC_UNUSED LassoProvider *provider,
 		LassoProvider *remote_provider, LassoMdProtocolType protocol_type)
 {
-	LassoHttpMethod method = LASSO_HTTP_METHOD_NONE;
-	LassoProviderRole our_role = LASSO_PROVIDER_ROLE_SP;
-	int i;
-	const char *possible_bindings[] = {
-		"HTTP-POST",
-		"HTTP-Redirect",
-		"HTTP-Artifact",
-		"SOAP",
-		"PAOS",
-		NULL
-	};
-	LassoHttpMethod method_bindings[] = {
-		LASSO_HTTP_METHOD_POST,
-		LASSO_HTTP_METHOD_REDIRECT,
-		LASSO_HTTP_METHOD_ARTIFACT_GET,
-		LASSO_HTTP_METHOD_SOAP,
-		LASSO_HTTP_METHOD_PAOS
-	};
-
-	switch (remote_provider->role) {
-		case LASSO_PROVIDER_ROLE_IDP:
-			our_role = LASSO_PROVIDER_ROLE_SP;
-			break;
-		case LASSO_PROVIDER_ROLE_SP:
-			our_role = LASSO_PROVIDER_ROLE_IDP;
-			break;
-		default:
-			return LASSO_HTTP_METHOD_NONE;
+	GList *t = NULL;
+	const char *kind = NULL;
+	LassoHttpMethod result = LASSO_HTTP_METHOD_NONE;
+	
+	if (protocol_type < LASSO_MD_PROTOCOL_TYPE_LAST) {
+		kind = profile_names[protocol_type];
 	}
-	for (i=0; possible_bindings[i] && method == LASSO_HTTP_METHOD_NONE; i++) {
-		char *s;
-		const GList *l1, *l2;
+	if (! kind) {
+		warning("Could not find a first http method for protocol type %u", protocol_type);
+		return LASSO_HTTP_METHOD_NONE;
+	}
 
-		s = g_strdup_printf("%s %s",
-				profile_names[protocol_type],
-				possible_bindings[i]);
-		l1 = lasso_provider_get_metadata_list_for_role(provider, our_role, s);
-		l2 = lasso_provider_get_metadata_list(remote_provider, s);
-		if (l1 && l2) {
-			method = method_bindings[i];
+	lasso_foreach(t, remote_provider->private_data->endpoints) {
+		EndpointType *endpoint_type = (EndpointType*)t->data;
+		if (endpoint_type && g_strcmp0(endpoint_type->kind, kind) == 0) {
+			result = binding_uri_to_http_method(endpoint_type->binding);
+			if (result) break;
 		}
 	}
 
-	return method;
+	return result;
+}
+
+gboolean
+lasso_saml20_provider_accept_http_method(G_GNUC_UNUSED LassoProvider *provider, LassoProvider *remote_provider,
+		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,
+		G_GNUC_UNUSED gboolean initiate_profile)
+{
+	GList *t = NULL;
+	const char *kind = NULL;
+	
+	if (protocol_type < LASSO_MD_PROTOCOL_TYPE_LAST) {
+		kind = profile_names[protocol_type];
+	}
+	if (! kind) {
+		warning("Could not find a first http method for protocol type %u", protocol_type);
+		return LASSO_HTTP_METHOD_NONE;
+	}
+
+	lasso_foreach(t, remote_provider->private_data->endpoints) {
+		EndpointType *endpoint_type = (EndpointType*)t->data;
+		if (endpoint_type && endpoint_type->role == remote_provider->role &&
+				g_strcmp0(endpoint_type->kind, kind) == 0) {
+			if (binding_uri_to_http_method(endpoint_type->binding) == http_method) {
+				return TRUE;
+			}
+		}
+	}
+
+	return FALSE;
 }
 
 gboolean
 lasso_saml20_provider_check_assertion_consumer_service_url(LassoProvider *provider, const gchar *url, const gchar *binding)
 {
-	GHashTable *descriptor;
-	GList *l = NULL, *r = NULL, *candidate = NULL;
-	char *name;
-	const char *binding_s = NULL;
-	int lname;
+	GList *t = NULL;
 
-	descriptor = provider->private_data->Descriptors;
-	if (descriptor == NULL || url == NULL || binding == NULL)
-		return FALSE;
-
-	binding_s = binding_uri_to_identifier(binding);
-	if (binding_s == NULL) {
-		return FALSE;
-	}
-
-	g_hash_table_foreach(descriptor,
-			(GHFunc)add_assertion_consumer_url_to_list,
-			&r);
-
-	name = g_strdup_printf(LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE
-			" %s ", binding_s);
-	lname = strlen(name);
-	for (l = r; l; l = g_list_next(l)) {
-		char *b = l->data;
-		if (strncmp(name, b, lname) == 0) {
-			candidate = lasso_provider_get_metadata_list_for_role(provider, LASSO_PROVIDER_ROLE_SP, b);
-			if (candidate && candidate->data && strcmp(candidate->data, url) == 0)
-				break;
-			else
-				candidate = NULL;
+	lasso_foreach (provider->private_data->endpoints, t) {
+		EndpointType *endpoint_type = (EndpointType*) t->data;
+		if (endpoint_type && endpoint_type->role == LASSO_PROVIDER_ROLE_SP
+				&& g_strcmp0(endpoint_type->url, url) == 0
+				&& g_strcmp0(endpoint_type->binding, binding) == 0)
+		{
+			return TRUE;
 		}
 	}
-	lasso_release(name);
-	lasso_release_list(r);
-
-	if (candidate)
-		return TRUE;
-	else
-		return FALSE;
+	return FALSE;
 }
+
+static const char *supported_assertion_consumer_bindings[] = { LASSO_SAML2_METADATA_BINDING_POST,
+	LASSO_SAML2_METADATA_BINDING_ARTIFACT, NULL };
+
+static gboolean match_any(const char *key, const char *array[]) {
+	const char **t = array;
+
+	while (*t) {
+		if (g_strcmp0(key, *t) == 0) {
+			return TRUE;
+		}
+		t++;
+	}
+	return FALSE;
+}
+
+static EndpointType *
+lasso_saml20_provider_get_assertion_consumer_service(LassoProvider *provider, int service_id)
+{
+	const char *kind = LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE;
+	GList *t = NULL;
+	EndpointType *result = NULL;
+
+	if (service_id != -1) {
+		lasso_foreach(t, provider->private_data->endpoints) {
+			EndpointType *endpoint_type = (EndpointType*) t->data;
+			if (! endpoint_type)
+				continue;
+			if (endpoint_type->role == LASSO_PROVIDER_ROLE_SP &&
+					g_strcmp0(endpoint_type->kind, kind) == 0 &&
+					endpoint_type->index == service_id)
+			{
+				result = endpoint_type;
+				break;
+			}
+		}
+	} else { /* lookup a default supported endpoint type */
+		lasso_foreach(t, provider->private_data->endpoints) {
+			EndpointType *endpoint_type = (EndpointType*) t->data;
+			if (! endpoint_type)
+				continue;
+			if (endpoint_type->role == LASSO_PROVIDER_ROLE_SP &&
+					g_strcmp0(endpoint_type->kind, kind) == 0 &&
+					match_any(endpoint_type->binding,
+						supported_assertion_consumer_bindings))
+			{
+				result = endpoint_type;
+				break;
+			}
+		}
+	}
+	return result;
+}
+
 
 gchar*
 lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider,
 		int service_id)
 {
-	GList *l = NULL;
-	char *sid;
-	char *name;
-	const char *possible_bindings[] = {
-		"HTTP-Artifact",
-		"HTTP-POST",
-		NULL
-	};
-	int i;
-
-	if (service_id == -1) {
-		sid = g_strdup(provider->private_data->default_assertion_consumer);
-	} else {
-		sid = g_strdup_printf("%d", service_id);
+	EndpointType *endpoint_type = lasso_saml20_provider_get_assertion_consumer_service(provider, service_id);
+	if (endpoint_type)
+	{
+		return g_strdup(endpoint_type->url);
 	}
-
-	for (i=0; possible_bindings[i]; i++) {
-		name = g_strdup_printf(LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE
-				" %s %s",
-				possible_bindings[i], sid);
-		l = lasso_provider_get_metadata_list_for_role(provider,
-				LASSO_PROVIDER_ROLE_SP,
-				name);
-		lasso_release_string(name);
-		if (l != NULL)
-			break;
-	}
-	lasso_release_string(sid);
-	if (l)
-		return g_strdup(l->data);
-	return NULL;
-}
-
-#define ACS_KEY "sp " LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE
-
-static void
-add_assertion_consumer_url_to_list(gchar *key, G_GNUC_UNUSED gpointer value, GList **list)
-{
-	if (strncmp(key, ACS_KEY, sizeof(ACS_KEY)-1) == 0) {
-		lasso_list_add_new_string(*list, key);
-	}
-}
-
-struct HelperBindingByUrl {
-	const char *binding;
-	const char *url;
-};
-
-void
-helper_binding_by_url(char *key, GList *value, struct HelperBindingByUrl *data)
-{
-	if (strncmp(key, ACS_KEY, sizeof(ACS_KEY)-1) != 0) {
-		return;
-	}
-
-	if (data->binding == NULL && g_list_find_custom(value, data->url, (GCompareFunc)g_strcmp0) != NULL) {
-		char *end;
-		// URL was found for the first time
-		key += sizeof(ACS_KEY);
-		end = strchr(key, ' ');
-		if (end) {
-			key = g_strndup(key, (ptrdiff_t)(end-key));
-			data->binding = identifier_to_binding_uri(key);
-			lasso_release(key);
-		} else {
-			data->binding = identifier_to_binding_uri(key);
-		}
-	}
-
-}
-
-const gchar*
-lasso_saml20_provider_get_assertion_consumer_service_binding_by_url(LassoProvider *provider, const char *url)
-{
-	struct HelperBindingByUrl _helper_binding_by_url = { .binding = NULL, .url = url };
-
-	g_hash_table_foreach(provider->private_data->Descriptors, (GHFunc)helper_binding_by_url,
-			&_helper_binding_by_url);
-
-	return _helper_binding_by_url.binding;
-}
-
-gchar*
-lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvider *provider,
-		const gchar *binding)
-{
-	GHashTable *descriptor;
-	GList *l = NULL, *r = NULL;
-	char *name;
-	const char *binding_s = NULL;
-	int lname;
-
-	descriptor = provider->private_data->Descriptors;
-	if (descriptor == NULL)
-		return NULL;
-
-	binding_s = binding_uri_to_identifier(binding);
-	if (binding_s == NULL) {
-		return NULL;
-	}
-
-	g_hash_table_foreach(descriptor,
-			(GHFunc)add_assertion_consumer_url_to_list,
-			&r);
-
-	name = g_strdup_printf("sp "
-			LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE
-			" %s ", binding_s);
-	lname = strlen(name);
-	for (l = r; l; l = g_list_next(l)) {
-		char *b = l->data;
-		if (strncmp(name, b, lname) == 0) {
-			l = g_hash_table_lookup(descriptor, b);
-			break;
-		}
-	}
-	lasso_release_string(name);
-	lasso_release_list(r);
-
-	if (l) {
-		return g_strdup(l->data);
-	}
-
 	return NULL;
 }
 
@@ -630,88 +626,53 @@ gchar*
 lasso_saml20_provider_get_assertion_consumer_service_binding(LassoProvider *provider,
 		int service_id)
 {
-	GHashTable *descriptor;
-	GList *l = NULL;
-	char *sid;
-	char *name;
-	char *binding = NULL;
-	const char *possible_bindings[] = {
-		"HTTP-POST",
-		"HTTP-Redirect",
-		"HTTP-Artifact",
-		"SOAP", 
-		NULL
-	};
-	int i;
-
-	if (service_id == -1) {
-		sid = g_strdup(provider->private_data->default_assertion_consumer);
-	} else {
-		sid = g_strdup_printf("%d", service_id);
+	EndpointType *endpoint_type = lasso_saml20_provider_get_assertion_consumer_service(provider, service_id);
+	if (endpoint_type)
+	{
+		return g_strdup(binding_uri_to_identifier(endpoint_type->binding));
 	}
-	descriptor = provider->private_data->Descriptors;
-	if (descriptor == NULL)
-		return NULL;
-
-	for (i=0; possible_bindings[i]; i++) {
-		name = g_strdup_printf(LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE
-				" %s %s",
-				possible_bindings[i], sid);
-		l = lasso_provider_get_metadata_list_for_role(provider, LASSO_PROVIDER_ROLE_SP, name);
-		lasso_release_string(name);
-		if (l != NULL) {
-			binding = g_strdup(possible_bindings[i]);
-			break;
-		}
-	}
-	lasso_release_string(sid);
-	return binding;
+	return NULL;
 }
 
-gboolean
-lasso_saml20_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote_provider,
-		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,
-		gboolean initiate_profile)
+const gchar*
+lasso_saml20_provider_get_assertion_consumer_service_binding_by_url(LassoProvider *provider, const char *url)
 {
-	char *protocol_profile;
-	static const char *http_methods[] = {
-		NULL,
-		NULL,
-		NULL,
-		NULL,
-		"HTTP-POST",
-		"HTTP-Redirect",
-		"SOAP",
-		"HTTP-Artifact",
-		"HTTP-Artifact",
-		NULL
-	};
-	gboolean rc = FALSE;
-	LassoProviderRole initiating_role;
+	const char *kind = LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE;
+	GList *t = NULL;
 
-	initiating_role = remote_provider->role;
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
-		provider->role = LASSO_PROVIDER_ROLE_IDP;
+	lasso_foreach(t, provider->private_data->endpoints) {
+		EndpointType *endpoint_type = (EndpointType*) t->data;
+		if (! endpoint_type)
+			continue;
+		if (endpoint_type->role == LASSO_PROVIDER_ROLE_SP &&
+				g_strcmp0(endpoint_type->kind, kind) == 0 &&
+				g_strcmp0(endpoint_type->url, url) == 0)
+		{
+			return endpoint_type->binding;
+		}
 	}
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP) {
-		provider->role = LASSO_PROVIDER_ROLE_SP;
+	return NULL;
+}
+
+gchar*
+lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvider *provider,
+		const gchar *binding)
+{
+	const char *kind = LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE;
+	GList *t = NULL;
+
+	lasso_foreach(t, provider->private_data->endpoints) {
+		EndpointType *endpoint_type = (EndpointType*) t->data;
+		if (! endpoint_type)
+			continue;
+		if (endpoint_type->role == LASSO_PROVIDER_ROLE_SP &&
+				g_strcmp0(endpoint_type->kind, kind) == 0 &&
+				g_strcmp0(endpoint_type->binding, binding) == 0)
+		{
+			return endpoint_type->url;
+		}
 	}
-	if (initiate_profile)
-		initiating_role = provider->role;
-
-	/* exclude bad input */
-	if (http_method > (int)G_N_ELEMENTS(http_methods) || http_method < 0 ||  http_methods[http_method+1] == NULL) {
-		return FALSE;
-	}
-
-	protocol_profile = g_strdup_printf("%s %s", profile_names[protocol_type],
-			http_methods[http_method+1]);
-
-	/* just check if remote provider can receive the request, remote provider will have to check
-	 * how to return the response itself */
-	rc = (lasso_provider_get_metadata_list(remote_provider, protocol_profile) != NULL);
-	lasso_release_string(protocol_profile);
-	return rc;
+	return NULL;
 }
 
 /**
