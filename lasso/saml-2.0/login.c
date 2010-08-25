@@ -91,7 +91,8 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_me
 			lasso_samlp2_name_id_policy_new());
 	/* set name id policy format */
 	/* no need to check server, done in init_request */
-	default_name_id_format = lasso_provider_get_default_name_id_format(&profile->server->parent);
+	default_name_id_format = lasso_provider_get_metadata_one_for_role(&profile->server->parent,
+			LASSO_PROVIDER_ROLE_SP, "NameIDFormat");
 	if (default_name_id_format) {
 		/* steal the string */
 		lasso_assign_new_string(LASSO_SAMLP2_AUTHN_REQUEST(request)->NameIDPolicy->Format,
