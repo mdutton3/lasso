@@ -859,6 +859,13 @@ finalize(GObject *object)
 /* instance and class init functions */
 /*****************************************************************************/
 
+void
+lasso_endpoint_free(EndpointType *endpoint_type) {
+	g_free(endpoint_type->binding);
+	g_free(endpoint_type->url);
+	g_free(endpoint_type->kind);
+	g_free(endpoint_type->return_url);
+}
 
 static void
 instance_init(LassoProvider *provider)
@@ -881,6 +888,7 @@ instance_init(LassoProvider *provider)
 	provider->private_data->encryption_public_key = NULL;
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
 	provider->private_data->encryption_sym_key_type = LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128;
+	lasso_release_list_of_full(provider->private_data->endpoints, lasso_endpoint_free);
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->Descriptors = g_hash_table_new_full(
