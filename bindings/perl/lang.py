@@ -223,7 +223,7 @@ INCLUDE: LassoNode.xs
                 if type == 'i':
                     self.xs.pn('ct = newSViv(%s);' % name)
                 elif type == 's':
-                    self.xs.pn('ct = newSVpv(%s, 0);' % name)
+                    self.xs.pn('ct = newSVpv((char*)%s, 0);' % name)
                 elif type == 'b': # only one case LASSO_WSF_ENABLED
                     self.xs.unindent()
                     self.xs.pn('''#ifdef %s

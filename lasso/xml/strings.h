@@ -131,6 +131,41 @@
  */
 #define LASSO_PYTHON_HREF "http://www.entrouvert.org/namespaces/python/0.0"
 
+/**
+ * LASSO_SIGNATURE_TYPE_ATTRIBUTE:
+ *
+ * Attribute name for the Lasso signature type attribute.
+ */
+#define LASSO_SIGNATURE_TYPE_ATTRIBUTE BAD_CAST "SignatureType"
+
+/**
+ * LASSO_SIGNATURE_METHOD_ATTRIBUTE:
+ *
+ * Attribute name for the Lasso signature type attribute.
+ */
+#define LASSO_SIGNATURE_METHOD_ATTRIBUTE BAD_CAST "SignatureMethod"
+
+/**
+ * LASSO_PRIVATE_KEY_ATTRIBUTE:
+ *
+ * Attribute name for the Lasso private key attribute.
+ */
+#define LASSO_PRIVATE_KEY_ATTRIBUTE BAD_CAST "PrivateKey"
+
+/**
+ * LASSO_PRIVATE_KEY_PASSWORD_ATTRIBUTE:
+ *
+ * Attribute name for the Lasso private key attribute.
+ */
+#define LASSO_PRIVATE_KEY_PASSWORD_ATTRIBUTE BAD_CAST "PrivateKeyPassword"
+
+/**
+ * LASSO_CERTIFICATE_ATTRIBUTE:
+ *
+ * Attribute name for the Lasso private key attribute.
+ */
+#define LASSO_CERTIFICATE_ATTRIBUTE BAD_CAST "Certificate"
+
 /*****************************************************************************/
 /* Liberty Alliance ID-FF                                                    */
 /*****************************************************************************/
