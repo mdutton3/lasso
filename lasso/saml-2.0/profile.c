@@ -46,6 +46,7 @@
 #include "../xml/saml-2.0/samlp2_status_response.h"
 #include "../xml/saml-2.0/samlp2_response.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
+#include "../xml/misc_text_node.h"
 #include "../utils.h"
 #include "../debug.h"
 
@@ -156,17 +157,21 @@ http_method_to_binding(LassoHttpMethod method) {
 static char*
 lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part)
 {
+	LassoNode *what = NULL;
 	lasso_assign_new_string(profile->private_data->artifact,
 			lasso_saml20_profile_build_artifact(&profile->server->parent));
 	if (part == 0) {
-		lasso_assign_new_string(profile->private_data->artifact_message,
-				lasso_node_dump(profile->request));
+		what = profile->request;
 	} else if (part == 1) {
-		lasso_assign_new_string(profile->private_data->artifact_message,
-				lasso_node_dump(profile->response));
+		what = profile->response;
 	} else {
 		/* XXX: RequestDenied here? */
 	}
+	/* Remove signature at the response level, if needed if will be on the ArtifactResponse */
+	lasso_node_remove_signature(what);
+	/* Keep an XML copy of the response for later retrieval */
+	lasso_assign_new_string(profile->private_data->artifact_message,
+			lasso_node_export_to_xml(what));
 
 	return profile->private_data->artifact;
 }
@@ -379,34 +384,42 @@ int
 lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 {
 	LassoSamlp2StatusResponse *response = NULL;
-	LassoNode *resp = NULL;
 	int rc = 0;
 
 	if ( ! LASSO_IS_SAMLP2_REQUEST_ABSTRACT(profile->request)) {
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	}
+	/* Setup the response */
 	response = LASSO_SAMLP2_STATUS_RESPONSE(lasso_samlp2_artifact_response_new());
-	if (profile->private_data->artifact_message) {
-		resp = lasso_node_new_from_dump(profile->private_data->artifact_message);
-		lasso_assign_new_gobject(LASSO_SAMLP2_ARTIFACT_RESPONSE(response)->any, resp);
-	}
+	lasso_assign_new_gobject(profile->response, response);
 	response->ID = lasso_build_unique_id(32);
 	lasso_assign_string(response->Version, "2.0");
 	response->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
 			LASSO_PROVIDER(profile->server)->ProviderID));
 	response->IssueInstant = lasso_get_current_time();
 	lasso_assign_string(response->InResponseTo, LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
+	/* Add content */
+	if (profile->private_data->artifact_message) {
+		xmlDoc *doc;
+		xmlNode *node;
+		char *content = profile->private_data->artifact_message;
+		doc = lasso_xml_parse_memory(content, strlen(content));
+		if (doc) {
+			node = xmlDocGetRootElement(doc);
+			lasso_assign_new_gobject(LASSO_SAMLP2_ARTIFACT_RESPONSE(response)->any,
+					lasso_misc_text_node_new_with_xml_node(node));
+			lasso_release_doc(doc);
+			lasso_saml20_profile_set_response_status(profile,
+					LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
+		} else {
+			lasso_saml20_profile_set_response_status(profile,
+					LASSO_SAML2_STATUS_CODE_REQUESTER, NULL);
+		}
+	}
+	/* Setup the signature */
 	lasso_check_good_rc(lasso_profile_saml20_setup_message_signature(profile,
 				(LassoNode*)response));
-	lasso_assign_new_gobject(profile->response, LASSO_NODE(response));
-
-	if (resp == NULL) {
-		lasso_saml20_profile_set_response_status(profile,
-				LASSO_SAML2_STATUS_CODE_REQUESTER, NULL);
-	} else {
-		lasso_saml20_profile_set_response_status(profile,
-				LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
-	}
+	/* Serialize the message */
 	lasso_assign_new_string(profile->msg_body, lasso_node_export_to_soap(profile->response));
 cleanup:
 	return rc;
