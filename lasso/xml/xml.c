@@ -1129,6 +1129,27 @@ _lasso_node_collect_namespaces(GHashTable **namespaces, xmlNode *node)
 	}
 }
 
+gboolean
+lasso_get_integer_attribute(xmlNode *node, xmlChar *attribute_name, xmlChar *ns_href, int *integer, long int low, long int high) {
+	xmlChar *content = NULL;
+	gboolean rc = FALSE;
+	long int what;
+
+	g_assert (integer);
+	content = xmlGetNsProp(node, attribute_name, ns_href);
+	if (! content)
+		goto cleanup;
+	if (! lasso_string_to_xsd_integer((char*)content, &what))
+		goto cleanup;
+	if (*integer < low || *integer >= high)
+		goto cleanup;
+	*integer = what;
+	rc = TRUE;
+cleanup:
+	lasso_release_xml_string(content);
+	return rc;
+}
+
 /** FIXME: return a real error code */
 static int
 lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
