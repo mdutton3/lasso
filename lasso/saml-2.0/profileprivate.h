@@ -40,7 +40,6 @@ extern "C" {
 int lasso_saml20_profile_init_request(LassoProfile *profile, const char *remote_provider_id,
 		gboolean first_in_session, LassoSamlp2RequestAbstract *request_abstract,
 		LassoHttpMethod http_method, LassoMdProtocolType protocol_type);
-char* lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part);
 #define lasso_saml20_profile_set_response_status_success(profile, code2) \
 	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS, code2)
 #define lasso_saml20_profile_set_response_status_responder(profile, code2) \

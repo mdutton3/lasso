@@ -62,6 +62,7 @@ static gint lasso_profile_saml20_build_artifact_post_response_msg(LassoProfile *
 		const char *service);
 static gboolean has_signature(LassoNode *node, LassoSignatureMethod *signature_method,
 		char **private_key_file, char **private_key_password);
+static char* lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part);
 
 #define check_msg_body \
 	if (! profile->msg_body) { \
@@ -152,7 +153,7 @@ http_method_to_binding(LassoHttpMethod method) {
  *
  * Return value: the generated artifact (internally allocated, don't free)
  **/
-char*
+static char*
 lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part)
 {
 	lasso_assign_new_string(profile->private_data->artifact,
