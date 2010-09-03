@@ -76,7 +76,7 @@ PHP_MINIT_FUNCTION(lasso)
             if c[0] == 'i':
                 print >> self.fd, '    REGISTER_LONG_CONSTANT("%s", %s, CONST_CS|CONST_PERSISTENT);' % (c[1], c[1])
             elif c[0] == 's':
-                print >> self.fd, '    REGISTER_STRING_CONSTANT("%s", %s, CONST_CS|CONST_PERSISTENT);' % (c[1], c[1])
+                print >> self.fd, '    REGISTER_STRING_CONSTANT("%s", (char*) %s, CONST_CS|CONST_PERSISTENT);' % (c[1], c[1])
             elif c[0] == 'b':
                 print >> self.fd, '''\
 #ifdef %s

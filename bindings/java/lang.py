@@ -364,7 +364,7 @@ protected static native void destroy(long cptr);
             elif c[0] == 's':
                 print >>fd, wrapper_decl(s,'jstring')
                 print >>fd, ') {'
-                print >>fd, '   return (*env)->NewStringUTF(env, %s);' % c[1]
+                print >>fd, '   return (*env)->NewStringUTF(env, (char*) %s);' % c[1]
                 print >>fd, '}'
             elif c[0] == 'b':
                 print >>fd, wrapper_decl(s,'jboolean')

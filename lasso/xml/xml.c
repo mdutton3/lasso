@@ -1129,6 +1129,27 @@ _lasso_node_collect_namespaces(GHashTable **namespaces, xmlNode *node)
 	}
 }
 
+gboolean
+lasso_get_integer_attribute(xmlNode *node, xmlChar *attribute_name, xmlChar *ns_href, int *integer, long int low, long int high) {
+	xmlChar *content = NULL;
+	gboolean rc = FALSE;
+	long int what;
+
+	g_assert (integer);
+	content = xmlGetNsProp(node, attribute_name, ns_href);
+	if (! content)
+		goto cleanup;
+	if (! lasso_string_to_xsd_integer((char*)content, &what))
+		goto cleanup;
+	if (*integer < low || *integer >= high)
+		goto cleanup;
+	*integer = what;
+	rc = TRUE;
+cleanup:
+	lasso_release_xml_string(content);
+	return rc;
+}
+
 /** FIXME: return a real error code */
 static int
 lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
@@ -1141,6 +1162,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	struct XmlSnippet *snippet_any = NULL;
 	struct XmlSnippet *snippet_any_attribute = NULL;
 	struct XmlSnippet *snippet_collect_namespaces = NULL;
+	struct XmlSnippet *snippet_signature = NULL;
 	GSList *unknown_nodes = NULL;
 	GSList *known_attributes = NULL;
 	gboolean keep_xmlnode = FALSE;
@@ -1350,6 +1372,10 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				snippet_collect_namespaces = snippet;
 			}
 
+			if (type == SNIPPET_SIGNATURE) {
+				snippet_signature = snippet;
+			}
+
 			if (type == SNIPPET_ATTRIBUTE) {
 				if (snippet->type & SNIPPET_ANY) {
 					snippet_any_attribute = snippet;
@@ -1406,6 +1432,44 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		_lasso_node_collect_namespaces(value, xmlnode);
 	}
 
+	/* Collect signature parameters */
+	{
+			LassoSignatureMethod method;
+			LassoSignatureType type;
+			xmlChar *private_key = NULL;
+			xmlChar *private_key_password = NULL;
+			xmlChar *certificate = NULL;
+
+		while (snippet_signature) {
+			int what;
+			if (! lasso_get_integer_attribute(xmlnode, LASSO_SIGNATURE_METHOD_ATTRIBUTE,
+						BAD_CAST LASSO_LIB_HREF, &what,
+						LASSO_SIGNATURE_METHOD_RSA_SHA1,
+						LASSO_SIGNATURE_METHOD_LAST))
+				break;
+			method = what;
+			if (! lasso_get_integer_attribute(xmlnode, LASSO_SIGNATURE_METHOD_ATTRIBUTE,
+					BAD_CAST LASSO_LIB_HREF, &what, LASSO_SIGNATURE_TYPE_NONE+1,
+					LASSO_SIGNATURE_TYPE_LAST))
+				break;
+			type = what;
+			private_key = xmlGetNsProp(xmlnode, LASSO_PRIVATE_KEY_PASSWORD_ATTRIBUTE,
+				BAD_CAST LASSO_LIB_HREF);
+			if (! private_key)
+				break;
+			private_key = xmlGetNsProp(xmlnode, LASSO_PRIVATE_KEY_ATTRIBUTE, BAD_CAST
+				LASSO_LIB_HREF);
+			certificate = xmlGetNsProp(xmlnode, LASSO_CERTIFICATE_ATTRIBUTE, BAD_CAST
+				LASSO_LIB_HREF);
+			lasso_node_set_signature(node, type,
+				method, (char*) private_key, (char*) private_key_password, (char*) certificate);
+		}
+		lasso_release_xml_string(private_key);
+		lasso_release_xml_string(private_key_password);
+		lasso_release_xml_string(certificate);
+	}
+
+	/* Collect other children */
 	if (unknown_nodes && snippet_any) {
 		xmlNode *t = unknown_nodes->data;
 		void *tmp;
@@ -1414,6 +1478,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		(*(char**)value) = tmp;
 	}
 
+	/* Collect other attributes */
 	if (snippet_any_attribute) {
 		GHashTable **any_attribute;
 		GSList *tmp_attr;
@@ -1633,15 +1698,15 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		if (private_key) {
 			ns = get_or_define_ns(xmlnode, BAD_CAST LASSO_LASSO_HREF);
 			sprintf(buffer, "%u", type);
-			xmlSetNsProp(xmlnode, ns, BAD_CAST "SignatureType", BAD_CAST buffer);
+			xmlSetNsProp(xmlnode, ns, LASSO_SIGNATURE_TYPE_ATTRIBUTE, BAD_CAST buffer);
 			sprintf(buffer, "%u", method);
-			xmlSetNsProp(xmlnode, ns, BAD_CAST "SignatureMethod", BAD_CAST buffer);
-			xmlSetNsProp(xmlnode, ns, BAD_CAST "PrivateKey", BAD_CAST private_key);
+			xmlSetNsProp(xmlnode, ns, LASSO_SIGNATURE_METHOD_ATTRIBUTE, BAD_CAST buffer);
+			xmlSetNsProp(xmlnode, ns, LASSO_PRIVATE_KEY_ATTRIBUTE, BAD_CAST private_key);
 			if (private_key_password) {
-				xmlSetNsProp(xmlnode, ns, BAD_CAST "PrivateKeyPassword", BAD_CAST private_key_password);
+				xmlSetNsProp(xmlnode, ns, LASSO_PRIVATE_KEY_PASSWORD_ATTRIBUTE, BAD_CAST private_key_password);
 			}
 			if (certificate) {
-				xmlSetNsProp(xmlnode, ns, BAD_CAST "Certificate", BAD_CAST certificate);
+				xmlSetNsProp(xmlnode, ns, LASSO_CERTIFICATE_ATTRIBUTE, BAD_CAST certificate);
 			}
 		}
 	}
