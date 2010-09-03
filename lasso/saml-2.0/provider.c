@@ -396,6 +396,12 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 			(! loaded_one_or_more_descriptor || (pdata->roles & provider->role) == 0)) {
 		/* We must at least load one descriptor, and we must load a descriptor for our
 		 * assigned role or we fail. */
+		if (! loaded_one_or_more_descriptor) {
+			warning("No descriptor was loaded, failing");
+		}
+		if ((pdata->roles & provider->role) == 0) {
+			warning("Loaded roles and prescribed role does not intersect");
+		}
 		return FALSE;
 	}
 

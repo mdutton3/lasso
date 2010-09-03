@@ -1019,6 +1019,7 @@ _lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	if (doc == NULL) {
+		warning("Metadata is not an XML document");
 		return FALSE;
 	}
 
