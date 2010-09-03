@@ -865,6 +865,7 @@ lasso_endpoint_free(EndpointType *endpoint_type) {
 	g_free(endpoint_type->url);
 	g_free(endpoint_type->kind);
 	g_free(endpoint_type->return_url);
+	g_free(endpoint_type);
 }
 
 static void
