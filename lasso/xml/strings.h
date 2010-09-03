@@ -107,6 +107,13 @@
  */
 #define LASSO_SOAP_FAULT_CODE_VERSION_MISMATCH "s:VersionMismatch"
 
+/**
+ * LASSO_PRIVATE_STATUS_CODE_FAILED_TO_RESTORE_ARTIFACT:
+ *
+ * An artifact content is present but Lasso failed to rebuild the corresponding XML content.
+ */
+#define LASSO_PRIVATE_STATUS_CODE_FAILED_TO_RESTORE_ARTIFACT "FailedToRestoreArtifact"
+
 /*****************************************************************************/
 /* Lasso                                                                     */
 /*****************************************************************************/

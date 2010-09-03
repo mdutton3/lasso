@@ -413,7 +413,8 @@ lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 					LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
 		} else {
 			lasso_saml20_profile_set_response_status(profile,
-					LASSO_SAML2_STATUS_CODE_REQUESTER, NULL);
+					LASSO_SAML2_STATUS_CODE_RESPONDER,
+					LASSO_PRIVATE_STATUS_CODE_FAILED_TO_RESTORE_ARTIFACT);
 		}
 	}
 	/* Setup the signature */
