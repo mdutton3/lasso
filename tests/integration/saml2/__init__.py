@@ -25,7 +25,7 @@ if os.path.exists(CONFIG_FILE):
 # Combine default and configuration file
 AUTHENTIC_SRCDIR = CONFIG.get('AUTHENTIC_SRCDIR') or '/usr/local/src/authentic'
 AUTHENTICCTL = CONFIG.get('AUTHENTICCTL') or '/usr/sbin/authenticctl.py'
-AUTHENTIC_DATA_DIR = CONFIG.get('AUTHENTIC_DATA_DIR') or '/usr/share/authentic/'
+AUTHENTIC_DATADIR = CONFIG.get('AUTHENTIC_DATADIR') or '/usr/share/authentic/'
 LCSCTL = CONFIG.get('LCSCTL') or '/usr/sbin/lcsctl.py'
 LCS_DATADIR = CONFIG.get('LCS_DATADIR') or '/usr/share/lcs/'
 LASSO_BUILDDIR = os.environ.get('LASSO_BUILDDIR') or \
