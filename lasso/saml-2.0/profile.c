@@ -416,6 +416,10 @@ lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 					LASSO_SAML2_STATUS_CODE_RESPONDER,
 					LASSO_PRIVATE_STATUS_CODE_FAILED_TO_RESTORE_ARTIFACT);
 		}
+	} else {
+		/* if no artifact is present, it is a success anyway */
+		lasso_saml20_profile_set_response_status(profile,
+				LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
 	}
 	/* Setup the signature */
 	lasso_check_good_rc(lasso_profile_saml20_setup_message_signature(profile,
