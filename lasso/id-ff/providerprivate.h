@@ -41,6 +41,18 @@ typedef enum {
 	LASSO_PUBLIC_KEY_ENCRYPTION
 } LassoPublicKeyType;
 
+/* This structure should allow to map ID-FFv1.2 and SAMLv2 endpoints */
+struct EndpointType_s {
+	LassoProviderRole role;
+	char *kind;
+	char *binding;
+	char *url;
+	char *return_url;
+	int index;
+	gboolean is_default;
+};
+typedef struct EndpointType_s EndpointType;
+
 
 struct _LassoProviderPrivate
 {
@@ -65,8 +77,8 @@ struct _LassoProviderPrivate
 	LassoEncryptionSymKeyType encryption_sym_key_type;
 	char *valid_until;
 	char *cache_duration;
+	GList *endpoints; /* of EndpointType_s */
 };
-
 
 gboolean lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata);
 gboolean lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *metadata);

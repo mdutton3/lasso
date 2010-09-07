@@ -1317,7 +1317,15 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					*(void**)value = tmp;
 					tmp = NULL;
 				} else if (snippet->type & SNIPPET_INTEGER) {
-					int val = atoi(tmp);
+					int val = strtol(tmp, NULL, 10);
+					if (((val == LONG_MIN || val == LONG_MAX) && errno == ERANGE)
+							|| errno == EINVAL || val < 0) {
+						if (snippet->type & SNIPPET_OPTIONAL_NEG) {
+							val = -1;
+						} else {
+							val = 0;
+						}
+					}
 					(*(int*)value) = val;
 					trace_snippet("   setting integer %i for ", val);
 					xmlFree(tmp);
@@ -1382,7 +1390,15 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				continue;
 
 			if (snippet->type & SNIPPET_INTEGER) {
-				int val = atoi(tmp);
+				int val = strtol(tmp, NULL, 10);
+				if (((val == LONG_MIN || val == LONG_MAX) && errno == ERANGE)
+						|| errno == EINVAL || val < 0) {
+					if (snippet->type & SNIPPET_OPTIONAL_NEG) {
+						val = -1;
+					} else {
+						val = 0;
+					}
+				}
 				(*(int*)value) = val;
 			} else if (snippet->type & SNIPPET_BOOLEAN) {
 				int val = 0;
