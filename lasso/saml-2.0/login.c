@@ -91,7 +91,8 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_me
 			lasso_samlp2_name_id_policy_new());
 	/* set name id policy format */
 	/* no need to check server, done in init_request */
-	default_name_id_format = lasso_provider_get_default_name_id_format(&profile->server->parent);
+	default_name_id_format = lasso_provider_get_metadata_one_for_role(&profile->server->parent,
+			LASSO_PROVIDER_ROLE_SP, "NameIDFormat");
 	if (default_name_id_format) {
 		/* steal the string */
 		lasso_assign_new_string(LASSO_SAMLP2_AUTHN_REQUEST(request)->NameIDPolicy->Format,
@@ -310,7 +311,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 			(authn_request->AssertionConsumerServiceURL != NULL)) &&
 			(authn_request->AssertionConsumerServiceIndex != -1))
 	{
-		rc = LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT;
+		rc = LASSO_PROFILE_ERROR_INVALID_REQUEST;
 		goto cleanup;
 	}
 
@@ -318,7 +319,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	protocol_binding = authn_request->ProtocolBinding;
 	if (protocol_binding == NULL && authn_request->AssertionConsumerServiceIndex) {
 		/* protocol binding not set; so it will look into
-		 * AssertionConsumingServiceIndex
+		 * AssertionConsumerServiceIndex
 		 * Also, if AssertionConsumerServiceIndex is not set in request,
 		 * its value will be -1, which is just the right value to get
 		 * default assertion consumer...  (convenient)
@@ -360,6 +361,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		} else if (g_strcmp0(protocol_binding,
 					LASSO_SAML2_METADATA_BINDING_REDIRECT) == 0) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT;
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 		} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 		} else {

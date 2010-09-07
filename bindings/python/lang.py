@@ -692,7 +692,7 @@ register_constants(PyObject *d)
             if c[0] == 'i':
                 print >> fd, '    obj = PyInt_FromLong(%s);' % c[1]
             elif c[0] == 's':
-                print >> fd, '    obj = PyString_FromString(%s);' % c[1]
+                print >> fd, '    obj = PyString_FromString((char*)%s);' % c[1]
             elif c[0] == 'b':
                 print >> fd, '''\
 #ifdef %s

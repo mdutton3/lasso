@@ -1,3 +1,262 @@
+2010-09-07  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* configure.ac, lasso/saml-2.0/profile.c:
+	[SAMLv2] when no artifact message is present, still return a success
+	status
+
+	It is mandated by the specification.
+
+2010-09-06  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* tests/integration/saml2/__init__.py:
+	[Tests integration] fix configuration variable name
+
+2010-09-03  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/id-ff/provider.c:
+	[Core] fix memory leak in lasso_endpoint_free
+
+2010-09-03  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/id-ff/provider.c, lasso/saml-2.0/provider.c:
+	[ID-FFv1.2&SAMLv2] add more warning for failure to load metadata file
+
+	Report detailf of the failure through warning log.
+
+2010-09-03  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/saml-2.0/profile.c, lasso/xml/strings.h:
+	[SAMLv2] when failing to recreate the content for the ArtefactResponse set a lasso specific status code
+
+2010-09-01  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/saml-2.0/profile.c:
+	[SAMLv2] change the way content is stored and loaded for the
+	HTTP-Artifact binding
+
+	Previously content was stored as the result of lasso_node_dump method
+	then reloaded, and then serialized again as part of the
+	ArtifactResponse message. lasso_node_dump was ignoring all hint to
+	sign node, but keeping the needed parameters around. That's not what
+	must be done, the signature should happen at the generation of the
+	artifact and the result must manipulated as is (i.e. XML content) and
+	never moved back to the land of LassoNode objects.
+
+	Now the content is:
+	- first removed of any signature at the message level, because the
+	  ArtifactResponse will take care of this, (any signature under this
+	  level (like at the assertion) is kept),
+	- serialized using lasso_node_export_to_xml,
+	- reloaded using lasso_xml_parse_memory,
+	- and put into the ArtifactResponse using a
+	  lasso_misc_text_node_new_with_xml_node.
+
+2010-09-01  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/saml-2.0/profile.c, lasso/saml-2.0/profileprivate.h:
+	[SAMLv2] make lasso_saml20_profile_generate_artifact a static function
+
+	It is only used in lasso/saml-2.0/profile.c anyway.
+
+2010-09-01  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/xml/xml.c:
+	[Core] load signature parameters
+
+	Generic signature parameters (attached as qdata to nodes) is now
+	reloaded when initializing a node from XML for a node type with a
+	signature snippet in its metadatas.
+
+	It fixes the problematic usage of ciphered private keys with the
+	HTTP-Artifact binding (which needs to keep a copy of the AuthnResponse
+	around and to sign it later).
+
+2010-09-01  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/xml/xml.c:
+	[Core] add private function to read an integer attribute
+
+	This function does integer parsing and range checks, it returns TRUE if
+	all goes well.
+
+2010-09-01  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/xml/tools.c, lasso/xml/xml.h:
+	[Core] add LAST enum values to LassoSignatureMethod and
+	LassoSignatureType enumerations
+
+	It helps making range checks.
+
+2010-09-01  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* bindings/java/lang.py, bindings/perl/lang.py,
+	bindings/php5/wrapper_source.py, bindings/python/lang.py,
+	lasso/xml/strings.h:
+	[Strings] add string constant for the internal XML attributes used in
+	dumps
+
+	Add string constants for signature method, signature type, private key
+	(file path or content), private key password and certificate (file
+	path or content).
+
+	Add cast for xmlChar constant strings definition in python bindings,
+	it assumed all constant strings were char*.
+
+2010-08-31  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso.doap:
+	[DOAP] fix typos
+
+	Tags were badly formatted.
+
+2010-08-25  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/saml-2.0/login.c:
+	[SAMLv2] mark Redirect binding as an invalid binding for return AuthnResponse
+
+	This is really not supported by the SAMLv2 protocol.
+
+2010-08-25  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/saml-2.0/login.c:
+	[SAMLv2] fix string in comment
+
+2010-08-25  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/saml-2.0/login.c:
+	[SAMLv2] replace use of lasso_provider_get_default_name_id_format with direct use of lasso_provider_get_metadata_one_for_role
+
+	The first is trying to use provider->role to know which kind of role
+	descriptor to lookup, but for the server object this field is 0 and
+	when building authn request we know that we want our default
+	NameIDFormat for the SP sso descriptor.
+
+2010-08-25  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/saml-2.0/provider.c:
+	[SAMLv2] rebuild specialized LassoProvider methods upon new endpoints storage
+
+	The new way of storing endpoints allows to keep ordering between
+	endpoints with respect to the order of the index and isDefault field
+	for indexed endpoint type, and to the XML node orders for other
+	endpoints.
+
+	It also simplifies the code.
+
+2010-08-25  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/id-ff/provider.c:
+	[Core] add destroy code for new private field endpoints
+
+	The contained string must be disallocated if the object is destroyed.
+
+2010-08-25  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/id-ff/providerprivate.h:
+	[Core] add structure to store endpoints type for metadata files
+
+	This new C structure will allow to filter ID-FFv1.2 and SAMLv2
+	endpoints more easily.
+
+2010-08-25  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/xml/xml.c:
+	[XML] use strtol instead of atoi to parse XSchema integers
+
+	This commit also reject negative integers from being parsed (all
+	integers in SAMLv2 and ID-FFv1.2 schemas are positive integers).
+
+2010-08-25  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/saml-2.0/login.c:
+	[SAMLv2] when AuthnRequest contains invalid attributes returns
+	INVALID_REQUEST not NO_DEFAULT_ENDPOINT
+
+	This is the right status to return.
+
+2010-08-05  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* lasso/id-ff/provider.h:
+	[Core] fix change of enumeration value
+
+	This change broke the API, revert it.
+
+2010-07-27  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* website/web/index.xml:
+	[Website] update download link on front page
+
+2010-07-27  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* website/templates/base.ezt:
+	[Website] fix typos
+
+2010-07-27  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* website/templates/base.ezt, website/web/download/index.xml:
+	[Website] fix source and download links
+
+	The source repository is now the git repository on dev.entrouvert.org.
+	Latest source release is 2.3.0. And git browser is included in our
+	redmine.
+
+2010-07-27  Benjamin Dauvergne <bdauvergne@lupin.entrouvert.com>
+
+	* website/templates/base.ezt:
+	[Website] change position of Download block in right bar
+
+2010-07-27  Benjamin Dauvergne <bdauvergne@lupin.entrouvert.com>
+
+	* website/convert-to-static.py:
+	[Website] in convert-to-static.py, work around errors in build logs
+
+	If Build() constructor fails, keep going.
+
+2010-07-27  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* website/web/news/15-release-2.3.0.xml:
+	[Website] fix wrong structure for the news file about release 2.3.0
+
+2010-07-27  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* website/convert-to-static.py:
+	[Website] import convert-to-static.py modification from lupin
+
+2010-07-27  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* website/web/news/15-release-2.3.0.xml:
+	[Website] add news file aboute release 2.3.0
+
+2010-07-22  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* website/web/download/index.xml:
+	[Website] fix non escaped ampersand
+
+2010-07-21  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* configure.ac:
+	[Release] update libtool version
+
+2010-07-21  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* website/web/download/index.xml:
+	[Website] update download links
+
+2010-07-21  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* NEWS, configure.ac, lasso.doap, website/web/doap.rdf:
+	[Release] Update version number from 2.3 to 2.3.0
+
+2010-07-21  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* NEWS:
+	[Release] update release date in NEWS file
+
+2010-07-21  Benjamin Dauvergne <bdauvergne@entrouvert.com>
+
+	* ChangeLog:
+	[Release] update ChangeLog
+
 2010-07-21 17:55  bdauvergne
 
 	* NEWS, abi/abi-2.3, configure.ac, lasso.doap, website/templates/base.ezt,

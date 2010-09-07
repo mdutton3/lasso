@@ -113,11 +113,16 @@ class Build:
 
         if self.changelog:
             self.changelog = self.changelog.replace('.xml', '')
-            dom_cl = xml.dom.minidom.parse(file('web' + self.changelog + '.xml'))
-            self.last_commit_author = getText(dom_cl.getElementsByTagName('author')[-1].childNodes)
-            self.nb_commits = len(dom_cl.getElementsByTagName('entry'))
-            if not self.nb_commits:
-                self.nb_commits = len(dom_cl.getElementsByTagName('logentry'))
+            try:
+                dom_cl = xml.dom.minidom.parse(file('web' + self.changelog + '.xml'))
+            except:
+                self.nb_commits = '?'
+                self.last_commit_author = '?'
+            else:
+                self.last_commit_author = getText(dom_cl.getElementsByTagName('author')[-1].childNodes)
+                self.nb_commits = len(dom_cl.getElementsByTagName('entry'))
+                if not self.nb_commits:
+                    self.nb_commits = len(dom_cl.getElementsByTagName('logentry'))
 
 
 
@@ -129,7 +134,6 @@ re_summary = re.compile('[a-z]+\.[0-9]{4}.xml')
 if not os.path.exists('web-static'):
     os.mkdir('web-static')
 
-
 for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
     if not os.path.exists('web/%s' % BUILDLOGS_DIR):
         continue
@@ -137,7 +141,7 @@ for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
         os.mkdir('web-static/%s' % BUILDLOGS_DIR)
 
     for base, dirs, files in os.walk('web/%s' % BUILDLOGS_DIR):
-        if base.endswith('/CVS') or base.endswith('/.svn'):
+        if base.endswith('/CVS') or base.endswith('/.svn') or base.endswith('/.git'):
             continue
         for dirname in dirs:
             src_file = os.path.join(base, dirname)
@@ -205,7 +209,7 @@ for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
     day_dirs = os.listdir('web/%s/' % BUILDLOGS_DIR)
     day_dirs.sort()
     day_dirs.reverse()
-    day_dirs = day_dirs[:20]
+    day_dirs = day_dirs[:60]
 
     main_page = []
 
@@ -217,12 +221,15 @@ for BUILDLOGS_DIR in ('build-logs', 'build-logs-wsf'):
 
     main_page.sort()
     main_page.reverse()
-    main_page = main_page[:20]
+    main_page = main_page[:50]
     builds = []
     for filename in main_page:
-        builds.append( Build(xml.dom.minidom.parse(filename)) )
-        if len(builds) > 1 and builds[-2].date[:8] == builds[-1].date[:8]:
-            builds[-1].display_date = ''
+        try:
+            builds.append( Build(xml.dom.minidom.parse(filename)) )
+            if len(builds) > 1 and builds[-2].date[:8] == builds[-1].date[:8]:
+                builds[-1].display_date = ''
+        except:
+            pass
 
     fd = StringIO()
     buildlog_template.generate(fd, {'build': builds})
@@ -254,6 +261,8 @@ for base, dirs, files in os.walk('web'):
         basename, ext = os.path.splitext(filename)
         src_file = os.path.join(base, filename)
         dst_file = 'web-static/' + src_file[4:]
+
+        if os.path.isdir(src_file): continue
 
         if os.path.exists(dst_file) and \
                 os.stat(dst_file)[stat.ST_MTIME] >= os.stat(src_file)[stat.ST_MTIME]:
