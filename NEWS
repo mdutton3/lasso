@@ -1,7 +1,13 @@
 NEWS
 ====
 
-2.3.1 - September 9th 2010
+2.3.2 - Septembre 7th 2010
+--------------------------
+
+ * Fix bug in increment of the libtool version info, increasing the SONAME
+   uselessly.
+
+2.3.1 - September 7th 2010
 --------------------------
 
 31 commits, 23 files changed, 523 insertions, 356 deletions
