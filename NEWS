@@ -1,8 +1,27 @@
 NEWS
 ====
 
+2.3.1 - September 9th 2010
+--------------------------
+
+31 commits, 23 files changed, 523 insertions, 356 deletions
+
+ * An ABI breakage was introduced in 2.3.0 with change of value for enumeration
+   values LASSO_PROVIDER_ROLE_SP and LASSO_PROVIDER_ROLE_IDP, it breaked code
+   compiled with previous version and dumps of server objects. This release fix
+   it.
+ * SAMLv2 handling of the artifact binding for the WebSSO profile is now
+   simpler, no more dumping of the response nodes and signing at the artifact
+   building time, the final response is signed when the artifact is generated
+   and when unserialized later it is only manipulated as XML for not breaking
+   the signature. It fixes usage of ciphered private keys with the
+   HTTP-Artifact binding.
+ * SAMLv2 internal storage of endpoints was modified to better keep the
+   ordering between endpoints, which is espacially important for
+   AssertionConsumerService endpoints and difficult to implement well.
+
 2.3.0 - July 21th 2010
---------------------
+----------------------
 
 391 commits, 332 files changed, 13919 insertions, 7137 deletions
 
