@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<div xmlns="http://www.w3.org/1999/xhtml">
+ <h3>2010-09-07: Released 2.3.1 &amp; 2.3.2</h3>
+
+ <p>
+  Lasso 2.3.1, then 2.3.2 (quick ABI fix), have been released.
+  <a href="/download/">Download 2.3.2 now</a>
+ </p>
+
+ <p class="changes">
+  <strong>What changed ?</strong>
+  Those releases are bugfix releases, they include a fix to an ABI breakage
+  introduced in 2.3.0, SAMLv2 handling of the artifact binding for the WebSSO
+  profile has been simplified, and the storage of SAMLv2 endpoints has been
+  updated to keep their ordering.
+ </p>
+
+</div>
