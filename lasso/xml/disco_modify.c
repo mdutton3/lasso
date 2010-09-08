@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "disco_modify.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:disco_modify

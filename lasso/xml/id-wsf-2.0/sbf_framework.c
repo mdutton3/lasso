@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "sbf_framework.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:sbf_framework

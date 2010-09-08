@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "disco_abstract.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:disco_abstract

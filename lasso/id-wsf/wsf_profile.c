@@ -35,6 +35,7 @@
 #include "../utils.h"
 
 #include "./wsf_profile.h"
+#include "../xml/idwsf_strings.h"
 #include "./wsf_profile_private.h"
 #include "./discovery.h"
 #include "./wsf_utils.h"

@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "dst_data_response_base.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:dst_data_response_base

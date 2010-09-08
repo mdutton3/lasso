@@ -83,6 +83,7 @@
 #include "../id-ff/providerprivate.h"
 
 #include "./discovery.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "./soap_binding.h"
 #include "./idwsf2_helper.h"
 #include "./saml2_login.h"
@@ -1033,7 +1034,7 @@ lasso_idwsf2_discovery_validate_md_register(LassoIdWsf2Discovery *discovery)
 
 	response = lasso_idwsf2_disco_svc_md_register_response_new();
 	response->Status =
-		lasso_idwsf2_util_status_new_with_code(LASSO_DISCO_STATUS_CODE_OK, NULL);
+		lasso_idwsf2_util_status_new_with_code(LASSO_IDWSF2_DISCOVERY_STATUS_CODE_OK, NULL);
 	for (SvcMDs = discovery->private_data->metadatas; SvcMDs != NULL; SvcMDs = g_list_next(SvcMDs)) {
 		lasso_list_add_string(response->SvcMDID,
 				LASSO_IDWSF2_DISCO_SVC_METADATA(SvcMDs->data)->svcMDID);

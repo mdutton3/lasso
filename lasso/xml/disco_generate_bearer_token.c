@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "disco_generate_bearer_token.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:disco_generate_bearer_token

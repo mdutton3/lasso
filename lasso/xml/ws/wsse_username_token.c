@@ -40,6 +40,7 @@
  */
 
 #include "./wsse_username_token.h"
+#include "../idwsf_strings.h"
 #include <xmlsec/xmltree.h>
 #include <openssl/sha.h>
 #include <glib.h>

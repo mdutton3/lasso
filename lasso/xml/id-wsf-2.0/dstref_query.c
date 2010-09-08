@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "dstref_query.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:dstref_query

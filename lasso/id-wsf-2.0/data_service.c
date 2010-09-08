@@ -35,6 +35,7 @@
 #include <libxml/xpathInternals.h>
 
 #include "./data_service.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
 
 #include "../xml/id-wsf-2.0/disco_service_type.h"
 #include "../xml/id-wsf-2.0/dstref_query.h"

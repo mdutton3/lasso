@@ -28,6 +28,7 @@
 #include <xmlsec/templates.h>
 
 #include "is_interaction_statement.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:is_interaction_statement

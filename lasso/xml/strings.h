@@ -42,7 +42,6 @@
 #ifndef __LASSO_STRINGS_H__
 #define __LASSO_STRINGS_H__
 
-#include "./idwsf_strings.h"
 #include "./saml-2.0/saml2_strings.h"
 
 /*****************************************************************************/
@@ -113,6 +112,26 @@
  * An artifact content is present but Lasso failed to rebuild the corresponding XML content.
  */
 #define LASSO_PRIVATE_STATUS_CODE_FAILED_TO_RESTORE_ARTIFACT "FailedToRestoreArtifact"
+
+/*
+ * WS-Security Utility
+ */
+
+/**
+ * LASSO_WSUTIL1_HREF:
+ *
+ * Namespace for FIXME
+ *
+ */
+#define LASSO_WSUTIL1_HREF \
+	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+/**
+ * LASSO_WSUTIL1_PREFIX:
+ *
+ * Preferred prefix for namespace of FIXME
+ *
+ */
+#define LASSO_WSUTIL1_PREFIX "wsutil"
 
 /*****************************************************************************/
 /* Lasso                                                                     */

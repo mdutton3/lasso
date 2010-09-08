@@ -50,6 +50,9 @@
 #include "../debug.h"
 #include "./soap-1.1/soap_envelope.h"
 #include "./soap-1.1/soap_body.h"
+#if LASSO_WSF_ENABLED
+#include "./idwsf_strings.h"
+#endif
 
 static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump);
@@ -1985,6 +1988,7 @@ prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 		prefix = "Samlp2";
 	else if (strcmp((char*)href, LASSO_SOAP_ENV_HREF) == 0)
 		prefix = "Soap";
+#ifdef LASSO_WSF_ENABLED
 	else if (strcmp((char*)href, LASSO_SOAP_BINDING_HREF) == 0)
 		prefix = "SoapBinding";
 	else if (strcmp((char*)href, LASSO_SOAP_BINDING_EXT_HREF) == 0)
@@ -2046,6 +2050,7 @@ prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 		prefix = "Utility";
 	else if (prefix != NULL && strcmp(prefix, "Sa") == 0 && strcmp((char*)nodename, "Status") == 0)
 		prefix = "Utility";
+#endif
 
 	return prefix;
 }

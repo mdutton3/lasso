@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "disco_remove_entry.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:disco_remove_entry

@@ -25,6 +25,7 @@
  */
 
 #include "id_ff_extensions.h"
+#include "../xml/idwsf_strings.h"
 #include "id_ff_extensions_private.h"
 #include "../xml/disco_description.h"
 #include "../xml/disco_resource_offering.h"

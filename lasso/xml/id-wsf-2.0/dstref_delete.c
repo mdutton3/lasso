@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "dstref_delete.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:dstref_delete

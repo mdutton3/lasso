@@ -38,6 +38,8 @@
 #include "../saml-2.0/profileprivate.h"
 
 #include "profile.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
+#include "../xml/idwsf_strings.h"
 #include "session.h"
 
 #include "../xml/soap-1.1/soap_fault.h"

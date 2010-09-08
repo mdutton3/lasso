@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "ps_add_to_collection_request.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:ps_add_to_collection_request

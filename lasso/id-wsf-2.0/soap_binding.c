@@ -23,6 +23,8 @@
  */
 
 #include "./soap_binding.h"
+#include "../xml/idwsf_strings.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "../xml/id-wsf-2.0/sb2_sender.h"
 #include "../xml/id-wsf-2.0/sb2_redirect_request.h"
 #include "../xml/id-wsf-2.0/sb2_user_interaction_header.h"

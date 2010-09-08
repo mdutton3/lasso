@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "disco_endpoint_context.h"
+#include "./idwsf2_strings.h"
 #include "sbf_framework.h"
 
 /**

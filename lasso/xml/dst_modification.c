@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "dst_modification.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:dst_modification

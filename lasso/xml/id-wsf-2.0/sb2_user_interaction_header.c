@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "sb2_user_interaction_header.h"
+#include "./idwsf2_strings.h"
 #include "../../registry.h"
 
 /**

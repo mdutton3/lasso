@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "ps_set_object_info_request.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:ps_set_object_info_request

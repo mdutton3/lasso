@@ -24,6 +24,7 @@
 
 #include "../xml/private.h"
 #include "./personal_profile_service.h"
+#include "../xml/idwsf_strings.h"
 #include "./data_service.h"
 #include "./wsf_profile_private.h"
 #include "./discovery.h"

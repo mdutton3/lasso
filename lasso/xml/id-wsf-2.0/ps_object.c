@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "ps_object.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:ps_object

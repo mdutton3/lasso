@@ -63,6 +63,7 @@
 
 #include "./discovery.h"
 #include "./data_service.h"
+#include "../xml/idwsf_strings.h"
 #include "../xml/dst_query.h"
 #include "../xml/dst_query_response.h"
 #include "../xml/dst_modify.h"

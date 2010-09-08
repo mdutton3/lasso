@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "wsu_timestamp.h"
+#include "../idwsf_strings.h"
 
 /*
  * Schema fragment (oasis-200401-wss-wssecurity-utility-1.0.xsd):

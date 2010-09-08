@@ -23,6 +23,7 @@
  */
 
 #include "./idwsf2_helper.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "../xml/id-wsf-2.0/disco_abstract.h"
 #include "../xml/id-wsf-2.0/disco_service_type.h"
 #include "../xml/id-wsf-2.0/disco_provider_id.h"

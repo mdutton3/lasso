@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "sa_parameter.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:sa_parameter

@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "sec_transited_provider_path.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:sec_transited_provider_path

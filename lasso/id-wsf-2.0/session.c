@@ -26,6 +26,7 @@
  * SECTION:idwsf2-session-extension
  */
 #include "session.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "../utils.h"
 #include "../id-ff/session.h"
 #include "../id-ff/sessionprivate.h"

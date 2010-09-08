@@ -49,6 +49,10 @@
 #include "../xml/soap-1.1/soap_fault.h"
 #include "../utils.h"
 #include "../debug.h"
+#ifdef LASSO_WSF_ENABLED
+#include "../xml/idwsf_strings.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
+#endif
 
 /*****************************************************************************/
 /* public functions                                                          */
@@ -201,6 +205,7 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		type = LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING;
 	} else if (strcmp(name, "AuthnRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_LECP;
+#ifdef LASSO_WSF_ENABLED
 	} else if (strcmp(name, "Query") == 0) {
 		if (strcmp((char*)ns->href, LASSO_DISCO_HREF) == 0) {
 			type = LASSO_REQUEST_TYPE_DISCO_QUERY;
@@ -223,6 +228,7 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		type = LASSO_REQUEST_TYPE_IDWSF2_DISCO_SVCMD_REGISTER;
 	} else if (strcmp(name, "SvcMDAssociationAdd") == 0) {
 		type = LASSO_REQUEST_TYPE_IDWSF2_DISCO_SVCMD_ASSOCIATION_ADD;
+#endif
 	} else {
 		message(G_LOG_LEVEL_WARNING, "Unknown node name : %s", name);
 	}

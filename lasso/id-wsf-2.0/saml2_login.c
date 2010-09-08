@@ -23,6 +23,7 @@
  */
 
 #include "./saml2_login.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "identity.h"
 #include "server.h"
 #include "session.h"

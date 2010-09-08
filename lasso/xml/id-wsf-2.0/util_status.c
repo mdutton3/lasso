@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "util_status.h"
+#include "./idwsf2_strings.h"
 #include "../../utils.h"
 
 /**
