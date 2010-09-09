@@ -159,38 +159,24 @@ gint
 lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_management,
 		char *request_msg)
 {
-	int rc1 = 0, rc2 = 0;
 	LassoProfile *profile = NULL;
 	LassoSamlp2ManageNameIDRequest *request = NULL;
+	int rc = 0;
 
 	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 	lasso_null_param(request_msg);
 
-	/* Parsing */
 	profile = LASSO_PROFILE(name_id_management);
 	request = (LassoSamlp2ManageNameIDRequest*)lasso_samlp2_manage_name_id_request_new();
-	rc1 = lasso_saml20_profile_process_any_request(profile,
+	lasso_check_good_rc(lasso_saml20_profile_process_any_request(profile,
 			(LassoNode*)request,
-			request_msg);
+			request_msg));
+	lasso_check_good_rc(lasso_saml20_profile_process_name_identifier_decryption(profile,
+			&request->NameID, &request->EncryptedID));
+	lasso_check_good_rc(lasso_saml20_profile_check_signature_status(profile));
 
-	if (! LASSO_IS_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)) {
-		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
-	}
-
-	/* NameID treatment */
-	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile,
-			&request->NameID, &request->EncryptedID);
-
-	lasso_release_gobject(request);
-	if (profile->signature_status) {
-		return profile->signature_status;
-	}
-	if (rc1)
-		return rc1;
-	if (rc2)
-		return rc2;
-
-	return 0;
+cleanup:
+	return rc;
 }
 
 

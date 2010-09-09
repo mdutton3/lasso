@@ -605,8 +605,9 @@ cleanup:
  * validation fails no error code will be returned, you must explicitely verify the
  * profile->signature_status code.
  *
- * Return value: 0 if parsing is successful (even if signature validation fails), and error code
- * otherwise.
+ * Return value: 0 if parsing is successful (even if signature validation fails), and otherwise,
+ * LASSO_PROFILE_ERROR_INVALID_MSG, LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE, *
+ * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND.
  */
 int
 lasso_saml20_profile_process_any_request(LassoProfile *profile,
@@ -704,13 +705,12 @@ lasso_saml20_profile_process_soap_request(LassoProfile *profile,
 			remote_provider, request_msg, "ID", LASSO_MESSAGE_FORMAT_SOAP);
 
 	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
 			rc = profile->signature_status;
 			break;
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
 			break;
-		default:
-			g_assert(0);
 	}
 
 cleanup:
@@ -1603,4 +1603,26 @@ lasso_saml20_profile_setup_encrypted_node(LassoProvider *provider,
 	lasso_assign_new_gobject(*node_destination, encrypted_node);
 	lasso_release_gobject(*node_to_encrypt);
 	return 0;
+}
+
+/**
+ * Check the profile->signature_status flag, if signature validation is activated, report it as an
+ * error, if not not return 0.
+ */
+int
+lasso_saml20_profile_check_signature_status(LassoProfile *profile) {
+	int rc = 0;
+
+	if (profile->signature_status) {
+		switch (lasso_profile_get_signature_verify_hint(profile)) {
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
+				rc = profile->signature_status;
+				break;
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+				break;
+		}
+	}
+
+	return rc;
 }

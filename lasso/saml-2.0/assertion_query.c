@@ -276,22 +276,14 @@ lasso_assertion_query_process_request_msg(LassoAssertionQuery *assertion_query,
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(assertion_query);
-	rc1 = lasso_saml20_profile_process_soap_request(profile, request_msg);
-
+	lasso_check_good_rc(lasso_saml20_profile_process_soap_request(profile, request_msg));
 	lasso_extract_node_or_fail(subject_query, profile->request, SAMLP2_SUBJECT_QUERY_ABSTRACT,
 			LASSO_PROFILE_ERROR_INVALID_MSG);
 	lasso_extract_node_or_fail(subject, subject_query->Subject, SAML2_SUBJECT,
 			LASSO_PROFILE_ERROR_MISSING_SUBJECT);
+	lasso_check_good_rc(lasso_saml20_profile_process_name_identifier_decryption(profile, &subject->NameID, &subject->EncryptedID));
 
-	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile, &subject->NameID, &subject->EncryptedID);
-
-	rc = rc1;
-	if (rc == 0)
-		rc = rc2;
-	if (rc == 0)
-		rc = profile->signature_status;
 cleanup:
-
 	return rc;
 }
 
@@ -390,10 +382,9 @@ lasso_assertion_query_process_response_msg(
 
 	lasso_bad_param(ASSERTION_QUERY, assertion_query);
 	profile = &assertion_query->parent;
-	response = (LassoSamlp2StatusResponse*)lasso_samlp2_response_new();
 
-	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile,
-				response, NULL, response_msg));
+	lasso_check_good_rc(lasso_saml20_profile_process_soap_response(profile,
+				response_msg));
 
 cleanup:
 	lasso_release_gobject(response);
