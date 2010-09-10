@@ -289,6 +289,7 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 {
 	LassoProfile *profile = NULL;
 	LassoSamlp2StatusResponse *response;
+	int rc = 0;
 
 	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 	profile = &name_id_management->parent;
@@ -296,13 +297,22 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 	/* no response set here means request denied */
 	if (! LASSO_IS_SAMLP2_STATUS_RESPONSE(profile->response)) {
 		response = (LassoSamlp2StatusResponse*)lasso_samlp2_manage_name_id_response_new();
-		lasso_saml20_profile_init_response(profile, response, LASSO_SAML2_STATUS_CODE_RESPONDER,
-				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
+		if (lasso_saml20_profile_check_signature_status(profile)) {
+			lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
+						LASSO_SAML2_STATUS_CODE_REQUESTER,
+						LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE));
+		} else {
+			lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
+						LASSO_SAML2_STATUS_CODE_RESPONDER,
+						LASSO_SAML2_STATUS_CODE_REQUEST_DENIED));
+		}
 		lasso_release_gobject(response);
 	}
 
 	/* use the same binding as for the request */
-	return lasso_saml20_profile_build_response_msg(profile, "ManageNameIDService", profile->http_request_method, NULL);
+	rc = lasso_saml20_profile_build_response_msg(profile, "ManageNameIDService", profile->http_request_method, NULL);
+cleanup:
+	return rc;
 }
 
 
@@ -334,7 +344,7 @@ lasso_name_id_management_process_response_msg(
 	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile, response, NULL, response_msg));
 
 	/* Stop here if signature validation failed. */
-	goto_cleanup_if_fail_with_rc(profile->signature_status == 0, profile->signature_status);
+	lasso_check_good_rc(lasso_saml20_profile_check_signature_status(profile));
 
 	if (LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->Terminate) {
 		lasso_identity_remove_federation(profile->identity, profile->remote_providerID);
