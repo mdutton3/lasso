@@ -175,13 +175,6 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
 				LASSO_SAML2_STATUS_CODE_SUCCESS, NULL));
 
-	/* verify signature status */
-	if (profile->signature_status != 0) {
-		lasso_saml20_profile_set_response_status_requester(profile,
-				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
-		return profile->signature_status;
-	}
-
 	/* Get the name identifier */
 	name_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID;
 	if (name_id == NULL) {
@@ -339,9 +332,16 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 	if (! LASSO_IS_SAMLP2_STATUS_RESPONSE(profile->response)) {
 		/* no response set here means request denied */
 		response = (LassoSamlp2StatusResponse*) lasso_samlp2_logout_response_new();
-		lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
-					LASSO_SAML2_STATUS_CODE_RESPONDER,
-					LASSO_SAML2_STATUS_CODE_REQUEST_DENIED));
+		/* verify signature status */
+		if (lasso_saml20_profile_check_signature_status(profile) != 0) {
+			lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
+						LASSO_SAML2_STATUS_CODE_REQUESTER,
+						LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE));
+		} else {
+			lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
+						LASSO_SAML2_STATUS_CODE_RESPONDER,
+						LASSO_SAML2_STATUS_CODE_REQUEST_DENIED));
+		}
 	}
 
 	/* build logout response message */
@@ -367,6 +367,13 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 	response = (LassoSamlp2StatusResponse*) lasso_samlp2_logout_response_new();
 	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile, response,
 				&response_method, response_msg));
+
+	/* only if asked we report, otherwise we do not care */
+	if (profile->signature_status && lasso_profile_get_signature_verify_hint(profile) ==
+			LASSO_PROFILE_SIGNATURE_HINT_FORCE)
+	{
+		goto_cleanup_with_rc(profile->signature_status);
+	}
 
 	remote_provider = lasso_server_get_provider(logout->parent.server,
 			logout->parent.remote_providerID);
