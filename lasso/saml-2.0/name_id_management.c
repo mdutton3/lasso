@@ -176,6 +176,7 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 	lasso_check_good_rc(lasso_saml20_profile_check_signature_status(profile));
 
 cleanup:
+	lasso_release_gobject(request);
 	return rc;
 }
 
@@ -526,7 +527,7 @@ lasso_name_id_management_new_from_dump(LassoServer *server, const char *dump)
  *
  * Dumps @name_id_management content to an XML string.
  *
- * Return value: the dump string.  It must be freed by the caller.
+ * Return value:(transfer full): the dump string.  It must be freed by the caller.
  **/
 gchar*
 lasso_name_id_management_dump(LassoNameIdManagement *name_id_management)
