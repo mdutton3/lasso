@@ -657,6 +657,7 @@ START_TEST(test04_sso_then_slo_soap)
 	check_null(spLogoutContext->parent.msg_relayState);
 	lasso_assign_string(logoutResponseSoapMessage, spLogoutContext->parent.msg_body);
 	lasso_release_gobject(spLogoutContext);
+	lasso_release_gobject(idpLogoutContext);
 
 	/* process the response */
 	check_not_null(idpLogoutContext = lasso_logout_new(idpContext));
