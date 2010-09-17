@@ -112,24 +112,28 @@ cleanup:
 
 static gboolean want_authn_request_signed(LassoProvider *provider) {
 	char *s;
+	gboolean rc = TRUE;
 
 	s = lasso_provider_get_metadata_one_for_role(provider, LASSO_PROVIDER_ROLE_IDP,
 			LASSO_SAML2_METADATA_ATTRIBUTE_WANT_AUTHN_REQUEST_SIGNED);
 	if (g_strcmp0(s, "false") == 0) {
-		return FALSE;
+		rc = FALSE;
 	}
-	return TRUE;
+	lasso_release_string(s);
+	return rc;
 }
 
 static gboolean authn_request_signed(LassoProvider *provider) {
 	char *s;
+	gboolean rc = FALSE;
 
 	s = lasso_provider_get_metadata_one_for_role(provider, LASSO_PROVIDER_ROLE_SP,
 			LASSO_SAML2_METADATA_ATTRIBUTE_AUTHN_REQUEST_SIGNED);
 	if (g_strcmp0(s, "true") == 0) {
-		return TRUE;
+		rc = TRUE;
 	}
-	return FALSE;
+	lasso_release_string(s);
+	return rc;
 }
 
 static gboolean
