@@ -283,7 +283,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 
 		/* AuthnRequest already set by .._init_idp_initiated_authn_request, or from a
 		 * previously failed call to process_authn_request that we retry. */
-		request = profile->request;
+		request = lasso_ref(profile->request);
 	} else {
 		request = lasso_samlp2_authn_request_new();
 		lasso_check_good_rc(lasso_saml20_profile_process_any_request(profile, request, authn_request_msg));
