@@ -2130,6 +2130,7 @@ next:
 	}
 
 cleanup:
+	lasso_release_key_manager(keys_mngr);
 	return result;
 }
 
