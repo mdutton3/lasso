@@ -470,6 +470,7 @@ lasso_node_export_to_soap(LassoNode *node)
 	lasso_list_add_gobject(body->any, node);
 	ret = lasso_node_export_to_xml((LassoNode*)envelope);
 	lasso_release_gobject(envelope);
+	lasso_release_gobject(body);
 	return ret;
 }
 
