@@ -790,6 +790,16 @@ free_list_strings(GList *list)
 }
 
 static void
+lasso_endpoint_free(EndpointType *endpoint_type) {
+	g_free(endpoint_type->binding);
+	g_free(endpoint_type->url);
+	g_free(endpoint_type->kind);
+	g_free(endpoint_type->return_url);
+	g_free(endpoint_type);
+}
+
+
+static void
 dispose(GObject *object)
 {
 	LassoProvider *provider = LASSO_PROVIDER(object);
@@ -859,15 +869,6 @@ finalize(GObject *object)
 /*****************************************************************************/
 /* instance and class init functions */
 /*****************************************************************************/
-
-void
-lasso_endpoint_free(EndpointType *endpoint_type) {
-	g_free(endpoint_type->binding);
-	g_free(endpoint_type->url);
-	g_free(endpoint_type->kind);
-	g_free(endpoint_type->return_url);
-	g_free(endpoint_type);
-}
 
 static void
 instance_init(LassoProvider *provider)
