@@ -165,13 +165,3 @@
    fun:g_hash_table_new
    fun:g_quark_from_static_string
 }
-{
-   suppression 134
-   Memcheck:Leak
-   fun:calloc
-   fun:g_slice_alloc
-   fun:g_string_sized_new
-   fun:g_log_default_handler
-   fun:g_logv
-   fun:g_log
-}
