@@ -387,6 +387,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	lasso_saml20_profile_init_response(profile, response,
 				status1, status2);
 cleanup:
+	lasso_release_gobject(request);
 	lasso_release_gobject(response);
 	return rc;
 }
