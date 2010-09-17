@@ -58,6 +58,7 @@ generateIdentityProviderContextDump()
 	ret = lasso_server_dump(serverContext);
 
 	g_object_unref(serverContext);
+	g_list_free(providers);
 
 	return ret;
 }
