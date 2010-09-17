@@ -840,6 +840,7 @@ dispose(GObject *object)
 	provider->private_data->affiliation_id = NULL;
 	lasso_release(provider->private_data->affiliation_owner_id);
 	provider->private_data->affiliation_owner_id = NULL;
+	lasso_release_list_of_full(provider->private_data->endpoints, lasso_endpoint_free);
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
 }
@@ -889,7 +890,6 @@ instance_init(LassoProvider *provider)
 	provider->private_data->encryption_public_key = NULL;
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
 	provider->private_data->encryption_sym_key_type = LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128;
-	lasso_release_list_of_full(provider->private_data->endpoints, lasso_endpoint_free);
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->Descriptors = g_hash_table_new_full(
