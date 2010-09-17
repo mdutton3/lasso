@@ -864,6 +864,9 @@ _lasso_node_free_custom_element(struct _CustomElement *custom_element)
 		lasso_release_string(custom_element->href);
 		lasso_release_string(custom_element->nodename);
 		lasso_release_ghashtable(custom_element->namespaces);
+		lasso_release_string(custom_element->private_key);
+		lasso_release_string(custom_element->private_key_password);
+		lasso_release_string(custom_element->certificate);
 	}
 	lasso_release(custom_element);
 }
