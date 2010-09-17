@@ -711,6 +711,9 @@ lasso_saml20_profile_process_soap_request(LassoProfile *profile,
 			break;
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
 			break;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST:
+			g_assert_not_reached();
+			break;
 	}
 
 cleanup:
@@ -1620,6 +1623,9 @@ lasso_saml20_profile_check_signature_status(LassoProfile *profile) {
 				rc = profile->signature_status;
 				break;
 			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+				break;
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST:
+				g_assert_not_reached();
 				break;
 		}
 	}
