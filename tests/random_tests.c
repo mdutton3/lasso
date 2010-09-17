@@ -125,6 +125,7 @@ START_TEST(test01_server_new)
 	fail_unless(provider->ca_cert_chain == NULL);
 	g_object_unref(server);
 	lasso_release_string(dump);
+	lasso_release_string(content);
 }
 END_TEST
 
