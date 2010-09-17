@@ -270,7 +270,7 @@ lasso_assertion_query_process_request_msg(LassoAssertionQuery *assertion_query,
 	LassoProfile *profile = NULL;
 	LassoSamlp2SubjectQueryAbstract *subject_query = NULL;
 	LassoSaml2Subject *subject = NULL;
-	int rc = 0, rc1 = 0, rc2 = 0;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_ASSERTION_QUERY(assertion_query),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
