@@ -376,8 +376,8 @@ lasso_assertion_query_process_response_msg(
 		LassoAssertionQuery *assertion_query,
 		gchar *response_msg)
 {
-	LassoProfile *profile;
-	LassoSamlp2StatusResponse *response;
+	LassoProfile *profile = NULL;
+	LassoSamlp2StatusResponse *response = NULL;
 	int rc = 0;
 
 	lasso_bad_param(ASSERTION_QUERY, assertion_query);
