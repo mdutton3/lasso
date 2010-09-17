@@ -1973,9 +1973,11 @@ lasso_node_new_from_soap(const char *soap)
  *
  */
 static const char *
-prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
+prefix_from_href_and_nodename(const xmlChar *href, G_GNUC_UNUSED const xmlChar *nodename) {
 	char *prefix = NULL;
-	char *tmp = NULL;
+#ifdef LASSO_WSF_ENABLED
+	char *tmp = NULL
+#endif
 
 	if (strcmp((char*)href, LASSO_LASSO_HREF) == 0)
 		prefix = "";
