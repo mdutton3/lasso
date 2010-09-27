@@ -703,7 +703,7 @@ lasso_server_new_from_dump(const gchar *dump)
  *
  * Dumps @server content to an XML string.
  *
- * Return value: the dump string.  It must be freed by the caller.
+ * Return value:(transfer full): the dump string.  It must be freed by the caller.
  **/
 gchar*
 lasso_server_dump(LassoServer *server)

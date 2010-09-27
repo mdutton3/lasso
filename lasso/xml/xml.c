@@ -161,7 +161,7 @@ _lasso_node_export_to_xml(LassoNode *node, gboolean format, gboolean dump, int l
  *
  * Dumps @node.  All datas in object are dumped in an XML format.
  *
- * Return value: a full XML dump of @node.  The string must be freed by the
+ * Return value:(transfer full): a full XML dump of @node.  The string must be freed by the
  *     caller.
  **/
 char*
@@ -178,7 +178,7 @@ lasso_node_dump(LassoNode *node)
  * Create a debug dump for @node, it is pretty printed so any contained signature will be
  * uncheckable.
  *
- * Return value: a full indented and so human readable dump of @node. The string must be freed by
+ * Return value:(transfer full): a full indented and so human readable dump of @node. The string must be freed by
  * the caller.
  */
 char*
