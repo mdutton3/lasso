@@ -35,6 +35,7 @@ extern Suite* login_saml2_suite();
 extern Suite* random_suite();
 extern Suite* metadata_suite();
 extern Suite* assertion_query_suite();
+extern Suite* non_regression_suite();
 #ifdef LASSO_WSF_ENABLED
 extern Suite* idwsf2_suite();
 #endif
@@ -48,6 +49,7 @@ SuiteFunction suites[] = {
 	random_suite,
 	metadata_suite,
 	assertion_query_suite,
+	non_regression_suite,
 #ifdef LASSO_WSF_ENABLED
 	idwsf2_suite,
 #endif

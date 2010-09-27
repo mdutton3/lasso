@@ -550,7 +550,7 @@ lasso_saml20_provider_check_assertion_consumer_service_url(LassoProvider *provid
 {
 	GList *t = NULL;
 
-	lasso_foreach (provider->private_data->endpoints, t) {
+	lasso_foreach (t, provider->private_data->endpoints) {
 		EndpointType *endpoint_type = (EndpointType*) t->data;
 		if (endpoint_type && endpoint_type->role == LASSO_PROVIDER_ROLE_SP
 				&& g_strcmp0(endpoint_type->url, url) == 0

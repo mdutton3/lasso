@@ -20,7 +20,7 @@ INCLUDES = \
 	$(CHECK_CFLAGS)
 
 
-tests_SOURCES = tests.c login_tests.c basic_tests.c random_tests.c metadata_tests.c login_tests_saml2.c assertion_query_saml2.c $(WSF_TESTS)
+tests_SOURCES = tests.c login_tests.c basic_tests.c non_regression_tests.c random_tests.c metadata_tests.c login_tests_saml2.c assertion_query_saml2.c $(WSF_TESTS)
 
 tests_LDADD = \
 	$(top_builddir)/lasso/liblasso.la \
