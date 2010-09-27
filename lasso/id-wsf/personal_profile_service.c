@@ -46,7 +46,7 @@ lasso_personal_profile_service_get_email(LassoPersonalProfileService *service)
 	xmlNode *xmlnode, *child;
 	xmlChar *msgAccount = NULL, *msgProvider = NULL;
 	char *email;
-	GList *answers = NULL;
+	GList *answers = NULL, *answer = NULL;
 	gint rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(service) == TRUE, NULL);
@@ -54,9 +54,9 @@ lasso_personal_profile_service_get_email(LassoPersonalProfileService *service)
 	rc = lasso_data_service_get_answers_by_select(LASSO_DATA_SERVICE(service),
 			"/pp:PP/pp:MsgContact", &answers);
 
-	lasso_foreach(answers, answers)
+	lasso_foreach(answer, answers)
 	{
-		xmlnode = (xmlNode*)answers->data;
+		xmlnode = (xmlNode*)answer->data;
 		child = xmlnode->children;
 		while (child != NULL) {
 			if (child->type != XML_ELEMENT_NODE) {

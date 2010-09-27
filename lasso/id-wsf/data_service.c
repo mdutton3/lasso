@@ -1040,6 +1040,7 @@ lasso_data_service_apply_queries(LassoDataService *service, LassoDstQueryRespons
 	LassoWsfProfile *wsf_profile = NULL;
 	xmlDoc *doc = NULL;
 	xmlXPathContext *xpathCtx = NULL;
+	GList *query = NULL;
 
 	lasso_bad_param(DATA_SERVICE, service);
 	g_return_val_if_fail(service->private_data, LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT);
@@ -1067,8 +1068,8 @@ lasso_data_service_apply_queries(LassoDataService *service, LassoDstQueryRespons
 	xpathCtx = xmlXPathNewContext(doc);
 	lasso_register_idwsf_xpath_namespaces(xpathCtx);
 
-	lasso_foreach (queries, queries) {
-		LassoDstQueryItem *item = queries->data;
+	lasso_foreach (query, queries) {
+		LassoDstQueryItem *item = query->data;
 
 		goto_cleanup_if_fail_with_rc(lasso_data_service_apply_query(service, query_response,
 					xpathCtx, item) == 0, query_response->Data ?
