@@ -205,6 +205,8 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		type = LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING;
 	} else if (strcmp(name, "AuthnRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_LECP;
+	} else if (strcmp(name, "ManageNameIDRequest") == 0) {
+		type = LASSO_REQUEST_TYPE_NAME_ID_MANAGEMENT;
 #ifdef LASSO_WSF_ENABLED
 	} else if (strcmp(name, "Query") == 0) {
 		if (strcmp((char*)ns->href, LASSO_DISCO_HREF) == 0) {
@@ -222,8 +224,6 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		}
 	} else if (strcmp(name, "SASLRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_SASL_REQUEST;
-	} else if (strcmp(name, "ManageNameIDRequest") == 0) {
-		type = LASSO_REQUEST_TYPE_NAME_ID_MANAGEMENT;
 	} else if (strcmp(name, "SvcMDRegister") == 0) {
 		type = LASSO_REQUEST_TYPE_IDWSF2_DISCO_SVCMD_REGISTER;
 	} else if (strcmp(name, "SvcMDAssociationAdd") == 0) {
