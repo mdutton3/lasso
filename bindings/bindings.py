@@ -549,8 +549,8 @@ def parse_header(header_file):
 
 def parse_headers(srcdir):
     wsf_prefixes = ['disco_', 'dst_', 'is_', 'profile_service_', 'discovery_',
-            'wsf_', 'interaction_', 'utility_', 'sa_', 'soap_', 'authentication_',
-            'wsse_', 'sec_', 'idwsf2_', 'wsf2_', 'wsa_', 'wsu']
+            'wsf_', 'interaction_', 'utility_', 'sa_', 'authentication_',
+            'wsse_', 'sec_', 'idwsf2_', 'wsf2_', 'wsa_', 'wsu', 'soap_binding_']
 
     srcdir = os.path.abspath(srcdir)
     parentdir = os.path.dirname(srcdir)
