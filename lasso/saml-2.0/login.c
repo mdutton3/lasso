@@ -781,7 +781,10 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 		name_id_policy = authn_request->NameIDPolicy;
 	}
 	/* TRANSIENT */
-	if (!name_id_policy || g_strcmp0(name_id_policy->Format,
+	if (!name_id_policy || name_id_policy->Format == NULL ||
+			g_strcmp0(name_id_policy->Format,
+				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_UNSPECIFIED) ||
+			g_strcmp0(name_id_policy->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
 		char *id = lasso_build_unique_id(32);
 
