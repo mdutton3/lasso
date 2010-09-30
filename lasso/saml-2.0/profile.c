@@ -1248,6 +1248,11 @@ lasso_saml20_profile_build_response_msg(LassoProfile *profile, char *service,
 		}
 	}
 
+	if (url) {
+		lasso_assign_string(((LassoSamlp2StatusResponse*)profile->response)->Destination,
+				url);
+	}
+
 	switch (method) {
 		case LASSO_HTTP_METHOD_POST:
 			rc = lasso_saml20_profile_build_post_response_msg(profile, url);
