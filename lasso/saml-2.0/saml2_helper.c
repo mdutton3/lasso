@@ -87,7 +87,7 @@ lasso_saml2_assertion_is_audience_restricted(LassoSaml2Assertion *saml2_assertio
 		if (LASSO_IS_SAML2_AUDIENCE_RESTRICTION(it->data)) {
 			LassoSaml2AudienceRestriction *saml2_audience_restriction;
 			saml2_audience_restriction = (LassoSaml2AudienceRestriction*)it->data;
-			if (g_strcmp0(saml2_audience_restriction->Audience, providerID) == 0)
+			if (lasso_strisequal(saml2_audience_restriction->Audience,providerID))
 				return TRUE;
 		}
 	}
@@ -564,7 +564,7 @@ lasso_saml2_assertion_allows_proxying_to(LassoSaml2Assertion *saml2_assertion, c
 		return LASSO_SAML2_ASSERTION_VALID;
 
 	/* FIXME: Change saml2:ProxyRestriction class */
-	if (g_strcmp0(proxy_restriction->Audience, audience) != 0) {
+	if (lasso_strisnotequal(proxy_restriction->Audience,audience)) {
 		return LASSO_SAML2_ASSERTION_INVALID;
 	}
 
@@ -597,7 +597,7 @@ lasso_saml2_assertion_validate_audience(LassoSaml2Assertion *saml2_assertion,
 	lasso_foreach_full_begin (LassoSaml2AudienceRestriction*, saml2_audience_restriction, it,
 			saml2_conditions->AudienceRestriction)
 		did_audience = TRUE;
-		if (g_strcmp0(saml2_audience_restriction->Audience, audience) == 0) {
+		if (lasso_strisequal(saml2_audience_restriction->Audience,audience)) {
 			found_audience = TRUE;
 		}
 	lasso_foreach_full_end()
@@ -654,10 +654,11 @@ lasso_saml2_assertion_get_issuer_provider(const LassoSaml2Assertion *saml2_asser
 	g_return_val_if_fail (LASSO_IS_SAML2_ASSERTION (saml2_assertion), NULL);
 	issuer = saml2_assertion->Issuer;
 	g_return_val_if_fail (LASSO_IS_SAML2_NAME_ID (issuer), NULL);
-	g_return_val_if_fail (issuer->Format == NULL || g_strcmp0(issuer->Format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY) == 0, NULL);
+	g_return_val_if_fail (issuer->Format == NULL ||
+			lasso_strisequal(issuer->Format,LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY),
+			NULL);
 	g_return_val_if_fail (LASSO_IS_SERVER(server), NULL);
-	if (g_strcmp0(server->parent.ProviderID, issuer->content) == 0) {
+	if (lasso_strisequal(server->parent.ProviderID,issuer->content)) {
 		return (LassoProvider*)&server->parent;
 	}
 	return lasso_server_get_provider (server, issuer->content);

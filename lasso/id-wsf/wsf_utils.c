@@ -44,6 +44,7 @@
 #include <string.h>
 
 #include "../xml/strings.h"
+#include "../xml/idwsf_strings.h"
 
 /**
  * lasso_security_mech_id_is_null_authentication:

@@ -84,7 +84,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 			if (encrypted_element != NULL) {
 				lasso_list_add_new_gobject(response->EncryptedAssertion, encrypted_element);
 			} else {
-				lasso_list_add_new_gobject(response->Assertion, assertions->data);
+				lasso_list_add_gobject(response->Assertion, assertions->data);
 			}
 		}
 	}
@@ -93,7 +93,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 
 	if (lasso_dump == FALSE) {
 		lasso_release_list_of_gobjects(response->EncryptedAssertion);
-		lasso_assign_list(response->Assertion, Assertion_save);
+		lasso_assign_new_list_of_gobjects(response->Assertion, Assertion_save);
 	}
 
 	return result;

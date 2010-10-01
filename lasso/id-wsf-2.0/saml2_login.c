@@ -23,6 +23,7 @@
  */
 
 #include "./saml2_login.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "identity.h"
 #include "server.h"
 #include "session.h"
@@ -240,7 +241,7 @@ lasso_saml2_assertion_idwsf2_get_discovery_bootstrap_epr(LassoSaml2Assertion *as
 				continue;
 
 			attribute = LASSO_SAML2_ATTRIBUTE(j->data);
-			if (g_strcmp0(attribute->Name, LASSO_SAML2_ATTRIBUTE_NAME_EPR) != 0)
+			if (lasso_strisnotequal(attribute->Name,LASSO_SAML2_ATTRIBUTE_NAME_EPR))
 				continue;
 			/* There should only one attribute value, and the EPR should be the first
 			 * contained node */

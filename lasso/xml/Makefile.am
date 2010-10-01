@@ -76,6 +76,7 @@ WSF_C_FILES = \
 	utility_status.c
 
 WSF_H_FILES = \
+	idwsf_strings.h \
 	disco_authenticate_requester.h \
 	disco_authenticate_session_context.h \
 	disco_authorize_requester.h \
@@ -193,7 +194,6 @@ liblasso_xml_la_SOURCES = \
 
 liblassoinclude_HEADERS = \
 	strings.h \
-	idwsf_strings.h \
 	xml.h \
 	ds_key_info.h \
 	ds_key_value.h \

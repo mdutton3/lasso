@@ -75,6 +75,7 @@
 #include "../xml/saml_attribute_value.h"
 #include "../xml/disco_modify.h"
 #include "../xml/saml_assertion.h"
+#include "../xml/idwsf_strings.h"
 
 #include "../id-ff/server.h"
 #include "../id-ff/provider.h"
@@ -85,6 +86,7 @@
 #include "./wsf_profile_private.h"
 #include "./wsf_utils.h"
 #include "../utils.h"
+#include "./discovery.h"
 
 struct _LassoDiscoveryPrivate
 {

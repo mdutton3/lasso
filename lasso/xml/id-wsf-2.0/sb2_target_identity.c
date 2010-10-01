@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "sb2_target_identity.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:sb2_target_identity

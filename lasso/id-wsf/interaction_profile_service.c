@@ -23,6 +23,7 @@
  */
 
 #include "./interaction_profile_service.h"
+#include "../xml/idwsf_strings.h"
 #include "./wsf_profile.h"
 #include "../xml/soap-1.1/soap_detail.h"
 #include "../xml/soap-1.1/soap_fault.h"

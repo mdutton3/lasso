@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "subs_notify_response.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:subs_notify_response

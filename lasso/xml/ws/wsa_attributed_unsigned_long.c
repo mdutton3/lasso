@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "wsa_attributed_unsigned_long.h"
+#include "../idwsf_strings.h"
 
 /*
  * Schema fragment (ws-addr.xsd):

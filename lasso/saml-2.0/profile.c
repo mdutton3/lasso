@@ -605,8 +605,9 @@ cleanup:
  * validation fails no error code will be returned, you must explicitely verify the
  * profile->signature_status code.
  *
- * Return value: 0 if parsing is successful (even if signature validation fails), and error code
- * otherwise.
+ * Return value: 0 if parsing is successful (even if signature validation fails), and otherwise,
+ * LASSO_PROFILE_ERROR_INVALID_MSG, LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE, *
+ * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND.
  */
 int
 lasso_saml20_profile_process_any_request(LassoProfile *profile,
@@ -704,13 +705,15 @@ lasso_saml20_profile_process_soap_request(LassoProfile *profile,
 			remote_provider, request_msg, "ID", LASSO_MESSAGE_FORMAT_SOAP);
 
 	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
 			rc = profile->signature_status;
 			break;
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
 			break;
-		default:
-			g_assert(0);
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST:
+			g_assert_not_reached();
+			break;
 	}
 
 cleanup:
@@ -1245,6 +1248,11 @@ lasso_saml20_profile_build_response_msg(LassoProfile *profile, char *service,
 		}
 	}
 
+	if (url) {
+		lasso_assign_string(((LassoSamlp2StatusResponse*)profile->response)->Destination,
+				url);
+	}
+
 	switch (method) {
 		case LASSO_HTTP_METHOD_POST:
 			rc = lasso_saml20_profile_build_post_response_msg(profile, url);
@@ -1276,7 +1284,9 @@ _lasso_saml20_is_valid_issuer(LassoSaml2NameID *name_id) {
 	if (! LASSO_IS_SAML2_NAME_ID(name_id))
 		return FALSE;
 
-	if (name_id->Format && g_strcmp0(name_id->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY) != 0) {
+	if (name_id->Format &&
+			lasso_strisnotequal(name_id->Format,LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY))
+	{
 		return FALSE;
 	}
 	return TRUE;
@@ -1377,8 +1387,7 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 			LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
 	lasso_extract_node_or_fail(status_code1, status->StatusCode, SAMLP2_STATUS_CODE,
 			LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
-	if (g_strcmp0(status_code1->Value,
-				LASSO_SAML2_STATUS_CODE_SUCCESS) != 0)
+	if (lasso_strisnotequal(status_code1->Value,LASSO_SAML2_STATUS_CODE_SUCCESS))
 	{
 		LassoSamlp2StatusCode *status_code2 = status_code1->StatusCode;
 		rc = LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
@@ -1603,4 +1612,29 @@ lasso_saml20_profile_setup_encrypted_node(LassoProvider *provider,
 	lasso_assign_new_gobject(*node_destination, encrypted_node);
 	lasso_release_gobject(*node_to_encrypt);
 	return 0;
+}
+
+/**
+ * Check the profile->signature_status flag, if signature validation is activated, report it as an
+ * error, if not not return 0.
+ */
+int
+lasso_saml20_profile_check_signature_status(LassoProfile *profile) {
+	int rc = 0;
+
+	if (profile->signature_status) {
+		switch (lasso_profile_get_signature_verify_hint(profile)) {
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
+				rc = profile->signature_status;
+				break;
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+				break;
+			case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST:
+				g_assert_not_reached();
+				break;
+		}
+	}
+
+	return rc;
 }

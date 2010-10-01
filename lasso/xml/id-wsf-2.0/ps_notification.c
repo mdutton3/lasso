@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "ps_notification.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:ps_notification

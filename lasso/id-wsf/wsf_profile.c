@@ -35,6 +35,7 @@
 #include "../utils.h"
 
 #include "./wsf_profile.h"
+#include "../xml/idwsf_strings.h"
 #include "./wsf_profile_private.h"
 #include "./discovery.h"
 #include "./wsf_utils.h"
@@ -989,12 +990,14 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 			LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION);
 
 	/* Check message ID */
-	goto_cleanup_if_fail_with_rc(
-			g_strcmp0(lasso_wsf_profile_utils_get_message_id(
-					profile->soap_envelope_request),
-				lasso_wsf_profile_utils_get_ref_message_id(
-					profile->soap_envelope_response)) == 0,
-			LASSO_WSF_PROFILE_ERROR_INVALID_OR_MISSING_REFERENCE_TO_MESSAGE_ID);
+	{
+		const char *message_id =
+			lasso_wsf_profile_utils_get_message_id(profile->soap_envelope_request);
+		const char *ref_message_id =
+			lasso_wsf_profile_utils_get_ref_message_id(profile->soap_envelope_response);
+		goto_cleanup_if_fail_with_rc(lasso_strisequal(message_id, ref_message_id),
+				LASSO_WSF_PROFILE_ERROR_INVALID_OR_MISSING_REFERENCE_TO_MESSAGE_ID);
+	}
 
 	/* Signal soap fault specifically,
 	 * find soap redirects. */

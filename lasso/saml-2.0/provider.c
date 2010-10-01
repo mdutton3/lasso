@@ -186,10 +186,10 @@ compare_endpoint_type(const EndpointType *a, const EndpointType *b) {
 		return -1;
 	if (a->role > b->role)
 		return +1;
-	c = g_strcmp0(a->kind, b->kind);
+	c = g_strcmp0(a->kind,b->kind);
 	if (c != 0)
 		return c;
-	c = g_strcmp0(a->binding, b->binding);
+	c = g_strcmp0(a->binding,b->binding);
 	if (c != 0)
 		return c;
 	if (a->is_default && ! b->is_default)
@@ -347,7 +347,7 @@ load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole rol
 			break;
 		token = strtok_r(NULL, " ", &saveptr);
 	}
-	if (g_strcmp0(token, LASSO_SAML2_PROTOCOL_HREF) != 0) {
+	if (lasso_strisnotequal(token,LASSO_SAML2_PROTOCOL_HREF)) {
 		lasso_release_xml_string(value);
 		return FALSE;
 	}
@@ -507,7 +507,7 @@ lasso_saml20_provider_get_first_http_method(G_GNUC_UNUSED LassoProvider *provide
 
 	lasso_foreach(t, remote_provider->private_data->endpoints) {
 		EndpointType *endpoint_type = (EndpointType*)t->data;
-		if (endpoint_type && g_strcmp0(endpoint_type->kind, kind) == 0) {
+		if (endpoint_type && lasso_strisequal(endpoint_type->kind, kind)) {
 			result = binding_uri_to_http_method(endpoint_type->binding);
 			if (result) break;
 		}
@@ -535,7 +535,7 @@ lasso_saml20_provider_accept_http_method(G_GNUC_UNUSED LassoProvider *provider, 
 	lasso_foreach(t, remote_provider->private_data->endpoints) {
 		EndpointType *endpoint_type = (EndpointType*)t->data;
 		if (endpoint_type && endpoint_type->role == remote_provider->role &&
-				g_strcmp0(endpoint_type->kind, kind) == 0) {
+				lasso_strisequal(endpoint_type->kind, kind)) {
 			if (binding_uri_to_http_method(endpoint_type->binding) == http_method) {
 				return TRUE;
 			}
@@ -550,11 +550,11 @@ lasso_saml20_provider_check_assertion_consumer_service_url(LassoProvider *provid
 {
 	GList *t = NULL;
 
-	lasso_foreach (provider->private_data->endpoints, t) {
+	lasso_foreach (t, provider->private_data->endpoints) {
 		EndpointType *endpoint_type = (EndpointType*) t->data;
 		if (endpoint_type && endpoint_type->role == LASSO_PROVIDER_ROLE_SP
-				&& g_strcmp0(endpoint_type->url, url) == 0
-				&& g_strcmp0(endpoint_type->binding, binding) == 0)
+				&& lasso_strisequal(endpoint_type->url,url)
+				&& lasso_strisequal(endpoint_type->binding,binding))
 		{
 			return TRUE;
 		}
@@ -569,7 +569,7 @@ static gboolean match_any(const char *key, const char *array[]) {
 	const char **t = array;
 
 	while (*t) {
-		if (g_strcmp0(key, *t) == 0) {
+		if (lasso_strisequal(key,*t)) {
 			return TRUE;
 		}
 		t++;
@@ -590,7 +590,7 @@ lasso_saml20_provider_get_assertion_consumer_service(LassoProvider *provider, in
 			if (! endpoint_type)
 				continue;
 			if (endpoint_type->role == LASSO_PROVIDER_ROLE_SP &&
-					g_strcmp0(endpoint_type->kind, kind) == 0 &&
+					lasso_strisequal(endpoint_type->kind,kind) &&
 					endpoint_type->index == service_id)
 			{
 				result = endpoint_type;
@@ -603,7 +603,7 @@ lasso_saml20_provider_get_assertion_consumer_service(LassoProvider *provider, in
 			if (! endpoint_type)
 				continue;
 			if (endpoint_type->role == LASSO_PROVIDER_ROLE_SP &&
-					g_strcmp0(endpoint_type->kind, kind) == 0 &&
+					lasso_strisequal(endpoint_type->kind,kind) &&
 					match_any(endpoint_type->binding,
 						supported_assertion_consumer_bindings))
 			{
@@ -651,8 +651,8 @@ lasso_saml20_provider_get_assertion_consumer_service_binding_by_url(LassoProvide
 		if (! endpoint_type)
 			continue;
 		if (endpoint_type->role == LASSO_PROVIDER_ROLE_SP &&
-				g_strcmp0(endpoint_type->kind, kind) == 0 &&
-				g_strcmp0(endpoint_type->url, url) == 0)
+				lasso_strisequal(endpoint_type->kind,kind) &&
+				lasso_strisequal(endpoint_type->url,url))
 		{
 			return endpoint_type->binding;
 		}
@@ -672,8 +672,8 @@ lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvide
 		if (! endpoint_type)
 			continue;
 		if (endpoint_type->role == LASSO_PROVIDER_ROLE_SP &&
-				g_strcmp0(endpoint_type->kind, kind) == 0 &&
-				g_strcmp0(endpoint_type->binding, binding) == 0)
+				lasso_strisequal(endpoint_type->kind,kind) &&
+				lasso_strisequal(endpoint_type->binding,binding))
 		{
 			return endpoint_type->url;
 		}

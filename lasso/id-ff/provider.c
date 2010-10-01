@@ -632,7 +632,7 @@ _lasso_provider_load_key_descriptor(LassoProvider *provider, xmlNode *key_descri
 
 	private_data = provider->private_data;
 	use = xmlGetProp(key_descriptor, (xmlChar*)"use");
-	if (use == NULL || g_strcmp0((char*)use, "signing") == 0) {
+	if (use == NULL || lasso_strisequal((char *)use,"signing")) {
 		lasso_assign_xml_node(private_data->signing_key_descriptor, key_descriptor);
 	}
 	if (use == NULL || strcmp((char*)use, "encryption") == 0) {
@@ -790,6 +790,16 @@ free_list_strings(GList *list)
 }
 
 static void
+lasso_endpoint_free(EndpointType *endpoint_type) {
+	g_free(endpoint_type->binding);
+	g_free(endpoint_type->url);
+	g_free(endpoint_type->kind);
+	g_free(endpoint_type->return_url);
+	g_free(endpoint_type);
+}
+
+
+static void
 dispose(GObject *object)
 {
 	LassoProvider *provider = LASSO_PROVIDER(object);
@@ -840,6 +850,7 @@ dispose(GObject *object)
 	provider->private_data->affiliation_id = NULL;
 	lasso_release(provider->private_data->affiliation_owner_id);
 	provider->private_data->affiliation_owner_id = NULL;
+	lasso_release_list_of_full(provider->private_data->endpoints, lasso_endpoint_free);
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
 }
@@ -858,15 +869,6 @@ finalize(GObject *object)
 /*****************************************************************************/
 /* instance and class init functions */
 /*****************************************************************************/
-
-void
-lasso_endpoint_free(EndpointType *endpoint_type) {
-	g_free(endpoint_type->binding);
-	g_free(endpoint_type->url);
-	g_free(endpoint_type->kind);
-	g_free(endpoint_type->return_url);
-	g_free(endpoint_type);
-}
 
 static void
 instance_init(LassoProvider *provider)
@@ -889,7 +891,6 @@ instance_init(LassoProvider *provider)
 	provider->private_data->encryption_public_key = NULL;
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
 	provider->private_data->encryption_sym_key_type = LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128;
-	lasso_release_list_of_full(provider->private_data->endpoints, lasso_endpoint_free);
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->Descriptors = g_hash_table_new_full(

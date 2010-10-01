@@ -23,6 +23,7 @@
  */
 
 #include "server.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "../id-ff/server.h"
 #include "../id-ff/serverprivate.h"
 #include "../xml/id-wsf-2.0/disco_svc_metadata.h"

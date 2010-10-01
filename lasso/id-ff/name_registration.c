@@ -770,7 +770,7 @@ lasso_name_registration_new_from_dump(LassoServer *server, const char *dump)
  *
  * Dumps @name_registration content to an XML string.
  *
- * Return value: the dump string.  It must be freed by the caller.
+ * Return value:(transfer full): the dump string.  It must be freed by the caller.
  **/
 gchar *
 lasso_name_registration_dump(LassoNameRegistration *name_registration)

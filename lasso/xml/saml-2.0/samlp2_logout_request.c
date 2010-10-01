@@ -127,6 +127,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 #endif
 	}
 	((LassoSamlp2LogoutRequest*)node)->SessionIndex = keep_session_index;
+	lasso_release_list_of_strings(other_session_index);
 
 	return xmlnode;
 }

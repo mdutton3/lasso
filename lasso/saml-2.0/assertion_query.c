@@ -270,28 +270,20 @@ lasso_assertion_query_process_request_msg(LassoAssertionQuery *assertion_query,
 	LassoProfile *profile = NULL;
 	LassoSamlp2SubjectQueryAbstract *subject_query = NULL;
 	LassoSaml2Subject *subject = NULL;
-	int rc = 0, rc1 = 0, rc2 = 0;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_ASSERTION_QUERY(assertion_query),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(assertion_query);
-	rc1 = lasso_saml20_profile_process_soap_request(profile, request_msg);
-
+	lasso_check_good_rc(lasso_saml20_profile_process_soap_request(profile, request_msg));
 	lasso_extract_node_or_fail(subject_query, profile->request, SAMLP2_SUBJECT_QUERY_ABSTRACT,
 			LASSO_PROFILE_ERROR_INVALID_MSG);
 	lasso_extract_node_or_fail(subject, subject_query->Subject, SAML2_SUBJECT,
 			LASSO_PROFILE_ERROR_MISSING_SUBJECT);
+	lasso_check_good_rc(lasso_saml20_profile_process_name_identifier_decryption(profile, &subject->NameID, &subject->EncryptedID));
 
-	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile, &subject->NameID, &subject->EncryptedID);
-
-	rc = rc1;
-	if (rc == 0)
-		rc = rc2;
-	if (rc == 0)
-		rc = profile->signature_status;
 cleanup:
-
 	return rc;
 }
 
@@ -384,16 +376,15 @@ lasso_assertion_query_process_response_msg(
 		LassoAssertionQuery *assertion_query,
 		gchar *response_msg)
 {
-	LassoProfile *profile;
-	LassoSamlp2StatusResponse *response;
+	LassoProfile *profile = NULL;
+	LassoSamlp2StatusResponse *response = NULL;
 	int rc = 0;
 
 	lasso_bad_param(ASSERTION_QUERY, assertion_query);
 	profile = &assertion_query->parent;
-	response = (LassoSamlp2StatusResponse*)lasso_samlp2_response_new();
 
-	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile,
-				response, NULL, response_msg));
+	lasso_check_good_rc(lasso_saml20_profile_process_soap_response(profile,
+				response_msg));
 
 cleanup:
 	lasso_release_gobject(response);
@@ -415,8 +406,8 @@ lasso_assertion_query_lookup_attribute(LassoAssertionQuery *assertion_query, cha
 	lasso_foreach_full_begin(LassoSaml2Attribute*, attribute, it, query->Attribute)
 	{
 		if (LASSO_IS_SAML2_ATTRIBUTE(attribute) &&
-				g_strcmp0(attribute->NameFormat, format) == 0 &&
-				g_strcmp0(attribute->Name, name) == 0)
+				lasso_strisequal(attribute->NameFormat,format) &&
+				lasso_strisequal(attribute->Name,name))
 		{
 			result = attribute;
 			break;

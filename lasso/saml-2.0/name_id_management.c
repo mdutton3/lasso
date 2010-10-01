@@ -159,38 +159,25 @@ gint
 lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_management,
 		char *request_msg)
 {
-	int rc1 = 0, rc2 = 0;
 	LassoProfile *profile = NULL;
 	LassoSamlp2ManageNameIDRequest *request = NULL;
+	int rc = 0;
 
 	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 	lasso_null_param(request_msg);
 
-	/* Parsing */
 	profile = LASSO_PROFILE(name_id_management);
 	request = (LassoSamlp2ManageNameIDRequest*)lasso_samlp2_manage_name_id_request_new();
-	rc1 = lasso_saml20_profile_process_any_request(profile,
+	lasso_check_good_rc(lasso_saml20_profile_process_any_request(profile,
 			(LassoNode*)request,
-			request_msg);
+			request_msg));
+	lasso_check_good_rc(lasso_saml20_profile_process_name_identifier_decryption(profile,
+			&request->NameID, &request->EncryptedID));
+	lasso_check_good_rc(lasso_saml20_profile_check_signature_status(profile));
 
-	if (! LASSO_IS_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)) {
-		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
-	}
-
-	/* NameID treatment */
-	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile,
-			&request->NameID, &request->EncryptedID);
-
+cleanup:
 	lasso_release_gobject(request);
-	if (profile->signature_status) {
-		return profile->signature_status;
-	}
-	if (rc1)
-		return rc1;
-	if (rc2)
-		return rc2;
-
-	return 0;
+	return rc;
 }
 
 
@@ -303,6 +290,7 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 {
 	LassoProfile *profile = NULL;
 	LassoSamlp2StatusResponse *response;
+	int rc = 0;
 
 	lasso_bad_param(NAME_ID_MANAGEMENT, name_id_management);
 	profile = &name_id_management->parent;
@@ -310,13 +298,22 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 	/* no response set here means request denied */
 	if (! LASSO_IS_SAMLP2_STATUS_RESPONSE(profile->response)) {
 		response = (LassoSamlp2StatusResponse*)lasso_samlp2_manage_name_id_response_new();
-		lasso_saml20_profile_init_response(profile, response, LASSO_SAML2_STATUS_CODE_RESPONDER,
-				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
+		if (lasso_saml20_profile_check_signature_status(profile)) {
+			lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
+						LASSO_SAML2_STATUS_CODE_REQUESTER,
+						LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE));
+		} else {
+			lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
+						LASSO_SAML2_STATUS_CODE_RESPONDER,
+						LASSO_SAML2_STATUS_CODE_REQUEST_DENIED));
+		}
 		lasso_release_gobject(response);
 	}
 
 	/* use the same binding as for the request */
-	return lasso_saml20_profile_build_response_msg(profile, "ManageNameIDService", profile->http_request_method, NULL);
+	rc = lasso_saml20_profile_build_response_msg(profile, "ManageNameIDService", profile->http_request_method, NULL);
+cleanup:
+	return rc;
 }
 
 
@@ -348,7 +345,7 @@ lasso_name_id_management_process_response_msg(
 	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile, response, NULL, response_msg));
 
 	/* Stop here if signature validation failed. */
-	goto_cleanup_if_fail_with_rc(profile->signature_status == 0, profile->signature_status);
+	lasso_check_good_rc(lasso_saml20_profile_check_signature_status(profile));
 
 	if (LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->Terminate) {
 		lasso_identity_remove_federation(profile->identity, profile->remote_providerID);
@@ -530,7 +527,7 @@ lasso_name_id_management_new_from_dump(LassoServer *server, const char *dump)
  *
  * Dumps @name_id_management content to an XML string.
  *
- * Return value: the dump string.  It must be freed by the caller.
+ * Return value:(transfer full): the dump string.  It must be freed by the caller.
  **/
 gchar*
 lasso_name_id_management_dump(LassoNameIdManagement *name_id_management)

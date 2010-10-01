@@ -41,8 +41,6 @@
 #ifndef __LASSO_IDWSF_STRINGS_H__
 #define __LASSO_IDWSF_STRINGS_H__
 
-#include "./id-wsf-2.0/idwsf2_strings.h"
-
 /*****************************************************************************/
 /* Liberty Alliance ID-WSF                                                   */
 /*****************************************************************************/
@@ -401,26 +399,6 @@
  */
 #define LASSO_WSSE_USERNAME_TOKEN_PROFILE_PASSWORD_TEXT \
 	LASSO_WSSE_USERNAME_TOKEN_PROFILE_HREF "#PasswordText"
-
-/*
- * WS-Security Utility
- */
-
-/**
- * LASSO_WSUTIL1_HREF:
- *
- * Namespace for FIXME
- *
- */
-#define LASSO_WSUTIL1_HREF \
-	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
-/**
- * LASSO_WSUTIL1_PREFIX:
- *
- * Preferred prefix for namespace of FIXME
- *
- */
-#define LASSO_WSUTIL1_PREFIX "wsutil"
 
 /* WS-Addressing */
 /**

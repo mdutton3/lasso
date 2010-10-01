@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "soap_binding_ext_credential.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:soap_binding_ext_credential

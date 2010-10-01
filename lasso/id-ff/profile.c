@@ -49,6 +49,10 @@
 #include "../xml/soap-1.1/soap_fault.h"
 #include "../utils.h"
 #include "../debug.h"
+#ifdef LASSO_WSF_ENABLED
+#include "../xml/idwsf_strings.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
+#endif
 
 /*****************************************************************************/
 /* public functions                                                          */
@@ -201,6 +205,9 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		type = LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING;
 	} else if (strcmp(name, "AuthnRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_LECP;
+	} else if (strcmp(name, "ManageNameIDRequest") == 0) {
+		type = LASSO_REQUEST_TYPE_NAME_ID_MANAGEMENT;
+#ifdef LASSO_WSF_ENABLED
 	} else if (strcmp(name, "Query") == 0) {
 		if (strcmp((char*)ns->href, LASSO_DISCO_HREF) == 0) {
 			type = LASSO_REQUEST_TYPE_DISCO_QUERY;
@@ -217,12 +224,11 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		}
 	} else if (strcmp(name, "SASLRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_SASL_REQUEST;
-	} else if (strcmp(name, "ManageNameIDRequest") == 0) {
-		type = LASSO_REQUEST_TYPE_NAME_ID_MANAGEMENT;
 	} else if (strcmp(name, "SvcMDRegister") == 0) {
 		type = LASSO_REQUEST_TYPE_IDWSF2_DISCO_SVCMD_REGISTER;
 	} else if (strcmp(name, "SvcMDAssociationAdd") == 0) {
 		type = LASSO_REQUEST_TYPE_IDWSF2_DISCO_SVCMD_ASSOCIATION_ADD;
+#endif
 	} else {
 		message(G_LOG_LEVEL_WARNING, "Unknown node name : %s", name);
 	}
@@ -743,7 +749,7 @@ LassoProviderRole lasso_profile_sso_role_with(LassoProfile *profile, const char 
 		return LASSO_PROVIDER_ROLE_NONE;
 
 	/* coherency check */
-	g_return_val_if_fail(g_strcmp0(federation->remote_providerID, remote_provider_id) == 0,
+	g_return_val_if_fail(lasso_strisequal(federation->remote_providerID,remote_provider_id),
 			LASSO_PROVIDER_ROLE_NONE);
 
 	if (LASSO_IS_SAML2_NAME_ID(federation->local_nameIdentifier)) {
@@ -758,9 +764,9 @@ LassoProviderRole lasso_profile_sso_role_with(LassoProfile *profile, const char 
 		message(G_LOG_LEVEL_WARNING, "a federation without a NameID was found");
 		return LASSO_PROVIDER_ROLE_NONE;
 	}
-	if (g_strcmp0(remote_provider_id, name_qualifier) == 0) {
+	if (lasso_strisequal(remote_provider_id,name_qualifier)) {
 		return LASSO_PROVIDER_ROLE_SP;
-	} else if (g_strcmp0(provider_id, name_qualifier) == 0) {
+	} else if (lasso_strisequal(provider_id,name_qualifier)) {
 		return LASSO_PROVIDER_ROLE_IDP;
 	}
 	return LASSO_PROVIDER_ROLE_NONE;

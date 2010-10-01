@@ -50,6 +50,9 @@
 #include "../debug.h"
 #include "./soap-1.1/soap_envelope.h"
 #include "./soap-1.1/soap_body.h"
+#if LASSO_WSF_ENABLED
+#include "./idwsf_strings.h"
+#endif
 
 static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump);
@@ -158,7 +161,7 @@ _lasso_node_export_to_xml(LassoNode *node, gboolean format, gboolean dump, int l
  *
  * Dumps @node.  All datas in object are dumped in an XML format.
  *
- * Return value: a full XML dump of @node.  The string must be freed by the
+ * Return value:(transfer full): a full XML dump of @node.  The string must be freed by the
  *     caller.
  **/
 char*
@@ -175,7 +178,7 @@ lasso_node_dump(LassoNode *node)
  * Create a debug dump for @node, it is pretty printed so any contained signature will be
  * uncheckable.
  *
- * Return value: a full indented and so human readable dump of @node. The string must be freed by
+ * Return value:(transfer full): a full indented and so human readable dump of @node. The string must be freed by
  * the caller.
  */
 char*
@@ -467,6 +470,7 @@ lasso_node_export_to_soap(LassoNode *node)
 	lasso_list_add_gobject(body->any, node);
 	ret = lasso_node_export_to_xml((LassoNode*)envelope);
 	lasso_release_gobject(envelope);
+	lasso_release_gobject(body);
 	return ret;
 }
 
@@ -861,6 +865,9 @@ _lasso_node_free_custom_element(struct _CustomElement *custom_element)
 		lasso_release_string(custom_element->href);
 		lasso_release_string(custom_element->nodename);
 		lasso_release_ghashtable(custom_element->namespaces);
+		lasso_release_string(custom_element->private_key);
+		lasso_release_string(custom_element->private_key_password);
+		lasso_release_string(custom_element->certificate);
 	}
 	lasso_release(custom_element);
 }
@@ -1559,7 +1566,7 @@ _xmlnode_add_custom_namespace(const char *prefix, const char *href, xmlNode *xml
 
 	existing = xmlSearchNs(NULL, xmlnode, BAD_CAST prefix);
 	if (existing) {
-		if (g_strcmp0((char*)existing->href, href) != 0) {
+		if (lasso_strisnotequal((char *)existing->href,href)) {
 			message(G_LOG_LEVEL_CRITICAL, "Cannot add namespace %s='%s' to node %s, "
 					"namespace already exists with another href", prefix, href,
 					(char*)xmlnode->name);
@@ -1967,9 +1974,11 @@ lasso_node_new_from_soap(const char *soap)
  *
  */
 static const char *
-prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
+prefix_from_href_and_nodename(const xmlChar *href, G_GNUC_UNUSED const xmlChar *nodename) {
 	char *prefix = NULL;
-	char *tmp = NULL;
+#ifdef LASSO_WSF_ENABLED
+	char *tmp = NULL
+#endif
 
 	if (strcmp((char*)href, LASSO_LASSO_HREF) == 0)
 		prefix = "";
@@ -1985,6 +1994,7 @@ prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 		prefix = "Samlp2";
 	else if (strcmp((char*)href, LASSO_SOAP_ENV_HREF) == 0)
 		prefix = "Soap";
+#ifdef LASSO_WSF_ENABLED
 	else if (strcmp((char*)href, LASSO_SOAP_BINDING_HREF) == 0)
 		prefix = "SoapBinding";
 	else if (strcmp((char*)href, LASSO_SOAP_BINDING_EXT_HREF) == 0)
@@ -2046,6 +2056,7 @@ prefix_from_href_and_nodename(const xmlChar *href, const xmlChar *nodename) {
 		prefix = "Utility";
 	else if (prefix != NULL && strcmp(prefix, "Sa") == 0 && strcmp((char*)nodename, "Status") == 0)
 		prefix = "Utility";
+#endif
 
 	return prefix;
 }
@@ -2161,16 +2172,19 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	if (! fromXsi) {
 		/* if the typename was not obtained via xsi:type but through mapping of the element
 		 * name then keep the element name */
-		if (LASSO_NODE_GET_CLASS(node)->node_data && LASSO_NODE_GET_CLASS(node)->node_data->node_name && g_strcmp0((char*)xmlnode->name,
-					LASSO_NODE_GET_CLASS(node)->node_data->node_name) != 0) {
+		if (LASSO_NODE_GET_CLASS(node)->node_data &&
+				LASSO_NODE_GET_CLASS(node)->node_data->node_name &&
+				lasso_strisnotequal((char*)xmlnode->name,
+					LASSO_NODE_GET_CLASS(node)->node_data->node_name))
+		{
 			lasso_node_set_custom_nodename(node, (char*)xmlnode->name);
 		}
 
 		if (xmlnode->ns && (LASSO_NODE_GET_CLASS(node)->node_data == NULL ||
 					LASSO_NODE_GET_CLASS(node)->node_data->ns == NULL ||
-					g_strcmp0((char*)xmlnode->ns->href,
-						(char*)LASSO_NODE_GET_CLASS(node)->node_data->ns->href)
-					!= 0)) {
+					lasso_xmlstrisnotequal(xmlnode->ns->href,
+						LASSO_NODE_GET_CLASS(node)->node_data->ns->href)))
+		{
 			lasso_node_set_custom_namespace(node, (char*)xmlnode->ns->prefix,
 					(char*)xmlnode->ns->href);
 		}
@@ -3117,7 +3131,7 @@ xml_insure_namespace(xmlNode *xmlnode, xmlNs *ns, gboolean force, gchar *ns_href
 
 	if (ns == NULL) {
 		for (ns = xmlnode->nsDef; ns; ns = ns->next) {
-			if (ns->href && g_strcmp0((gchar*)ns->href, ns_href) == 0) {
+			if (ns->href && lasso_strisequal((gchar *)ns->href,ns_href)) {
 				break;
 			}
 		}

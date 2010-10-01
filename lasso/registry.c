@@ -96,7 +96,8 @@ void lasso_registry_default_shutdown()
  *
  * Return value: TRUE if all field of record1 are equal to record2.
  */
-gboolean lasso_registry_direct_mapping_equal(LassoRegistryDirectMappingRecord *record1, LassoRegistryDirectMappingRecord *record2)
+gboolean lasso_registry_direct_mapping_equal(LassoRegistryDirectMappingRecord *record1,
+		LassoRegistryDirectMappingRecord *record2)
 {
 	return record1->from_namespace == record2->from_namespace
 		&& record1->from_name == record2->from_name
@@ -113,7 +114,8 @@ gboolean lasso_registry_direct_mapping_equal(LassoRegistryDirectMappingRecord *r
  *
  * Return value: TRUE if record1 is equal to record2
  */
-gboolean lasso_registry_functional_mapping_equal(LassoRegistryFunctionalMappingRecord *record1, LassoRegistryFunctionalMappingRecord *record2)
+gboolean lasso_registry_functional_mapping_equal(LassoRegistryFunctionalMappingRecord *record1,
+		LassoRegistryFunctionalMappingRecord *record2)
 {
 	return record1->from_namespace == record2->from_namespace &&
 		record1->to_namespace == record2->to_namespace;

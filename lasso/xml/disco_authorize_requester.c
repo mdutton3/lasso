@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "disco_authorize_requester.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:disco_authorize_requester

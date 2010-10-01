@@ -23,6 +23,8 @@
  */
 
 #include "./soap_binding.h"
+#include "../xml/idwsf_strings.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "../xml/id-wsf-2.0/sb2_sender.h"
 #include "../xml/id-wsf-2.0/sb2_redirect_request.h"
 #include "../xml/id-wsf-2.0/sb2_user_interaction_header.h"
@@ -238,7 +240,7 @@ lasso_soap_envelope_get_action(LassoSoapEnvelope *soap_envelope)
 
 	lasso_foreach(i, soap_envelope->Header->Other) {
 		if (LASSO_IS_WSA_ATTRIBUTED_URI(i->data)
-				&& g_strcmp0(lasso_node_get_name((LassoNode*)i->data), "Action")) {
+				&& lasso_strisequal(lasso_node_get_name((LassoNode *)i->data),"Action")) {
 			return ((LassoWsAddrAttributedURI*)i->data)->content;
 		}
 	}
@@ -271,9 +273,9 @@ _get_node(GList **list, GType node_type, const char *node_name, const char *node
 
 		if (LASSO_IS_NODE(node) &&
 		    (! node_type || ( G_IS_OBJECT(node) && G_OBJECT_TYPE(node) == node_type)) &&
-		    (! node_name || g_strcmp0(lasso_node_get_name(node), node_name) == 0) &&
+		    (! node_name || lasso_strisequal(lasso_node_get_name(node),node_name)) &&
 		    (! node_namespace ||
-			     g_strcmp0(lasso_node_get_namespace(node), node_namespace) == 0)) {
+			     lasso_strisequal(lasso_node_get_namespace(node),node_namespace))) {
 			return node;
 		}
 	}
@@ -282,10 +284,10 @@ _get_node(GList **list, GType node_type, const char *node_name, const char *node
 		if (! node) {
 			return NULL;
 		}
-		if (g_strcmp0(lasso_node_get_name(node), node_name) != 0) {
+		if (lasso_strisnotequal(lasso_node_get_name(node),node_name)) {
 			lasso_node_set_custom_nodename(node, node_name);
 		}
-		if (g_strcmp0(lasso_node_get_namespace(node), node_namespace) == 0) {
+		if (lasso_strisequal(lasso_node_get_namespace(node),node_namespace)) {
 			lasso_node_set_custom_namespace(node, node_namespace, node_prefix);
 		}
 		lasso_list_add_new_gobject(*list, node);
@@ -435,11 +437,11 @@ lasso_soap_envelope_get_sb2_user_interaction_hint(LassoSoapEnvelope *soap_envelo
 	header = lasso_soap_envelope_get_sb2_user_interaction_header(soap_envelope, FALSE);
 	if (header) {
 		hint = header->interact;
-		if (g_strcmp0(hint, LASSO_SB2_USER_INTERACTION_INTERACT_IF_NEEDED) == 0)
+		if (lasso_strisequal(hint,LASSO_SB2_USER_INTERACTION_INTERACT_IF_NEEDED))
 			return LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_INTERACT_IF_NEEDED;
-		if (g_strcmp0(hint, LASSO_SB2_USER_INTERACTION_DO_NOT_INTERACT) == 0)
+		if (lasso_strisequal(hint,LASSO_SB2_USER_INTERACTION_DO_NOT_INTERACT))
 			return LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_DO_NOT_INTERACT;
-		if (g_strcmp0(hint, LASSO_SB2_USER_INTERACTION_DO_NOT_INTERACT_FOR_DATA) == 0)
+		if (lasso_strisequal(hint,LASSO_SB2_USER_INTERACTION_DO_NOT_INTERACT_FOR_DATA))
 			return LASSO_IDWSF2_SB2_USER_INTERACTION_HINT_DO_NOT_INTERACT_FOR_DATA;
 
 	}

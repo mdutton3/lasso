@@ -112,24 +112,28 @@ cleanup:
 
 static gboolean want_authn_request_signed(LassoProvider *provider) {
 	char *s;
+	gboolean rc = TRUE;
 
 	s = lasso_provider_get_metadata_one_for_role(provider, LASSO_PROVIDER_ROLE_IDP,
 			LASSO_SAML2_METADATA_ATTRIBUTE_WANT_AUTHN_REQUEST_SIGNED);
-	if (g_strcmp0(s, "false") == 0) {
-		return FALSE;
+	if (lasso_strisequal(s,"false")) {
+		rc = FALSE;
 	}
-	return TRUE;
+	lasso_release_string(s);
+	return rc;
 }
 
 static gboolean authn_request_signed(LassoProvider *provider) {
 	char *s;
+	gboolean rc = FALSE;
 
 	s = lasso_provider_get_metadata_one_for_role(provider, LASSO_PROVIDER_ROLE_SP,
 			LASSO_SAML2_METADATA_ATTRIBUTE_AUTHN_REQUEST_SIGNED);
-	if (g_strcmp0(s, "true") == 0) {
-		return TRUE;
+	if (lasso_strisequal(s,"true")) {
+		rc = TRUE;
 	}
-	return FALSE;
+	lasso_release_string(s);
+	return rc;
 }
 
 static gboolean
@@ -243,8 +247,7 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login)
 
 	/* support old way of doing PAOS */
 	if (login->http_method == LASSO_HTTP_METHOD_SOAP
-			&& g_strcmp0(authn_request->ProtocolBinding,
-				LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
+			&& lasso_strisequal(authn_request->ProtocolBinding,LASSO_SAML2_METADATA_BINDING_PAOS)) {
 		login->http_method = LASSO_HTTP_METHOD_PAOS;
 		/* PAOS is special, the url passed to build_request is the AssertionConsumerServiceURL of
 		 * this SP, not the destination. */
@@ -279,7 +282,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 
 		/* AuthnRequest already set by .._init_idp_initiated_authn_request, or from a
 		 * previously failed call to process_authn_request that we retry. */
-		request = profile->request;
+		request = lasso_ref(profile->request);
 	} else {
 		request = lasso_samlp2_authn_request_new();
 		lasso_check_good_rc(lasso_saml20_profile_process_any_request(profile, request, authn_request_msg));
@@ -332,15 +335,15 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		if (binding == NULL) {
 			if (service_index == -1)
 				return LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT;
-		} else if (g_strcmp0(binding, "HTTP-Artifact") == 0) {
+		} else if (lasso_strisequal(binding,"HTTP-Artifact")) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
-		} else if (g_strcmp0(binding, "HTTP-POST") == 0) {
+		} else if (lasso_strisequal(binding,"HTTP-POST")) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
-		} else if (g_strcmp0(binding, "HTTP-Redirect") == 0) {
+		} else if (lasso_strisequal(binding,"HTTP-Redirect")) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT;
-		} else if (g_strcmp0(binding, "SOAP") == 0) {
+		} else if (lasso_strisequal(binding,"SOAP")) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
-		} else if (g_strcmp0(binding, "PAOS") == 0) {
+		} else if (lasso_strisequal(binding,"PAOS")) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 		}
 		lasso_release_string(binding);
@@ -352,17 +355,16 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 						remote_provider,
 						authn_request->AssertionConsumerServiceURL);
 		}
-		if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_ARTIFACT) == 0) {
+		if (lasso_strisequal(protocol_binding,LASSO_SAML2_METADATA_BINDING_ARTIFACT)) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
-		} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_POST) == 0) {
+		} else if (lasso_strisequal(protocol_binding,LASSO_SAML2_METADATA_BINDING_POST)) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
-		} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_SOAP) == 0) {
+		} else if (lasso_strisequal(protocol_binding,LASSO_SAML2_METADATA_BINDING_SOAP)) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
-		} else if (g_strcmp0(protocol_binding,
-					LASSO_SAML2_METADATA_BINDING_REDIRECT) == 0) {
+		} else if (lasso_strisequal(protocol_binding,LASSO_SAML2_METADATA_BINDING_REDIRECT)) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT;
 			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
-		} else if (g_strcmp0(protocol_binding, LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
+		} else if (lasso_strisequal(protocol_binding,LASSO_SAML2_METADATA_BINDING_PAOS)) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 		} else {
 			rc = LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
@@ -383,6 +385,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	lasso_saml20_profile_init_response(profile, response,
 				status1, status2);
 cleanup:
+	lasso_release_gobject(request);
 	lasso_release_gobject(response);
 	return rc;
 }
@@ -410,15 +413,15 @@ lasso_saml20_login_must_authenticate(LassoLogin *login)
 		GList *t1, *t2;
 		int compa;
 
-		if (comparison == NULL || g_strcmp0(comparison, "exact") == 0) {
+		if (comparison == NULL || lasso_strisequal(comparison,"exact")) {
 			compa = 0;
-		} else if (g_strcmp0(comparison, "minimum") == 0) {
+		} else if (lasso_strisequal(comparison,"minimum")) {
 			message(G_LOG_LEVEL_CRITICAL, "'minimum' comparison is not implemented");
 			compa = 0;
-		} else if (g_strcmp0(comparison, "better") == 0) {
+		} else if (lasso_strisequal(comparison,"better")) {
 			message(G_LOG_LEVEL_CRITICAL, "'better' comparison is not implemented");
 			compa = 0;
-		} else if (g_strcmp0(comparison, "maximum") == 0) {
+		} else if (lasso_strisequal(comparison,"maximum")) {
 			message(G_LOG_LEVEL_CRITICAL, "'maximum' comparison is not implemented");
 			compa = 0;
 		}
@@ -458,7 +461,7 @@ lasso_saml20_login_must_authenticate(LassoLogin *login)
 				method = as->AuthnContext->AuthnContextClassRef;
 
 				if (compa == 0) { /* exact */
-					if (g_strcmp0(method, class_ref) == 0) {
+					if (lasso_strisequal(method,class_ref)) {
 						matched = TRUE;
 						break;
 					}
@@ -506,7 +509,7 @@ lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login)
 
 	if (name_id_policy) {
 		char *format = name_id_policy->Format;
-		if (g_strcmp0(format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
+		if (lasso_strisequal(format,LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT)) {
 			goto_cleanup_with_rc (FALSE)
 		}
 		if (name_id_policy->AllowCreate == FALSE) {
@@ -533,22 +536,22 @@ lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login)
 	if (consent == NULL)
 		goto_cleanup_with_rc (FALSE)
 
-	if (g_strcmp0(consent, LASSO_SAML2_CONSENT_OBTAINED) == 0)
+	if (lasso_strisequal(consent,LASSO_SAML2_CONSENT_OBTAINED))
 		goto_cleanup_with_rc (FALSE)
 
-	if (g_strcmp0(consent, LASSO_SAML2_CONSENT_PRIOR) == 0)
+	if (lasso_strisequal(consent,LASSO_SAML2_CONSENT_PRIOR))
 		goto_cleanup_with_rc (FALSE)
 
-	if (g_strcmp0(consent, LASSO_SAML2_CONSENT_IMPLICIT) == 0)
+	if (lasso_strisequal(consent,LASSO_SAML2_CONSENT_IMPLICIT))
 		goto_cleanup_with_rc (FALSE)
 
-	if (g_strcmp0(consent, LASSO_SAML2_CONSENT_EXPLICIT) == 0)
+	if (lasso_strisequal(consent,LASSO_SAML2_CONSENT_EXPLICIT))
 		goto_cleanup_with_rc (FALSE)
 
-	if (g_strcmp0(consent, LASSO_SAML2_CONSENT_UNAVAILABLE) == 0)
+	if (lasso_strisequal(consent,LASSO_SAML2_CONSENT_UNAVAILABLE))
 		goto_cleanup_with_rc (TRUE)
 
-	if (g_strcmp0(consent, LASSO_SAML2_CONSENT_INAPPLICABLE) == 0)
+	if (lasso_strisequal(consent,LASSO_SAML2_CONSENT_INAPPLICABLE))
 		goto_cleanup_with_rc (TRUE)
 
 cleanup:
@@ -651,8 +654,7 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 	if (lasso_saml20_login_must_ask_for_consent_private(login) && !is_consent_obtained) {
 		goto_cleanup_with_rc (LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED)
 	}
-	if (g_strcmp0(name_id_policy_format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) != 0) {
+	if (lasso_strisnotequal(name_id_policy_format,LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT)) {
 		/* non persistent case, TRANSIENT is handled by lasso_login_build_assertion() and
 		 * other format are the sole responsibility of the caller */
 		goto_cleanup_with_rc (0)
@@ -760,6 +762,12 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Subject->SubjectConfirmation->SubjectConfirmationData =
 		LASSO_SAML2_SUBJECT_CONFIRMATION_DATA(
 			lasso_saml2_subject_confirmation_data_new());
+	lasso_assign_string(
+		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotBefore,
+		notBefore);
+	lasso_assign_string(
+		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter,
+		notOnOrAfter);
 
 	/* If request is present, refer to it in the response */
 	if (authn_request) {
@@ -776,8 +784,9 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 		name_id_policy = authn_request->NameIDPolicy;
 	}
 	/* TRANSIENT */
-	if (!name_id_policy || g_strcmp0(name_id_policy->Format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
+	if (!name_id_policy || name_id_policy->Format == NULL ||
+			lasso_strisequal(name_id_policy->Format,LASSO_SAML2_NAME_IDENTIFIER_FORMAT_UNSPECIFIED) ||
+			lasso_strisequal(name_id_policy->Format,LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT)) {
 		char *id = lasso_build_unique_id(32);
 
 		name_id = (LassoSaml2NameID*)lasso_saml2_name_id_new_with_string(id);
@@ -787,18 +796,18 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 		lasso_assign_string(name_id->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT);
 		assertion->Subject->NameID = name_id;
 	/* FEDERATED */
-	} else if (g_strcmp0(name_id_policy->Format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0 ||
-			g_strcmp0(name_id_policy->Format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED) == 0) {
+	} else if (lasso_strisequal(name_id_policy->Format,
+				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) ||
+			lasso_strisequal(name_id_policy->Format,
+				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED))
+		{
 		LassoFederation *federation;
 
 		federation = _lasso_login_saml20_get_federation(login);
 		goto_cleanup_if_fail_with_rc(federation != NULL,
 				LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 
-		if (g_strcmp0(name_id_policy->Format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED) == 0) {
+		if (lasso_strisequal(name_id_policy->Format,LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED)) {
 			do_encrypt_nameid = TRUE;
 		}
 		lasso_assign_gobject(assertion->Subject->NameID,
@@ -1106,7 +1115,7 @@ lasso_saml20_login_check_assertion_signature(LassoLogin *login,
 	if (! Issuer || /* No issuer */
 			! Issuer->content || /* No issuer content */
 			(Issuer->Format &&
-			 g_strcmp0(Issuer->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY) != 0))
+			 lasso_strisnotequal(Issuer->Format,LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY)))
 		/* Issuer format is not entity */
 	{
 		rc = LASSO_PROFILE_ERROR_MISSING_ISSUER;
@@ -1154,7 +1163,7 @@ _lasso_check_assertion_issuer(LassoSaml2Assertion *assertion, const gchar *provi
 	if (! assertion->Issuer || ! assertion->Issuer->content)
 		return FALSE;
 
-	return g_strcmp0(assertion->Issuer->content, provider_id) == 0;
+	return lasso_strisequal(assertion->Issuer->content,provider_id);
 }
 
 static gint
@@ -1235,21 +1244,19 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	}
 
 	status_value = response->Status->StatusCode->Value;
-	if (status_value && g_strcmp0(status_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
-		if (g_strcmp0(status_value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED) == 0)
+	if (status_value && lasso_strisnotequal(status_value,LASSO_SAML2_STATUS_CODE_SUCCESS)) {
+		if (lasso_strisequal(status_value,LASSO_SAML2_STATUS_CODE_REQUEST_DENIED))
 			return LASSO_LOGIN_ERROR_REQUEST_DENIED;
-		if (g_strcmp0(status_value, LASSO_SAML2_STATUS_CODE_RESPONDER) == 0 ||
-				g_strcmp0(status_value, LASSO_SAML2_STATUS_CODE_REQUESTER)) {
+		if (lasso_strisequal(status_value,LASSO_SAML2_STATUS_CODE_RESPONDER) ||
+				lasso_strisequal(status_value,LASSO_SAML2_STATUS_CODE_REQUESTER)) {
 			/* samlp:Responder */
 			if (response->Status->StatusCode->StatusCode &&
 					response->Status->StatusCode->StatusCode->Value) {
 				status_value = response->Status->StatusCode->StatusCode->Value;
-				if (g_strcmp0(status_value,
-					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST) == 0) {
+				if (lasso_strisequal(status_value,LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST)) {
 					return LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
 				}
-				if (g_strcmp0(status_value,
-						LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
+				if (lasso_strisequal(status_value,LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL)) {
 					return LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL;
 				}
 			}
@@ -1292,7 +1299,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		if (login->private_data->request_id) {
 			const char *in_response_to = lasso_saml2_assertion_get_in_response_to(assertion);
 
-			if (g_strcmp0(in_response_to, login->private_data->request_id) != 0) {
+			if (lasso_strisnotequal(in_response_to,login->private_data->request_id)) {
 				rc = LASSO_LOGIN_ERROR_ASSERTION_DOES_NOT_MATCH_REQUEST_ID;
 				goto cleanup;
 			}
@@ -1349,7 +1356,7 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 
 		ta = t->data;
 
-		if (g_strcmp0(ta->ID, assertion->ID) == 0) {
+		if (lasso_strisequal(ta->ID,assertion->ID)) {
 			lasso_release_list(previous_assertions);
 			return LASSO_LOGIN_ERROR_ASSERTION_REPLAY;
 		}
@@ -1367,8 +1374,7 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 
 	/* create federation, only if nameidentifier format is Federated */
 	if (ni && ni->Format
-			&& g_strcmp0(ni->Format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0) {
+			&& lasso_strisequal(ni->Format,LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT)) {
 		federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
 
 		lasso_assign_gobject(federation->local_nameIdentifier, ni);
