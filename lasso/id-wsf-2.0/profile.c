@@ -435,7 +435,7 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 			name_qualifier = assertion->Subject->NameID->NameQualifier;
 			sp_name_qualifier = assertion->Subject->NameID->SPNameQualifier;
 		}
-		if (! name_qualifier || g_strcmp0(name_qualifier, issuer->ProviderID) != 0)
+		if (! name_qualifier || lasso_strisnotequal(name_qualifier,issuer->ProviderID))
 			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_ASSERTION);
 		/* There is two cases for the NameID of the security assertion:
 		 * - we are the IdP and the Wsp, so the NameQualifier is us and the SPNameQualifier is the
@@ -449,10 +449,10 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 		sender_id = lasso_soap_envelope_sb2_get_provider_id(envelope);
 		if (! sender_id)
 			goto_cleanup_with_rc(LASSO_WSF_PROFILE_ERROR_MISSING_SENDER_ID);
-		if (local_service_id && g_strcmp0(local_service_id, name_qualifier) == 0 &&
-				sp_name_qualifier && g_strcmp0(sp_name_qualifier, sender_id) == 0) {
+		if (local_service_id && lasso_strisequal(local_service_id,name_qualifier) &&
+				sp_name_qualifier && lasso_strisequal(sp_name_qualifier,sender_id)) {
 			/* Ok. */
-		} else if (sp_name_qualifier && g_strcmp0(sp_name_qualifier, local_service_id) == 0) {
+		} else if (sp_name_qualifier && lasso_strisequal(sp_name_qualifier,local_service_id)) {
 			/* Ok. */
 		} else {
 			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_ASSERTION);

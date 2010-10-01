@@ -823,7 +823,7 @@ lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_pu
 		goto done;
 	}
 	usig_alg = xmlURIUnescapeString(sig_alg, 0, NULL);
-	if (g_strcmp0(usig_alg, (char*)xmlSecHrefRsaSha1) == 0) {
+	if (lasso_strisequal(usig_alg,(char *)xmlSecHrefRsaSha1)) {
 		if (sender_public_key->value->id != xmlSecOpenSSLKeyDataRsaId) {
 			ret = critical_error(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 			goto done;
@@ -834,7 +834,7 @@ lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_pu
 			goto done;
 		}
 		key_size = RSA_size(rsa);
-	} else if (g_strcmp0(usig_alg, (char*)xmlSecHrefDsaSha1) == 0) {
+	} else if (lasso_strisequal(usig_alg,(char *)xmlSecHrefDsaSha1)) {
 		if (sender_public_key->value->id != xmlSecOpenSSLKeyDataDsaId) {
 			ret = critical_error(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 			goto done;

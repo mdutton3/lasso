@@ -100,8 +100,8 @@ gint
 lasso_idwsf2_data_service_set_service_type(LassoIdWsf2DataService *service, const char *prefix,
 		const char *service_type)
 {
-	if (!LASSO_IS_IDWSF2_DATA_SERVICE(service) || lasso_is_empty_string(prefix)
-			|| lasso_is_empty_string(service_type))
+	if (!LASSO_IS_IDWSF2_DATA_SERVICE(service) || lasso_strisempty(prefix)
+			|| lasso_strisempty(service_type))
 		return LASSO_PARAM_ERROR_INVALID_VALUE;
 	lasso_assign_string(service->private_data->service_type_prefix, prefix);
 	lasso_assign_string(service->private_data->service_type, service_type);
@@ -259,7 +259,7 @@ lasso_idwsf2_data_service_add_query_item(LassoIdWsf2DataService *service, const 
 	/* Check duplicates */
 	lasso_foreach(i, service->private_data->query_items) {
 		LassoIdWsf2DstRefQueryItem *old_item = (LassoIdWsf2DstRefQueryItem *)i->data;
-		if (g_strcmp0(old_item->parent.parent.itemID, item_id) == 0) {
+		if (lasso_strisequal(old_item->parent.parent.itemID,item_id)) {
 			return LASSO_IDWSF2_DST_ERROR_DUPLICATE_ITEM;
 		}
 	}
@@ -298,7 +298,7 @@ lasso_idwsf2_data_service_add_modify_item(LassoIdWsf2DataService *service, const
 	}
 	lasso_foreach(i, service->private_data->modify_items) {
 		LassoIdWsf2DstRefModifyItem *old_item = (LassoIdWsf2DstRefModifyItem *)i->data;
-		if (g_strcmp0(old_item->id, item_id) == 0) {
+		if (lasso_strisequal(old_item->id,item_id)) {
 			return LASSO_IDWSF2_DST_ERROR_DUPLICATE_ITEM;
 		}
 	}
@@ -391,7 +391,7 @@ lasso_idwsf2_data_service_get_item(LassoIdWsf2DataService *service,
 			}
 			lasso_foreach(i, service->private_data->query_items) {
 				LassoIdWsf2DstRefQueryItem *old_item = (LassoIdWsf2DstRefQueryItem *)i->data;
-				if (g_strcmp0(old_item->parent.parent.itemID, item_id) == 0) {
+				if (lasso_strisequal(old_item->parent.parent.itemID,item_id)) {
 					return (LassoNode*)old_item;
 				}
 			}
@@ -405,7 +405,7 @@ lasso_idwsf2_data_service_get_item(LassoIdWsf2DataService *service,
 			}
 			lasso_foreach(i, service->private_data->modify_items) {
 				LassoIdWsf2DstRefModifyItem *old_item = (LassoIdWsf2DstRefModifyItem *)i->data;
-				if (g_strcmp0(old_item->id, item_id) == 0) {
+				if (lasso_strisequal(old_item->id,item_id)) {
 					return (LassoNode*)old_item;
 				}
 			}
@@ -428,12 +428,12 @@ gint
 lasso_idwsf2_data_service_add_namespace(LassoIdWsf2DataService *service, const char *prefix,
 		const char *href)
 {
-	if (xmlValidateNCName(BAD_CAST prefix, 0) && ! lasso_is_empty_string(href))
+	if (xmlValidateNCName(BAD_CAST prefix, 0) && ! lasso_strisempty(href))
 		return LASSO_PARAM_ERROR_INVALID_VALUE;
 
 	if (g_hash_table_lookup(service->private_data->namespaces, prefix) != NULL ||
-			g_strcmp0(service->private_data->service_type_prefix, prefix) == 0 ||
-			g_strcmp0(prefix, LASSO_IDWSF2_DSTREF_PREFIX) == 0) {
+			lasso_strisequal(service->private_data->service_type_prefix,prefix) ||
+			lasso_strisequal(prefix,LASSO_IDWSF2_DSTREF_PREFIX)) {
 		return LASSO_PARAM_ERROR_INVALID_VALUE;
 	}
 
@@ -833,13 +833,13 @@ lasso_idwsf2_data_service_process_response_msg(
 	if (! status || ! status->code) {
 		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
 	}
-	if (g_strcmp0(status->code, LASSO_DST2_STATUS_CODE1_FAILED) == 0) {
+	if (lasso_strisequal(status->code,LASSO_DST2_STATUS_CODE1_FAILED)) {
 		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS);
 	}
-	if (g_strcmp0(status->code, LASSO_DST2_STATUS_CODE1_PARTIAL) == 0) {
+	if (lasso_strisequal(status->code,LASSO_DST2_STATUS_CODE1_PARTIAL)) {
 		rc = LASSO_IDWSF2_DST_ERROR_PARTIAL_FAILURE;
 	}
-	if (g_strcmp0(status->code, LASSO_DST2_STATUS_CODE1_OK) != 0) {
+	if (lasso_strisnotequal(status->code,LASSO_DST2_STATUS_CODE1_OK)) {
 		rc = LASSO_IDWSF2_DST_ERROR_UNKNOWN_STATUS_CODE;
 	}
 
@@ -910,7 +910,7 @@ lasso_idwsf2_data_service_get_query_item_result(LassoIdWsf2DataService *service,
 	}
 	lasso_foreach(i, service->private_data->query_datas) {
 		LassoIdWsf2DstRefData *data = (LassoIdWsf2DstRefData*)i->data;
-		if (g_strcmp0(data->parent.itemIDRef, item_id) == 0) {
+		if (lasso_strisequal(data->parent.itemIDRef,item_id)) {
 			return data;
 		}
 	}

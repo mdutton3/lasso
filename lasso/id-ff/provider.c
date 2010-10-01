@@ -632,7 +632,7 @@ _lasso_provider_load_key_descriptor(LassoProvider *provider, xmlNode *key_descri
 
 	private_data = provider->private_data;
 	use = xmlGetProp(key_descriptor, (xmlChar*)"use");
-	if (use == NULL || g_strcmp0((char*)use, "signing") == 0) {
+	if (use == NULL || lasso_strisequal((char *)use,"signing")) {
 		lasso_assign_xml_node(private_data->signing_key_descriptor, key_descriptor);
 	}
 	if (use == NULL || strcmp((char*)use, "encryption") == 0) {

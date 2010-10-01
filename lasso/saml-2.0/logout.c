@@ -222,7 +222,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 		}
 		assertion_SessionIndex =
 			((LassoSaml2AuthnStatement*)assertion->AuthnStatement->data)->SessionIndex;
-		if (g_strcmp0(logout_request->SessionIndex, assertion_SessionIndex) != 0) {
+		if (lasso_strisnotequal(logout_request->SessionIndex,assertion_SessionIndex)) {
 			lasso_saml20_profile_set_response_status_responder(profile,
 					LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 			return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
@@ -392,11 +392,11 @@ cleanup:
 
 		value = sub_status_code->Value;
 
-		if (g_strcmp0(value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED) == 0) {
+		if (lasso_strisequal(value,LASSO_SAML2_STATUS_CODE_REQUEST_DENIED)) {
 			rc = LASSO_LOGOUT_ERROR_REQUEST_DENIED;
 			break;
 		}
-		if (g_strcmp0(value, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
+		if (lasso_strisequal(value,LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL)) {
 			rc = LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
 			break;
 		}

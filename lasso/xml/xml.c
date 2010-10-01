@@ -1566,7 +1566,7 @@ _xmlnode_add_custom_namespace(const char *prefix, const char *href, xmlNode *xml
 
 	existing = xmlSearchNs(NULL, xmlnode, BAD_CAST prefix);
 	if (existing) {
-		if (g_strcmp0((char*)existing->href, href) != 0) {
+		if (lasso_strisnotequal((char *)existing->href,href)) {
 			message(G_LOG_LEVEL_CRITICAL, "Cannot add namespace %s='%s' to node %s, "
 					"namespace already exists with another href", prefix, href,
 					(char*)xmlnode->name);
@@ -2172,16 +2172,19 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	if (! fromXsi) {
 		/* if the typename was not obtained via xsi:type but through mapping of the element
 		 * name then keep the element name */
-		if (LASSO_NODE_GET_CLASS(node)->node_data && LASSO_NODE_GET_CLASS(node)->node_data->node_name && g_strcmp0((char*)xmlnode->name,
-					LASSO_NODE_GET_CLASS(node)->node_data->node_name) != 0) {
+		if (LASSO_NODE_GET_CLASS(node)->node_data &&
+				LASSO_NODE_GET_CLASS(node)->node_data->node_name &&
+				lasso_strisnotequal((char*)xmlnode->name,
+					LASSO_NODE_GET_CLASS(node)->node_data->node_name))
+		{
 			lasso_node_set_custom_nodename(node, (char*)xmlnode->name);
 		}
 
 		if (xmlnode->ns && (LASSO_NODE_GET_CLASS(node)->node_data == NULL ||
 					LASSO_NODE_GET_CLASS(node)->node_data->ns == NULL ||
-					g_strcmp0((char*)xmlnode->ns->href,
-						(char*)LASSO_NODE_GET_CLASS(node)->node_data->ns->href)
-					!= 0)) {
+					lasso_xmlstrisnotequal(xmlnode->ns->href,
+						LASSO_NODE_GET_CLASS(node)->node_data->ns->href)))
+		{
 			lasso_node_set_custom_namespace(node, (char*)xmlnode->ns->prefix,
 					(char*)xmlnode->ns->href);
 		}
@@ -3128,7 +3131,7 @@ xml_insure_namespace(xmlNode *xmlnode, xmlNs *ns, gboolean force, gchar *ns_href
 
 	if (ns == NULL) {
 		for (ns = xmlnode->nsDef; ns; ns = ns->next) {
-			if (ns->href && g_strcmp0((gchar*)ns->href, ns_href) == 0) {
+			if (ns->href && lasso_strisequal((gchar *)ns->href,ns_href)) {
 				break;
 			}
 		}

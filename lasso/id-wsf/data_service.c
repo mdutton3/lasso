@@ -237,8 +237,8 @@ lasso_data_service_get_query_item(LassoDataService *service,
 	{
 		LassoDstQueryItem *query_item = NULL;
 		lasso_extract_node_or_fail(query_item, query_items->data, DST_QUERY_ITEM, LASSO_ERROR_CAST_FAILED);
-		if ((select && g_strcmp0(select, query_item->Select) == 0) ||
-			(item_id && g_strcmp0(item_id, query_item->itemID) == 0))
+		if ((select && lasso_strisequal(select,query_item->Select)) ||
+			(item_id && lasso_strisequal(item_id,query_item->itemID)))
 		{
 			if (output) {
 				lasso_assign_new_gobject(*output, query_item);
@@ -431,7 +431,7 @@ lasso_data_service_get_answers_by_select(LassoDataService *service, const char *
 		if (datas) {
 			lasso_extract_node_or_fail(data, datas->data, DST_DATA,
 					LASSO_ERROR_CAST_FAILED);
-			if (g_strcmp0(select, query_item->Select) != 0) {
+			if (lasso_strisnotequal(select,query_item->Select)) {
 				data = NULL;
 				rc = LASSO_DST_ERROR_QUERY_NOT_FOUND;
 			}
@@ -444,7 +444,7 @@ lasso_data_service_get_answers_by_select(LassoDataService *service, const char *
 		while (iter) {
 			lasso_extract_node_or_fail(query_item, iter->data, DST_QUERY_ITEM,
 					LASSO_ERROR_CAST_FAILED);
-			if (g_strcmp0(query_item->Select, select) == 0) {
+			if (lasso_strisequal(query_item->Select,select)) {
 				break;
 			}
 			query_item = NULL;
@@ -457,7 +457,7 @@ lasso_data_service_get_answers_by_select(LassoDataService *service, const char *
 		while (datas) {
 			lasso_extract_node_or_fail(data, datas->data, DST_DATA,
 					LASSO_ERROR_CAST_FAILED);
-			if (g_strcmp0(data->itemIDRef, query_item->itemID) == 0) {
+			if (lasso_strisequal(data->itemIDRef,query_item->itemID)) {
 				break;
 			}
 			data = NULL;
@@ -510,7 +510,7 @@ lasso_data_service_get_answers_by_item_id(LassoDataService *service, const char 
 	datas = query_response->Data;
 	while (datas) {
 		lasso_extract_node_or_fail(data, datas->data, DST_DATA, LASSO_ERROR_CAST_FAILED);
-		if (g_strcmp0(data->itemIDRef, item_id) == 0) {
+		if (lasso_strisequal(data->itemIDRef,item_id)) {
 			break;
 		}
 		data = NULL;

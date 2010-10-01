@@ -197,7 +197,7 @@ START_TEST(test02_saml2_serviceProviderLogin)
 	check_equals(idpLoginContext->protocolProfile, LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART);
 	check_false(lasso_login_must_ask_for_consent(idpLoginContext));
 	check_not_null(idpLoginContext->parent.msg_relayState);
-	check_equals(g_strcmp0(idpLoginContext->parent.msg_relayState, relayState), 0);
+	check_equals(lasso_strisnotequal(idpLoginContext->parent.msg_relayState,relayState), 0);
 	check_good_rc(lasso_login_validate_request_msg(idpLoginContext,
 			1, /* authentication_result */
 		        0 /* is_consent_obtained */
@@ -239,7 +239,7 @@ START_TEST(test02_saml2_serviceProviderLogin)
 			responseQuery,
 			LASSO_HTTP_METHOD_ARTIFACT_GET));
 	check_not_null(spLoginContext->parent.msg_relayState);
-	check_equals(g_strcmp0(spLoginContext->parent.msg_relayState, relayState), 0);
+	check_equals(lasso_strisnotequal(spLoginContext->parent.msg_relayState,relayState), 0);
 	check_good_rc(lasso_login_build_request_msg(spLoginContext));
 	soapRequestMsg = LASSO_PROFILE(spLoginContext)->msg_body;
 	check_not_null(soapRequestMsg);
@@ -543,7 +543,7 @@ START_TEST(test04_sso_then_slo_soap)
 	check_equals(idpLoginContext->protocolProfile, LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART);
 	check_false(lasso_login_must_ask_for_consent(idpLoginContext));
 	check_not_null(idpLoginContext->parent.msg_relayState);
-	check_equals(g_strcmp0(idpLoginContext->parent.msg_relayState, relayState), 0);
+	check_equals(lasso_strisnotequal(idpLoginContext->parent.msg_relayState,relayState), 0);
 	check_good_rc(lasso_login_validate_request_msg(idpLoginContext,
 			1, /* authentication_result */
 		        0 /* is_consent_obtained */
@@ -585,7 +585,7 @@ START_TEST(test04_sso_then_slo_soap)
 			responseQuery,
 			LASSO_HTTP_METHOD_ARTIFACT_GET));
 	check_not_null(spLoginContext->parent.msg_relayState);
-	check_equals(g_strcmp0(spLoginContext->parent.msg_relayState, relayState), 0);
+	check_equals(lasso_strisnotequal(spLoginContext->parent.msg_relayState,relayState), 0);
 	check_good_rc(lasso_login_build_request_msg(spLoginContext));
 	soapRequestMsg = LASSO_PROFILE(spLoginContext)->msg_body;
 	check_not_null(soapRequestMsg);

@@ -115,7 +115,7 @@ lasso_wsa_endpoint_reference_get_idwsf2_security_context_for_security_mechanism(
 	lasso_foreach_full_begin(LassoIdWsf2DiscoSecurityContext*, context, it1, epr->Metadata->any);
 	if (LASSO_IS_IDWSF2_DISCO_SECURITY_CONTEXT (context)) {
 		lasso_foreach_full_begin(char*, textnode, it2, context->SecurityMechID);
-			if (g_strcmp0 (textnode, security_mech_id) == 0 || sech_mech_predicate(textnode)) {
+			if (lasso_strisequal(textnode,security_mech_id) || sech_mech_predicate(textnode)) {
 				return context;
 			}
 		lasso_foreach_full_end()
@@ -165,7 +165,7 @@ lasso_wsa_endpoint_reference_get_token_by_usage(
 			epr, sec_mech_predicate, security_mech_id, TRUE);
 	lasso_foreach_full_begin (LassoIdWsf2SecToken*, token, iter, security_context->Token);
 	if (LASSO_IS_IDWSF2_SEC_TOKEN (token)) {
-		if (usage && g_strcmp0(token->usage, usage) == 0) {
+		if (usage && lasso_strisequal(token->usage,usage)) {
 			if (LASSO_IS_NODE(token->any)) {
 				return (LassoNode*)token->any;
 			} else if (token->ref) {

@@ -485,7 +485,7 @@
  * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ.
  */
 #define lasso_check_non_empty_string(str) \
-	goto_cleanup_if_fail_with_rc(! lasso_is_empty_string(str), \
+	goto_cleanup_if_fail_with_rc(! lasso_strisempty(str), \
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 /*

@@ -406,8 +406,8 @@ lasso_assertion_query_lookup_attribute(LassoAssertionQuery *assertion_query, cha
 	lasso_foreach_full_begin(LassoSaml2Attribute*, attribute, it, query->Attribute)
 	{
 		if (LASSO_IS_SAML2_ATTRIBUTE(attribute) &&
-				g_strcmp0(attribute->NameFormat, format) == 0 &&
-				g_strcmp0(attribute->Name, name) == 0)
+				lasso_strisequal(attribute->NameFormat,format) &&
+				lasso_strisequal(attribute->Name,name))
 		{
 			result = attribute;
 			break;

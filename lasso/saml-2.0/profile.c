@@ -1284,7 +1284,9 @@ _lasso_saml20_is_valid_issuer(LassoSaml2NameID *name_id) {
 	if (! LASSO_IS_SAML2_NAME_ID(name_id))
 		return FALSE;
 
-	if (name_id->Format && g_strcmp0(name_id->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY) != 0) {
+	if (name_id->Format &&
+			lasso_strisnotequal(name_id->Format,LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY))
+	{
 		return FALSE;
 	}
 	return TRUE;
@@ -1385,8 +1387,7 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 			LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
 	lasso_extract_node_or_fail(status_code1, status->StatusCode, SAMLP2_STATUS_CODE,
 			LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
-	if (g_strcmp0(status_code1->Value,
-				LASSO_SAML2_STATUS_CODE_SUCCESS) != 0)
+	if (lasso_strisnotequal(status_code1->Value,LASSO_SAML2_STATUS_CODE_SUCCESS))
 	{
 		LassoSamlp2StatusCode *status_code2 = status_code1->StatusCode;
 		rc = LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;

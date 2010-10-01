@@ -163,13 +163,13 @@ lasso_saml2_name_id_equals(LassoSaml2NameID *name_id, LassoSaml2NameID *other_na
 		return FALSE;
 
 	/* check optional content */
-	if (g_strcmp0(name_id->Format, other_name_id->Format) != 0)
+	if (lasso_strisnotequal(name_id->Format,other_name_id->Format))
 		return FALSE;
-	if (g_strcmp0(name_id->SPProvidedID, other_name_id->SPProvidedID) != 0)
+	if (lasso_strisnotequal(name_id->SPProvidedID,other_name_id->SPProvidedID))
 		return FALSE;
-	if (g_strcmp0(name_id->NameQualifier, other_name_id->NameQualifier) != 0)
+	if (lasso_strisnotequal(name_id->NameQualifier,other_name_id->NameQualifier))
 		return FALSE;
-	if (g_strcmp0(name_id->SPNameQualifier, other_name_id->SPNameQualifier) != 0)
+	if (lasso_strisnotequal(name_id->SPNameQualifier,other_name_id->SPNameQualifier))
 		return FALSE;
 
 	return TRUE;

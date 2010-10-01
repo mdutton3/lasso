@@ -749,7 +749,7 @@ LassoProviderRole lasso_profile_sso_role_with(LassoProfile *profile, const char 
 		return LASSO_PROVIDER_ROLE_NONE;
 
 	/* coherency check */
-	g_return_val_if_fail(g_strcmp0(federation->remote_providerID, remote_provider_id) == 0,
+	g_return_val_if_fail(lasso_strisequal(federation->remote_providerID,remote_provider_id),
 			LASSO_PROVIDER_ROLE_NONE);
 
 	if (LASSO_IS_SAML2_NAME_ID(federation->local_nameIdentifier)) {
@@ -764,9 +764,9 @@ LassoProviderRole lasso_profile_sso_role_with(LassoProfile *profile, const char 
 		message(G_LOG_LEVEL_WARNING, "a federation without a NameID was found");
 		return LASSO_PROVIDER_ROLE_NONE;
 	}
-	if (g_strcmp0(remote_provider_id, name_qualifier) == 0) {
+	if (lasso_strisequal(remote_provider_id,name_qualifier)) {
 		return LASSO_PROVIDER_ROLE_SP;
-	} else if (g_strcmp0(provider_id, name_qualifier) == 0) {
+	} else if (lasso_strisequal(provider_id,name_qualifier)) {
 		return LASSO_PROVIDER_ROLE_IDP;
 	}
 	return LASSO_PROVIDER_ROLE_NONE;
