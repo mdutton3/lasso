@@ -783,7 +783,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	/* TRANSIENT */
 	if (!name_id_policy || name_id_policy->Format == NULL ||
 			g_strcmp0(name_id_policy->Format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_UNSPECIFIED) ||
+				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_UNSPECIFIED) == 0 ||
 			g_strcmp0(name_id_policy->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
 		char *id = lasso_build_unique_id(32);
