@@ -46,7 +46,7 @@ char* create_authn_response_msg(char *query);
 		} \
 	}
 
-void create_authn_request(LassoLogin *sp_login, LassoLogin *idp_login)
+void create_authn_request(LassoLogin *sp_login, G_GNUC_UNUSED LassoLogin *idp_login)
 {
 
 	check_good_rc(lasso_login_init_authn_request(sp_login, NULL, LASSO_HTTP_METHOD_REDIRECT));
@@ -62,7 +62,7 @@ process_authn_request(LassoLogin *sp_login, LassoLogin *idp_login)
 }
 
 void
-create_authn_response(LassoLogin *sp_login, LassoLogin *idp_login)
+create_authn_response(G_GNUC_UNUSED LassoLogin *sp_login, LassoLogin *idp_login)
 {
 	if (LASSO_SAMLP2_RESPONSE(idp_login->parent.response)->Assertion) {
 		g_object_unref(LASSO_SAMLP2_RESPONSE(idp_login->parent.response)->Assertion->data);
@@ -122,8 +122,7 @@ main(int argc, char *argv[])
 {
 	LassoServer *sp_server, *idp_server;
 	LassoLogin *sp_login, *idp_login;
-	int i, n;
-	char *authn_response_msg;
+	int n;
 
 	lasso_init();
 
