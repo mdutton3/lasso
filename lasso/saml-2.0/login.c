@@ -762,6 +762,12 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Subject->SubjectConfirmation->SubjectConfirmationData =
 		LASSO_SAML2_SUBJECT_CONFIRMATION_DATA(
 			lasso_saml2_subject_confirmation_data_new());
+	lasso_assign_string(
+		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotBefore,
+		notBefore);
+	lasso_assign_string(
+		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter,
+		notOnOrAfter);
 
 	/* If request is present, refer to it in the response */
 	if (authn_request) {
