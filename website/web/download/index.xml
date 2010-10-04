@@ -10,7 +10,7 @@
 	<p>
 	  Lasso is licensed under the GNU GPL and the latest release
 	  is available here as a gzipped tarball:
-	  <a href="https://dev.entrouvert.org/attachments/download/15/lasso-2.3.2.tar.gz">lasso-2.3.2.tar.gz</a>
+	  <a href="https://dev.entrouvert.org/attachments/download/22/lasso-2.3.3.tar.gz">lasso-2.3.3.tar.gz</a>
 	</p>
 
 	<h2>Binary Downloads</h2>
@@ -53,63 +53,21 @@ deb http://deb.entrouvert.org karmic main
 	</p>
 
 
-	<h3>Fedora Core Packages</h3>
-
-	<p>
-	  There are RPM packages built on Fedora Core 6; <strong>beware that
-		  they are from an old release</strong>
-	</p>
-
-	<ul>
-	 <li><a
-	 href="http://labs.libre-entreprise.org/frs/download.php/596/lasso-2.1.1-1.i386.rpm">lasso-2.1.1-1.i386.rpm</a></li>
-	 <li><a
-	 href="http://labs.libre-entreprise.org/frs/download.php/597/lasso-devel-2.1.1-1.i386.rpm">lasso-devel-2.1.1-1.i386.rpm</a></li>
-	 <li><a
-	 href="http://labs.libre-entreprise.org/frs/download.php/598/lasso-java-2.1.1-1.i386.rpm">lasso-java-2.1.1-1.i386.rpm</a></li>
-	 <li><a
-	 href="http://labs.libre-entreprise.org/frs/download.php/599/lasso-perl-2.1.1-1.i386.rpm">lasso-perl-2.1.1-1.i386.rpm</a></li>
-	 <li><a
-	 href="http://labs.libre-entreprise.org/frs/download.php/600/lasso-python-2.1.1-1.i386.rpm">lasso-python-2.1.1-1.i386.rpm</a></li>
-	</ul>
-
-
 	<h3>Microsoft Windows Installer Packages</h3>
 
 	<p>
-	 The following Microsoft Windows installer packages are available
-	 for the previous, 2.1.1, release:
+		Windows support is currently being updated, expect some news soon.
 	</p>
 
-	<ul>
-	 <li><a
-	 href="https://labs.libre-entreprise.org/frs/download.php/629/Install-lite-wsf-2_1_1.exe">[lite]</a>
-	 Installer with Lasso library</li>
-	 <li><a
-	 href="https://labs.libre-entreprise.org/frs/download.php/630/Install-full-wsf-2_1_1.exe">[full]</a>
-	 Installer with Lasso library as well as dependencies</li>
-	 <li><a
-	 href="https://labs.libre-entreprise.org/frs/download.php/631/Install-java-lite-wsf-2_1_1.exe">[java
-	 lite]</a> Installer with Java binding for Lasso library</li>
-	 <li><a
-	 href="http://labs.libre-entreprise.org/frs/download.php/603/Install-deps-2_1_1.exe">[deps]</a>
-	 Installer with dependencies only</li>
-	</ul>
-
-
-	<h2>Subversion</h2>
+	<h2>Git</h2>
 
 	<p>
-	 Lasso is also available through Subversion; you can checkout source code
+	 Lasso is also available through Git; you can checkout source code
 	 (see below) or browse source files online with <a
-	 href="https://dev.entrouvert.org/projects/lasso/repository">ViewCVS</a>.
+	 href="https://dev.entrouvert.org/projects/lasso/repository">Redmine</a>.
 	</p>
 
-	<pre> svn checkout svn://labs.libre-entreprise.org/svnroot/lasso/trunk lasso </pre>
-
-	<p> We are actively moving to git for future development, the details
-		will be given here. For people who cannot use git, regular
-		tarbal of the trunk will be made. </p>
+	<pre> git clone http://dev.entrouvert.org/git/lasso.git </pre>
 
  </body>
 </html>

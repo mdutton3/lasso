@@ -48,8 +48,8 @@
   <p>
    The most recent version of Lasso is <strong>2.3.3</strong>. You can
    <a
-   href="https://dev.entrouvert.org/attachments/download/15/lasso-2.3.2.tar.gz">download
-   the 2.3.2 tarball here</a> or get more options on the general <a
+   href="https://dev.entrouvert.org/attachments/download/22/lasso-2.3.3.tar.gz">download
+   the 2.3.3 tarball here</a> or get more options on the general <a
    href="/download/">download</a> page.
   </p>
 
@@ -155,6 +155,16 @@
     </tr>
     <tr>
      <td>Identity Provider Introduction (cookie)</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr>
+     <td>Attribute Query SOAP</td>
+     <td>OK</td>
+     <td>OK</td>
+    </tr>
+    <tr>
+     <td>Authorization Decision Query SOAP</td>
      <td>OK</td>
      <td>OK</td>
     </tr>
