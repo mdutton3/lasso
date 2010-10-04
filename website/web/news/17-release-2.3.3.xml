@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<h3>2010-09-07: Released 2.3.3</h3>
+
+ <p>
+  Lasso 2.3.3 have been released.
+  <a href="/download/">Download 2.3.3 now</a>
+ </p>
+
+ <p class="changes">
+  <strong>What changed ?</strong>
+  Mainly memory leaks fix and two SAMLv2 spec non-conformity were corrected,
+  one on presence of the Destination attribute and another on the presence of
+  the NotOnOrAfter in the SubjectConfirmationData element. An error on the code
+  for finding a default assertion consumer service URL was also fixed.
+ </p>
+
+</div>
