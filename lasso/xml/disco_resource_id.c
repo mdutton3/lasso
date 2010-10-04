@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "disco_resource_id.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:disco_resource_id

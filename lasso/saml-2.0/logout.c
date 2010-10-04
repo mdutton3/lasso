@@ -121,7 +121,7 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 {
 	LassoProfile *profile = NULL;
 	LassoSamlp2LogoutRequest *logout_request = NULL;
-	int rc1 = 0, rc2 = 0;
+	int rc1 = 0, rc2 = 0, rc = 0;
 
 	lasso_bad_param(LOGOUT, logout);
 	lasso_null_param(request_msg);
@@ -130,26 +130,19 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	logout_request = (LassoSamlp2LogoutRequest*) lasso_samlp2_logout_request_new();
 	rc1 = lasso_saml20_profile_process_any_request(profile, (LassoNode*)logout_request,
 			request_msg);
+	goto_cleanup_if_fail_with_rc(rc1 == 0, rc1);
 
-	logout_request = (LassoSamlp2LogoutRequest*)profile->request;
-	if (rc1 && ! logout_request) {
-		return rc1;
-	}
 	/* remember initial request method, for setting it for generating response */
 	logout->initial_http_request_method = profile->http_request_method;
-
 	rc2 = lasso_saml20_profile_process_name_identifier_decryption(profile,
 			&logout_request->NameID,
 			&logout_request->EncryptedID);
+	goto_cleanup_if_fail_with_rc(rc2 == 0, rc2);
+	lasso_check_good_rc(lasso_saml20_profile_check_signature_status(profile));
 
+cleanup:
 	lasso_release_gobject(logout_request);
-	if (profile->signature_status) {
-		return profile->signature_status;
-	}
-	if (rc1) {
-		return rc1;
-	}
-	return rc2;
+	return rc;
 }
 
 int
@@ -181,13 +174,6 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	response = (LassoSamlp2StatusResponse*)lasso_samlp2_logout_response_new();
 	lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
 				LASSO_SAML2_STATUS_CODE_SUCCESS, NULL));
-
-	/* verify signature status */
-	if (profile->signature_status != 0) {
-		lasso_saml20_profile_set_response_status_requester(profile,
-				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
-		return profile->signature_status;
-	}
 
 	/* Get the name identifier */
 	name_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID;
@@ -236,7 +222,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 		}
 		assertion_SessionIndex =
 			((LassoSaml2AuthnStatement*)assertion->AuthnStatement->data)->SessionIndex;
-		if (g_strcmp0(logout_request->SessionIndex, assertion_SessionIndex) != 0) {
+		if (lasso_strisnotequal(logout_request->SessionIndex,assertion_SessionIndex)) {
 			lasso_saml20_profile_set_response_status_responder(profile,
 					LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 			return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
@@ -346,9 +332,16 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 	if (! LASSO_IS_SAMLP2_STATUS_RESPONSE(profile->response)) {
 		/* no response set here means request denied */
 		response = (LassoSamlp2StatusResponse*) lasso_samlp2_logout_response_new();
-		lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
-					LASSO_SAML2_STATUS_CODE_RESPONDER,
-					LASSO_SAML2_STATUS_CODE_REQUEST_DENIED));
+		/* verify signature status */
+		if (lasso_saml20_profile_check_signature_status(profile) != 0) {
+			lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
+						LASSO_SAML2_STATUS_CODE_REQUESTER,
+						LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE));
+		} else {
+			lasso_check_good_rc(lasso_saml20_profile_init_response(profile, response,
+						LASSO_SAML2_STATUS_CODE_RESPONDER,
+						LASSO_SAML2_STATUS_CODE_REQUEST_DENIED));
+		}
 	}
 
 	/* build logout response message */
@@ -375,6 +368,13 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 	lasso_check_good_rc(lasso_saml20_profile_process_any_response(profile, response,
 				&response_method, response_msg));
 
+	/* only if asked we report, otherwise we do not care */
+	if (profile->signature_status && lasso_profile_get_signature_verify_hint(profile) ==
+			LASSO_PROFILE_SIGNATURE_HINT_FORCE)
+	{
+		goto_cleanup_with_rc(profile->signature_status);
+	}
+
 	remote_provider = lasso_server_get_provider(logout->parent.server,
 			logout->parent.remote_providerID);
 	goto_cleanup_if_fail_with_rc(LASSO_IS_PROVIDER(remote_provider),
@@ -392,11 +392,11 @@ cleanup:
 
 		value = sub_status_code->Value;
 
-		if (g_strcmp0(value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED) == 0) {
+		if (lasso_strisequal(value,LASSO_SAML2_STATUS_CODE_REQUEST_DENIED)) {
 			rc = LASSO_LOGOUT_ERROR_REQUEST_DENIED;
 			break;
 		}
-		if (g_strcmp0(value, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
+		if (lasso_strisequal(value,LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL)) {
 			rc = LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
 			break;
 		}

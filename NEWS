@@ -1,7 +1,40 @@
 NEWS
 ====
 
-2.3.2 - Septembre 7th 2010
+2.3.3 - October 1st 2010
+------------------------
+
+44 commits, 264 files changed, 858 insertions, 401 deletions
+
+Generic:
+ * Fixed a lot of memleaks thanks to valgrind, the greatest tool on earth (with
+   coccinelle).
+ * Add missing annotation creating memleaks in python binding (on lasso_*_dump king   of methods).
+ * Fix bad inclusion of an ID-WSF include file when ID-WSF support is not enabled
+ * Benchmarking program was updated to measure each part of a WebSSO
+   independently (AuthnRequest generation/processing, AuthnResponse
+   generation/processing).
+ * Add new macro lasso_strisequal and lasso_strisnotequal to avoid errors with
+   strcmp. (Thanks to coccinelle semantic patches).
+
+SAMLv2:
+ * Add uniform support for LassoProfileVerifySignatureHint for other profiles
+   than WebSSO.
+ * Report signature errors in response to NameIDNanagement requests
+ * Fix wrong use of macro lasso_foreach breaking the mecanism for finding a
+   default assertion consumer.
+ * Behaviour of lasso_login_build_assertion was modified:
+   - when the NameIDPolicy lacks a Format attribute or the Format attribute is
+     the unspecified format (see the spec for the corresponding URN). Now it
+     results in a transient nameid being generated. If you want it to be
+     persistent you must change it before calling this method.
+   - the setting of the SubjectConfirmationData->NotOnOrAfter attribute was
+     restored as it is mandated by the WebSSO profile. It's the same value as
+     Conditions->NotOnOrAfter.
+ * Fix missing initialization of Destination attribute on Samlp2StatusResponse
+   object for synchronous bindings (Redirect & Post)
+
+2.3.2 - September 7th 2010
 --------------------------
 
  * Fix bug in increment of the libtool version info, increasing the SONAME

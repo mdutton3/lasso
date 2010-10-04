@@ -2413,7 +2413,7 @@ lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
  *
  * Dumps @login content to an XML string.
  *
- * Return value: the dump string.  It must be freed by the caller.
+ * Return value:(transfer full): the dump string.  It must be freed by the caller.
  **/
 gchar*
 lasso_login_dump(LassoLogin *login)

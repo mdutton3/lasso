@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "is_inquiry_element.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:is_inquiry_element

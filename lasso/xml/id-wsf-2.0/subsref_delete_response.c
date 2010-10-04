@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "subsref_delete_response.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:subsref_delete_response

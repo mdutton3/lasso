@@ -376,7 +376,7 @@ lasso_session_is_dirty(LassoSession *session)
 gint
 lasso_session_remove_assertion(LassoSession *session, const gchar *providerID)
 {
-	if (! LASSO_IS_SESSION(session) || lasso_is_empty_string(providerID)) {
+	if (! LASSO_IS_SESSION(session) || lasso_strisempty(providerID)) {
 		return LASSO_PARAM_ERROR_INVALID_VALUE;
 	}
 
@@ -756,7 +756,7 @@ lasso_session_new_from_dump(const gchar *dump)
  *
  * Dumps @session content to an XML string.
  *
- * Return value: the dump string.  It must be freed by the caller.
+ * Return value:(transfer full): the dump string.  It must be freed by the caller.
  **/
 gchar*
 lasso_session_dump(LassoSession *session)

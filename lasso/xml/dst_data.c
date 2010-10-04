@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "dst_data.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:dst_data

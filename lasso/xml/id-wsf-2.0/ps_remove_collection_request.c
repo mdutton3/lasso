@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "ps_remove_collection_request.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:ps_remove_collection_request

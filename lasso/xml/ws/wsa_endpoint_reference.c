@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "wsa_endpoint_reference.h"
+#include "../idwsf_strings.h"
 #include "../../registry.h"
 
 /*

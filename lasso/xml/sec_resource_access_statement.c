@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "sec_resource_access_statement.h"
+#include "./idwsf_strings.h"
 
 /*
  * <xs: element name="ResourceAccessStatement"

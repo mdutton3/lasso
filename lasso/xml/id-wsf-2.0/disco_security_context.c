@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "disco_security_context.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:disco_security_context

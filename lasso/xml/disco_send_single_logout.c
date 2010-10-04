@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "disco_send_single_logout.h"
+#include "./idwsf_strings.h"
 #include "../registry.h"
 
 /**

@@ -1405,7 +1405,7 @@ lasso_logout_new_from_dump(LassoServer *server, const char *dump)
  *
  * Dumps @logout content to an XML string.
  *
- * Return value: the dump string.  It must be freed by the caller.
+ * Return value:(transfer full): the dump string.  It must be freed by the caller.
  **/
 gchar*
 lasso_logout_dump(LassoLogout *logout)

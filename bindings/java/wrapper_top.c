@@ -8,6 +8,7 @@
 #include "../ghashtable.h"
 #include "../../lasso/utils.h"
 #include "../utils.c"
+#include "../../lasso/backward_comp.h"
 
 #define LASSO_ROOT "com/entrouvert/lasso/"
 #define check_exception (*env)->ExceptionCheck(env)
@@ -544,7 +545,7 @@ remove_from_list_of_strings(JNIEnv *env, GList **list, jstring jstr) {
     g_error_if_fail(env && list);
     lasso_return_val_if_fail(jstr, 1);
     lasso_return_val_if_fail(jstring_to_local_string(env, jstr, &local_string), 0);
-    found = g_list_find_custom(*list, local_string, (GCompareFunc)strcmp);
+    found = g_list_find_custom(*list, local_string, (GCompareFunc)g_strcmp0);
     if (found) {
         g_free(found->data);
         *list = g_list_delete_link(*list, found);

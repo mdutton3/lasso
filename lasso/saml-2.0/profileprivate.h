@@ -78,6 +78,7 @@ gint lasso_profile_saml20_setup_message_signature(LassoProfile *profile,
 gint lasso_saml20_profile_setup_encrypted_node(LassoProvider *provider,
 		LassoNode **node_to_encrypt, LassoNode **node_destination);
 int lasso_saml20_profile_setup_subject(LassoProfile *profile, LassoSaml2Subject *subject);
+int lasso_saml20_profile_check_signature_status(LassoProfile *profile);
 
 #ifdef __cplusplus
 }

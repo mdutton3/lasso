@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "wsse_embedded.h"
+#include "../idwsf_strings.h"
 
 /*
  * Schema fragment (oasis-200401-wss-wssecurity-secext-1.0.xsd):

@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "wsse_security_header.h"
+#include "../idwsf_strings.h"
 #include "../../registry.h"
 
 /*

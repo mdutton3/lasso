@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "disco_resource_offering.h"
+#include "./idwsf_strings.h"
 #include "../utils.h"
 
 /**

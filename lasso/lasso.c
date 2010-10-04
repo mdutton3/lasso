@@ -286,23 +286,23 @@ void lasso_set_flag(char *flag) {
 	}
 
 	do {
-		if (g_strcmp0(flag, "verify-signature") == 0) {
+		if (lasso_strisequal(flag,"verify-signature")) {
 			lasso_flag_verify_signature = value;
 			continue;
 		}
-		if (g_strcmp0(flag,"memory-debug") == 0) {
+		if (lasso_strisequal(flag,"memory-debug")) {
 			lasso_flag_memory_debug = value;
 			continue;
 		}
-		if (g_strcmp0(flag,"strict-checking") == 0) {
+		if (lasso_strisequal(flag,"strict-checking")) {
 			lasso_flag_strict_checking = value;
 			continue;
 		}
-		if (g_strcmp0(flag,"add-signature") == 0) {
+		if (lasso_strisequal(flag,"add-signature")) {
 			lasso_flag_add_signature = value;
 			continue;
 		}
-		if (g_strcmp0(flag, "sign-messages") == 0) {
+		if (lasso_strisequal(flag,"sign-messages")) {
 			lasso_flag_sign_messages = value;
 			continue;
 		}

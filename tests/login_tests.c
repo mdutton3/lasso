@@ -196,7 +196,7 @@ START_TEST(test02_serviceProviderLogin)
 			"lasso_login_must_ask_for_consent() should be FALSE");
 	fail_unless(idpLoginContext->parent.msg_relayState != NULL,
 			"lasso_login_process_authn_request_msg should restore the RelayState parameter");
-	fail_unless(g_strcmp0(idpLoginContext->parent.msg_relayState, relayState) == 0,
+	fail_unless(lasso_strisequal(idpLoginContext->parent.msg_relayState,relayState),
 			"lasso_login_process_authn_request_msg should restore the same RelayState thant sent in the request");
 	rc = lasso_login_validate_request_msg(idpLoginContext,
 			1, /* authentication_result */
@@ -242,7 +242,7 @@ START_TEST(test02_serviceProviderLogin)
 			LASSO_HTTP_METHOD_REDIRECT);
 	fail_unless(spLoginContext->parent.msg_relayState != NULL,
 			"lasso_login_init_request should restore the RelayState parameter");
-	fail_unless(g_strcmp0(spLoginContext->parent.msg_relayState, relayState) == 0,
+	fail_unless(lasso_strisequal(spLoginContext->parent.msg_relayState,relayState),
 			"lasso_login_init_request should restore the same RelayState thant sent in the request");
 	fail_unless(rc == 0, "lasso_login_init_request failed");
 	rc = lasso_login_build_request_msg(spLoginContext);

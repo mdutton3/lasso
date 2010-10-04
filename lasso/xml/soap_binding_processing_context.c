@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "soap_binding_processing_context.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:soap_binding_processing_context

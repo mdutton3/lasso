@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "wsa_attributed_uri.h"
+#include "../idwsf_strings.h"
 #include "../../registry.h"
 
 /*

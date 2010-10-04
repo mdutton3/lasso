@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "ps_resolve_identifier_request.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:ps_resolve_identifier_request

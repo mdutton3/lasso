@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "is_text.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:is_text

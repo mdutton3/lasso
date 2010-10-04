@@ -477,11 +477,6 @@
 #define lasso_null_param(name) \
 	g_return_val_if_fail(name != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-inline static gboolean
-lasso_is_empty_string(const char *str) {
-	return ((str) == NULL || (str)[0] == '\0');
-}
-
 /**
  * lasso_check_non_empty_string:
  * @str: a char pointer
@@ -490,7 +485,7 @@ lasso_is_empty_string(const char *str) {
  * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ.
  */
 #define lasso_check_non_empty_string(str) \
-	goto_cleanup_if_fail_with_rc(! lasso_is_empty_string(str), \
+	goto_cleanup_if_fail_with_rc(! lasso_strisempty(str), \
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 /*
@@ -658,5 +653,23 @@ GObject * lasso_extract_gtype_from_list_or_new(GType type, GList **list, gboolea
 	if (lasso_flag_memory_debug) { \
 		fprintf(stderr, ## args); \
 	}
+
+/* Lasso string data helpers */
+inline static gboolean
+lasso_strisequal(const char *a, const char *b) {
+	return (g_strcmp0(a,b) == 0);
+}
+inline static gboolean
+lasso_strisnotequal(const char *a, const char *b) {
+	return ! lasso_strisequal(a,b);
+}
+inline static gboolean
+lasso_strisempty(const char *str) {
+	return ((str) == NULL || (str)[0] == '\0');
+}
+inline static gboolean
+lasso_xmlstrisnotequal(const xmlChar *a, const xmlChar *b) {
+	return lasso_strisnotequal((char*)a, (char*)b);
+}
 
 #endif /* __LASSO_UTILS_H__ */

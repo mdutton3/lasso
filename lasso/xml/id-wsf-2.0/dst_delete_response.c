@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "dst_delete_response.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:dst_delete_response

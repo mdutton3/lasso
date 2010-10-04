@@ -83,6 +83,7 @@
 #include "../id-ff/providerprivate.h"
 
 #include "./discovery.h"
+#include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "./soap_binding.h"
 #include "./idwsf2_helper.h"
 #include "./saml2_login.h"
@@ -226,7 +227,7 @@ lasso_idwsf2_discovery_status2rc(LassoIdWsf2UtilStatus *status)
 		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 
 	for (i = 0; i < G_N_ELEMENTS(code2rc); ++i) {
-		if (g_strcmp0(status->code, code2rc[i].code) == 0) {
+		if (lasso_strisequal(status->code,code2rc[i].code)) {
 			rc = code2rc[i].rc;
 		}
 	}
@@ -571,7 +572,7 @@ lasso_idwsf2_discovery_build_request_msg(LassoIdWsf2Discovery *discovery,
 			GList *i;
 			lasso_foreach(i, discovery->private_data->metadatas) {
 				LassoIdWsf2DiscoSvcMetadata *metadata = (LassoIdWsf2DiscoSvcMetadata *)i->data;
-				if (lasso_is_empty_string(metadata->svcMDID)) {
+				if (lasso_strisempty(metadata->svcMDID)) {
 					message(G_LOG_LEVEL_WARNING, "disco:MetadataReplace method called with " \
 							"non registered metadatas " \
 							"(svcMDID attribute is missing)");
@@ -826,7 +827,7 @@ _string_list_intersect(GList *a, GList *b)
 	lasso_foreach(i, a)
 	{
 		lasso_foreach(j, b)
-			if (g_strcmp0(i->data, j->data) == 0) {
+			if (lasso_strisequal(i->data,j->data)) {
 				return TRUE;
 			}
 	}
@@ -841,7 +842,7 @@ _string_list_contains(GList *a, const char *str)
 	if (a == NULL)
 		return TRUE;
 	lasso_foreach(i, a)
-		if (g_strcmp0(i->data, str) == 0) {
+		if (lasso_strisequal(i->data,str)) {
 			return TRUE;
 		}
 	return FALSE;
@@ -916,7 +917,7 @@ lasso_idwsf2_discovery_match_request_service_and_metadata2(
 			gboolean has20 = FALSE;
 			lasso_foreach (k, endpoint_context->Framework) {
 				LassoIdWsf2SbfFramework *framework = k->data;
-				if (LASSO_IS_IDWSF2_SBF_FRAMEWORK(framework) && g_strcmp0(framework->version, "2.0") == 0)
+				if (LASSO_IS_IDWSF2_SBF_FRAMEWORK(framework) && lasso_strisequal(framework->version,"2.0"))
 					has20 = TRUE;
 			}
 			result = result && has20;
@@ -1033,7 +1034,7 @@ lasso_idwsf2_discovery_validate_md_register(LassoIdWsf2Discovery *discovery)
 
 	response = lasso_idwsf2_disco_svc_md_register_response_new();
 	response->Status =
-		lasso_idwsf2_util_status_new_with_code(LASSO_DISCO_STATUS_CODE_OK, NULL);
+		lasso_idwsf2_util_status_new_with_code(LASSO_IDWSF2_DISCOVERY_STATUS_CODE_OK, NULL);
 	for (SvcMDs = discovery->private_data->metadatas; SvcMDs != NULL; SvcMDs = g_list_next(SvcMDs)) {
 		lasso_list_add_string(response->SvcMDID,
 				LASSO_IDWSF2_DISCO_SVC_METADATA(SvcMDs->data)->svcMDID);

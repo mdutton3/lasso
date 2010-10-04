@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "subsref_app_data.h"
+#include "./idwsf2_strings.h"
 #include "../../registry.h"
 
 /**

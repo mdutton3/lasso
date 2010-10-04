@@ -24,6 +24,7 @@
 
 #include "private.h"
 #include "dst_modify_response.h"
+#include "./idwsf_strings.h"
 
 /**
  * SECTION:dst_modify_response

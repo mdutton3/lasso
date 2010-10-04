@@ -24,6 +24,7 @@
 
 #include "../private.h"
 #include "ps_test_membership_request.h"
+#include "./idwsf2_strings.h"
 
 /**
  * SECTION:ps_test_membership_request
