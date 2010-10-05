@@ -76,7 +76,7 @@
 </div>
 
   <div id="content">
-    [is section "buildbox"]<h1>Subversion Status</h1>[end]
+    [is section "buildbox"]<h1>Git Status</h1>[end]
     [body]
 
      <div id="copyright">
