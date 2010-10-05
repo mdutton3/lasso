@@ -38,7 +38,7 @@
       <li[is section "mailinglists"] id="current"[end]>
        <a href="/mailinglists/">Mailing Lists</a></li>
       <li[is section "buildbox"] id="current"[end]>
-        <a href="/buildbox">Subversion Status</a></li>
+        <a href="/buildbox">Git Status</a></li>
       <li[is section "links"] id="current"[end]>
         <a href="/links">Related Links</a></li>
       <li><a href="http://bugzilla.entrouvert.org/buglist.cgi?product=Lasso">Bug
