@@ -285,7 +285,7 @@ for base, dirs, files in os.walk('web'):
             news_files = [x for x in os.listdir('web/news/') if x.endswith('.xml') and x[2] == '-']
             news_files.sort()
             news_files.reverse()
-            news_files = news_files[:3]
+            news_files = news_files[:2]
             news = []
             for f in news_files:
                 news.append('<div>%s</div>' % re_div.findall(file(os.path.join('web/news/', f)).read())[0][1].strip())
