@@ -49,7 +49,7 @@ struct EndpointType_s {
 	char *url;
 	char *return_url;
 	int index;
-	gboolean is_default;
+	int is_default;
 };
 typedef struct EndpointType_s EndpointType;
 
