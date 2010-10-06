@@ -288,7 +288,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		lasso_check_good_rc(lasso_saml20_profile_process_any_request(profile, request, authn_request_msg));
 	}
 	if (! LASSO_IS_SAMLP2_AUTHN_REQUEST(request)) {
-		return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 	authn_request = LASSO_SAMLP2_AUTHN_REQUEST(request);
 	/* intialize the response */
