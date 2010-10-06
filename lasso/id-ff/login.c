@@ -2072,28 +2072,38 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 
 	/* Check authnRequest signature. */
 	if (authn_request_msg != NULL) {
+		LassoProfileSignatureVerifyHint sig_verify_hint;
+
+		sig_verify_hint = lasso_profile_get_signature_verify_hint(profile);
 		remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-		if (remote_provider != NULL) {
-			/* Is authnRequest signed ? */
-			authnRequestSigned = lasso_provider_get_metadata_one(
-					remote_provider, "AuthnRequestsSigned");
-			if (authnRequestSigned != NULL) {
-				must_verify_signature = strcmp(authnRequestSigned, "true") == 0;
-				lasso_release_string(authnRequestSigned);
-			} else {
-				/* missing element in metadata; shouldn't
-				 * happen, assume true */
-				must_verify_signature = TRUE;
-			}
-		} else {
+		if (remote_provider == NULL) {
 			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 		}
-
-		/* verify request signature */
+		/* Is authnRequest signed ? */
+		must_verify_signature = TRUE;
+		authnRequestSigned = lasso_provider_get_metadata_one(
+				remote_provider, "AuthnRequestsSigned");
+		if (authnRequestSigned != NULL) {
+			must_verify_signature = strcmp(authnRequestSigned, "true") == 0;
+			lasso_release_string(authnRequestSigned);
+		}
+		if (sig_verify_hint == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE) {
+			must_verify_signature = TRUE;
+		}
+		if (sig_verify_hint == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE) {
+			must_verify_signature = FALSE;
+		}
+		/* reset the signature_status, and if signature validation was not really needed
+		 * just choke on the presence of an invalid signature, if no signature just goes on
+		 * */
+		profile->signature_status = 0;
 		if (must_verify_signature) {
 			ret = lasso_provider_verify_signature(remote_provider,
 					authn_request_msg, "RequestID", format);
-			profile->signature_status = ret;
+			if (profile == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE && ret !=
+					LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
+				profile->signature_status = ret;
+			}
 		}
 	}
 
