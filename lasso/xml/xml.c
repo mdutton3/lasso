@@ -33,7 +33,7 @@
 
 #include "private.h"
 #include <ctype.h>
-
+#include <errno.h>
 
 #include <xmlsec/base64.h>
 #include <xmlsec/xmltree.h>

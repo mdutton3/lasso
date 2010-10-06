@@ -24,6 +24,8 @@
 
 #define _POSIX_SOURCE
 
+#include <errno.h>
+
 #include "../xml/private.h"
 #include <xmlsec/base64.h>
 #include <xmlsec/xmltree.h>
