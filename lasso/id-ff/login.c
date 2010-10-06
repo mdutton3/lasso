@@ -2030,7 +2030,11 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
 
-		lasso_assign_new_gobject(profile->request, LASSO_NODE(request));
+		lasso_assign_new_gobject(profile->request, request);
+		if (! LASSO_IS_LIB_AUTHN_REQUEST(profile->request)) {
+			lasso_release_gobject(profile->request);
+			return LASSO_PROFILE_ERROR_INVALID_MSG;
+		}
 
 		/* get remote ProviderID */
 		lasso_assign_string(profile->remote_providerID,
