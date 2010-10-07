@@ -145,6 +145,18 @@ lasso_provider_get_assertion_consumer_service_url(LassoProvider *provider, const
 	char *name = NULL;
 	char *assertion_consumer_service_url = NULL;
 
+	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
+		int sid = -1;
+		if (service_id != NULL) {
+			if (lasso_string_to_xsd_integer(service_id, &sid)) {
+				if (sid < 0) {
+					sid = -1;
+				}
+			}
+		}
+		return lasso_saml20_provider_get_assertion_consumer_service_url(provider, sid);
+	}
+
 	if (service_id == NULL)
 		service_id = provider->private_data->default_assertion_consumer;
 	name = g_strdup_printf("AssertionConsumerServiceURL %s", service_id);
