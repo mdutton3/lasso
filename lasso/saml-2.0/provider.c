@@ -690,7 +690,7 @@ lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvide
 				lasso_strisequal(endpoint_type->kind,kind) &&
 				lasso_strisequal(endpoint_type->binding,binding))
 		{
-			return endpoint_type->url;
+			return g_strdup(endpoint_type->url);
 		}
 	}
 	return NULL;
