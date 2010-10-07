@@ -345,6 +345,7 @@ lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char 
 {
 	LassoProvider *remote_provider;
 	int rc = 0;
+	LassoProfileSignatureVerifyHint sig_verify_hint;
 
 	/* FIXME: parse only one time the message, reuse the parsed document for signature
 	 * validation */
@@ -355,13 +356,21 @@ lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char 
 	if (! LASSO_IS_SAMLP2_ARTIFACT_RESOLVE(profile->request)) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
+	lasso_assign_string(profile->private_data->artifact,
+			LASSO_SAMLP2_ARTIFACT_RESOLVE(profile->request)->Artifact);
+
+	sig_verify_hint = lasso_profile_get_signature_verify_hint(profile);
 
 	lasso_assign_string(profile->remote_providerID, LASSO_SAMLP2_REQUEST_ABSTRACT(
 			profile->request)->Issuer->content);
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 
-	profile->signature_status = lasso_provider_verify_signature(remote_provider, msg, "ID",
-			LASSO_MESSAGE_FORMAT_SOAP);
+	goto_cleanup_if_fail_with_rc(remote_provider, LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER);
+
+	if (sig_verify_hint != LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE) {
+		profile->signature_status = lasso_provider_verify_signature(remote_provider, msg, "ID",
+				LASSO_MESSAGE_FORMAT_SOAP);
+	}
 
 	switch (lasso_profile_get_signature_verify_hint(profile)) {
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
@@ -374,9 +383,7 @@ lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char 
 			break;
 	}
 
-	lasso_assign_string(profile->private_data->artifact,
-			LASSO_SAMLP2_ARTIFACT_RESOLVE(profile->request)->Artifact);
-
+cleanup:
 	return rc;
 }
 
