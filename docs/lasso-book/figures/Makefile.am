@@ -49,4 +49,5 @@ slo-sp-soap-4.svg: slo-sp-soap.svg step.xsl
 slo-sp-soap-5.svg: slo-sp-soap.svg step.xsl
 slo-sp-soap-6.svg: slo-sp-soap.svg step.xsl
 
-EXTRA_DIST = step.xsl sso-brws-art.svg sso-brws-post.svg slo-sp-soap.svg
+EXTRA_DIST = step.xsl sso-brws-art.svg sso-brws-post.svg slo-sp-soap.svg \
+	$(FIGURES_PNG_FILES) $(GENERATED_FIGURES_SVG_FILES)

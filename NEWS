@@ -1,6 +1,28 @@
 NEWS
 ====
 
+2.3.4 - Otober 8th 2010
+-----------------------
+
+14 commits, 10 files changed, 199 insertions, 49 deletions
+
+Generic
+ * fix warning for compiling on pardus and EL5
+ * the release tarball now contains the figures for the documentation
+ * lasso_login_process_authn_request documentation gained details on returned errors
+
+SAMLv2:
+ * report unknown provider instead an error on parameter value when resolving
+   and artifact in an assertionConsumer endpoint and the provider is not
+   registered into the server object.
+ * lasso_provider_get_assertion_consumer_url now use specific SAMLv2 methods
+ * fixed a bug in the ordering of indexed endpoints which produced error when
+   looking up the defualt assertion consumer. It also improved ordering in
+   presence of the attribute isDefault="false".
+
+ID-FFv1.2:
+ * respect the signature verify hint when handling authn requests
+
 2.3.3 - October 1st 2010
 ------------------------
 
