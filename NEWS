@@ -7,7 +7,7 @@ NEWS
 14 commits, 10 files changed, 199 insertions, 49 deletions
 
 Generic
- * fix warning for compiling on pardus and EL5
+ * fix warning for compiling on Pardus and EL5
  * the release tarball now contains the figures for the documentation
  * lasso_login_process_authn_request documentation gained details on returned errors
 
