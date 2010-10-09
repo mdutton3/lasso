@@ -1513,6 +1513,7 @@ cleanup:
 gint
 lasso_profile_saml20_setup_message_signature(LassoProfile *profile, LassoNode *request_or_response)
 {
+	LassoSignatureMethod sign_method;
 	lasso_bad_param(PROFILE, profile);
 
 	switch (lasso_profile_get_signature_hint(profile)) {
@@ -1544,7 +1545,7 @@ lasso_profile_saml20_setup_message_signature(LassoProfile *profile, LassoNode *r
 		} else {
 			request->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 		}
-		request->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
+		request->sign_method = profile->server->signature_method;
 		lasso_assign_string(request->private_key_file,
 				profile->server->private_key);
 		lasso_assign_string(request->certificate_file,
@@ -1562,7 +1563,7 @@ lasso_profile_saml20_setup_message_signature(LassoProfile *profile, LassoNode *r
 		} else {
 			response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 		}
-		response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
+		response->sign_method = profile->server->signature_method;
 		lasso_assign_string(response->private_key_file,
 				profile->server->private_key);
 		lasso_assign_string(response->certificate_file,
