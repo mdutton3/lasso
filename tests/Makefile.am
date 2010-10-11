@@ -15,7 +15,7 @@ noinst_PROGRAMS = tests perfs tests2
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
 	-DTESTSDATADIR=\"$(srcdir)/data/\" \
-	-DTESTSMETADATADIR=\"$(srcdir)/metadata/\" \
+	-DTESTSMETADATADIR=\"$(srcdir)/data/metadata/\" \
 	$(LASSO_CFLAGS) \
 	$(CHECK_CFLAGS)
 
