@@ -88,3 +88,16 @@ win32/nsis/lasso-deps.nsi
 win32/nsis/lasso-full.nsi
 win32/nsis/lasso-lite.nsi
 win32/nsis/python.nsi
+docs/lasso-book/book.html
+docs/lasso-book/figures/slo-sp-soap.png
+docs/lasso-book/figures/sso-brws-art.png
+docs/lasso-book/figures/sso-brws-post.png
+docs/lasso-book/writing-a-c-sp.html
+docs/lasso-book/writing-a-java-sp.html
+docs/lasso-book/writing-a-php-sp.html
+docs/lasso-book/writing-a-saml2-php-sp.html
+docs/reference/lasso/html-build.stamp
+docs/reference/lasso/scan-build.stamp
+docs/reference/lasso/sgml-build.stamp
+/lasso-?.?.?.tar.gz
+/lasso.pc
