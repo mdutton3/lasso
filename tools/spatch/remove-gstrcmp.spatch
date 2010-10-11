@@ -1,0 +1,17 @@
+@@
+expression E,D;
+@@
+- g_strcmp0(E,D) == 0
++ lasso_strisequal(E,D)
+
+@@
+expression E,D;
+@@
+- g_strcmp0(E,D) != 0
++ lasso_strisnotequal(E,D)
+
+@@
+@@
+
+- lasso_is_empty_string
++ lasso_strisempty
