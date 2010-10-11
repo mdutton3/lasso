@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" entityID="https://idp.feide.no">
+  <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>MIIDhjCCAm4CCQCMHNhxUI2H1TANBgkqhkiG9w0BAQUFADCBhDELMAkGA1UEBhMCTk8xEjAQBgNVBAcTCVRyb25kaGVpbTETMBEGA1UEChMKVW5pbmV0dCBBUzEOMAwGA1UECxMFRkVJREUxFTATBgNVBAMTDGlkcC5mZWlkZS5ubzElMCMGCSqGSIb3DQEJARYWbW9yaWEtZHJpZnRAdW5pbmV0dC5ubzAeFw0wODA5MDUxMTU0MzNaFw0xODA3MTUxMTU0MzNaMIGEMQswCQYDVQQGEwJOTzESMBAGA1UEBxMJVHJvbmRoZWltMRMwEQYDVQQKEwpVbmluZXR0IEFTMQ4wDAYDVQQLEwVGRUlERTEVMBMGA1UEAxMMaWRwLmZlaWRlLm5vMSUwIwYJKoZIhvcNAQkBFhZtb3JpYS1kcmlmdEB1bmluZXR0Lm5vMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4fTsmIsKVGtniXddnerSeiLeAZAlAOL8v+ebzVzYcpTJzMHrplD+lF2tXxRgs7IGEw3t2zRCtxnGbiGkXPW+oCs4T989z+Sq8nh7Lff/XlyK+jQ7BtfC8RUYQ+eNEQy0Fif+81JyPbiwZovbiL4WrK1GOG81/2CF7rvwyXJkDD1YXJ5W18/c06YLfYJjuzZgEoCVRq6ecgQyPKg1xwIpW2GpkKOBXA7oKWtev+xcmSiLZwZE96mSHjty0L+wW6NUuf2/8VSCc4IED0EbzqFUoeHuGXqPak+tu9+VpP6vmmyp4gSCxsmWtoKm7UC8P1QeCyZxwQaoGlIp78wsE5ao5wIDAQABMA0GCSqGSIb3DQEBBQUAA4IBAQACUWuuirUSwDWksdkwKuqsNttnNmivwUMLtKDjHbMcwVK/b4qWjrAjfmJXxamUSYlnGjeoiqSQQuc3/qHCPAZUnN8VqXcZUCBXWjMO7Y/AnnsFKHpkYm51jWckjudeyfUr4UnH7te0OuUrGRIVrRRg3DqLdgrcbkJ98JyT97hnaDMke4qNVwrQFF+yvxYs1aYkILySBB/KPGSTh5sxJovcyWd7GY4ad5nH5oEjXF1yZzndmUuHGlTTzk6SGzmUJgqKyba+KJ/jauy6qNC1gPqfnbntWKDkE9a9ow8tlsi3jHI9AZu9U6LnOvTJ8MjhyXOEByCaDnTpK8JiZr6JvCaV</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:KeyDescriptor use="encryption">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>MIIDhjCCAm4CCQCMHNhxUI2H1TANBgkqhkiG9w0BAQUFADCBhDELMAkGA1UEBhMCTk8xEjAQBgNVBAcTCVRyb25kaGVpbTETMBEGA1UEChMKVW5pbmV0dCBBUzEOMAwGA1UECxMFRkVJREUxFTATBgNVBAMTDGlkcC5mZWlkZS5ubzElMCMGCSqGSIb3DQEJARYWbW9yaWEtZHJpZnRAdW5pbmV0dC5ubzAeFw0wODA5MDUxMTU0MzNaFw0xODA3MTUxMTU0MzNaMIGEMQswCQYDVQQGEwJOTzESMBAGA1UEBxMJVHJvbmRoZWltMRMwEQYDVQQKEwpVbmluZXR0IEFTMQ4wDAYDVQQLEwVGRUlERTEVMBMGA1UEAxMMaWRwLmZlaWRlLm5vMSUwIwYJKoZIhvcNAQkBFhZtb3JpYS1kcmlmdEB1bmluZXR0Lm5vMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4fTsmIsKVGtniXddnerSeiLeAZAlAOL8v+ebzVzYcpTJzMHrplD+lF2tXxRgs7IGEw3t2zRCtxnGbiGkXPW+oCs4T989z+Sq8nh7Lff/XlyK+jQ7BtfC8RUYQ+eNEQy0Fif+81JyPbiwZovbiL4WrK1GOG81/2CF7rvwyXJkDD1YXJ5W18/c06YLfYJjuzZgEoCVRq6ecgQyPKg1xwIpW2GpkKOBXA7oKWtev+xcmSiLZwZE96mSHjty0L+wW6NUuf2/8VSCc4IED0EbzqFUoeHuGXqPak+tu9+VpP6vmmyp4gSCxsmWtoKm7UC8P1QeCyZxwQaoGlIp78wsE5ao5wIDAQABMA0GCSqGSIb3DQEBBQUAA4IBAQACUWuuirUSwDWksdkwKuqsNttnNmivwUMLtKDjHbMcwVK/b4qWjrAjfmJXxamUSYlnGjeoiqSQQuc3/qHCPAZUnN8VqXcZUCBXWjMO7Y/AnnsFKHpkYm51jWckjudeyfUr4UnH7te0OuUrGRIVrRRg3DqLdgrcbkJ98JyT97hnaDMke4qNVwrQFF+yvxYs1aYkILySBB/KPGSTh5sxJovcyWd7GY4ad5nH5oEjXF1yZzndmUuHGlTTzk6SGzmUJgqKyba+KJ/jauy6qNC1gPqfnbntWKDkE9a9ow8tlsi3jHI9AZu9U6LnOvTJ8MjhyXOEByCaDnTpK8JiZr6JvCaV</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp.feide.no/simplesaml/saml2/idp/SingleLogoutService.php"/>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp.feide.no/simplesaml/saml2/idp/SSOService.php"/>
+  </md:IDPSSODescriptor>
+  <md:ContactPerson contactType="technical">
+    <md:GivenName>Feide</md:GivenName>
+    <md:SurName>Support</md:SurName>
+    <md:EmailAddress>moria-drift@uninett.no</md:EmailAddress>
+  </md:ContactPerson>
+</md:EntityDescriptor>

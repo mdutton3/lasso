@@ -1,0 +1,28 @@
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://e-securisation.triskel-studio.com/simplesaml2/module.php/saml/sp/metadata.php/default-sp">
+  <md:SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>MIICcTCCAdqgAwIBAgIJAKxvdin5lqsuMA0GCSqGSIb3DQEBBQUAMDAxCzAJBgNVBAYTAkZSMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwHhcNMTAxMDA1MTQzNzIzWhcNMjAxMDA0MTQzNzIzWjAwMQswCQYDVQQGEwJGUjEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDPNXagKV5qkKzzEKy7e8MP7iQE3og802FVYj77Ld8gph0z4GKWqaYsg43lfJLJ3cOl/yRrvm02eoRSgoKMKi78EGwDdyGCbif4XHL1uxSXReOkzhBezkvBWzLX7QNRItGN9bEmvtLdcN5EprvD94NVJdhj2VYCsOgOaXjxXVRXzwIDAQABo4GSMIGPMB0GA1UdDgQWBBSLjyauR839sgqNb/6eKNjPwXRPfTBgBgNVHSMEWTBXgBSLjyauR839sgqNb/6eKNjPwXRPfaE0pDIwMDELMAkGA1UEBhMCRlIxITAfBgNVBAoTGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZIIJAKxvdin5lqsuMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADgYEAZvEqXyFXfkR1qsw5DA0nlfq6VEjFpyliMc/9ppY8u6/rsL0f96ZW+7RuCdpeBjwzGkNMY51udIcmTka9PeXLSjpU7IhEEV7NX5CQxDoYrUjM3VT5AacW7mJDlN90pFKbxN7MEwoylxLYDoK7vDy+s/nmBHEkp/ibGDH6yDPl0GY=</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:KeyDescriptor use="encryption">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>MIICcTCCAdqgAwIBAgIJAKxvdin5lqsuMA0GCSqGSIb3DQEBBQUAMDAxCzAJBgNVBAYTAkZSMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwHhcNMTAxMDA1MTQzNzIzWhcNMjAxMDA0MTQzNzIzWjAwMQswCQYDVQQGEwJGUjEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDPNXagKV5qkKzzEKy7e8MP7iQE3og802FVYj77Ld8gph0z4GKWqaYsg43lfJLJ3cOl/yRrvm02eoRSgoKMKi78EGwDdyGCbif4XHL1uxSXReOkzhBezkvBWzLX7QNRItGN9bEmvtLdcN5EprvD94NVJdhj2VYCsOgOaXjxXVRXzwIDAQABo4GSMIGPMB0GA1UdDgQWBBSLjyauR839sgqNb/6eKNjPwXRPfTBgBgNVHSMEWTBXgBSLjyauR839sgqNb/6eKNjPwXRPfaE0pDIwMDELMAkGA1UEBhMCRlIxITAfBgNVBAoTGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZIIJAKxvdin5lqsuMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADgYEAZvEqXyFXfkR1qsw5DA0nlfq6VEjFpyliMc/9ppY8u6/rsL0f96ZW+7RuCdpeBjwzGkNMY51udIcmTka9PeXLSjpU7IhEEV7NX5CQxDoYrUjM3VT5AacW7mJDlN90pFKbxN7MEwoylxLYDoK7vDy+s/nmBHEkp/ibGDH6yDPl0GY=</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://e-securisation.triskel-studio.com/simplesaml2/module.php/saml/sp/saml2-logout.php/default-sp"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://e-securisation.triskel-studio.com/simplesaml2/module.php/saml/sp/saml2-acs.php/default-sp" index="0"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:1.0:profiles:browser-post" Location="http://e-securisation.triskel-studio.com/simplesaml2/module.php/saml/sp/saml1-acs.php/default-sp" index="1"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="http://e-securisation.triskel-studio.com/simplesaml2/module.php/saml/sp/saml2-acs.php/default-sp" index="2"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01" Location="http://e-securisation.triskel-studio.com/simplesaml2/module.php/saml/sp/saml1-acs.php/default-sp/artifact" index="3"/>
+  </md:SPSSODescriptor>
+  <md:ContactPerson contactType="technical">
+    <md:GivenName>Triskel</md:GivenName>
+    <md:SurName>Studio</md:SurName>
+    <md:EmailAddress>ac@h-medias.com</md:EmailAddress>
+  </md:ContactPerson>
+</md:EntityDescriptor>
