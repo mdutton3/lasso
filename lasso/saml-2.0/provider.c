@@ -24,6 +24,8 @@
 
 #define _POSIX_SOURCE
 
+#include <errno.h>
+
 #include "../xml/private.h"
 #include <xmlsec/base64.h>
 #include <xmlsec/xmltree.h>
@@ -145,7 +147,7 @@ load_endpoint_type2(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole
 	xmlChar *isDefault = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_ISDEFAULT);
 	gboolean indexed_endpoint = FALSE;
 	int idx = *counter++;
-	gboolean is_default = FALSE;
+	int is_default = 0;
 	EndpointType *endpoint_type;
 
 	if (! binding || ! location) {
@@ -158,7 +160,18 @@ load_endpoint_type2(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole
 			warning("Invalid AssertionConsumerService, no index set");
 			goto cleanup;
 		}
-		is_default = xsdIsTrue(isDefault);
+		/* isDefault is 0 if invalid or not present
+		 * -1 if true (comes first)
+		 * +1 if false (comes last)
+		 */
+		if (isDefault) {
+			if (xsdIsTrue(isDefault)) {
+				is_default = -1;
+			}
+			if (xsdIsFalse(isDefault)) {
+				is_default = 1;
+			}
+		}
 	}
 	endpoint_type = g_new0(EndpointType, 1);
 	endpoint_type->kind = g_strdup((char*)xmlnode->name);
@@ -182,6 +195,13 @@ static gint
 compare_endpoint_type(const EndpointType *a, const EndpointType *b) {
 	int c;
 	
+	/* order the sequence of endpoints:
+	 * - first by role,
+	 * - then by profile,
+	 * - then by isDefault attribute (truth first, then absent, then false)
+	 * - then by index
+	 * - then by binding
+	 */
 	if (a->role < b->role)
 		return -1;
 	if (a->role > b->role)
@@ -189,12 +209,9 @@ compare_endpoint_type(const EndpointType *a, const EndpointType *b) {
 	c = g_strcmp0(a->kind,b->kind);
 	if (c != 0)
 		return c;
-	c = g_strcmp0(a->binding,b->binding);
-	if (c != 0)
-		return c;
-	if (a->is_default && ! b->is_default)
+	if (a->is_default < b->is_default)
 		return -1;
-	if (! a->is_default && b->is_default)
+	if (a->is_default > b->is_default)
 		return +1;
 	if (a->index < b->index)
 		return -1;
@@ -675,7 +692,7 @@ lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvide
 				lasso_strisequal(endpoint_type->kind,kind) &&
 				lasso_strisequal(endpoint_type->binding,binding))
 		{
-			return endpoint_type->url;
+			return g_strdup(endpoint_type->url);
 		}
 	}
 	return NULL;

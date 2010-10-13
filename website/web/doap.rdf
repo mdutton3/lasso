@@ -62,6 +62,10 @@
     </repository>
     <release>
       <Version>
+        <created>2010-10-13</created>
+        <revision>2.3.4</revision>
+      </Version>
+      <Version>
         <created>2010-10-01</created>
         <revision>2.3.3</revision>
       </Version>

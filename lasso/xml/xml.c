@@ -31,9 +31,12 @@
  *
  */
 
+#define _GNU_SOURCE /* for use of strndup */
+
 #include "private.h"
 #include <ctype.h>
-
+#include <errno.h>
+#include <string.h>
 
 #include <xmlsec/base64.h>
 #include <xmlsec/xmltree.h>

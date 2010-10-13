@@ -307,8 +307,6 @@ static void lasso_login_build_assertion_artifact(LassoLogin *login);
  * </para></listitem>
  * <listitem><para>
  * #LASSO_PROFILE_ERROR_MISSING_RESPONSE if no response object is present ( it is normally initialized
- * </para></listitem>
- * <listitem><para>
  * by lasso_login_process_authn_request_msg() )
  * </para></listitem>
  * <listitem><para>
@@ -876,17 +874,11 @@ lasso_login_build_assertion_artifact(LassoLogin *login)
  * </para></listitem>
  * <listitem><para>
  * LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if no remote provider ID was setup in the login
- * </para></listitem>
- * <listitem><para>
  * profile object, it's usually done by lasso_login_process_authn_request_msg,
  * </para></listitem>
  * <listitem><para>
  * LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD if the HTTP method is neither LASSO_HTTP_METHOD_REDIRECT
- * </para></listitem>
- * <listitem><para>
  * or LASSO_HTTP_METHOD_POST (ID-FF 1.2 case) or neither LASSO_HTTP_METHOD_ARTIFACT_GET or
- * </para></listitem>
- * <listitem><para>
  * LASSO_HTTP_METHOD_ARTIFACT_POST (SAML 2.0 case) for SAML 2.0),
  * </para></listitem>
  * <listitem><para>
@@ -897,8 +889,6 @@ lasso_login_build_assertion_artifact(LassoLogin *login)
  * </para></listitem>
  * <listitem><para>
  * LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the remote provider is not known to our server object
- * </para></listitem>
- * <listitem><para>
  * which impeach us to find a service endpoint,
  * </para></listitem>
  * <listitem><para>
@@ -1602,18 +1592,44 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
  * binding. You must set the @response_http_method argument according to the way you received the
  * artifact message.
  *
- * Return value: 0 on success; or a
+ * Return value: 0 on success; or
+ * <itemizedlist>
+ * <listitem>
+ * <para>
  * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
  * LASSO_PARAM_ERROR_INVALID_VALUE if @response_msg is NULL,
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
  * LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD if the HTTP method is neither LASSO_HTTP_METHOD_REDIRECT
  * or LASSO_HTTP_METHOD_POST (in the ID-FF 1.2 case) or neither LASSO_HTTP_METHOD_ARTIFACT_GET or
  * LASSO_HTTP_METHOD_ARTIFACT_POST (in the SAML 2.0 case),
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
  * LASSO_PROFILE_ERROR_MISSING_ARTIFACT if no artifact field was found in the query string (only
  * possible for the LASSO_HTTP_METHOD_REDIRECT case),
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
  * LASSO_PROFILE_ERROR_INVALID_ARTIFACT if decoding of the artifact failed -- whether because
  * the base64 encoding is invalid or because the type code is wrong --,
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
  * LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if no provider ID could be found corresponding to
  * the hash contained in the artifact.
+ * </para>
+ * </listitem>
+ * </itemizedlist>
  *
  **/
 gint
@@ -1896,7 +1912,87 @@ lasso_login_must_authenticate(LassoLogin *login)
  * Processes received authentication request, checks it is signed correctly,
  * checks if requested protocol profile is supported, etc.
  *
- * Return value: 0 on success; or a negative value otherwise.
+ * Return value: 0 on success; or
+ * <itemizedlist>
+ * <listitem>
+ * <para>
+ * #LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is no a #LassoLogin object,
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
+ * #LASSO_PROFILE_ERROR_MISSING_REQUEST if @authn_request_msg is #NULL and no request as actually
+ * been processed or initialized &#151; see lasso_login_init_idp_initiated_authn_request(),
+ *
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
+ * #LASSO_PROFILE_ERROR_INVALID_MSG if the content of @authn_request_msg cannot be parsed to as a
+ * valid lib:AuthnRequest messages for any support binding (mainly HTTP-Redirect, HTTP-Post and
+ * SOAP),
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
+ *
+ * #LASSO_PROFILE_ERROR_MISSING_ISSUER if the parsed samlp2:AuthnRequest does not have a proper Issuer element,
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
+ *
+ * #LASSO_PROFILE_ERROR_INVALID_REQUEST if the parsed message does not validate as a valid
+ * samlp2:AuthnRequest (SAMLv2) i.e. if there is no Issuer, or mutually exclusive attributes are
+ * used (ProtocolBinding and AssertionConsumerServiceIndex),
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
+ *
+ * #LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE if the protocolProfile (ID-FFv1.2) or the
+ * protocolBinding (SAMLv2) is unsupported by Lasso,
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
+ *
+ * #LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE if the protocolProfile (ID-FFv1.2) or the protocolBinding
+ * (SAMLv2) for the AssertionConsumer is unsupported by this provider implementation as indicated by
+ * its metadata file,
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
+ *
+ * #LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER, or
+ * #LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND if the metadata for the issuer of the request are absent
+ * from the #LassoServer object of this profile,
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
+ *
+ * #LASSO_DS_ERROR_SIGNATURE_NOT_FOUND if no signature could be found and signature validation is
+ * forced &#151; by the service provider metadata with the AuthnRequestsSigned attribute
+ * (ID-FFv1.2&SAMLv2), the attribute WantAuthnRequestsSigned in the identity provider metadata file
+ * (SAMLv2) or as advised by the lasso_profile_set_signature_verify_hint() method),
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
+ *
+ * #LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED if the signature validation failed on a present
+ * signature,
+ * </para>
+ * </listitem>
+ * <listitem>
+ * <para>
+ * #LASSO_DS_ERROR_INVALID_SIGNATURE if the signature was malformed and a signature was present,
+ * </para>
+ * </listitem>
+ * </itemizedlist>
+ *
  **/
 gint
 lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_request_msg)
@@ -1934,7 +2030,11 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
 
-		lasso_assign_new_gobject(profile->request, LASSO_NODE(request));
+		lasso_assign_new_gobject(profile->request, request);
+		if (! LASSO_IS_LIB_AUTHN_REQUEST(profile->request)) {
+			lasso_release_gobject(profile->request);
+			return LASSO_PROFILE_ERROR_INVALID_MSG;
+		}
 
 		/* get remote ProviderID */
 		lasso_assign_string(profile->remote_providerID,
@@ -1972,28 +2072,38 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 
 	/* Check authnRequest signature. */
 	if (authn_request_msg != NULL) {
+		LassoProfileSignatureVerifyHint sig_verify_hint;
+
+		sig_verify_hint = lasso_profile_get_signature_verify_hint(profile);
 		remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-		if (remote_provider != NULL) {
-			/* Is authnRequest signed ? */
-			authnRequestSigned = lasso_provider_get_metadata_one(
-					remote_provider, "AuthnRequestsSigned");
-			if (authnRequestSigned != NULL) {
-				must_verify_signature = strcmp(authnRequestSigned, "true") == 0;
-				lasso_release_string(authnRequestSigned);
-			} else {
-				/* missing element in metadata; shouldn't
-				 * happen, assume true */
-				must_verify_signature = TRUE;
-			}
-		} else {
+		if (remote_provider == NULL) {
 			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 		}
-
-		/* verify request signature */
+		/* Is authnRequest signed ? */
+		must_verify_signature = TRUE;
+		authnRequestSigned = lasso_provider_get_metadata_one(
+				remote_provider, "AuthnRequestsSigned");
+		if (authnRequestSigned != NULL) {
+			must_verify_signature = strcmp(authnRequestSigned, "true") == 0;
+			lasso_release_string(authnRequestSigned);
+		}
+		if (sig_verify_hint == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE) {
+			must_verify_signature = TRUE;
+		}
+		if (sig_verify_hint == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE) {
+			must_verify_signature = FALSE;
+		}
+		/* reset the signature_status, and if signature validation was not really needed
+		 * just choke on the presence of an invalid signature, if no signature just goes on
+		 * */
+		profile->signature_status = 0;
 		if (must_verify_signature) {
 			ret = lasso_provider_verify_signature(remote_provider,
 					authn_request_msg, "RequestID", format);
-			profile->signature_status = ret;
+			if (profile == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE && ret !=
+					LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
+				profile->signature_status = ret;
+			}
 		}
 	}
 

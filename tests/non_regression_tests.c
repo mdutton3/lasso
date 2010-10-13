@@ -32,6 +32,7 @@
 #include <../lasso/xml/lib_authentication_statement.h>
 #include <../lasso/xml/saml_name_identifier.h>
 #include <../lasso/xml/samlp_response.h>
+#include <../lasso/id-ff/provider.h>
 #include "../lasso/utils.h"
 
 
@@ -81,11 +82,67 @@ Format=\"urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified\"\n\
 }
 END_TEST
 
+START_TEST(indexed_endpoints_20101008)
+{
+	LassoProvider *provider = NULL;
+	char *meta01 = "<md:EntityDescriptor entityID=\"google.com\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\">\n\
+<SPSSODescriptor protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n\
+<AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"wrong\" index=\"1\" />\n\
+<AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" Location=\"ok\" index=\"0\" />\n\
+</SPSSODescriptor>\n\
+</md:EntityDescriptor>\n";
+	char *meta02 = "<md:EntityDescriptor entityID=\"google.com\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\">\n\
+<SPSSODescriptor protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n\
+<AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" Location=\"wrong\" index=\"0\" isDefault=\"false\" />\n\
+<AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"ok\" index=\"1\" />\n\
+</SPSSODescriptor>\n\
+</md:EntityDescriptor>\n";
+	char *meta03 = "<md:EntityDescriptor entityID=\"google.com\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\">\n\
+<SPSSODescriptor protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n\
+<AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"wrong\" index=\"0\" isDefault=\"false\" />\n\
+<AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" Location=\"ok\" index=\"1\" />\n\
+</SPSSODescriptor>\n\
+</md:EntityDescriptor>\n";
+	char *meta04 = "<md:EntityDescriptor entityID=\"google.com\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\">\n\
+<SPSSODescriptor protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n\
+<AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"wrong\" index=\"0\" />\n\
+<AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" Location=\"ok\" index=\"1\" isDefault=\"true\" />\n\
+</SPSSODescriptor>\n\
+</md:EntityDescriptor>\n";
+
+	provider = lasso_provider_new_from_buffer(LASSO_PROVIDER_ROLE_SP, meta01, NULL, NULL);
+	check_not_null(provider);
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, NULL), "ok");
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "0"), "ok");
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "1"), "wrong");
+	lasso_release_gobject(provider);
+	provider = lasso_provider_new_from_buffer(LASSO_PROVIDER_ROLE_SP, meta02, NULL, NULL);
+	check_not_null(provider);
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, NULL), "ok");
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "0"), "wrong");
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "1"), "ok");
+	lasso_release_gobject(provider);
+	provider = lasso_provider_new_from_buffer(LASSO_PROVIDER_ROLE_SP, meta03, NULL, NULL);
+	check_not_null(provider);
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, NULL), "ok");
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "0"), "wrong");
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "1"), "ok");
+	lasso_release_gobject(provider);
+	provider = lasso_provider_new_from_buffer(LASSO_PROVIDER_ROLE_SP, meta04, NULL, NULL);
+	check_not_null(provider);
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, NULL), "ok");
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "0"), "wrong");
+	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "1"), "ok");
+	lasso_release_gobject(provider);
+}
+END_TEST
+
 struct {
 	char *name;
 	void *function;
 } tests[] = {
-	{ "Googleapps error from coudot@ on 27-09-2010", test01_googleapps_27092010}
+	{ "Googleapps error from coudot@ on 27-09-2010", test01_googleapps_27092010},
+	{ "Wrong assertionConsumer ordering on 08-10-2010", indexed_endpoints_20101008}
 };
 
 Suite*
