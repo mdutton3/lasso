@@ -1513,7 +1513,6 @@ cleanup:
 gint
 lasso_profile_saml20_setup_message_signature(LassoProfile *profile, LassoNode *request_or_response)
 {
-	LassoSignatureMethod sign_method;
 	lasso_bad_param(PROFILE, profile);
 
 	switch (lasso_profile_get_signature_hint(profile)) {
