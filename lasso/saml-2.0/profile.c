@@ -1111,8 +1111,8 @@ has_signature(LassoNode *node, LassoSignatureMethod *method, char **private_key_
 	LassoNodeClass *klass;
 	LassoSignatureType sign_type;
 	LassoSignatureMethod sign_method;
-	char *key;
-	char *password;
+	char *key = NULL;
+	char *password = NULL;
 
 	if (node == NULL)
 		return FALSE;
