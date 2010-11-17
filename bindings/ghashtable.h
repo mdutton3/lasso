@@ -34,7 +34,7 @@ static gboolean return_true(G_GNUC_UNUSED gpointer a, G_GNUC_UNUSED gpointer b,
 	return TRUE;
 }
 
-void
+static void
 g_hash_table_remove_all (GHashTable *hash_table)
 {
     lasso_return_if_fail(hash_table != NULL);
@@ -63,7 +63,7 @@ g_hash_table_get_keys (GHashTable *hash_table)
   return retval;
 }
 
-GList *
+static GList *
 g_hash_table_get_values (GHashTable *hash_table)
 {
     GHashNode *node;
