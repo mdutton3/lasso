@@ -78,6 +78,15 @@ set_hash_of_objects(GHashTable **hash, HV *hv)
 	}
 }
 
+static void
+__ht_foreach_get_hos(gpointer key, gpointer value, gpointer user_data)
+{
+	HV *hv = user_data;
+
+	(void)hv_store(hv, key, strlen(key), newSVpv(value, 0), 0);
+}
+
+
 /**
  * get_hash_of_strings:
  * @hash: a #GHashTable of strings
@@ -85,16 +94,19 @@ set_hash_of_objects(GHashTable **hash, HV *hv)
 HV*
 get_hash_of_strings(GHashTable *hash)
 {
-	GHashTableIter iter;
-	gpointer key, value;
 	HV *hv;
 
 	hv = newHV();
-	g_hash_table_iter_init(&iter, hash);
-	while (g_hash_table_iter_next(&iter, &key, &value)) {
-		(void)hv_store(hv, key, strlen(key), newSVpv(value, 0), 0);
-	}
+	g_hash_table_foreach(hash, __ht_foreach_get_hos, hv);
 	return hv;
+}
+
+static void
+__ht_foreach_get_hoo(gpointer key, gpointer value, gpointer user_data)
+{
+	HV *hv = user_data;
+
+	(void)hv_store(hv, key, strlen(key), gperl_new_object(value, FALSE), 0);
 }
 
 /**
@@ -104,14 +116,9 @@ get_hash_of_strings(GHashTable *hash)
 HV*
 get_hash_of_objects(GHashTable *hash)
 {
-	GHashTableIter iter;
-	gpointer key, value;
 	HV *hv;
 
 	hv = newHV();
-	g_hash_table_iter_init(&iter, hash);
-	while (g_hash_table_iter_next(&iter, &key, &value)) {
-		(void)hv_store(hv, key, strlen(key), gperl_new_object(value, FALSE), 0);
-	}
+	g_hash_table_foreach(hash, __ht_foreach_get_hos, hv);
 	return hv;
 }
