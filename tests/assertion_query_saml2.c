@@ -31,6 +31,7 @@
 #include "../lasso/utils.h"
 #include "../lasso/backward_comp.h"
 #include "../lasso/xml/saml-2.0/saml2_xsd.h"
+#include "../bindings/ghashtable.h"
 
 #include "./tests.h"
 

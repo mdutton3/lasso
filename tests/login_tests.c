@@ -31,6 +31,7 @@
 #include "../lasso/utils.h"
 #include "../lasso/backward_comp.h"
 #include "./tests.h"
+#include "../bindings/ghashtable.h"
 
 
 static char*

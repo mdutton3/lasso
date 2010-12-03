@@ -32,7 +32,7 @@
 #include "../lasso/utils.h"
 #include "../lasso/backward_comp.h"
 #include "../lasso/xml/saml-2.0/samlp2_logout_request.h"
-
+#include "../bindings/ghashtable.h"
 #include "./tests.h"
 
 static char*

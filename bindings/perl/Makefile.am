@@ -58,7 +58,7 @@ distclean-local:
 clean-local:
 	-@if [ -f Makefile.perl ]; then make -f Makefile.perl clean; fi; rm -f Makefile.perl
 
-install-exec-local:
+install-exec-local: Makefile.perl
 	make -f Makefile.perl install DESTDIR=$(DESTDIR) PREFIX=$(prefix)
 
 uninstall-local:
