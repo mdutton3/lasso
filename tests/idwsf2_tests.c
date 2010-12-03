@@ -39,6 +39,7 @@
 #include <../lasso/id-wsf-2.0/saml2_login.h>
 
 #include <../lasso/xml/saml-2.0/samlp2_authn_request.h>
+#include <../lasso/xml/idwsf_strings.h>
 
 #include "./tests.h"
 
