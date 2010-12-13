@@ -101,9 +101,6 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoHttpMethod http_me
 		lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(request)->NameIDPolicy->Format,
 			LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT);
 	}
-	/* set name id policy SP qualifier (the 'destination' of the NameID) */
-	lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(request)->NameIDPolicy->SPNameQualifier,
-		request->Issuer->content);
 
 cleanup:
 	lasso_release_gobject(request);
