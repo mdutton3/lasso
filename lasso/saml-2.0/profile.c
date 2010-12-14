@@ -1040,12 +1040,19 @@ lasso_saml20_profile_validate_request(LassoProfile *profile, gboolean needs_iden
 	lasso_saml20_profile_init_response(profile, status_response,
 			LASSO_SAML2_STATUS_CODE_SUCCESS, NULL);
 
-	if (lasso_profile_get_signature_verify_hint(profile) == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE &&
-			profile->signature_status) {
-		lasso_saml20_profile_set_response_status(profile,
-				LASSO_SAML2_STATUS_CODE_REQUESTER,
-				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
-		return profile->signature_status;
+	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
+			if (profile->signature_status) {
+				lasso_saml20_profile_set_response_status(profile,
+						LASSO_SAML2_STATUS_CODE_REQUESTER,
+						LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
+				return profile->signature_status;
+			}
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+			break;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST:
+			g_assert_not_reached();
 	}
 
 cleanup:
@@ -1412,9 +1419,16 @@ cleanup:
 	if (rc) {
 		return rc;
 	}
-	if ((signature_verify_hint == LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE) &&
-			profile->signature_status) {
-		return LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
+	switch (lasso_profile_get_signature_verify_hint(profile)) {
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_FORCE:
+			if (profile->signature_status) {
+				return LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE;
+			}
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_IGNORE:
+			break;
+		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST:
+			g_assert_not_reached();
 	}
 	if (missing_issuer) {
 		return LASSO_PROFILE_ERROR_MISSING_ISSUER;
