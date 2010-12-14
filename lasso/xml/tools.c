@@ -1591,16 +1591,13 @@ lasso_node_decrypt_xmlnode(xmlNode* encrypted_element,
 		}
 	} else {
 		/* Look an EncryptedKey inside the EncryptedData */
-		encrypted_key_node = encrypted_data_node;
-		while (encrypted_key_node &&
-				strcmp((char*)encrypted_key_node->name, "EncryptedKey") != 0 ) {
-			if (strcmp((char*)encrypted_key_node->name, "EncryptedData") == 0 ||
-					strcmp((char*)encrypted_key_node->name, "KeyInfo") == 0) {
-				encrypted_key_node = xmlCopyNode(encrypted_key_node->children, 1);
+		xmlNodePtr key_info;
+		do {
+			key_info = xmlSecFindChild(encrypted_data_node, xmlSecNodeKeyInfo, xmlSecDSigNs);
+			if (! key_info)
 				break;
-			}
-			encrypted_key_node = encrypted_key_node->next;
-		}
+			encrypted_key_node = xmlSecFindChild(key_info, xmlSecNodeEncryptedKey, xmlSecEncNs);
+		} while (0);
 	}
 
 	if (encrypted_key_node == NULL) {
