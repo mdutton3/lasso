@@ -656,7 +656,6 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 	/* Create a new EncryptedElement */
 	encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_saml2_encrypted_element_new());
 	lasso_assign_gobject(encrypted_element->original_data, lasso_node);
-	lasso_list_add_xml_node(encrypted_element->EncryptedKey, encrypted_key_node);
 	lasso_assign_xml_node(encrypted_element->EncryptedData, xmlDocGetRootElement(doc));
 	lasso_transfer_gobject(ret, encrypted_element);
 
