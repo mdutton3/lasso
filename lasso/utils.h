@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <glib.h>
 #include <glib-object.h>
+#include <xmlsec/keys.h>
 #include "debug.h"
 #include "./backward_comp.h"
 #include "./xml/private.h"
@@ -330,7 +331,7 @@
 
 #define lasso_assign_sec_key(dest, src) \
 	{ \
-		xmlSecKey *__tmp = xmlSecKeyDup(src); \
+		xmlSecKey *__tmp = xmlSecKeyDuplicate(src); \
 		if (dest) \
 			lasso_release_sec_key(dest); \
 		dest = __tmp; \
