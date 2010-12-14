@@ -850,6 +850,8 @@ struct _CustomElement {
 	char *private_key;
 	char *private_key_password;
 	char *certificate;
+	xmlSecKey *encryption_public_key;
+	LassoEncryptionSymKeyType encryption_sym_key_type;
 };
 
 static struct _CustomElement *
@@ -1004,6 +1006,68 @@ lasso_node_get_signature(LassoNode *node, LassoSignatureType *type, LassoSignatu
 		*private_key_password = custom_element->private_key_password;
 	if (certificate)
 		*certificate = custom_element->certificate;
+}
+
+/**
+ * lasso_node_set_encryption:
+ * @node: a @LassoNode object
+ * @encryption_public_key: an #xmlSecKey used to crypt the session key
+ * @encryption_sym_key_type: the kind of session key to use
+ *
+ * Setup a node for future encryption. It is read by saml2:EncryptedElement for eventually
+ * encrypting nodes.
+ *
+ * Return value: 0 if successful, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if node is not a
+ * #LassoNode.
+ */
+void
+lasso_node_set_encryption(LassoNode *node, xmlSecKey *encryption_public_key,
+		LassoEncryptionSymKeyType encryption_sym_key_type)
+{
+	struct _CustomElement *custom_element;
+
+	g_return_if_fail(LASSO_IS_NODE(node));
+	if (encryption_public_key) {
+		custom_element = _lasso_node_get_custom_element_or_create(node);
+	} else {
+		custom_element = _lasso_node_get_custom_element(node);
+		if (! custom_element) {
+			return;
+		}
+		lasso_release_sec_key(custom_element->encryption_public_key);
+		return;
+	}
+	lasso_assign_sec_key(custom_element->encryption_public_key,
+			encryption_public_key);
+	if (encryption_sym_key_type < LASSO_ENCRYTPION_SYM_KEY_TYPE_LAST) {
+		custom_element->encryption_sym_key_type = encryption_sym_key_type;
+	} else {
+		custom_element->encryption_sym_key_type = LASSO_ENCRYPTION_SYM_KEY_TYPE_DEFAULT;
+	}
+}
+
+/**
+ * lasso_node_get_encryption:
+ * @node: a #LassoNode object
+ * @encryption_public_key_ptr: a pointer on a pointer to an #xmlSecKey object, to hold the the
+ * public key used to encrypt the session key
+ * @encryption_sym_key_type: a pointer on a #LassoEncryptionSymKeyType
+ *
+ * Lookup eventual configuration for encrypting the given node.
+ */
+void
+lasso_node_get_encryption(LassoNode *node, xmlSecKey **encryption_public_key,
+		LassoEncryptionSymKeyType *encryption_sym_key_type)
+{
+	struct _CustomElement *custom_element;
+
+	g_return_if_fail(LASSO_IS_NODE(node));
+	custom_element = _lasso_node_get_custom_element(node);
+	if (custom_element->encryption_public_key) {
+		lasso_assign_sec_key(*encryption_public_key,
+				custom_element->encryption_public_key);
+		*encryption_sym_key_type = custom_element->encryption_sym_key_type;
+	}
 }
 
 /**
