@@ -860,11 +860,9 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 	/* Save encryption material in assertion private datas to be able to encrypt later */
 	if (do_encrypt_assertion) {
-		assertion->encryption_activated = TRUE;
-		lasso_assign_string(assertion->encryption_public_key_str,
-				provider->private_data->encryption_public_key_str);
-		assertion->encryption_sym_key_type =
-			lasso_provider_get_encryption_sym_key_type(provider);
+		lasso_node_set_encryption((LassoNode*)assertion,
+				lasso_provider_get_encryption_public_key(provider),
+				lasso_provider_get_encryption_sym_key_type(provider));
 	}
 
 	/* store assertion in session object */
