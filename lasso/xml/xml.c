@@ -44,6 +44,7 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 #include <xmlsec/xmlenc.h>
+#include <xmlsec/openssl/crypto.h>
 
 #include "xml.h"
 #include "xml_enc.h"
@@ -596,6 +597,24 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 		message(G_LOG_LEVEL_WARNING, "Failed to add key info");
 		goto cleanup;
 	}
+	/* check id of the key */
+	if (xmlSecKeyGetData(encryption_public_key, xmlSecOpenSSLKeyDataRsaId) != 0) {
+		xmlNode *key_value = xmlSecTmplKeyInfoAddKeyValue(key_info_node2);
+		if (key_value == NULL) {
+			message(G_LOG_LEVEL_WARNING, "Failed to add key value");
+			goto cleanup;
+		}
+	} else { /* it must be a certificate */
+		xmlNodePtr x509_data;
+		x509_data = xmlSecTmplKeyInfoAddX509Data(key_info_node2);
+		if (x509_data == NULL) {
+			message(G_LOG_LEVEL_WARNING, "Failed to add X509 data");
+			goto cleanup;
+		}
+	}
+
+
+
 
 	/* create encryption context */
 	enc_ctx = (xmlSecEncCtxPtr)xmlSecEncCtxCreate(key_manager);
