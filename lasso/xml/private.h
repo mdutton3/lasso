@@ -205,6 +205,12 @@ void lasso_node_get_signature(LassoNode *node, LassoSignatureType *type, LassoSi
 		char **private_key, char **private_key_password,
 		char **certificate);
 
+void lasso_node_set_encryption(LassoNode *node, xmlSecKey *encryption_public_key,
+		LassoEncryptionSymKeyType encryption_sym_key_type);
+
+void lasso_node_get_encryption(LassoNode *node, xmlSecKey **encryption_public_key,
+		LassoEncryptionSymKeyType *encryption_sym_key_type);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
