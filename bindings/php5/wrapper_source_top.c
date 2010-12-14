@@ -7,6 +7,28 @@
 #include <lasso/lasso.h>
 #include "php_lasso.h"
 #include "../ghashtable.h"
+#define LASSO_LOG_STATIC
+
+#if defined(__GNUC__)
+#  define lasso_log(level, filename, line, function, format, args...) \
+        g_log("Lasso", level, "%s:%i:%s" format, filename, line, function, ##args)
+#elif defined(HAVE_VARIADIC_MACROS)
+#  define lasso_log(level, format, line, function, ...)  \
+        g_log("Lasso", leve, "%s:%i:%s" format, filename, line, function, __VA_ARGS__)
+#else
+static inline void lasso_log(GLogLevelFlags level, const char *filename,
+    int line, const char *function, const char *format, ...)
+{
+	va_list ap;
+	char s[1024];
+	va_start(ap, format);
+	g_vsnprintf(s, 1024, format, ap);
+	va_end(ap);
+    g_log("Lasso", level, "%s:%i:%s %s", filename, line, function, s);
+}
+#define lasso_log lasso_log
+#endif
+
 #include "../../lasso/utils.h"
 #include "../utils.c"
 
