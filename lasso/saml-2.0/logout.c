@@ -83,6 +83,10 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	assertion = (LassoSaml2Assertion*)assertion_n;
 
 	/* Set the NameID */
+	goto_cleanup_if_fail_with_rc(assertion->Subject != NULL,
+			LASSO_PROFILE_ERROR_MISSING_SUBJECT);
+	goto_cleanup_if_fail_with_rc(assertion->Subject->NameID != NULL,
+			LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER);
 	lasso_assign_gobject(logout_request->NameID, assertion->Subject->NameID);
 
 	/* Encrypt NameID */
