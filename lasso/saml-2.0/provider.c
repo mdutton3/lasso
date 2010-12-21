@@ -518,7 +518,6 @@ lasso_saml20_provider_get_first_http_method(G_GNUC_UNUSED LassoProvider *provide
 		kind = profile_names[protocol_type];
 	}
 	if (! kind) {
-		warning("Could not find a first http method for protocol type %u", protocol_type);
 		return LASSO_HTTP_METHOD_NONE;
 	}
 
@@ -526,7 +525,8 @@ lasso_saml20_provider_get_first_http_method(G_GNUC_UNUSED LassoProvider *provide
 		EndpointType *endpoint_type = (EndpointType*)t->data;
 		if (endpoint_type && lasso_strisequal(endpoint_type->kind, kind)) {
 			result = binding_uri_to_http_method(endpoint_type->binding);
-			if (result) break;
+			if (result != LASSO_HTTP_METHOD_NONE)
+				break;
 		}
 	}
 
@@ -546,7 +546,7 @@ lasso_saml20_provider_accept_http_method(G_GNUC_UNUSED LassoProvider *provider, 
 	}
 	if (! kind) {
 		warning("Could not find a first http method for protocol type %u", protocol_type);
-		return LASSO_HTTP_METHOD_NONE;
+		return FALSE;
 	}
 
 	lasso_foreach(t, remote_provider->private_data->endpoints) {
