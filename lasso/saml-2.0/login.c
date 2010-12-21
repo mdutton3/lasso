@@ -701,7 +701,7 @@ int
 lasso_saml20_login_build_assertion(LassoLogin *login,
 		const char *authenticationMethod,
 		const char *authenticationInstant,
-		const char *notBefore,
+		G_GNUC_UNUSED const char *notBefore,
 		const char *notOnOrAfter)
 {
 	LassoProfile *profile = &login->parent;
