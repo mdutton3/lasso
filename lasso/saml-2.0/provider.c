@@ -235,7 +235,7 @@ load_endpoint_type(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole 
 
 	binding_s = binding_uri_to_identifier((char*)binding);
 	if (! binding_s) {
-		critical("XXX: unknown binding: %s", binding);
+		debug("Endpoint loading failed, unknown binding: %s", binding);
 		goto cleanup;
 	}
 
@@ -243,7 +243,7 @@ load_endpoint_type(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole 
 	value = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_LOCATION);
 
 	if (value == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX: missing location for element %s", xmlnode->name);
+		debug("Endpoint loading failed, missing location on element %s", xmlnode->name);
 		goto cleanup;
 	}
 	/* special case of AssertionConsumerService */
