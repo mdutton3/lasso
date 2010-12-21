@@ -82,7 +82,7 @@ binding_uri_to_http_method(const char *uri)
 	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_REDIRECT) == 0) {
 		return LASSO_HTTP_METHOD_REDIRECT;
 	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_POST) == 0) {
-		return LASSO_HTTP_METHOD_NONE;
+		return LASSO_HTTP_METHOD_POST;
 	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_ARTIFACT) == 0) {
 		return LASSO_HTTP_METHOD_ARTIFACT_GET;
 	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
