@@ -1081,7 +1081,7 @@ lasso_node_get_encryption(LassoNode *node, xmlSecKey **encryption_public_key,
 
 	g_return_if_fail(LASSO_IS_NODE(node));
 	custom_element = _lasso_node_get_custom_element(node);
-	if (custom_element->encryption_public_key) {
+	if (custom_element && custom_element->encryption_public_key) {
 		lasso_assign_sec_key(*encryption_public_key,
 				custom_element->encryption_public_key);
 		*encryption_sym_key_type = custom_element->encryption_sym_key_type;
