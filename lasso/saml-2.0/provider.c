@@ -82,7 +82,7 @@ binding_uri_to_http_method(const char *uri)
 	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_REDIRECT) == 0) {
 		return LASSO_HTTP_METHOD_REDIRECT;
 	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_POST) == 0) {
-		return LASSO_HTTP_METHOD_NONE;
+		return LASSO_HTTP_METHOD_POST;
 	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_ARTIFACT) == 0) {
 		return LASSO_HTTP_METHOD_ARTIFACT_GET;
 	} else if (strcmp(uri, LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
@@ -235,7 +235,7 @@ load_endpoint_type(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole 
 
 	binding_s = binding_uri_to_identifier((char*)binding);
 	if (! binding_s) {
-		critical("XXX: unknown binding: %s", binding);
+		debug("Endpoint loading failed, unknown binding: %s", binding);
 		goto cleanup;
 	}
 
@@ -243,7 +243,7 @@ load_endpoint_type(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole 
 	value = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_LOCATION);
 
 	if (value == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX: missing location for element %s", xmlnode->name);
+		debug("Endpoint loading failed, missing location on element %s", xmlnode->name);
 		goto cleanup;
 	}
 	/* special case of AssertionConsumerService */
@@ -518,7 +518,6 @@ lasso_saml20_provider_get_first_http_method(G_GNUC_UNUSED LassoProvider *provide
 		kind = profile_names[protocol_type];
 	}
 	if (! kind) {
-		warning("Could not find a first http method for protocol type %u", protocol_type);
 		return LASSO_HTTP_METHOD_NONE;
 	}
 
@@ -526,7 +525,8 @@ lasso_saml20_provider_get_first_http_method(G_GNUC_UNUSED LassoProvider *provide
 		EndpointType *endpoint_type = (EndpointType*)t->data;
 		if (endpoint_type && lasso_strisequal(endpoint_type->kind, kind)) {
 			result = binding_uri_to_http_method(endpoint_type->binding);
-			if (result) break;
+			if (result != LASSO_HTTP_METHOD_NONE)
+				break;
 		}
 	}
 
@@ -546,7 +546,7 @@ lasso_saml20_provider_accept_http_method(G_GNUC_UNUSED LassoProvider *provider, 
 	}
 	if (! kind) {
 		warning("Could not find a first http method for protocol type %u", protocol_type);
-		return LASSO_HTTP_METHOD_NONE;
+		return FALSE;
 	}
 
 	lasso_foreach(t, remote_provider->private_data->endpoints) {
