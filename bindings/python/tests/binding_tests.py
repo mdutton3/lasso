@@ -28,6 +28,9 @@
 import unittest
 import sys
 import os
+import logging
+
+logging.basicConfig()
 
 if not '..' in sys.path:
     sys.path.insert(0, '..')
