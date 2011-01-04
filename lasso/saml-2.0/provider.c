@@ -127,8 +127,10 @@ xsdIsFalse(xmlChar *value)
 
 static gboolean
 xsdUnsignedShortParse(xmlChar *value, int *out) {
-	int l = strtol((char*)value, NULL, 10);
+	int l = 0;
 
+	errno = 0;
+	l = strtol((char*)value, NULL, 10);
 	if (((l == LONG_MIN || l == LONG_MAX) && errno == ERANGE) ||
 			errno == EINVAL || l < 0 || l >= 65535) {
 		return FALSE;
