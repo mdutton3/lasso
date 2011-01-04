@@ -54,8 +54,10 @@
 #include "../debug.h"
 #include "./soap-1.1/soap_envelope.h"
 #include "./soap-1.1/soap_body.h"
-#if LASSO_WSF_ENABLED
+#include "../lasso_config.h"
+#ifdef LASSO_WSF_ENABLED
 #include "./idwsf_strings.h"
+#include "./id-wsf-2.0/idwsf2_strings.h"
 #endif
 
 static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
@@ -2062,7 +2064,7 @@ static const char *
 prefix_from_href_and_nodename(const xmlChar *href, G_GNUC_UNUSED const xmlChar *nodename) {
 	char *prefix = NULL;
 #ifdef LASSO_WSF_ENABLED
-	char *tmp = NULL
+	char *tmp = NULL;
 #endif
 
 	if (strcmp((char*)href, LASSO_LASSO_HREF) == 0)

@@ -41,6 +41,7 @@
 #endif
 
 #include "identityprivate.h"
+#include "../lasso_config.h"
 
 /*****************************************************************************/
 /* public methods                                                            */

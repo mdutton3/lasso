@@ -53,6 +53,7 @@
 #include "../xml/idwsf_strings.h"
 #include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #endif
+#include "../lasso_config.h"
 
 /*****************************************************************************/
 /* public functions                                                          */

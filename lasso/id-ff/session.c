@@ -29,6 +29,7 @@
  **/
 
 #include "../xml/private.h"
+#include "../lasso_config.h"
 #include "session.h"
 #include "sessionprivate.h"
 #include "../xml/saml_assertion.h"
