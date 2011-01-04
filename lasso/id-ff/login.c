@@ -268,6 +268,7 @@
 #include "identityprivate.h"
 #include "loginprivate.h"
 #include "../saml-2.0/loginprivate.h"
+#include "../lasso_config.h"
 
 #ifdef LASSO_WSF_ENABLED
 #include "../id-wsf/id_ff_extensions_private.h"

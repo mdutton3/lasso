@@ -1,3 +1,3 @@
 #!/bin/sh
 
-php5 -n -d extension_dir=../.libs -d extension=lasso.so ${SRCDIR}binding_tests.php
+${PHP5:?PHP5 variable is not defined} -n -d extension_dir=../.libs -d extension=lasso.so ${SRCDIR}binding_tests.php

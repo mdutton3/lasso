@@ -40,6 +40,7 @@
 #include "../saml-2.0/serverprivate.h"
 #include "../utils.h"
 #include "../debug.h"
+#include "../lasso_config.h"
 #ifdef LASSO_WSF_ENABLED
 #include "../id-wsf/id_ff_extensions_private.h"
 #include "../id-wsf-2.0/serverprivate.h"
