@@ -119,6 +119,6 @@ get_hash_of_objects(GHashTable *hash)
 	HV *hv;
 
 	hv = newHV();
-	g_hash_table_foreach(hash, __ht_foreach_get_hos, hv);
+	g_hash_table_foreach(hash, __ht_foreach_get_hoo, hv);
 	return hv;
 }
