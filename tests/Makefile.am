@@ -64,7 +64,7 @@ massif:
 	$(MASSIF) ./tests
 
 endif
-EXTRA_DIST = metadata valgrind tests.h $(tests_SOURCES)
+EXTRA_DIST = valgrind tests.h $(tests_SOURCES)
 
 SUBDIRS = data
 
