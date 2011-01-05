@@ -11,7 +11,7 @@
   <strong>What changed ?</strong>
   Fix compilation bugs under Centos5 mainly in bindings. Fix segfault in logout
   response handling. Improve compatibility with Shibboleth 2.0 (was tested
-  against IdP from the Frend academic network, the CRU).
+  against IdP from the French academic network, the CRU).
  </p>
 
 </div>
