@@ -1,6 +1,46 @@
 NEWS
 ====
 
+2.3.5 - January 11th 2010
+-------------------------
+
+36 commits, 31 files changed, 240 insertions, 92 deletions
+
+Generic:
+ * add more backward compatible replacement for GHashTable methods (to compile
+   under centos5)
+ * a generic way to attach encryption parameters to LassoNode has been added, a
+   future major release should see the removal of specific field for storing
+   those parameters in node supporting encryption.
+ * The way we format encrypted node is now more compatible with Shibboleth and
+   I hope with other implementations: the KeyInfo is kept inside the
+   EncryptedData element, and not repeated inside a child of the EncryptedElement.
+ * Fixed: LASSO_SIGNATURE_VERIFY_HINT_FORCE did not force checking signature on
+   messages
+ * Fixed: lasso_provider_get_first_http_method broke when an unknown binding
+   was found in an endpoint declaration
+
+SAMLv2:
+ * Fixed: segfault when checking signature on logout responses (introduced in 2.3.4)
+ * SPNameQualifier is more set on subject NameID of assertions, as it should be
+   reserved for Affiliation members (and it broke shibboleth which only expect
+   this to be used for affiliation, wrongly I think).
+ * Conditions->notBefore/notOnOrAfter is motre setted by
+   lasso_login_build_assertion, only notOnOrAfter on SubjectConfirmationData,
+   which is more inline with the specification.
+ * the logout profile now use the session to initialize the NameID in requests,
+   not the identity. It allow to have a transient federation in the session but
+   a persistent one in the identity
+ * fixed support for the POST binding
+ * Fixed: it seems that strtol does not reset errno under Centos 5, we do it by hand.
+
+Python binding:
+ * constructors now raise a lasso.Error instead of a simple Exception when failing
+
+PHP5 binding:
+ * removed dependency upon an internal function of liblasso3
+
+
 2.3.4 - Otober 8th 2010
 -----------------------
 
