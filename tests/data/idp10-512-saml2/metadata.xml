@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+    entityID="http://idp5/metadata">
+<IDPSSODescriptor
+    WantAuthnRequestsSigned="true"
+    protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+<KeyDescriptor use="signing">
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:X509Data><ds:X509Certificate>
+MIIBmTCCAUOgAwIBAgIJAJZMU0OBRTvOMA0GCSqGSIb3DQEBBQUAMBUxEzARBgNV
+BAoTCkVudHJvdXZlcnQwHhcNMTEwMTIwMTA1MzAwWhcNMTEwMjE5MTA1MzAwWjAV
+MRMwEQYDVQQKEwpFbnRyb3V2ZXJ0MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMdi
+EXDlw9BRQPiLRmt8pb0nq08iyOcrkPqXZv55qcisDbq6rKVvNIadKdNR5A1G7C1i
+7e6mXkoLsC8q2+Fb8VECAwEAAaN2MHQwHQYDVR0OBBYEFC7+TXCAbY1opCnQQzUV
+TcITJ9fOMEUGA1UdIwQ+MDyAFC7+TXCAbY1opCnQQzUVTcITJ9fOoRmkFzAVMRMw
+EQYDVQQKEwpFbnRyb3V2ZXJ0ggkAlkxTQ4FFO84wDAYDVR0TBAUwAwEB/zANBgkq
+hkiG9w0BAQUFAANBAFkpYCnHeE10PZsQaUrgwAV4Os77wqPmD+H5YGfZX2gOSBem
+rs1CJ7VQskTLf1sb6szfy7pZe7iBl6brQOEmhwY=
+</ds:X509Certificate></ds:X509Data>
+    </ds:KeyInfo>
+  </KeyDescriptor>
+<KeyDescriptor use="encryption">
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:KeyValue>
+MIIBmTCCAUOgAwIBAgIJAJZMU0OBRTvOMA0GCSqGSIb3DQEBBQUAMBUxEzARBgNV
+BAoTCkVudHJvdXZlcnQwHhcNMTEwMTIwMTA1MzAwWhcNMTEwMjE5MTA1MzAwWjAV
+MRMwEQYDVQQKEwpFbnRyb3V2ZXJ0MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMdi
+EXDlw9BRQPiLRmt8pb0nq08iyOcrkPqXZv55qcisDbq6rKVvNIadKdNR5A1G7C1i
+7e6mXkoLsC8q2+Fb8VECAwEAAaN2MHQwHQYDVR0OBBYEFC7+TXCAbY1opCnQQzUV
+TcITJ9fOMEUGA1UdIwQ+MDyAFC7+TXCAbY1opCnQQzUVTcITJ9fOoRmkFzAVMRMw
+EQYDVQQKEwpFbnRyb3V2ZXJ0ggkAlkxTQ4FFO84wDAYDVR0TBAUwAwEB/zANBgkq
+hkiG9w0BAQUFAANBAFkpYCnHeE10PZsQaUrgwAV4Os77wqPmD+H5YGfZX2gOSBem
+rs1CJ7VQskTLf1sb6szfy7pZe7iBl6brQOEmhwY=
+</ds:KeyValue>
+    </ds:KeyInfo>
+  </KeyDescriptor>
+
+  <ArtifactResolutionService isDefault="true" index="0"
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+    Location="http://idp5/artifact" />
+  <SingleLogoutService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+    Location="http://idp5/singleLogoutSOAP" />
+  <SingleLogoutService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    Location="http://idp5/singleLogout"
+    ResponseLocation="http://idp5/singleLogoutReturn" />
+  <ManageNameIDService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+    Location="http://idp5/manageNameIdSOAP" />
+  <ManageNameIDService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    Location="http://idp5/manageNameId"
+    ResponseLocation="http://idp5/manageNameIdReturn" />
+  <SingleSignOnService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    Location="http://idp5/singleSignOn" />
+  <SingleSignOnService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+    Location="http://idp5/singleSignOnSOAP" />
+  <SingleSignOnService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+    Location="http://idp5/singleSignOnArtifact" />
+</IDPSSODescriptor>
+<Organization>
+   <OrganizationName xml:lang="en">Entr'ouvert</OrganizationName>
+</Organization>
+
+</EntityDescriptor>

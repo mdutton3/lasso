@@ -28,12 +28,10 @@
 #include <../lasso/xml/saml-2.0/samlp2_response.h>
 #include <../lasso/xml/saml-2.0/samlp2_authn_request.h>
 
-#define INDEX "5"
-#define PROTO "saml2"
-#define IDP_METADATA TESTSDATADIR "/idp" INDEX "-" PROTO "/metadata.xml"
-#define IDP_PKEY TESTSDATADIR "/idp" INDEX "-" PROTO "/private-key.pem"
-#define SP_METADATA TESTSDATADIR "/sp" INDEX "-" PROTO "/metadata.xml"
-#define SP_PKEY TESTSDATADIR "/sp" INDEX "-" PROTO "/private-key.pem"
+#define IDP_METADATA TESTSDATADIR "/idp%s/metadata.xml"
+#define IDP_PKEY TESTSDATADIR "/idp%s/private-key.pem"
+#define SP_METADATA TESTSDATADIR "/sp%s/metadata.xml"
+#define SP_PKEY TESTSDATADIR "/sp%s/private-key.pem"
 
 char* create_authn_response_msg(char *query);
 
@@ -123,30 +121,43 @@ main(int argc, char *argv[])
 	LassoServer *sp_server, *idp_server;
 	LassoLogin *sp_login, *idp_login;
 	int n;
+	char sp_metadata[100], sp_pkey[100],
+	     idp_metadata[100], idp_pkey[100];
+	char *index;
+
+	if (argc == 3) {
+		index = argv[2];
+	} else {
+		index = "5-saml2";
+	}
+	sprintf(sp_metadata, SP_METADATA, index);
+	sprintf(sp_pkey, SP_PKEY, index);
+	sprintf(idp_metadata, IDP_METADATA, index);
+	sprintf(idp_pkey, IDP_PKEY, index);
 
 	lasso_init();
 
 	sp_server = lasso_server_new(
-			SP_METADATA,
-			SP_PKEY,
+			sp_metadata,
+			sp_pkey,
 			NULL, /* Secret key to unlock private key */
 			NULL);
 	lasso_server_add_provider(
 			sp_server,
 			LASSO_PROVIDER_ROLE_IDP,
-			IDP_METADATA,
-			IDP_PKEY,
+			idp_metadata,
+			idp_pkey,
 			NULL);
 	idp_server = lasso_server_new(
-			IDP_METADATA,
-			IDP_PKEY,
+			idp_metadata,
+			idp_pkey,
 			NULL, /* Secret key to unlock private key */
 			NULL);
 	lasso_server_add_provider(
 			idp_server,
 			LASSO_PROVIDER_ROLE_SP,
-			SP_METADATA,
-			SP_PKEY,
+			sp_metadata,
+			sp_pkey,
 			NULL);
 
 	n = 100;
