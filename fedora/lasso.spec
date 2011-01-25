@@ -1,23 +1,22 @@
+%{!?python_sitearch: %define python_sitearch %(%{__python} -c 'from distutils import sysconfig; print sysconfig.get_python_lib(1)')}
+
 %define with_java %{?_without_java: 0} %{?!_without_java: 1}
 %define with_php %{?_without_php: 0} %{?!_without_php: 1}
 %define with_python %{?_without_python: 0} %{?!_without_python: 1}
 %define with_wsf %{?_without_wsf: 0} %{?!_without_wsf: 1}
-%define php_version %(php-config --version | cut -d. -f1)
-%define php_extdir %(php-config --extension-dir 2>/dev/null || echo %{_libdir}/php4)
-%define php_confdir %{_sysconfdir}/php.d
-%define php_datadir %{_datadir}/php
 
 %define with_java 1
 %define with_php 1
 %define with_python 1
+%define with_wsf 1
 
 Summary: Liberty Alliance Single Sign On
 Name: lasso
-Version: 2.2.2
-Release: 2%{?dist}
+Version: 2.3.5
+Release: 1%{?dist}
 License: GPL
 Group: System Environment/Libraries
-Source: https://labs.libre-entreprise.org/frs/download.php/594/lasso-%{version}.tar.gz
+Source: http://dev.entrouvert.org/lasso/lasso-%{version}.tar.gz
 Buildroot: %{_tmppath}/%{name}-%{version}-%(id -u -n)
 %if %{with_wsf}
 BuildRequires: cyrus-sasl-devel
@@ -39,7 +38,6 @@ the needs for a strong authentication with an absolute respect of the users priv
 %package devel
 Summary: Header files and libraries for %{name} development.
 Group: Development/Libraries
-BuildRequires: gtk-doc, python-docutils
 Requires: %{name} = %{version}-%{release}
 
 %description devel
@@ -50,6 +48,7 @@ you will need to install %{name}-devel.
 %package perl
 Summary: Perl Bindings for %{name}
 Group: Development/Libraries
+BuildRequires: perl(ExtUtils::MakeMaker)
 Requires: perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Requires: %{name} = %{version}-%{release}
 Obsoletes: perl-%{name} < %{version}-%{release}
@@ -81,9 +80,9 @@ supplied by %{name}.
 %package php
 Summary: PHP module for %{name}
 Group: Development/Libraries
-BuildRequires: php-devel >= 4.0, expat-devel
+BuildRequires: php-devel >= 5.0, expat-devel
 BuildRequires: python-lxml
-Requires: php >= 4.0
+Requires: php >= 5.0
 Requires: %{name} = %{version}-%{release}
 Obsoletes: php-%{name} < %{version}-%{release}
 Provides: php-%{name} = %{version}-%{release}
@@ -100,13 +99,10 @@ Summary: Python Bindings for %{name}
 Group: Development/Libraries
 BuildRequires: python-devel
 BuildRequires: python-lxml
-Requires: python >= %{python_version}
+Requires: python >= 2.0
 Requires: %{name} = %{version}-%{release}
 Obsoletes: python-%{name} < %{version}-%{release}
 Provides: python-%{name} = %{version}-%{release}
-%{!?python_sitearch: %define python_sitearch %(%{__python} -c 'from distutils import sysconfig; print sysconfig.get_python_lib(1)')}
-# eval to 2.3 if python isn't yet present, workaround for no python in fc4 minimal buildroot
-%{!?python_version: %define python_version %(%{__python} -c 'import sys; print sys.version.split(" ")[0]' || echo "2.3")}
 
 %description python
 The %{name}-python package contains a module that permits applications
@@ -126,29 +122,25 @@ supplied by %{name}.
 	   --disable-python \
 	%endif
 	%if %{with_php}
-	   --enable-php%{php_version}=yes \
-           --with-php%{php_version}-extension-dir=%{php_extdir} \
-	%if "%{php_version}" == "5"
-           --with-php5-config-dir=%{php_confdir} \
-	%endif
+	   --enable-php5=yes \
+           --with-php5-config-dir=%{_sysconfdir}/php.d \
 	%else
-	   --enable-php4=no \
 	   --enable-php5=no \
 	%endif
 	%if %{with_wsf}
            --enable-wsf \
-           --with-sasl2 \
+           --with-sasl2=%{_prefix}/sasl2 \
 	%endif
-           --enable-gtk-doc \
-	   --with-html-dir=%{_datadir}/gtk-doc/html/%{name} 
+	   --with-html-dir=%{_datadir}/gtk-doc/html 
 
 %install
 rm -rf %{buildroot}
 
-install -m 755 -d %{buildroot}%{_datadir}/gtk-doc/html/%{name}
+install -m 755 -d %{buildroot}%{_datadir}/gtk-doc/html
 
 make install exec_prefix=%{_prefix} DESTDIR=%{buildroot}
 find %{buildroot} -type f -name '*.la' -exec rm -f {} \;
+find %{buildroot} -type f -name '*.a' -exec rm -f {} \;
 
 # Perl subpackage
 find %{buildroot} \( -name perllocal.pod -o -name .packlist \) -exec rm -v {} \;
@@ -164,17 +156,8 @@ fi
 
 # PHP subpackage
 %if %{with_php}
-%if "%{php_version}" == "4"
-install -m 755 -d %{buildroot}%{php_confdir}
-
-cat > %{buildroot}%{php_confdir}/%{name}.ini <<EOF
-; Enable %{name} extension module
-extension=%{name}.so
-EOF
-%else
-install -m 755 -d %{buildroot}%{php_datadir}/%{name}
+install -m 755 -d %{buildroot}%{_datadir}/php/%{name}
 mv %{buildroot}%{_datadir}/php/*.php %{buildroot}%{_datadir}/php/%{name}
-%endif
 %endif
 
 %post
@@ -197,10 +180,6 @@ rm -rf %{buildroot}
 %doc %{_datadir}/gtk-doc/html/%{name}
 %{_libdir}/pkgconfig/lasso.pc
 %{_includedir}/%{name}
-%{_libdir}/*.a
-%if %{with_java}
-%{_libdir}/java/*.a
-%endif
 
 %files perl -f %{name}-perl-filelist
 %defattr(-,root,root)
@@ -215,11 +194,9 @@ rm -rf %{buildroot}
 %if %{with_php}
 %files php
 %defattr(-,root,root)
-%attr(755,root,root) %{php_extdir}/*
-%config(noreplace) %attr(644,root,root) %{php_confdir}/%{name}.ini
-%if "%{php_version}" == "5"
-%attr(755,root,root) %{php_datadir}/%{name}/*
-%endif
+%attr(755,root,root) %{_libdir}/php/modules/*
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/php.d/%{name}.ini
+%attr(755,root,root) %{_datadir}/php/%{name}/*
 %endif
 
 %if %{with_python}
@@ -229,6 +206,30 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Jan 10 2011 Jean-Marc Liger <jmliger@siris.sorbonne.fr> 2.3.5-1%{?dist}
+- Updated to final 2.3.5
+- Removed --enable-gtk-doc, use doc already been built in tarball instead
+- Rebuilt on CentOS 5
+
+* Tue Oct 30 2010 Jean-Marc Liger <jmliger@siris.sorbonne.fr> 2.3.4-1%{?dist}
+- Updated to final 2.3.4
+- Updated g_hash_table patch (Benjamin Dauvergne)
+- Removed --with-php5-extension-dir obsolete option
+- Removed --enable-php4 obsolete option
+- Rebuilt on CentOS 5
+
+* Wed Jan 20 2010 Jean-Marc Liger <jmliger@siris.sorbonne.fr> 2.2.90-1%{?dist}
+- Updated to final 2.2.90
+- Updated BuildRequires gtk-doc >= 1.9
+- Added g_hash_table patch
+- Rebuilt on CentOS 4,5
+
+* Wed Jan 20 2010 Jean-Marc Liger <jmliger@siris.sorbonne.fr> 2.2.2-1%{?dist}
+- Updated to final 2.2.2 (Imported missing lasso/xml/soap_binding.h from SVN)
+- Added patch for glib2 < 2.14
+- Added missing BuildRequires perl(ExtUtils::MakeMaker) for perl package
+- Rebuilt on CentOS 4,5
+
 * Fri Dec 16 2008 Jean-Marc Liger <jmliger@siris.sorbonne.fr> 2.2.1-2%{?dist}
 - Added php5 data files
 - Rebuilt on CentOS 4,5 and Fedora 9
