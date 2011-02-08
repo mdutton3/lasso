@@ -66,8 +66,7 @@ endif
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	CC=gcc-4.3 CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) $(CONFIGURE_ARGS)
-	touch perl/lasso_wrap.c perl/lasso.pm
+	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) $(CONFIGURE_ARGS)
 
 
 build: build-stamp
@@ -111,6 +110,8 @@ endif
 	  rm -rf bindings/python$$v; \
 	done
 
+	rm -f config.log
+
 	dh_clean 
 
 install: build
@@ -131,6 +132,9 @@ install: build
 	if [ -e $(CURDIR)/debian/tmp/usr/lib/java ]; then \
 	  mv $(CURDIR)/debian/tmp/usr/lib/java/*.so $(CURDIR)/debian/tmp/usr/lib/jni/ ; \
 	fi
+
+	# remove id-wsf directory if it is empty
+	-rmdir $(CURDIR)/debian/tmp/usr/include/lasso/id-wsf/
 
 
 # Build architecture-independent files here.
@@ -156,6 +160,7 @@ binary-arch: build install
 	dh_makeshlibs -a -V
 	dh_installdeb
 	dh_shlibdeps -a
+	echo "php:Depends=phpapi-`php-config5 --phpapi`" >> $(CURDIR)/debian/php5-lasso.substvars
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
