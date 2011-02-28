@@ -452,6 +452,75 @@ START_TEST(test03_serviceProviderLogin)
 	g_object_unref(idpLoginContext);
 }
 END_TEST
+
+START_TEST(test04_multiple_dump_cycle)
+{
+	char *serviceProviderContextDump, *identityProviderContextDump;
+	LassoServer *spContext, *idpContext;
+	LassoLogin *spLoginContext, *idpLoginContext;
+	LassoLibAuthnRequest *request;
+	int rc = 0;
+	char *relayState;
+	char *authnRequestUrl, *authnRequestQuery;
+	char *idpLoginContextDump;
+
+	serviceProviderContextDump = generateServiceProviderContextDump();
+	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
+	spLoginContext = lasso_login_new(spContext);
+	fail_unless(spLoginContext != NULL,
+			"lasso_login_new() shouldn't have returned NULL");
+	rc = lasso_login_init_authn_request(spLoginContext, "https://idp1/metadata",
+			LASSO_HTTP_METHOD_REDIRECT);
+	fail_unless(rc == 0, "lasso_login_init_authn_request failed");
+	request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(spLoginContext)->request);
+	fail_unless(LASSO_IS_LIB_AUTHN_REQUEST(request), "request should be authn_request");
+	request->IsPassive = 0;
+	request->NameIDPolicy = g_strdup(LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
+	request->consent = g_strdup(LASSO_LIB_CONSENT_OBTAINED);
+	relayState = "fake";
+	request->RelayState = g_strdup(relayState);
+	rc = lasso_login_build_authn_request_msg(spLoginContext);
+	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
+	authnRequestUrl = LASSO_PROFILE(spLoginContext)->msg_url;
+	fail_unless(authnRequestUrl != NULL,
+			"authnRequestUrl shouldn't be NULL");
+	authnRequestQuery = strchr(authnRequestUrl, '?')+1;
+	fail_unless(strlen(authnRequestQuery) > 0,
+			"authnRequestRequest shouldn't be an empty string");
+
+	/* Identity provider singleSignOn, for a user having no federation. */
+	identityProviderContextDump = generateIdentityProviderContextDumpMemory();
+	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
+	idpLoginContext = lasso_login_new(idpContext);
+	fail_unless(idpLoginContext != NULL,
+			"lasso_login_new() shouldn't have returned NULL");
+	rc = lasso_login_process_authn_request_msg(idpLoginContext, authnRequestQuery);
+	fail_unless(rc == 0, "lasso_login_process_authn_request_msg failed");
+	idpLoginContextDump = lasso_login_dump(idpLoginContext);
+	check_not_null(idpLoginContextDump);
+	printf("%s\n", idpLoginContextDump);
+	g_object_unref(idpLoginContext);
+	idpLoginContext = lasso_login_new_from_dump(idpContext, idpLoginContextDump);
+	check_not_null(idpLoginContext);
+	g_free(idpLoginContextDump);
+	idpLoginContextDump = lasso_login_dump(idpLoginContext);
+	check_not_null(idpLoginContextDump);
+	printf("%s\n", idpLoginContextDump);
+	g_object_unref(idpLoginContext);
+	idpLoginContext = lasso_login_new_from_dump(idpContext, idpLoginContextDump);
+	check_not_null(idpLoginContext);
+	g_free(idpLoginContextDump);
+	g_free(serviceProviderContextDump);
+	g_free(identityProviderContextDump);
+	g_object_unref(spContext);
+	g_object_unref(idpContext);
+	g_object_unref(spLoginContext);
+	g_object_unref(idpLoginContext);
+}
+END_TEST
+
+
+
 Suite*
 login_suite()
 {
@@ -459,12 +528,15 @@ login_suite()
 	TCase *tc_generate = tcase_create("Generate Server Contexts");
 	TCase *tc_spLogin = tcase_create("Login initiated by service provider");
 	TCase *tc_spLoginMemory = tcase_create("Login initiated by service provider without key loading");
+	TCase *tc_spMultipleDumpCycle = tcase_create("Dump and load Login object multiple times");
 	suite_add_tcase(s, tc_generate);
 	suite_add_tcase(s, tc_spLogin);
 	suite_add_tcase(s, tc_spLoginMemory);
+	suite_add_tcase(s, tc_spMultipleDumpCycle);
 	tcase_add_test(tc_generate, test01_generateServersContextDumps);
 	tcase_add_test(tc_spLogin, test02_serviceProviderLogin);
 	tcase_add_test(tc_spLoginMemory, test03_serviceProviderLogin);
+	tcase_add_test(tc_spMultipleDumpCycle, test04_multiple_dump_cycle);
 	return s;
 }
 
