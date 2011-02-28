@@ -530,6 +530,16 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
+static void
+class_init(LassoNameIdentifierMappingClass *klass)
+{
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "NameIdentifierMapping");
+	lasso_node_class_set_ns(nclass, LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
+}
+
 GType
 lasso_name_identifier_mapping_get_type()
 {
@@ -540,7 +550,7 @@ lasso_name_identifier_mapping_get_type()
 			sizeof (LassoNameIdentifierMappingClass),
 			NULL,
 			NULL,
-			NULL,
+			(GClassInitFunc)class_init,
 			NULL,
 			NULL,
 			sizeof(LassoNameIdentifierMapping),

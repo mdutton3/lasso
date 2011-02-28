@@ -551,6 +551,7 @@ class_init(LassoAssertionQueryClass *klass)
 	nclass->init_from_xml = init_from_xml;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "AssertionQuery");
+	lasso_node_class_set_ns(nclass, LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 
 	G_OBJECT_CLASS(klass)->finalize = finalize;
