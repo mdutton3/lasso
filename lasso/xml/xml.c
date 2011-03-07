@@ -3253,7 +3253,16 @@ lasso_node_get_xmlnode_for_any_type(LassoNode *node, xmlNode *cur)
 	if (cur) {
 		if (original_xmlnode) {
 			xmlNode *children = xmlCopyNodeList(original_xmlnode->children);
-			xmlCopyPropList(cur, original_xmlnode->properties);
+			xmlAttr *attrs = xmlCopyPropList(cur, original_xmlnode->properties);
+			if (cur->properties == NULL) {
+				cur->properties = attrs;
+			} else {
+				xmlAttr *it = cur->properties;
+				while (it->next) {
+					it = it->next;
+				}
+				it->next = attrs;
+			}
 			xmlAddChildList(cur, children);
 			return cur;
 		} else {
