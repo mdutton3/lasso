@@ -1305,7 +1305,7 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	xmlSecDSigReferenceCtx *dsig_reference_ctx = NULL;
 	gboolean free_the_doc = FALSE;
 
-	g_return_val_if_fail(signed_node && id_attr_name && (keys_manager || public_key),
+	g_return_val_if_fail(signed_node && (keys_manager || public_key),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	if (lasso_flag_verify_signature == FALSE) {
@@ -1324,9 +1324,11 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	}
 
 	/* Find ID */
-	id = xmlGetProp(signed_node, (xmlChar*)id_attr_name);
-	if (id) {
-		xmlAddID(NULL, doc, id, xmlHasProp(signed_node, (xmlChar*)id_attr_name));
+	if (id_attr_name) {
+		id = xmlGetProp(signed_node, (xmlChar*)id_attr_name);
+		if (id) {
+			xmlAddID(NULL, doc, id, xmlHasProp(signed_node, (xmlChar*)id_attr_name));
+		}
 	}
 
 	/* Create DSig context */
