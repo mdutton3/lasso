@@ -1336,7 +1336,12 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	goto_cleanup_if_fail_with_rc(doc, LASSO_DS_ERROR_CONTEXT_CREATION_FAILED);
 	/* XXX: Is xmlSecTransformUriTypeSameEmpty permitted ?
 	 * I would say yes only if signed_node == signature->parent. */
-	dsigCtx->enabledReferenceUris = xmlSecTransformUriTypeSameDocument;
+	dsigCtx->enabledReferenceUris = 0;
+	dsigCtx->enabledReferenceUris |= xmlSecTransformUriTypeSameDocument;
+	if (signature_verification_option & EMPTY_URI) {
+		dsigCtx->enabledReferenceUris |= xmlSecTransformUriTypeEmpty;
+	}
+
 	goto_cleanup_if_fail_with_rc(lasso_saml_constrain_dsigctxt(dsigCtx),
 			LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
 	/* Given a public key use it to validate the signature ! */
@@ -1354,11 +1359,18 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	goto_cleanup_if_fail_with_rc(((signature_verification_option & NO_SINGLE_REFERENCE) == 0) ||
 			xmlSecPtrListGetSize(&(dsigCtx->signedInfoReferences)) == 1, LASSO_DS_ERROR_TOO_MUCH_REFERENCES);
 	/* The reference should be to the signed node */
-	reference_uri = g_strdup_printf("#%s", id);
-	dsig_reference_ctx = (xmlSecDSigReferenceCtx*)xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), 0);
-	goto_cleanup_if_fail_with_rc(dsig_reference_ctx != 0 &&
-			strcmp((char*)dsig_reference_ctx->uri, reference_uri) == 0,
-			LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML);
+	{
+		gboolean ok = FALSE;
+		reference_uri = g_strdup_printf("#%s", id);
+		dsig_reference_ctx = (xmlSecDSigReferenceCtx*)
+			xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), 0);
+		ok |= dsig_reference_ctx != 0 &&
+			lasso_strisequal((char*)dsig_reference_ctx->uri, reference_uri);
+		ok |= signature_verification_option && EMPTY_URI &&
+			lasso_strisequal((char*)dsig_reference_ctx->uri, "");
+		goto_cleanup_if_fail_with_rc(ok,
+				LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML);
+	}
 	/* Keep URI of all nodes signed if asked */
 	if (uri_references) {
 		gint size = xmlSecPtrListGetSize(&(dsigCtx->signedInfoReferences));
