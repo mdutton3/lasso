@@ -1939,6 +1939,26 @@ START_TEST(test12_custom_namespace)
 }
 END_TEST
 
+/* test load federation */
+START_TEST(test13_test_lasso_server_load_federation)
+{
+	LassoServer *server = NULL;
+	char *metadata_content;
+
+	check_not_null(server = lasso_server_new(
+			TESTSDATADIR "/idp5-saml2/metadata.xml",
+			TESTSDATADIR "/idp5-saml2/private-key.pem",
+			NULL, /* Secret key to unlock private key */
+			NULL));
+	check_true(g_file_get_contents(TESTSDATADIR "/renater-metadata.xml", &metadata_content,
+				NULL, NULL));
+	check_good_rc(lasso_server_load_federation(server, 0, metadata_content, TESTSDATADIR "/renater-metadata.cert"));
+
+	lasso_release_string(metadata_content);
+	lasso_release_gobject(server);
+}
+END_TEST
+
 Suite*
 basic_suite()
 {
@@ -1953,6 +1973,7 @@ basic_suite()
 	TCase *tc_registry_new_from_xmlNode = tcase_create("Test parsing a node that has a mapping to Lasso Object in the registry");
 	TCase *tc_response_new_from_xmlNode = tcase_create("Test parsing a message from Ping Federate");
 	TCase *tc_custom_namespace = tcase_create("Test custom namespace handling");
+	TCase *tc_load_federation = tcase_create("Test loading a federation metadata file");
 
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
@@ -1964,6 +1985,7 @@ basic_suite()
 	suite_add_tcase(s, tc_registry_new_from_xmlNode);
 	suite_add_tcase(s, tc_response_new_from_xmlNode);
 	suite_add_tcase(s, tc_custom_namespace);
+	suite_add_tcase(s, tc_load_federation);
 
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
@@ -1977,6 +1999,7 @@ basic_suite()
 	tcase_add_test(tc_response_new_from_xmlNode, test10_test_alldumps);
 	tcase_add_test(tc_response_new_from_xmlNode, test11_get_default_name_id_format);
 	tcase_add_test(tc_custom_namespace, test12_custom_namespace);
+	tcase_add_test(tc_load_federation, test13_test_lasso_server_load_federation);
 	return s;
 }
 
