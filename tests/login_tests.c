@@ -498,14 +498,12 @@ START_TEST(test04_multiple_dump_cycle)
 	fail_unless(rc == 0, "lasso_login_process_authn_request_msg failed");
 	idpLoginContextDump = lasso_login_dump(idpLoginContext);
 	check_not_null(idpLoginContextDump);
-	printf("%s\n", idpLoginContextDump);
 	g_object_unref(idpLoginContext);
 	idpLoginContext = lasso_login_new_from_dump(idpContext, idpLoginContextDump);
 	check_not_null(idpLoginContext);
 	g_free(idpLoginContextDump);
 	idpLoginContextDump = lasso_login_dump(idpLoginContext);
 	check_not_null(idpLoginContextDump);
-	printf("%s\n", idpLoginContextDump);
 	g_object_unref(idpLoginContext);
 	idpLoginContext = lasso_login_new_from_dump(idpContext, idpLoginContextDump);
 	check_not_null(idpLoginContext);
