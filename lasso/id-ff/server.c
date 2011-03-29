@@ -748,3 +748,74 @@ lasso_server_get_encryption_private_key(LassoServer *server)
 
 	return server->private_data->encryption_private_key;
 }
+
+/**
+ * lasso_server_load_federation:
+ * @server: a #LassoServer object
+ * @role: a #LassoProviderRole value
+ * @federation_file: a C string formatted as SAML 2.0 metadata XML content,
+ * @trusted_roots:(allow-none): a PEM encoded files containing the certificates to check signatures
+ * on the metadata files (optional)
+ *
+ * Load all the SAML 2.0 entities from @federation_file which contain a declaration for @role. If
+ * @trusted_roots is non-NULL, use it to check a signature on the metadata file.
+ *
+* Return value: 0 on success, an error code otherwise, amon:
+ * <itemizedlist>
+ * <listitem><para>
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if server is not a #LassoServer object or @role is not a
+ * valid role value,
+ * </listitem></para>
+ * LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED if the @trusted_root file cannot be loaded,
+ * <listitem><para>
+ * </listitem></para>
+ * </itemizedlist>
+ */
+lasso_error_t
+lasso_server_load_federation(LassoServer *server, LassoProviderRole role, const gchar *federation_metadata, const gchar
+		*trusted_roots)
+{
+	xmlDoc *doc = NULL;
+	xmlNode *root = NULL;
+	xmlSecKeysMngr *keys_mngr = NULL;
+	lasso_error_t rc = 0;
+	GList *uri_references = NULL;
+
+	lasso_bad_param(SERVER, server);
+	g_return_val_if_fail(role == LASSO_PROVIDER_ROLE_SP || role == LASSO_PROVIDER_ROLE_IDP,
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	if (trusted_roots) {
+		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(trusted_roots);
+		lasso_return_val_if_fail(keys_mngr != NULL,
+				LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED);
+	}
+	doc = lasso_xml_parse_memory(federation_metadata, strlen(federation_metadata));
+	goto_cleanup_if_fail_with_rc(doc, LASSO_SERVER_ERROR_INVALID_XML);
+	root = xmlDocGetRootElement(doc);
+	if (trusted_roots) {
+		/* check metadata file signature */
+		lasso_check_good_rc(lasso_verify_signature(root, doc, NULL, keys_mngr, NULL,
+					EMPTY_URI, &uri_references));
+		if (! uri_references || uri_references->next != NULL || !
+				lasso_strisequal(uri_references->data, "")) {
+			warning("lasso_server_load_federation: metadata signature check failed, it"
+					" does not sign the complete file");
+			goto_cleanup_with_rc(LASSO_DS_ERROR_INVALID_SIGNATURE);
+		}
+	}
+	/* TODO: branch to the SAML2 version of this function */
+	if (lasso_strisequal((char*)root->ns->href, LASSO_SAML2_METADATA_HREF)) {
+		lasso_check_good_rc(lasso_saml20_server_load_federation(server, role, root));
+	} else {
+	/* TODO: iterate SPDescriptor and IDPDescriptor, choose which one to parse by looking at the role enum.
+	 * */
+		goto_cleanup_with_rc(LASSO_ERROR_UNIMPLEMENTED);
+	}
+
+cleanup:
+	lasso_release_list_of_strings(uri_references);
+	lasso_release_key_manager(keys_mngr);
+	lasso_release_doc(doc);
+	return rc;
+}
