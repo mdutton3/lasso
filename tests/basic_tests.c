@@ -1939,6 +1939,8 @@ START_TEST(test12_custom_namespace)
 }
 END_TEST
 
+#include <stdio.h>
+
 /* test load federation */
 START_TEST(test13_test_lasso_server_load_federation)
 {
@@ -1952,8 +1954,8 @@ START_TEST(test13_test_lasso_server_load_federation)
 			NULL));
 	check_true(g_file_get_contents(TESTSDATADIR "/renater-metadata.xml", &metadata_content,
 				NULL, NULL));
-	check_good_rc(lasso_server_load_federation(server, 0, metadata_content, TESTSDATADIR "/renater-metadata.cert"));
-
+	check_good_rc(lasso_server_load_federation(server, LASSO_PROVIDER_ROLE_IDP,
+				metadata_content, TESTSDATADIR "/metadata-federation-renater.crt"));
 	lasso_release_string(metadata_content);
 	lasso_release_gobject(server);
 }
