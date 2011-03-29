@@ -22,11 +22,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <xmlsec/xmltree.h>
+
 #include "../utils.h"
 #include "../xml/private.h"
 #include "serverprivate.h"
 #include "../id-ff/serverprivate.h"
 #include "../id-ff/providerprivate.h"
+#include "../xml/saml-2.0/saml2_xsd.h"
 
 
 int
@@ -83,4 +86,52 @@ lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node)
 	xmlFree(owner_id);
 
 	return 0;
+}
+
+static gboolean
+_lasso_test_sp_descriptor(xmlNode *node) {
+	return xmlSecFindChild(node,
+			BAD_CAST LASSO_SAML2_METADATA_ELEMENT_SP_SSO_DESCRIPTOR,
+			BAD_CAST LASSO_SAML2_METADATA_HREF) != NULL;
+}
+
+static gboolean
+_lasso_test_idp_descriptor(xmlNode *node) {
+	return xmlSecFindChild(node,
+			BAD_CAST LASSO_SAML2_METADATA_ELEMENT_IDP_SSO_DESCRIPTOR,
+			BAD_CAST LASSO_SAML2_METADATA_HREF) != NULL;
+}
+
+lasso_error_t
+lasso_saml20_server_load_federation(LassoServer *server, LassoProviderRole role, xmlNode *root_node)
+{
+	xmlNode *child;
+	lasso_error_t rc = 0;
+
+	child = xmlSecGetNextElementNode(root_node->children);
+	/* first parse the providers... */
+	while (child) {
+		if (! xmlSecCheckNodeName(child,
+					BAD_CAST LASSO_SAML2_METADATA_ELEMENT_ENTITY_DESCRIPTOR,
+					BAD_CAST LASSO_SAML2_METADATA_HREF)) {
+			goto next;
+		}
+		if (role == LASSO_PROVIDER_ROLE_IDP && ! _lasso_test_idp_descriptor(child)) {
+			goto next;
+		}
+		if (role == LASSO_PROVIDER_ROLE_SP && ! _lasso_test_sp_descriptor(child)) {
+			goto next;
+		}
+		LassoProvider *provider;
+
+		provider = lasso_provider_new_from_xmlnode(role, child);
+		if (provider) {
+			char *name = g_strdup(provider->ProviderID);
+
+			g_hash_table_insert(server->providers, name, provider);
+		}
+next:
+		child = xmlSecGetNextElementNode(child->next);
+	}
+	return rc;
 }
