@@ -103,7 +103,7 @@ _lasso_test_idp_descriptor(xmlNode *node) {
 }
 
 lasso_error_t
-lasso_saml20_server_load_federation(LassoServer *server, LassoProviderRole role, xmlNode *root_node)
+lasso_saml20_server_load_federation(LassoServer *server, LassoProviderRole role, xmlNode *root_node, GList *blacklisted_entity_ids)
 {
 	xmlNode *child;
 	lasso_error_t rc = 0;
@@ -111,6 +111,8 @@ lasso_saml20_server_load_federation(LassoServer *server, LassoProviderRole role,
 	child = xmlSecGetNextElementNode(root_node->children);
 	/* first parse the providers... */
 	while (child) {
+		LassoProvider *provider = NULL;
+
 		if (! xmlSecCheckNodeName(child,
 					BAD_CAST LASSO_SAML2_METADATA_ELEMENT_ENTITY_DESCRIPTOR,
 					BAD_CAST LASSO_SAML2_METADATA_HREF)) {
@@ -122,12 +124,16 @@ lasso_saml20_server_load_federation(LassoServer *server, LassoProviderRole role,
 		if (role == LASSO_PROVIDER_ROLE_SP && ! _lasso_test_sp_descriptor(child)) {
 			goto next;
 		}
-		LassoProvider *provider;
 
 		provider = lasso_provider_new_from_xmlnode(role, child);
 		if (provider) {
 			char *name = g_strdup(provider->ProviderID);
 
+			if (g_list_find_custom(blacklisted_entity_ids, name,
+						(GCompareFunc) g_strcmp0)) {
+				lasso_release_gobject(provider);
+				goto next;
+			}
 			g_hash_table_insert(server->providers, name, provider);
 		}
 next:

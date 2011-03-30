@@ -756,6 +756,8 @@ lasso_server_get_encryption_private_key(LassoServer *server)
  * @federation_file: a C string formatted as SAML 2.0 metadata XML content,
  * @trusted_roots:(allow-none): a PEM encoded files containing the certificates to check signatures
  * on the metadata files (optional)
+ * @blacklisted_entity_ids:(allow-none)(element-type string): a list of EntityID which should not be
+ * loaded, can be NULL.
  *
  * Load all the SAML 2.0 entities from @federation_file which contain a declaration for @role. If
  * @trusted_roots is non-NULL, use it to check a signature on the metadata file.
@@ -773,7 +775,7 @@ lasso_server_get_encryption_private_key(LassoServer *server)
  */
 lasso_error_t
 lasso_server_load_federation(LassoServer *server, LassoProviderRole role, const gchar *federation_metadata, const gchar
-		*trusted_roots)
+		*trusted_roots, GList *blacklisted_entity_ids)
 {
 	xmlDoc *doc = NULL;
 	xmlNode *root = NULL;
@@ -806,7 +808,7 @@ lasso_server_load_federation(LassoServer *server, LassoProviderRole role, const 
 	}
 	/* TODO: branch to the SAML2 version of this function */
 	if (lasso_strisequal((char*)root->ns->href, LASSO_SAML2_METADATA_HREF)) {
-		lasso_check_good_rc(lasso_saml20_server_load_federation(server, role, root));
+		lasso_check_good_rc(lasso_saml20_server_load_federation(server, role, root, blacklisted_entity_ids));
 	} else {
 	/* TODO: iterate SPDescriptor and IDPDescriptor, choose which one to parse by looking at the role enum.
 	 * */

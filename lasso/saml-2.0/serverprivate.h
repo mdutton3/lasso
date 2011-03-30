@@ -33,7 +33,8 @@ extern "C" {
 #include "../id-ff/server.h"
 
 int lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node);
-lasso_error_t lasso_saml20_server_load_federation(LassoServer *server, LassoProviderRole role, xmlNode *root_node);
+lasso_error_t lasso_saml20_server_load_federation(LassoServer *server, LassoProviderRole role,
+		xmlNode *root_node, GList *blacklisted_entity_ids);
 
 #ifdef __cplusplus
 }
