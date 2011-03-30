@@ -1945,6 +1945,7 @@ END_TEST
 START_TEST(test13_test_lasso_server_load_federation)
 {
 	LassoServer *server = NULL;
+	GList *loaded_entity_ids = NULL;
 	char *metadata_content;
 	GList blacklisted_1 = { .data = "https://identities.univ-jfc.fr/idp/prod", .next = NULL };
 
@@ -1956,8 +1957,11 @@ START_TEST(test13_test_lasso_server_load_federation)
 	check_true(g_file_get_contents(TESTSDATADIR "/renater-metadata.xml", &metadata_content,
 				NULL, NULL));
 	check_good_rc(lasso_server_load_federation(server, LASSO_PROVIDER_ROLE_IDP,
-				metadata_content, TESTSDATADIR "/metadata-federation-renater.crt", &blacklisted_1));
-	check_true(g_hash_table_size(server->providers) == 101);
+				metadata_content, TESTSDATADIR "/metadata-federation-renater.crt",
+				&blacklisted_1, &loaded_entity_ids));
+	check_equals(g_hash_table_size(server->providers), 101);
+	check_equals(g_list_length(loaded_entity_ids), 101);
+
 	lasso_release_string(metadata_content);
 	lasso_release_gobject(server);
 }

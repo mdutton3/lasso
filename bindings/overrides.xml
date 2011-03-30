@@ -172,6 +172,7 @@
   <func name="lasso_provider_new_from_dump" skip="java"/>
   <!-- LassoServer -->
   <func name="lasso_server_get_provider" return_owner="false" />
+  <func name="lasso_server_load_federation" skip="perl,java" />
   <!-- IdWsf -->
   <arg name="abstract" rename="abstract_" language="java"/>
   <func name="lasso_personal_profile_service_new_full" rename="lasso_personal_profile_server_new_personal_profile_service_full"/>
