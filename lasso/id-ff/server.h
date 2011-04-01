@@ -103,7 +103,7 @@ LASSO_EXPORT lasso_error_t lasso_server_load_affiliation(LassoServer *server, co
 LASSO_EXPORT lasso_error_t lasso_server_set_encryption_private_key_with_password(LassoServer *server,
 		const gchar *filename_or_buffer, const gchar *password);
 
-LASSO_EXPORT lasso_error_t lasso_server_load_federation(LassoServer *server, LassoProviderRole role,
+LASSO_EXPORT lasso_error_t lasso_server_load_metadata(LassoServer *server, LassoProviderRole role,
 		const gchar *federation_file, const gchar *trusted_roots, GList *blacklisted_entity_ids, GList **loaded_entity_ids);
 
 #ifdef __cplusplus

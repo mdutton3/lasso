@@ -750,7 +750,7 @@ lasso_server_get_encryption_private_key(LassoServer *server)
 }
 
 /**
- * lasso_server_load_federation:
+ * lasso_server_load_metadata:
  * @server: a #LassoServer object
  * @role: a #LassoProviderRole value
  * @federation_file: a C string formatted as SAML 2.0 metadata XML content,
@@ -776,8 +776,8 @@ lasso_server_get_encryption_private_key(LassoServer *server)
  * </itemizedlist>
  */
 lasso_error_t
-lasso_server_load_federation(LassoServer *server, LassoProviderRole role, const gchar *federation_metadata, const gchar
-		*trusted_roots, GList *blacklisted_entity_ids, GList **loaded_entity_ids)
+lasso_server_load_metadata(LassoServer *server, LassoProviderRole role, const gchar *federation_file,
+		const gchar *trusted_roots, GList *blacklisted_entity_ids, GList **loaded_entity_ids)
 {
 	xmlDoc *doc = NULL;
 	xmlNode *root = NULL;
@@ -794,7 +794,7 @@ lasso_server_load_federation(LassoServer *server, LassoProviderRole role, const 
 		lasso_return_val_if_fail(keys_mngr != NULL,
 				LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED);
 	}
-	doc = lasso_xml_parse_memory(federation_metadata, strlen(federation_metadata));
+	doc = lasso_xml_parse_file(federation_file);
 	goto_cleanup_if_fail_with_rc(doc, LASSO_SERVER_ERROR_INVALID_XML);
 	root = xmlDocGetRootElement(doc);
 	if (trusted_roots) {
@@ -808,12 +808,9 @@ lasso_server_load_federation(LassoServer *server, LassoProviderRole role, const 
 			goto_cleanup_with_rc(LASSO_DS_ERROR_INVALID_SIGNATURE);
 		}
 	}
-	/* TODO: branch to the SAML2 version of this function */
 	if (lasso_strisequal((char*)root->ns->href, LASSO_SAML2_METADATA_HREF)) {
 		lasso_check_good_rc(lasso_saml20_server_load_federation(server, role, root, blacklisted_entity_ids, loaded_entity_ids));
 	} else {
-	/* TODO: iterate SPDescriptor and IDPDescriptor, choose which one to parse by looking at the role enum.
-	 * */
 		goto_cleanup_with_rc(LASSO_ERROR_UNIMPLEMENTED);
 	}
 

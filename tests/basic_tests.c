@@ -1942,11 +1942,10 @@ END_TEST
 #include <stdio.h>
 
 /* test load federation */
-START_TEST(test13_test_lasso_server_load_federation)
+START_TEST(test13_test_lasso_server_load_metadata)
 {
 	LassoServer *server = NULL;
 	GList *loaded_entity_ids = NULL;
-	char *metadata_content;
 	GList blacklisted_1 = { .data = "https://identities.univ-jfc.fr/idp/prod", .next = NULL };
 
 	check_not_null(server = lasso_server_new(
@@ -1954,15 +1953,13 @@ START_TEST(test13_test_lasso_server_load_federation)
 			TESTSDATADIR "/idp5-saml2/private-key.pem",
 			NULL, /* Secret key to unlock private key */
 			NULL));
-	check_true(g_file_get_contents(TESTSDATADIR "/renater-metadata.xml", &metadata_content,
-				NULL, NULL));
-	check_good_rc(lasso_server_load_federation(server, LASSO_PROVIDER_ROLE_IDP,
-				metadata_content, TESTSDATADIR "/metadata-federation-renater.crt",
+	check_good_rc(lasso_server_load_metadata(server, LASSO_PROVIDER_ROLE_IDP,
+				TESTSDATADIR "/renater-metadata.xml",
+				TESTSDATADIR "/metadata-federation-renater.crt",
 				&blacklisted_1, &loaded_entity_ids));
 	check_equals(g_hash_table_size(server->providers), 101);
 	check_equals(g_list_length(loaded_entity_ids), 101);
 
-	lasso_release_string(metadata_content);
 	lasso_release_gobject(server);
 }
 END_TEST
@@ -1981,7 +1978,7 @@ basic_suite()
 	TCase *tc_registry_new_from_xmlNode = tcase_create("Test parsing a node that has a mapping to Lasso Object in the registry");
 	TCase *tc_response_new_from_xmlNode = tcase_create("Test parsing a message from Ping Federate");
 	TCase *tc_custom_namespace = tcase_create("Test custom namespace handling");
-	TCase *tc_load_federation = tcase_create("Test loading a federation metadata file");
+	TCase *tc_load_metadata = tcase_create("Test loading a federation metadata file");
 
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
@@ -1993,7 +1990,7 @@ basic_suite()
 	suite_add_tcase(s, tc_registry_new_from_xmlNode);
 	suite_add_tcase(s, tc_response_new_from_xmlNode);
 	suite_add_tcase(s, tc_custom_namespace);
-	suite_add_tcase(s, tc_load_federation);
+	suite_add_tcase(s, tc_load_metadata);
 
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
@@ -2007,7 +2004,7 @@ basic_suite()
 	tcase_add_test(tc_response_new_from_xmlNode, test10_test_alldumps);
 	tcase_add_test(tc_response_new_from_xmlNode, test11_get_default_name_id_format);
 	tcase_add_test(tc_custom_namespace, test12_custom_namespace);
-	tcase_add_test(tc_load_federation, test13_test_lasso_server_load_federation);
+	tcase_add_test(tc_load_metadata, test13_test_lasso_server_load_metadata);
 	return s;
 }
 
