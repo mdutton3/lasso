@@ -1366,8 +1366,9 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 			xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), 0);
 		ok |= dsig_reference_ctx != 0 &&
 			lasso_strisequal((char*)dsig_reference_ctx->uri, reference_uri);
-		ok |= signature_verification_option && EMPTY_URI &&
-			lasso_strisequal((char*)dsig_reference_ctx->uri, "");
+		ok |= (signature_verification_option & EMPTY_URI)
+			&& xmlDocGetRootElement(doc) == signed_node
+			&& lasso_strisequal((char*)dsig_reference_ctx->uri, "");
 		goto_cleanup_if_fail_with_rc(ok,
 				LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML);
 	}
