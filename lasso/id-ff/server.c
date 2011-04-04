@@ -753,25 +753,26 @@ lasso_server_get_encryption_private_key(LassoServer *server)
  * lasso_server_load_metadata:
  * @server: a #LassoServer object
  * @role: a #LassoProviderRole value
- * @federation_file: a C string formatted as SAML 2.0 metadata XML content,
+ * @federation_file: path to a SAML 2.0 metadata file
  * @trusted_roots:(allow-none): a PEM encoded files containing the certificates to check signatures
- * on the metadata files (optional)
+ * on the metadata file (optional)
  * @blacklisted_entity_ids:(allow-none)(element-type string): a list of EntityID which should not be
  * loaded, can be NULL.
  * @loaded_entity_ids:(transfer full)(element-type string)(allow-none): an output parameter for the
  * list of the loaded EntityID, can be NULL.
  *
- * Load all the SAML 2.0 entities from @federation_file which contain a declaration for @role. If
- * @trusted_roots is non-NULL, use it to check a signature on the metadata file.
+ * Load all the SAML 2.0 entities from @federation_file which contains a declaration for @role. If
+ * @trusted_roots is non-NULL, use it to check a signature on the metadata file, otherwise ignore
+ * signature validation.
  *
-* Return value: 0 on success, an error code otherwise, amon:
+ * Return value: 0 on success, an error code otherwise, among:
  * <itemizedlist>
  * <listitem><para>
  * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if server is not a #LassoServer object or @role is not a
  * valid role value,
- * </listitem></para>
- * LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED if the @trusted_root file cannot be loaded,
+ * </para></listitem>
  * <listitem><para>
+ * LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED if the @trusted_root file cannot be loaded,
  * </listitem></para>
  * </itemizedlist>
  */
