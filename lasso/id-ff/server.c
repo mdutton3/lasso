@@ -803,7 +803,8 @@ lasso_server_load_metadata(LassoServer *server, LassoProviderRole role, const gc
 					EMPTY_URI, &uri_references));
 	}
 	if (lasso_strisequal((char*)root->ns->href, LASSO_SAML2_METADATA_HREF)) {
-		lasso_check_good_rc(lasso_saml20_server_load_federation(server, role, root, blacklisted_entity_ids, loaded_entity_ids));
+		lasso_check_good_rc(lasso_saml20_server_load_metadata(server, role, root,
+					blacklisted_entity_ids, loaded_entity_ids));
 	} else {
 		goto_cleanup_with_rc(LASSO_ERROR_UNIMPLEMENTED);
 	}

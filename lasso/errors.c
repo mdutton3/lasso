@@ -301,6 +301,8 @@ lasso_strerror(int error_code)
 			return "Failed to add new provider (protocol mismatch). It means that you tried to add a provider supporting a protocol imcompatible with the protocol declared for your #LassoServer, for example metadata for ID-FF 1.2 with metadata for SAML 2.0.";
 		case LASSO_SERVER_ERROR_INVALID_XML:
 			return "Parsed XML is invalid.";
+		case LASSO_SERVER_ERROR_NO_PROVIDER_LOADED:
+			return "When loading a metadata file it indicates that no provider could be loaded. It could be because the file is not well formed, or because there is no provider for the role sought.";
 		case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
 			return "The identifier of a provider is unknown to #LassoServer. To register a provider in a #LassoServer object, you must use the methods lasso_server_add_provider() or lasso_server_add_provider_from_buffer().";
 		case LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED:

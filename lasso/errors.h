@@ -263,6 +263,15 @@ LASSO_EXPORT const char* lasso_strerror(int error_code);
  * Parsed XML is invalid.
  */
 #define LASSO_SERVER_ERROR_INVALID_XML -205
+/**
+ * LASSO_SERVER_ERROR_NO_PROVIDER_LOADED
+ *
+ * When loading a metadata file it indicates that no provider could be loaded.
+ * It could be because the file is not well formed, or because there is no provider for the
+ * role sought.
+ *
+ */
+#define LASSO_SERVER_ERROR_NO_PROVIDER_LOADED 206
 
 /* Single Logout */
 /**
