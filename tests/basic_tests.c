@@ -1956,9 +1956,17 @@ START_TEST(test13_test_lasso_server_load_metadata)
 	check_good_rc(lasso_server_load_metadata(server, LASSO_PROVIDER_ROLE_IDP,
 				TESTSDATADIR "/renater-metadata.xml",
 				TESTSDATADIR "/metadata-federation-renater.crt",
-				&blacklisted_1, &loaded_entity_ids));
+				&blacklisted_1, &loaded_entity_ids,
+				LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT));
 	check_equals(g_hash_table_size(server->providers), 101);
 	check_equals(g_list_length(loaded_entity_ids), 101);
+	check_good_rc(lasso_server_load_metadata(server, LASSO_PROVIDER_ROLE_IDP,
+				TESTSDATADIR "/ukfederation-metadata.xml",
+				TESTSDATADIR "/ukfederation.pem",
+				&blacklisted_1, &loaded_entity_ids,
+				LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT));
+	check_equals(g_list_length(loaded_entity_ids), 283);
+	check_equals(g_hash_table_size(server->providers), 384);
 
 	lasso_release_gobject(server);
 }
@@ -2005,6 +2013,7 @@ basic_suite()
 	tcase_add_test(tc_response_new_from_xmlNode, test11_get_default_name_id_format);
 	tcase_add_test(tc_custom_namespace, test12_custom_namespace);
 	tcase_add_test(tc_load_metadata, test13_test_lasso_server_load_metadata);
+	tcase_set_timeout(tc_load_metadata, 10);
 	return s;
 }
 

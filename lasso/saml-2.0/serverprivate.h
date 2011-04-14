@@ -34,7 +34,9 @@ extern "C" {
 
 int lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node);
 lasso_error_t lasso_saml20_server_load_metadata(LassoServer *server, LassoProviderRole role,
-		xmlNode *root_node, GList *blacklisted_entity_ids, GList **loaded_entity_ids);
+		xmlDoc *doc, xmlNode *root_node, GList *blacklisted_entity_ids,
+		GList **loaded_entity_ids, xmlSecKeysMngr *keys_mngr,
+		enum LassoServerLoadMetadataFlag flags);
 
 #ifdef __cplusplus
 }
