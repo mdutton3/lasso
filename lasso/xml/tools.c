@@ -62,6 +62,7 @@
 #include "../utils.h"
 #include <stdarg.h>
 #include <ctype.h>
+#include "../lasso_config.h"
 
 /**
  * SECTION:tools
@@ -1697,7 +1698,7 @@ static void xml_logv(int log_level, const char *msg, va_list arg_ptr) {
 
 	vsnprintf(buffer, 512, msg, arg_ptr);
 	escaped = g_strescape(buffer, NULL);
-	g_log("Lasso", log_level, "libxml2: %s", escaped);
+	g_log(LASSO_LOG_DOMAIN, log_level, "libxml2: %s", escaped);
 	lasso_release_string(escaped);
 }
 
@@ -2247,7 +2248,7 @@ lasso_set_string_from_prop(char **str, xmlNode *node, xmlChar *name, xmlChar *ns
 guint
 lasso_log_set_handler(GLogLevelFlags log_levels, GLogFunc log_func, gpointer user_data)
 {
-	return g_log_set_handler("Lasso", log_levels, log_func, user_data);
+	return g_log_set_handler(LASSO_LOG_DOMAIN, log_levels, log_func, user_data);
 }
 
 /**
@@ -2260,7 +2261,7 @@ lasso_log_set_handler(GLogLevelFlags log_levels, GLogFunc log_func, gpointer use
 void
 lasso_log_remove_handler(guint handler_id)
 {
-	g_log_remove_handler("Lasso", handler_id);
+	g_log_remove_handler(LASSO_LOG_DOMAIN, handler_id);
 }
 
 void
