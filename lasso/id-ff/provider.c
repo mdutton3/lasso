@@ -90,7 +90,7 @@ char *protocol_methods[LASSO_HTTP_METHOD_LAST] = {
 	"", "-http", "-soap"
 };
 
-static gboolean _lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc);
+static gboolean _lasso_provider_load_metadata_from_xmlnode(LassoProvider *provider, xmlNode *node);
 static int _lasso_provider_get_role_index(LassoProviderRole role);
 void _lasso_provider_add_metadata_value_for_role(LassoProvider *provider,
 		LassoProviderRole role, const char *name, const char *value);
@@ -974,6 +974,7 @@ gboolean
 _lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *metadata, int length)
 {
 	xmlDoc *doc;
+	xmlNode *node;
 	gboolean rc = TRUE;
 
 	lasso_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
@@ -984,7 +985,8 @@ _lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *
 	if (doc == NULL) {
 		return FALSE;
 	}
-	goto_cleanup_if_fail_with_rc (_lasso_provider_load_metadata_from_doc(provider, doc), FALSE);
+	node = xmlDocGetRootElement(doc);
+	goto_cleanup_if_fail_with_rc (_lasso_provider_load_metadata_from_xmlnode(provider, node), FALSE);
 	lasso_assign_string(provider->metadata_filename, metadata);
 cleanup:
 	lasso_release_doc(doc);
@@ -1031,28 +1033,23 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *path)
 }
 
 static gboolean
-_lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
+_lasso_provider_load_metadata_from_xmlnode(LassoProvider *provider, xmlNode *node)
 {
+	xmlDoc *doc = NULL;
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
-	xmlNode *node;
 	const char *xpath_idp = "/md:EntityDescriptor/md:IDPDescriptor";
 	const char *xpath_sp = "/md:EntityDescriptor/md:SPDescriptor";
 	const char *xpath_organization = "/md:EntityDescriptor/md:Organization";
 	xmlChar *providerID = NULL;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
-	if (doc == NULL) {
-		warning("Metadata is not an XML document");
-		return FALSE;
-	}
+	g_return_val_if_fail(node != NULL && node->ns != NULL, FALSE);
+	g_return_val_if_fail (node->doc != NULL, FALSE);
 
-	node = xmlDocGetRootElement(doc);
-	if (node == NULL || node->ns == NULL) {
-		message (G_LOG_LEVEL_CRITICAL, "lasso_provider_load_metadata_from_doc: no root element");
-		return FALSE;
-	}
-
+	/* In the future it could be necessary to handle node without a document, and to create one
+	 * to hold them. */
+	doc = node->doc;
 
 	if (strcmp((char*)node->ns->href, LASSO_SAML2_METADATA_HREF) == 0) {
 		gboolean result;
@@ -1074,7 +1071,7 @@ _lasso_provider_load_metadata_from_doc(LassoProvider *provider, xmlDoc *doc)
 		xpathObj = xmlXPathEvalExpression(
 				(xmlChar*)"/md11:SPDescriptor|/md11:IDPDescriptor", xpathCtx);
 		if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
-			message (G_LOG_LEVEL_CRITICAL, "lasso_saml20_provider_load_metadata_from_doc: no md12:EntityDescriptor or md11:SPDesriptor or md11:IDPDescriptor");
+			message (G_LOG_LEVEL_CRITICAL, "lasso_saml20_provider_load_metadata_from_xmlnode: no md12:EntityDescriptor or md11:SPDesriptor or md11:IDPDescriptor");
 			xmlXPathFreeObject(xpathObj);
 			xmlXPathFreeContext(xpathCtx);
 			return FALSE;
@@ -1724,4 +1721,30 @@ lasso_provider_match_conformance(LassoProvider *provider, LassoProvider *another
 	int conformance2 = lasso_provider_get_protocol_conformance(another_provider);
 
 	return (conformance1 & conformance2) != 0;
+}
+
+LassoProvider*
+lasso_provider_new_from_xmlnode(LassoProviderRole role, xmlNode *node) {
+	LassoProvider *provider = NULL, *ret = NULL;
+
+	provider = (LassoProvider*)g_object_new(LASSO_TYPE_PROVIDER, NULL);
+	provider->role = role;
+	goto_cleanup_if_fail(_lasso_provider_load_metadata_from_xmlnode(provider, node));
+
+	if (!lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING)) {
+		message(G_LOG_LEVEL_WARNING, "Could not load public signing key of %s",
+				provider->ProviderID);
+		goto cleanup;
+	}
+	if (!lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION)) {
+		message(G_LOG_LEVEL_WARNING, "Could not load public encryption key of %s",
+				provider->ProviderID);
+		goto cleanup;
+	}
+
+	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
+	lasso_transfer_gobject(ret, provider);
+cleanup:
+	lasso_release_gobject(provider);
+	return ret;
 }

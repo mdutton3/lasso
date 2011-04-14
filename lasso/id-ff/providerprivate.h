@@ -94,7 +94,7 @@ int lasso_provider_verify_query_signature(LassoProvider *provider, const char *m
 void _lasso_provider_load_key_descriptor(LassoProvider *provider, xmlNode *key_descriptor);
 void _lasso_provider_add_metadata_value_for_role(LassoProvider *provider,
 		LassoProviderRole role, const char *name, const char *value);
-
+LassoProvider* lasso_provider_new_from_xmlnode(LassoProviderRole role, xmlNode *node);
 
 #ifdef __cplusplus
 }

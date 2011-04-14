@@ -62,6 +62,7 @@
 #include "../utils.h"
 #include <stdarg.h>
 #include <ctype.h>
+#include "../lasso_config.h"
 
 /**
  * SECTION:tools
@@ -1265,6 +1266,16 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 	return TRUE;
 }
 
+static void
+lasso_xml_generic_error_func(G_GNUC_UNUSED void *ctx, const char *msg, ...)
+{
+	va_list args;
+
+	va_start(args, msg);
+	g_logv(LASSO_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, msg, args);
+	va_end(args);
+}
+
 /**
  * lasso_verify_signature:
  * @signed_node: an #xmlNode containing an enveloped xmlDSig signature
@@ -1305,7 +1316,7 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	xmlSecDSigReferenceCtx *dsig_reference_ctx = NULL;
 	gboolean free_the_doc = FALSE;
 
-	g_return_val_if_fail(signed_node && id_attr_name && (keys_manager || public_key),
+	g_return_val_if_fail(signed_node && (keys_manager || public_key),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	if (lasso_flag_verify_signature == FALSE) {
@@ -1324,9 +1335,11 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	}
 
 	/* Find ID */
-	id = xmlGetProp(signed_node, (xmlChar*)id_attr_name);
-	if (id) {
-		xmlAddID(NULL, doc, id, xmlHasProp(signed_node, (xmlChar*)id_attr_name));
+	if (id_attr_name) {
+		id = xmlGetProp(signed_node, (xmlChar*)id_attr_name);
+		if (id) {
+			xmlAddID(NULL, doc, id, xmlHasProp(signed_node, (xmlChar*)id_attr_name));
+		}
 	}
 
 	/* Create DSig context */
@@ -1334,13 +1347,20 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	goto_cleanup_if_fail_with_rc(doc, LASSO_DS_ERROR_CONTEXT_CREATION_FAILED);
 	/* XXX: Is xmlSecTransformUriTypeSameEmpty permitted ?
 	 * I would say yes only if signed_node == signature->parent. */
-	dsigCtx->enabledReferenceUris = xmlSecTransformUriTypeSameDocument;
+	dsigCtx->enabledReferenceUris = 0;
+	dsigCtx->enabledReferenceUris |= xmlSecTransformUriTypeSameDocument;
+	if (signature_verification_option & EMPTY_URI) {
+		dsigCtx->enabledReferenceUris |= xmlSecTransformUriTypeEmpty;
+	}
+
 	goto_cleanup_if_fail_with_rc(lasso_saml_constrain_dsigctxt(dsigCtx),
 			LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED);
 	/* Given a public key use it to validate the signature ! */
 	if (public_key) {
 		dsigCtx->signKey = xmlSecKeyDuplicate(public_key);
 	}
+
+	xmlSetGenericErrorFunc(NULL, lasso_xml_generic_error_func);
 
 	/* Verify signature */
 	goto_cleanup_if_fail_with_rc(xmlSecDSigCtxVerify(dsigCtx, signature) >= 0,
@@ -1352,11 +1372,19 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	goto_cleanup_if_fail_with_rc(((signature_verification_option & NO_SINGLE_REFERENCE) == 0) ||
 			xmlSecPtrListGetSize(&(dsigCtx->signedInfoReferences)) == 1, LASSO_DS_ERROR_TOO_MUCH_REFERENCES);
 	/* The reference should be to the signed node */
-	reference_uri = g_strdup_printf("#%s", id);
-	dsig_reference_ctx = (xmlSecDSigReferenceCtx*)xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), 0);
-	goto_cleanup_if_fail_with_rc(dsig_reference_ctx != 0 &&
-			strcmp((char*)dsig_reference_ctx->uri, reference_uri) == 0,
-			LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML);
+	{
+		gboolean ok = FALSE;
+		reference_uri = g_strdup_printf("#%s", id);
+		dsig_reference_ctx = (xmlSecDSigReferenceCtx*)
+			xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), 0);
+		ok |= dsig_reference_ctx != 0 &&
+			lasso_strisequal((char*)dsig_reference_ctx->uri, reference_uri);
+		ok |= (signature_verification_option & EMPTY_URI)
+			&& xmlDocGetRootElement(doc) == signed_node
+			&& lasso_strisequal((char*)dsig_reference_ctx->uri, "");
+		goto_cleanup_if_fail_with_rc(ok,
+				LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML);
+	}
 	/* Keep URI of all nodes signed if asked */
 	if (uri_references) {
 		gint size = xmlSecPtrListGetSize(&(dsigCtx->signedInfoReferences));
@@ -1682,7 +1710,7 @@ static void xml_logv(int log_level, const char *msg, va_list arg_ptr) {
 
 	vsnprintf(buffer, 512, msg, arg_ptr);
 	escaped = g_strescape(buffer, NULL);
-	g_log("Lasso", log_level, "libxml2: %s", escaped);
+	g_log(LASSO_LOG_DOMAIN, log_level, "libxml2: %s", escaped);
 	lasso_release_string(escaped);
 }
 
@@ -2232,7 +2260,7 @@ lasso_set_string_from_prop(char **str, xmlNode *node, xmlChar *name, xmlChar *ns
 guint
 lasso_log_set_handler(GLogLevelFlags log_levels, GLogFunc log_func, gpointer user_data)
 {
-	return g_log_set_handler("Lasso", log_levels, log_func, user_data);
+	return g_log_set_handler(LASSO_LOG_DOMAIN, log_levels, log_func, user_data);
 }
 
 /**
@@ -2245,7 +2273,7 @@ lasso_log_set_handler(GLogLevelFlags log_levels, GLogFunc log_func, gpointer use
 void
 lasso_log_remove_handler(guint handler_id)
 {
-	g_log_remove_handler("Lasso", handler_id);
+	g_log_remove_handler(LASSO_LOG_DOMAIN, handler_id);
 }
 
 void

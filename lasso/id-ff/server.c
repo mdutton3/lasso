@@ -748,3 +748,73 @@ lasso_server_get_encryption_private_key(LassoServer *server)
 
 	return server->private_data->encryption_private_key;
 }
+
+/**
+ * lasso_server_load_metadata:
+ * @server: a #LassoServer object
+ * @role: a #LassoProviderRole value
+ * @federation_file: path to a SAML 2.0 metadata file
+ * @trusted_roots:(allow-none): a PEM encoded files containing the certificates to check signatures
+ * on the metadata file (optional)
+ * @blacklisted_entity_ids:(allow-none)(element-type string): a list of EntityID which should not be
+ * loaded, can be NULL.
+ * @loaded_entity_ids:(transfer full)(element-type string)(allow-none): an output parameter for the
+ * list of the loaded EntityID, can be NULL.
+ * @flags: flags modifying the behaviour for checking signatures on EntityDescriptor and
+ * EntitiesDescriptors nodes.
+ *
+ * Load all the SAML 2.0 entities from @federation_file which contains a declaration for @role. If
+ * @trusted_roots is non-NULL, use it to check a signature on the metadata file, otherwise ignore
+ * signature validation.
+ *
+ * Return value: 0 on success, an error code otherwise, among:
+ * <itemizedlist>
+ * <listitem><para>
+ * LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if server is not a #LassoServer object or @role is not a
+ * valid role value,
+ * </para></listitem>
+ * <listitem><para>
+ * LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED if the @trusted_root file cannot be loaded,
+ * </listitem></para>
+ * </itemizedlist>
+ */
+lasso_error_t
+lasso_server_load_metadata(LassoServer *server, LassoProviderRole role, const gchar *federation_file,
+		const gchar *trusted_roots, GList *blacklisted_entity_ids,
+		GList **loaded_entity_ids, enum LassoServerLoadMetadataFlag flags)
+{
+	xmlDoc *doc = NULL;
+	xmlNode *root = NULL;
+	xmlSecKeysMngr *keys_mngr = NULL;
+	lasso_error_t rc = 0;
+
+	lasso_bad_param(SERVER, server);
+	g_return_val_if_fail(role == LASSO_PROVIDER_ROLE_SP || role == LASSO_PROVIDER_ROLE_IDP,
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	if (flags == LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT) {
+		flags = LASSO_SERVER_LOAD_METADATA_FLAG_CHECK_ENTITIES_DESCRIPTOR_SIGNATURE
+			| LASSO_SERVER_LOAD_METADATA_FLAG_CHECK_ENTITY_DESCRIPTOR_SIGNATURE
+			| LASSO_SERVER_LOAD_METADATA_FLAG_INHERIT_SIGNATURE;
+	}
+
+	if (trusted_roots) {
+		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(trusted_roots);
+		lasso_return_val_if_fail(keys_mngr != NULL,
+				LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED);
+	}
+	doc = lasso_xml_parse_file(federation_file);
+	goto_cleanup_if_fail_with_rc(doc, LASSO_SERVER_ERROR_INVALID_XML);
+	root = xmlDocGetRootElement(doc);
+	if (lasso_strisequal((char*)root->ns->href, LASSO_SAML2_METADATA_HREF)) {
+		lasso_check_good_rc(lasso_saml20_server_load_metadata(server, role, doc, root,
+					blacklisted_entity_ids, loaded_entity_ids, keys_mngr, flags));
+	} else {
+		goto_cleanup_with_rc(LASSO_ERROR_UNIMPLEMENTED);
+	}
+
+cleanup:
+	lasso_release_key_manager(keys_mngr);
+	lasso_release_doc(doc);
+	return rc;
+}

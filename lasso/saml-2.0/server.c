@@ -22,11 +22,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <xmlsec/xmltree.h>
+
 #include "../utils.h"
 #include "../xml/private.h"
 #include "serverprivate.h"
 #include "../id-ff/serverprivate.h"
 #include "../id-ff/providerprivate.h"
+#include "../xml/saml-2.0/saml2_xsd.h"
 
 
 int
@@ -83,4 +86,175 @@ lasso_saml20_server_load_affiliation(LassoServer *server, xmlNode *node)
 	xmlFree(owner_id);
 
 	return 0;
+}
+
+static void
+debug_report_signature_error(xmlNode *node, lasso_error_t result) {
+	xmlChar *path;
+
+	path = xmlGetNodePath(node);
+	debug("Could not check signature whose xpath is '%s': %s", path, lasso_strerror(result));
+	lasso_release_xml_string(path);
+}
+
+static gboolean
+_lasso_test_sp_descriptor(xmlNode *node) {
+	return xmlSecFindChild(node,
+			BAD_CAST LASSO_SAML2_METADATA_ELEMENT_SP_SSO_DESCRIPTOR,
+			BAD_CAST LASSO_SAML2_METADATA_HREF) != NULL;
+}
+
+static gboolean
+_lasso_test_idp_descriptor(xmlNode *node) {
+	return xmlSecFindChild(node,
+			BAD_CAST LASSO_SAML2_METADATA_ELEMENT_IDP_SSO_DESCRIPTOR,
+			BAD_CAST LASSO_SAML2_METADATA_HREF) != NULL;
+}
+
+static lasso_error_t
+lasso_saml20_server_load_metadata_entity(LassoServer *server, LassoProviderRole role,
+		xmlDoc *doc, xmlNode *entity, GList *blacklisted_entity_ids, GList **loaded_end,
+		xmlSecKeysMngr *keys_mngr, enum LassoServerLoadMetadataFlag flags)
+{
+	LassoProvider *provider = NULL;
+	gboolean check_signature = flags & LASSO_SERVER_LOAD_METADATA_FLAG_CHECK_ENTITY_DESCRIPTOR_SIGNATURE;
+
+	if (role == LASSO_PROVIDER_ROLE_IDP && ! _lasso_test_idp_descriptor(entity)) {
+		return 0;
+	}
+	if (role == LASSO_PROVIDER_ROLE_SP && ! _lasso_test_sp_descriptor(entity)) {
+		return 0;
+	}
+
+	if (keys_mngr && check_signature) {
+		lasso_error_t result;
+
+		result = lasso_verify_signature(entity, doc, "ID", keys_mngr, NULL, EMPTY_URI,
+				NULL);
+		if (result != 0) {
+			debug_report_signature_error(entity, result);
+			return result;
+		}
+	}
+
+	provider = lasso_provider_new_from_xmlnode(role, entity);
+	if (provider) {
+		char *name = g_strdup(provider->ProviderID);
+
+		if (g_list_find_custom(blacklisted_entity_ids, name,
+					(GCompareFunc) g_strcmp0)) {
+			lasso_release_gobject(provider);
+			return LASSO_SERVER_ERROR_NO_PROVIDER_LOADED;
+		}
+		if (*loaded_end) {
+			GList *l = *loaded_end;
+			l->next = g_new0(GList, 1);
+			l->next->prev = l;
+			l->next->data = g_strdup(name);
+			*loaded_end = l->next;
+		}
+		g_hash_table_insert(server->providers, name, provider);
+		return 0;
+	} else {
+		return LASSO_SERVER_ERROR_NO_PROVIDER_LOADED;
+	}
+}
+
+static lasso_error_t lasso_saml20_server_load_metadata_child(LassoServer *server,
+		LassoProviderRole role, xmlDoc *doc, xmlNode *child, GList *blacklisted_entity_ids,
+		GList **loaded_end, xmlSecKeysMngr *keys_mngr, enum LassoServerLoadMetadataFlag flags);
+
+static lasso_error_t
+lasso_saml20_server_load_metadata_entities(LassoServer *server, LassoProviderRole role, xmlDoc *doc, xmlNode *entities,
+		GList *blacklisted_entity_ids, GList **loaded_end,
+		xmlSecKeysMngr *keys_mngr, enum LassoServerLoadMetadataFlag flags)
+{
+	xmlNode *child;
+	gboolean at_least_one = FALSE;
+	gboolean check_signature = flags & LASSO_SERVER_LOAD_METADATA_FLAG_CHECK_ENTITIES_DESCRIPTOR_SIGNATURE;
+	gboolean inherit_signature = flags & LASSO_SERVER_LOAD_METADATA_FLAG_INHERIT_SIGNATURE;
+
+	/* if a key store is passed, check signature */
+	if (keys_mngr && check_signature) {
+		lasso_error_t result;
+
+		result = lasso_verify_signature(entities, doc, "ID", keys_mngr, NULL, EMPTY_URI,
+				NULL);
+		if (result == 0) {
+			if (inherit_signature) {
+				keys_mngr = NULL;
+			}
+		} else {
+			debug_report_signature_error(entities, result);
+			return result;
+		}
+	}
+
+	child = xmlSecGetNextElementNode(entities->children);
+	while (child) {
+		lasso_error_t rc = 0;
+
+		rc = lasso_saml20_server_load_metadata_child(server, role, doc, child,
+				blacklisted_entity_ids, loaded_end, keys_mngr, flags);
+		if (rc == 0) {
+			at_least_one = TRUE;
+		}
+		child = xmlSecGetNextElementNode(child->next);
+	}
+	return at_least_one ? 0 : LASSO_SERVER_ERROR_NO_PROVIDER_LOADED;
+}
+
+static lasso_error_t
+lasso_saml20_server_load_metadata_child(LassoServer *server, LassoProviderRole role, xmlDoc *doc,
+		xmlNode *child, GList *blacklisted_entity_ids, GList **loaded_end,
+		xmlSecKeysMngr *keys_mngr, enum LassoServerLoadMetadataFlag flags)
+{
+	if (xmlSecCheckNodeName(child,
+				BAD_CAST LASSO_SAML2_METADATA_ELEMENT_ENTITY_DESCRIPTOR,
+				BAD_CAST LASSO_SAML2_METADATA_HREF)) {
+		return lasso_saml20_server_load_metadata_entity(server, role, doc, child,
+				blacklisted_entity_ids, loaded_end, keys_mngr, flags);
+	} else if (xmlSecCheckNodeName(child,
+				BAD_CAST LASSO_SAML2_METADATA_ELEMENT_ENTITIES_DESCRIPTOR,
+				BAD_CAST LASSO_SAML2_METADATA_HREF)) {
+		return lasso_saml20_server_load_metadata_entities(server, role, doc, child,
+				blacklisted_entity_ids, loaded_end, keys_mngr, flags);
+	}
+	return LASSO_SERVER_ERROR_INVALID_XML;
+}
+
+/**
+ * lasso_saml20_server_load_metadata:
+ * @server: a #LassoServer object
+ * @role: the role of providers to load
+ * @root_node: the root node a SAML 2.0 metadata file
+ * @blacklisted_entity_ids: a list of entity IDs of provider to skip
+ * @loaded_entity_ids: an out parameter to return the list of the loaded providers entity IDs
+ *
+ * Load the SAML 2.0 providers present in the given metadata as pointed to by the @root_node
+ * parameter. If at least one provider is loaded the call is deemed successful.
+ *
+ * Return value: 0 if at least one provider has been loaded, LASSO_SERVER_ERROR_NO_PROVIDER_LOADED
+ * otherwise.
+ */
+lasso_error_t
+lasso_saml20_server_load_metadata(LassoServer *server, LassoProviderRole role,
+		xmlDoc *doc, xmlNode *root_node,
+		GList *blacklisted_entity_ids, GList **loaded_entity_ids,
+		xmlSecKeysMngr *keys_mngr, enum LassoServerLoadMetadataFlag flags)
+{
+	lasso_error_t rc = 0;
+	GList loaded = { .data = NULL, .next = NULL };
+	GList *loaded_end = NULL;
+
+	if (loaded_entity_ids) {
+		loaded_end = &loaded;
+	}
+	rc = lasso_saml20_server_load_metadata_child(server, role,
+			doc, root_node, blacklisted_entity_ids, &loaded_end, keys_mngr, flags);
+	if (loaded_entity_ids) {
+		lasso_release_list_of_strings(*loaded_entity_ids);
+		*loaded_entity_ids = loaded.next;
+	}
+	return rc;
 }

@@ -65,7 +65,8 @@ typedef enum {
 typedef enum {
 	NO_OPTION = 0,
 	NO_SINGLE_REFERENCE = 1 /* SAML signature should contain a single reference,
-				  * but WS-Security signatures can contain many */
+				  * but WS-Security signatures can contain many */,
+	EMPTY_URI = 2,
 } SignatureVerificationOption;
 
 struct XmlSnippet {

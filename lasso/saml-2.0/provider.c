@@ -25,6 +25,7 @@
 #define _POSIX_SOURCE
 
 #include <errno.h>
+#include <string.h>
 
 #include "../xml/private.h"
 #include <xmlsec/base64.h>
@@ -423,6 +424,8 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 {
 	xmlNode *node, *descriptor_node;
 	xmlChar *providerID;
+	xmlChar providerID_cpy[150] = "";
+
 	LassoProviderPrivate *pdata = provider->private_data;
 	static const struct {
 		char *name;
@@ -459,6 +462,7 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 	providerID = xmlGetProp(node, (xmlChar*)"entityID");
 	g_return_val_if_fail(providerID, FALSE);
 	lasso_assign_string(provider->ProviderID, (char*)providerID);
+	g_strlcpy((char*) providerID_cpy, (char*) providerID, 150);
 	lasso_release_xml_string(providerID);
 	/* initialize roles */
 	pdata->roles = LASSO_PROVIDER_ROLE_NONE;
@@ -497,10 +501,11 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 		/* We must at least load one descriptor, and we must load a descriptor for our
 		 * assigned role or we fail. */
 		if (! loaded_one_or_more_descriptor) {
-			warning("No descriptor was loaded, failing");
+			warning("%s: No descriptor was loaded, failing", providerID_cpy);
 		}
 		if ((pdata->roles & provider->role) == 0) {
-			warning("Loaded roles and prescribed role does not intersect");
+			warning("%s: Loaded roles and prescribed role does not intersect",
+					providerID_cpy);
 		}
 		return FALSE;
 	}
