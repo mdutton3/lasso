@@ -114,7 +114,7 @@ _lasso_test_idp_descriptor(xmlNode *node) {
 static lasso_error_t
 lasso_saml20_server_load_metadata_entity(LassoServer *server, LassoProviderRole role,
 		xmlDoc *doc, xmlNode *entity, GList *blacklisted_entity_ids, GList **loaded_end,
-		xmlSecKeysMngr *keys_mngr, enum LassoServerLoadMetadataFlag flags)
+		xmlSecKeysMngr *keys_mngr, LassoServerLoadMetadataFlag flags)
 {
 	LassoProvider *provider = NULL;
 	gboolean check_signature = flags & LASSO_SERVER_LOAD_METADATA_FLAG_CHECK_ENTITY_DESCRIPTOR_SIGNATURE;
@@ -162,12 +162,12 @@ lasso_saml20_server_load_metadata_entity(LassoServer *server, LassoProviderRole 
 
 static lasso_error_t lasso_saml20_server_load_metadata_child(LassoServer *server,
 		LassoProviderRole role, xmlDoc *doc, xmlNode *child, GList *blacklisted_entity_ids,
-		GList **loaded_end, xmlSecKeysMngr *keys_mngr, enum LassoServerLoadMetadataFlag flags);
+		GList **loaded_end, xmlSecKeysMngr *keys_mngr, LassoServerLoadMetadataFlag flags);
 
 static lasso_error_t
 lasso_saml20_server_load_metadata_entities(LassoServer *server, LassoProviderRole role, xmlDoc *doc, xmlNode *entities,
 		GList *blacklisted_entity_ids, GList **loaded_end,
-		xmlSecKeysMngr *keys_mngr, enum LassoServerLoadMetadataFlag flags)
+		xmlSecKeysMngr *keys_mngr, LassoServerLoadMetadataFlag flags)
 {
 	xmlNode *child;
 	gboolean at_least_one = FALSE;
@@ -207,7 +207,7 @@ lasso_saml20_server_load_metadata_entities(LassoServer *server, LassoProviderRol
 static lasso_error_t
 lasso_saml20_server_load_metadata_child(LassoServer *server, LassoProviderRole role, xmlDoc *doc,
 		xmlNode *child, GList *blacklisted_entity_ids, GList **loaded_end,
-		xmlSecKeysMngr *keys_mngr, enum LassoServerLoadMetadataFlag flags)
+		xmlSecKeysMngr *keys_mngr, LassoServerLoadMetadataFlag flags)
 {
 	if (xmlSecCheckNodeName(child,
 				BAD_CAST LASSO_SAML2_METADATA_ELEMENT_ENTITY_DESCRIPTOR,
@@ -241,7 +241,7 @@ lasso_error_t
 lasso_saml20_server_load_metadata(LassoServer *server, LassoProviderRole role,
 		xmlDoc *doc, xmlNode *root_node,
 		GList *blacklisted_entity_ids, GList **loaded_entity_ids,
-		xmlSecKeysMngr *keys_mngr, enum LassoServerLoadMetadataFlag flags)
+		xmlSecKeysMngr *keys_mngr, LassoServerLoadMetadataFlag flags)
 {
 	lasso_error_t rc = 0;
 	GList loaded = { .data = NULL, .next = NULL };

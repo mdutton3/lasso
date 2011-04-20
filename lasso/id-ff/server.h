@@ -78,12 +78,12 @@ struct _LassoServerClass {
  * @LASSO_SERVER_LOAD_METADATA_FLAG_INHERIT_SIGNATURE: when an EntitiesDescriptor is signed, all its
  * children inherit the trust from this signature and their signature is not checked.
  */
-enum LassoServerLoadMetadataFlag {
+typedef enum {
 	LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT = 0,
 	LASSO_SERVER_LOAD_METADATA_FLAG_CHECK_ENTITIES_DESCRIPTOR_SIGNATURE = 1,
 	LASSO_SERVER_LOAD_METADATA_FLAG_CHECK_ENTITY_DESCRIPTOR_SIGNATURE = 2,
 	LASSO_SERVER_LOAD_METADATA_FLAG_INHERIT_SIGNATURE = 4
-};
+} LassoServerLoadMetadataFlag;
 
 LASSO_EXPORT GType lasso_server_get_type(void);
 
@@ -124,7 +124,7 @@ LASSO_EXPORT lasso_error_t lasso_server_set_encryption_private_key_with_password
 LASSO_EXPORT lasso_error_t lasso_server_load_metadata(LassoServer *server, LassoProviderRole role,
 		const gchar *federation_file, const gchar *trusted_roots, GList
 		*blacklisted_entity_ids, GList **loaded_entity_ids,
-		enum LassoServerLoadMetadataFlag flags);
+		LassoServerLoadMetadataFlag flags);
 
 #ifdef __cplusplus
 }

@@ -781,7 +781,7 @@ lasso_server_get_encryption_private_key(LassoServer *server)
 lasso_error_t
 lasso_server_load_metadata(LassoServer *server, LassoProviderRole role, const gchar *federation_file,
 		const gchar *trusted_roots, GList *blacklisted_entity_ids,
-		GList **loaded_entity_ids, enum LassoServerLoadMetadataFlag flags)
+		GList **loaded_entity_ids, LassoServerLoadMetadataFlag flags)
 {
 	xmlDoc *doc = NULL;
 	xmlNode *root = NULL;
