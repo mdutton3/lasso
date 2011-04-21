@@ -1412,6 +1412,9 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 		if (!status_code2->Value)
 			goto cleanup;
 		/* FIXME: what to do with secondary status code ? */
+		if (lasso_strisequal(status_code2->Value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED)) {
+			rc = LASSO_PROFILE_ERROR_REQUEST_DENIED;
+		}
 	}
 
 cleanup:
