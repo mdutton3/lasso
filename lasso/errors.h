@@ -597,7 +597,13 @@ LASSO_EXPORT const char* lasso_strerror(int error_code);
  * The issuer of an assertion is not considered as an IdP
  */
 #define LASSO_PROFILE_ERROR_ISSUER_IS_NOT_AN_IDP 449
-
+/**
+ * LASSO_PROFILE_ERROR_REQUEST_DENIED:
+ *
+ * Generic error when an IdP or an SP return the RequestDenied status code in its response.
+ *
+ */
+#define LASSO_PROFILE_ERROR_REQUEST_DENIED 450
 
 /* functions/methods parameters checking */
 /**

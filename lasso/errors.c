@@ -275,6 +275,8 @@ lasso_strerror(int error_code)
 			return "Missing subject";
 		case LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND:
 			return "Name identifier not found";
+		case LASSO_PROFILE_ERROR_REQUEST_DENIED:
+			return "Generic error when an IdP or an SP return the RequestDenied status code in its response.";
 		case LASSO_PROFILE_ERROR_RESPONSE_DOES_NOT_MATCH_REQUEST:
 			return "Received response does not refer to the request sent";
 		case LASSO_PROFILE_ERROR_SESSION_NOT_FOUND:
