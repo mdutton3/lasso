@@ -1057,7 +1057,8 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 
 	/* Skip signature errors, let lasso_saml20_login_process_response_status_and_assertion
 	 * handle them */
-	goto_cleanup_if_fail (rc == 0 || rc == LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE);
+	goto_cleanup_if_fail (rc == 0 || rc == LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS || rc ==
+			LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE);
 
 	rc = lasso_saml20_login_process_response_status_and_assertion(login);
 cleanup:
