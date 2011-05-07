@@ -173,6 +173,8 @@ lasso_strerror(int error_code)
 			return "An unsigned authn request was received but the metadata specify that they must be signed.";
 		case LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND:
 			return "Federation not found on logout";
+		case LASSO_LOGOUT_ERROR_PARTIAL_LOGOUT:
+			return "Logout could not be propagated to every service provider in the current session.";
 		case LASSO_LOGOUT_ERROR_REQUEST_DENIED:
 			return "Request denied by identity provider";
 		case LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL:

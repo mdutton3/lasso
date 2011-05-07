@@ -396,6 +396,10 @@ cleanup:
 
 		value = sub_status_code->Value;
 
+		if (lasso_strisequal(value,LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT)) {
+			rc = LASSO_LOGOUT_ERROR_PARTIAL_LOGOUT;
+			break;
+		}
 		if (lasso_strisequal(value,LASSO_SAML2_STATUS_CODE_REQUEST_DENIED)) {
 			rc = LASSO_LOGOUT_ERROR_REQUEST_DENIED;
 			break;

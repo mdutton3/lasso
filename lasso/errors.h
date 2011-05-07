@@ -298,6 +298,12 @@ LASSO_EXPORT const char* lasso_strerror(int error_code);
  * Unknown principal on logout
  */
 #define LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL 304
+/**
+ * LASSO_LOGOUT_ERROR_PARTIAL_LOGOUT:
+ *
+ * Logout could not be propagated to every service provider in the current session.
+ */
+#define LASSO_LOGOUT_ERROR_PARTIAL_LOGOUT 305
 
 /* Profile */
 /**
