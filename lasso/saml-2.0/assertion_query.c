@@ -223,16 +223,18 @@ lasso_assertion_query_build_request_msg(LassoAssertionQuery *assertion_query)
 		const char *url;
 		/* XXX: support only SOAP */
 		static const gchar *servicepoints[LASSO_ASSERTION_QUERY_REQUEST_TYPE_LAST] = {
-			"AssertionIDRequestService SOAP",
+			NULL,
+			NULL,
 			"AuthnQueryService SOAP",
+			"AttributeService SOAP",
 			"AuthzService SOAP",
-			"AttributeService SOAP"
 		};
 		static const LassoProviderRole roles[LASSO_ASSERTION_QUERY_REQUEST_TYPE_LAST] = {
-			LASSO_PROVIDER_ROLE_ANY,
+			LASSO_PROVIDER_ROLE_NONE,
+			LASSO_PROVIDER_ROLE_NONE,
 			LASSO_PROVIDER_ROLE_AUTHN_AUTHORITY,
+			LASSO_PROVIDER_ROLE_ATTRIBUTE_AUTHORITY,
 			LASSO_PROVIDER_ROLE_AUTHZ_AUTHORITY,
-			LASSO_PROVIDER_ROLE_ATTRIBUTE_AUTHORITY
 		};
 
 		type = assertion_query->private_data->query_request_type;
@@ -240,7 +242,7 @@ lasso_assertion_query_build_request_msg(LassoAssertionQuery *assertion_query)
 			return LASSO_ERROR_UNDEFINED;
 		}
 		if (type < LASSO_ASSERTION_QUERY_REQUEST_TYPE_ASSERTION_ID ||
-		    type >= LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHZ_DECISION) {
+		    type > LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHZ_DECISION) {
 			return LASSO_PARAM_ERROR_INVALID_VALUE;
 		}
 		url = lasso_provider_get_metadata_one_for_role(remote_provider, roles[type], servicepoints[type]);
