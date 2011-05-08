@@ -1,6 +1,32 @@
 NEWS
 ====
 
+2.4.0 - May 4th 2011
+--------------------
+
+74 commits, 81 files changed, 29040 insertions, 463 deletions
+
+Generic
+ * a new directory to keep used semantic patch around (employ with coccinelle)
+ * fix a missing include of errno.h
+ * fix bug of missing lasso: namespace when dumping some profile objects.
+ * internal function lasso_verify_signature now can verify empty reference
+   signature (which means "signs the whole file"), as used by renater metadata
+   files.
+ *
+
+Bindings:
+ * php5 no more depends upon an internal function of liblasso
+ *
+
+Tests:
+ * metadata test files from Renater were added
+ * add sp and idp sample files for testing with 1024 bits RSA keys
+ * performance test tool now accept a parameter to use a different set of sample
+   files
+ * consecutive dump and load of lasso objects is now tested as it MUST be
+   idempotent.
+
 2.3.6 - November 29th 2011
 --------------------------
 
