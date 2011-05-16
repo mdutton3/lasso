@@ -1954,8 +1954,8 @@ START_TEST(test13_test_lasso_server_load_metadata)
 			NULL, /* Secret key to unlock private key */
 			NULL));
 	check_good_rc(lasso_server_load_metadata(server, LASSO_PROVIDER_ROLE_IDP,
-				TESTSDATADIR "/renater-metadata.xml",
-				TESTSDATADIR "/metadata-federation-renater.crt",
+				TESTSDATADIR "/metadata/renater-metadata.xml",
+				TESTSDATADIR "/metadata/metadata-federation-renater.crt",
 				&blacklisted_1, &loaded_entity_ids,
 				LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT));
 	check_equals(g_hash_table_size(server->providers), 101);
