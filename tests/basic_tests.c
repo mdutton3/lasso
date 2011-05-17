@@ -1958,15 +1958,15 @@ START_TEST(test13_test_lasso_server_load_metadata)
 				TESTSDATADIR "/metadata/metadata-federation-renater.crt",
 				&blacklisted_1, &loaded_entity_ids,
 				LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT));
-	check_equals(g_hash_table_size(server->providers), 101);
-	check_equals(g_list_length(loaded_entity_ids), 101);
+	check_equals(g_hash_table_size(server->providers), 110);
+	check_equals(g_list_length(loaded_entity_ids), 110);
 	check_good_rc(lasso_server_load_metadata(server, LASSO_PROVIDER_ROLE_IDP,
 				TESTSDATADIR "/ukfederation-metadata.xml",
 				TESTSDATADIR "/ukfederation.pem",
 				&blacklisted_1, &loaded_entity_ids,
 				LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT));
 	check_equals(g_list_length(loaded_entity_ids), 283);
-	check_equals(g_hash_table_size(server->providers), 384);
+	check_equals(g_hash_table_size(server->providers), 393);
 
 	lasso_release_gobject(server);
 }
