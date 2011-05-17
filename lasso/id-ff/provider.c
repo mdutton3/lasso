@@ -1543,25 +1543,7 @@ lasso_provider_get_encryption_sym_key_type(const LassoProvider *provider)
 int
 lasso_provider_verify_query_signature(LassoProvider *provider, const char *message)
 {
-	xmlSecKey *provider_public_key;
-	int rc = 0;
-
-	lasso_bad_param(PROVIDER, provider);
-	lasso_check_good_rc(lasso_provider_try_loading_public_key(provider, &provider_public_key, TRUE));
-	g_return_val_if_fail(provider_public_key, LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY);
-
-	switch (lasso_provider_get_protocol_conformance(provider)) {
-		case LASSO_PROTOCOL_LIBERTY_1_0:
-		case LASSO_PROTOCOL_LIBERTY_1_1:
-		case LASSO_PROTOCOL_LIBERTY_1_2:
-			return lasso_query_verify_signature(message, provider_public_key);
-		case LASSO_PROTOCOL_SAML_2_0:
-			return lasso_saml2_query_verify_signature(message, provider_public_key);
-		default:
-			return LASSO_ERROR_UNIMPLEMENTED;
-	}
-cleanup:
-	return rc;
+	return lasso_provider_verify_signature(provider, message, "", LASSO_MESSAGE_FORMAT_QUERY);
 }
 
 /**
