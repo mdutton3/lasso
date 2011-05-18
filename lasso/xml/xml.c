@@ -31,8 +31,6 @@
  *
  */
 
-#define _GNU_SOURCE /* for use of strndup */
-
 #include "private.h"
 #include <ctype.h>
 #include <errno.h>
@@ -2538,7 +2536,7 @@ snippet_dump_any(gchar *key, gchar *value, xmlNode *xmlnode)
 			message(G_LOG_LEVEL_WARNING, "Invalid attribute name: %s", key);
 			return;
 		}
-		ns_uri = strndup(key+1, end-(key+1));
+		ns_uri = g_strndup(key+1, end-(key+1));
 		ns = get_or_define_ns(xmlnode, BAD_CAST ns_uri);
 		xmlSetNsProp(xmlnode, ns, BAD_CAST key, BAD_CAST value);
 	} else {
