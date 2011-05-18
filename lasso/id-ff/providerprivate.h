@@ -72,7 +72,7 @@ struct _LassoProviderPrivate
 	GList *signing_key_descriptors;
 	xmlNode *encryption_key_descriptor;
 	char *encryption_public_key_str;
-	xmlSecKey *encryption_public_key;
+	GList *encryption_public_keys;
 	LassoEncryptionMode encryption_mode;
 	LassoEncryptionSymKeyType encryption_sym_key_type;
 	char *valid_until;
