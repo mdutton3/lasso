@@ -32,7 +32,7 @@ extern "C" {
 struct _LassoServerPrivate
 {
 	gboolean dispose_has_run;
-	xmlSecKey *encryption_private_key;
+	GList *encryption_private_keys;
 	GList *svc_metadatas;
 };
 
@@ -40,7 +40,7 @@ gchar* lasso_server_get_first_providerID(LassoServer *server);
 gchar* lasso_server_get_first_providerID_by_role(const LassoServer *server, LassoProviderRole role);
 gchar* lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash);
 xmlSecKey* lasso_server_get_private_key(LassoServer *server);
-xmlSecKey* lasso_server_get_encryption_private_key(LassoServer *server);
+GList* lasso_server_get_encryption_private_keys(LassoServer *server);
 
 #ifdef __cplusplus
 }

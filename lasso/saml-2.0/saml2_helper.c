@@ -776,8 +776,22 @@ int
 lasso_saml2_encrypted_element_server_decrypt(LassoSaml2EncryptedElement* encrypted_element, LassoServer *server, LassoNode** decrypted_node)
 {
 	lasso_bad_param(SERVER, server);
+	int rc = 0;
+	GList *encryption_private_keys;
 
-	return lasso_saml2_encrypted_element_decrypt(encrypted_element, lasso_server_get_encryption_private_key(server), decrypted_node);
+	encryption_private_keys = lasso_server_get_encryption_private_keys(server);
+	if (! encryption_private_keys) {
+		return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+	}
+	lasso_foreach_full_begin(xmlSecKey*, encryption_private_key, it, encryption_private_keys)
+	{
+		rc = lasso_saml2_encrypted_element_decrypt(encrypted_element,
+				encryption_private_key, decrypted_node);
+		if (rc == 0)
+			break;
+	}
+	lasso_foreach_full_end();
+	return rc;
 }
 
 /**

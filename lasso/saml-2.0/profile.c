@@ -506,10 +506,23 @@ lasso_saml20_profile_set_session_from_dump_decrypt(
 				assertion->Subject->EncryptedID->original_data);
 		lasso_release_gobject(assertion->Subject->EncryptedID);
 		} else { /* decrypt */
-			int rc = 0;
-			rc = lasso_saml2_encrypted_element_decrypt(assertion->Subject->EncryptedID,
-					lasso_server_get_encryption_private_key(profile->server),
-					(LassoNode**) &assertion->Subject->NameID);
+			int rc;
+			GList *encryption_private_keys =
+				lasso_server_get_encryption_private_keys(profile->server);
+
+			rc = LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+			lasso_foreach_full_begin(xmlSecKey*, encryption_private_key, it,
+					encryption_private_keys);
+			{
+				rc = lasso_saml2_encrypted_element_decrypt(
+						assertion->Subject->EncryptedID,
+						encryption_private_key,
+						(LassoNode**)&assertion->Subject->NameID);
+				if (rc == 0)
+					break;
+			}
+			lasso_foreach_full_end();
+
 			if (rc == 0) {
 				lasso_release_gobject(assertion->Subject->EncryptedID);
 			} else {
@@ -560,7 +573,6 @@ lasso_saml20_profile_process_name_identifier_decryption(LassoProfile *profile,
 		LassoSaml2NameID **name_id,
 		LassoSaml2EncryptedElement **encrypted_id)
 {
-	xmlSecKey *encryption_private_key = NULL;
 	int rc = 0;
 
 	lasso_bad_param(PROFILE, profile);
@@ -568,15 +580,20 @@ lasso_saml20_profile_process_name_identifier_decryption(LassoProfile *profile,
 	lasso_null_param(encrypted_id);
 
 	if (*name_id == NULL && *encrypted_id != NULL) {
-		encryption_private_key = profile->server->private_data->encryption_private_key;
 		if (! LASSO_IS_SAML2_ENCRYPTED_ELEMENT(*encrypted_id)) {
 			return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 		}
-		if (encrypted_id != NULL && encryption_private_key == NULL) {
-			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+		rc = LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+		lasso_foreach_full_begin(xmlSecKey*, encryption_private_key, it,
+				lasso_server_get_encryption_private_keys(profile->server));
+		{
+			rc = lasso_saml2_encrypted_element_decrypt(*encrypted_id, encryption_private_key,
+					&profile->nameIdentifier);
+			if (rc == 0)
+				break;
 		}
-		rc = lasso_saml2_encrypted_element_decrypt(*encrypted_id, encryption_private_key,
-				&profile->nameIdentifier);
+		lasso_foreach_full_end();
+
 		if (rc)
 			goto cleanup;
 		if (! LASSO_IS_SAML2_NAME_ID(profile->nameIdentifier)) {

@@ -548,16 +548,16 @@ xmlSecKey*
 lasso_provider_get_encryption_public_key(const LassoProvider *provider)
 {
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
-	GList *public_keys;
+	GList *keys;
 
-	if (provider->private_data->encryption_public_key) {
-		return provider->private_data->encryption_public_key;
+	keys = provider->private_data->encryption_public_keys;
+	/* encrypt using the first given key, multiple encryption key in the metadata is generally
+	 * useless. roll-over of the encryption key is done mainly at the receiving side, by trying
+	 * to decipher using the two private keys, the old and the new. */
+	if (keys && keys->data) {
+		return (xmlSecKey*)keys->data;
 	}
-	public_keys = lasso_provider_get_public_keys(provider);
-	if (! public_keys) {
-		return NULL;
-	}
-	return (xmlSecKey*)public_keys->data;
+	return NULL;
 }
 
 static void
@@ -859,10 +859,7 @@ dispose(GObject *object)
 		provider->private_data->encryption_public_key_str = NULL;
 	}
 
-	if (provider->private_data->encryption_public_key) {
-		xmlSecKeyDestroy(provider->private_data->encryption_public_key);
-		provider->private_data->encryption_public_key = NULL;
-	}
+	lasso_release_list_of_sec_key(provider->private_data->encryption_public_keys);
 
 	lasso_release(provider->private_data->affiliation_id);
 	provider->private_data->affiliation_id = NULL;
@@ -906,7 +903,7 @@ instance_init(LassoProvider *provider)
 	provider->private_data->signing_key_descriptors = NULL;
 	provider->private_data->encryption_key_descriptor = NULL;
 	provider->private_data->encryption_public_key_str = NULL;
-	provider->private_data->encryption_public_key = NULL;
+	provider->private_data->encryption_public_keys = NULL;
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
 	provider->private_data->encryption_sym_key_type = LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128;
 
@@ -1290,8 +1287,8 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 						list_of_sec_key);
 				break;
 			case LASSO_PUBLIC_KEY_ENCRYPTION:
-				lasso_assign_new_sec_key(provider->private_data->encryption_public_key,
-						(xmlSecKey*)keys->data);
+				lasso_transfer_full(provider->private_data->encryption_public_keys, keys,
+						list_of_sec_key);
 				break;
 			default:
 				lasso_release_list_of_sec_key(keys);
