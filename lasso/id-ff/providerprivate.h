@@ -68,11 +68,11 @@ struct _LassoProviderPrivate
 	char *affiliation_owner_id;
 	char *affiliation_id;
 
-	xmlSecKey *public_key;
-	xmlNode *signing_key_descriptor;
+	GList *signing_public_keys;
+	GList *signing_key_descriptors;
 	xmlNode *encryption_key_descriptor;
 	char *encryption_public_key_str;
-	xmlSecKey *encryption_public_key;
+	GList *encryption_public_keys;
 	LassoEncryptionMode encryption_mode;
 	LassoEncryptionSymKeyType encryption_sym_key_type;
 	char *valid_until;
@@ -86,7 +86,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format);
 gboolean lasso_provider_load_public_key(LassoProvider *provider,
 		LassoPublicKeyType public_key_type);
-xmlSecKey* lasso_provider_get_public_key(const LassoProvider *provider);
+GList* lasso_provider_get_public_keys(const LassoProvider *provider);
 xmlSecKey* lasso_provider_get_encryption_public_key(const LassoProvider *provider);
 LassoEncryptionSymKeyType lasso_provider_get_encryption_sym_key_type(const LassoProvider* provider);
 int lasso_provider_verify_saml_signature(LassoProvider *provider, xmlNode *signed_node, xmlDoc *doc);

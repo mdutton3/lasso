@@ -144,6 +144,9 @@
 #define lasso_release_list_of_xml_node_list(dest) \
 	lasso_release_list_of_full(dest, xmlFreeNodeList)
 
+#define lasso_release_list_of_sec_key(dest) \
+	lasso_release_list_of_full(dest, xmlSecKeyDestroy)
+
 #define lasso_release_xml_node(node) \
 	lasso_release_full2(node, xmlFreeNode, xmlNodePtr)
 
@@ -424,6 +427,12 @@
 		while (__iter && *__iter) { \
 			lasso_list_add_string(*__tmp_dest, *__iter); \
 		} \
+	}
+
+#define lasso_list_add_new_sec_key(dest, src) \
+	{ \
+		xmlSecKey *__tmp_src = (src); \
+		lasso_list_add_non_null(dest, __tmp_src); \
 	}
 
 /* List element removal */
