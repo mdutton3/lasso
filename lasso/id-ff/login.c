@@ -384,12 +384,13 @@ lasso_login_build_assertion(LassoLogin *login,
 	/* Encrypt NameID */
 	provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	ss = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(as);
-	if (provider && provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_NAMEID
-			&& lasso_provider_get_encryption_public_key(provider) != NULL) {
+	if (provider
+			&& (lasso_provider_get_encryption_mode(provider) & LASSO_ENCRYPTION_MODE_NAMEID)) {
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
-			LASSO_NODE(ss->Subject->NameIdentifier),
-			lasso_provider_get_encryption_public_key(provider),
-			provider->private_data->encryption_sym_key_type, provider->ProviderID));
+					LASSO_NODE(ss->Subject->NameIdentifier),
+					lasso_provider_get_encryption_public_key(provider),
+					lasso_provider_get_encryption_sym_key_type(provider),
+					provider->ProviderID));
 		if (encrypted_element != NULL) {
 			lasso_assign_new_gobject(ss->Subject->EncryptedNameIdentifier, encrypted_element);
 			lasso_release_gobject(ss->Subject->NameIdentifier);
