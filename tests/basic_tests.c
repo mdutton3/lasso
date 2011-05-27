@@ -1960,6 +1960,10 @@ START_TEST(test13_test_lasso_server_load_metadata)
 				LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT));
 	check_equals(g_hash_table_size(server->providers), 110);
 	check_equals(g_list_length(loaded_entity_ids), 110);
+
+#if 0
+	/* UK federation file are too big to distribute (and I don't even known if it's right to do
+	 * it, disable this test for now ) */
 	check_good_rc(lasso_server_load_metadata(server, LASSO_PROVIDER_ROLE_IDP,
 				TESTSDATADIR "/ukfederation-metadata.xml",
 				TESTSDATADIR "/ukfederation.pem",
@@ -1967,6 +1971,7 @@ START_TEST(test13_test_lasso_server_load_metadata)
 				LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT));
 	check_equals(g_list_length(loaded_entity_ids), 283);
 	check_equals(g_hash_table_size(server->providers), 393);
+#endif
 
 	lasso_release_gobject(server);
 }
