@@ -14,5 +14,4 @@ WriteMakefile(
       ( AUTHOR         => 'Benjamin Dauvergne <bdauvergne@entrouvert.com>') : ()),
     LIBS              => [ "$LIBS" ],
     MAKEFILE          => 'Makefile.perl',
-    dynamic_lib       => { OTHERLDFLAGS => '-Wl,--as-needed' }
 );
