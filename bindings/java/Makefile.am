@@ -55,7 +55,7 @@ com_entrouvert_lasso_LassoJNI.h: com/entrouvert/lasso/LassoJNI.class  $(java_las
 libjnilasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir) $(AM_CFLAGS) @JAVA_INCLUDE@
 libjnilasso_la_CFLAGS += -Wno-unused-parameter
 
-libjnilasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version
+libjnilasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version $(JNI_EXTRA_LDFLAGS)
 libjnilasso_la_LIBADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 nodist_libjnilasso_la_SOURCES = com_entrouvert_lasso_LassoJNI.c 
 
@@ -105,8 +105,8 @@ AllJunitTests: JAVAFLAGS +="-Dsrcdir=$(srcdir)"
 AllJunitTests: $(test_source_files:.java=.class) 	
 	echo "#! /bin/sh" > $@
 	echo "OBJDIR=`libtool --config | grep ^objdir | sed s/.*=//`" >> $@
-	echo 'LD_LIBRARY_PATH=$$OBJDIR @JUNIT@ BindingTests' >> $@
-	echo 'LD_LIBRARY_PATH=$$OBJDIR @JUNIT@ LoginTest' >> $@
+	echo 'LD_LIBRARY_PATH=$$OBJDIR DYLD_LIBRARY_PATH=$$OBJDIR @JUNIT@ -Djava.library.path=$$OBJDIR BindingTests' >> $@
+	echo 'LD_LIBRARY_PATH=$$OBJDIR DYLD_LIBRARY_PATH=$$OBJDIR @JUNIT@ -Djava.library.path=$$OBJDIR LoginTest' >> $@
 	chmod +x $@
 endif
 

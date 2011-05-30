@@ -322,6 +322,12 @@ else
   JAVA_VERSION=""
 fi
 
+dnl Support JNI under MacOsX
+case $host_os in
+*-darwin*)
+    JNI_EXTRA_LDFLAGS="-shrext .jnilib" ;;
+esac
+
 dnl Conditional java sub dir test.
 AM_CONDITIONAL([JAVA_ENABLED],[test "x$enable_java" = "xyes"])
 AM_CONDITIONAL([JUNIT_ENABLED],[test "x$JUNIT" != "x"])
@@ -332,6 +338,7 @@ AC_SUBST(JAVA_INCLUDE)
 AC_SUBST(CLASSPATH_OPT)
 JDK_INCLUDE=$JAVA_INCLUDE
 AC_SUBST(JDK_INCLUDE)
+AC_SUBST(JNI_EXTRA_LDFLAGS)
 
 
 # --------------
