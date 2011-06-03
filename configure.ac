@@ -74,7 +74,7 @@ case "${host}" in
                 ;;
         esac
         ;;
-    *-darwin*)
+    *darwin*)
         DARWIN=1
         ;;
 esac
@@ -323,10 +323,9 @@ else
 fi
 
 dnl Support JNI under MacOsX
-case $host_os in
-*-darwin*)
+if [ "$DARWIN" = 1 ]; then
     JNI_EXTRA_LDFLAGS="-shrext .jnilib" ;;
-esac
+fi
 
 dnl Conditional java sub dir test.
 AM_CONDITIONAL([JAVA_ENABLED],[test "x$enable_java" = "xyes"])
