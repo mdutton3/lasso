@@ -1,31 +1,60 @@
 NEWS
 ====
 
-2.4.0 - May 4th 2011
---------------------
+2.4.0 - June 6th 2011
+---------------------
+93 files changed, 32160 insertions(+), 607 deletions(-)
 
-74 commits, 81 files changed, 29040 insertions, 463 deletions
+Minor version number increase since ABI was extended (new methods).
 
-Generic
- * a new directory to keep used semantic patch around (employ with coccinelle)
- * fix a missing include of errno.h
- * fix bug of missing lasso: namespace when dumping some profile objects.
- * internal function lasso_verify_signature now can verify empty reference
-   signature (which means "signs the whole file"), as used by renater metadata
-   files.
- *
+ - Improvements to autoconf and automake files to compile under Darwin (Mac Os
+   X).
+ - Key rollover support:
+   Lasso is now able to accept messages signed by any key declared as a signing
+   key in a metadata and not just the last one. You can also decrypt encrypted
+   nodes using any of a list of private keys, allowing roll-over of encryption
+   certificates. Signing key roll-over is automatic, your provider just have to
+   provide the new signing key in their metadata. For multiple-encryption key
+   you can load another private key than the one loaded in the LassoServer
+   constuctor with code like that:
 
-Bindings:
- * php5 no more depends upon an internal function of liblasso
- *
+      >>> import lasso
+      >>> server = lasso.Server(our_metadata, first_private_key_path)
+      >>> server.setEncryptionPrivateKey(second_private_key_path)
 
-Tests:
- * metadata test files from Renater were added
- * add sp and idp sample files for testing with 1024 bits RSA keys
- * performance test tool now accept a parameter to use a different set of sample
-   files
- * consecutive dump and load of lasso objects is now tested as it MUST be
-   idempotent.
+   See the FAQ file for the workflow of a proper key roll-over.
+
+ - Partial logout reponse now produce a specific error code when parsed by
+   lasso_logout_process_response_msg()
+ - Bugs in lasso_assertion_query_build_request_msg() were fixed
+ - Processing of assertions is not stopped when checking that first level
+   status code is not success, so that later code can check the second level
+   status code.
+ - A new generic error for denied request was added,
+   LASSO_PROFILE_ERROR_REQUEST_DENIED
+ - A new API lasso_server_load_metadata() was added to load federation files
+   (XML files containing metadata from multiple providers) and to check
+   signatures on them.
+ - Better warning and errors are reported in logs when failing to load a
+   metadata file.
+ - Bugs around missing namespace declaration for dump file were fixed, it
+   prevented reloading dumped object (like LassoLogin).
+ - lasso_node_get_xml_node_for_any_type() must be able to copy the content of
+   an XML node to another (namespace, attribute and children). It did not, now
+   it is fixed. It can be used for example to add specific attribute like «
+   xsi:type="string" » to a Saml2AttributeValue. Here is a python snippet to do that:
+
+      >>> import lasso
+      >>> a = lasso.Saml2AttributeValue()
+      >>> a.setOriginalXmlnode('<Dummy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="string">Value</Dummy>')
+      >>> print a.debug(0)
+      <saml:AttributeValue xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="string">Value</saml:AttributeValue>
+
+ - The perfs benchmarking tools now allows to select a different metadata set
+   (for example to test with different public key sizes).
+ - Perl minimal version for the binding was downgraded to 5
+ - an FAQ file was started.
+
 
 2.3.6 - November 29th 2011
 --------------------------
