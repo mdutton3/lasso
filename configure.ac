@@ -324,7 +324,7 @@ fi
 
 dnl Support JNI under MacOsX
 if [ "$DARWIN" = 1 ]; then
-    JNI_EXTRA_LDFLAGS="-shrext .jnilib" ;;
+    JNI_EXTRA_LDFLAGS="-shrext .jnilib"
 fi
 
 dnl Conditional java sub dir test.
