@@ -35,11 +35,13 @@ class WrapperHeader:
         print >> self.fd, '''\
 /* this file has been generated automatically; do not edit */
 
+#include "../../config.h"
+
 #ifndef PHP_LASSO_H
 #define PHP_LASSO_H 1
 
 #define PHP_LASSO_EXTNAME "lasso"
-#define PHP_LASSO_VERSION "2.1.1"
+#define PHP_LASSO_VERSION VERSION
 
 #define PHP_LASSO_SERVER_RES_NAME "Lasso Server"
 
