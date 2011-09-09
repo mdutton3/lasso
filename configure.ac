@@ -36,7 +36,7 @@ AM_CONDITIONAL(HAVE_AM_SILENT_RULES, test x$HAVE_AM_SILENT_RULES != x)
 dnl Create rules to automaticaly regenerate the config header.
 AM_CONFIG_HEADER([config.h lasso/lasso_config.h])
 dnl Add --enable-maintainer-mode option to configure.
-AM_MAINTAINER_MODE
+AM_MAINTAINER_MODE([enable])
 
 dnl ==========================================================================
 dnl Perform host specific configuration
