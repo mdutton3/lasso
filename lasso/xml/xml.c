@@ -2191,25 +2191,20 @@ _type_name_from_href_and_nodename(char *href, char *nodename) {
 }
 
 /**
- * lasso_node_new_from_xmlNode:
+ * _lasso_node_new_from_xmlNode:
  * @node: an xmlNode
  *
  * Builds a new #LassoNode from an xmlNode.
  *
  * Return value: a new node
  **/
-LassoNode*
-lasso_node_new_from_xmlNode(xmlNode *xmlnode)
+static LassoNode*
+_lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 {
 	char *typename = NULL;
 	xmlChar *xsitype = NULL;
 	LassoNode *node = NULL;
 	gboolean fromXsi = FALSE;
-
-	if (xmlnode == NULL || xmlnode->ns == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Unable to build a LassoNode from a xmlNode");
-		return NULL;
-	}
 
 	xsitype = xmlGetNsProp(xmlnode, (xmlChar*)"type", (xmlChar*)LASSO_XSI_HREF);
 	if (xsitype) {
@@ -2282,6 +2277,23 @@ cleanup:
 	return node;
 }
 
+/**
+ * lasso_node_new_from_xmlNode:
+ * @node: an xmlNode
+ *
+ * Builds a new #LassoNode from an xmlNode.
+ *
+ * Return value: a new node
+ **/
+LassoNode*
+lasso_node_new_from_xmlNode(xmlNode *xmlnode)
+{
+	if (xmlnode == NULL || xmlnode->ns == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "Unable to build a LassoNode from a xmlNode");
+		return NULL;
+	}
+	return _lasso_node_new_from_xmlNode(xmlnode);
+}
 
 static LassoNode*
 lasso_node_new_from_xmlNode_with_type(xmlNode *xmlnode, char *typename)
@@ -2291,7 +2303,7 @@ lasso_node_new_from_xmlNode_with_type(xmlNode *xmlnode, char *typename)
 	int rc = 0;
 
 	if (typename == NULL)
-		return lasso_node_new_from_xmlNode(xmlnode); /* will auto-detect */
+		return _lasso_node_new_from_xmlNode(xmlnode); /* will auto-detect */
 
 	gtype = g_type_from_name(typename);
 	if (gtype == 0)
