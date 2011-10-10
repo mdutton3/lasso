@@ -1345,12 +1345,9 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					LassoNode *n;
 					n = lasso_node_new_from_xmlNode_with_type(t,
 							snippet->class_name);
-					if (n == NULL && snippet_any == snippet &&
-							t->properties == NULL && t->children &&
-							t->children->type == XML_TEXT_NODE &&
-							t->children->next == NULL) {
-						/* unknown, but no attributes, and content
-						 * is text ? -> use generic object */
+					if (n == NULL && snippet_any == snippet) {
+						/* unknown, can be text or node -> make a
+						 * LassoMiscTextNode */
 						n = lasso_node_new_from_xmlNode_with_type(t,
 								"LassoMiscTextNode");
 					}
