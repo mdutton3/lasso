@@ -22,6 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdio.h>
 #include "../xml/private.h"
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
@@ -415,6 +416,7 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 		const char *sender_id = NULL, *local_service_id = NULL;
 		const char *name_qualifier = NULL, *sp_name_qualifier = NULL;
 		LassoSaml2AssertionValidationState validation_state;
+		LassoProviderRole role;
 
 		assertion = lasso_soap_envelope_get_saml2_security_token (envelope);
 		if (assertion == NULL)
@@ -425,7 +427,12 @@ lasso_idwsf2_profile_check_security_mechanism(LassoIdWsf2Profile *profile,
 		issuer = lasso_saml2_assertion_get_issuer_provider(assertion, profile->parent.server);
 		if (! issuer)
 			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_UNKNOWN_ISSUER);
-		if (issuer->role != LASSO_PROVIDER_ROLE_IDP)
+		if (issuer == &profile->parent.server->parent || issuer->role == 0) {
+			role = issuer->private_data->roles;
+		} else {
+			role = issuer->role;
+		}
+		if ((role & LASSO_PROVIDER_ROLE_IDP) == 0)
 			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_ISSUER_IS_NOT_AN_IDP);
 		lasso_check_good_rc(lasso_provider_verify_single_node_signature(issuer,
 					(LassoNode*)assertion, "ID"));
