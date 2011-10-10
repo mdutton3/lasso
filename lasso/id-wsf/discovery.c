@@ -917,12 +917,13 @@ lasso_discovery_build_key_info_node(LassoDiscovery *discovery, const gchar *prov
 	LassoDsKeyValue *key_value = NULL;
 	LassoProvider *provider = NULL;
 	xmlSecKeyInfoCtx *ctx = NULL;
-	xmlSecKey *public_key = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *key_info_node = NULL;
 	xmlNode *xmlnode = NULL;
 	xmlXPathContext *xpathCtx = NULL;
 	xmlXPathObject *xpathObj = NULL;
+	GList *public_keys = NULL;
+	xmlSecKey *public_key = NULL;
 
 	lasso_return_val_if_invalid_param(DISCOVERY, discovery, NULL);
 	g_return_val_if_fail(providerID != NULL, NULL);
@@ -933,7 +934,11 @@ lasso_discovery_build_key_info_node(LassoDiscovery *discovery, const gchar *prov
 		return NULL;
 	}
 
-	public_key = lasso_provider_get_public_key(provider);
+	public_keys = lasso_provider_get_public_keys(provider);
+	if (public_keys == NULL) {
+		return NULL;
+	}
+	public_key = (xmlSecKey*)public_keys->data;
 	if (public_key == NULL) {
 		return NULL;
 	}
