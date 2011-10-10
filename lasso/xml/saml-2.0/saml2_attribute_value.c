@@ -48,7 +48,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_NODES | SNIPPET_ALLOW_TEXT,
+	{ "", SNIPPET_LIST_NODES | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoSaml2AttributeValue, any), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
