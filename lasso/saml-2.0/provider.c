@@ -39,6 +39,12 @@
 #include "../xml/saml-2.0/saml2_attribute.h"
 #include "../xml/saml-2.0/saml2_xsd.h"
 
+enum HttpMethodKind {
+	SYNC_NOT_APPLICABLE,
+	SYNCHRONOUS,
+	ASYNCHRONOUS
+};
+
 const char *profile_names[LASSO_MD_PROTOCOL_TYPE_LAST] = {
 	"", /* No fedterm in SAML 2.0 */
 	"NameIDMappingService",  /*IDPSSODescriptor*/
@@ -55,6 +61,21 @@ const char *profile_names[LASSO_MD_PROTOCOL_TYPE_LAST] = {
 	"AuthzService",  /*PDPDescriptor*/
 	"AttributeService" /*AttributeAuthorityDescriptor*/
 };
+
+static enum HttpMethodKind http_method_kind(LassoHttpMethod method) {
+	switch (method) {
+		case LASSO_HTTP_METHOD_SOAP:
+			return ASYNCHRONOUS;
+		case LASSO_HTTP_METHOD_GET:
+		case LASSO_HTTP_METHOD_POST:
+		case LASSO_HTTP_METHOD_REDIRECT:
+		case LASSO_HTTP_METHOD_ARTIFACT_GET:
+		case LASSO_HTTP_METHOD_ARTIFACT_POST:
+			return SYNCHRONOUS;
+		default:
+			return SYNC_NOT_APPLICABLE;
+	}
+}
 
 static const char*
 binding_uri_to_identifier(const char *uri)
@@ -513,8 +534,33 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 	return TRUE;
 }
 
+static gboolean has_synchronous_methods(LassoProvider *provider, LassoMdProtocolType protocol_type)
+{
+	GList *t = NULL;
+	const char *kind = NULL;
+	LassoHttpMethod result = LASSO_HTTP_METHOD_NONE;
+
+	if (protocol_type < LASSO_MD_PROTOCOL_TYPE_LAST) {
+		kind = profile_names[protocol_type];
+	}
+	if (! kind) {
+		return LASSO_HTTP_METHOD_NONE;
+	}
+
+	lasso_foreach(t, provider->private_data->endpoints) {
+		EndpointType *endpoint_type = (EndpointType*)t->data;
+		if (endpoint_type && lasso_strisequal(endpoint_type->kind, kind)) {
+			result = binding_uri_to_http_method(endpoint_type->binding);
+			if (http_method_kind(result) == SYNCHRONOUS)
+				return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
 LassoHttpMethod
-lasso_saml20_provider_get_first_http_method(G_GNUC_UNUSED LassoProvider *provider,
+lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 		LassoProvider *remote_provider, LassoMdProtocolType protocol_type)
 {
 	GList *t = NULL;
@@ -532,6 +578,11 @@ lasso_saml20_provider_get_first_http_method(G_GNUC_UNUSED LassoProvider *provide
 		EndpointType *endpoint_type = (EndpointType*)t->data;
 		if (endpoint_type && lasso_strisequal(endpoint_type->kind, kind)) {
 			result = binding_uri_to_http_method(endpoint_type->binding);
+			/* a synchronous method needs another synchronous method for receiving the
+			 * response on the local side */
+			if (http_method_kind(result) == SYNCHRONOUS
+					&& ! has_synchronous_methods(provider, protocol_type))
+				continue;
 			if (result != LASSO_HTTP_METHOD_NONE)
 				break;
 		}
