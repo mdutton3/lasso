@@ -95,14 +95,20 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		n->text_child = TRUE;
 		n->content = g_strdup((char*)(xmlnode->content));
 		return 0;
+	} else if (xmlnode->type == XML_ELEMENT_NODE && xmlnode->properties == NULL &&
+			(xmlnode->children == NULL
+				|| (xmlnode->children != NULL && xmlnode->children->next == NULL &&
+					xmlnode->children->type == XML_TEXT_NODE)))
+	{
+		rc = parent_class->init_from_xml(node, xmlnode);
+		if (rc) return rc;
+
+		n->ns_href = g_strdup((char*)xmlnode->ns->href);
+		n->ns_prefix = g_strdup((char*)xmlnode->ns->prefix);
+		n->name = g_strdup((char*)xmlnode->name);
+	} else {
+		lasso_misc_text_node_set_xml_content(n, xmlnode);
 	}
-
-	rc = parent_class->init_from_xml(node, xmlnode);
-	if (rc) return rc;
-
-	n->ns_href = g_strdup((char*)xmlnode->ns->href);
-	n->ns_prefix = g_strdup((char*)xmlnode->ns->prefix);
-	n->name = g_strdup((char*)xmlnode->name);
 
 	return 0;
 }
