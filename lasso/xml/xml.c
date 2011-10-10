@@ -2239,7 +2239,7 @@ _lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 			fromXsi = TRUE;
 	}
 
-	if (typename == NULL) {
+	if (typename == NULL && xmlnode->ns && xmlnode->ns->href) {
 		typename = _type_name_from_href_and_nodename ((char*)xmlnode->ns->href, (char*)xmlnode->name);
 	}
 
