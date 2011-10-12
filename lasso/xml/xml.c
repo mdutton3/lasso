@@ -1674,11 +1674,16 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	LassoNode *value_node;
 	struct XmlSnippet *version_snippet;
 	struct _CustomElement *custom_element;
+	LassoNodeClass *node_data_class = class;
 
-	if (class->node_data == NULL)
+	while (node_data_class && node_data_class->node_data != NULL && node_data_class->node_data->node_name == NULL) {
+		node_data_class = g_type_class_peek_parent(node_data_class);
+	}
+	if (! node_data_class || node_data_class->node_data == NULL ||
+			node_data_class->node_data->node_name == NULL)
 		return NULL;
 
-	xmlnode = xmlNewNode(NULL, (xmlChar*)class->node_data->node_name);
+	xmlnode = xmlNewNode(NULL, (xmlChar*)node_data_class->node_data->node_name);
 	custom_element = _lasso_node_get_custom_element(node);
 	/* collect namespaces in the order of ancestor classes, nearer first */
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
