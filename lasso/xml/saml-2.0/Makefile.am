@@ -27,6 +27,7 @@ liblasso_xml_saml2_la_SOURCES = \
 	saml2_encrypted_element.c \
 	saml2_evidence.c \
 	saml2_key_info_confirmation_data.c \
+	saml2_key_info_confirmation_data_type.c \
 	saml2_name_id.c \
 	saml2_one_time_use.c \
 	saml2_proxy_restriction.c \
@@ -80,6 +81,7 @@ liblassoinclude_HEADERS = \
 	saml2_encrypted_element.h \
 	saml2_evidence.h \
 	saml2_key_info_confirmation_data.h \
+	saml2_key_info_confirmation_data_type.h \
 	saml2_name_id.h \
 	saml2_one_time_use.h \
 	saml2_proxy_restriction.h \

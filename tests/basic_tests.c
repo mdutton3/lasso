@@ -1873,6 +1873,10 @@ START_TEST(test10_test_alldumps)
 		lasso_release_doc(xmldoc);
 		++iter;
 	}
+	/* test serialization / deserialization of KeyInfoConfirmationDataType */
+	node = LASSO_NODE(lasso_saml2_key_info_confirmation_data_type_new());
+	printf("%s\n", lasso_node_debug(node, 10));
+	lasso_release_gobject(node);
 }
 END_TEST
 

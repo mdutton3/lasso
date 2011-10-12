@@ -41,6 +41,7 @@
 #include "./saml2_encrypted_element.h"
 #include "./saml2_evidence.h"
 #include "./saml2_key_info_confirmation_data.h"
+#include "./saml2_key_info_confirmation_data_type.h"
 #include "./saml2_name_id.h"
 #include "./saml2_one_time_use.h"
 #include "./saml2_proxy_restriction.h"
