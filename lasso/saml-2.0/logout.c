@@ -374,7 +374,7 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 
 	/* only if asked we report, otherwise we do not care */
 	if (profile->signature_status && lasso_profile_get_signature_verify_hint(profile) ==
-			LASSO_PROFILE_SIGNATURE_HINT_FORCE)
+			(LassoProfileSignatureVerifyHint)LASSO_PROFILE_SIGNATURE_HINT_FORCE)
 	{
 		goto_cleanup_with_rc(profile->signature_status);
 	}
