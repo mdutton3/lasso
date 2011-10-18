@@ -153,7 +153,8 @@ class BindingData:
                 return funcs[0]
         regex = re.compile(r'\/\*\*\s(.*?)\*\/', re.DOTALL)
         for base, dirnames, filenames in os.walk(srcdir):
-            if base.endswith('/.svn'):
+            bname = os.path.basename(base)
+            if bname == '.svn':
                 # ignore svn directories
                 continue
             if not 'Makefile.am' in filenames:
@@ -561,14 +562,15 @@ def parse_headers(srcdir):
     if not binding.options.idwsf:
         exclusion += ( 'idwsf_strings.h', )
     for base, dirnames, filenames in os.walk(srcdir):
-        if base.endswith('/.svn'):
+        bname = os.path.basename(base)
+        if bname == '.svn':
             # ignore svn directories
             continue
         if not 'Makefile.am' in filenames:
             # not a source dir
             continue
-        if not binding.options.idwsf and (base.endswith('/id-wsf') or \
-                base.endswith('/id-wsf-2.0') or base.endswith('/ws')):
+        if not binding.options.idwsf and bname == 'id-wsf' or \
+                bname == 'id-wsf-2.0' or bname == 'ws':
             # ignore ID-WSF
             continue
         makefile_am = open(os.path.join(base, 'Makefile.am')).read()
