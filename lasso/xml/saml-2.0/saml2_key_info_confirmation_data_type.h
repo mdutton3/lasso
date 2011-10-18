@@ -58,7 +58,7 @@ struct _LassoSaml2KeyInfoConfirmationDataType {
 
 	/*< public >*/
 	/* attributes */
-	GList *KeyInfo;
+	GList *KeyInfo; /* of LassoDsKeyInfo */
 };
 
 
