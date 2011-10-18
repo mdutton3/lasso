@@ -17,7 +17,7 @@ php_configdir=@PHP5_CONFIG_DIR@
 php_config_DATA = lasso.ini
 
 lasso_la_CFLAGS = -fno-strict-aliasing $(LASSO_CORE_CFLAGS) -I$(top_srcdir) -I$(top_builddir) $(PHP5_INCLUDES) $(AM_CFLAGS)
-lasso_la_CFLAGS += -Wno-unused-parameter
+lasso_la_CFLAGS += -Wno-unused-parameter -Wno-sign-compare # problem in zend.h
 lasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version
 lasso_la_LIBADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS) $(PHP5_LDFLAGS)
 nodist_lasso_la_SOURCES = _lasso.c
