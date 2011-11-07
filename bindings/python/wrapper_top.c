@@ -606,8 +606,9 @@ static PyObject *get_logger_object() {
 	}
 	/* XXX: needed so that PyImport_ImportModule("logging") always works */
 	logging_module = PyImport_ImportModule("sys");
-	if (logging_module)
+	if (logging_module) {
 		Py_DECREF(logging_module);
+	}
 	logging_module = PyImport_ImportModule("logging");
 	if (logging_module) {
 		_logger_object = PyObject_CallMethod(logging_module, "getLogger",
