@@ -569,8 +569,8 @@ def parse_headers(srcdir):
         if not 'Makefile.am' in filenames:
             # not a source dir
             continue
-        if not binding.options.idwsf and bname == 'id-wsf' or \
-                bname == 'id-wsf-2.0' or bname == 'ws':
+        if not binding.options.idwsf and (bname == 'id-wsf' or \
+                bname == 'id-wsf-2.0' or bname == 'ws'):
             # ignore ID-WSF
             continue
         makefile_am = open(os.path.join(base, 'Makefile.am')).read()
