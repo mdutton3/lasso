@@ -51,6 +51,11 @@
  * </figure>
  */
 
+struct _LassoSaml2SubjectConfirmationDataPrivate {
+	GList *any; /* of LassoMiscTextNode */
+	GHashTable *attributes;
+};
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
@@ -67,6 +72,10 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, InResponseTo), NULL, NULL, NULL},
 	{ "Address", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSaml2SubjectConfirmationData, Address), NULL, NULL, NULL},
+	{ "", SNIPPET_LIST_NODES | SNIPPET_ANY | SNIPPET_PRIVATE,
+		G_STRUCT_OFFSET(struct _LassoSaml2SubjectConfirmationDataPrivate, any), NULL, NULL, NULL},
+	{ "", SNIPPET_ATTRIBUTE | SNIPPET_ANY | SNIPPET_PRIVATE,
+		G_STRUCT_OFFSET(struct _LassoSaml2SubjectConfirmationDataPrivate, attributes), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
@@ -88,6 +97,7 @@ class_init(LassoSaml2SubjectConfirmationDataClass *klass)
 	lasso_node_class_set_nodename(nclass, "SubjectConfirmationData");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	g_type_class_add_private(klass, sizeof(struct _LassoSaml2SubjectConfirmationDataPrivate));
 }
 
 GType
