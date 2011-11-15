@@ -917,6 +917,7 @@ lasso_saml20_profile_build_request_msg(LassoProfile *profile, const char *servic
 			break;
 		case LASSO_HTTP_METHOD_PAOS:
 			rc = lasso_profile_saml20_build_paos_request_msg(profile, url);
+			break;
 		default:
 			rc = LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 			break;
