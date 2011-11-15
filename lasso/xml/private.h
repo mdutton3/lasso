@@ -60,6 +60,7 @@ typedef enum {
 	SNIPPET_ANY = 1 << 25, /* ##any node */
 	SNIPPET_ALLOW_TEXT = 1 << 26, /* allow text childs in list of nodes */
 	SNIPPET_KEEP_XMLNODE = 1 << 27, /* force keep xmlNode */
+	SNIPPET_PRIVATE = 1 << 28, /* means that the offset is relative to a private extension */
 } SnippetType;
 
 typedef enum {
@@ -77,6 +78,29 @@ struct XmlSnippet {
 	char *ns_name;
 	char *ns_uri;
 };
+
+
+/**
+ * This inline method replace normal use of G_STRUCT_MEMBER_P/G_STRUCT_MEMBER, in order to add an
+ * indirection through the private structure attached to a GObject instance if needed */
+inline static void *
+snippet_struct_member(void *base, GType type, struct XmlSnippet *snippet)
+{
+	if (snippet->type & SNIPPET_PRIVATE) {
+		if (! G_IS_OBJECT(base))
+			return NULL;
+		GObject *object = (GObject*)base;
+		base = g_type_instance_get_private((GTypeInstance*)object,
+				type);
+	}
+	return G_STRUCT_MEMBER_P(base, snippet->offset);
+}
+
+#define SNIPPET_STRUCT_MEMBER(type, base, gtype, snippet) \
+	(*(type*)snippet_struct_member(base, gtype, snippet))
+
+#define SNIPPET_STRUCT_MEMBER_P(base, gtype, snippet) \
+	snippet_struct_member(base, gtype, snippet)
 
 struct QuerySnippet {
 	char *path;

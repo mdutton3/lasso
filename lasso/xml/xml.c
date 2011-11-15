@@ -58,13 +58,13 @@
 #include "./id-wsf-2.0/idwsf2_strings.h"
 #endif
 
-static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
+static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump);
-static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name);
+static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name, LassoNodeClass **class_p);
 static gboolean set_value_at_path(LassoNode *node, char *path, char *query_value);
 static char* get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet);
 static gboolean find_path(LassoNode *node, char *path, LassoNode **value_node,
-		struct XmlSnippet **snippet);
+		LassoNodeClass **class_p, struct XmlSnippet **snippet);
 
 static void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippet_signature);
@@ -83,7 +83,6 @@ GHashTable *idwsf2_dst_services_by_prefix = NULL; /* ID-WSF 2 DST services, inde
 /*****************************************************************************/
 /* global methods                                                            */
 /*****************************************************************************/
-
 
 /**
  * lasso_register_dst_service:
@@ -1145,42 +1144,43 @@ lasso_node_traversal(LassoNode *node, void (*do_to_node)(LassoNode *node, Snippe
 	LassoNodeClass *class;
 	struct XmlSnippet *snippet;
 
-	if (node == NULL) {
+	if (node == NULL || do_to_node == NULL) {
 		return;
 	}
 	class = LASSO_NODE_GET_CLASS(node);
-	if (class == NULL || class->node_data == NULL || do_to_node == NULL) {
-		return;
-	}
 	do_to_node(node, type);
 
-	snippet = class->node_data->snippets;
-	while (snippet->name != NULL) {
-		SnippetType type;
-		void **value = G_STRUCT_MEMBER_P(node, snippet->offset);
+	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
+		GType g_type = G_TYPE_FROM_CLASS(class);
+		snippet = class->node_data->snippets;
+		while (snippet->name != NULL) {
+			SnippetType type;
+			void **value = SNIPPET_STRUCT_MEMBER_P(node, g_type, snippet);
 
-		type = snippet->type & 0xff;
-		switch (type) {
-			case SNIPPET_NODE:
-			case SNIPPET_NAME_IDENTIFIER:
-			case SNIPPET_NODE_IN_CHILD:
-				lasso_node_traversal(*value, do_to_node, snippet->type);
-				break;
-			case SNIPPET_LIST_NODES:
-				{
-					GList *list = *value;
-					while (list != NULL) {
-						if (list->data) {
-							lasso_node_traversal(LASSO_NODE(list->data), do_to_node, snippet->type);
+			type = snippet->type & 0xff;
+			switch (type) {
+				case SNIPPET_NODE:
+				case SNIPPET_NAME_IDENTIFIER:
+				case SNIPPET_NODE_IN_CHILD:
+					lasso_node_traversal(*value, do_to_node, snippet->type);
+					break;
+				case SNIPPET_LIST_NODES:
+					{
+						GList *list = *value;
+						while (list != NULL) {
+							if (list->data) {
+								lasso_node_traversal(LASSO_NODE(list->data), do_to_node, snippet->type);
+							}
+							list = g_list_next(list);
 						}
-						list = g_list_next(list);
 					}
-				}
-				break;
-			default:
-				break;
+					break;
+				default:
+					break;
+			}
+			snippet++;
 		}
-		snippet++;
+		class = g_type_class_peek_parent(class);
 	}
 }
 
@@ -1253,6 +1253,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	SnippetType type;
 	struct XmlSnippet *snippet_any = NULL;
 	struct XmlSnippet *snippet_any_attribute = NULL;
+	GType g_type_collect_namespaces, g_type_any, g_type_any_attribute;
 	struct XmlSnippet *snippet_collect_namespaces = NULL;
 	struct XmlSnippet *snippet_signature = NULL;
 	GSList *unknown_nodes = NULL;
@@ -1276,6 +1277,8 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	}
 
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
+		GType g_type = G_TYPE_FROM_CLASS(class);
+
 		lasso_trace(" initializing %s\n", G_OBJECT_CLASS_NAME(class));
 
 		/* reduce keep_xmlnode flags */
@@ -1288,7 +1291,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					GList **location = NULL;
 
 					type = snippet->type & 0xff;
-					value = G_STRUCT_MEMBER_P(node, snippet->offset);
+					value = SNIPPET_STRUCT_MEMBER_P(node, g_type, snippet);
 
 					if (type == SNIPPET_LIST_XMLNODES) {
 						location = value;
@@ -1316,9 +1319,10 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					snippet && snippet->name; snippet++) {
 				void *tmp = NULL;
 				type = snippet->type & 0xff;
-				value = G_STRUCT_MEMBER_P(node, snippet->offset);
+				value = SNIPPET_STRUCT_MEMBER_P(node, g_type, snippet);
 
 				if ((snippet->type & SNIPPET_ANY) && type != SNIPPET_ATTRIBUTE) {
+					g_type_any = g_type;
 					snippet_any = snippet;
 				}
 
@@ -1455,10 +1459,11 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			void *tmp = NULL;
 			type = snippet->type & 0xff;
 
-			value = G_STRUCT_MEMBER_P(node, snippet->offset);
+			value = SNIPPET_STRUCT_MEMBER_P(node, g_type, snippet);
 			if (snippet->name && snippet->name[0] == '\0' && type ==
 					SNIPPET_COLLECT_NAMESPACES) {
 				snippet_collect_namespaces = snippet;
+				g_type_collect_namespaces = g_type;
 			}
 
 			if (type == SNIPPET_SIGNATURE) {
@@ -1467,6 +1472,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 			if (type == SNIPPET_ATTRIBUTE) {
 				if (snippet->type & SNIPPET_ANY) {
+					g_type_any_attribute = g_type;
 					snippet_any_attribute = snippet;
 					continue;
 				}
@@ -1517,7 +1523,8 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	/* Collect namespaces on the current node */
 	if (snippet_collect_namespaces) {
-		void *value = G_STRUCT_MEMBER_P(node, snippet_collect_namespaces->offset);
+		void *value = SNIPPET_STRUCT_MEMBER_P(node, g_type_collect_namespaces,
+				snippet_collect_namespaces);
 		_lasso_node_collect_namespaces(value, xmlnode);
 	}
 
@@ -1562,7 +1569,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (unknown_nodes && snippet_any) {
 		xmlNode *t = unknown_nodes->data;
 		void *tmp;
-		value = G_STRUCT_MEMBER_P(node, snippet_any->offset);
+		value = SNIPPET_STRUCT_MEMBER_P(node, g_type_any, snippet_any);
 		tmp = lasso_node_new_from_xmlNode_with_type(t, snippet_any->class_name);
 		(*(char**)value) = tmp;
 	}
@@ -1574,7 +1581,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		xmlAttr *node_attr;
 
 
-		any_attribute = G_STRUCT_MEMBER_P(node, snippet_any_attribute->offset);
+		any_attribute = SNIPPET_STRUCT_MEMBER_P(node, g_type_any_attribute, snippet_any_attribute);
 		if (*any_attribute == NULL) {
 			*any_attribute = g_hash_table_new_full(
 					g_str_hash, g_str_equal, g_free, g_free);
@@ -1668,6 +1675,7 @@ static xmlNode*
 lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+	LassoNodeClass *version_class = NULL;
 	xmlNode *xmlnode;
 	xmlNs *ns;
 	GList *list_ns = NULL, *list_classes = NULL, *t;
@@ -1746,7 +1754,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	t = g_list_last(list_classes);
 	while (t) {
 		class = t->data;
-		lasso_node_build_xmlNode_from_snippets(node, xmlnode,
+		lasso_node_build_xmlNode_from_snippets(node, (LassoNodeClass*)class, xmlnode,
 				class->node_data->snippets, lasso_dump);
 		t = g_list_previous(t);
 	}
@@ -1755,15 +1763,17 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlCleanNs(xmlnode);
 
 	/* backward compatibility with Liberty ID-FF 1.1; */
-	if (find_path(node, "MajorVersion", &value_node, &version_snippet) == TRUE) {
+	if (find_path(node, "MajorVersion", &value_node, &version_class, &version_snippet) == TRUE) {
 		int *value;
 		int major_version, minor_version;
 
-		value = G_STRUCT_MEMBER_P(value_node, version_snippet->offset);
+		value = SNIPPET_STRUCT_MEMBER_P(value_node, G_TYPE_FROM_CLASS(version_class),
+				version_snippet);
 		major_version = *value;
 
-		find_path(node, "MinorVersion", &value_node, &version_snippet);
-		value = G_STRUCT_MEMBER_P(value_node, version_snippet->offset);
+		find_path(node, "MinorVersion", &value_node, &version_class, &version_snippet);
+		value = SNIPPET_STRUCT_MEMBER_P(value_node, G_TYPE_FROM_CLASS(version_class),
+				version_snippet);
 		minor_version = *value;
 
 		if (strcmp((char*)xmlnode->ns->href, LASSO_LIB_HREF) == 0) {
@@ -1830,7 +1840,7 @@ lasso_node_dispose(GObject *object)
 
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 		for (snippet = class->node_data->snippets; snippet && snippet->name; snippet++) {
-			void **value = G_STRUCT_MEMBER_P(object, snippet->offset);
+			void **value = SNIPPET_STRUCT_MEMBER_P(object, G_TYPE_FROM_CLASS(class), snippet);
 			type = snippet->type & 0xff;
 
 			if (snippet->type & SNIPPET_BOOLEAN)
@@ -2559,18 +2569,21 @@ snippet_dump_any(gchar *key, gchar *value, xmlNode *xmlnode)
 }
 
 static void
-lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
+lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump)
 {
 	struct XmlSnippet *snippet;
 	SnippetType type;
+	GType g_type;
 	xmlNode *t;
 	xmlNs *xmlns;
 	GList *elem;
 	struct XmlSnippet *snippet_any_attribute = NULL;
 
+	g_type = G_TYPE_FROM_CLASS(class);
+
 	for (snippet = snippets; snippet && snippet->name; snippet++) {
-		void *value = G_STRUCT_MEMBER(void*, node, snippet->offset);
+		void *value = SNIPPET_STRUCT_MEMBER(void *, node, g_type, snippet);
 		char *str = value;
 		type = snippet->type & 0xff;
 
@@ -2691,6 +2704,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 			case SNIPPET_ALLOW_TEXT:
 			case SNIPPET_ANY:
 			case SNIPPET_KEEP_XMLNODE:
+			case SNIPPET_PRIVATE:
 				g_assert_not_reached();
 		}
 		if (snippet->type & SNIPPET_INTEGER)
@@ -2698,8 +2712,8 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 	}
 
 	if (snippet_any_attribute) {
-		GHashTable *value = G_STRUCT_MEMBER(GHashTable*, node,
-				snippet_any_attribute->offset);
+		GHashTable *value = SNIPPET_STRUCT_MEMBER(GHashTable *, node, g_type,
+				snippet_any_attribute);
 		if (value) {
 			g_hash_table_foreach(value, (GHFunc)snippet_dump_any, xmlnode);
 		}
@@ -2711,6 +2725,7 @@ void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippet_signature)
 {
 	LassoNodeClass *klass = LASSO_NODE_GET_CLASS(node);
+	GType g_type = G_TYPE_FROM_CLASS(klass);
 	LassoSignatureType sign_type;
 	LassoSignatureMethod sign_method;
 	xmlNode *signature = NULL, *reference, *key_info, *t;
@@ -2748,7 +2763,7 @@ void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 	/* XXX: get out if signature == NULL ? */
 	xmlAddChild(xmlnode, signature);
 
-	id = G_STRUCT_MEMBER(char*, node, snippet_signature->offset);
+	id = SNIPPET_STRUCT_MEMBER(char *, node, g_type, snippet_signature);
 	uri = g_strdup_printf("#%s", id);
 	reference = xmlSecTmplSignatureAddReference(signature,
 			xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
@@ -2767,7 +2782,7 @@ void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 }
 
 static struct XmlSnippet*
-find_xml_snippet_by_name(LassoNode *node, char *name)
+find_xml_snippet_by_name(LassoNode *node, char *name, LassoNodeClass **class_p)
 {
 	LassoNodeClass *class;
 	struct XmlSnippet *snippet;
@@ -2777,28 +2792,32 @@ find_xml_snippet_by_name(LassoNode *node, char *name)
 		for (snippet = class->node_data->snippets;
 				snippet && snippet->name && strcmp(snippet->name, name) != 0;
 				snippet++) ;
-		if (snippet && snippet->name)
+		if (snippet && snippet->name) {
+			*class_p = class;
 			return snippet;
+		}
 		class = g_type_class_peek_parent(class);
 	}
-
+	*class_p = NULL;
 	return NULL;
 }
 
 static gboolean
-find_path(LassoNode *node, char *path, LassoNode **value_node, struct XmlSnippet **snippet)
+find_path(LassoNode *node, char *path, LassoNode **value_node, LassoNodeClass **class_p, struct XmlSnippet **snippet)
 {
 	char *s, *t;
 	struct XmlSnippet *tsnippet = NULL;
 	LassoNode *tnode = node;
 
+	*class_p = NULL;
 	s = path;
 	while (s-1) {
 		t = strchr(s, '/');
 		if (t) *t = 0;
-		tsnippet = find_xml_snippet_by_name(tnode, s);
+		tsnippet = find_xml_snippet_by_name(tnode, s, class_p);
 		if (t) {
-			tnode = G_STRUCT_MEMBER(LassoNode*, tnode, tsnippet->offset);
+			tnode = SNIPPET_STRUCT_MEMBER(LassoNode *, tnode, G_TYPE_FROM_CLASS(*class_p),
+					tsnippet);
 			if (tnode == NULL)
 				return FALSE;
 		}
@@ -2819,25 +2838,28 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 {
 	struct XmlSnippet *snippet;
 	LassoNode *value_node;
+	LassoNodeClass *class;
+	GType g_type;
 
-	if (find_path(node, path, &value_node, &snippet) != TRUE)
+	if (find_path(node, path, &value_node, &class, &snippet) != TRUE)
 		return NULL;
+	g_type = G_TYPE_FROM_CLASS(class);
 
 	*xml_snippet = *snippet;
 
 	if (snippet->type & SNIPPET_BOOLEAN) {
-		gboolean v = G_STRUCT_MEMBER(gboolean, value_node, snippet->offset);
+		gboolean v = SNIPPET_STRUCT_MEMBER(gboolean, value_node, g_type, snippet);
 		return v ? g_strdup("true") : g_strdup("false");
 	} else if (snippet->type & SNIPPET_INTEGER) {
-		int v = G_STRUCT_MEMBER(int, value_node, snippet->offset);
+		int v = SNIPPET_STRUCT_MEMBER(int, value_node, g_type, snippet);
 		return g_strdup_printf("%d", v);
 	} else if (snippet->type == SNIPPET_NODE) {
-		LassoNode *value = G_STRUCT_MEMBER(LassoNode*, value_node, snippet->offset);
+		LassoNode *value = SNIPPET_STRUCT_MEMBER(LassoNode *, value_node, g_type, snippet);
 		return lasso_node_build_query(value);
 	} else if (snippet->type == SNIPPET_EXTENSION) {
 		/* convert all of the <lib:Extension> into a string, already
 		 * escaped for URI usage */
-		GList *value = G_STRUCT_MEMBER(GList*, value_node, snippet->offset);
+		GList *value = SNIPPET_STRUCT_MEMBER(GList *, value_node, g_type, snippet);
 		xmlChar *s, *s2;
 		GString *result = g_string_new("");
 		while (value) {
@@ -2888,7 +2910,7 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 		return g_string_free(result, FALSE);
 	} else if (snippet->type == SNIPPET_LIST_CONTENT) {
 		/* not clear in spec; concat values with spaces */
-		GList *value = G_STRUCT_MEMBER(GList*, value_node, snippet->offset);
+		GList *value = SNIPPET_STRUCT_MEMBER(GList *, value_node, g_type, snippet);
 		GString *result = g_string_new("");
 		while (value) {
 			result = g_string_append(result, (char*)value->data);
@@ -2902,7 +2924,7 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 		}
 		return g_string_free(result, FALSE);
 	} else {
-		char *value = G_STRUCT_MEMBER(char*, value_node, snippet->offset);
+		char *value = SNIPPET_STRUCT_MEMBER(char *, value_node, g_type, snippet);
 		if (value == NULL) return NULL;
 		return g_strdup(value);
 	}
@@ -2914,12 +2936,15 @@ set_value_at_path(LassoNode *node, char *path, char *query_value)
 {
 	struct XmlSnippet *snippet;
 	LassoNode *value_node;
+	LassoNodeClass *class;
+	GType g_type;
 	void *value;
 
-	if (find_path(node, path, &value_node, &snippet) != TRUE)
+	if (find_path(node, path, &value_node, &class, &snippet) != TRUE)
 		return FALSE;
+	g_type = G_TYPE_FROM_CLASS(class);
 
-	value = G_STRUCT_MEMBER_P(value_node, snippet->offset);
+	value = SNIPPET_STRUCT_MEMBER_P(value_node, g_type, snippet);
 
 	if (snippet->type & SNIPPET_INTEGER) {
 		int val = atoi(query_value);
@@ -3053,10 +3078,13 @@ lasso_node_init_from_query_fields(LassoNode *node, char **query_fields)
 			 * Extension; build it */
 			struct XmlSnippet *extension_snippet;
 			LassoNode *value_node;
+			LassoNodeClass *class;
 			GList **value;
 			xmlNode *xmlnode, *xmlchild;
-			if (find_path(node, "Extension", &value_node, &extension_snippet) == TRUE) {
-				value = G_STRUCT_MEMBER_P(value_node, extension_snippet->offset);
+			if (find_path(node, "Extension", &value_node, &class, &extension_snippet) == TRUE) {
+				GType g_type = G_TYPE_FROM_CLASS(class);
+				value = SNIPPET_STRUCT_MEMBER_P(value_node, g_type,
+						extension_snippet);
 				if (*value) {
 					xmlnode = (*value)->data;
 				} else {
