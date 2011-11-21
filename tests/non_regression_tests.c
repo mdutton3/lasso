@@ -88,6 +88,7 @@ END_TEST
 START_TEST(indexed_endpoints_20101008)
 {
 	LassoProvider *provider = NULL;
+	char *str;
 	char *meta01 = "<md:EntityDescriptor entityID=\"google.com\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\">\n\
 <SPSSODescriptor protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n\
 <AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"wrong\" index=\"1\" />\n\
@@ -115,27 +116,51 @@ START_TEST(indexed_endpoints_20101008)
 
 	provider = lasso_provider_new_from_buffer(LASSO_PROVIDER_ROLE_SP, meta01, NULL, NULL);
 	check_not_null(provider);
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, NULL), "ok");
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "0"), "ok");
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "1"), "wrong");
+	str = lasso_provider_get_assertion_consumer_service_url(provider, NULL);
+	check_str_equals(str, "ok");
+	g_free(str);
+	str = lasso_provider_get_assertion_consumer_service_url(provider, "0");
+	check_str_equals(str, "ok");
+	g_free(str);
+	str = lasso_provider_get_assertion_consumer_service_url(provider, "1");
+	check_str_equals(str, "wrong");
+	g_free(str);
 	lasso_release_gobject(provider);
 	provider = lasso_provider_new_from_buffer(LASSO_PROVIDER_ROLE_SP, meta02, NULL, NULL);
 	check_not_null(provider);
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, NULL), "ok");
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "0"), "wrong");
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "1"), "ok");
+	str = lasso_provider_get_assertion_consumer_service_url(provider, NULL);
+	check_str_equals(str, "ok");
+	g_free(str);
+	str = lasso_provider_get_assertion_consumer_service_url(provider, "0");
+	check_str_equals(str, "wrong");
+	g_free(str);
+	str = lasso_provider_get_assertion_consumer_service_url(provider, "1");
+	check_str_equals(str, "ok");
+	g_free(str);
 	lasso_release_gobject(provider);
 	provider = lasso_provider_new_from_buffer(LASSO_PROVIDER_ROLE_SP, meta03, NULL, NULL);
 	check_not_null(provider);
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, NULL), "ok");
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "0"), "wrong");
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "1"), "ok");
+	str = lasso_provider_get_assertion_consumer_service_url(provider, NULL);
+	check_str_equals(str, "ok");
+	g_free(str);
+	str = lasso_provider_get_assertion_consumer_service_url(provider, "0");
+	check_str_equals(str, "wrong");
+	g_free(str);
+	str = lasso_provider_get_assertion_consumer_service_url(provider, "1");
+	check_str_equals(str, "ok");
+	g_free(str);
 	lasso_release_gobject(provider);
 	provider = lasso_provider_new_from_buffer(LASSO_PROVIDER_ROLE_SP, meta04, NULL, NULL);
 	check_not_null(provider);
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, NULL), "ok");
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "0"), "wrong");
-	check_str_equals(lasso_provider_get_assertion_consumer_service_url(provider, "1"), "ok");
+	str = lasso_provider_get_assertion_consumer_service_url(provider, NULL);
+	check_str_equals(str, "ok");
+	g_free(str);
+	str = lasso_provider_get_assertion_consumer_service_url(provider, "0");
+	check_str_equals(str, "wrong");
+	g_free(str);
+	str = lasso_provider_get_assertion_consumer_service_url(provider, "1");
+	check_str_equals(str, "ok");
+	g_free(str);
 	lasso_release_gobject(provider);
 }
 END_TEST

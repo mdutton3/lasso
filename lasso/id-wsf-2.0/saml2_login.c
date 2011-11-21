@@ -91,7 +91,7 @@ lasso_server_create_assertion_as_idwsf2_security_token(LassoServer *server,
 			lasso_release_gobject(assertion);
 			goto cleanup;
 		}
-		lasso_assign_gobject(assertion->Subject->EncryptedID, encrypted_id);
+		lasso_assign_new_gobject(assertion->Subject->EncryptedID, encrypted_id);
 	} else {
 		lasso_assign_new_gobject(assertion->Subject->NameID, name_id);
 	}

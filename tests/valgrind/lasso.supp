@@ -165,3 +165,42 @@
    fun:g_hash_table_new
    fun:g_quark_from_static_string
 }
+{
+   g_type_init
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:g_type_init
+}
+{
+   g_type_init
+   Memcheck:Leak
+   fun:calloc
+   ...
+   fun:g_type_init
+}
+{
+   g_type_init
+   Memcheck:Leak
+   fun:realloc
+   ...
+   fun:g_type_init
+}
+{
+   register type
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:g_type_register_static
+   ...
+   fun:lasso_*get_type
+}
+{
+   register type
+   Memcheck:Leak
+   fun:realloc
+   ...
+   fun:g_type_register_static
+   ...
+   fun:lasso_*get_type
+}

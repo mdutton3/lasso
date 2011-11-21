@@ -890,6 +890,7 @@ _lasso_node_free_custom_element(struct _CustomElement *custom_element)
 		lasso_release_string(custom_element->private_key);
 		lasso_release_string(custom_element->private_key_password);
 		lasso_release_string(custom_element->certificate);
+		lasso_release_sec_key(custom_element->encryption_public_key);
 	}
 	lasso_release(custom_element);
 }

@@ -1840,6 +1840,13 @@ START_TEST(test10_test_alldumps)
 	lasso_release_string(node_dump);
 	lasso_release_gobject(node2);
 	lasso_release_gobject(node);
+	/* test serialization / deserialization of KeyInfoConfirmationDataType */
+	node = LASSO_NODE(lasso_saml2_key_info_confirmation_data_type_new());
+	node_dump = lasso_node_dump(node);
+	fail_unless((node2 = lasso_node_new_from_dump(node_dump)) != NULL, "restoring dump failed after lasso_saml2_key_info_confirmation_data_type_new");
+	lasso_release_string(node_dump);
+	lasso_release_gobject(node2);
+	lasso_release_gobject(node);
 #endif
 	/* test deserialization of saml2:EncryptedAssertion" */
 	const char *encrypted_element_xml[] = {
@@ -1873,10 +1880,6 @@ START_TEST(test10_test_alldumps)
 		lasso_release_doc(xmldoc);
 		++iter;
 	}
-	/* test serialization / deserialization of KeyInfoConfirmationDataType */
-	node = LASSO_NODE(lasso_saml2_key_info_confirmation_data_type_new());
-	printf("%s\n", lasso_node_debug(node, 10));
-	lasso_release_gobject(node);
 }
 END_TEST
 
@@ -1976,6 +1979,7 @@ START_TEST(test13_test_lasso_server_load_metadata)
 	check_equals(g_list_length(loaded_entity_ids), 283);
 	check_equals(g_hash_table_size(server->providers), 393);
 #endif
+	lasso_release_list_of_strings(loaded_entity_ids);
 
 	lasso_release_gobject(server);
 }
