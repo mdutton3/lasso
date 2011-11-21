@@ -846,8 +846,34 @@ lasso_node_set_original_xmlnode(LassoNode *node, xmlNode* xmlnode)
 {
 	if (xmlnode) {
 		xmlNode *copy = NULL;
+		xmlNode *parent = xmlnode->parent;
 
 		copy = xmlCopyNode(xmlnode, 1);
+		/* excl-c14n can move some namespace declarations at the point where the document is
+		 * cut, to simulate it we copy on the new node all namespaces from the parents of
+		 * the node which are not shadowed by another declaration on this node or one of its
+		 * parent. */
+		while (parent && parent->type == XML_ELEMENT_NODE) {
+			xmlNs *ns_def = parent->nsDef;
+			xmlNs *local_ns_def;
+			while (ns_def) {
+				int ok = 1;
+				local_ns_def = copy->nsDef;
+				while (local_ns_def) {
+					if (lasso_strisequal((char*)local_ns_def->prefix, (char*)ns_def->prefix)) {
+						ok = 0;
+						break;
+					}
+					local_ns_def = local_ns_def->next;
+				}
+				if (ok) {
+					xmlNewNs(copy, ns_def->href, ns_def->prefix);
+				}
+				ns_def = ns_def->next;
+			}
+			parent = parent->parent;
+		}
+
 		if (lasso_flag_memory_debug) {
 			fprintf(stderr, "setting original xmlnode (at %p) on node %s:%p\n", copy, G_OBJECT_TYPE_NAME (node), node);
 		}
