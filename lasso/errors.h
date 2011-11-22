@@ -1076,3 +1076,10 @@ LASSO_EXPORT const char* lasso_strerror(int error_code);
  * The current assertion query does not contain an attribute query.
  */
 #define LASSO_ASSERTION_QUERY_ERROR_NOT_AN_ATTRIBUTE_QUERY 1902
+
+/**
+ * LASSO_XMLENC_ERROR_INVALID_ENCRYPTED_DATA
+ *
+ * The EncryptedData node is invalid, look at the logs.
+ */
+#define LASSO_XMLENC_ERROR_INVALID_ENCRYPTED_DATA -2001

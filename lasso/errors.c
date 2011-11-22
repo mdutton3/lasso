@@ -359,6 +359,8 @@ lasso_strerror(int error_code)
 			return "The known password does not match the UsernameToken";
 		case LASSO_WSSEC_ERROR_MISSING_SECURITY_TOKEN:
 			return "The request miss a WS-Security token.";
+		case LASSO_XMLENC_ERROR_INVALID_ENCRYPTED_DATA:
+			return "The EncryptedData node is invalid, look at the logs.";
 		case LASSO_XML_ERROR_ATTR_NOT_FOUND:
 			return "Unable to get attribute of element.";
 		case LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND:
