@@ -1574,13 +1574,15 @@ lasso_node_decrypt_xmlnode(xmlNode* encrypted_element,
 	xmlChar *algorithm = NULL;
 	xmlSecKeyDataId key_type;
 	GList *i = NULL;
-	int rc = LASSO_DS_ERROR_DECRYPTION_FAILED;
+	int rc = LASSO_XMLENC_ERROR_INVALID_ENCRYPTED_DATA;
 
 	if (encryption_private_key == NULL || !xmlSecKeyIsValid(encryption_private_key)) {
 		message(G_LOG_LEVEL_WARNING, "Invalid decryption key");
 		rc = LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
 		goto cleanup;
 	}
+
+	xmlSetGenericErrorFunc(NULL, lasso_xml_generic_error_func);
 
 	/* Need to duplicate it because xmlSecEncCtxDestroy(encCtx); will destroy it */
 	encryption_private_key = xmlSecKeyDuplicate(encryption_private_key);
@@ -1655,8 +1657,8 @@ lasso_node_decrypt_xmlnode(xmlNode* encrypted_element,
 	if (key_buffer != NULL) {
 		sym_key = xmlSecKeyReadBuffer(key_type, key_buffer);
 	}
+	rc = LASSO_DS_ERROR_ENCRYPTION_FAILED;
 	if (sym_key == NULL) {
-		message(G_LOG_LEVEL_WARNING, "EncryptedKey decryption failed");
 		goto cleanup;
 	}
 
@@ -1673,6 +1675,7 @@ lasso_node_decrypt_xmlnode(xmlNode* encrypted_element,
 
 	/* decrypt the EncryptedData */
 	if ((xmlSecEncCtxDecrypt(encCtx, encrypted_data_node) < 0) || (encCtx->result == NULL)) {
+		rc = LASSO_XMLENC_ERROR_INVALID_ENCRYPTED_DATA;
 		message(G_LOG_LEVEL_WARNING, "EncryptedData decryption failed");
 		goto cleanup;
 	}

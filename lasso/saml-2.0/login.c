@@ -1193,8 +1193,11 @@ _lasso_saml20_login_decrypt_assertion(LassoLogin *login, LassoSamlp2Response *sa
 				break;
 		}
 		lasso_foreach_full_end();
-
-		if (rc1) {
+		if (rc1 == LASSO_DS_ERROR_DECRYPTION_FAILED) {
+			message(G_LOG_LEVEL_WARNING, "Could not decrypt the EncryptedKey");
+			at_least_one_decryption_failture |= TRUE;
+			continue;
+		} else if (rc1) {
 			message(G_LOG_LEVEL_WARNING, "Could not decrypt an assertion: %s", lasso_strerror(rc1));
 			at_least_one_decryption_failture |= TRUE;
 			continue;
