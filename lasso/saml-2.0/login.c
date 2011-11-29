@@ -1160,16 +1160,16 @@ _lasso_check_assertion_issuer(LassoSaml2Assertion *assertion, const gchar *provi
 static gint
 _lasso_saml20_login_decrypt_assertion(LassoLogin *login, LassoSamlp2Response *samlp2_response)
 {
-	xmlSecKey *encryption_private_key;
-	GList *it;
+	GList *encryption_private_keys = NULL;
+	GList *it = NULL;
 	gboolean at_least_one_decryption_failture = FALSE;
 	gboolean at_least_one_malformed_element = FALSE;
 
 	if (! samlp2_response->EncryptedAssertion)
 		return 0; /* nothing to do */
 
-	encryption_private_key = lasso_server_get_encryption_private_key(login->parent.server);
-	if (! encryption_private_key) {
+	encryption_private_keys = lasso_server_get_encryption_private_keys(login->parent.server);
+	if (! encryption_private_keys) {
 			message(G_LOG_LEVEL_WARNING, "Missing private encryption key, cannot decrypt assertions.");
 			return LASSO_DS_ERROR_DECRYPTION_FAILED_MISSING_PRIVATE_KEY;
 	}
@@ -1185,9 +1185,19 @@ _lasso_saml20_login_decrypt_assertion(LassoLogin *login, LassoSamlp2Response *sa
 			continue;
 		}
 		encrypted_assertion = (LassoSaml2EncryptedElement*)it->data;
-		rc1 = lasso_saml2_encrypted_element_decrypt(encrypted_assertion, encryption_private_key, (LassoNode**)&assertion);
-
-		if (rc1) {
+		lasso_foreach_full_begin(xmlSecKey*, encryption_private_key, it,
+				encryption_private_keys)
+		{
+			rc1 = lasso_saml2_encrypted_element_decrypt(encrypted_assertion, encryption_private_key, (LassoNode**)&assertion);
+			if (rc1 == 0)
+				break;
+		}
+		lasso_foreach_full_end();
+		if (rc1 == LASSO_DS_ERROR_DECRYPTION_FAILED) {
+			message(G_LOG_LEVEL_WARNING, "Could not decrypt the EncryptedKey");
+			at_least_one_decryption_failture |= TRUE;
+			continue;
+		} else if (rc1) {
 			message(G_LOG_LEVEL_WARNING, "Could not decrypt an assertion: %s", lasso_strerror(rc1));
 			at_least_one_decryption_failture |= TRUE;
 			continue;
@@ -1429,6 +1439,7 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 	lasso_check_good_rc(lasso_saml20_profile_build_response_msg(profile, NULL, http_method, url));
 
 cleanup:
+	lasso_release_string(url);
 	return rc;
 }
 
@@ -1486,7 +1497,7 @@ lasso_saml20_login_init_idp_initiated_authn_request(LassoLogin *login,
 		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 
 	lasso_assign_string(profile->remote_providerID, remote_providerID);
-	lasso_assign_gobject(profile->request, lasso_samlp2_authn_request_new());
+	lasso_assign_new_gobject(profile->request, lasso_samlp2_authn_request_new());
 	lasso_assign_new_gobject(LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy,
 			lasso_samlp2_name_id_policy_new());
 	lasso_assign_new_gobject(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer,

@@ -799,6 +799,107 @@ START_TEST(test05_sso_idp_with_key_rollover)
 }
 END_TEST
 
+#define make_context(ctx, server_prefix, server_suffix, provider_role, \
+		provider_prefix, provider_suffix) \
+	ctx =  lasso_server_new( \
+			TESTSDATADIR server_prefix "/metadata" server_suffix ".xml", \
+			TESTSDATADIR server_prefix "/private-key" server_suffix ".pem", \
+			NULL, /* Secret key to unlock private key */ \
+			TESTSDATADIR server_prefix "/certificate" server_suffix ".pem"); \
+	check_not_null(ctx); \
+	check_good_rc(lasso_server_add_provider( \
+			ctx, \
+			provider_role, \
+			TESTSDATADIR provider_prefix "/metadata" provider_suffix ".xml", \
+			NULL, \
+			NULL)); \
+	providers = g_hash_table_get_values(ctx->providers); \
+	check_not_null(providers); \
+	lasso_provider_set_encryption_mode(LASSO_PROVIDER(providers->data), \
+			LASSO_ENCRYPTION_MODE_ASSERTION | LASSO_ENCRYPTION_MODE_NAMEID); \
+	g_list_free(providers);
+
+void
+sso_sp_with_key_rollover(LassoServer *idp_context, LassoServer *sp_context)
+{
+	LassoLogin *idp_login_context;
+	LassoLogin *sp_login_context;
+
+	check_not_null(idp_login_context = lasso_login_new(idp_context));
+	check_not_null(sp_login_context = lasso_login_new(sp_context))
+
+	/* Create response */
+	check_good_rc(lasso_login_init_idp_initiated_authn_request(idp_login_context,
+				"http://sp11/metadata"));
+
+	lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(idp_login_context->parent.request)->ProtocolBinding,
+			LASSO_SAML2_METADATA_BINDING_POST);
+	lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(idp_login_context->parent.request)->NameIDPolicy->Format,
+			LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
+	LASSO_SAMLP2_AUTHN_REQUEST(idp_login_context->parent.request)->NameIDPolicy->AllowCreate = 1;
+
+	check_good_rc(lasso_login_process_authn_request_msg(idp_login_context, NULL));
+	check_good_rc(lasso_login_validate_request_msg(idp_login_context,
+			1, /* authentication_result */
+		        0 /* is_consent_obtained */
+			));
+
+	check_good_rc(lasso_login_build_assertion(idp_login_context,
+			LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD,
+			"FIXME: authenticationInstant",
+			"FIXME: reauthenticateOnOrAfter",
+			"FIXME: notBefore",
+			"FIXME: notOnOrAfter"));
+	check_good_rc(lasso_login_build_authn_response_msg(idp_login_context));
+	check_not_null(idp_login_context->parent.msg_body);
+	check_not_null(idp_login_context->parent.msg_url);
+
+	/* Process response */
+	check_good_rc(lasso_login_process_authn_response_msg(sp_login_context,
+				idp_login_context->parent.msg_body));
+	check_good_rc(lasso_login_accept_sso(sp_login_context));
+
+	/* Cleanup */
+	lasso_release_gobject(idp_login_context);
+	lasso_release_gobject(sp_login_context);
+}
+
+START_TEST(test06_sso_sp_with_key_rollover)
+{
+	LassoServer *idp_context_before_rollover = NULL;
+	LassoServer *idp_context_after_rollover = NULL;
+	LassoServer *sp_context_before_rollover = NULL;
+	LassoServer *sp_context_after_rollover = NULL;
+	GList *providers;
+
+	/* Create an IdP context for IdP initiated SSO with provider metadata 1 */
+	make_context(idp_context_before_rollover, "idp6-saml2", "", LASSO_PROVIDER_ROLE_SP,
+			"sp11-multikey-saml2", "-before-rollover")
+	make_context(idp_context_after_rollover, "idp6-saml2", "", LASSO_PROVIDER_ROLE_SP,
+			"sp11-multikey-saml2", "-after-rollover")
+	make_context(sp_context_before_rollover, "sp11-multikey-saml2", "-before-rollover",
+			LASSO_PROVIDER_ROLE_IDP, "idp6-saml2", "")
+	lasso_server_set_encryption_private_key(sp_context_before_rollover,
+			TESTSDATADIR "sp11-multikey-saml2/private-key-after-rollover.pem");
+	make_context(sp_context_after_rollover, "sp11-multikey-saml2", "-after-rollover",
+			LASSO_PROVIDER_ROLE_IDP, "idp6-saml2", "")
+	lasso_server_set_encryption_private_key(sp_context_after_rollover,
+			TESTSDATADIR "sp11-multikey-saml2/private-key-before-rollover.pem");
+
+	/* Tests... */
+	sso_sp_with_key_rollover(idp_context_before_rollover, sp_context_before_rollover);
+	sso_sp_with_key_rollover(idp_context_after_rollover, sp_context_before_rollover);
+	sso_sp_with_key_rollover(idp_context_before_rollover, sp_context_after_rollover);
+	sso_sp_with_key_rollover(idp_context_after_rollover, sp_context_after_rollover);
+
+	/* Cleanup */
+	lasso_release_gobject(idp_context_before_rollover);
+	lasso_release_gobject(idp_context_after_rollover);
+	lasso_release_gobject(sp_context_before_rollover);
+	lasso_release_gobject(sp_context_after_rollover);
+}
+END_TEST
+
 Suite*
 login_saml2_suite()
 {
@@ -808,16 +909,19 @@ login_saml2_suite()
 	TCase *tc_spLoginMemory = tcase_create("Login initiated by service provider without key loading");
 	TCase *tc_spSloSoap = tcase_create("Login initiated by service provider without key loading and with SLO SOAP");
 	TCase *tc_idpKeyRollover = tcase_create("Login initiated by idp, idp use two differents signing keys (simulate key roll-over)");
+	TCase *tc_spKeyRollover = tcase_create("Login initiated by idp, sp use two differents encrypting keys (simulate key roll-over)");
 	suite_add_tcase(s, tc_generate);
 	suite_add_tcase(s, tc_spLogin);
 	suite_add_tcase(s, tc_spLoginMemory);
 	suite_add_tcase(s, tc_spSloSoap);
 	suite_add_tcase(s, tc_idpKeyRollover);
+	suite_add_tcase(s, tc_spKeyRollover);
 	tcase_add_test(tc_generate, test01_saml2_generateServersContextDumps);
 	tcase_add_test(tc_spLogin, test02_saml2_serviceProviderLogin);
 	tcase_add_test(tc_spLoginMemory, test03_saml2_serviceProviderLogin);
 	tcase_add_test(tc_spSloSoap, test04_sso_then_slo_soap);
 	tcase_add_test(tc_idpKeyRollover, test05_sso_idp_with_key_rollover);
+	tcase_add_test(tc_spKeyRollover, test06_sso_sp_with_key_rollover);
 	return s;
 }
 

@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+      xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+      xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+      entityID="http://sp11/metadata">
+  <SPSSODescriptor
+      AuthnRequestsSigned="true"
+      protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <KeyDescriptor>
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>
+MIICHjCCAYegAwIBAgIJAKCn8J6jYs6kMA0GCSqGSIb3DQEBBQUAMBUxEzARBgNV
+BAoTCkVudHJvdXZlcnQwHhcNMTEwMTE5MjAxNDE2WhcNMTEwMjE4MjAxNDE2WjAV
+MRMwEQYDVQQKEwpFbnRyb3V2ZXJ0MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKB
+gQDGI2g/WLmdODxhiraxFklG09r6C/yjX06zTt1MapA5+eIcEg2Hp+elCwcCogL1
+ZK9/vYlU2yzIGgxV5mVVUybgdQuIvmEi8BlWM4HM5np97J/g6r41vG5auA4ve1Xp
+F11rVO9Ru1LIQwMaHXJVf0yojNLH6VOmJU3GDELjKB+VLwIDAQABo3YwdDAdBgNV
+HQ4EFgQUssAKE1M50yrgLpqoFzRbSOeZ41swRQYDVR0jBD4wPIAUssAKE1M50yrg
+LpqoFzRbSOeZ41uhGaQXMBUxEzARBgNVBAoTCkVudHJvdXZlcnSCCQCgp/Ceo2LO
+pDAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBABPxbVQuuVzkfZFmeUJH
+S6WSvTKoEfJKXm7xLB9ChtPixZkPN6XXYaV0zx6cIwiUBi97ijcMU4W/+s5Xn4rB
+/HJ2UWPlObpjZOxdl1eGsrTw8l7LWPls1B0b0wYms32q6bDVwPWVlDqc5Z13b9M3
+8bNF5SUdZmcRJzk3LKXZ9nkA
+</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </KeyDescriptor>
+
+<KeyDescriptor use="signing">
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:X509Data>
+        <ds:X509Certificate>MIIDnjCCAoagAwIBAgIBATANBgkqhkiG9w0BAQUFADBUMQswCQYDVQQGEwJGUjEP
+MA0GA1UECBMGRnJhbmNlMQ4wDAYDVQQHEwVQYXJpczETMBEGA1UEChMKRW50cm91
+dmVydDEPMA0GA1UEAxMGRGFtaWVuMB4XDTA2MTAyNzA5MDc1NFoXDTExMTAyNjA5
+MDc1NFowVDELMAkGA1UEBhMCRlIxDzANBgNVBAgTBkZyYW5jZTEOMAwGA1UEBxMF
+UGFyaXMxEzARBgNVBAoTCkVudHJvdXZlcnQxDzANBgNVBAMTBkRhbWllbjCCASIw
+DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAM06Hx6VgHYR9wUf/tZVVTRkVWNq
+h9x+PvHA2qH4OYMuqGs4Af6lU2YsZvnrmRdcFWv0+UkdAgXhReCWAZgtB1pd/W9m
+6qDRldCCyysow6xPPKRz/pOTwRXm/fM0QGPeXzwzj34BXOIOuFu+n764vKn18d+u
+uVAEzk1576pxTp4pQPzJfdNLrLeQ8vyCshoFU+MYJtp1UA+h2JoO0Y8oGvywbUxH
+ioHN5PvnzObfAM4XaDQohmfxM9Uc7Wp4xKAc1nUq5hwBrHpjFMRSz6UCfMoJSGIi
++3xJMkNCjL0XEw5NKVc5jRKkzSkN5j8KTM/k1jPPsDHPRYzbWWhnNtd6JlkCAwEA
+AaN7MHkwCQYDVR0TBAIwADAsBglghkgBhvhCAQ0EHxYdT3BlblNTTCBHZW5lcmF0
+ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFP2WWMDShux3iF74+SoO1xf6qhqaMB8G
+A1UdIwQYMBaAFGjl6TRXbQDHzSlZu+e8VeBaZMB5MA0GCSqGSIb3DQEBBQUAA4IB
+AQAZ/imK7UMognXbs5RfSB8cMW6iNAI+JZqe9XWjvtmLfIIPbHM96o953SiFvrvQ
+BZjGmmPMK3UH29cjzDx1R/RQaYTyMrHyTePLh3BMd5mpJ/9eeJCSxPzE2ECqWRUa
+pkjukecFXqmRItwgTxSIUE9QkpzvuQRb268PwmgroE0mwtiREADnvTFkLkdiEMew
+fiYxZfJJLPBqwlkw/7f1SyzXoPXnz5QbNwDmrHelga6rKSprYKb3pueqaIe8j/AP
+NC1/bzp8cGOcJ88BD5+Ny6qgPVCrMLE5twQumJ12V3SvjGNtzFBvg2c/9S5OmVqR
+LlTxKnCrWAXftSm1rNtewTsF</ds:X509Certificate>
+      </ds:X509Data>
+    </ds:KeyInfo>
+  </KeyDescriptor>
+
+    <ArtifactResolutionService isDefault="true" index="0"
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+      Location="http://sp11/artifact" />
+    <SingleLogoutService
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+      Location="http://sp11/singleLogoutSOAP" />
+    <SingleLogoutService
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+      Location="http://sp11/singleLogout"
+      ResponseLocation="http://sp11/singleLogoutReturn" />
+    <ManageNameIDService
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+      Location="http://sp11/manageNameIdSOAP" />
+    <ManageNameIDService
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+      Location="http://sp11/manageNameId"
+      ResponseLocation="http://sp11/manageNameIdReturn" />
+    <AssertionConsumerService isDefault="true" index="0"
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+      Location="http://sp11/singleSignOnArtifact" />
+    <AssertionConsumerService index="1"
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+      Location="http://sp11/singleSignOnPost" />
+    <AssertionConsumerService index="2"
+      Binding="urn:oasis:names:tc:SAML:2.0:bindings:PAOS"
+      Location="http://sp11/singleSignOnSOAP" />
+    <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</NameIDFormat>
+  </SPSSODescriptor>
+  <Organization>
+     <OrganizationName xml:lang="en">Example SAML 2.0 metadatas</OrganizationName>
+  </Organization>
+</EntityDescriptor>

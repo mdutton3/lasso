@@ -287,7 +287,6 @@ load_endpoint_type(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole 
 	} else {
 		name = g_strdup_printf("%s %s", xmlnode->name, binding_s);
 	}
-	lasso_release_xml_string(binding);
 
 	/* Response endpoint ? */
 	response_value = getSaml2MdProp(xmlnode, LASSO_SAML2_METADATA_ATTRIBUTE_RESPONSE_LOCATION);
@@ -301,6 +300,7 @@ load_endpoint_type(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole 
 	_lasso_provider_add_metadata_value_for_role(provider, role, name, (char*)value);
 
 cleanup:
+	lasso_release_xml_string(binding);
 	lasso_release_xml_string(value);
 	lasso_release_xml_string(response_value);
 	lasso_release_string(name);

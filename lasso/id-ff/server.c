@@ -182,10 +182,7 @@ lasso_server_set_encryption_private_key_with_password(LassoServer *server,
 		if (! key || ! (xmlSecKeyGetType(key) & xmlSecKeyDataTypePrivate)) {
 			return LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED;
 		}
-		lasso_release_sec_key(server->private_data->encryption_private_key);
-		server->private_data->encryption_private_key = key;
-	} else {
-		lasso_release_sec_key(server->private_data->encryption_private_key);
+		lasso_list_add_new_sec_key(server->private_data->encryption_private_keys, key);
 	}
 
 	return 0;
@@ -289,8 +286,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	rc = parent_class->init_from_xml(node, xmlnode);
 
 	if (server->private_key) {
-		server->private_data->encryption_private_key =
-			lasso_xmlsec_load_private_key(server->private_key, server->private_key_password);
+		lasso_server_set_encryption_private_key_with_password(server, server->private_key,
+				server->private_key_password);
 	}
 	if (rc)
 		return rc;
@@ -481,7 +478,7 @@ dispose(GObject *object)
 	}
 	server->private_data->dispose_has_run = TRUE;
 
-	lasso_release_sec_key(server->private_data->encryption_private_key);
+	lasso_release_list_of_sec_key(server->private_data->encryption_private_keys);
 
 	lasso_release_list_of_gobjects(server->private_data->svc_metadatas);
 
@@ -523,7 +520,7 @@ instance_init(LassoServer *server)
 {
 	server->private_data = g_new0(LassoServerPrivate, 1);
 	server->private_data->dispose_has_run = FALSE;
-	server->private_data->encryption_private_key = NULL;
+	server->private_data->encryption_private_keys = NULL;
 	server->private_data->svc_metadatas = NULL;
 
 	server->providers = g_hash_table_new_full(
@@ -610,7 +607,7 @@ lasso_server_new(const gchar *metadata,
 		if (lasso_provider_load_metadata(LASSO_PROVIDER(server), metadata) == FALSE) {
 			message(G_LOG_LEVEL_CRITICAL,
 					"Failed to load metadata from %s.", metadata);
-			lasso_node_destroy(LASSO_NODE(server));
+			lasso_release_gobject(server);
 			return NULL;
 		}
 	}
@@ -619,11 +616,11 @@ lasso_server_new(const gchar *metadata,
 	if (private_key) {
 		lasso_assign_string(server->private_key, private_key);
 		lasso_assign_string(server->private_key_password, private_key_password);
-		server->private_data->encryption_private_key = lasso_xmlsec_load_private_key(private_key,
-				private_key_password);
-		if (! server->private_data->encryption_private_key) {
+		if (lasso_server_set_encryption_private_key_with_password(server, private_key,
+				private_key_password) != 0) {
 			message(G_LOG_LEVEL_WARNING, "Cannot load the private key");
 			lasso_release_gobject(server);
+			return NULL;
 		}
 	}
 	lasso_provider_load_public_key(&server->parent, LASSO_PUBLIC_KEY_SIGNING);
@@ -657,7 +654,7 @@ lasso_server_new_from_buffers(const char *metadata, const char *private_key_cont
 		if (lasso_provider_load_metadata_from_buffer(LASSO_PROVIDER(server), metadata) == FALSE) {
 			message(G_LOG_LEVEL_CRITICAL,
 					"Failed to load metadata from preloaded buffer");
-			lasso_node_destroy(LASSO_NODE(server));
+			lasso_release_gobject(server);
 			return NULL;
 		}
 	}
@@ -665,12 +662,12 @@ lasso_server_new_from_buffers(const char *metadata, const char *private_key_cont
 	if (private_key_content) {
 		lasso_assign_string(server->private_key, private_key_content);
 		lasso_assign_string(server->private_key_password, private_key_password);
-		server->private_data->encryption_private_key =
-			lasso_xmlsec_load_private_key_from_buffer(private_key_content,
-					strlen(private_key_content), private_key_password);
-		if (! server->private_data->encryption_private_key) {
+
+		if (lasso_server_set_encryption_private_key_with_password(server, private_key_content,
+				private_key_password) != 0) {
 			message(G_LOG_LEVEL_WARNING, "Cannot load the private key");
 			lasso_release_gobject(server);
+			return NULL;
 		}
 	}
 	lasso_provider_load_public_key(&server->parent, LASSO_PUBLIC_KEY_SIGNING);
@@ -731,14 +728,14 @@ lasso_server_get_private_key(LassoServer *server)
 }
 
 /**
- * lasso_server_get_encryption_private_key:
+ * lasso_server_get_encryption_private_keys:
  * @server: a #LassoServer object
  *
- * Return:(transfer none): a xmlSecKey object, it is owned by the #LassoServer object, so do not
+ * Return:(transfer none)(element-type xmlSecKeyPtr): a GList of xmlSecKey object, it is owned by the #LassoServer object, so do not
  * free it.
  */
-xmlSecKey*
-lasso_server_get_encryption_private_key(LassoServer *server)
+GList*
+lasso_server_get_encryption_private_keys(LassoServer *server)
 {
 	if (! LASSO_IS_SERVER(server))
 		return NULL;
@@ -746,7 +743,7 @@ lasso_server_get_encryption_private_key(LassoServer *server)
 	if (! server->private_data)
 		return NULL;
 
-	return server->private_data->encryption_private_key;
+	return server->private_data->encryption_private_keys;
 }
 
 /**

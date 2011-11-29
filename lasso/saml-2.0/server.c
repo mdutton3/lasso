@@ -139,7 +139,7 @@ lasso_saml20_server_load_metadata_entity(LassoServer *server, LassoProviderRole 
 
 	provider = lasso_provider_new_from_xmlnode(role, entity);
 	if (provider) {
-		char *name = g_strdup(provider->ProviderID);
+		char *name = provider->ProviderID;
 
 		if (g_list_find_custom(blacklisted_entity_ids, name,
 					(GCompareFunc) g_strcmp0)) {
@@ -153,7 +153,7 @@ lasso_saml20_server_load_metadata_entity(LassoServer *server, LassoProviderRole 
 			l->next->data = g_strdup(name);
 			*loaded_end = l->next;
 		}
-		g_hash_table_insert(server->providers, name, provider);
+		g_hash_table_insert(server->providers, g_strdup(name), provider);
 		return 0;
 	} else {
 		return LASSO_SERVER_ERROR_NO_PROVIDER_LOADED;
