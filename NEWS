@@ -1,6 +1,17 @@
 NEWS
 ====
 
+2.3.6 - November 29th 2011
+--------------------------
+
+2 commits, 2 files changed, 28 insertions, 2 deletions
+
+ * fix a bug when receiving a signature using the InclusiveNamespaces
+   PrefixList by copying namespace declaration from upper level at the level of
+   the signed node.
+ * fix compilation warning on recent version of GCC
+
+
 2.3.5 - January 11th 2010
 -------------------------
 

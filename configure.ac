@@ -15,7 +15,7 @@ dnl - Second number is the number of supported API versions where API version >
 dnl   first number.
 dnl - Third number is the current API version implementation version number.
 dnl See libtool explanations about current, age and release, later in this file.
-AC_INIT([lasso], 2.3.5, lasso-devel@lists.labs.libre-entreprise.org)
+AC_INIT([lasso], 2.3.6, lasso-devel@lists.labs.libre-entreprise.org)
 dnl Check if autoconf ver > 2.53
 AC_PREREQ(2.53)
 AC_CONFIG_MACRO_DIR([m4])
@@ -184,7 +184,7 @@ dnl - interfaces removed -> AGE = 0
 # m = a
 # r = r
 current=`expr $VERSION_MAJOR + $VERSION_MINOR`
-LASSO_VERSION_INFO="12:3:9"
+LASSO_VERSION_INFO="12:4:9"
 AC_SUBST(LASSO_VERSION_INFO)
 
 dnl Compute the minimal supported ABI version for Win32 scripts and resources files.
