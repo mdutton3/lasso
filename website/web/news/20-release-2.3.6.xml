@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<div xmlns="http://www.w3.org/1999/xhtml">
+<h3>2011-11-29: Released 2.3.6</h3>
+
+ <p>
+  Lasso 2.3.6 have been released.
+  <a href="https://dev.entrouvert.org/lasso/lasso-2.3.6.tar.gz">Download 2.3.6 now</a>
+ </p>
+
+ <p class="changes">
+  <strong>What changed ?</strong>
+  A bug concerning signature using the InclusiveNamespace parameter of
+  exclusive  XML canonicalization was fixed.
+ </p>
+
+</div>
