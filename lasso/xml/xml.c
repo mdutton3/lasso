@@ -377,25 +377,10 @@ lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
  *      caller.
  **/
 char*
-lasso_node_export_to_query(LassoNode *node,
-		LassoSignatureMethod sign_method, const char *private_key_file)
+lasso_node_export_to_query(LassoNode *node, LassoSignatureMethod sign_method,
+		const char *private_key_file)
 {
-	char *unsigned_query, *query = NULL;
-
-	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
-
-	unsigned_query = lasso_node_build_query(node);
-	if (unsigned_query == NULL) {
-		return NULL;
-	}
-	if (private_key_file) {
-		query = lasso_query_sign(unsigned_query, sign_method, private_key_file, NULL);
-	} else {
-		lasso_transfer_string(query, unsigned_query);
-	}
-	lasso_release(unsigned_query);
-
-	return query;
+	return lasso_node_export_to_query_with_password(node, sign_method, private_key_file, NULL);
 }
 
 /**
