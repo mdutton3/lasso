@@ -126,6 +126,8 @@ LASSO_EXPORT lasso_error_t lasso_server_load_metadata(LassoServer *server, Lasso
 		*blacklisted_entity_ids, GList **loaded_entity_ids,
 		LassoServerLoadMetadataFlag flags);
 
+LASSO_EXPORT lasso_error_t lasso_server_add_provider2(LassoServer *server, LassoProvider *provider);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -105,6 +105,28 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 }
 
 /**
+ * lasso_server_add_provider2:
+ * @server: a #LassoServer object
+ * @provider: a #LassoProvider object
+ *
+ * Add @provider to the list of known providers object of @server.
+ *
+ * Return 0 if successful, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ otherwise.
+ */
+lasso_error_t
+lasso_server_add_provider2(LassoServer *server, LassoProvider *provider)
+{
+	lasso_bad_param(SERVER, server);
+	lasso_bad_param(PROVIDER, provider);
+	g_return_val_if_fail(provider->ProviderID, LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT);
+	g_return_val_if_fail(server->providers, LASSO_PARAM_ERROR_NON_INITIALIZED_OBJECT);
+
+	g_hash_table_insert(server->providers, g_strdup(provider->ProviderID), provider);
+
+	return 0;
+}
+
+/**
  * lasso_server_add_provider_from_buffer:
  * @server: a #LassoServer
  * @role: provider role, identity provider or service provider
