@@ -519,6 +519,7 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 			new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
 			xmlFree(t);
 			break;
+		case LASSO_SIGNATURE_METHOD_NONE:
 		case LASSO_SIGNATURE_METHOD_LAST:
 			g_assert_not_reached();
 	}
@@ -571,6 +572,7 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
 			s_new_query = g_strdup_printf("%s&Signature=%s", new_query, e_b64_sigret);
 			break;
+		case LASSO_SIGNATURE_METHOD_NONE:
 		case LASSO_SIGNATURE_METHOD_LAST:
 			g_assert_not_reached();
 	}

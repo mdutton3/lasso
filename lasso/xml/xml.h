@@ -97,11 +97,18 @@ typedef enum {
  * Signature method.
  **/
 typedef enum {
-	LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
+	LASSO_SIGNATURE_METHOD_NONE = 0,
+	LASSO_SIGNATURE_METHOD_RSA_SHA1,
 	LASSO_SIGNATURE_METHOD_DSA_SHA1,
 	LASSO_SIGNATURE_METHOD_LAST
 } LassoSignatureMethod;
 
+static inline gboolean
+lasso_validate_signature_method(LassoSignatureMethod signature_method)
+{
+	return signature_method > (LassoSignatureMethod)LASSO_SIGNATURE_TYPE_NONE \
+		&& signature_method < (LassoSignatureMethod)LASSO_SIGNATURE_METHOD_LAST;
+}
 
 typedef struct _LassoNode LassoNode;
 typedef struct _LassoNodeClass LassoNodeClass;
