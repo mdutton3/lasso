@@ -685,4 +685,24 @@ lasso_xmlstrisnotequal(const xmlChar *a, const xmlChar *b) {
 	return lasso_strisnotequal((char*)a, (char*)b);
 }
 
+/**
+ * lasso_crypto_memequal:
+ * @a: first buffer
+ * @b: second buffer
+ * @l: common length
+ *
+ * Compare two buffers, preventing timing attacks.
+ */
+static inline gboolean
+lasso_crypto_memequal(void *a, void *b, unsigned int l)
+{
+	unsigned char *x = a, *y = b;
+	gboolean result = TRUE;
+
+	for (;l;l--, x++, y++) {
+		result = result && (*x == *y);
+	}
+	return result;
+}
+
 #endif /* __LASSO_UTILS_H__ */
