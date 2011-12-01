@@ -909,7 +909,7 @@ lasso_sha1(const char *str)
 	if (str == NULL)
 		return NULL;
 
-	md = xmlMalloc(20);
+	md = g_malloc(20);
 	return (char*)SHA1((unsigned char*)str, strlen(str), md);
 }
 
