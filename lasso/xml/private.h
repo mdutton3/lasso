@@ -79,6 +79,41 @@ struct XmlSnippet {
 	char *ns_uri;
 };
 
+/**
+ * LassoSignatureContext:
+ * @signature_method: the method for signing (RSA, DSA, HMAC)
+ * @signature_key: a key for the signature
+ *
+ * Information needed to make a signature
+ */
+typedef struct _LassoSignatureContext {
+	LassoSignatureMethod signature_method;
+	xmlSecKey *signature_key;
+} LassoSignatureContext;
+
+#define LASSO_SIGNATURE_CONTEXT_NONE ((LassoSignatureContext){LASSO_SIGNATURE_TYPE_NONE, NULL})
+
+#define lasso_assign_signature_context(to, from) \
+	do { \
+		LassoSignatureContext *__to = &(to); \
+		LassoSignatureContext __from = (from); \
+		__to->signature_method = __from.signature_method; \
+		lasso_assign_sec_key(__to->signature_key, __from.signature_key); \
+	} while(0)
+
+#define lasso_assign_new_signature_context(to, from) \
+	do { \
+		LassoSignatureContext *__to = &(to); \
+		LassoSignatureContext __from = (from); \
+		__to->signature_method = __from.signature_method; \
+		lasso_assign_new_sec_key(__to->signature_key, __from.signature_key); \
+	} while(0)
+
+static inline gboolean
+lasso_validate_signature_context(LassoSignatureContext context) {
+	return lasso_validate_signature_method(context.signature_method)
+		&& context.signature_key != NULL;
+}
 
 /**
  * This inline method replace normal use of G_STRUCT_MEMBER_P/G_STRUCT_MEMBER, in order to add an
