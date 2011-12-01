@@ -464,6 +464,9 @@
 #define lasso_transfer_gobject(dest, src) \
 	lasso_transfer_full(dest, src, gobject)
 
+#define lasso_transfer_xml_node(dest, src) \
+	lasso_transfer_full(dest, src, xml_node)
+
 /* Node extraction */
 #define lasso_extract_node_or_fail(to, from, kind, error) \
 	{\
