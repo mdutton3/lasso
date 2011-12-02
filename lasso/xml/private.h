@@ -270,6 +270,7 @@ void lasso_node_set_encryption(LassoNode *node, xmlSecKey *encryption_public_key
 
 void lasso_node_get_encryption(LassoNode *node, xmlSecKey **encryption_public_key,
 		LassoEncryptionSymKeyType *encryption_sym_key_type);
+gboolean lasso_base64_decode(const char *from, char **buffer, int *buffer_len);
 
 #ifdef __cplusplus
 }

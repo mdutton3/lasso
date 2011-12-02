@@ -1999,6 +1999,39 @@ _lasso_xmlsec_load_key_from_buffer(const char *buffer, size_t length, const char
 
 	return private_key;
 }
+/**
+ * lasso_base64_decode:
+ * @from: the source base64 encoded string
+ * @buffer: an output argument to place the resulting buffer pointer
+ * @buffer_len: an output argument to place the resulting buffer length
+ *
+ * Decode the given string as Base64 and allocate a buffer for the decoded content, place the
+ * pointer to the buffer in @buffer and the length in @buffer_len
+ *
+ * Return value: TRUE if successful, FALSE otherwise.
+ */
+gboolean
+lasso_base64_decode(const char *from, char **buffer, int *buffer_len)
+{
+	size_t len = strlen(from);
+	int ret;
+
+	/* base64 map 4 bytes to 3 */
+	len = len / 4 + (len % 4 ? 1 : 0);
+	len *= 3;
+	len += 1; /* zero byte */
+	*buffer = g_malloc0(len);
+
+	xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
+	ret = xmlSecBase64Decode(BAD_CAST from, BAD_CAST *buffer, len);
+	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
+	if (ret <= 0) {
+		lasso_release_string(*buffer);
+		return FALSE;
+	}
+	*buffer_len = ret;
+	return TRUE;
+}
 
 /**
  * lasso_xmlsec_load_private_key_from_buffer:
