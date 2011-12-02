@@ -37,6 +37,8 @@
 #include "./provider.h"
 #include <time.h>
 
+static GList* lasso_saml2_assertion_get_audience_restrictions(LassoSaml2Assertion *assertion);
+
 /**
  * lasso_saml2_assertion_has_audience_restriction:
  * @saml2_assertion: a #LassoSaml2Assertion object
@@ -49,19 +51,7 @@
 gboolean
 lasso_saml2_assertion_has_audience_restriction(LassoSaml2Assertion *saml2_assertion)
 {
-	GList *it;
-
-	g_return_val_if_fail (LASSO_IS_SAML2_ASSERTION(saml2_assertion), FALSE);
-	if (! LASSO_IS_SAML2_CONDITIONS(saml2_assertion->Conditions))
-		return FALSE;
-
-	lasso_foreach(it, saml2_assertion->Conditions->Condition)
-	{
-		if (LASSO_IS_SAML2_AUDIENCE_RESTRICTION(it->data)) {
-			return TRUE;
-		}
-	}
-	return FALSE;
+	return lasso_saml2_assertion_get_audience_restrictions(saml2_assertion) != NULL;
 }
 
 /**
@@ -79,10 +69,7 @@ lasso_saml2_assertion_is_audience_restricted(LassoSaml2Assertion *saml2_assertio
 {
 	GList *it;
 
-	g_return_val_if_fail (LASSO_IS_SAML2_ASSERTION(saml2_assertion), FALSE);
-	if (! LASSO_IS_SAML2_CONDITIONS(saml2_assertion->Conditions))
-		return FALSE;
-	lasso_foreach(it, saml2_assertion->Conditions->Condition)
+	lasso_foreach(it, lasso_saml2_assertion_get_audience_restrictions(saml2_assertion))
 	{
 		if (LASSO_IS_SAML2_AUDIENCE_RESTRICTION(it->data)) {
 			LassoSaml2AudienceRestriction *saml2_audience_restriction;
@@ -679,16 +666,24 @@ lasso_server_saml2_assertion_setup_signature(LassoServer *server,
 		LassoSaml2Assertion *saml2_assertion)
 {
 	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
+	GList *audience_restrictions = NULL;
+	char *provider_id = NULL;
 	lasso_error_t rc = 0;
 
 	lasso_bad_param(SERVER, server);
 	lasso_bad_param(SAML2_ASSERTION, saml2_assertion);
 
+	/* instead of this we should probably allow to pass a provider id or object in a new API */
+	audience_restrictions = lasso_saml2_assertion_get_audience_restrictions(saml2_assertion);
+	if (audience_restrictions) {
+		provider_id = ((LassoSaml2AudienceRestriction*)audience_restrictions->data)->Audience;
+	}
+	lasso_check_good_rc(lasso_server_get_signature_context_for_provider_by_name(server,
+				provider_id, &context));
+	lasso_node_set_signature(&saml2_assertion->parent, context);
 	if (! saml2_assertion->ID) {
 		lasso_assign_new_string(saml2_assertion->ID, lasso_build_unique_id(32));
 	}
-	lasso_check_good_rc(lasso_server_get_signature_context(server, &context));
-	lasso_check_good_rc(lasso_node_set_signature((LassoNode*)saml2_assertion, context));
 cleanup:
 	return rc;
 }
@@ -806,4 +801,22 @@ lasso_saml2_assertion_decrypt_subject(LassoSaml2Assertion *assertion, LassoServe
 		return lasso_saml2_encrypted_element_server_decrypt(assertion->Subject->EncryptedID, server, (LassoNode**)&assertion->Subject->NameID);
 	}
 	return 0;
+}
+
+/**
+ * lasso_saml2_assertion_get_audience_restrictions:
+ * @assertion: a #LassoSaml2Assertion
+ *
+ * Returns the list of audience restriction associated to the given assertion
+ *
+ * Return value:(transfer none): the GList of the Saml2AudienceRestriction nodes
+ */
+static GList*
+lasso_saml2_assertion_get_audience_restrictions(LassoSaml2Assertion *assertion)
+{
+	g_return_val_if_fail (LASSO_IS_SAML2_ASSERTION(assertion), NULL);
+	if (! LASSO_IS_SAML2_CONDITIONS(assertion->Conditions))
+		return FALSE;
+
+	return assertion->Conditions->AudienceRestriction;
 }

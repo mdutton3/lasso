@@ -1996,8 +1996,8 @@ _lasso_xmlsec_load_key_from_buffer(const char *buffer, size_t length, const char
 					"works with DSA and RSA algorithms.");
 		}
 	}
-	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 cleanup:
+	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 	return private_key;
 }
 /**
