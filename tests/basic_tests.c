@@ -1985,6 +1985,33 @@ START_TEST(test13_test_lasso_server_load_metadata)
 }
 END_TEST
 
+#include "../lasso/key.h"
+
+/* test load federation */
+START_TEST(test14_lasso_key)
+{
+	LassoKey *key;
+	char *buffer;
+	gsize length;
+	char *base64_encoded;
+
+	check_true(g_file_get_contents(TESTSDATADIR "sp1-la/private-key-raw.pem", &buffer, &length, NULL));
+	check_not_null(key = lasso_key_new_for_signature_from_memory(buffer,
+				length, NULL, LASSO_SIGNATURE_METHOD_RSA_SHA1,
+				NULL));
+	lasso_release_gobject(key);
+	check_not_null(key = lasso_key_new_for_signature_from_file(TESTSDATADIR
+				"sp1-la/private-key-raw.pem", NULL, LASSO_SIGNATURE_METHOD_RSA_SHA1,
+				NULL));
+	lasso_release_gobject(key);
+	base64_encoded = g_base64_encode(BAD_CAST buffer, length);
+	check_not_null(key = lasso_key_new_for_signature_from_base64_string(base64_encoded, NULL,
+				LASSO_SIGNATURE_METHOD_RSA_SHA1, NULL));
+	lasso_release_string(base64_encoded);
+	lasso_release_string(buffer);
+}
+END_TEST
+
 Suite*
 basic_suite()
 {
@@ -2000,6 +2027,7 @@ basic_suite()
 	TCase *tc_response_new_from_xmlNode = tcase_create("Test parsing a message from Ping Federate");
 	TCase *tc_custom_namespace = tcase_create("Test custom namespace handling");
 	TCase *tc_load_metadata = tcase_create("Test loading a federation metadata file");
+	TCase *tc_key = tcase_create("Test loading and manipulating LassoKey objects");
 
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
@@ -2012,6 +2040,7 @@ basic_suite()
 	suite_add_tcase(s, tc_response_new_from_xmlNode);
 	suite_add_tcase(s, tc_custom_namespace);
 	suite_add_tcase(s, tc_load_metadata);
+	suite_add_tcase(s, tc_key);
 
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
@@ -2026,6 +2055,7 @@ basic_suite()
 	tcase_add_test(tc_response_new_from_xmlNode, test11_get_default_name_id_format);
 	tcase_add_test(tc_custom_namespace, test12_custom_namespace);
 	tcase_add_test(tc_load_metadata, test13_test_lasso_server_load_metadata);
+	tcase_add_test(tc_key, test14_lasso_key);
 	tcase_set_timeout(tc_load_metadata, 10);
 	return s;
 }

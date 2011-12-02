@@ -197,6 +197,7 @@
   <func name="lasso_wsa_endpoint_reference_add_security_token" skip="true"/>
   <func name="lasso_log_set_handler" skip="true"/>
   <func name="lasso_log_remove_handler" skip="true"/>
+  <func name="lasso_key_new_for_signature_from_memory" skip="true"/>
   <!-- Exceptions -->
   <exception>
     <category name="Profile"/>

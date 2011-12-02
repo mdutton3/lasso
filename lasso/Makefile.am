@@ -19,11 +19,11 @@ lasso.rc.lo: $(top_srcdir)/win32/lasso.rc
 lib_LTLIBRARIES = liblasso.la
 
 liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h \
-			  registry.h ctypes.h
-nodist_liblassoinclude_HEADERS = debug.h utils.h registry-private.h logging.h backward_comp.h
+			  registry.h ctypes.h key.h
+nodist_liblassoinclude_HEADERS = debug.h utils.h registry-private.h logging.h backward_comp.h keyprivate.h
 BUILT_SOURCES = types.c errors.c symbols.sym
 
-liblasso_la_SOURCES = lasso.c errors.c registry.c utils.c logging.c
+liblasso_la_SOURCES = lasso.c errors.c registry.c utils.c logging.c key.c
 
 if WSF_ENABLED
 SYMBOLS_ARGS = -wsf
