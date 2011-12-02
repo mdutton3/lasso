@@ -157,9 +157,8 @@ START_TEST(test02_serviceProviderLogin)
 	spLoginContext = lasso_login_new(spContext);
 	fail_unless(spLoginContext != NULL,
 			"lasso_login_new() shouldn't have returned NULL");
-	rc = lasso_login_init_authn_request(spLoginContext, "https://idp1/metadata",
-			LASSO_HTTP_METHOD_REDIRECT);
-	fail_unless(rc == 0, "lasso_login_init_authn_request failed");
+	check_good_rc(lasso_login_init_authn_request(spLoginContext, "https://idp1/metadata",
+			LASSO_HTTP_METHOD_REDIRECT));
 	request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(spLoginContext)->request);
 	fail_unless(LASSO_IS_LIB_AUTHN_REQUEST(request), "request should be authn_request");
 	request->IsPassive = 0;
@@ -167,8 +166,7 @@ START_TEST(test02_serviceProviderLogin)
 	request->consent = g_strdup(LASSO_LIB_CONSENT_OBTAINED);
 	relayState = "fake[]";
 	request->RelayState = g_strdup(relayState);
-	rc = lasso_login_build_authn_request_msg(spLoginContext);
-	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
+	check_good_rc(lasso_login_build_authn_request_msg(spLoginContext));
 	authnRequestUrl = LASSO_PROFILE(spLoginContext)->msg_url;
 	fail_unless(authnRequestUrl != NULL,
 			"authnRequestUrl shouldn't be NULL");
@@ -187,7 +185,7 @@ START_TEST(test02_serviceProviderLogin)
 	idpLoginContext = lasso_login_new(idpContext);
 	fail_unless(idpLoginContext != NULL,
 			"lasso_login_new() shouldn't have returned NULL");
-	rc = lasso_login_process_authn_request_msg(idpLoginContext, authnRequestQuery);
+	check_good_rc(lasso_login_process_authn_request_msg(idpLoginContext, authnRequestQuery));
 	fail_unless(rc == 0, "lasso_login_process_authn_request_msg failed");
 	fail_unless(lasso_login_must_authenticate(idpLoginContext),
 			"lasso_login_must_authenticate() should be TRUE");
@@ -199,19 +197,18 @@ START_TEST(test02_serviceProviderLogin)
 			"lasso_login_process_authn_request_msg should restore the RelayState parameter");
 	fail_unless(lasso_strisequal(idpLoginContext->parent.msg_relayState,relayState),
 			"lasso_login_process_authn_request_msg should restore the same RelayState thant sent in the request");
-	rc = lasso_login_validate_request_msg(idpLoginContext,
+	check_good_rc(lasso_login_validate_request_msg(idpLoginContext,
 			1, /* authentication_result */
 		        0 /* is_consent_obtained */
-			);
+			));
 
-	rc = lasso_login_build_assertion(idpLoginContext,
+	check_good_rc(lasso_login_build_assertion(idpLoginContext,
 			LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD,
 			"FIXME: authenticationInstant",
 			"FIXME: reauthenticateOnOrAfter",
 			"FIXME: notBefore",
-			"FIXME: notOnOrAfter");
-	rc = lasso_login_build_artifact_msg(idpLoginContext, LASSO_HTTP_METHOD_REDIRECT);
-	fail_unless(rc == 0, "lasso_login_build_artifact_msg failed");
+			"FIXME: notOnOrAfter"));
+	check_good_rc(lasso_login_build_artifact_msg(idpLoginContext, LASSO_HTTP_METHOD_REDIRECT));
 
 	idpIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(idpLoginContext)->identity);
 	fail_unless(idpIdentityContextDump != NULL,
@@ -237,16 +234,18 @@ START_TEST(test02_serviceProviderLogin)
 	lasso_login_destroy(spLoginContext);
 
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
+	check_true(LASSO_IS_SERVER(spContext));
 	spLoginContext = lasso_login_new_from_dump(spContext, spLoginDump);
-	rc = lasso_login_init_request(spLoginContext,
+	check_true(LASSO_IS_LOGIN(spLoginContext));
+	check_good_rc(lasso_login_init_request(spLoginContext,
 			responseQuery,
-			LASSO_HTTP_METHOD_REDIRECT);
+			LASSO_HTTP_METHOD_REDIRECT));
 	fail_unless(spLoginContext->parent.msg_relayState != NULL,
 			"lasso_login_init_request should restore the RelayState parameter");
 	fail_unless(lasso_strisequal(spLoginContext->parent.msg_relayState,relayState),
 			"lasso_login_init_request should restore the same RelayState thant sent in the request");
 	fail_unless(rc == 0, "lasso_login_init_request failed");
-	rc = lasso_login_build_request_msg(spLoginContext);
+	check_good_rc(lasso_login_build_request_msg(spLoginContext));
 	fail_unless(rc == 0, "lasso_login_build_request_msg failed");
 	soapRequestMsg = LASSO_PROFILE(spLoginContext)->msg_body;
 	fail_unless(soapRequestMsg != NULL, "soapRequestMsg must not be NULL");
@@ -259,28 +258,25 @@ START_TEST(test02_serviceProviderLogin)
 			"requestType should be LASSO_REQUEST_TYPE_LOGIN");
 
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
+	check_true(LASSO_IS_SERVER(idpContext));
 	idpLoginContext = lasso_login_new(idpContext);
-	rc = lasso_login_process_request_msg(idpLoginContext, soapRequestMsg);
-	fail_unless(rc == 0, "lasso_login_process_request_msg failed");
-
-	rc = lasso_profile_set_session_from_dump(LASSO_PROFILE(idpLoginContext),
-						 idpSessionContextDump);
-	fail_unless(rc == 0, "lasso_login_set_assertion_from_dump failed");
-	rc = lasso_login_build_response_msg(idpLoginContext, serviceProviderId);
-	fail_unless(rc == 0, "lasso_login_build_response_msg failed");
+	check_true(LASSO_IS_LOGIN(idpLoginContext));
+	check_good_rc(lasso_login_process_request_msg(idpLoginContext, soapRequestMsg));
+	check_good_rc(lasso_profile_set_session_from_dump(LASSO_PROFILE(idpLoginContext),
+						 idpSessionContextDump));
+	check_good_rc(lasso_login_build_response_msg(idpLoginContext, serviceProviderId));
 	soapResponseMsg =  LASSO_PROFILE(idpLoginContext)->msg_body;
 	fail_unless(soapResponseMsg != NULL, "soapResponseMsg must not be NULL");
 
 	/* Service provider assertion consumer (step 2: process SOAP response) */
-	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
-	fail_unless(rc == 0, "lasso_login_process_response_msg failed");
-	rc = lasso_login_accept_sso(spLoginContext);
-	fail_unless(rc == 0, "lasso_login_accept_sso failed");
+	check_good_rc(lasso_login_process_response_msg(spLoginContext, soapResponseMsg));
+	check_good_rc(lasso_login_accept_sso(spLoginContext));
 	fail_unless(LASSO_PROFILE(spLoginContext)->identity != NULL,
 			"spLoginContext has no identity");
 	spIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(spLoginContext)->identity);
-	fail_unless(spIdentityContextDump != NULL, "lasso_identity_dump failed");
+	check_not_null(spIdentityContextDump);
 	spSessionDump = lasso_session_dump(LASSO_PROFILE(spLoginContext)->session);
+	check_not_null(spSessionDump);
 
 	/* Test InResponseTo checking */
 	found = strstr(soapResponseMsg, "Assertion");
@@ -289,10 +285,9 @@ START_TEST(test02_serviceProviderLogin)
 	fail_unless(found != NULL, "We must find an InResponseTo attribute");
 	found[sizeof("InResponseTo=\"")] = '?';
 	lasso_set_flag("no-verify-signature");
-	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
+	check_not_equals(lasso_login_process_response_msg(spLoginContext, soapResponseMsg), 0);
 	lasso_set_flag("verify-signature");
-	fail_unless(rc != 0, "lasso_login_process_response_msg must fail");
-	rc = lasso_login_accept_sso(spLoginContext);
+	check_good_rc(lasso_login_accept_sso(spLoginContext));
 	fail_unless(rc == 0, "lasso_login_accept_sso must fail");
 
 	g_free(spLoginDump);
