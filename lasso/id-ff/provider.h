@@ -31,6 +31,7 @@ extern "C" {
 
 #include "../xml/xml.h"
 #include "../xml/xml_enc.h"
+#include "../key.h"
 
 #define LASSO_TYPE_PROVIDER (lasso_provider_get_type())
 #define LASSO_PROVIDER(obj) \
@@ -269,6 +270,9 @@ LASSO_EXPORT GList *lasso_provider_get_metadata_keys_for_role(LassoProvider *pro
 LASSO_EXPORT LassoProviderRole lasso_provider_get_roles(LassoProvider *provider);
 
 LASSO_EXPORT gboolean lasso_provider_match_conformance(LassoProvider *provider, LassoProvider *another_provider);
+
+LASSO_EXPORT lasso_error_t lasso_provider_set_specific_signing_key(LassoProvider *provider,
+		LassoKey *key);
 
 #ifdef __cplusplus
 }

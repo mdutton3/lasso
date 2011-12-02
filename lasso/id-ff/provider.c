@@ -66,6 +66,7 @@ use this default role to access descriptors.</para>
 #include <unistd.h>
 #include "../utils.h"
 #include "../debug.h"
+#include "../keyprivate.h"
 
 static char *protocol_uris[LASSO_MD_PROTOCOL_TYPE_LAST] = {
 	"http://projectliberty.org/profiles/fedterm",
@@ -1344,6 +1345,7 @@ lasso_provider_verify_saml_signature(LassoProvider *provider,
 	/* Get provider credentials */
 	lasso_check_good_rc(lasso_provider_try_loading_ca_cert_chain(provider, &keys_manager));
 	lasso_check_good_rc(lasso_provider_try_loading_public_keys(provider, &public_keys, keys_manager == NULL));
+
 	lasso_foreach_full_begin(xmlSecKey*, public_key, it, public_keys);
 	{
 		signature_rc = lasso_verify_signature(signed_node, doc, id_attribute_name, keys_manager, public_key,
@@ -1746,4 +1748,30 @@ lasso_provider_new_from_xmlnode(LassoProviderRole role, xmlNode *node) {
 cleanup:
 	lasso_release_gobject(provider);
 	return ret;
+}
+
+/**
+ * lasso_provider_set_specific_signing_key:
+ * @provider: a #LassoProvider object
+ * @key: a #LassoKey object
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+lasso_error_t
+lasso_provider_set_specific_signing_key(LassoProvider *provider,
+		LassoKey *key)
+{
+	lasso_error_t rc = 0;
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
+
+	lasso_bad_param(PROVIDER, provider);
+	lasso_bad_param(KEY, key);
+
+	context = lasso_key_get_signature_context(key);
+	goto_cleanup_if_fail_with_rc(lasso_validate_signature_context(context),
+			LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED);
+	lasso_assign_signature_context(provider->private_data->signature_context,
+			context);
+cleanup:
+	return rc;
 }
