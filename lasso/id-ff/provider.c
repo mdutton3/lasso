@@ -870,17 +870,6 @@ dispose(GObject *object)
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
 }
 
-static void
-finalize(GObject *object)
-{
-	LassoProvider *provider = LASSO_PROVIDER(object);
-
-	lasso_release(provider->private_data);
-	provider->private_data = NULL;
-
-	G_OBJECT_CLASS(parent_class)->finalize(G_OBJECT(provider));
-}
-
 /*****************************************************************************/
 /* instance and class init functions */
 /*****************************************************************************/
@@ -893,7 +882,8 @@ instance_init(LassoProvider *provider)
 	provider->metadata_filename = NULL;
 	provider->public_key = NULL;
 	provider->ca_cert_chain = NULL;
-	provider->private_data = g_new0(LassoProviderPrivate, 1);
+	provider->private_data = G_TYPE_INSTANCE_GET_PRIVATE(provider, LASSO_TYPE_PROVIDER,
+			LassoProviderPrivate);
 	provider->private_data->dispose_has_run = FALSE;
 	provider->private_data->default_assertion_consumer = NULL;
 	provider->private_data->affiliation_id = NULL;
@@ -927,7 +917,7 @@ class_init(LassoProviderClass *klass)
 	nclass->init_from_xml = init_from_xml;
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
-	G_OBJECT_CLASS(klass)->finalize = finalize;
+	g_type_class_add_private(G_OBJECT_CLASS(klass), sizeof(LassoProviderPrivate));
 }
 
 GType
