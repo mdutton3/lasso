@@ -25,9 +25,13 @@
 #ifndef __LASSO_PROVIDER_PRIVATE_H__
 #define __LASSO_PROVIDER_PRIVATE_H__
 
+#include <./serverprivate.h>
+#include "../xml/private.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
 
 /**
  * LassoPublicKeyType:
@@ -78,6 +82,7 @@ struct _LassoProviderPrivate
 	char *valid_until;
 	char *cache_duration;
 	GList *endpoints; /* of EndpointType_s */
+	LassoSignatureContext signature_context;
 };
 
 gboolean lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata);

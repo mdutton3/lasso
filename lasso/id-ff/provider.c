@@ -896,6 +896,7 @@ instance_init(LassoProvider *provider)
 	provider->private_data->encryption_public_keys = NULL;
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
 	provider->private_data->encryption_sym_key_type = LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128;
+	provider->private_data->signature_context = LASSO_SIGNATURE_CONTEXT_NONE;
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->Descriptors = g_hash_table_new_full(
@@ -1239,7 +1240,8 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 	}
 
 	if (public_key != NULL) {
-		xmlSecKey *key = lasso_xmlsec_load_private_key(public_key, NULL);
+		xmlSecKey *key = lasso_xmlsec_load_private_key(public_key, NULL,
+				LASSO_SIGNATURE_METHOD_RSA_SHA1, NULL);
 		if (key) {
 			lasso_list_add_new_sec_key(keys, key);
 		} else {

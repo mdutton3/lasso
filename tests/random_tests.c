@@ -278,7 +278,8 @@ START_TEST(test06_lib_statuscode)
 }
 END_TEST
 
-extern xmlSecKey* lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password);
+extern xmlSecKey* lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const
+		char *password, LassoSignatureMethod method, const char *certificate);
 
 extern int lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_public_key);
 
@@ -315,7 +316,8 @@ NC1/bzp8cGOcJ88BD5+Ny6qgPVCrMLE5twQumJ12V3SvjGNtzFBvg2c/9S5OmVqR\n\
 LlTxKnCrWAXftSm1rNtewTsF\n\
 -----END CERTIFICATE-----";
 
-	xmlSecKeyPtr key = lasso_xmlsec_load_private_key_from_buffer(pkey, sizeof(pkey)-1, NULL);
+	xmlSecKeyPtr key = lasso_xmlsec_load_private_key_from_buffer(pkey, sizeof(pkey)-1, NULL,
+			LASSO_SIGNATURE_METHOD_RSA_SHA1, NULL);
 
 	fail_unless(key != NULL, "Cannot load public key");
 	fail_unless(lasso_saml2_query_verify_signature(query1, key) == 0, "Signature was not validated");

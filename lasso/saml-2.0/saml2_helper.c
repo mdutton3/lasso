@@ -678,27 +678,19 @@ int
 lasso_server_saml2_assertion_setup_signature(LassoServer *server,
 		LassoSaml2Assertion *saml2_assertion)
 {
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
+	lasso_error_t rc = 0;
+
 	lasso_bad_param(SERVER, server);
 	lasso_bad_param(SAML2_ASSERTION, saml2_assertion);
 
-	if (server->certificate) {
-		saml2_assertion->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
-	} else {
-		saml2_assertion->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
-	}
-	saml2_assertion->sign_method = server->signature_method;
-	lasso_assign_string(saml2_assertion->private_key_file,
-			server->private_key);
-	lasso_assign_string(saml2_assertion->certificate_file,
-			server->certificate);
-	lasso_node_set_signature((LassoNode*)saml2_assertion, saml2_assertion->sign_type,
-			saml2_assertion->sign_method, server->private_key,
-			server->private_key_password, server->certificate);
 	if (! saml2_assertion->ID) {
 		lasso_assign_new_string(saml2_assertion->ID, lasso_build_unique_id(32));
 	}
-
-	return 0;
+	lasso_check_good_rc(lasso_server_get_signature_context(server, &context));
+	lasso_check_good_rc(lasso_node_set_signature((LassoNode*)saml2_assertion, context));
+cleanup:
+	return rc;
 }
 
 /**

@@ -402,22 +402,28 @@ lasso_node_export_to_query_with_password(LassoNode *node,
 		const char *private_key_file_password)
 {
 	char *unsigned_query, *query = NULL;
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
 
 	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
 
-	unsigned_query = lasso_node_build_query(node);
-	if (unsigned_query == NULL) {
+	context.signature_method = sign_method;
+	context.signature_key = lasso_xmlsec_load_private_key(private_key_file,
+			private_key_file_password, sign_method, NULL);
+
+	if (! context.signature_key) {
 		return NULL;
 	}
-	if (private_key_file) {
-		query = lasso_query_sign(unsigned_query, sign_method, private_key_file,
-				private_key_file_password);
-	} else {
-		lasso_transfer_string(query, unsigned_query);
-	}
-	lasso_release(unsigned_query);
 
-	return query;
+	unsigned_query = lasso_node_build_query(node);
+	if (unsigned_query){
+		query = lasso_query_sign(unsigned_query, context);
+		if (query) {
+			lasso_release(unsigned_query);
+			unsigned_query = query;
+		}
+	}
+	lasso_release_sec_key(context.signature_key);
+	return unsigned_query;
 }
 
 /**
@@ -724,6 +730,52 @@ lasso_node_build_query(LassoNode *node)
 	return class->build_query(node);
 }
 
+static LassoNodeClassData*
+lasso_legacy_get_signature_node_data(LassoNode *node, LassoNodeClass **out_klass)
+{
+	LassoNodeClass *klass = NULL;
+	LassoNodeClassData *node_data = NULL;
+
+	klass = LASSO_NODE_GET_CLASS(node);
+	/* find a klass defining a signature */
+	while (klass && LASSO_IS_NODE_CLASS(klass)) {
+		if (klass->node_data && klass->node_data->sign_type_offset) {
+			if (out_klass) {
+				*out_klass = klass;
+			}
+			node_data = klass->node_data;
+			break;
+		}
+		klass = g_type_class_peek_parent(klass);
+	}
+
+	return node_data;
+}
+
+static gboolean
+lasso_legacy_extract_and_copy_signature_parameters(LassoNode *node, LassoNodeClassData *node_data)
+{
+	LassoSignatureMethod signature_method = LASSO_SIGNATURE_METHOD_NONE;
+	char *private_key_file = NULL;
+	char *certificate_file = NULL;
+
+	if (! node_data) {
+		return FALSE;
+	}
+	signature_method = G_STRUCT_MEMBER(LassoSignatureMethod, node,
+			node_data->sign_method_offset);
+	private_key_file = G_STRUCT_MEMBER(char *, node, node_data->private_key_file_offset);
+	certificate_file = G_STRUCT_MEMBER(char *, node, node_data->certificate_file_offset);
+	if (! lasso_validate_signature_method(signature_method)) {
+		return FALSE;
+	}
+	if (lasso_node_set_signature(node,
+			lasso_make_signature_context_from_path_or_string(private_key_file, NULL,
+				signature_method, certificate_file)) != 0) {
+		return FALSE;
+	}
+	return TRUE;
+}
 
 /**
  * lasso_node_get_xmlNode:
@@ -737,35 +789,31 @@ lasso_node_build_query(LassoNode *node)
 xmlNode*
 lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
-	LassoNodeClass *class;
-	xmlNode *xmlnode;
-	LassoNodeClassData *node_data = NULL;
+	xmlNode *xmlnode = NULL;
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
+	LassoNodeClassData *node_data;
 
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-	class = LASSO_NODE_GET_CLASS(node);
-	xmlnode = class->get_xmlNode(node, lasso_dump);
-
-	/* find a class defining a signature */
-	while (class && LASSO_IS_NODE_CLASS(class)) {
-		if (class->node_data && class->node_data->sign_type_offset) {
-			node_data = class->node_data;
-			break;
-		}
-		class = g_type_class_peek_parent(class);
+	xmlnode = LASSO_NODE_GET_CLASS(node)->get_xmlNode(node, lasso_dump);
+	node_data = lasso_legacy_get_signature_node_data(node, NULL);
+	context = lasso_node_get_signature(node);
+	/* support for legacy way to put a signature on a node */
+	if (! lasso_validate_signature_context(context)) {
+		if (lasso_legacy_extract_and_copy_signature_parameters(node, node_data))
+			context = lasso_node_get_signature(node);
 	}
+	if (! lasso_dump && node_data && xmlnode && lasso_validate_signature_context(context)) {
+		int rc;
+		char *id_attribute = G_STRUCT_MEMBER(char*, node,
+				node_data->id_attribute_offset);
 
-	/* add signature */
-	if (xmlnode && node_data && node_data->sign_type_offset) {
-		LassoSignatureType sign_type = G_STRUCT_MEMBER(LassoSignatureType, node,
-				node_data->sign_type_offset);
-		char *id_attribute = G_STRUCT_MEMBER(char*, node,  node_data->id_attribute_offset);
-		char *private_key_file = G_STRUCT_MEMBER(char*, node,
-				node_data->private_key_file_offset);
-		char *certificate_file = G_STRUCT_MEMBER(char*, node,
-				node_data->certificate_file_offset);
-
-		lasso_apply_signature(node, lasso_dump, &xmlnode, node_data->id_attribute_name,
-				id_attribute, sign_type, private_key_file, certificate_file);
+		rc = lasso_sign_node(xmlnode, context, node_data->id_attribute_name,
+				id_attribute);
+		if (rc != 0) {
+			warning("Signing of %s:%s failed: %s", xmlnode->ns->prefix,
+					xmlnode->name, lasso_strerror(rc));
+			lasso_release_xml_node(xmlnode);
+		}
 	}
 
 	return xmlnode;
@@ -873,11 +921,7 @@ struct _CustomElement {
 	char *href;
 	char *nodename;
 	GHashTable *namespaces;
-	LassoSignatureType signature_type;
-	LassoSignatureMethod signature_method;
-	char *private_key;
-	char *private_key_password;
-	char *certificate;
+	LassoSignatureContext signature_context;
 	xmlSecKey *encryption_public_key;
 	LassoEncryptionSymKeyType encryption_sym_key_type;
 };
@@ -898,10 +942,8 @@ _lasso_node_free_custom_element(struct _CustomElement *custom_element)
 		lasso_release_string(custom_element->href);
 		lasso_release_string(custom_element->nodename);
 		lasso_release_ghashtable(custom_element->namespaces);
-		lasso_release_string(custom_element->private_key);
-		lasso_release_string(custom_element->private_key_password);
-		lasso_release_string(custom_element->certificate);
 		lasso_release_sec_key(custom_element->encryption_public_key);
+		lasso_release_sec_key(custom_element->signature_context.signature_key);
 	}
 	lasso_release(custom_element);
 }
@@ -965,19 +1007,14 @@ lasso_node_set_custom_namespace(LassoNode *node, const char *prefix, const char 
 /**
  * lasso_node_set_signature:
  * @node: a #LassoNode object
- * @signature_type: a #LassoSignatureType enum
- * @signature_method: a #LassoSignatureMethod enum
- * @private_key: a private key as file path or a PEM string
- * @private_key_password: the password for the private key
- * @certificate: an eventual certificate to bind with the signature
+ * @signature_context: a #LassoSignatureContext structure
  *
  * Setup a signature on @node.
  *
  * Return value: 0 if successful, an error code otherwise.
  */
 int
-lasso_node_set_signature(LassoNode *node, LassoSignatureType type, LassoSignatureMethod method,
-		const char *private_key, const char *private_key_password, const char *certificate)
+lasso_node_set_signature(LassoNode *node, LassoSignatureContext context)
 {
 	struct _CustomElement *custom_element;
 	int rc = 0;
@@ -985,11 +1022,13 @@ lasso_node_set_signature(LassoNode *node, LassoSignatureType type, LassoSignatur
 	lasso_bad_param(NODE, node);
 	custom_element = _lasso_node_get_custom_element_or_create(node);
 	g_return_val_if_fail (custom_element != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	custom_element->signature_type = type;
-	custom_element->signature_method = method;
-	lasso_assign_string(custom_element->private_key, private_key);
-	lasso_assign_string(custom_element->private_key_password, private_key_password);
-	lasso_assign_string(custom_element->certificate, certificate);
+
+	if (custom_element->signature_context.signature_key) {
+		lasso_release_sec_key(custom_element->signature_context.signature_key);
+	}
+	custom_element->signature_context.signature_method = context.signature_method;
+	lasso_assign_new_sec_key(custom_element->signature_context.signature_key,
+			context.signature_key);
 	return rc;
 }
 
@@ -1004,37 +1043,17 @@ lasso_node_set_signature(LassoNode *node, LassoSignatureType type, LassoSignatur
  *
  * Return signature parameters stored with this node.
  */
-void
-lasso_node_get_signature(LassoNode *node, LassoSignatureType *type, LassoSignatureMethod *method,
-		char **private_key, char **private_key_password, char **certificate)
+LassoSignatureContext
+lasso_node_get_signature(LassoNode *node)
 {
 	struct _CustomElement *custom_element;
 
-	g_return_if_fail (LASSO_IS_NODE(node));
+	g_return_val_if_fail (LASSO_IS_NODE(node), LASSO_SIGNATURE_CONTEXT_NONE);
 	custom_element = _lasso_node_get_custom_element(node);
 	if (! custom_element) {
-		if (type)
-			*type = 0;
-		if (method)
-			*method = 0;
-		if (private_key)
-			lasso_assign_string(*private_key, NULL);
-		if (private_key_password)
-			lasso_assign_string(*private_key_password, NULL);
-		if (certificate)
-			lasso_assign_string(*certificate, NULL);
-		return;
+		return LASSO_SIGNATURE_CONTEXT_NONE;
 	}
-	if (type)
-		*type = custom_element->signature_type;
-	if (method)
-		*method = custom_element->signature_method;
-	if (private_key)
-		*private_key = custom_element->private_key;
-	if (private_key_password)
-		*private_key_password = custom_element->private_key_password;
-	if (certificate)
-		*certificate = custom_element->certificate;
+	return custom_element->signature_context;
 }
 
 /**
@@ -1542,11 +1561,12 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	/* Collect signature parameters */
 	{
-			LassoSignatureMethod method;
-			LassoSignatureType type;
+			LassoSignatureMethod method = 0;
+			LassoSignatureType type = 0;
 			xmlChar *private_key = NULL;
 			xmlChar *private_key_password = NULL;
 			xmlChar *certificate = NULL;
+			LassoSignatureContext signature_context = LASSO_SIGNATURE_CONTEXT_NONE;
 
 		while (snippet_signature) {
 			int what;
@@ -1561,7 +1581,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					LASSO_SIGNATURE_TYPE_LAST))
 				break;
 			type = what;
-			private_key = xmlGetNsProp(xmlnode, LASSO_PRIVATE_KEY_PASSWORD_ATTRIBUTE,
+			private_key_password = xmlGetNsProp(xmlnode, LASSO_PRIVATE_KEY_PASSWORD_ATTRIBUTE,
 				BAD_CAST LASSO_LIB_HREF);
 			if (! private_key)
 				break;
@@ -1569,8 +1589,11 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				LASSO_LIB_HREF);
 			certificate = xmlGetNsProp(xmlnode, LASSO_CERTIFICATE_ATTRIBUTE, BAD_CAST
 				LASSO_LIB_HREF);
-			lasso_node_set_signature(node, type,
-				method, (char*) private_key, (char*) private_key_password, (char*) certificate);
+
+			signature_context.signature_method = method;
+			signature_context.signature_key = lasso_xmlsec_load_private_key((char*) private_key,
+					(char*) private_key_password, method, (char*) certificate);
+			lasso_node_set_signature(node, signature_context);
 		}
 		lasso_release_xml_string(private_key);
 		lasso_release_xml_string(private_key_password);
@@ -1652,8 +1675,7 @@ lasso_node_remove_signature(LassoNode *node) {
                }
                klass = g_type_class_peek_parent(klass);
        }
-       lasso_node_set_signature(node, LASSO_SIGNATURE_TYPE_NONE, LASSO_SIGNATURE_METHOD_RSA_SHA1,
-			NULL, NULL, NULL);
+       lasso_node_set_signature(node, LASSO_SIGNATURE_CONTEXT_NONE);
 }
 
 /*****************************************************************************/
@@ -1796,37 +1818,6 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 			}
 		}
 	}
-
-	/* store signature parameters */
-	if (lasso_dump)
-	{
-		LassoSignatureType type;
-		LassoSignatureMethod method;
-		const char *private_key = NULL;
-		const char *private_key_password = NULL;
-		const char *certificate = NULL;
-		xmlNsPtr ns = NULL;
-		char buffer[64] = { 0 };
-
-		lasso_node_get_signature(node, &type, &method, (char **)&private_key,
-				(char **)&private_key_password,
-				(char **)&certificate);
-		if (private_key) {
-			ns = get_or_define_ns(xmlnode, BAD_CAST LASSO_LASSO_HREF);
-			sprintf(buffer, "%u", type);
-			xmlSetNsProp(xmlnode, ns, LASSO_SIGNATURE_TYPE_ATTRIBUTE, BAD_CAST buffer);
-			sprintf(buffer, "%u", method);
-			xmlSetNsProp(xmlnode, ns, LASSO_SIGNATURE_METHOD_ATTRIBUTE, BAD_CAST buffer);
-			xmlSetNsProp(xmlnode, ns, LASSO_PRIVATE_KEY_ATTRIBUTE, BAD_CAST private_key);
-			if (private_key_password) {
-				xmlSetNsProp(xmlnode, ns, LASSO_PRIVATE_KEY_PASSWORD_ATTRIBUTE, BAD_CAST private_key_password);
-			}
-			if (certificate) {
-				xmlSetNsProp(xmlnode, ns, LASSO_CERTIFICATE_ATTRIBUTE, BAD_CAST certificate);
-			}
-		}
-	}
-
 
 	return xmlnode;
 }
@@ -2732,50 +2723,50 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, x
 	}
 }
 
-static
-void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
+static void
+lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippet_signature)
 {
-	LassoNodeClass *klass = LASSO_NODE_GET_CLASS(node);
-	GType g_type = G_TYPE_FROM_CLASS(klass);
-	LassoSignatureType sign_type;
-	LassoSignatureMethod sign_method;
-	xmlNode *signature = NULL, *reference, *key_info, *t;
+	LassoNodeClass *klass = NULL;
+	LassoNodeClassData *node_data = NULL;
+	LassoSignatureContext context;
+	xmlSecTransformId transform_id;
+	xmlNode *signature = NULL, *reference, *key_info;
 	char *uri;
 	char *id;
 
-	while (klass && LASSO_IS_NODE_CLASS(klass) && klass->node_data) {
-		if (klass->node_data->sign_type_offset)
+
+	node_data = lasso_legacy_get_signature_node_data(node, &klass);
+	if (! node_data)
+		return;
+
+	if (node_data->sign_type_offset == 0)
+		return;
+
+	context = lasso_node_get_signature(node);
+	if (! lasso_validate_signature_context(context))
+		if (lasso_legacy_extract_and_copy_signature_parameters(node, node_data))
+			context = lasso_node_get_signature(node);
+
+	if (! lasso_validate_signature_context(context))
+		return;
+
+	switch (context.signature_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+			transform_id = xmlSecTransformRsaSha1Id;
 			break;
-		klass = g_type_class_peek_parent(klass);
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			transform_id = xmlSecTransformDsaSha1Id;
+			break;
+		default:
+			g_assert_not_reached();
 	}
-
-	if (klass->node_data->sign_type_offset == 0)
-		return;
-
-	sign_type = G_STRUCT_MEMBER(
-			LassoSignatureType, node,
-			klass->node_data->sign_type_offset);
-	sign_method = G_STRUCT_MEMBER(
-			LassoSignatureMethod, node,
-			klass->node_data->sign_method_offset);
-
-	if (sign_type == LASSO_SIGNATURE_TYPE_NONE)
-		return;
-
-	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
-		signature = xmlSecTmplSignatureCreate(NULL,
-				xmlSecTransformExclC14NId,
-				xmlSecTransformRsaSha1Id, NULL);
-	} else {
-		signature = xmlSecTmplSignatureCreate(NULL,
-				xmlSecTransformExclC14NId,
-				xmlSecTransformDsaSha1Id, NULL);
-	}
-	/* XXX: get out if signature == NULL ? */
+	signature = xmlSecTmplSignatureCreate(NULL,
+			xmlSecTransformExclC14NId,
+			transform_id, NULL);
 	xmlAddChild(xmlnode, signature);
 
-	id = SNIPPET_STRUCT_MEMBER(char *, node, g_type, snippet_signature);
+	id = SNIPPET_STRUCT_MEMBER(char *, node, G_TYPE_FROM_CLASS(klass), snippet_signature);
 	uri = g_strdup_printf("#%s", id);
 	reference = xmlSecTmplSignatureAddReference(signature,
 			xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
@@ -2785,11 +2776,21 @@ void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
 	/* add exclusive C14N transform */
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
-
-	if (sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
-		/* add <dsig:KeyInfo/> */
-		key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
-		t = xmlSecTmplKeyInfoAddX509Data(key_info);
+	/* if the key is the public part of a symetric key, add its certificate or the key itself */
+	switch (context.signature_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			/* symetric cryptography methods */
+			key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
+			if (xmlSecKeyGetData(context.signature_key, xmlSecOpenSSLKeyDataX509Id)) {
+				/* add <dsig:KeyInfo/> */
+				xmlSecTmplKeyInfoAddX509Data(key_info);
+			} else {
+				xmlSecTmplKeyInfoAddKeyValue(key_info);
+			}
+			break;
+		default:
+			g_assert_not_reached();
 	}
 }
 

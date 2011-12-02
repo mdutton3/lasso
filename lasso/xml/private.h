@@ -34,6 +34,7 @@ extern "C" {
 #include <xmlsec/crypto.h>
 #include <xmlsec/xmlenc.h>
 #include "saml-2.0/saml2_encrypted_element.h"
+#include "../utils.h"
 
 typedef enum {
 	SNIPPET_NODE,
@@ -186,8 +187,7 @@ xmlSecKeyPtr lasso_get_public_key_from_pem_file(const char *file);
 xmlSecKeyPtr lasso_get_public_key_from_pem_cert_file(const char *file);
 xmlSecKeysMngr* lasso_load_certs_from_pem_certs_chain_file (const char *file);
 
-char* lasso_query_sign(char *query, LassoSignatureMethod sign_method,
-	const char *private_key_file, const char *private_key_file_password);
+char* lasso_query_sign(char *query, LassoSignatureContext signature_context);
 
 int lasso_query_verify_signature(const char *query, const xmlSecKey *public_key);
 
@@ -197,9 +197,7 @@ char* lasso_sha1(const char *str);
 
 char** urlencoded_to_strings(const char *str);
 
-int lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value,
-		const char *private_key_file, const char *private_key_password,
-		const char *certificate_file);
+int lasso_sign_node(xmlNode *xmlnode, LassoSignatureContext context, const char *id_attr_name, const char *id_value);
 
 int lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_name,
 		xmlSecKeysMngr *keys_manager, xmlSecKey *public_key,
@@ -243,8 +241,9 @@ gboolean lasso_eval_xpath_expression(xmlXPathContextPtr xpath_ctx, const char *e
 
 char * lasso_get_relaystate_from_query(const char *query);
 char * lasso_url_add_parameters(char *url, gboolean free, ...);
-xmlSecKey* lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password);
-xmlSecKey* lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *password);
+xmlSecKey* lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password, LassoSignatureMethod signature_method, const char *certificate);
+xmlSecKey* lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *password,
+		LassoSignatureMethod signature_method, const char *certificate);
 xmlDocPtr lasso_xml_parse_file(const char *filepath);
 xmlDocPtr lasso_xml_parse_memory_with_error(const char *buffer, int size, xmlError *error);
 xmlSecKeyPtr lasso_xmlsec_load_key_info(xmlNode *key_descriptor);
@@ -254,16 +253,9 @@ void lasso_set_string_from_prop(char **str, xmlNode *node, xmlChar *name, xmlCha
 
 void lasso_node_add_custom_namespace(LassoNode *node, const char *prefix, const char *href);
 
-void lasso_apply_signature(LassoNode *node, gboolean lasso_dump,
-		xmlNode **xmlnode, char *id_attribute, char *id_value, LassoSignatureType sign_type,
-		char *private_key_file, char *certificate_file);
+int lasso_node_set_signature(LassoNode *node, LassoSignatureContext context);
 
-int lasso_node_set_signature(LassoNode *node, LassoSignatureType type, LassoSignatureMethod method,
-		const char *private_key, const char *private_key_password, const char *certificate);
-
-void lasso_node_get_signature(LassoNode *node, LassoSignatureType *type, LassoSignatureMethod *method,
-		char **private_key, char **private_key_password,
-		char **certificate);
+LassoSignatureContext lasso_node_get_signature(LassoNode *node);
 
 void lasso_node_set_encryption(LassoNode *node, xmlSecKey *encryption_public_key,
 		LassoEncryptionSymKeyType encryption_sym_key_type);
@@ -271,6 +263,14 @@ void lasso_node_set_encryption(LassoNode *node, xmlSecKey *encryption_public_key
 void lasso_node_get_encryption(LassoNode *node, xmlSecKey **encryption_public_key,
 		LassoEncryptionSymKeyType *encryption_sym_key_type);
 gboolean lasso_base64_decode(const char *from, char **buffer, int *buffer_len);
+
+LassoSignatureContext lasso_make_signature_context_from_buffer(const char *buffer, size_t length,
+		const char *password, LassoSignatureMethod signature_method,
+		const char *certificate);
+
+LassoSignatureContext lasso_make_signature_context_from_path_or_string(char *filename_or_buffer,
+		const char *password, LassoSignatureMethod signature_method,
+		const char *certificate);
 
 #ifdef __cplusplus
 }

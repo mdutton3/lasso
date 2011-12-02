@@ -40,6 +40,8 @@
 #include <openssl/pem.h>
 #include <openssl/sha.h>
 #include <openssl/engine.h>
+#include <openssl/hmac.h>
+#include <openssl/evp.h>
 
 #include <xmlsec/base64.h>
 #include <xmlsec/crypto.h>
@@ -454,16 +456,6 @@ cleanup:
 	return keys_mngr;
 }
 
-static int
-_lasso_openssl_pwd_callback(char *buf, int size, G_GNUC_UNUSED int rwflag, void *u)
-{
-	if (u) {
-		strncpy(buf, u, size);
-		return strlen(u);
-	}
-	return 0;
-}
-
 /*
  * lasso_query_sign:
  * @query: a query (an url-encoded node)
@@ -476,52 +468,47 @@ _lasso_openssl_pwd_callback(char *buf, int size, G_GNUC_UNUSED int rwflag, void 
  * Return value: a newly allocated query signed or NULL if an error occurs.
  **/
 char*
-lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *private_key_file,
-		const char *private_key_file_password)
+lasso_query_sign(char *query, LassoSignatureContext context)
 {
-	BIO *bio = NULL;
 	char *digest = NULL; /* 160 bit buffer */
 	RSA *rsa = NULL;
 	DSA *dsa = NULL;
 	unsigned char *sigret = NULL;
 	unsigned int siglen;
-	char *b64_sigret = NULL, *e_b64_sigret = NULL;
+	xmlChar *b64_sigret = NULL, *e_b64_sigret = NULL;
 	char *new_query = NULL, *s_new_query = NULL;
 	int status = 0;
-	char *t;
+	const xmlChar *algo_href = NULL;
+	xmlSecKey *key;
+	xmlSecKeyData *key_data;
+	int sigret_size;
+	LassoSignatureMethod sign_method;
 
 	g_return_val_if_fail(query != NULL, NULL);
-	g_return_val_if_fail(sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1 ||
-			sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1, NULL);
-	g_return_val_if_fail(private_key_file != NULL, NULL);
+	g_return_val_if_fail(lasso_validate_signature_method(context.signature_method), NULL);
 
-	if (access(private_key_file, R_OK) == 0) {
-		bio = BIO_new_file(private_key_file, "rb");
-	} else {
-		// Safe deconst cast, the BIO is read-only
-		bio = BIO_new_mem_buf((char*)private_key_file, -1);
-	}
-	if (bio == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to open %s private key file",
-				private_key_file);
-		return NULL;
-	}
+	key = context.signature_key;
+	sign_method = context.signature_method;
+	key_data = xmlSecKeyGetValue(key);
+
 
 	/* add SigAlg */
 	switch (sign_method) {
 		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
-			t = (char*)xmlURIEscapeStr(xmlSecHrefRsaSha1, NULL);
-			new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
-			xmlFree(t);
+			algo_href = xmlSecHrefRsaSha1;
 			break;
 		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
-			t = (char*)xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
-			new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
-			xmlFree(t);
+			algo_href = xmlSecHrefDsaSha1;
 			break;
 		case LASSO_SIGNATURE_METHOD_NONE:
 		case LASSO_SIGNATURE_METHOD_LAST:
 			g_assert_not_reached();
+	}
+
+	{
+		const char *t = (char*)xmlURIEscapeStr(algo_href, NULL);
+		new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
+		xmlFree(BAD_CAST t);
 	}
 
 	/* build buffer digest */
@@ -530,29 +517,38 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 		message(G_LOG_LEVEL_CRITICAL, "Failed to build the buffer digest");
 		goto done;
 	}
+	/* extract the OpenSSL key */
+	switch (sign_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+			rsa = xmlSecOpenSSLKeyDataRsaGetRsa(key_data);
+			g_assert(rsa);
+			/* alloc memory for sigret */
+			sigret_size = RSA_size(rsa);
+			break;
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			dsa = xmlSecOpenSSLKeyDataDsaGetDsa(key_data);
+			g_assert(dsa);
+			/* alloc memory for sigret */
+			sigret_size = DSA_size(dsa);
+			break;
+		default:
+			g_assert_not_reached();
+	}
+	sigret = (unsigned char *)g_malloc (sigret_size);
 
-	/* calculate signature value */
-	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
-		/* load private key */
-		rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, _lasso_openssl_pwd_callback,
-				(void*)private_key_file_password);
-		if (rsa == NULL) {
-			goto done;
-		}
-		/* alloc memory for sigret */
-		sigret = (unsigned char *)g_malloc (RSA_size(rsa));
-		/* sign digest message */
-		status = RSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret, &siglen, rsa);
-		RSA_free(rsa);
-	} else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
-		dsa = PEM_read_bio_DSAPrivateKey(bio, NULL, _lasso_openssl_pwd_callback,
-				(void*)private_key_file_password);
-		if (dsa == NULL) {
-			goto done;
-		}
-		sigret = (unsigned char *)g_malloc (DSA_size(dsa));
-		status = DSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret, &siglen, dsa);
-		DSA_free(dsa);
+	switch (sign_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+			/* sign digest message */
+			status = RSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret,
+					&siglen, rsa);
+			break;
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			status = DSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret,
+					&siglen, dsa);
+			break;
+		case LASSO_SIGNATURE_METHOD_LAST:
+		case LASSO_SIGNATURE_METHOD_NONE:
+			g_assert_not_reached();
 	}
 
 	if (status == 0) {
@@ -560,17 +556,16 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 	}
 
 	/* Base64 encode the signature value */
-	b64_sigret = (char*)xmlSecBase64Encode(sigret, siglen, 0);
+	b64_sigret = xmlSecBase64Encode(sigret, siglen, 0);
 	/* escape b64_sigret */
-	e_b64_sigret = (char*)xmlURIEscapeStr((xmlChar*)b64_sigret, NULL);
+	e_b64_sigret = xmlURIEscapeStr((xmlChar*)b64_sigret, NULL);
 
 	/* add signature */
 	switch (sign_method) {
 		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
-			s_new_query = g_strdup_printf("%s&Signature=%s", new_query, e_b64_sigret);
-			break;
 		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
-			s_new_query = g_strdup_printf("%s&Signature=%s", new_query, e_b64_sigret);
+			s_new_query = g_strdup_printf("%s&Signature=%s", new_query, (char*)
+					e_b64_sigret);
 			break;
 		case LASSO_SIGNATURE_METHOD_NONE:
 		case LASSO_SIGNATURE_METHOD_LAST:
@@ -579,11 +574,10 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 
 done:
 	lasso_release(new_query);
-	xmlFree(digest);
-	BIO_free(bio);
+	lasso_release_string(digest);
 	lasso_release(sigret);
-	xmlFree(b64_sigret);
-	xmlFree(e_b64_sigret);
+	lasso_release_xml_string(b64_sigret);
+	lasso_release_xml_string(e_b64_sigret);
 
 	return s_new_query;
 }
@@ -722,7 +716,7 @@ lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_k
 done:
 	xmlFree(b64_signature);
 	xmlFree(signature);
-	xmlFree(digest);
+	lasso_release_string(digest);
 	xmlFree(usig_alg);
 	g_strfreev(str_split);
 
@@ -884,7 +878,7 @@ lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_pu
 done:
 	xmlFree(b64_signature);
 	xmlFree(signature);
-	xmlFree(digest);
+	lasso_release_string(digest);
 	xmlFree(usig_alg);
 	lasso_release(components);
 	lasso_release(query_copy);
@@ -970,22 +964,21 @@ void _lasso_xmlsec_password_callback() {
  * Return value: 0 if successful, an error code otherwise.
  */
 int
-lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value,
-		const char *private_key_file, const char *private_key_password,
-		const char *certificate_file)
+lasso_sign_node(xmlNode *xmlnode, LassoSignatureContext context, const char *id_attr_name,
+		const char *id_value)
 {
-	xmlDoc *doc;
-	xmlNode *sign_tmpl, *old_parent;
-	xmlSecDSigCtx *dsig_ctx;
+	xmlDoc *doc = NULL;
+	xmlNode *sign_tmpl = NULL, *old_parent = NULL;
+	xmlSecDSigCtx *dsig_ctx = NULL;
 	xmlAttr *id_attr = NULL;
-	void *password_callback = NULL;
+	lasso_error_t rc = 0;
 
-	if (private_key_file == NULL || xmlnode == NULL)
-		return LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ;
+	g_return_val_if_fail(context.signature_method, LASSO_DS_ERROR_INVALID_SIGALG);
+	g_return_val_if_fail(context.signature_key, LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED);
 
 	sign_tmpl = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
-	if (sign_tmpl == NULL)
-		return LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND;
+	goto_cleanup_if_fail_with_rc(sign_tmpl != NULL,
+			LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND);
 
 	doc = xmlNewDoc((xmlChar*)"1.0");
 	old_parent = xmlnode->parent;
@@ -998,52 +991,21 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	}
 
 	dsig_ctx = xmlSecDSigCtxCreate(NULL);
-	if (! private_key_password) {
-		password_callback = _lasso_openssl_pwd_callback;
-	}
-	if (access(private_key_file, R_OK) == 0) {
-		dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
-				xmlSecKeyDataFormatPem, private_key_password,
-				password_callback, NULL /* password_callback_ctx */);
-	} else {
-		int len = private_key_file ? strlen(private_key_file) : 0;
-		dsig_ctx->signKey = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)private_key_file, len,
-				xmlSecKeyDataFormatPem, private_key_password,
-				password_callback, NULL /* password_callback_ctx */);
-	}
-	if (dsig_ctx->signKey == NULL) {
-		xmlSecDSigCtxDestroy(dsig_ctx);
-		return critical_error(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED);
-	}
-	if (certificate_file != NULL && certificate_file[0] != 0) {
-		int rc = -1;
-
-		if (access(certificate_file, R_OK) == 0) {
-			rc = xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
-						xmlSecKeyDataFormatPem);
-		} else {
-			int len = certificate_file ? strlen(certificate_file) : 0;
-
-			rc = xmlSecCryptoAppKeyCertLoadMemory(dsig_ctx->signKey, (xmlSecByte*)certificate_file,
-						len, xmlSecKeyDataFormatPem);
-		}
-		if (rc < 0) {
-			xmlSecDSigCtxDestroy(dsig_ctx);
-			return critical_error(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED);
-		}
-	}
+	lasso_assign_sec_key(dsig_ctx->signKey, context.signature_key);
 	if (xmlSecDSigCtxSign(dsig_ctx, sign_tmpl) < 0) {
-		xmlSecDSigCtxDestroy(dsig_ctx);
-		return critical_error(LASSO_DS_ERROR_SIGNATURE_FAILED);
+		goto_cleanup_with_rc(LASSO_DS_ERROR_SIGNATURE_FAILED);
 	}
-	xmlSecDSigCtxDestroy(dsig_ctx);
-	xmlRemoveID(doc, id_attr);
-	xmlUnlinkNode(xmlnode);
-	lasso_release_doc(doc);
-	xmlnode->parent = old_parent;
-	xmlSetTreeDoc(xmlnode, NULL);
 
-	return 0;
+cleanup:
+	if (doc) {
+		xmlRemoveID(doc, id_attr);
+		xmlUnlinkNode(xmlnode);
+		lasso_release_doc(doc);
+		xmlnode->parent = old_parent;
+		xmlSetTreeDoc(xmlnode, NULL);
+	}
+	lasso_release_signature_context(dsig_ctx);
+	return rc;
 }
 
 gchar*
@@ -1975,7 +1937,8 @@ cleanup:
 }
 
 xmlSecKey*
-_lasso_xmlsec_load_key_from_buffer(const char *buffer, size_t length, const char *password)
+_lasso_xmlsec_load_key_from_buffer(const char *buffer, size_t length, const char *password,
+		LassoSignatureMethod signature_method, const char *certificate)
 {
 	int i = 0;
 	xmlSecKeyDataFormat key_formats[] = {
@@ -1988,15 +1951,53 @@ _lasso_xmlsec_load_key_from_buffer(const char *buffer, size_t length, const char
 		xmlSecKeyDataFormatPkcs8Pem,
 		0
 	};
+	xmlSecKeyDataFormat cert_formats[] = {
+		xmlSecKeyDataFormatCertPem,
+		xmlSecKeyDataFormatCertDer,
+		0
+	};
 	xmlSecKey *private_key = NULL;
 
 	xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
-	for (i = 0; key_formats[i] && private_key == NULL; i++) {
-		private_key = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)buffer, length,
-				key_formats[i], password, NULL, NULL);
+	switch (signature_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			for (i = 0; key_formats[i] && private_key == NULL; i++) {
+				private_key = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)buffer, length,
+						key_formats[i], password, NULL, NULL);
+			}
+			break;
+		case LASSO_SIGNATURE_METHOD_LAST:
+		case LASSO_SIGNATURE_METHOD_NONE:
+			g_assert_not_reached();
+	}
+	goto_cleanup_if_fail(private_key != NULL);
+	if (certificate) {
+		if (signature_method == LASSO_SIGNATURE_METHOD_RSA_SHA1 || signature_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
+			int done = 0;
+
+			for (i=0; cert_formats[i]; i++) {
+				if (xmlSecCryptoAppKeyCertLoad(private_key, certificate, cert_formats[i])
+						== 0) {
+					done = 1;
+					break;
+				}
+				if (xmlSecCryptoAppKeyCertLoadMemory(private_key, BAD_CAST certificate,
+							strlen(certificate), cert_formats[i]) == 0) {
+					done = 1;
+					break;
+				}
+			}
+			if (done == 0) {
+				warning("Unable to load certificate: %s", certificate);
+			}
+		} else {
+			warning("Attaching a certificate for signature only "
+					"works with DSA and RSA algorithms.");
+		}
 	}
 	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
-
+cleanup:
 	return private_key;
 }
 /**
@@ -2040,28 +2041,29 @@ lasso_base64_decode(const char *from, char **buffer, int *buffer_len)
  * @password: eventually a password
  */
 xmlSecKey*
-lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password) {
+lasso_xmlsec_load_private_key_from_buffer(const char *buffer, size_t length, const char *password,
+		LassoSignatureMethod signature_method, const char *certificate) {
 	xmlSecKey *private_key = NULL;
 
-	private_key = _lasso_xmlsec_load_key_from_buffer(buffer, length, password);
+	private_key = _lasso_xmlsec_load_key_from_buffer(buffer, length, password, signature_method, certificate);
 
 	/* special lasso metadata hack */
 	if (! private_key) {
-		xmlChar *out;
+		char *out = NULL;
 		int len;
-		out = xmlMalloc(length*4);
-		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
-		len = xmlSecBase64Decode(BAD_CAST buffer, out, length*4);
-		xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
-		private_key = _lasso_xmlsec_load_key_from_buffer((char*)out, len, password);
-		xmlFree(out);
+
+		if (lasso_base64_decode(buffer, &out, &len)) {
+			private_key = _lasso_xmlsec_load_key_from_buffer((char*)out, len, password,
+					signature_method, certificate);
+		}
+		lasso_release_string(out);
 	}
 
 	return private_key;
 }
 
 xmlSecKey*
-lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *password) {
+lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *password, LassoSignatureMethod signature_method, const char *certificate) {
 	char *buffer = NULL;
 	size_t length;
 	xmlSecKey *ret;
@@ -2070,9 +2072,11 @@ lasso_xmlsec_load_private_key(const char *filename_or_buffer, const char *passwo
 		return NULL;
 
 	if (g_file_get_contents(filename_or_buffer, &buffer, &length, NULL)) {
-		ret = lasso_xmlsec_load_private_key_from_buffer(buffer, length, password);
+		ret = lasso_xmlsec_load_private_key_from_buffer(buffer, length, password, signature_method, certificate);
 	} else {
-		ret = lasso_xmlsec_load_private_key_from_buffer(filename_or_buffer, strlen(filename_or_buffer), password);
+		ret = lasso_xmlsec_load_private_key_from_buffer(filename_or_buffer,
+				strlen(filename_or_buffer), password, signature_method,
+				certificate);
 	}
 	lasso_release_string(buffer);
 	return ret;
@@ -2189,7 +2193,8 @@ next:
 
 	content = xmlNodeGetContent(key_value);
 	if (content) {
-		result = lasso_xmlsec_load_private_key_from_buffer((char*)content, strlen((char*)content), NULL);
+		result = lasso_xmlsec_load_private_key_from_buffer((char*)content,
+				strlen((char*)content), NULL, LASSO_SIGNATURE_METHOD_RSA_SHA1, NULL);
 		xmlFree(content);
 	}
 
@@ -2314,46 +2319,61 @@ lasso_log_remove_handler(guint handler_id)
 	g_log_remove_handler(LASSO_LOG_DOMAIN, handler_id);
 }
 
-void
-lasso_apply_signature(LassoNode *node, gboolean lasso_dump,
-		xmlNode **xmlnode, char *id_attribute, char *id_value, LassoSignatureType old_sign_type, char *old_private_key_file, char *old_certificate_file)
-{
-	int rc = 0;
-	LassoSignatureType sign_type = LASSO_SIGNATURE_TYPE_NONE;
-	LassoSignatureMethod sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-	char *private_key_file = NULL;
-	char *private_key_password = NULL;
-	char *certificate_file = NULL;
+/**
+ * lasso_make_signature_context_from_buffer:
+ * @buffer: a byte buffer of size @length
+ * @length: the size of @buffer as bytes
+ * @password: an eventual password to decoded the private key contained in @buffer
+ * @signature_method: the signature method to associate to this key
+ * @certificate: a certificate as a file path or PEM encoded in a NULL-terminated string, to
+ * associate with the key, it will be used to fill the KeyInfo node in an eventual signature.
+ *
+ * Load a signature key and return an initialized #LassoSignatureContext structure. If the structure
+ * contains a new #xmlSecKey it must be freed by the caller. If your must store it. use
+ * lasso_assign_new_signature_context and not lasso_assign_signature_context which is gonna
+ * duplicate the key and so make a leak.
+ *
+ * Return value: an initialized LassoSignatureContext containing a freshly created @xmlSecKey object
+ * successful, LASSO_SIGNATURE_CONTEXT_NONE otherwise. The caller must free the #xmlSecKey.
+ */
+LassoSignatureContext
+lasso_make_signature_context_from_buffer(const char *buffer, size_t length, const char *password,
+		LassoSignatureMethod signature_method, const char *certificate) {
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
 
-	lasso_node_get_signature(node, &sign_type, &sign_method, &private_key_file, &private_key_password,
-			&certificate_file);
-
-	if (!sign_type) {
-		sign_type = old_sign_type;
-		private_key_password = NULL;
-		private_key_file = old_private_key_file;
-		certificate_file = old_certificate_file;
+	context.signature_key = lasso_xmlsec_load_private_key_from_buffer(buffer, length, password,
+			signature_method, certificate);
+	if (context.signature_key) {
+		context.signature_method = signature_method;
 	}
+	return context;
+}
 
-	if (lasso_dump == FALSE && sign_type) {
-		char *node_name;
-		char *prefix;
+/**
+ * lasso_make_signature_context_from_path_or_string:
+ * @filename_or_buffer: a file path of a string containing the key PEM or Base64 encoded
+ * @password: an eventual password to decoded the private key contained in @buffer
+ * @signature_method: the signature method to associate to this key
+ * @certificate: a certificate as a file path or PEM encoded in a NULL-terminated string, to
+ * associate with the key, it will be used to fill the KeyInfo node in an eventual signature.
+ *
+ * Load a signature key and return an initialized #LassoSignatureContext structure. If the structure
+ * contains a new #xmlSecKey it must be freed by the caller. If your must store it. use
+ * lasso_assign_new_signature_context and not lasso_assign_signature_context which is gonna
+ * duplicate the key and so make a leak.
+ *
+ * Return value: an initialized LassoSignatureContext containing a freshly created @xmlSecKey object
+ * successful, LASSO_SIGNATURE_CONTEXT_NONE otherwise.
+ */
+LassoSignatureContext
+lasso_make_signature_context_from_path_or_string(char *filename_or_buffer, const char *password,
+		LassoSignatureMethod signature_method, const char *certificate) {
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
 
-		node_name = LASSO_NODE_GET_CLASS(node)->node_data->node_name;
-		prefix = (char*)LASSO_NODE_GET_CLASS(node)->node_data->ns->prefix;
-
-		if (private_key_file == NULL) {
-			message(G_LOG_LEVEL_WARNING,
-					"No Private Key set for signing %s:%s", prefix, node_name);
-		} else {
-			rc = lasso_sign_node(*xmlnode, id_attribute, id_value, private_key_file,
-					private_key_password, certificate_file);
-			if (rc != 0) {
-				message(G_LOG_LEVEL_WARNING, "Signing of %s:%s: %s", prefix, node_name, lasso_strerror(rc));
-			}
-		}
-		if (rc != 0) {
-			lasso_release_xml_node(*xmlnode);
-		}
+	context.signature_key = lasso_xmlsec_load_private_key(filename_or_buffer, password,
+			signature_method, certificate);
+	if (context.signature_key) {
+		context.signature_method = signature_method;
 	}
+	return context;
 }

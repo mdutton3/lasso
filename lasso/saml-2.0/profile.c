@@ -52,7 +52,7 @@
 
 static char* lasso_saml20_profile_build_artifact(LassoProvider *provider);
 static int lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, char **query,
-		LassoSignatureMethod method, const char *private_key, const char *private_key_password);
+		LassoSignatureContext context);
 static gint lasso_profile_saml20_build_artifact_get_request_msg(LassoProfile *profile,
 		const char *service);
 static gint lasso_profile_saml20_build_artifact_post_request_msg(LassoProfile *profile,
@@ -61,8 +61,6 @@ static gint lasso_profile_saml20_build_artifact_get_response_msg(LassoProfile *p
 		const char *service);
 static gint lasso_profile_saml20_build_artifact_post_response_msg(LassoProfile *profile,
 		const char *service);
-static gboolean has_signature(LassoNode *node, LassoSignatureMethod *signature_method,
-		char **private_key_file, char **private_key_password);
 static char* lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part);
 
 #define check_msg_body \
@@ -1097,8 +1095,7 @@ cleanup:
  */
 static int
 lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, char **query,
-		LassoSignatureMethod signature_method, const char *private_key_file,
-		const char *private_key_password) {
+		LassoSignatureContext context) {
 	char *unsigned_query = NULL;
 	char *result = NULL;
 	int rc = 0;
@@ -1115,9 +1112,8 @@ lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, char
 					"see #3.4.3 of saml-bindings-2.0-os");
 		}
 	}
-	if (signature_method && private_key_file && lasso_flag_add_signature) {
-		result = lasso_query_sign(unsigned_query, signature_method, private_key_file,
-				private_key_password);
+	if (lasso_validate_signature_method(context.signature_method)) {
+		result = lasso_query_sign(unsigned_query, context);
 		goto_cleanup_if_fail_with_rc(result != NULL,
 				LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		lasso_transfer_string(*query, result);
@@ -1128,48 +1124,6 @@ cleanup:
 	lasso_release_string(unsigned_query);
 	lasso_release_string(result);
 	return rc;
-}
-
-static gboolean
-has_signature(LassoNode *node, LassoSignatureMethod *method, char **private_key_file,
-		char **private_key_password) {
-	LassoNodeClass *klass;
-	LassoSignatureType sign_type;
-	LassoSignatureMethod sign_method;
-	char *key = NULL;
-	char *password = NULL;
-
-	if (node == NULL)
-		return FALSE;
-
-	/* new signature parameters storage */
-	lasso_node_get_signature(node, &sign_type, &sign_method, &key, &password, NULL);
-	if (sign_type) {
-		*method = sign_method;
-		lasso_assign_string(*private_key_file, key);
-		lasso_assign_string(*private_key_password, password);
-		return TRUE;
-	}
-
-	klass = LASSO_NODE_GET_CLASS(node);
-	/* follow the class parenting chain */
-	while (klass && LASSO_IS_NODE_CLASS(klass)) {
-		if (klass && klass->node_data && klass->node_data->sign_type_offset != 0) {
-			if (G_STRUCT_MEMBER(LassoSignatureType, node,
-						klass->node_data->sign_type_offset)
-					!= LASSO_SIGNATURE_TYPE_NONE) {
-				*method = G_STRUCT_MEMBER(LassoSignatureMethod, node,
-						klass->node_data->sign_method_offset);
-				lasso_assign_string(*private_key_file, G_STRUCT_MEMBER(char*, node,
-						klass->node_data->private_key_file_offset));
-				/** FIXME: retrieve the stored key password */
-				*private_key_password = NULL;
-				return TRUE;
-			}
-		}
-		klass = g_type_class_peek_parent(klass);
-	}
-	return FALSE;
 }
 
 /**
@@ -1191,26 +1145,23 @@ lasso_saml20_profile_build_http_redirect(LassoProfile *profile,
 {
 	char *query = NULL;
 	int rc = 0;
-	LassoSignatureMethod signature_method = 0;
-	char *private_key_file = NULL;
-	char *private_key_password = NULL;
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
 
 	goto_cleanup_if_fail_with_rc (url != NULL, LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	/* if message is signed, remove XML signature, add query signature */
-	if (has_signature(msg, &signature_method, (char **)&private_key_file,
-				(char **)&private_key_password)) {
+	context = lasso_node_get_signature(msg);
+	/* We must duplicate the key since lasso_node_remove_signature will free it. */
+	context.signature_key = xmlSecKeyDuplicate(context.signature_key);
+	if (lasso_validate_signature_method(context.signature_method)) {
 		lasso_node_remove_signature(msg);
 	}
-	lasso_check_good_rc(lasso_saml20_profile_export_to_query(profile, msg, &query,
-				signature_method, private_key_file, private_key_password));
+	lasso_check_good_rc(lasso_saml20_profile_export_to_query(profile, msg, &query, context));
 
 	lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
 	lasso_release(profile->msg_body);
 	lasso_release(query);
 
 cleanup:
-	lasso_release_string(private_key_file);
-	lasso_release_string(private_key_password);
 	return rc;
 }
 
@@ -1549,6 +1500,8 @@ gint
 lasso_profile_saml20_setup_message_signature(LassoProfile *profile, LassoNode *request_or_response)
 {
 	lasso_bad_param(PROFILE, profile);
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
+	lasso_error_t rc = 0;
 
 	switch (lasso_profile_get_signature_hint(profile)) {
 		case LASSO_PROFILE_SIGNATURE_HINT_MAYBE:
@@ -1567,49 +1520,11 @@ lasso_profile_saml20_setup_message_signature(LassoProfile *profile, LassoNode *r
 	if (! LASSO_IS_SERVER(profile->server)) {
 		return LASSO_PROFILE_ERROR_MISSING_SERVER;
 	}
-	if (! profile->server->private_key) {
-		return LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
-	}
-	if (LASSO_IS_SAMLP2_REQUEST_ABSTRACT(request_or_response)) {
-		LassoSamlp2RequestAbstract *request;
-
-		request = (LassoSamlp2RequestAbstract*)request_or_response;
-		if (profile->server->certificate) {
-			request->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
-		} else {
-			request->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
-		}
-		request->sign_method = profile->server->signature_method;
-		lasso_assign_string(request->private_key_file,
-				profile->server->private_key);
-		lasso_assign_string(request->certificate_file,
-				profile->server->certificate);
-		lasso_node_set_signature(request_or_response, request->sign_type,
-				request->sign_method, profile->server->private_key,
-				profile->server->private_key_password,
-				profile->server->certificate);
-	} else if (LASSO_IS_SAMLP2_STATUS_RESPONSE(request_or_response)) {
-		LassoSamlp2StatusResponse *response;
-
-		response = (LassoSamlp2StatusResponse*)request_or_response;
-		if (profile->server->certificate) {
-			response->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
-		} else {
-			response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
-		}
-		response->sign_method = profile->server->signature_method;
-		lasso_assign_string(response->private_key_file,
-				profile->server->private_key);
-		lasso_assign_string(response->certificate_file,
-				profile->server->certificate);
-		lasso_node_set_signature(request_or_response, response->sign_type,
-				response->sign_method, profile->server->private_key,
-				profile->server->private_key_password,
-				profile->server->certificate);
-	} else {
-		return LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ;
-	}
-	return 0;
+	lasso_check_good_rc(lasso_server_get_signature_context_for_provider_by_name(profile->server,
+				profile->remote_providerID, &context));
+	lasso_check_good_rc(lasso_node_set_signature(request_or_response, context));
+cleanup:
+	return rc;
 }
 
 /**

@@ -25,9 +25,13 @@
 #ifndef __LASSO_SERVER_PRIVATE_H__
 #define __LASSO_SERVER_PRIVATE_H__
 
+#include "./server.h"
+#include "../xml/private.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
 
 struct _LassoServerPrivate
 {
@@ -41,6 +45,21 @@ gchar* lasso_server_get_first_providerID_by_role(const LassoServer *server, Lass
 gchar* lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash);
 xmlSecKey* lasso_server_get_private_key(LassoServer *server);
 GList* lasso_server_get_encryption_private_keys(LassoServer *server);
+
+lasso_error_t lasso_server_get_signature_context_for_provider(LassoServer *server,
+		LassoProvider *provider, LassoSignatureContext *signature_context);
+
+lasso_error_t lasso_server_get_signature_context_for_provider_by_name(LassoServer *server,
+		const char *provider_id, LassoSignatureContext *signature_context);
+
+lasso_error_t lasso_server_set_signature_for_provider_by_name(LassoServer *server,
+		const char *provider_id, LassoNode *node);
+
+lasso_error_t lasso_server_export_to_query_for_provider_by_name(LassoServer *server,
+		const char *provider_id, LassoNode *node, char **query);
+
+lasso_error_t lasso_server_get_signature_context(LassoServer *server, LassoSignatureContext
+		*context);
 
 #ifdef __cplusplus
 }

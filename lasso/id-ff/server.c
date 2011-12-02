@@ -32,6 +32,7 @@
 
 #include "../xml/private.h"
 #include <xmlsec/base64.h>
+#include <xmlsec/xmltree.h>
 
 #include <config.h>
 #include "server.h"
@@ -45,6 +46,9 @@
 #include "../id-wsf/id_ff_extensions_private.h"
 #include "../id-wsf-2.0/serverprivate.h"
 #endif
+
+#define RSA_SHA1 "RSA_SHA1"
+#define DSA_SHA1 "DSA_SHA1"
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -79,9 +83,7 @@ lasso_server_add_provider_helper(LassoServer *server, LassoProviderRole role,
 		return LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH;
 	}
 
-	g_hash_table_insert(server->providers, g_strdup(provider->ProviderID), provider);
-
-	return 0;
+	return lasso_server_add_provider2(server, provider);
 }
 
 /**
@@ -200,7 +202,8 @@ lasso_server_set_encryption_private_key_with_password(LassoServer *server,
 		const gchar *filename_or_buffer, const gchar *password)
 {
 	if (filename_or_buffer) {
-		xmlSecKey *key = lasso_xmlsec_load_private_key(filename_or_buffer, password);
+		xmlSecKey *key = lasso_xmlsec_load_private_key(filename_or_buffer, password,
+				server->signature_method, NULL);
 		if (! key || ! (xmlSecKeyGetType(key) & xmlSecKeyDataTypePrivate)) {
 			return LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED;
 		}
@@ -271,10 +274,12 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoServer *server = LASSO_SERVER(node);
 	char *signature_methods[] = { NULL, "RSA_SHA1", "DSA_SHA1"};
-	xmlNode *xmlnode;
+	xmlNode *xmlnode = NULL, *ret_xmlnode = NULL;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlSetProp(xmlnode, (xmlChar*)"ServerDumpVersion", (xmlChar*)"2");
+	if (server->signature_method >= G_N_ELEMENTS(signature_methods))
+		goto cleanup;
 	xmlSetProp(xmlnode, (xmlChar*)"SignatureMethod",
 			(xmlChar*)signature_methods[server->signature_method]);
 
@@ -292,8 +297,11 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 #endif
 
 	xmlCleanNs(xmlnode);
+	lasso_transfer_xml_node(ret_xmlnode, xmlnode);
 
-	return xmlnode;
+cleanup:
+	lasso_release_xml_node(xmlnode);
+	return ret_xmlnode;
 }
 
 
@@ -315,41 +323,39 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		return rc;
 
 	s = xmlGetProp(xmlnode, (xmlChar*)"SignatureMethod");
-	if (s && strcmp((char*)s, "RSA_SHA1") == 0)
+	if (lasso_strisequal((char*) s, RSA_SHA1))
 		server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-	if (s && strcmp((char*)s, "DSA_SHA1") == 0)
+	else if (lasso_strisequal((char*) s, DSA_SHA1))
 		server->signature_method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
-	if (s)
-		xmlFree(s);
+	else {
+		warning("Unable to rebuild a LassoServer object from XML, bad SignatureMethod: %s",
+			s);
+		goto_cleanup_with_rc(LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED);
+	}
 
-	t = xmlnode->children;
+	t = xmlSecGetNextElementNode(xmlnode->children);
 	while (t) {
-		xmlNode *t2 = t->children;
-
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-
 		/* Providers */
 		if (strcmp((char*)t->name, "Providers") == 0) {
+			xmlNode *t2 = xmlSecGetNextElementNode(t->children);
+
 			while (t2) {
 				LassoProvider *p;
-				if (t2->type != XML_ELEMENT_NODE) {
-					t2 = t2->next;
-					continue;
-				}
+
 				p = g_object_new(LASSO_TYPE_PROVIDER, NULL);
-				LASSO_NODE_GET_CLASS(p)->init_from_xml(LASSO_NODE(p), t2);
+				lasso_check_good_rc(lasso_node_init_from_xml((LassoNode*)p,
+							t2))
 				if (lasso_provider_load_public_key(p, LASSO_PUBLIC_KEY_SIGNING)) {
 					g_hash_table_insert(server->providers,
 							g_strdup(p->ProviderID), p);
 				} else {
-					message(G_LOG_LEVEL_CRITICAL,
-							"Failed to load signing public key for %s.",
+					critical("Failed to load signing public key for %s.",
 							p->ProviderID);
+					lasso_release_gobject(p);
+					goto_cleanup_with_rc(
+						LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED);
 				}
-				t2 = t2->next;
+				t2 = xmlSecGetNextElementNode(t2->next);
 			}
 		}
 
@@ -358,8 +364,11 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		lasso_server_init_id_wsf20_svcmds(server, t);
 #endif
 
-		t = t->next;
+		t = xmlSecGetNextElementNode(t->next);
 	}
+
+cleanup:
+	lasso_release_xml_string(s);
 
 	return 0;
 }
@@ -746,7 +755,154 @@ lasso_server_get_private_key(LassoServer *server)
 	if (! server->private_key)
 		return NULL;
 
-	return lasso_xmlsec_load_private_key(server->private_key, server->private_key_password);
+	return lasso_xmlsec_load_private_key(server->private_key, server->private_key_password,
+			server->signature_method, server->certificate);
+}
+
+/**
+ * lasso_server_get_signature_context_for_provider:
+ * @server: a #LassoServer object
+ * @provider: a #LassoProvider object
+ *
+ * Find the key and signature method to sign messages adressed to @provider. If @provider has an
+ * override over the private key of the @server object, use this override.
+ *
+ * The returned context content is now owned by the caller, if it must survives the @server or
+ * @provider object life, the key should be copied.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ *
+ */
+lasso_error_t
+lasso_server_get_signature_context_for_provider(LassoServer *server,
+		LassoProvider *provider, LassoSignatureContext *signature_context)
+{
+	lasso_error_t rc = 0;
+	LassoSignatureContext *private_context = NULL;
+
+	lasso_bad_param(SERVER, server);
+	lasso_null_param(signature_context);
+
+	if (provider) {
+		lasso_bad_param(PROVIDER, provider);
+		private_context = &provider->private_data->signature_context;
+	}
+
+	if (private_context && lasso_validate_signature_method(private_context->signature_method)) {
+		lasso_assign_signature_context(*signature_context, *private_context);
+	} else {
+		rc = lasso_server_get_signature_context(server, signature_context);
+	}
+
+	return rc;
+
+}
+
+/**
+ * lasso_server_get_signature_context:
+ * @server: a #LassoServer object
+ * @context: a pointer to an allocated and initialized #LassoSignatureContext structure
+ *
+ * Try to create a signature context for this server. Beware that you should better use
+ * lasso_server_get_signature_context_for_provider() or
+ * lasso_server_get_signature_context_for_provider_by_name() in mot of the case when you know the
+ * target for your signature, because the provider could have special signature needs, like using a
+ * shared secret signature.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+lasso_error_t
+lasso_server_get_signature_context(LassoServer *server, LassoSignatureContext *context)
+{
+	lasso_bad_param(SERVER, server);
+	lasso_null_param(context);
+
+	lasso_assign_new_signature_context(*context,
+			lasso_make_signature_context_from_path_or_string(
+				server->private_key, server->private_key_password,
+				server->signature_method, server->certificate));
+	if (! lasso_validate_signature_context(*context)) {
+		return LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
+	}
+	return 0;
+}
+
+/**
+ * lasso_server_get_signature_context_for_provider_by_name:
+ * @server: a #LassoServer object
+ * @provider_id: the identifier of a known provider
+ *
+ * Find the key and signature method to sign messages adressed to @provider. If @provider has an
+ * override over the private key of the @server object, use this override.
+ *
+ * The returned context content is now owned by the caller, if it must survives the @server or
+ * provider object life, the key should be copied.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ *
+ */
+lasso_error_t
+lasso_server_get_signature_context_for_provider_by_name(LassoServer *server,
+		const char *provider_id, LassoSignatureContext *signature_context)
+{
+	LassoProvider *provider;
+	lasso_bad_param(SERVER, server);
+
+	provider = lasso_server_get_provider(server, provider_id);
+	return lasso_server_get_signature_context_for_provider(server,
+			provider, signature_context);
+}
+
+/**
+ * lasso_server_set_signature_for_provider_by_name:
+ * @server: a #LassoServer object
+ * @provider_id: the identifier of a known provider
+ * @node: a #LassoNode object
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+lasso_error_t
+lasso_server_set_signature_for_provider_by_name(LassoServer *server, const char *provider_id, LassoNode *node)
+{
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
+	lasso_error_t rc = 0;
+
+	lasso_check_good_rc(lasso_server_get_signature_context_for_provider_by_name(server,
+				provider_id, &context));
+	lasso_node_set_signature(node, context);
+cleanup:
+	return rc;
+}
+
+/**
+ * lasso_server_export_to_query_for_provider_by_name:
+ * @server: a #LassoServer object
+ * @provider_id: the identifier of a known provider
+ * @node: a #LassoNode object
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+lasso_error_t
+lasso_server_export_to_query_for_provider_by_name(LassoServer *server, const char *provider_id, LassoNode *node, char **out)
+{
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
+	lasso_error_t rc = 0;
+	char *query = NULL;
+
+	lasso_check_good_rc(lasso_server_get_signature_context_for_provider_by_name(server,
+				provider_id, &context));
+	query = lasso_node_build_query(node);
+	goto_cleanup_if_fail_with_rc(query, LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
+	if (lasso_validate_signature_method(context.signature_method)) {
+		lasso_assign_new_string(query, lasso_query_sign(query, context));
+	}
+	goto_cleanup_if_fail_with_rc(query,
+			LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
+	lasso_assign_new_string(*out, query);
+	context = LASSO_SIGNATURE_CONTEXT_NONE;
+cleanup:
+	lasso_assign_new_signature_context(context, LASSO_SIGNATURE_CONTEXT_NONE);
+	return rc;
 }
 
 /**
