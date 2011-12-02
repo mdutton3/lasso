@@ -1230,16 +1230,6 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 	return TRUE;
 }
 
-static void
-lasso_xml_generic_error_func(G_GNUC_UNUSED void *ctx, const char *msg, ...)
-{
-	va_list args;
-
-	va_start(args, msg);
-	g_logv(LASSO_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, msg, args);
-	va_end(args);
-}
-
 /**
  * lasso_verify_signature:
  * @signed_node: an #xmlNode containing an enveloped xmlDSig signature
@@ -1323,8 +1313,6 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	if (public_key) {
 		dsigCtx->signKey = xmlSecKeyDuplicate(public_key);
 	}
-
-	xmlSetGenericErrorFunc(NULL, lasso_xml_generic_error_func);
 
 	/* Verify signature */
 	goto_cleanup_if_fail_with_rc(xmlSecDSigCtxVerify(dsigCtx, signature) >= 0,
@@ -1545,8 +1533,6 @@ lasso_node_decrypt_xmlnode(xmlNode* encrypted_element,
 		rc = LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
 		goto cleanup;
 	}
-
-	xmlSetGenericErrorFunc(NULL, lasso_xml_generic_error_func);
 
 	/* Need to duplicate it because xmlSecEncCtxDestroy(encCtx); will destroy it */
 	encryption_private_key = xmlSecKeyDuplicate(encryption_private_key);

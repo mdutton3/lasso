@@ -127,6 +127,16 @@ DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 
 #include "types.c"
 
+static void
+lasso_xml_generic_error_func(G_GNUC_UNUSED void *ctx, const char *msg, ...)
+{
+	va_list args;
+
+	va_start(args, msg);
+	g_logv(LASSO_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, msg, args);
+	va_end(args);
+}
+
 /**
  * lasso_init:
  *
@@ -183,6 +193,7 @@ int lasso_init()
 		return LASSO_ERROR_UNDEFINED;
 	}
 	lasso_flag_parse_environment_variable();
+	xmlSetGenericErrorFunc(NULL, lasso_xml_generic_error_func);
 	return 0;
 }
 
