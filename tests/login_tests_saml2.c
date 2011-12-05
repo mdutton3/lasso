@@ -915,7 +915,7 @@ END_TEST
 			NULL)); \
 	providers = g_hash_table_get_values(ctx->providers); \
 	check_not_null(providers); \
-	lasso_provider_set_specific_signing_key(LASSO_PROVIDER(providers->data), \
+	lasso_provider_set_server_signing_key(LASSO_PROVIDER(providers->data), \
 			key); \
 	lasso_provider_add_key(LASSO_PROVIDER(providers->data), key, FALSE); \
 	g_list_free(providers);

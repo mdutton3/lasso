@@ -271,7 +271,7 @@ LASSO_EXPORT LassoProviderRole lasso_provider_get_roles(LassoProvider *provider)
 
 LASSO_EXPORT gboolean lasso_provider_match_conformance(LassoProvider *provider, LassoProvider *another_provider);
 
-LASSO_EXPORT lasso_error_t lasso_provider_set_specific_signing_key(LassoProvider *provider,
+LASSO_EXPORT lasso_error_t lasso_provider_set_server_signing_key(LassoProvider *provider,
 		LassoKey *key);
 
 LASSO_EXPORT lasso_error_t lasso_provider_add_key(LassoProvider *provider, LassoKey *key, gboolean after);

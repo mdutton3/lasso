@@ -171,7 +171,7 @@ main(int argc, char *argv[])
 				NULL, LASSO_SIGNATURE_METHOD_HMAC_SHA1, NULL);
 		providers = g_hash_table_get_values(sp_server->providers);
 		provider = LASSO_PROVIDER(providers->data);
-		lasso_provider_set_specific_signing_key(provider, key);
+		lasso_provider_set_server_signing_key(provider, key);
 		lasso_provider_add_key(provider, key, FALSE);
 		g_list_free(providers);
 	}
@@ -190,7 +190,7 @@ main(int argc, char *argv[])
 	if (use_shared_secret) {
 		providers = g_hash_table_get_values(idp_server->providers);
 		provider = LASSO_PROVIDER(providers->data);
-		lasso_provider_set_specific_signing_key(provider, key);
+		lasso_provider_set_server_signing_key(provider, key);
 		lasso_provider_add_key(provider, key, FALSE);
 		g_list_free(providers);
 	}

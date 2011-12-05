@@ -1792,14 +1792,14 @@ cleanup:
 }
 
 /**
- * lasso_provider_set_specific_signing_key:
+ * lasso_provider_set_server_signing_key:
  * @provider: a #LassoProvider object
  * @key: a #LassoKey object
  *
  * Return value: 0 if successful, an error code otherwise.
  */
 lasso_error_t
-lasso_provider_set_specific_signing_key(LassoProvider *provider,
+lasso_provider_set_server_signing_key(LassoProvider *provider,
 		LassoKey *key)
 {
 	lasso_error_t rc = 0;
