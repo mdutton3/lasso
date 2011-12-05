@@ -1751,6 +1751,47 @@ cleanup:
 }
 
 /**
+ * lasso_provider_add_key:
+ * @provider: a #LassoProvider object
+ * @key: a #LassoKey object
+ * @after:(default FALSE): add the key at the end of the list, not on front.
+ *
+ * Add a new signature key for validating message received from @provider.
+ * If the key is used to improve verification time add it first with @after as true, it the key is
+ * ther for coninuitý of service (when doing a key rollover for example) at it last with @after as
+ * false.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+lasso_error_t
+lasso_provider_add_key(LassoProvider *provider, LassoKey *key, gboolean after)
+{
+	LassoSignatureContext context;
+	lasso_error_t rc = 0;
+	GList **list = NULL;
+	xmlSecKey *xml_sec_key;
+
+	lasso_bad_param(PROVIDER, provider);
+	lasso_bad_param(KEY, key);
+
+	switch (lasso_key_get_key_type(key)) {
+		case LASSO_KEY_TYPE_FOR_SIGNATURE:
+			context = lasso_key_get_signature_context(key);
+			list = &provider->private_data->signing_public_keys;
+			xml_sec_key = xmlSecKeyDuplicate(context.signature_key);
+			break;
+	}
+	goto_cleanup_if_fail_with_rc(list && xml_sec_key, LASSO_PARAM_ERROR_INVALID_VALUE);
+	if (after) {
+		*list = g_list_append(*list, xml_sec_key);
+	} else {
+		*list = g_list_prepend(*list, xml_sec_key);
+	}
+cleanup:
+	return rc;
+}
+
+/**
  * lasso_provider_set_specific_signing_key:
  * @provider: a #LassoProvider object
  * @key: a #LassoKey object
