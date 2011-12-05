@@ -2758,6 +2758,9 @@ lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
 			transform_id = xmlSecTransformDsaSha1Id;
 			break;
+		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
+			transform_id = xmlSecTransformHmacSha1Id;
+			break;
 		default:
 			g_assert_not_reached();
 	}
@@ -2787,6 +2790,13 @@ lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 				xmlSecTmplKeyInfoAddX509Data(key_info);
 			} else {
 				xmlSecTmplKeyInfoAddKeyValue(key_info);
+			}
+			break;
+		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
+			if (context.signature_key->name) {
+				key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
+				xmlSecTmplKeyInfoAddKeyName(key_info, NULL);
+
 			}
 			break;
 		default:

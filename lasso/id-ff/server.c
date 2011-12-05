@@ -49,6 +49,7 @@
 
 #define RSA_SHA1 "RSA_SHA1"
 #define DSA_SHA1 "DSA_SHA1"
+#define HMAC_SHA1 "HMAC_SHA1"
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -273,7 +274,7 @@ static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoServer *server = LASSO_SERVER(node);
-	char *signature_methods[] = { NULL, "RSA_SHA1", "DSA_SHA1"};
+	char *signature_methods[] = { NULL, RSA_SHA1, DSA_SHA1, HMAC_SHA1};
 	xmlNode *xmlnode = NULL, *ret_xmlnode = NULL;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
@@ -327,6 +328,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 	else if (lasso_strisequal((char*) s, DSA_SHA1))
 		server->signature_method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
+	else if (lasso_strisequal((char*) s, HMAC_SHA1))
+		server->signature_method = LASSO_SIGNATURE_METHOD_HMAC_SHA1;
 	else {
 		warning("Unable to rebuild a LassoServer object from XML, bad SignatureMethod: %s",
 			s);

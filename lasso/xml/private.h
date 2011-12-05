@@ -264,6 +264,12 @@ void lasso_node_get_encryption(LassoNode *node, xmlSecKey **encryption_public_ke
 		LassoEncryptionSymKeyType *encryption_sym_key_type);
 gboolean lasso_base64_decode(const char *from, char **buffer, int *buffer_len);
 
+xmlSecKeyPtr
+lasso_create_hmac_key(const xmlSecByte * buf, xmlSecSize size);
+
+lasso_error_t
+lasso_get_hmac_key(const xmlSecKey *key, void **buffer, size_t *size);
+
 LassoSignatureContext lasso_make_signature_context_from_buffer(const char *buffer, size_t length,
 		const char *password, LassoSignatureMethod signature_method,
 		const char *certificate);

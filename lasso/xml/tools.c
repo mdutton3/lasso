@@ -479,6 +479,9 @@ lasso_query_sign(char *query, LassoSignatureContext context)
 	char *new_query = NULL, *s_new_query = NULL;
 	int status = 0;
 	const xmlChar *algo_href = NULL;
+	char *hmac_key;
+	size_t hmac_key_length;
+	const EVP_MD *md;
 	xmlSecKey *key;
 	xmlSecKeyData *key_data;
 	unsigned int sigret_size = 0;
@@ -499,6 +502,9 @@ lasso_query_sign(char *query, LassoSignatureContext context)
 			break;
 		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
 			algo_href = xmlSecHrefDsaSha1;
+			break;
+		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
+			algo_href = xmlSecHrefHmacSha1;
 			break;
 		case LASSO_SIGNATURE_METHOD_NONE:
 		case LASSO_SIGNATURE_METHOD_LAST:
@@ -531,6 +537,18 @@ lasso_query_sign(char *query, LassoSignatureContext context)
 			/* alloc memory for sigret */
 			sigret_size = DSA_size(dsa);
 			break;
+		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
+			lasso_get_hmac_key(key, (void**)&hmac_key,
+					&hmac_key_length);
+			g_assert(hmac_key);
+			md = EVP_sha1();
+			sigret_size = EVP_MD_size(md);
+			/* key should be at least 128 bits long */
+			if (hmac_key_length < 16) {
+				critical("HMAC key should be at least 128 bits long");
+				goto done;
+			}
+			break;
 		default:
 			g_assert_not_reached();
 	}
@@ -545,6 +563,11 @@ lasso_query_sign(char *query, LassoSignatureContext context)
 		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
 			status = DSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret,
 					&siglen, dsa);
+			break;
+		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
+			HMAC(md, hmac_key, hmac_key_length, (unsigned char *)new_query,
+					strlen(new_query), sigret, &siglen);
+			status = 1;
 			break;
 		case LASSO_SIGNATURE_METHOD_LAST:
 		case LASSO_SIGNATURE_METHOD_NONE:
@@ -566,6 +589,7 @@ lasso_query_sign(char *query, LassoSignatureContext context)
 	switch (sign_method) {
 		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
 		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
 			s_new_query = g_strdup_printf("%s&Signature=%s", new_query, (char*)
 					e_b64_sigret);
 			break;
@@ -613,6 +637,9 @@ lasso_query_verify_helper(const char *signed_content, const char *b64_signature,
 	char *digest = NULL;
 	xmlSecByte *signature = NULL;
 	int key_size = 0;
+	unsigned char *hmac_key = NULL;
+	unsigned int hmac_key_length = 0;
+	const EVP_MD *md = NULL;
 	lasso_error_t rc = 0;
 	LassoSignatureMethod method = LASSO_SIGNATURE_METHOD_NONE;
 
@@ -627,6 +654,11 @@ lasso_query_verify_helper(const char *signed_content, const char *b64_signature,
 		dsa = xmlSecOpenSSLKeyDataDsaGetDsa(key->value);
 		key_size = DSA_size(dsa);
 		method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
+	} else if (lasso_strisequal(algorithm, (char*)xmlSecHrefHmacSha1)) {
+		lasso_check_good_rc(lasso_get_hmac_key(key, (void**)&hmac_key, &hmac_key_length));
+		md = EVP_sha1();
+		key_size = EVP_MD_size(md);
+		method = LASSO_SIGNATURE_METHOD_HMAC_SHA1;
 	} else {
 		goto_cleanup_with_rc(LASSO_DS_ERROR_INVALID_SIGALG);
 	}
@@ -663,6 +695,15 @@ lasso_query_verify_helper(const char *signed_content, const char *b64_signature,
 						20,
 						signature,
 						key_size, dsa) == 1,
+					LASSO_DS_ERROR_INVALID_SIGNATURE);
+			break;
+		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
+			digest = g_malloc(key_size);
+			HMAC(md, hmac_key, hmac_key_length, (unsigned char*)signed_content,
+				strlen(signed_content), (unsigned char*)digest, NULL);
+
+			goto_cleanup_if_fail_with_rc(lasso_crypto_memequal(digest, signature,
+						key_size),
 					LASSO_DS_ERROR_INVALID_SIGNATURE);
 			break;
 		case LASSO_SIGNATURE_METHOD_NONE:
@@ -1164,6 +1205,7 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 	if((xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformInclC14NId) < 0) ||
 			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformExclC14NId) < 0) ||
 			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformSha1Id) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformHmacSha1Id) < 0) ||
 			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformDsaSha1Id) < 0) ||
 			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformRsaSha1Id) < 0)) {
 
@@ -1181,6 +1223,7 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 
 	/* Limit possible key info to X509, RSA and DSA */
 	if((xmlSecPtrListAdd(&(dsigCtx->keyInfoReadCtx.enabledKeyData), BAD_CAST xmlSecKeyDataX509Id) < 0) ||
+			(xmlSecPtrListAdd(&(dsigCtx->keyInfoReadCtx.enabledKeyData), BAD_CAST xmlSecKeyDataHmacId) < 0) ||
 			(xmlSecPtrListAdd(&(dsigCtx->keyInfoReadCtx.enabledKeyData), BAD_CAST xmlSecKeyDataRsaId) < 0) ||
 			(xmlSecPtrListAdd(&(dsigCtx->keyInfoReadCtx.enabledKeyData), BAD_CAST xmlSecKeyDataDsaId) < 0)) {
 		message(G_LOG_LEVEL_CRITICAL, "Error: failed to limit allowed key data");
@@ -1912,6 +1955,12 @@ _lasso_xmlsec_load_key_from_buffer(const char *buffer, size_t length, const char
 						key_formats[i], password, NULL, NULL);
 			}
 			break;
+		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
+			private_key = xmlSecKeyReadMemory(xmlSecKeyDataHmacId, (xmlSecByte*)buffer, length);
+			if (private_key) {
+				xmlSecKeySetName(private_key, BAD_CAST "shared");
+			}
+			break;
 		case LASSO_SIGNATURE_METHOD_LAST:
 		case LASSO_SIGNATURE_METHOD_NONE:
 			g_assert_not_reached();
@@ -2262,6 +2311,40 @@ void
 lasso_log_remove_handler(guint handler_id)
 {
 	g_log_remove_handler(LASSO_LOG_DOMAIN, handler_id);
+}
+
+/**
+ * lasso_get_hmac_key:
+ * @key: an #xmlSecKey object
+ * @buffer: a byte buffer of size @size
+ * @size: the size of @buffer as bytes
+ *
+ * Extract the symetric HMAC key from the #xmlSecKey structure and place a pointer to i into the
+ * buffer variable.
+ *
+ * Return value: 0 if successful, an error code otherwise.
+ */
+lasso_error_t
+lasso_get_hmac_key(const xmlSecKey *key, void **buffer, size_t *size)
+{
+	xmlSecKeyDataPtr key_data;
+	xmlSecBufferPtr key_data_buffer;
+
+	lasso_null_param(key);
+	lasso_null_param(buffer);
+	lasso_null_param(size);
+
+	if (key->value->id != xmlSecKeyDataHmacId) {
+		return LASSO_PARAM_ERROR_INVALID_VALUE;
+	}
+	key_data = xmlSecKeyGetValue((xmlSecKeyPtr)key);
+	g_return_val_if_fail(key_data, LASSO_PARAM_ERROR_INVALID_VALUE);
+	key_data_buffer = xmlSecKeyDataBinaryValueGetBuffer(key_data);
+	g_return_val_if_fail(key_data_buffer, LASSO_PARAM_ERROR_INVALID_VALUE);
+	*buffer = xmlSecBufferGetData(key_data_buffer);
+	*size = xmlSecBufferGetSize(key_data_buffer);
+	g_return_val_if_fail(*buffer && *size, LASSO_PARAM_ERROR_INVALID_VALUE);
+	return 0;
 }
 
 /**
