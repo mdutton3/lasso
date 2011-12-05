@@ -23,6 +23,7 @@
 
 #include <sys/time.h>
 #include <time.h>
+#include <getopt.h>
 
 #include <../lasso/lasso.h>
 #include <../lasso/xml/saml-2.0/samlp2_response.h>
@@ -120,16 +121,33 @@ main(int argc, char *argv[])
 {
 	LassoServer *sp_server, *idp_server;
 	LassoLogin *sp_login, *idp_login;
-	int n;
+	int n = 100;
 	char sp_metadata[100], sp_pkey[100],
 	     idp_metadata[100], idp_pkey[100];
-	char *index;
+	char *index = "5-saml2";
+	GList *providers;
+	LassoKey *key;
+	LassoProvider *provider;
+	gboolean use_shared_secret = FALSE;
+	int opt = 0;
 
-	if (argc == 3) {
-		index = argv[2];
-	} else {
-		index = "5-saml2";
+	while ((opt = getopt(argc, argv, "hn:s:")) != -1) {
+		switch (opt) {
+			case 'h':
+				use_shared_secret = TRUE;
+				break;
+			case 'n':
+				n = atoi(optarg);
+				break;
+			case 's':
+				index = optarg;
+				break;
+		}
 	}
+
+	printf("Looping %d times, %susing metadata %s\n", n,
+			use_shared_secret ? "with shared secret key, " : "", index);
+
 	sprintf(sp_metadata, SP_METADATA, index);
 	sprintf(sp_pkey, SP_PKEY, index);
 	sprintf(idp_metadata, IDP_METADATA, index);
@@ -148,6 +166,16 @@ main(int argc, char *argv[])
 			idp_metadata,
 			idp_pkey,
 			NULL);
+	if (use_shared_secret) {
+		key = lasso_key_new_for_signature_from_memory("xxxxxxxxxxxxxxxx", 16,
+				NULL, LASSO_SIGNATURE_METHOD_HMAC_SHA1, NULL);
+		providers = g_hash_table_get_values(sp_server->providers);
+		provider = LASSO_PROVIDER(providers->data);
+		lasso_provider_set_specific_signing_key(provider, key);
+		lasso_provider_add_key(provider, key, FALSE);
+		g_list_free(providers);
+	}
+
 	idp_server = lasso_server_new(
 			idp_metadata,
 			idp_pkey,
@@ -159,10 +187,12 @@ main(int argc, char *argv[])
 			sp_metadata,
 			sp_pkey,
 			NULL);
-
-	n = 100;
-	if (argc == 2) {
-		n = atoi(argv[1]);
+	if (use_shared_secret) {
+		providers = g_hash_table_get_values(idp_server->providers);
+		provider = LASSO_PROVIDER(providers->data);
+		lasso_provider_set_specific_signing_key(provider, key);
+		lasso_provider_add_key(provider, key, FALSE);
+		g_list_free(providers);
 	}
 
 	sp_login = lasso_login_new(sp_server);
