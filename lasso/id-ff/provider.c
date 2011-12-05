@@ -1234,6 +1234,7 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 	GList *keys_descriptors = NULL;
 	xmlNode *key_descriptor = NULL;
 	GList *keys = NULL;
+	gboolean ret = FALSE;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), FALSE);
 	if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
@@ -1281,22 +1282,22 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 	}
 
 	if (keys) {
+		GList **dest = NULL;
 		switch (public_key_type) {
 			case LASSO_PUBLIC_KEY_SIGNING:
-				lasso_transfer_full(provider->private_data->signing_public_keys, keys,
-						list_of_sec_key);
+				dest = &provider->private_data->signing_public_keys;
 				break;
 			case LASSO_PUBLIC_KEY_ENCRYPTION:
-				lasso_transfer_full(provider->private_data->encryption_public_keys, keys,
-						list_of_sec_key);
+				dest = &provider->private_data->encryption_public_keys;
 				break;
-			default:
-				lasso_release_list_of_sec_key(keys);
 		}
-		return TRUE;
-	} else {
-		return FALSE;
+		if (dest) {
+			lasso_transfer_full(*dest, keys, list_of_sec_key);
+			ret = TRUE;
+		}
 	}
+	lasso_release_list_of_sec_key(keys);
+	return ret;
 }
 
 
