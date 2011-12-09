@@ -940,7 +940,6 @@ sso_initiated_by_sp(LassoServer *idp_context, LassoServer *sp_context)
 	LASSO_SAMLP2_AUTHN_REQUEST(sp_login_context->parent.request)->NameIDPolicy->AllowCreate = 1;
 	check_good_rc(lasso_login_build_authn_request_msg(sp_login_context));
 	check_not_null(sp_login_context->parent.msg_url);
-	printf("authn_request: %s", sp_login_context->parent.msg_url);
 	authn_request_query = strchr(sp_login_context->parent.msg_url, '?');
 	check_not_null(authn_request_query);
 	authn_request_query += 1;
@@ -960,7 +959,6 @@ sso_initiated_by_sp(LassoServer *idp_context, LassoServer *sp_context)
 	check_good_rc(lasso_login_build_authn_response_msg(idp_login_context));
 	check_not_null(idp_login_context->parent.msg_body);
 	check_not_null(idp_login_context->parent.msg_url);
-	printf("Xml Response: %s\n", lasso_node_export_to_xml(idp_login_context->parent.response));
 
 	/* Process response */
 	check_good_rc(lasso_login_process_authn_response_msg(sp_login_context,
