@@ -2094,6 +2094,8 @@ prefix_from_href_and_nodename(const xmlChar *href, G_GNUC_UNUSED const xmlChar *
 		prefix = "Samlp2";
 	else if (strcmp((char*)href, LASSO_SOAP_ENV_HREF) == 0)
 		prefix = "Soap";
+	else if (strcmp((char*)href, LASSO_DS_HREF) == 0)
+		prefix = "Ds";
 #ifdef LASSO_WSF_ENABLED
 	else if (strcmp((char*)href, LASSO_SOAP_BINDING_HREF) == 0)
 		prefix = "SoapBinding";
@@ -2101,8 +2103,6 @@ prefix_from_href_and_nodename(const xmlChar *href, G_GNUC_UNUSED const xmlChar *
 		prefix = "SoapBindingExt";
 	else if (strcmp((char*)href, LASSO_DISCO_HREF) == 0)
 		prefix = "Disco";
-	else if (strcmp((char*)href, LASSO_DS_HREF) == 0)
-		prefix = "Ds";
 	else if (strcmp((char*)href, LASSO_IS_HREF) == 0)
 		prefix = "Is";
 	else if (strcmp((char*)href, LASSO_SA_HREF) == 0)

@@ -26,9 +26,10 @@
 #define __LASSO_XML_IDFF_H__
 
 #include "./xml.h"
-#include "./ds_key_info.h"
-#include "./ds_key_value.h"
-#include "./ds_rsa_key_value.h"
+#include "./dsig/ds_key_info.h"
+#include "./dsig/ds_key_value.h"
+#include "./dsig/ds_rsa_key_value.h"
+#include "./dsig/ds_x509_data.h"
 #include "./lib_assertion.h"
 #include "./lib_authentication_statement.h"
 #include "./lib_authn_context.h"

@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = saml-2.0 soap-1.1
+SUBDIRS = saml-2.0 soap-1.1 dsig
 if WSF_ENABLED
 SUBDIRS += id-wsf-2.0 ws
 endif
@@ -140,9 +140,6 @@ endif
 liblasso_xml_la_SOURCES = \
 	tools.c \
 	xml.c \
-	ds_key_info.c \
-	ds_key_value.c \
-	ds_rsa_key_value.c \
 	lib_assertion.c	\
 	lib_authentication_statement.c \
 	lib_authn_context.c	\
@@ -194,9 +191,6 @@ liblasso_xml_la_SOURCES = \
 liblassoinclude_HEADERS = \
 	strings.h \
 	xml.h \
-	ds_key_info.h \
-	ds_key_value.h \
-	ds_rsa_key_value.h \
 	lib_assertion.h	\
 	lib_authentication_statement.h \
 	lib_authn_context.h	\

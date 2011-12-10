@@ -30,7 +30,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "../xml.h"
-#include "../ds_key_info.h"
+#include "../dsig/ds_key_info.h"
 #include "./saml2_subject_confirmation_data.h"
 
 #define LASSO_TYPE_SAML2_KEY_INFO_CONFIRMATION_DATA_TYPE \

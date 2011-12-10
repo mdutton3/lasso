@@ -2012,6 +2012,34 @@ START_TEST(test14_lasso_key)
 }
 END_TEST
 
+/* test load federation */
+START_TEST(test15_ds_key_info)
+{
+	LassoDsKeyInfo *ds_key_info = lasso_ds_key_info_new();
+	LassoDsKeyValue *ds_key_value = lasso_ds_key_value_new();
+	LassoDsX509Data *x509_data = lasso_ds_x509_data_new();
+	char *dump;
+
+	lasso_ds_x509_data_set_certificate(x509_data, "coucou");
+	lasso_ds_key_value_set_x509_data(ds_key_value, x509_data);
+	ds_key_info->KeyValue = g_object_ref(ds_key_value);
+	dump = lasso_node_debug((LassoNode*)ds_key_info, 10);
+	lasso_release_gobject(ds_key_info);
+	lasso_release_gobject(ds_key_value);
+	lasso_release_gobject(x509_data);
+	ds_key_info = (LassoDsKeyInfo*)lasso_node_new_from_dump(dump);
+	check_not_null(ds_key_info);
+	check_true(LASSO_IS_DS_KEY_INFO(ds_key_info));
+	check_not_null(ds_key_info->KeyValue);
+	check_true(LASSO_IS_DS_KEY_VALUE(ds_key_info->KeyValue));
+	x509_data = lasso_ds_key_value_get_x509_data(ds_key_info->KeyValue);
+	check_not_null(x509_data);
+	check_true(LASSO_IS_DS_X509_DATA(x509_data));
+	check_str_equals(lasso_ds_x509_data_get_certificate(x509_data), "coucou");
+	lasso_release_gobject(ds_key_info);
+}
+END_TEST
+
 Suite*
 basic_suite()
 {
@@ -2028,6 +2056,7 @@ basic_suite()
 	TCase *tc_custom_namespace = tcase_create("Test custom namespace handling");
 	TCase *tc_load_metadata = tcase_create("Test loading a federation metadata file");
 	TCase *tc_key = tcase_create("Test loading and manipulating LassoKey objects");
+	TCase *tc_key_info = tcase_create("Test creating and dumping ds:KeyInfo nodes");
 
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
@@ -2041,6 +2070,7 @@ basic_suite()
 	suite_add_tcase(s, tc_custom_namespace);
 	suite_add_tcase(s, tc_load_metadata);
 	suite_add_tcase(s, tc_key);
+	suite_add_tcase(s, tc_key_info);
 
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
@@ -2056,6 +2086,7 @@ basic_suite()
 	tcase_add_test(tc_custom_namespace, test12_custom_namespace);
 	tcase_add_test(tc_load_metadata, test13_test_lasso_server_load_metadata);
 	tcase_add_test(tc_key, test14_lasso_key);
+	tcase_add_test(tc_key_info, test15_ds_key_info);
 	tcase_set_timeout(tc_load_metadata, 10);
 	return s;
 }

@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include "xml.h"
+#include "../xml.h"
 
 #define LASSO_TYPE_DS_RSA_KEY_VALUE (lasso_ds_rsa_key_value_get_type())
 #define LASSO_DS_RSA_KEY_VALUE(obj) \

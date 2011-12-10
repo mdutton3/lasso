@@ -25,7 +25,7 @@
 #include "../private.h"
 #include "saml2_key_info_confirmation_data_type.h"
 #include "../../registry.h"
-#include "../ds_key_info.h"
+#include "../dsig/ds_key_info.h"
 #include "../../utils.h"
 
 /**
