@@ -998,7 +998,7 @@ END_TEST
 Suite*
 login_saml2_suite()
 {
-	Suite *s = suite_create("Login");
+	Suite *s = suite_create("Login using SAML 2.0");
 	TCase *tc_generate = tcase_create("Generate Server Contexts");
 	TCase *tc_spLogin = tcase_create("Login initiated by service provider");
 	TCase *tc_spLoginMemory = tcase_create("Login initiated by service provider without key loading");
