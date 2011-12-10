@@ -55,6 +55,7 @@ typedef enum _LassoKeyType {
 
 struct _LassoKey {
 	LassoNode parent;
+	/*< private >*/
 	LassoKeyPrivate *private_data;
 };
 
