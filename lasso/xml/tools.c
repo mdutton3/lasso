@@ -1767,7 +1767,7 @@ lasso_xml_parse_file(const char *filepath)
 {
 	char *file_content;
 	size_t file_length;
-	GError *error;
+	GError *error = NULL;
 
 	if (g_file_get_contents(filepath, &file_content, &file_length, &error)) {
 		xmlDocPtr ret;
