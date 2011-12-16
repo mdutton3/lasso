@@ -58,67 +58,32 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+struct _LassoSaml2KeyInfoConfirmationDataTypePrivate {
+	GList *KeyInfo;
+};
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "KeyInfo", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSaml2KeyInfoConfirmationDataType, KeyInfo), NULL, NULL, NULL},
+	{ "KeyInfo", SNIPPET_LIST_NODES|SNIPPET_PRIVATE,
+		G_STRUCT_OFFSET(LassoSaml2KeyInfoConfirmationDataTypePrivate, KeyInfo), "LassoDsKeyInfo", NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
 
+#define LASSO_SAML2_KEY_INFO_CONFIRMATION_DATA_TYPE_GET_PRIVATE(o) \
+	   (G_TYPE_INSTANCE_GET_PRIVATE ((o), LASSO_TYPE_SAML2_KEY_INFO_CONFIRMATION_DATA_TYPE, LassoSaml2KeyInfoConfirmationDataTypePrivate))
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static xmlNs *
-ensure_namespace(xmlNode *node, const xmlChar *href, const xmlChar *prefix)
-{
-	xmlNs *ns;
-
-	ns = xmlSearchNsByHref(node->doc, node, href);
-	if (! ns) {
-		ns = xmlNewNs(node, href, prefix);
-		xmlSetNs(node, ns);
-	}
-	return ns;
-}
-
 static void
-set_qname_attribue(xmlNode *node, xmlChar *attribute_name, const xmlChar *name, const
-		xmlChar *href, const xmlChar *prefix) {
-	xmlNs *type_ns;
-	xmlNs *xsi_ns;
-	xmlChar *value;
-
-	xsi_ns = ensure_namespace(node, BAD_CAST LASSO_XSI_HREF, BAD_CAST LASSO_XSI_PREFIX);
-	type_ns = ensure_namespace(node, href, prefix);
-	value = BAD_CAST g_strdup_printf("%s:%s", type_ns->prefix, name);
-	xmlSetNsProp(node, xsi_ns, attribute_name, value);
-	lasso_release_string(value);
-}
-
-static void
-set_xsi_type(xmlNode *node, const xmlChar *type, const xmlChar *href, const xmlChar *prefix) {
-	set_qname_attribue(node, BAD_CAST "type", type, href, prefix);
-}
-
-static xmlNode*
-get_xmlNode(LassoNode *node, gboolean lasso_dump)
+instance_init(LassoSaml2KeyInfoConfirmationDataType *saml2_key_info_confirmation_data_type)
 {
-	xmlNode *xmlnode = NULL;
-
-	/* add xsi:type="KeyInfoConfirmationDataType" */
-	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	set_xsi_type(xmlnode,
-			BAD_CAST "KeyInfoConfirmationDataType",
-			BAD_CAST LASSO_SAML2_ASSERTION_HREF,
-			BAD_CAST LASSO_SAML2_ASSERTION_PREFIX);
-
-	return xmlnode;
+	saml2_key_info_confirmation_data_type->private_data =
+		LASSO_SAML2_KEY_INFO_CONFIRMATION_DATA_TYPE_GET_PRIVATE(
+				saml2_key_info_confirmation_data_type);
 }
-
 
 static void
 class_init(LassoSaml2KeyInfoConfirmationDataTypeClass *klass)
@@ -127,8 +92,11 @@ class_init(LassoSaml2KeyInfoConfirmationDataTypeClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	nclass->get_xmlNode = get_xmlNode;
+	nclass->node_data->xsi_sub_type = TRUE;
+	lasso_node_class_set_nodename(nclass, "KeyInfoConfirmationDataType");
+	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	g_type_class_add_private(klass, sizeof(LassoSaml2KeyInfoConfirmationDataTypePrivate));
 }
 
 GType
@@ -146,7 +114,7 @@ lasso_saml2_key_info_confirmation_data_type_get_type()
 			NULL,
 			sizeof(LassoSaml2KeyInfoConfirmationDataType),
 			0,
-			NULL,
+			(GInstanceInitFunc)instance_init,
 			NULL
 		};
 
@@ -170,4 +138,42 @@ LassoNode*
 lasso_saml2_key_info_confirmation_data_type_new()
 {
 	return g_object_new(LASSO_TYPE_SAML2_KEY_INFO_CONFIRMATION_DATA_TYPE, NULL);
+}
+
+/**
+ * lasso_saml2_key_info_confirmation_data_type_get_key_info:
+ * @kicdt: a #LassoSaml2KeyInfoConfirmationDataType object.
+ *
+ * Return the list of KeyInfo node contained in the saml2:SubjectConfirmationData of type
+ * saml2:KeyInfoConfirmationDataType.
+ *
+ * Return value:(element-type LassoDsKeyInfo)(transfer none): a list of #LassoDsKeyInfo objects.
+ */
+GList*
+lasso_saml2_key_info_confirmation_data_type_get_key_info(
+		LassoSaml2KeyInfoConfirmationDataType *kicdt)
+{
+	lasso_return_val_if_fail(LASSO_IS_SAML2_KEY_INFO_CONFIRMATION_DATA_TYPE(kicdt), NULL);
+
+	return kicdt->private_data->KeyInfo;
+}
+
+/**
+ * lasso_saml2_key_info_confirmation_data_type_set_key_info:
+ * @kicdt: a #LassoSaml2KeyInfoConfirmationDataType object.
+ * @key_infos:(tranfer none)(element-type LassoDsKeyInfo): a list of #LassoDsKeyInfo object.
+ *
+ * Set the list of ds:KeyInfo nodes for the saml2:SubjectConfirmationData of type
+ * saml2:KeyInfoConfirmationDataType.
+ */
+void
+lasso_saml2_key_info_confirmation_data_type_set_key_info(
+		LassoSaml2KeyInfoConfirmationDataType *kicdt,
+		GList *key_infos)
+{
+	lasso_return_if_fail(LASSO_IS_SAML2_KEY_INFO_CONFIRMATION_DATA_TYPE(kicdt));
+
+	lasso_assign_list_of_gobjects(
+			kicdt->private_data->KeyInfo,
+			key_infos);
 }

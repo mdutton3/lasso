@@ -539,68 +539,14 @@ static struct XmlSnippet schema_snippets[] = {
 		NULL, NULL},
 	{ "HttpRequestMethod", SNIPPET_CONTENT | SNIPPET_INTEGER,
 		G_STRUCT_OFFSET(LassoProfile, http_request_method), NULL, NULL, NULL},
+	{ "Artifact", SNIPPET_CONTENT | SNIPPET_PRIVATE, G_STRUCT_OFFSET(LassoProfilePrivate,
+			artifact), NULL, NULL, NULL },
+	{ "ArtifactMessage", SNIPPET_CONTENT | SNIPPET_PRIVATE, G_STRUCT_OFFSET(LassoProfilePrivate,
+			artifact_message), NULL, NULL, NULL },
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node, gboolean lasso_dump)
-{
-	xmlNode *xmlnode;
-	LassoProfile *profile = LASSO_PROFILE(node);
-
-	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-
-	if (profile->private_data->artifact) {
-		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"Artifact",
-			(xmlChar*)profile->private_data->artifact);
-	}
-
-	if (profile->private_data->artifact_message) {
-		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"ArtifactMessage",
-			(xmlChar*)profile->private_data->artifact_message);
-	}
-
-	return xmlnode;
-}
-
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	LassoProfile *profile = LASSO_PROFILE(node);
-	xmlNode *t;
-
-	parent_class->init_from_xml(node, xmlnode);
-
-	if (xmlnode == NULL)
-		return LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED;
-
-	t = xmlnode->children;
-	while (t) {
-		xmlChar *s;
-
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-
-		if (strcmp((char*)t->name, "Artifact") == 0) {
-			s = xmlNodeGetContent(t);
-			lasso_assign_string(profile->private_data->artifact, (char*)s);
-			xmlFree(s);
-		} else if (strcmp((char*)t->name, "ArtifactMessage") == 0) {
-			s = xmlNodeGetContent(t);
-			lasso_assign_string(profile->private_data->artifact_message, (char*)s);
-			xmlFree(s);
-		}
-
-		t = t->next;
-	}
-
-	return 0;
-}
 
 /**
  * lasso_profile_set_signature_hint:
@@ -819,14 +765,6 @@ dispose(GObject *object)
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(profile));
 }
 
-static void
-finalize(GObject *object)
-{
-	LassoProfile *profile = LASSO_PROFILE(object);
-	lasso_release(profile->private_data);
-	G_OBJECT_CLASS(parent_class)->finalize(object);
-}
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -834,7 +772,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoProfile *profile)
 {
-	profile->private_data = g_new0(LassoProfilePrivate, 1);
+	profile->private_data = LASSO_PROFILE_GET_PRIVATE(profile);
 	profile->private_data->dispose_has_run = FALSE;
 	profile->private_data->artifact = NULL;
 	profile->private_data->artifact_message = NULL;
@@ -864,11 +802,9 @@ class_init(LassoProfileClass *klass)
 	lasso_node_class_set_nodename(nclass, "Profile");
 	lasso_node_class_set_ns(nclass, LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
-	nclass->get_xmlNode = get_xmlNode;
-	nclass->init_from_xml = init_from_xml;
+	g_type_class_add_private(klass, sizeof(LassoProfilePrivate));
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
-	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
 GType

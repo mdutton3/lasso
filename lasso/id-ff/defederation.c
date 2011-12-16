@@ -456,6 +456,15 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
+static void
+class_init(LassoDefederationClass *klass)
+{
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = NULL;
+}
+
+
 GType
 lasso_defederation_get_type()
 {
@@ -464,11 +473,11 @@ lasso_defederation_get_type()
 	if (!this_type) {
 		static const GTypeInfo this_info = {
 			sizeof (LassoDefederationClass),
-			NULL, NULL, NULL, NULL, NULL,
+			NULL, NULL, (GClassInitFunc) class_init, NULL, NULL,
 			sizeof(LassoDefederation),
 			0,
 			NULL,
-			NULL
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,

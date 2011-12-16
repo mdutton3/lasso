@@ -2405,3 +2405,62 @@ lasso_make_signature_context_from_path_or_string(char *filename_or_buffer, const
 	}
 	return context;
 }
+
+xmlNs *
+get_or_define_ns(xmlNode *xmlnode, const xmlChar *ns_uri, const xmlChar *advised_prefix) {
+	xmlNs *ns;
+	char prefix[20];
+	int i = 1;
+
+	ns = xmlSearchNsByHref(NULL, xmlnode, ns_uri);
+	if (ns)
+		return ns;
+	/* Try with the advised prefix */
+	if (advised_prefix) {
+		ns = xmlSearchNs(NULL, xmlnode, BAD_CAST prefix);
+		if (! ns) { /* If not taken, use it */
+			return xmlNewNs(xmlnode, ns_uri, BAD_CAST advised_prefix);
+		}
+	}
+	/* Create a prefix from scratch */
+	do {
+		sprintf(prefix, "ns%u", i);
+		i++;
+		ns = xmlSearchNs(NULL, xmlnode, BAD_CAST prefix);
+	} while (ns);
+	return xmlNewNs(xmlnode, ns_uri, BAD_CAST prefix);
+}
+
+
+void
+set_qname_attribute(xmlNode *node,
+		const xmlChar *attribute_ns_prefix,
+		const xmlChar *attribute_ns_href,
+		const xmlChar *attribute_name,
+		const xmlChar *prefix,
+		const xmlChar *href,
+		const xmlChar *name) {
+	xmlNs *type_ns;
+	xmlNs *xsi_ns;
+	xmlChar *value;
+
+	xsi_ns = get_or_define_ns(node, attribute_ns_href, attribute_ns_prefix);
+	type_ns = get_or_define_ns(node, href, prefix);
+	value = BAD_CAST g_strdup_printf("%s:%s", type_ns->prefix, name);
+	xmlSetNsProp(node, xsi_ns, attribute_name, value);
+	lasso_release_string(value);
+}
+
+void
+set_xsi_type(xmlNode *node,
+		const xmlChar *type_ns_prefix,
+		const xmlChar *type_ns_href,
+		const xmlChar *type_name) {
+	set_qname_attribute(node,
+			BAD_CAST LASSO_XSI_PREFIX,
+			BAD_CAST LASSO_XSI_HREF,
+			BAD_CAST "type",
+			type_ns_prefix,
+			type_ns_href,
+			type_name);
+}

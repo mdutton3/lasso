@@ -67,7 +67,8 @@ class_init(LassoLibSubjectClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "Subject");
+	nclass->node_data->xsi_sub_type = TRUE;
+	lasso_node_class_set_nodename(nclass, "SubjectType");
 	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }

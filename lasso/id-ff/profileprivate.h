@@ -44,6 +44,9 @@ struct _LassoProfilePrivate
 void lasso_profile_set_response_status(LassoProfile *profile, const gchar *statusCodeValue);
 void lasso_profile_clean_msg_info(LassoProfile *profile);
 
+#define LASSO_PROFILE_GET_PRIVATE(o) \
+	   (G_TYPE_INSTANCE_GET_PRIVATE ((o), LASSO_TYPE_PROFILE, LassoProfilePrivate))
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

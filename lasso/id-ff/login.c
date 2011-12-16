@@ -274,6 +274,9 @@
 #include "../id-wsf/id_ff_extensions_private.h"
 #endif
 
+#define LASSO_LOGIN_GET_PRIVATE(o) \
+	   (G_TYPE_INSTANCE_GET_PRIVATE ((o), LASSO_TYPE_LOGIN, LassoLoginPrivate))
+
 
 static void lasso_login_build_assertion_artifact(LassoLogin *login);
 
@@ -2286,6 +2289,10 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "AssertionArtifact", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLogin, assertionArtifact), NULL, NULL, NULL},
 	{ "NameIDPolicy", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLogin, nameIDPolicy), NULL, NULL, NULL},
 	{ "Assertion", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoLogin, assertion), NULL, NULL, NULL},
+	{ "RequestID", SNIPPET_CONTENT | SNIPPET_PRIVATE,
+		G_STRUCT_OFFSET(LassoLoginPrivate, request_id), NULL, NULL, NULL},
+	{ "LoginDumpVersion", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL},
+	{ "ProtocolProfile", SNIPPET_CONTENT, 0, NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
@@ -2299,7 +2306,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlSetProp(xmlnode, (xmlChar*)"LoginDumpVersion", (xmlChar*)"2");
-	xmlSetProp(xmlnode, (xmlChar*)"RequestID", (xmlChar*)LASSO_LOGIN(node)->private_data->request_id);
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART)
 		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"ProtocolProfile", (xmlChar*)"Artifact");
@@ -2320,9 +2326,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc) return rc;
-
-	lasso_assign_new_string(LASSO_LOGIN(node)->private_data->request_id, (char*)xmlGetProp(xmlnode,
-				(xmlChar*)"RequestID"));
 
 	t = xmlnode->children;
 	while (t) {
@@ -2367,14 +2370,6 @@ dispose(GObject *object)
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
-static void
-finalize(GObject *object)
-{
-	LassoLogin *login = LASSO_LOGIN(object);
-	lasso_release(login->private_data);
-	G_OBJECT_CLASS(parent_class)->finalize(object);
-}
-
 /*****************************************************************************/
 /* instance and class init functions */
 /*****************************************************************************/
@@ -2382,8 +2377,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoLogin *login)
 {
-	login->private_data = g_new0(LassoLoginPrivate, 1);
-
+	login->private_data = LASSO_LOGIN_GET_PRIVATE(login);
 	login->protocolProfile = 0;
 	login->assertionArtifact = NULL;
 	login->nameIDPolicy = NULL;
@@ -2402,9 +2396,9 @@ class_init(LassoLoginClass *klass)
 	lasso_node_class_set_nodename(nclass, "Login");
 	lasso_node_class_set_ns(nclass, LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	g_type_class_add_private(klass, sizeof(LassoLoginPrivate));
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
-	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
 GType

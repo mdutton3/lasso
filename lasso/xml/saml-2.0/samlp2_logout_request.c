@@ -142,7 +142,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc == 0) {
-		GList *last;
 
 		pv = GET_PRIVATE(node);
 		child = xmlSecFindChild(xmlnode, BAD_CAST SESSION_INDEX,
@@ -154,11 +153,10 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			lasso_release_xml_string(content);
 			child = xmlSecGetNextElementNode(child->next);
 		}
-		/* remove the last one, since it is also stored in node->SessionIndex */
-		last = g_list_last(pv->SessionIndex);
-		if (last) {
-			lasso_release_string(last->data);
-			pv->SessionIndex = g_list_delete_link(pv->SessionIndex, last);
+		/* remove the first one, since it is also stored in node->SessionIndex */
+		if (pv->SessionIndex) {
+			lasso_release_string(pv->SessionIndex->data);
+			pv->SessionIndex = g_list_delete_link(pv->SessionIndex, pv->SessionIndex);
 		}
 	}
 

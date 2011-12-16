@@ -516,6 +516,9 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "CaCertChainFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, ca_cert_chain), NULL, NULL, NULL},
 	{ "MetadataFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, metadata_filename), NULL, NULL, NULL},
 	{ "ProviderID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoProvider, ProviderID), NULL, NULL, NULL},
+	{ "ProviderRole", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL},
+	{ "EncryptionMode", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL},
+	{ "ProviderDumpVersion", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

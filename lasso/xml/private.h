@@ -40,7 +40,7 @@ typedef enum {
 	SNIPPET_NODE,
 	SNIPPET_CONTENT,
 	SNIPPET_TEXT_CHILD,
-	SNIPPET_NAME_IDENTIFIER,
+	SNIPPET_UNUSED1,
 	SNIPPET_ATTRIBUTE,
 	SNIPPET_NODE_IN_CHILD,
 	SNIPPET_LIST_NODES,
@@ -72,11 +72,15 @@ typedef enum {
 } SignatureVerificationOption;
 
 struct XmlSnippet {
-	char *name;
-	SnippetType type;
-	guint offset;
-	char *class_name;
-	char *ns_name;
+	char *name; /* name of the node or attribute to match */
+	SnippetType type; /* type of node to deserialize */
+	guint offset; /* offset of the storage field relative to the public or private object (if
+			 using SNIPPET_PRIVATE). If 0, means that no storage must be done, it will
+			 be handled by the init_from_xml virtual method. */
+	char *class_name; /* Force a certain LassoNode class for deserializing a node, usually
+			     useless. */
+	char *ns_name; /* if the namespace is different from the one of the parent node, specify it
+			  there */
 	char *ns_uri;
 };
 
@@ -156,6 +160,7 @@ struct _LassoNodeClassData
 	int private_key_file_offset;
 	int certificate_file_offset;
 	gboolean keep_xmlnode;
+	gboolean xsi_sub_type;
 };
 
 void lasso_node_class_set_nodename(LassoNodeClass *klass, char *name);
@@ -278,6 +283,22 @@ LassoSignatureContext lasso_make_signature_context_from_path_or_string(char *fil
 		const char *password, LassoSignatureMethod signature_method,
 		const char *certificate);
 
+xmlNs * get_or_define_ns(xmlNode *xmlnode, const xmlChar *ns_uri, const xmlChar
+		*advised_prefix);
+
+void set_qname_attribute(xmlNode *node,
+		const xmlChar *attribute_ns_prefix,
+		const xmlChar *attribute_ns_href,
+		const xmlChar *attribute_name,
+		const xmlChar *prefix,
+		const xmlChar *href,
+		const xmlChar *name);
+
+
+void set_xsi_type(xmlNode *node,
+		const xmlChar *type_ns_prefix,
+		const xmlChar *type_ns_href,
+		const xmlChar *type_name);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
