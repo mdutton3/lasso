@@ -134,6 +134,20 @@
  */
 #define LASSO_WSUTIL1_PREFIX "wsutil"
 
+/**
+ * LASSO_XMLENC_HREF
+ *
+ * Namespace for xmlenc-core
+ */
+#define LASSO_XMLENC_HREF "http://www.w3.org/2001/04/xmlenc#"
+
+/**
+ * LASSO_XMLENC_PREFIX
+ *
+ * Preferred prefix for namespace of xmlenc-core
+ */
+#define LASSO_XMLENC_PREFIX "xmlenc"
+
 /*****************************************************************************/
 /* Lasso                                                                     */
 /*****************************************************************************/
