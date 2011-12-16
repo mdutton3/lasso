@@ -62,7 +62,7 @@ END_TEST
 START_TEST(test03_server_load_dump_random_xml)
 {
 	LassoServer *serverContext;
-	begin_check_do_log(G_LOG_LEVEL_CRITICAL, "(xml.c/:2307) Unable to build a LassoNode from a xmlNode", TRUE);
+	begin_check_do_log(G_LOG_LEVEL_CRITICAL, " Unable to build a LassoNode from a xmlNode", TRUE);
 	serverContext = lasso_server_new_from_dump("<?xml version=\"1.0\"?><foo/>");
 	end_check_do_log();
 	fail_unless(serverContext == NULL,
@@ -1856,21 +1856,21 @@ START_TEST(test10_test_alldumps)
 #endif
 	/* test deserialization of saml2:EncryptedAssertion" */
 	const char *encrypted_element_xml[] = {
-	"<EncryptedAssertion xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n\
-		<EncryptedData/>\
-		<EncryptedKey/>\
+	"<EncryptedAssertion xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns:xmlenc=\"http://www.w3.org/2001/04/xmlenc#\">\n\
+		<xmlenc:EncryptedData/>\
+		<xmlenc:EncryptedKey/>\
 	</EncryptedAssertion>",
-	"<EncryptedID xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n\
-		<EncryptedData/>\
-		<EncryptedKey/>\
+	"<EncryptedID xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns:xmlenc=\"http://www.w3.org/2001/04/xmlenc#\">\n\
+		<xmlenc:EncryptedData/>\
+		<xmlenc:EncryptedKey/>\
 	</EncryptedID>",
-	"<EncryptedAttribute xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n\
-		<EncryptedData/>\
-		<EncryptedKey/>\
+	"<EncryptedAttribute xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns:xmlenc=\"http://www.w3.org/2001/04/xmlenc#\">\n\
+		<xmlenc:EncryptedData/>\
+		<xmlenc:EncryptedKey/>\
 	</EncryptedAttribute>",
-	"<NewEncryptedID xmlns=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n\
-		<EncryptedData/>\
-		<EncryptedKey/>\
+	"<NewEncryptedID xmlns=\"urn:oasis:names:tc:SAML:2.0:protocol\" xmlns:xmlenc=\"http://www.w3.org/2001/04/xmlenc#\">\n\
+		<xmlenc:EncryptedData/>\
+		<xmlenc:EncryptedKey/>\
 	</NewEncryptedID>", NULL };
 	const char **iter = encrypted_element_xml;
 	while (*iter) {
@@ -2027,6 +2027,8 @@ START_TEST(test15_ds_key_info)
 	LassoDsKeyValue *ds_key_value = lasso_ds_key_value_new();
 	LassoDsX509Data *x509_data = lasso_ds_x509_data_new();
 	char *dump;
+	GList list;
+	LassoNode *node;
 
 	lasso_ds_x509_data_set_certificate(x509_data, "coucou");
 	lasso_ds_key_value_set_x509_data(ds_key_value, x509_data);
@@ -2036,6 +2038,7 @@ START_TEST(test15_ds_key_info)
 	lasso_release_gobject(ds_key_value);
 	lasso_release_gobject(x509_data);
 	ds_key_info = (LassoDsKeyInfo*)lasso_node_new_from_dump(dump);
+	lasso_release_string(dump);
 	check_not_null(ds_key_info);
 	check_true(LASSO_IS_DS_KEY_INFO(ds_key_info));
 	check_not_null(ds_key_info->KeyValue);
@@ -2044,7 +2047,24 @@ START_TEST(test15_ds_key_info)
 	check_not_null(x509_data);
 	check_true(LASSO_IS_DS_X509_DATA(x509_data));
 	check_str_equals(lasso_ds_x509_data_get_certificate(x509_data), "coucou");
+	/* LassoSaml2SubjectConfirmation */
+	LassoSaml2SubjectConfirmation *sc = (LassoSaml2SubjectConfirmation*) \
+			lasso_saml2_subject_confirmation_new();
+	LassoSaml2KeyInfoConfirmationDataType *kicdt = (LassoSaml2KeyInfoConfirmationDataType*) \
+			lasso_saml2_key_info_confirmation_data_type_new();
+	lasso_assign_string(sc->Method, LASSO_SAML2_CONFIRMATION_METHOD_HOLDER_OF_KEY);
+	lasso_assign_new_gobject(sc->SubjectConfirmationData, &kicdt->parent);
+	list = (GList){ .data = ds_key_info, .next = NULL, .prev = NULL };
+	lasso_saml2_key_info_confirmation_data_type_set_key_info(kicdt, &list);
+	dump = lasso_node_debug((LassoNode*)sc, 10);
+	printf("1 %s\n", dump);
+	lasso_release_gobject(sc);
 	lasso_release_gobject(ds_key_info);
+	node = lasso_node_new_from_dump(dump);
+	lasso_release_string(dump);
+	dump = lasso_node_debug(node, 10);
+	printf("2 %s\n", dump);
+	lasso_release_string(dump);
 }
 END_TEST
 
