@@ -159,7 +159,6 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	LassoNode *assertion_n;
 	LassoSaml2Assertion *assertion;
 	LassoSamlp2LogoutRequest *logout_request;
-	char *assertion_SessionIndex = NULL;
 	int rc = 0;
 
 	if (LASSO_IS_SAMLP2_LOGOUT_REQUEST(profile->request) == FALSE)
@@ -224,12 +223,26 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 					LASSO_SAML2_STATUS_CODE_RESPONDER, "http://lasso.entrouvert.org/error/MalformedAssertion");
 			return LASSO_PROFILE_ERROR_BAD_SESSION_DUMP;
 		}
-		assertion_SessionIndex =
-			((LassoSaml2AuthnStatement*)assertion->AuthnStatement->data)->SessionIndex;
-		if (lasso_strisnotequal(logout_request->SessionIndex,assertion_SessionIndex)) {
-			lasso_saml20_profile_set_response_status_responder(profile,
-					LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
-			return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
+		if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP && logout_request->SessionIndex == NULL) {
+			/* ok, no SessionIndex from IdP, all sessions logout */
+		} else {
+			GList *session_indexes = lasso_samlp2_logout_request_get_session_indexes(logout_request);
+			int ok = 0;
+			char *assertion_SessionIndex = NULL;
+			GList *iter;
+
+			assertion_SessionIndex = _lasso_saml2_assertion_get_session_index(assertion);
+			lasso_foreach(iter, session_indexes) {
+				if (lasso_strisequal((char*)iter->data, assertion_SessionIndex)) {
+					ok = 1;
+				}
+			}
+			lasso_release_list_of_strings(session_indexes);
+			if (! ok) {
+				lasso_saml20_profile_set_response_status_responder(profile,
+						LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
+				return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
+			}
 		}
 	}
 
