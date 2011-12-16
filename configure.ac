@@ -840,6 +840,7 @@ lasso/xml/saml-2.0/Makefile
 lasso/xml/soap-1.1/Makefile
 lasso/xml/id-wsf-2.0/Makefile
 lasso/xml/ws/Makefile
+lasso/xml/dsig/Makefile
 tests/Makefile
 tests/data/Makefile
 lasso.pc

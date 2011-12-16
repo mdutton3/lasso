@@ -43,6 +43,7 @@
 #define __LASSO_STRINGS_H__
 
 #include "./saml-2.0/saml2_strings.h"
+#include "./dsig/strings.h"
 
 /*****************************************************************************/
 /* SOAP 1.1                                                                  */
@@ -132,6 +133,20 @@
  *
  */
 #define LASSO_WSUTIL1_PREFIX "wsutil"
+
+/**
+ * LASSO_XMLENC_HREF
+ *
+ * Namespace for xmlenc-core
+ */
+#define LASSO_XMLENC_HREF "http://www.w3.org/2001/04/xmlenc#"
+
+/**
+ * LASSO_XMLENC_PREFIX
+ *
+ * Preferred prefix for namespace of xmlenc-core
+ */
+#define LASSO_XMLENC_PREFIX "xmlenc"
 
 /*****************************************************************************/
 /* Lasso                                                                     */
@@ -954,22 +969,6 @@
 /*****************************************************************************/
 /* Others                                                                    */
 /*****************************************************************************/
-
-/* xmldsig prefix & href */
-/**
- * LASSO_DS_HREF:
- *
- * Namespace for FIXME
- *
- */
-#define LASSO_DS_HREF   "http://www.w3.org/2000/09/xmldsig#"
-/**
- * LASSO_DS_PREFIX:
- *
- * Preferred prefix for namespace of FIXME
- *
- */
-#define LASSO_DS_PREFIX "ds"
 
 /* xsi prefix & href */
 /**

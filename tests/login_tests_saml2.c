@@ -785,8 +785,10 @@ START_TEST(test05_sso_idp_with_key_rollover)
 	check_good_rc(lasso_login_accept_sso(spLoginContext));
 
 	/* Process response 2 */
+	block_lasso_logs;
 	check_good_rc(lasso_login_process_authn_response_msg(spLoginContext,
 				idpLoginContext2->parent.msg_body));
+	unblock_lasso_logs;
 	check_good_rc(lasso_login_accept_sso(spLoginContext));
 
 	/* Cleanup */
@@ -838,7 +840,9 @@ sso_sp_with_key_rollover(LassoServer *idp_context, LassoServer *sp_context)
 			LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
 	LASSO_SAMLP2_AUTHN_REQUEST(idp_login_context->parent.request)->NameIDPolicy->AllowCreate = 1;
 
+	block_lasso_logs;
 	check_good_rc(lasso_login_process_authn_request_msg(idp_login_context, NULL));
+	unblock_lasso_logs;
 	check_good_rc(lasso_login_validate_request_msg(idp_login_context,
 			1, /* authentication_result */
 		        0 /* is_consent_obtained */
@@ -855,8 +859,10 @@ sso_sp_with_key_rollover(LassoServer *idp_context, LassoServer *sp_context)
 	check_not_null(idp_login_context->parent.msg_url);
 
 	/* Process response */
+	block_lasso_logs;
 	check_good_rc(lasso_login_process_authn_response_msg(sp_login_context,
 				idp_login_context->parent.msg_body));
+	unblock_lasso_logs;
 	check_good_rc(lasso_login_accept_sso(sp_login_context));
 
 	/* Cleanup */
@@ -940,7 +946,6 @@ sso_initiated_by_sp(LassoServer *idp_context, LassoServer *sp_context)
 	LASSO_SAMLP2_AUTHN_REQUEST(sp_login_context->parent.request)->NameIDPolicy->AllowCreate = 1;
 	check_good_rc(lasso_login_build_authn_request_msg(sp_login_context));
 	check_not_null(sp_login_context->parent.msg_url);
-	printf("authn_request: %s", sp_login_context->parent.msg_url);
 	authn_request_query = strchr(sp_login_context->parent.msg_url, '?');
 	check_not_null(authn_request_query);
 	authn_request_query += 1;
@@ -960,7 +965,6 @@ sso_initiated_by_sp(LassoServer *idp_context, LassoServer *sp_context)
 	check_good_rc(lasso_login_build_authn_response_msg(idp_login_context));
 	check_not_null(idp_login_context->parent.msg_body);
 	check_not_null(idp_login_context->parent.msg_url);
-	printf("Xml Response: %s\n", lasso_node_export_to_xml(idp_login_context->parent.response));
 
 	/* Process response */
 	check_good_rc(lasso_login_process_authn_response_msg(sp_login_context,
@@ -988,7 +992,9 @@ START_TEST(test07_sso_sp_with_hmac_sha1_signatures)
 	test07_make_context(idp_context, "idp6-saml2", LASSO_PROVIDER_ROLE_SP, "sp6-saml2", key)
 	test07_make_context(sp_context, "sp6-saml2", LASSO_PROVIDER_ROLE_IDP, "idp6-saml2", key)
 
+	block_lasso_logs;
 	sso_initiated_by_sp(idp_context, sp_context);
+	unblock_lasso_logs;
 
 	/* Cleanup */
 	lasso_release_gobject(idp_context);
@@ -1000,7 +1006,7 @@ END_TEST
 Suite*
 login_saml2_suite()
 {
-	Suite *s = suite_create("Login");
+	Suite *s = suite_create("Login using SAML 2.0");
 	TCase *tc_generate = tcase_create("Generate Server Contexts");
 	TCase *tc_spLogin = tcase_create("Login initiated by service provider");
 	TCase *tc_spLoginMemory = tcase_create("Login initiated by service provider without key loading");

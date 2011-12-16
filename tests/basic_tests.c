@@ -51,7 +51,9 @@ END_TEST
 START_TEST(test02_server_load_dump_random_string)
 {
 	LassoServer *serverContext;
+	begin_check_do_log(G_LOG_LEVEL_CRITICAL, "libxml2: Start tag expected, '<' not found\\n", FALSE);
 	serverContext = lasso_server_new_from_dump("foo");
+	end_check_do_log();
 	fail_unless(serverContext == NULL,
 			"serverContext was created from a fake dump");
 }
@@ -60,7 +62,9 @@ END_TEST
 START_TEST(test03_server_load_dump_random_xml)
 {
 	LassoServer *serverContext;
+	begin_check_do_log(G_LOG_LEVEL_CRITICAL, " Unable to build a LassoNode from a xmlNode", TRUE);
 	serverContext = lasso_server_new_from_dump("<?xml version=\"1.0\"?><foo/>");
+	end_check_do_log();
 	fail_unless(serverContext == NULL,
 			"serverContext was created from fake (but valid XML) dump");
 }
@@ -156,7 +160,9 @@ START_TEST(test08_test_new_from_xmlNode)
 			"LassoTest", &this_info, 0);
 	r = lasso_registry_default_add_direct_mapping("http://example.com", "Test1", LASSO_LASSO_HREF, "LassoTest");
 	fail_unless(r == 0, "no mapping for http://example.com:Test1 should exist");
+	begin_check_do_log(G_LOG_LEVEL_WARNING, "	Class LassoTest has no node_data so no initialization is possible", TRUE);
 	node = lasso_node_new_from_dump("<Test1 xmlns=\"http://example.com\"></Test1>");
+	end_check_do_log();
 	fail_unless(node != NULL, "parsing <Test1/> should return an object");
 	fail_unless(strcmp(G_OBJECT_TYPE_NAME(node), "LassoTest") == 0, "node classname should be LassoTest");
 	g_object_unref(node);
@@ -1850,21 +1856,21 @@ START_TEST(test10_test_alldumps)
 #endif
 	/* test deserialization of saml2:EncryptedAssertion" */
 	const char *encrypted_element_xml[] = {
-	"<EncryptedAssertion xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n\
-		<EncryptedData/>\
-		<EncryptedKey/>\
+	"<EncryptedAssertion xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns:xmlenc=\"http://www.w3.org/2001/04/xmlenc#\">\n\
+		<xmlenc:EncryptedData/>\
+		<xmlenc:EncryptedKey/>\
 	</EncryptedAssertion>",
-	"<EncryptedID xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n\
-		<EncryptedData/>\
-		<EncryptedKey/>\
+	"<EncryptedID xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns:xmlenc=\"http://www.w3.org/2001/04/xmlenc#\">\n\
+		<xmlenc:EncryptedData/>\
+		<xmlenc:EncryptedKey/>\
 	</EncryptedID>",
-	"<EncryptedAttribute xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n\
-		<EncryptedData/>\
-		<EncryptedKey/>\
+	"<EncryptedAttribute xmlns=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns:xmlenc=\"http://www.w3.org/2001/04/xmlenc#\">\n\
+		<xmlenc:EncryptedData/>\
+		<xmlenc:EncryptedKey/>\
 	</EncryptedAttribute>",
-	"<NewEncryptedID xmlns=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n\
-		<EncryptedData/>\
-		<EncryptedKey/>\
+	"<NewEncryptedID xmlns=\"urn:oasis:names:tc:SAML:2.0:protocol\" xmlns:xmlenc=\"http://www.w3.org/2001/04/xmlenc#\">\n\
+		<xmlenc:EncryptedData/>\
+		<xmlenc:EncryptedKey/>\
 	</NewEncryptedID>", NULL };
 	const char **iter = encrypted_element_xml;
 	while (*iter) {
@@ -1960,11 +1966,13 @@ START_TEST(test13_test_lasso_server_load_metadata)
 			TESTSDATADIR "/idp5-saml2/private-key.pem",
 			NULL, /* Secret key to unlock private key */
 			NULL));
+	block_lasso_logs;
 	check_good_rc(lasso_server_load_metadata(server, LASSO_PROVIDER_ROLE_IDP,
 				TESTSDATADIR "/metadata/renater-metadata.xml",
 				TESTSDATADIR "/metadata/metadata-federation-renater.crt",
 				&blacklisted_1, &loaded_entity_ids,
 				LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT));
+	unblock_lasso_logs;
 	check_equals(g_hash_table_size(server->providers), 110);
 	check_equals(g_list_length(loaded_entity_ids), 110);
 
@@ -2012,6 +2020,54 @@ START_TEST(test14_lasso_key)
 }
 END_TEST
 
+/* test load federation */
+START_TEST(test15_ds_key_info)
+{
+	LassoDsKeyInfo *ds_key_info = lasso_ds_key_info_new();
+	LassoDsKeyValue *ds_key_value = lasso_ds_key_value_new();
+	LassoDsX509Data *x509_data = lasso_ds_x509_data_new();
+	char *dump;
+	GList list;
+	LassoNode *node;
+
+	lasso_ds_x509_data_set_certificate(x509_data, "coucou");
+	lasso_ds_key_value_set_x509_data(ds_key_value, x509_data);
+	ds_key_info->KeyValue = g_object_ref(ds_key_value);
+	dump = lasso_node_debug((LassoNode*)ds_key_info, 10);
+	lasso_release_gobject(ds_key_info);
+	lasso_release_gobject(ds_key_value);
+	lasso_release_gobject(x509_data);
+	ds_key_info = (LassoDsKeyInfo*)lasso_node_new_from_dump(dump);
+	lasso_release_string(dump);
+	check_not_null(ds_key_info);
+	check_true(LASSO_IS_DS_KEY_INFO(ds_key_info));
+	check_not_null(ds_key_info->KeyValue);
+	check_true(LASSO_IS_DS_KEY_VALUE(ds_key_info->KeyValue));
+	x509_data = lasso_ds_key_value_get_x509_data(ds_key_info->KeyValue);
+	check_not_null(x509_data);
+	check_true(LASSO_IS_DS_X509_DATA(x509_data));
+	check_str_equals(lasso_ds_x509_data_get_certificate(x509_data), "coucou");
+	/* LassoSaml2SubjectConfirmation */
+	LassoSaml2SubjectConfirmation *sc = (LassoSaml2SubjectConfirmation*) \
+			lasso_saml2_subject_confirmation_new();
+	LassoSaml2KeyInfoConfirmationDataType *kicdt = (LassoSaml2KeyInfoConfirmationDataType*) \
+			lasso_saml2_key_info_confirmation_data_type_new();
+	lasso_assign_string(sc->Method, LASSO_SAML2_CONFIRMATION_METHOD_HOLDER_OF_KEY);
+	lasso_assign_new_gobject(sc->SubjectConfirmationData, &kicdt->parent);
+	list = (GList){ .data = ds_key_info, .next = NULL, .prev = NULL };
+	lasso_saml2_key_info_confirmation_data_type_set_key_info(kicdt, &list);
+	dump = lasso_node_debug((LassoNode*)sc, 10);
+	printf("1 %s\n", dump);
+	lasso_release_gobject(sc);
+	lasso_release_gobject(ds_key_info);
+	node = lasso_node_new_from_dump(dump);
+	lasso_release_string(dump);
+	dump = lasso_node_debug(node, 10);
+	printf("2 %s\n", dump);
+	lasso_release_string(dump);
+}
+END_TEST
+
 Suite*
 basic_suite()
 {
@@ -2028,6 +2084,7 @@ basic_suite()
 	TCase *tc_custom_namespace = tcase_create("Test custom namespace handling");
 	TCase *tc_load_metadata = tcase_create("Test loading a federation metadata file");
 	TCase *tc_key = tcase_create("Test loading and manipulating LassoKey objects");
+	TCase *tc_key_info = tcase_create("Test creating and dumping ds:KeyInfo nodes");
 
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
@@ -2041,6 +2098,7 @@ basic_suite()
 	suite_add_tcase(s, tc_custom_namespace);
 	suite_add_tcase(s, tc_load_metadata);
 	suite_add_tcase(s, tc_key);
+	suite_add_tcase(s, tc_key_info);
 
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
@@ -2056,6 +2114,7 @@ basic_suite()
 	tcase_add_test(tc_custom_namespace, test12_custom_namespace);
 	tcase_add_test(tc_load_metadata, test13_test_lasso_server_load_metadata);
 	tcase_add_test(tc_key, test14_lasso_key);
+	tcase_add_test(tc_key_info, test15_ds_key_info);
 	tcase_set_timeout(tc_load_metadata, 10);
 	return s;
 }

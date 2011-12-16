@@ -167,6 +167,7 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoFederation, remote_nameIdentifier), NULL, NULL, NULL},
 	{ "RemoteProviderID", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoFederation, remote_providerID), NULL, NULL, NULL},
+	{ "FederationDumpVersion", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL },
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

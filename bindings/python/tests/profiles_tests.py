@@ -452,8 +452,8 @@ class AttributeAuthorityTestCase(unittest.TestCase):
 class LogoutTestCase(unittest.TestCase):
     def test01(self):
         '''Test parsing of a logout request with more than one session index'''
-        content = '''<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="xxxx" Version="2.0" IssueInstant="2010-06-14T22:00:00">
-        <samlp:Issuer>me</samlp:Issuer>
+        content = '''<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="xxxx" Version="2.0" IssueInstant="2010-06-14T22:00:00">
+        <saml:Issuer>me</saml:Issuer>
         <samlp:SessionIndex>id1</samlp:SessionIndex>
         <samlp:SessionIndex>id2</samlp:SessionIndex>
         <samlp:SessionIndex>id3</samlp:SessionIndex>
@@ -461,8 +461,8 @@ class LogoutTestCase(unittest.TestCase):
 
         node = lasso.Samlp2LogoutRequest.newFromXmlNode(content)
         assert isinstance(node, lasso.Samlp2LogoutRequest)
-        assert node.sessionIndex == 'id3'
-        assert node.sessionIndexes == ('id1', 'id2', 'id3')
+        assert node.sessionIndex == 'id1'
+        assert node.sessionIndexes == ('id2', 'id3', 'id1')
 
 serverSuite = unittest.makeSuite(ServerTestCase, 'test')
 loginSuite = unittest.makeSuite(LoginTestCase, 'test')

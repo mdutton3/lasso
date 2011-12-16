@@ -30,7 +30,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "../xml.h"
-#include "../ds_key_info.h"
+#include "../dsig/ds_key_info.h"
 #include "./saml2_subject_confirmation_data.h"
 
 #define LASSO_TYPE_SAML2_KEY_INFO_CONFIRMATION_DATA_TYPE \
@@ -51,14 +51,13 @@ extern "C" {
 
 typedef struct _LassoSaml2KeyInfoConfirmationDataType LassoSaml2KeyInfoConfirmationDataType;
 typedef struct _LassoSaml2KeyInfoConfirmationDataTypeClass LassoSaml2KeyInfoConfirmationDataTypeClass;
-
+typedef struct _LassoSaml2KeyInfoConfirmationDataTypePrivate LassoSaml2KeyInfoConfirmationDataTypePrivate;
 
 struct _LassoSaml2KeyInfoConfirmationDataType {
 	LassoSaml2SubjectConfirmationData parent;
 
-	/*< public >*/
-	/* attributes */
-	GList *KeyInfo; /* of LassoDsKeyInfo */
+	/*< private >*/
+	LassoSaml2KeyInfoConfirmationDataTypePrivate *private_data;
 };
 
 
@@ -68,8 +67,11 @@ struct _LassoSaml2KeyInfoConfirmationDataTypeClass {
 
 LASSO_EXPORT GType lasso_saml2_key_info_confirmation_data_type_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml2_key_info_confirmation_data_type_new(void);
-
-
+LASSO_EXPORT GList *lasso_saml2_key_info_confirmation_data_type_get_key_info(
+		LassoSaml2KeyInfoConfirmationDataType *kicdt);
+LASSO_EXPORT void lasso_saml2_key_info_confirmation_data_type_set_key_info(
+		LassoSaml2KeyInfoConfirmationDataType *kicdt,
+		GList *key_infos);
 
 #ifdef __cplusplus
 }

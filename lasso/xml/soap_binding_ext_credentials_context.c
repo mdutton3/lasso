@@ -54,7 +54,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "RequestAuthnContext", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, RequestAuthnContext), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, RequestAuthnContext), NULL,
+		LASSO_LIB_PREFIX, LASSO_LIB_HREF},
 	{ "SecurityMechID", SNIPPET_CONTENT,
 		G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, SecurityMechID), NULL, NULL, NULL},
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBindingExtCredentialsContext, id), NULL, NULL, NULL},

@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include "xml.h"
-#include "ds_key_value.h"
+#include "../xml.h"
+#include "./ds_key_value.h"
 
 #define LASSO_TYPE_DS_KEY_INFO (lasso_ds_key_info_get_type())
 #define LASSO_DS_KEY_INFO(obj) \

@@ -55,7 +55,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Inquiry", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionStatement, Inquiry), NULL, NULL, NULL},
-	{ "Signature", SNIPPET_SIGNATURE, 0, NULL, NULL, NULL  },
+	{ "Signature", SNIPPET_SIGNATURE, 0, NULL, LASSO_DS_PREFIX, LASSO_DS_HREF  },
 
 	/* hidden fields; used in lasso dumps */
 	{ "SignType", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,

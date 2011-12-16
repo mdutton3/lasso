@@ -516,6 +516,9 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "CaCertChainFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, ca_cert_chain), NULL, NULL, NULL},
 	{ "MetadataFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, metadata_filename), NULL, NULL, NULL},
 	{ "ProviderID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoProvider, ProviderID), NULL, NULL, NULL},
+	{ "ProviderRole", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL},
+	{ "EncryptionMode", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL},
+	{ "ProviderDumpVersion", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
@@ -1756,10 +1759,9 @@ cleanup:
  * @key: a #LassoKey object
  * @after:(default FALSE): add the key at the end of the list, not on front.
  *
- * Add a new signature key for validating message received from @provider.
- * If the key is used to improve verification time add it first with @after as true, it the key is
- * ther for coninuitý of service (when doing a key rollover for example) at it last with @after as
- * false.
+ * Add a new signature key for validating message received from @provider. If the key is used to
+ * improve verification time add it first with @after as true, it the key is ther for continuity of
+ * service (when doing a key rollover for example) at it last with @after as false.
  *
  * Return value: 0 if successful, an error code otherwise.
  */

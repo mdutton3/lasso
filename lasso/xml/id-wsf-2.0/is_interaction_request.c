@@ -56,7 +56,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Inquiry", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, Inquiry), NULL, NULL, NULL},
 	{ "KeyInfo", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, KeyInfo), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, KeyInfo), NULL, LASSO_DS_PREFIX, LASSO_DS_HREF},
 	{ "id", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2IsInteractionRequest, id), NULL, NULL, NULL},
 	{ "language", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,

@@ -60,11 +60,12 @@ struct _LassoIsInteractionRequest {
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 	GList *Inquiry; /* of LassoNode */
 	/* TODO : ds:KeyInfo */
+	LassoDsKeyInfo *KeyInfo;
 
 	char *id;
 	char *language;
 	int maxInteractTime;
-	/* TODO : signed */
+	char *signed_attribute;
 };
 
 struct _LassoIsInteractionRequestClass {

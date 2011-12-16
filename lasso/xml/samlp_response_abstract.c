@@ -65,7 +65,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Signature", SNIPPET_SIGNATURE,
-		G_STRUCT_OFFSET(LassoSamlpResponseAbstract, ResponseID), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoSamlpResponseAbstract, ResponseID), NULL, LASSO_DS_PREFIX,
+		LASSO_DS_HREF},
 	{ "ResponseID", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSamlpResponseAbstract, ResponseID), NULL, NULL, NULL},
 	{ "MajorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,

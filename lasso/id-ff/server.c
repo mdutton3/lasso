@@ -254,10 +254,20 @@ cleanup:
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "PrivateKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, private_key), NULL, NULL, NULL},
+	{ "PrivateKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, private_key), NULL,
+		NULL, NULL},
 	{ "PrivateKeyPassword", SNIPPET_CONTENT,
 		G_STRUCT_OFFSET(LassoServer, private_key_password), NULL, NULL, NULL},
-	{ "CertificateFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, certificate), NULL, NULL, NULL},
+	{ "CertificateFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, certificate), NULL,
+		NULL, NULL},
+	{ "SignatureMethod", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL },
+	{ "Providers", SNIPPET_LIST_NODES, 0, NULL, NULL, NULL },
+	{ "ServerDumpVersion", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL },
+#ifdef LASSO_WSF_ENABLED
+	{ "Services", SNIPPET_LIST_NODES, 0, NULL, NULL, NULL },
+	{ "SvcMDs", SNIPPET_LIST_NODES, 0, NULL, NULL, NULL },
+#endif
+
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

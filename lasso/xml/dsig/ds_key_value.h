@@ -29,8 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include "xml.h"
-#include "ds_rsa_key_value.h"
+#include "../xml.h"
+#include "./ds_rsa_key_value.h"
+#include "./ds_x509_data.h"
 
 #define LASSO_TYPE_DS_KEY_VALUE (lasso_ds_key_value_get_type())
 #define LASSO_DS_KEY_VALUE(obj) \
@@ -62,6 +63,9 @@ struct _LassoDsKeyValueClass {
 
 LASSO_EXPORT GType lasso_ds_key_value_get_type(void);
 LASSO_EXPORT LassoDsKeyValue* lasso_ds_key_value_new(void);
+LASSO_EXPORT LassoDsX509Data *lasso_ds_key_value_get_x509_data(LassoDsKeyValue *key_value);
+LASSO_EXPORT void lasso_ds_key_value_set_x509_data(LassoDsKeyValue *key_value, LassoDsX509Data
+		*x509_data);
 
 #ifdef __cplusplus
 }

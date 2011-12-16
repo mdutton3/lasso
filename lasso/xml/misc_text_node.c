@@ -33,6 +33,7 @@
 
 typedef struct {
 	xmlNode *xml_content;
+	GHashTable *any_attributes;
 } LassoMiscTextNodePrivate;
 
 #define LASSO_MISC_TEXT_NODE_GET_PRIVATE(o) \
@@ -41,30 +42,19 @@ typedef struct {
 static struct XmlSnippet schema_snippets[] = {
 	{ "content", SNIPPET_TEXT_CHILD,
 		G_STRUCT_OFFSET(LassoMiscTextNode, content), NULL, NULL, NULL},
+	{ "any_attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY | SNIPPET_PRIVATE,
+		G_STRUCT_OFFSET(LassoMiscTextNodePrivate, any_attributes), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
 static LassoNodeClass *parent_class = NULL;
-
-
-static void
-insure_namespace(xmlNode *xmlnode, xmlNs *ns)
-{
-	xmlNode *t = xmlnode->children;
-
-	xmlSetNs(xmlnode, ns);
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE && t->ns == NULL)
-			insure_namespace(t, ns);
-		t = t->next;
-	}
-}
 
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	xmlNs *ns;
+	LassoMiscTextNode *mtnode = (LassoMiscTextNode*)node;
 	LassoMiscTextNodePrivate *private;
 
 	private = LASSO_MISC_TEXT_NODE_GET_PRIVATE(node);
@@ -77,10 +67,12 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	}
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	xmlNodeSetName(xmlnode, (xmlChar*)LASSO_MISC_TEXT_NODE(node)->name);
-	ns = xmlNewNs(xmlnode, (xmlChar*)LASSO_MISC_TEXT_NODE(node)->ns_href,
-			(xmlChar*)LASSO_MISC_TEXT_NODE(node)->ns_prefix);
-	insure_namespace(xmlnode, ns);
+	xmlNodeSetName(xmlnode, BAD_CAST mtnode->name);
+	if (! lasso_strisempty(mtnode->ns_href) && ! lasso_strisempty(mtnode->ns_href)) {
+		ns = xmlNewNs(xmlnode, BAD_CAST mtnode->ns_href,
+				BAD_CAST mtnode->ns_prefix);
+		xmlSetNs(xmlnode, ns);
+	}
 
 	return xmlnode;
 }

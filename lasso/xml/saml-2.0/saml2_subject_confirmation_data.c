@@ -52,7 +52,7 @@
  */
 
 struct _LassoSaml2SubjectConfirmationDataPrivate {
-	GList *any; /* of LassoMiscTextNode */
+	GList *any;
 	GHashTable *attributes;
 };
 

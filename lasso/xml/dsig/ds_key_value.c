@@ -22,22 +22,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "private.h"
-#include "ds_rsa_key_value.h"
+#include "../private.h"
+#include "./ds_key_value.h"
 
-/*
- * SECTION:ds_rsa_key_value
- * @short_description: Object representation of an XML DSIG element to hold an RSA key
+/**
+ * SECTION:ds_key_value
+ * @short_description: object mapping for an XML DSIG KeyValue element
  *
  */
+
+struct _LassoDsKeyValuePrivate {
+	LassoDsX509Data *X509Data;
+};
+
+typedef struct _LassoDsKeyValuePrivate LassoDsKeyValuePrivate;
+
+#define LASSO_DS_KEY_VALUE_GET_PRIVATE(o) \
+	   (G_TYPE_INSTANCE_GET_PRIVATE ((o), LASSO_TYPE_DS_KEY_VALUE, LassoDsKeyValuePrivate))
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Modulus", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDsRsaKeyValue, Modulus), NULL, NULL, NULL},
-	{ "Exponent", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDsRsaKeyValue, Exponent), NULL, NULL, NULL},
+	{ "RSAKeyValue", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDsKeyValue, RSAKeyValue), NULL, NULL, NULL},
+	{ "X509Data", SNIPPET_NODE|SNIPPET_PRIVATE, G_STRUCT_OFFSET(LassoDsKeyValuePrivate, X509Data), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
@@ -47,50 +56,80 @@ static struct XmlSnippet schema_snippets[] = {
 
 
 static void
-class_init(LassoDsRsaKeyValueClass *klass)
+class_init(LassoDsKeyValueClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "RsaKeyValue");
+	lasso_node_class_set_nodename(nclass, "KeyValue");
 	lasso_node_class_set_ns(nclass, LASSO_DS_HREF, LASSO_DS_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	g_type_class_add_private(klass, sizeof(LassoDsKeyValuePrivate));
 }
 
 GType
-lasso_ds_rsa_key_value_get_type()
+lasso_ds_key_value_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoDsRsaKeyValueClass),
+			sizeof (LassoDsKeyValueClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoDsRsaKeyValue),
+			sizeof(LassoDsKeyValue),
 			0,
 			NULL,
 			NULL
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoDsRsaKeyValue", &this_info, 0);
+				"LassoDsKeyValue", &this_info, 0);
 	}
 	return this_type;
 }
 
 /**
- * lasso_ds_rsa_key_value_new:
+ * lasso_ds_key_value_new:
  *
- * Creates a new #LassoDsRsaKeyValue object.
+ * Creates a new #LassoDsKeyValue object.
  *
- * Return value: a newly created #LassoDsRsaKeyValue object
+ * Return value: a newly created #LassoDsKeyValue object
  **/
-LassoDsRsaKeyValue*
-lasso_ds_rsa_key_value_new()
+LassoDsKeyValue*
+lasso_ds_key_value_new()
 {
-	return g_object_new(LASSO_TYPE_DS_RSA_KEY_VALUE, NULL);
+	return g_object_new(LASSO_TYPE_DS_KEY_VALUE, NULL);
+}
+
+/**
+ * lasso_ds_key_value_get_x509_data:
+ *
+ * Get the X509 Data node if there is one.
+ *
+ * Return value:(transfer none): the internal value of the X509Data field
+ */
+LassoDsX509Data*
+lasso_ds_key_value_get_x509_data(LassoDsKeyValue *key_value)
+{
+	lasso_return_val_if_fail(LASSO_IS_DS_KEY_VALUE(key_value), NULL);
+
+	return LASSO_DS_KEY_VALUE_GET_PRIVATE(key_value)->X509Data;
+}
+
+/**
+ * lasso_ds_key_value_set_x509_data:
+ *
+ * Set the X509 Data node.
+ *
+ */
+void
+lasso_ds_key_value_set_x509_data(LassoDsKeyValue *key_value, LassoDsX509Data *x509_data)
+{
+	lasso_return_if_fail(LASSO_IS_DS_KEY_VALUE(key_value));
+
+	lasso_assign_gobject(LASSO_DS_KEY_VALUE_GET_PRIVATE(key_value)->X509Data, x509_data);
 }

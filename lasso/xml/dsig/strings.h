@@ -20,35 +20,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
 
-#ifndef __LASSO_PROFILE_PRIVATE_H__
-#define __LASSO_PROFILE_PRIVATE_H__
+/*
+ * This header file copy part of the SOAP 1.1 specification you can found there:
+ * http://www.w3.org/TR/soap12-part1/
+ * whom copyright is:
+ * Copyright © 2007 W3C® (MIT, ERCIM, Keio), All Rights Reserved. W3C liability, trademark and
+ * document use rules apply.
+ */
 
-#ifdef __cplusplus
-extern "C" {
 
-#endif /* __cplusplus */
+/**
+ * SECTION:dsig_strings
+ * @short_description: General strings constants for XMLDsig
+ * @include: lasso/xml/dsig/strings.h
+ *
+ **/
 
-#include "./profile.h"
+#ifndef __LASSO_DSIG_STRINGS_H__
+#define __LASSO_DSIG_STRINGS_H__
 
-struct _LassoProfilePrivate
-{
-	char *artifact;
-	char *artifact_message;
-	gboolean dispose_has_run;
-	LassoProfileSignatureHint signature_hint;
-	LassoProfileSignatureVerifyHint signature_verify_hint;
-};
+/* xmldsig prefix & href */
+/**
+ * LASSO_DS_HREF:
+ *
+ * Namespace for FIXME
+ *
+ */
+#define LASSO_DS_HREF   "http://www.w3.org/2000/09/xmldsig#"
+/**
+ * LASSO_DS_PREFIX:
+ *
+ * Preferred prefix for namespace of FIXME
+ *
+ */
+#define LASSO_DS_PREFIX "ds"
 
-void lasso_profile_set_response_status(LassoProfile *profile, const gchar *statusCodeValue);
-void lasso_profile_clean_msg_info(LassoProfile *profile);
-
-#define LASSO_PROFILE_GET_PRIVATE(o) \
-	   (G_TYPE_INSTANCE_GET_PRIVATE ((o), LASSO_TYPE_PROFILE, LassoProfilePrivate))
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
-#endif /* __LASSO_PROFILE_PRIVATE_H__ */
+#endif /* __LASSO_DSIG_STRINGS_H__ */

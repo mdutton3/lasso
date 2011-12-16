@@ -50,7 +50,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "TransitedProvider", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2SecTransitedProviderPath, TransitedProvider), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoIdWsf2SecTransitedProviderPath, TransitedProvider), NULL,
+		LASSO_IDWSF2_SEC_PREFIX, LASSO_IDWSF2_SEC_HREF},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

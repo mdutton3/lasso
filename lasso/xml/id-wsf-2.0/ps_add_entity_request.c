@@ -65,7 +65,8 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Subscription", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, Subscription), NULL, NULL, NULL},
 	{ "TokenPolicy", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, TokenPolicy), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoIdWsf2PsAddEntityRequest, TokenPolicy), NULL,
+		LASSO_IDWSF2_UTIL_PREFIX, LASSO_IDWSF2_UTIL_HREF},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

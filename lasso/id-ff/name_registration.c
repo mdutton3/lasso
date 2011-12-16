@@ -645,6 +645,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 static struct XmlSnippet schema_snippets[] = {
 	{ "OldNameIdentifier", SNIPPET_NODE_IN_CHILD,
 		G_STRUCT_OFFSET(LassoNameRegistration, oldNameIdentifier), NULL, NULL, NULL},
+	{ "NameRegistrationDumpVersion", SNIPPET_ATTRIBUTE, 0, NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

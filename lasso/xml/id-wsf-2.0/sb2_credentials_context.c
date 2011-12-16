@@ -52,7 +52,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "RequestedAuthnContext", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoIdWsf2Sb2CredentialsContext, RequestedAuthnContext),
-		"LassoSamlp2RequestedAuthnContext", NULL, NULL },
+		"LassoSamlp2RequestedAuthnContext", LASSO_SAML_PROTOCOL_PREFIX, LASSO_SAML_PROTOCOL_HREF},
 	{ "SecurityMechID", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoIdWsf2Sb2CredentialsContext, SecurityMechID), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,

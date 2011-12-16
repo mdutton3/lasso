@@ -483,6 +483,9 @@ def parse_header(header_file):
                 pass
             else:
                 # TODO: Add parsing of OFTYPE
+                # Transform struct to typedef
+                # example: "struct _LassoAssertion" -> "LassoAssertion"
+                line = re.sub('\s+struct _', ' ', line)
                 member_match = re.match('\s+(\w+)\s+(\*?\w+)', line)
                 if member_match:
                     member_type, member_name = normalise_var(member_match.group(1), member_match.group(2))

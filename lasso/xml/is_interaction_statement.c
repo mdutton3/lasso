@@ -49,8 +49,9 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Inquiry", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInteractionStatement, Inquiry), NULL, NULL, NULL},
-	/* TODO : Signature */
+	{ "Inquiry", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInteractionStatement, Inquiry), NULL,
+		NULL, NULL},
+	{ "Signature", SNIPPET_SIGNATURE, 0, NULL, LASSO_DS_PREFIX, LASSO_DS_HREF },
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

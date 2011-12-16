@@ -47,9 +47,16 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+struct _LassoSaml2AttributeValuePrivate {
+	GHashTable *any_attributes;
+};
+
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_NODES | SNIPPET_ANY,
+	{ "any", SNIPPET_LIST_NODES | SNIPPET_ANY | SNIPPET_ALLOW_TEXT,
 		G_STRUCT_OFFSET(LassoSaml2AttributeValue, any), NULL, NULL, NULL},
+	{ "any_attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY | SNIPPET_PRIVATE,
+		G_STRUCT_OFFSET(struct _LassoSaml2AttributeValuePrivate, any_attributes), NULL,
+		NULL, NULL },
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
@@ -85,6 +92,7 @@ class_init(LassoSaml2AttributeValueClass *klass)
 	lasso_node_class_set_nodename(nclass, "AttributeValue");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	g_type_class_add_private(klass, sizeof(struct _LassoSaml2AttributeValuePrivate));
 }
 
 GType

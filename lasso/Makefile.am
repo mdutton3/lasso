@@ -57,6 +57,8 @@ if MINGW
 liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/xml/liblasso-xml.la \
 	$(top_builddir)/lasso/xml/saml-2.0/liblasso-xml-saml2.la \
+	$(top_builddir)/lasso/xml/soap-1.1/liblasso-xml-soap11.la \
+	$(top_builddir)/lasso/xml/dsig/liblasso-xml-dsig.la \
 	$(top_builddir)/lasso/id-ff/liblasso-id-ff.la \
 	$(top_builddir)/lasso/saml-2.0/liblasso-saml-20.la \
 	$(WSF_LIB_FILE) \
@@ -73,6 +75,7 @@ liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/xml/liblasso-xml.la \
 	$(top_builddir)/lasso/xml/saml-2.0/liblasso-xml-saml2.la \
 	$(top_builddir)/lasso/xml/soap-1.1/liblasso-xml-soap11.la \
+	$(top_builddir)/lasso/xml/dsig/liblasso-xml-dsig.la \
 	$(top_builddir)/lasso/id-ff/liblasso-id-ff.la \
 	$(top_builddir)/lasso/saml-2.0/liblasso-saml-20.la \
 	$(WSF_LIB_FILE) \

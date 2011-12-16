@@ -125,6 +125,23 @@ static inline void critical(const char *format, ...)
 }
 #endif
 
+#if defined(__GNUC__)
+#  define error(format, args...) \
+	message(G_LOG_LEVEL_DEBUG, format, ##args)
+#elif defined(HAVE_VARIADIC_MACROS)
+#  define error(...)     message(G_LOG_LEVEL_DEBUG, __VA_ARGS__)
+#else
+static inline void error(const char *format, ...)
+{
+	va_list ap;
+	char s[1024];
+	va_start(ap, format);
+	g_vsnprintf(s, 1024, format, ap);
+	va_end(ap);
+	message(G_LOG_LEVEL_ERROR, "%s", s);
+}
+#endif
+
 #define critical_error(rc) (critical("%s", lasso_strerror(rc)), rc)
 
 #endif /* __LASSO_LOGGING_H_ */

@@ -165,26 +165,17 @@ START_TEST(indexed_endpoints_20101008)
 }
 END_TEST
 
-void error_log_func(G_GNUC_UNUSED const gchar *log_domain, G_GNUC_UNUSED GLogLevelFlags log_level,
-		const gchar *message, G_GNUC_UNUSED gpointer user_data)
-{
-	fail_unless(FALSE, "error_func called... %s", message);
-}
-
 START_TEST(remove_warning_when_parssing_unknown_SNIPPET_LIST_NODES_20111007)
 {
 	LassoNode *node;
 	xmlDoc *xmldoc;
 	const char content[] = "<saml:Attribute Name=\"urn:oid:1.3.6.1.4.1.5923.1.1.1.10\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\" FriendlyName=\"eduPersonTargetedID\" xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\"><saml:AttributeValue><NameID Format=\"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent\" NameQualifier=\"https://services-federation.renater.fr/test/idp\" SPNameQualifier=\"https://univnautes.entrouvert.lan/authsaml2/metadata\">C8NQsm1Y3Gas9m0AMDhxU7UxCSI=</NameID></saml:AttributeValue></saml:Attribute>";
-	guint log_handler;
 
 	xmldoc = xmlReadMemory(content, sizeof(content)-1, NULL, NULL, 0);
 	check_not_null(xmldoc);
-	log_handler = g_log_set_handler("Lasso", G_LOG_LEVEL_MASK, error_log_func, NULL);
 	node = lasso_node_new_from_xmlNode(xmlDocGetRootElement(xmldoc));
 	check_not_null(node);
 	check_true(LASSO_IS_SAML2_ATTRIBUTE(node));
-	g_log_remove_handler("Lasso", log_handler);
 	check_true(LASSO_IS_NODE(node));
 	xmlFreeDoc(xmldoc);
 	lasso_release_gobject(node);

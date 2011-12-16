@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "private.h"
-#include "ds_key_info.h"
+#include "../private.h"
+#include "./ds_key_info.h"
 
 /**
  * SECTION:ds_key_info
