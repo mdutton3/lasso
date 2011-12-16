@@ -20,4 +20,5 @@ liblassoinclude_HEADERS = \
 	ds_key_info.h \
 	ds_key_value.h \
 	ds_rsa_key_value.h \
-	ds_x509_data.h
+	ds_x509_data.h \
+	strings.h
