@@ -23,7 +23,7 @@
  */
 
 #include "../private.h"
-#include "./soap_body.h"
+#include "soap_body.h"
 
 /**
  * SECTION:soap_body

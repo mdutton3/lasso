@@ -26,11 +26,11 @@
 
 #include <check.h>
 
-#include <../lasso/lasso.h>
+#include "../lasso/lasso.h"
 #include <glib.h>
 #include "../lasso/utils.h"
 #include "../lasso/backward_comp.h"
-#include "./tests.h"
+#include "tests.h"
 #include "../bindings/ghashtable.h"
 
 

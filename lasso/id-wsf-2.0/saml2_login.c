@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "./saml2_login.h"
+#include "saml2_login.h"
 #include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "identity.h"
 #include "server.h"
@@ -44,7 +44,7 @@
 #include "../xml/saml-2.0/saml2_attribute_statement.h"
 #include "../xml/saml-2.0/saml2_attribute_value.h"
 #include "../xml/saml-2.0/samlp2_response.h"
-#include "./idwsf2_helper.h"
+#include "idwsf2_helper.h"
 #include "../xml/private.h"
 
 

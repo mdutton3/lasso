@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include "is_redirect_request.h"
-#include "./idwsf_strings.h"
+#include "idwsf_strings.h"
 
 /**
  * SECTION:is_redirect_request

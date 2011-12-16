@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include "sa_password_transforms.h"
-#include "./idwsf_strings.h"
+#include "idwsf_strings.h"
 
 /**
  * SECTION:sa_password_transforms

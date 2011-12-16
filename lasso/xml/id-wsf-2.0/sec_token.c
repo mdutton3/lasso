@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "sec_token.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:sec_token

@@ -31,7 +31,7 @@ extern "C" {
 
 #include "../xml.h"
 #include "../dsig/ds_key_info.h"
-#include "./saml2_subject_confirmation_data.h"
+#include "saml2_subject_confirmation_data.h"
 
 #define LASSO_TYPE_SAML2_KEY_INFO_CONFIRMATION_DATA_TYPE \
 	(lasso_saml2_key_info_confirmation_data_type_get_type())

@@ -26,22 +26,22 @@
 
 #include <check.h>
 
-#include <../lasso/lasso.h>
+#include "../lasso/lasso.h"
 #include <glib.h>
 #include "../lasso/utils.h"
 
-#include <../lasso/id-ff/login.h>
-#include <../lasso/id-ff/server.h>
-#include <../lasso/id-ff/identity.h>
-#include <../lasso/id-ff/session.h>
-#include <../lasso/id-wsf-2.0/discovery.h>
-#include <../lasso/id-wsf-2.0/data_service.h>
-#include <../lasso/id-wsf-2.0/saml2_login.h>
+#include "../lasso/id-ff/login.h"
+#include "../lasso/id-ff/server.h"
+#include "../lasso/id-ff/identity.h"
+#include "../lasso/id-ff/session.h"
+#include "../lasso/id-wsf-2.0/discovery.h"
+#include "../lasso/id-wsf-2.0/data_service.h"
+#include "../lasso/id-wsf-2.0/saml2_login.h"
 
-#include <../lasso/xml/saml-2.0/samlp2_authn_request.h>
-#include <../lasso/xml/idwsf_strings.h>
+#include "../lasso/xml/saml-2.0/samlp2_authn_request.h"
+#include "../lasso/xml/idwsf_strings.h"
 
-#include "./tests.h"
+#include "tests.h"
 
 static const char
 wsp_metadata[] = TESTSDATADIR "sp5-saml2/metadata.xml";

@@ -26,14 +26,14 @@
 
 #include <check.h>
 
-#include <../lasso/lasso.h>
-#include "./tests.h"
-#include <../lasso/xml/lib_assertion.h>
-#include <../lasso/xml/lib_authentication_statement.h>
-#include <../lasso/xml/saml_name_identifier.h>
-#include <../lasso/xml/samlp_response.h>
-#include <../lasso/xml/saml-2.0/saml2_attribute.h>
-#include <../lasso/id-ff/provider.h>
+#include "../lasso/lasso.h"
+#include "tests.h"
+#include "../lasso/xml/lib_assertion.h"
+#include "../lasso/xml/lib_authentication_statement.h"
+#include "../lasso/xml/saml_name_identifier.h"
+#include "../lasso/xml/samlp_response.h"
+#include "../lasso/xml/saml-2.0/saml2_attribute.h"
+#include "../lasso/id-ff/provider.h"
 #include "../lasso/utils.h"
 #include <libxml/tree.h>
 #include <libxml/parser.h>

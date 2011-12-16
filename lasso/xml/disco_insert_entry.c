@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include "disco_insert_entry.h"
-#include "./idwsf_strings.h"
+#include "idwsf_strings.h"
 #include "../utils.h"
 
 /**

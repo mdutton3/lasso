@@ -31,7 +31,7 @@ extern "C" {
 
 #include "../xml/ws/wsa_endpoint_reference.h"
 #include "../xml/id-wsf-2.0/disco_security_context.h"
-#include "./profile.h"
+#include "profile.h"
 
 
 const char* lasso_wsa_endpoint_reference_get_idwsf2_service_type(

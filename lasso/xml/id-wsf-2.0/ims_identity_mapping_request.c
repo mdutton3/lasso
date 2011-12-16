@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "ims_identity_mapping_request.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:ims_identity_mapping_request

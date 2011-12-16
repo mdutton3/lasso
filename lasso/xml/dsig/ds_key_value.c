@@ -23,7 +23,7 @@
  */
 
 #include "../private.h"
-#include "./ds_key_value.h"
+#include "ds_key_value.h"
 
 /**
  * SECTION:ds_key_value

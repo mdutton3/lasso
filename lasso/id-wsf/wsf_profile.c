@@ -34,11 +34,11 @@
 
 #include "../utils.h"
 
-#include "./wsf_profile.h"
+#include "wsf_profile.h"
 #include "../xml/idwsf_strings.h"
-#include "./wsf_profile_private.h"
-#include "./discovery.h"
-#include "./wsf_utils.h"
+#include "wsf_profile_private.h"
+#include "discovery.h"
+#include "wsf_utils.h"
 #include "../xml/disco_modify.h"
 #include "../xml/soap-1.1/soap_fault.h"
 #include "../xml/soap_binding_correlation.h"

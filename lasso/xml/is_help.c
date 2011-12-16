@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include "is_help.h"
-#include "./idwsf_strings.h"
+#include "idwsf_strings.h"
 
 /**
  * SECTION:is_help

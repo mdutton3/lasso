@@ -40,7 +40,7 @@
 #include "profile.h"
 #include "profileprivate.h"
 #include "providerprivate.h"
-#include "./sessionprivate.h"
+#include "sessionprivate.h"
 
 #include "../saml-2.0/profileprivate.h"
 #include "../xml/saml-2.0/saml2_name_id.h"

@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "ps_list_members_request.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:ps_list_members_request

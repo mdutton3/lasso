@@ -25,10 +25,10 @@
 #ifndef __LASSO_XML_SOAP11_H__
 #define __LASSO_XML_SOAP11_H__
 
-#include "./soap_body.h"
-#include "./soap_detail.h"
-#include "./soap_envelope.h"
-#include "./soap_fault.h"
-#include "./soap_header.h"
+#include "soap_body.h"
+#include "soap_detail.h"
+#include "soap_envelope.h"
+#include "soap_fault.h"
+#include "soap_header.h"
 
 #endif /* __LASSO_XML_SOAP11_H__ */

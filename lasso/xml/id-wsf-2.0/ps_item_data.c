@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "ps_item_data.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:ps_item_data

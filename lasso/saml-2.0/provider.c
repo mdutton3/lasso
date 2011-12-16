@@ -35,7 +35,7 @@
 #include "../id-ff/server.h"
 #include "../id-ff/providerprivate.h"
 #include "../utils.h"
-#include "./provider.h"
+#include "provider.h"
 #include "../xml/saml-2.0/saml2_attribute.h"
 #include "../xml/saml-2.0/saml2_xsd.h"
 

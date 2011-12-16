@@ -161,9 +161,9 @@ static inline void lasso_log(GLogLevelFlags level, const char *filename,
 #define lasso_log lasso_log
 #endif
 
-#include "./gobject_handling.c"
-#include "./glist_handling.c"
-#include "./ghashtable_handling.c"
+#include "gobject_handling.c"
+#include "glist_handling.c"
+#include "ghashtable_handling.c"
 
 
 #define lasso_assign_simple(a,b) a = b;

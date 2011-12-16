@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include "disco_description.h"
-#include "./idwsf_strings.h"
+#include "idwsf_strings.h"
 #include "../id-wsf/wsf_utils.h"
 #include "../utils.h"
 

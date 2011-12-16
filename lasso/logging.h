@@ -26,7 +26,7 @@
 #define __LASSO_LOGGING_H__ 1
 
 #include <glib.h>
-#include "./errors.h"
+#include "errors.h"
 
 #ifndef lasso_log
 void lasso_log(GLogLevelFlags level, const char *filename, int line,

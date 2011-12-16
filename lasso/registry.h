@@ -27,7 +27,7 @@
 #define __REGISTRY_H__
 
 #include <glib.h>
-#include "./export.h"
+#include "export.h"
 
 #ifdef __cplusplus
 extern "C" {

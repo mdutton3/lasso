@@ -22,9 +22,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "./interaction_profile_service.h"
+#include "interaction_profile_service.h"
 #include "../xml/idwsf_strings.h"
-#include "./wsf_profile.h"
+#include "wsf_profile.h"
 #include "../xml/soap-1.1/soap_detail.h"
 #include "../xml/soap-1.1/soap_fault.h"
 #include "../xml/is_redirect_request.h"

@@ -26,11 +26,11 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include "./providerprivate.h"
-#include "./loginprivate.h"
-#include "./profileprivate.h"
-#include "./federationprivate.h"
-#include "./saml2_helper.h"
+#include "providerprivate.h"
+#include "loginprivate.h"
+#include "profileprivate.h"
+#include "federationprivate.h"
+#include "saml2_helper.h"
 
 #include "../id-ff/providerprivate.h"
 #include "../id-ff/serverprivate.h"

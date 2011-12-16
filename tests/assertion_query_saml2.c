@@ -33,7 +33,7 @@
 #include "../lasso/xml/saml-2.0/saml2_xsd.h"
 #include "../bindings/ghashtable.h"
 
-#include "./tests.h"
+#include "tests.h"
 
 inline static char*
 generateIdentityProviderContextDump()

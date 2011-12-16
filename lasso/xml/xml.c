@@ -50,13 +50,13 @@
 #include "../utils.h"
 #include "../registry.h"
 #include "../debug.h"
-#include "./soap-1.1/soap_envelope.h"
-#include "./soap-1.1/soap_body.h"
-#include "./misc_text_node.h"
+#include "soap-1.1/soap_envelope.h"
+#include "soap-1.1/soap_body.h"
+#include "misc_text_node.h"
 #include "../lasso_config.h"
 #ifdef LASSO_WSF_ENABLED
-#include "./idwsf_strings.h"
-#include "./id-wsf-2.0/idwsf2_strings.h"
+#include "idwsf_strings.h"
+#include "id-wsf-2.0/idwsf2_strings.h"
 #endif
 
 static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, xmlNode *xmlnode,

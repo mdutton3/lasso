@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "ps_add_entity_response.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:ps_add_entity_response

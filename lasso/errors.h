@@ -36,7 +36,7 @@
  * <para><emphasis>Beware that this convention is not always well followed.</emphasis></para>
  */
 
-#include "./export.h"
+#include "export.h"
 
 LASSO_EXPORT const char* lasso_strerror(int error_code);
 

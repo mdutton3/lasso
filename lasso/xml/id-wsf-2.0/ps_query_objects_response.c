@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "ps_query_objects_response.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:ps_query_objects_response

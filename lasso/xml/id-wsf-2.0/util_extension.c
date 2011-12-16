@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "util_extension.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:util_extension

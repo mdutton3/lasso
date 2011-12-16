@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "ps_response_abstract.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:ps_response_abstract

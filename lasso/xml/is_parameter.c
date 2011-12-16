@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include "is_parameter.h"
-#include "./idwsf_strings.h"
+#include "idwsf_strings.h"
 
 /**
  * SECTION:is_parameter

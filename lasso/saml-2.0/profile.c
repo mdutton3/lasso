@@ -26,10 +26,10 @@
 #include <xmlsec/base64.h>
 
 #include "../utils.h"
-#include "./providerprivate.h"
-#include "./profileprivate.h"
-#include "./profile.h"
-#include "./provider.h"
+#include "providerprivate.h"
+#include "profileprivate.h"
+#include "profile.h"
+#include "provider.h"
 
 #include "../id-ff/providerprivate.h"
 #include "../id-ff/profile.h"

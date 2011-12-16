@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "dstref_create_response.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:dstref_create_response

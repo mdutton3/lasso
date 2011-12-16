@@ -23,7 +23,7 @@
  */
 
 #include "../utils.h"
-#include "./authentication.h"
+#include "authentication.h"
 #include "../xml/idwsf_strings.h"
 #include "../xml/private.h"
 #include "../xml/sa_sasl_request.h"

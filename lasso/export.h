@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include "./ctypes.h"
+#include "ctypes.h"
 
 /* Now, the export orgy begins. The following we must do for the
  * Windows platform with MSVC compiler. */

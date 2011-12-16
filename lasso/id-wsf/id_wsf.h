@@ -25,14 +25,14 @@
 #ifndef __LASSO_IDSWF_H__
 #define __LASSO_IDSWF_H__
 
-#include "./authentication.h"
-#include "./data_service.h"
-#include "./discovery.h"
-#include "./id_ff_extensions.h"
-#include "./id_wsf.h"
-#include "./interaction_profile_service.h"
-#include "./personal_profile_service.h"
-#include "./wsf_utils.h"
-#include "./wsf_profile.h"
+#include "authentication.h"
+#include "data_service.h"
+#include "discovery.h"
+#include "id_ff_extensions.h"
+#include "id_wsf.h"
+#include "interaction_profile_service.h"
+#include "personal_profile_service.h"
+#include "wsf_utils.h"
+#include "wsf_profile.h"
 
 #endif /* __LASSO_IDSWF_H__ */

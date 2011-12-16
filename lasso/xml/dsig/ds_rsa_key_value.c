@@ -23,7 +23,7 @@
  */
 
 #include "../private.h"
-#include "./ds_rsa_key_value.h"
+#include "ds_rsa_key_value.h"
 
 /*
  * SECTION:ds_rsa_key_value

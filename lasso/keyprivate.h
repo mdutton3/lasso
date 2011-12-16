@@ -24,7 +24,7 @@
 #ifndef __LASSO_KEY_PRIVATE_H__
 #define __LASSO_KEY_PRIVATE_H__
 
-#include "./xml/private.h"
+#include "xml/private.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "./idwsf2_helper.h"
+#include "idwsf2_helper.h"
 #include "../xml/id-wsf-2.0/idwsf2_strings.h"
 #include "../xml/id-wsf-2.0/disco_abstract.h"
 #include "../xml/id-wsf-2.0/disco_service_type.h"

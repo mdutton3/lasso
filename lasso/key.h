@@ -28,7 +28,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include "./xml/xml.h"
+#include "xml/xml.h"
 
 #define LASSO_TYPE_KEY (lasso_key_get_type())
 #define LASSO_KEY(obj) \

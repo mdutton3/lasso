@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "subs_ref_item.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:subs_ref_item

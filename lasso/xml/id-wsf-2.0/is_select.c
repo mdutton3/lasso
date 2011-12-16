@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "is_select.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:is_select

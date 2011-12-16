@@ -30,7 +30,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "xml.h"
-#include "./dsig/ds_key_info.h"
+#include "dsig/ds_key_info.h"
 
 #define LASSO_TYPE_SAML_SUBJECT_CONFIRMATION (lasso_saml_subject_confirmation_get_type())
 #define LASSO_SAML_SUBJECT_CONFIRMATION(obj) \

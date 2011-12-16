@@ -23,7 +23,7 @@
  */
 
 #include "../private.h"
-#include "./ds_x509_data.h"
+#include "ds_x509_data.h"
 
 /**
  * SECTION:ds_x509_data

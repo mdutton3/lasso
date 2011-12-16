@@ -23,9 +23,9 @@
  */
 
 #include "../private.h"
-#include "./samlp2_response.h"
-#include "./saml2_assertion.h"
-#include "./saml2_encrypted_element.h"
+#include "samlp2_response.h"
+#include "saml2_assertion.h"
+#include "saml2_encrypted_element.h"
 #include "../../utils.h"
 
 /**

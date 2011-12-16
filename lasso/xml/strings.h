@@ -42,8 +42,8 @@
 #ifndef __LASSO_STRINGS_H__
 #define __LASSO_STRINGS_H__
 
-#include "./saml-2.0/saml2_strings.h"
-#include "./dsig/strings.h"
+#include "saml-2.0/saml2_strings.h"
+#include "dsig/strings.h"
 
 /*****************************************************************************/
 /* SOAP 1.1                                                                  */

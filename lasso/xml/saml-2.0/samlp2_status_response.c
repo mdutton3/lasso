@@ -25,8 +25,8 @@
 
 #include "../private.h"
 #include "../../utils.h"
-#include "./samlp2_status_response.h"
-#include "./saml2_strings.h"
+#include "samlp2_status_response.h"
+#include "saml2_strings.h"
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 

@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include "soap_binding_usage_directive.h"
-#include "./idwsf_strings.h"
+#include "idwsf_strings.h"
 
 /**
  * SECTION:soap_binding_usage_directive

@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "util_response.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 #include "../../utils.h"
 
 /**

@@ -25,9 +25,9 @@
 #ifndef __LASSO_SOAP_BINDING_H__
 #define __LASSO_SOAP_BINDING_H__
 
-#include "./soap_binding_provider.h"
-#include "./soap_binding_correlation.h"
-#include "./soap-1.1/soap_envelope.h"
+#include "soap_binding_provider.h"
+#include "soap_binding_correlation.h"
+#include "soap-1.1/soap_envelope.h"
 
 #ifdef __cplusplus
 extern "C" {

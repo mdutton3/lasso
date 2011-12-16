@@ -26,10 +26,10 @@
 
 #include <check.h>
 
-#include <../lasso/lasso.h>
-#include <../lasso/id-ff/provider.h>
+#include "../lasso/lasso.h"
+#include "../lasso/id-ff/provider.h"
 #include "../lasso/utils.h"
-#include "./tests.h"
+#include "tests.h"
 #include "../lasso/xml/saml-2.0/saml2_xsd.h"
 
 START_TEST(test01_metadata_load_der_certificate_from_x509_cert)

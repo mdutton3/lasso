@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include "is_interaction_request.h"
-#include "./idwsf_strings.h"
+#include "idwsf_strings.h"
 
 /**
  * SECTION:is_interaction_request

@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "subs_notification.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:subs_notification

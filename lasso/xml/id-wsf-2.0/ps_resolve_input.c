@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "ps_resolve_input.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:ps_resolve_input

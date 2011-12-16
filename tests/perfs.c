@@ -25,9 +25,9 @@
 #include <time.h>
 #include <getopt.h>
 
-#include <../lasso/lasso.h>
-#include <../lasso/xml/saml-2.0/samlp2_response.h>
-#include <../lasso/xml/saml-2.0/samlp2_authn_request.h>
+#include "../lasso/lasso.h"
+#include "../lasso/xml/saml-2.0/samlp2_response.h"
+#include "../lasso/xml/saml-2.0/samlp2_authn_request.h"
 
 #define IDP_METADATA TESTSDATADIR "/idp%s/metadata.xml"
 #define IDP_PKEY TESTSDATADIR "/idp%s/private-key.pem"

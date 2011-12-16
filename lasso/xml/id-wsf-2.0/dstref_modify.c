@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "dstref_modify.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:dstref_modify

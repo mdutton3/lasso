@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <glib.h>
-#include "./utils.h"
+#include "utils.h"
 
 /**
  * SECTION:utilities

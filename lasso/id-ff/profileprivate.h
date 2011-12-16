@@ -30,7 +30,7 @@ extern "C" {
 
 #endif /* __cplusplus */
 
-#include "./profile.h"
+#include "profile.h"
 
 struct _LassoProfilePrivate
 {

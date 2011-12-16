@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "./saml2_helper.h"
+#include "saml2_helper.h"
 
 #include "../id-ff/server.h"
 #include "../id-ff/serverprivate.h"
@@ -34,7 +34,7 @@
 #include "../xml/saml-2.0/saml2_attribute_value.h"
 #include "../xml/private.h"
 #include "../utils.h"
-#include "./provider.h"
+#include "provider.h"
 #include <time.h>
 
 static GList* lasso_saml2_assertion_get_audience_restrictions(LassoSaml2Assertion *assertion);

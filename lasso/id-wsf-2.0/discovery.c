@@ -82,11 +82,11 @@
 #include "../id-ff/provider.h"
 #include "../id-ff/providerprivate.h"
 
-#include "./discovery.h"
+#include "discovery.h"
 #include "../xml/id-wsf-2.0/idwsf2_strings.h"
-#include "./soap_binding.h"
-#include "./idwsf2_helper.h"
-#include "./saml2_login.h"
+#include "soap_binding.h"
+#include "idwsf2_helper.h"
+#include "saml2_login.h"
 #include "../utils.h"
 
 struct _LassoIdWsf2DiscoveryPrivate

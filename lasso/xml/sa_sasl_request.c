@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include "sa_sasl_request.h"
-#include "./idwsf_strings.h"
+#include "idwsf_strings.h"
 
 /**
  * SECTION:sa_sasl_request

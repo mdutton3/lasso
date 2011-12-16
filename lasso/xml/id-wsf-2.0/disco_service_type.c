@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "disco_service_type.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:disco_service_type

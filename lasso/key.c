@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "./key.h"
-#include "./keyprivate.h"
-#include "./xml/private.h"
+#include "key.h"
+#include "keyprivate.h"
+#include "xml/private.h"
 
 /*****************************************************************************/
 /* private methods                                                           */

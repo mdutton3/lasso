@@ -30,8 +30,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "../xml.h"
-#include "./ds_rsa_key_value.h"
-#include "./ds_x509_data.h"
+#include "ds_rsa_key_value.h"
+#include "ds_x509_data.h"
 
 #define LASSO_TYPE_DS_KEY_VALUE (lasso_ds_key_value_get_type())
 #define LASSO_DS_KEY_VALUE(obj) \

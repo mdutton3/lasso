@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "sb2_sender.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:sb2_sender

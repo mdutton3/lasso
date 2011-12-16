@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "ims_mapping_input.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:ims_mapping_input

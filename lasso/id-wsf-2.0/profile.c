@@ -57,8 +57,8 @@
 #include "../xml/saml-2.0/saml2_assertion.h"
 #include "../xml/misc_text_node.h"
 #include "../utils.h"
-#include "./idwsf2_helper.h"
-#include "./soap_binding.h"
+#include "idwsf2_helper.h"
+#include "soap_binding.h"
 #include "../id-wsf/wsf_utils.h"
 #include "../saml-2.0/saml2_helper.h"
 

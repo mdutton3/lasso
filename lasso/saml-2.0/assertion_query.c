@@ -24,9 +24,9 @@
 
 #include "../id-ff/session.h"
 #include "../xml/private.h"
-#include "./assertion_query.h"
-#include "./providerprivate.h"
-#include "./profileprivate.h"
+#include "assertion_query.h"
+#include "providerprivate.h"
+#include "profileprivate.h"
 #include "../id-ff/providerprivate.h"
 #include "../id-ff/profileprivate.h"
 #include "../id-ff/identityprivate.h"

@@ -24,7 +24,7 @@
 
 #include "private.h"
 #include "dst_query_item.h"
-#include "./idwsf_strings.h"
+#include "idwsf_strings.h"
 
 /**
  * SECTION:dst_query_item

@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "disco_svc_md_register.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 #include "disco_svc_metadata.h"
 
 /**

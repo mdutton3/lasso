@@ -25,7 +25,7 @@
 #ifndef __LASSO_SERVER_PRIVATE_H__
 #define __LASSO_SERVER_PRIVATE_H__
 
-#include "./server.h"
+#include "server.h"
 #include "../xml/private.h"
 
 #ifdef __cplusplus

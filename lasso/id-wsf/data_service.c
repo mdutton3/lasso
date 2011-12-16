@@ -61,8 +61,8 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include "./discovery.h"
-#include "./data_service.h"
+#include "discovery.h"
+#include "data_service.h"
 #include "../xml/idwsf_strings.h"
 #include "../xml/dst_query.h"
 #include "../xml/dst_query_response.h"
@@ -76,7 +76,7 @@
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
-#include "./wsf_profile_private.h"
+#include "wsf_profile_private.h"
 
 extern GHashTable *dst_services_by_prefix; /* cf xml/xml.c */
 

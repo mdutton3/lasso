@@ -24,7 +24,7 @@
 
 #include "../private.h"
 #include "dst_test_item_base.h"
-#include "./idwsf2_strings.h"
+#include "idwsf2_strings.h"
 
 /**
  * SECTION:dst_test_item_base

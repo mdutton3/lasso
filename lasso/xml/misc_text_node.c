@@ -24,8 +24,8 @@
 
 #include <libxml/tree.h>
 #include "../utils.h"
-#include "./private.h"
-#include "./misc_text_node.h"
+#include "private.h"
+#include "misc_text_node.h"
 
 /*****************************************************************************/
 /* private methods                                                           */

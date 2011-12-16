@@ -23,9 +23,9 @@
  */
 
 #include <glib.h>
-#include "./registry-private.h"
-#include "./errors.h"
-#include "./utils.h"
+#include "registry-private.h"
+#include "errors.h"
+#include "utils.h"
 
 
 /**

@@ -37,7 +37,7 @@
 #include "../lasso/utils.h"
 #include "../lasso/xml/private.h"
 #include <libxml/tree.h>
-#include "./tests.h"
+#include "tests.h"
 
 START_TEST(test01_server_load_dump_empty_string)
 {

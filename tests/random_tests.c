@@ -26,12 +26,12 @@
 
 #include <check.h>
 
-#include <../lasso/lasso.h>
+#include "../lasso/lasso.h"
 
-#include <../lasso/xml/lib_assertion.h>
-#include <../lasso/xml/lib_authentication_statement.h>
-#include <../lasso/xml/saml_name_identifier.h>
-#include <../lasso/xml/samlp_response.h>
+#include "../lasso/xml/lib_assertion.h"
+#include "../lasso/xml/lib_authentication_statement.h"
+#include "../lasso/xml/saml_name_identifier.h"
+#include "../lasso/xml/samlp_response.h"
 #include "../lasso/utils.h"
 
 

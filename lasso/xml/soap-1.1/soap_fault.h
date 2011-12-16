@@ -30,7 +30,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "../xml.h"
-#include "./soap_detail.h"
+#include "soap_detail.h"
 
 #define LASSO_TYPE_SOAP_FAULT (lasso_soap_fault_get_type())
 #define LASSO_SOAP_FAULT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
