@@ -55,15 +55,17 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "ResourceID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIsInteractionRequest, ResourceID), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoIsInteractionRequest, ResourceID), NULL,
+		LASSO_DISCO_PREFIX, LASSO_DISCO_HREF},
 	{ "EncryptedResourceID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIsInteractionRequest, EncryptedResourceID), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoIsInteractionRequest, EncryptedResourceID), NULL,
+		LASSO_DISCO_PREFIX, LASSO_DISCO_HREF},
 	{ "Inquiry", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIsInteractionRequest, Inquiry), NULL, NULL, NULL},
 	/* TODO : KeyInfo */
-	{ "id", SNIPPET_ATTRIBUTE,
+	{ "id", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIsInteractionRequest, id), NULL, NULL, NULL},
-	{ "language", SNIPPET_ATTRIBUTE,
+	{ "language", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIsInteractionRequest, language), NULL, NULL, NULL},
 	{ "maxInteractTime", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIsInteractionRequest, maxInteractTime), NULL, NULL, NULL},

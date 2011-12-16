@@ -59,11 +59,11 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "NameID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2ManageNameIDRequest, NameID), NULL, NULL, NULL},
-	{ "EncryptedID", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2ManageNameIDRequest, EncryptedID),
-		"LassoSaml2EncryptedElement", NULL, NULL},
+	{ "NameID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlp2ManageNameIDRequest, NameID), NULL,
+		LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF},
+	{ "EncryptedID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlp2ManageNameIDRequest, EncryptedID),
+		"LassoSaml2EncryptedElement", LASSO_SAML2_ASSERTION_PREFIX,
+		LASSO_SAML2_ASSERTION_HREF},
 	{ "NewID", SNIPPET_CONTENT,
 		G_STRUCT_OFFSET(LassoSamlp2ManageNameIDRequest, NewID), NULL, NULL, NULL},
 	{ "NewEncryptedID", SNIPPET_NODE,

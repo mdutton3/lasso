@@ -57,7 +57,8 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "SubjectConfirmationData", SNIPPET_CONTENT,
 		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, SubjectConfirmationData), NULL, NULL, NULL},
 	{ "KeyInfo", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, KeyInfo), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, KeyInfo), NULL, LASSO_DS_PREFIX,
+		LASSO_DS_HREF},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

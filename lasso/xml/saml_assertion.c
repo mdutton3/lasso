@@ -80,7 +80,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "AttributeStatement", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlAssertion, AttributeStatement), NULL, NULL, NULL},
 	{ "Signature", SNIPPET_SIGNATURE,
-		G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID), NULL, LASSO_DS_PREFIX, LASSO_DS_HREF},
 	{ "MajorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
 		G_STRUCT_OFFSET(LassoSamlAssertion, MajorVersion), NULL, NULL, NULL},
 	{ "MinorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,

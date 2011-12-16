@@ -53,10 +53,10 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Action", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Action), NULL, NULL, NULL},
-	{ "Evidence", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Evidence), NULL, NULL, NULL},
+	{ "Action", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Action), NULL,
+		LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF},
+	{ "Evidence", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Evidence), NULL,
+		LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF},
 	{ "Resource", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSamlp2AuthzDecisionQuery, Resource), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}

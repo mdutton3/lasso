@@ -51,7 +51,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Status", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDAssociationDeleteResponse, Status),
-		"LassoIdWsf2UtilStatus", NULL, NULL },
+		"LassoIdWsf2UtilStatus", LASSO_IDWSF2_UTIL_PREFIX, LASSO_IDWSF2_UTIL_HREF},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoSvcMDAssociationDeleteResponse, attributes), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}

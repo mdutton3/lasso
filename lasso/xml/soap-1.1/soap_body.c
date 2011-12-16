@@ -54,7 +54,10 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSoapBody, any), NULL, NULL, NULL},
+	{ "any", SNIPPET_LIST_NODES | SNIPPET_ANY, G_STRUCT_OFFSET(LassoSoapBody, any), NULL, NULL,
+		NULL},
+	{ "Id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSoapBody, Id), NULL, LASSO_WSUTIL1_PREFIX,
+		LASSO_WSUTIL1_HREF },
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

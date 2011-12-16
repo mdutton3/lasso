@@ -59,7 +59,8 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "SecurityMechID", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoIdWsf2DiscoSecurityContext, SecurityMechID), NULL, NULL, NULL},
 	{ "Token", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoSecurityContext, Token), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoSecurityContext, Token), NULL,
+		LASSO_IDWSF2_SEC_PREFIX, LASSO_IDWSF2_SEC_HREF},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

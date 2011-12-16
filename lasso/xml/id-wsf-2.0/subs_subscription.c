@@ -68,7 +68,7 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, RefItem), NULL, NULL, NULL},
 	{ "Extension", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, Extension),
-		"LassoIdWsf2Utilextension", NULL, NULL },
+		"LassoIdWsf2Utilextension", LASSO_IDWSF2_UTIL_PREFIX, LASSO_IDWSF2_UTIL_HREF},
 	{ "subscriptionID", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoIdWsf2SubsSubscription, subscriptionID), NULL, NULL, NULL},
 	{ "notifyToRef", SNIPPET_ATTRIBUTE,

@@ -52,7 +52,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Extension", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRequest, Extension),
-		"LassoIdWsf2Utilextension", NULL, NULL },
+		"LassoIdWsf2Utilextension", LASSO_IDWSF2_UTIL_PREFIX, LASSO_IDWSF2_UTIL_HREF},
 	{ "itemID", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoIdWsf2DstRequest, itemID), NULL, NULL, NULL},
 	{ "attributes", SNIPPET_ATTRIBUTE | SNIPPET_ANY,

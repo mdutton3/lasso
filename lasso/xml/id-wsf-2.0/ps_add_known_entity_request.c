@@ -59,13 +59,15 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Object", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoIdWsf2PsAddKnownEntityRequest, Object), NULL, NULL, NULL},
 	{ "Token", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsAddKnownEntityRequest, Token), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoIdWsf2PsAddKnownEntityRequest, Token), NULL,
+		LASSO_IDWSF2_SEC_PREFIX, LASSO_IDWSF2_SEC_HREF},
 	{ "CreatePSObject", SNIPPET_CONTENT,
 		G_STRUCT_OFFSET(LassoIdWsf2PsAddKnownEntityRequest, CreatePSObject), NULL, NULL, NULL},
 	{ "Subscription", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoIdWsf2PsAddKnownEntityRequest, Subscription), NULL, NULL, NULL},
 	{ "TokenPolicy", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoIdWsf2PsAddKnownEntityRequest, TokenPolicy), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoIdWsf2PsAddKnownEntityRequest, TokenPolicy), NULL,
+		LASSO_IDWSF2_SEC_PREFIX, LASSO_IDWSF2_SEC_HREF},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

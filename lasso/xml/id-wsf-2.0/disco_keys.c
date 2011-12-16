@@ -51,7 +51,8 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "KeyDescriptor", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoIdWsf2DiscoKeys, KeyDescriptor), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoIdWsf2DiscoKeys, KeyDescriptor), NULL, LASSO_METADATA_PREFIX,
+		LASSO_METADATA_HREF},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 

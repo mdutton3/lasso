@@ -26,6 +26,7 @@
 #include "../private.h"
 #include "../../utils.h"
 #include "./samlp2_status_response.h"
+#include "./saml2_strings.h"
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 
@@ -62,9 +63,9 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Issuer", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlp2StatusResponse, Issuer),
-		"LassoSaml2NameID", NULL, NULL},
+		"LassoSaml2NameID", LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF},
 	{ "Signature", SNIPPET_SIGNATURE,
-		G_STRUCT_OFFSET(LassoSamlp2StatusResponse, ID), NULL, NULL, NULL},
+		G_STRUCT_OFFSET(LassoSamlp2StatusResponse, ID), NULL, LASSO_DS_PREFIX, LASSO_DS_HREF},
 	{ "Extensions", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlp2StatusResponse, Extensions), NULL, NULL, NULL},
 	{ "Status", SNIPPET_NODE,

@@ -60,7 +60,8 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Extension", SNIPPET_EXTENSION,
 		G_STRUCT_OFFSET(LassoLibStatusResponse, Extension), NULL, NULL, NULL},
 	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibStatusResponse, ProviderID), NULL, NULL, NULL},
-	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibStatusResponse, Status), NULL, NULL, NULL},
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibStatusResponse, Status), NULL,
+		LASSO_SAML_PROTOCOL_PREFIX, LASSO_SAML_PROTOCOL_HREF},
 	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibStatusResponse, RelayState), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };

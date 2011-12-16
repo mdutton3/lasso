@@ -56,10 +56,11 @@ extern LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion, char *
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Assertion", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSamlp2Response, Assertion), NULL, NULL, NULL},
-	{ "EncryptedAssertion", SNIPPET_LIST_NODES,
-		G_STRUCT_OFFSET(LassoSamlp2Response, EncryptedAssertion), NULL, NULL, NULL},
+	{ "Assertion", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSamlp2Response, Assertion), NULL,
+		LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF},
+	{ "EncryptedAssertion", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSamlp2Response,
+			EncryptedAssertion), NULL, LASSO_SAML2_ASSERTION_PREFIX,
+	LASSO_SAML2_ASSERTION_HREF},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
