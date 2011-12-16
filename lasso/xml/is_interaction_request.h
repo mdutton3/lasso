@@ -59,12 +59,11 @@ struct _LassoIsInteractionRequest {
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 	GList *Inquiry; /* of LassoNode */
-	/* TODO : ds:KeyInfo */
-	LassoDsKeyInfo *KeyInfo;
 
 	char *id;
 	char *language;
 	int maxInteractTime;
+	LassoDsKeyInfo *KeyInfo;
 	char *signed_attribute;
 };
 
