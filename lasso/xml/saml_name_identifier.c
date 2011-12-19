@@ -98,6 +98,20 @@ lasso_saml_name_identifier_get_type()
 	return this_type;
 }
 
+gboolean
+lasso_saml_name_identifier_equals(LassoSamlNameIdentifier *a,
+		LassoSamlNameIdentifier *b) {
+	if (a == NULL || b == NULL)
+		return FALSE;
+
+	if (! LASSO_IS_SAML_NAME_IDENTIFIER(a) && ! LASSO_IS_SAML_NAME_IDENTIFIER(b)) {
+		return FALSE;
+	}
+	return lasso_strisequal(a->NameQualifier, b->NameQualifier)
+		&& lasso_strisequal(a->Format, b->Format)
+		&& lasso_strisequal(a->content, b->content);
+}
+
 /**
  * lasso_saml_name_identifier_new:
  *
