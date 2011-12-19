@@ -41,7 +41,7 @@
         <a href="/buildbox">Git Status</a></li>
       <li[is section "links"] id="current"[end]>
         <a href="/links">Related Links</a></li>
-      <li><a href="http://bugzilla.entrouvert.org/buglist.cgi?product=Lasso">Bug
+      <li><a href="http://dev.entrouvert.org/projects/lasso/issues/new">Bug
        reports</a></li>
         </ul>
 </div>
