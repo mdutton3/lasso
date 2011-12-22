@@ -401,6 +401,12 @@ lasso_login_build_assertion(LassoLogin *login,
 		}
 	}
 
+	/* add session index */
+	if (lasso_provider_get_first_http_method(&login->parent.server->parent,
+				provider, LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT) != LASSO_HTTP_METHOD_NONE) {
+		lasso_assign_string(as->SessionIndex, assertion->AssertionID);
+	}
+
 	assertion->AuthenticationStatement = LASSO_SAML_AUTHENTICATION_STATEMENT(as);
 
 	/* Save signing material in assertion private datas to be able to sign later */
