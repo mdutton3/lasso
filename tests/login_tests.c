@@ -33,6 +33,15 @@
 #include "tests.h"
 #include "../bindings/ghashtable.h"
 
+#define save_thin_session \
+	gboolean old_thin_sessions = lasso_flag_thin_sessions;
+
+#define push_thin_sessions \
+	lasso_flag_thin_sessions = FALSE;
+
+#define pop_thin_sessions \
+	lasso_flag_thin_sessions = old_thin_sessions;
+
 
 static char*
 generateIdentityProviderContextDump()
@@ -151,6 +160,7 @@ START_TEST(test02_serviceProviderLogin)
 	char *spLoginDump;
 	int requestType;
 	char *found;
+	save_thin_session;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
@@ -180,6 +190,7 @@ START_TEST(test02_serviceProviderLogin)
 			"authnRequestQuery RelayState parameter should be encoded");
 
 	/* Identity provider singleSignOn, for a user having no federation. */
+	push_thin_sessions;
 	identityProviderContextDump = generateIdentityProviderContextDump();
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
 	idpLoginContext = lasso_login_new(idpContext);
@@ -228,6 +239,7 @@ START_TEST(test02_serviceProviderLogin)
 	serviceProviderId = g_strdup(LASSO_PROFILE(idpLoginContext)->remote_providerID);
 	fail_unless(serviceProviderId != NULL,
 		    "lasso_profile_get_remote_providerID shouldn't return NULL");
+	pop_thin_sessions;
 
 	/* Service provider assertion consumer */
 	lasso_server_destroy(spContext);
@@ -250,6 +262,7 @@ START_TEST(test02_serviceProviderLogin)
 	soapRequestMsg = LASSO_PROFILE(spLoginContext)->msg_body;
 	fail_unless(soapRequestMsg != NULL, "soapRequestMsg must not be NULL");
 
+	push_thin_sessions;
 	/* Identity provider SOAP endpoint */
 	lasso_server_destroy(idpContext);
 	lasso_login_destroy(idpLoginContext);
@@ -267,6 +280,7 @@ START_TEST(test02_serviceProviderLogin)
 	check_good_rc(lasso_login_build_response_msg(idpLoginContext, serviceProviderId));
 	soapResponseMsg =  LASSO_PROFILE(idpLoginContext)->msg_body;
 	fail_unless(soapResponseMsg != NULL, "soapResponseMsg must not be NULL");
+	pop_thin_sessions;
 
 	/* Service provider assertion consumer (step 2: process SOAP response) */
 	check_good_rc(lasso_login_process_response_msg(spLoginContext, soapResponseMsg));
@@ -323,6 +337,7 @@ START_TEST(test03_serviceProviderLogin)
 	char *spIdentityContextDump;
 	char *spSessionDump;
 	int requestType;
+	save_thin_session;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
@@ -348,6 +363,7 @@ START_TEST(test03_serviceProviderLogin)
 	fail_unless(strlen(authnRequestQuery) > 0,
 			"authnRequestRequest shouldn't be an empty string");
 
+	push_thin_sessions;
 	/* Identity provider singleSignOn, for a user having no federation. */
 	identityProviderContextDump = generateIdentityProviderContextDumpMemory();
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
@@ -366,7 +382,6 @@ START_TEST(test03_serviceProviderLogin)
 			1, /* authentication_result */
 		        0 /* is_consent_obtained */
 			);
-
 	rc = lasso_login_build_assertion(idpLoginContext,
 			LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD,
 			"FIXME: authenticationInstant",
@@ -375,7 +390,6 @@ START_TEST(test03_serviceProviderLogin)
 			"FIXME: notOnOrAfter");
 	rc = lasso_login_build_artifact_msg(idpLoginContext, LASSO_HTTP_METHOD_REDIRECT);
 	fail_unless(rc == 0, "lasso_login_build_artifact_msg failed");
-
 	idpIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(idpLoginContext)->identity);
 	fail_unless(idpIdentityContextDump != NULL,
 		    "lasso_identity_dump shouldn't return NULL");
@@ -390,6 +404,7 @@ START_TEST(test03_serviceProviderLogin)
 	serviceProviderId = g_strdup(LASSO_PROFILE(idpLoginContext)->remote_providerID);
 	fail_unless(serviceProviderId != NULL,
 		    "lasso_profile_get_remote_providerID shouldn't return NULL");
+	pop_thin_sessions;
 
 	/* Service provider assertion consumer */
 	lasso_server_destroy(spContext);
@@ -406,6 +421,7 @@ START_TEST(test03_serviceProviderLogin)
 	soapRequestMsg = LASSO_PROFILE(spLoginContext)->msg_body;
 	fail_unless(soapRequestMsg != NULL, "soapRequestMsg must not be NULL");
 
+	push_thin_sessions;
 	/* Identity provider SOAP endpoint */
 	lasso_server_destroy(idpContext);
 	lasso_login_destroy(idpLoginContext);
@@ -425,6 +441,7 @@ START_TEST(test03_serviceProviderLogin)
 	fail_unless(rc == 0, "lasso_login_build_response_msg failed");
 	soapResponseMsg =  LASSO_PROFILE(idpLoginContext)->msg_body;
 	fail_unless(soapResponseMsg != NULL, "soapResponseMsg must not be NULL");
+	pop_thin_sessions;
 
 	/* Service provider assertion consumer (step 2: process SOAP response) */
 	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
