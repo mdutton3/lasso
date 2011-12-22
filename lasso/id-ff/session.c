@@ -32,9 +32,12 @@
 #include "../lasso_config.h"
 #include "session.h"
 #include "sessionprivate.h"
+#include "../xml/lib_authentication_statement.h"
 #include "../xml/saml_assertion.h"
+#include "../xml/saml-2.0/saml2_authn_statement.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
 #include "../utils.h"
+#include "../debug.h"
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -45,9 +48,144 @@
 #include "../id-wsf-2.0/sessionprivate.h"
 #endif
 
+static gboolean lasso_match_name_id(LassoNode *a, LassoNode *b);
+
+struct _NidAndSessionIndex {
+	LassoNode *name_id;
+	char *assertion_id;
+	char *session_index;
+};
+
+struct _NidAndSessionIndex *
+lasso_new_nid_and_session_index(LassoNode *name_id, const char *assertion_id, const char
+		*session_index)
+{
+	struct _NidAndSessionIndex *nid_and_session_index = g_new0(struct _NidAndSessionIndex, 1);
+	lasso_assign_gobject(nid_and_session_index->name_id, name_id);
+	lasso_assign_string(nid_and_session_index->assertion_id, assertion_id);
+	lasso_assign_string(nid_and_session_index->session_index, session_index);
+
+	return nid_and_session_index;
+}
+
+void
+lasso_release_nid_and_session_index(struct _NidAndSessionIndex *nid_and_session_index)
+{
+	lasso_release_gobject(nid_and_session_index->name_id);
+	lasso_release_string(nid_and_session_index->session_index);
+	lasso_release_string(nid_and_session_index->assertion_id);
+}
+
+void
+lasso_release_list_of_nid_an_session_index(GList *list)
+{
+	g_list_foreach(list, (GFunc)lasso_release_nid_and_session_index, NULL);
+	g_list_free(list);
+}
+
 /*****************************************************************************/
 /* public methods	                                                     */
 /*****************************************************************************/
+
+static void
+lasso_session_add_nid_and_session_index(LassoSession *session,
+		const char *providerID,
+		struct _NidAndSessionIndex *nid_and_session_index)
+{
+	GList *l = g_hash_table_lookup(session->private_data->nid_and_session_indexes, providerID);
+	GList *i;
+
+	lasso_foreach(i, l) {
+		struct _NidAndSessionIndex *other_nid_and_sid = i->data;
+
+		/* do some sharing and limit doublons */
+		if (lasso_match_name_id(other_nid_and_sid->name_id, nid_and_session_index->name_id)) {
+			if (lasso_strisequal(other_nid_and_sid->session_index, nid_and_session_index->session_index)) {
+				lasso_release_nid_and_session_index(nid_and_session_index);
+				return;
+			}
+			// lasso_assign_gobject(nid_and_session_index->name_id, other_nid_and_sid->name_id);
+		}
+	}
+	if (l) {
+		l = g_list_append(l, nid_and_session_index);
+	} else {
+		l = g_list_append(l, nid_and_session_index);
+		g_hash_table_insert(session->private_data->nid_and_session_indexes,
+				g_strdup(providerID), l);
+	}
+}
+
+/**
+ * lasso_session_add_assertion_nid_and_session_index:
+ *
+ * Extract NameID and SessionIndex and keep them around.
+ *
+ */
+static gint
+lasso_session_add_assertion_nid_and_session_index(LassoSession *session, const gchar *providerID,
+		LassoNode *assertion)
+{
+	struct _NidAndSessionIndex *nid_and_session_index = NULL;
+
+	lasso_bad_param(SESSION, session);
+	lasso_null_param(assertion);
+
+	if (LASSO_IS_SAML_ASSERTION(assertion)) { /* saml 1.1 */
+		LassoSamlAssertion *saml_assertion = (LassoSamlAssertion*) assertion;
+		LassoLibAuthenticationStatement *auth_statement = NULL;
+		LassoSamlSubjectStatementAbstract *ss = NULL;
+
+		if (saml_assertion->SubjectStatement)
+			ss = &saml_assertion->SubjectStatement->parent;
+		else if (saml_assertion->AuthenticationStatement)
+			ss = &saml_assertion->AuthenticationStatement->parent;
+		else
+			return LASSO_PARAM_ERROR_INVALID_VALUE;
+		if (! ss->Subject)
+			return LASSO_PARAM_ERROR_INVALID_VALUE;
+		if (! ss->Subject->NameIdentifier)
+			return LASSO_PARAM_ERROR_INVALID_VALUE;
+		if (! LASSO_IS_LIB_AUTHENTICATION_STATEMENT(saml_assertion->AuthenticationStatement))
+			return LASSO_ERROR_UNIMPLEMENTED;
+		auth_statement = (LassoLibAuthenticationStatement*)
+			saml_assertion->AuthenticationStatement;
+		if (! auth_statement->SessionIndex)
+			return 0;
+		nid_and_session_index = lasso_new_nid_and_session_index(
+				(LassoNode*)ss->Subject->NameIdentifier,
+				saml_assertion->AssertionID,
+				auth_statement->SessionIndex);
+		lasso_session_add_nid_and_session_index(session,
+				providerID, nid_and_session_index);
+	} else if (LASSO_IS_SAML2_ASSERTION(assertion)) { /* saml 2.0 */
+		LassoSaml2Assertion *saml2_assertion = (LassoSaml2Assertion*) assertion;
+		GList *iter;
+
+		if (! saml2_assertion->Subject)
+			return LASSO_PARAM_ERROR_INVALID_VALUE;
+		if (! saml2_assertion->Subject->NameID)
+			return LASSO_PARAM_ERROR_INVALID_VALUE;
+		if (! saml2_assertion->AuthnStatement)
+			return 0;
+		lasso_foreach(iter, saml2_assertion->AuthnStatement) {
+			LassoSaml2AuthnStatement *authn_statement = iter->data;
+
+			if (authn_statement->SessionIndex) {
+				nid_and_session_index = lasso_new_nid_and_session_index(
+						(LassoNode*)saml2_assertion->Subject->NameID,
+						saml2_assertion->ID,
+						authn_statement->SessionIndex);
+				lasso_session_add_nid_and_session_index(session,
+						providerID,
+						nid_and_session_index);
+			}
+		}
+	} else {
+		return LASSO_ERROR_UNIMPLEMENTED;
+	}
+	return 0;
+}
 
 static gint
 lasso_session_add_assertion_simple(LassoSession *session, const char *providerID, LassoNode
@@ -61,6 +199,133 @@ lasso_session_add_assertion_simple(LassoSession *session, const char *providerID
 			g_object_ref(assertion));
 
     return 0;
+}
+
+static gboolean
+lasso_match_name_id(LassoNode *a, LassoNode *b)
+{
+	if (LASSO_IS_SAML_NAME_IDENTIFIER(a) && LASSO_IS_SAML_NAME_IDENTIFIER(b)) {
+		return lasso_saml_name_identifier_equals((LassoSamlNameIdentifier*)a,
+					(LassoSamlNameIdentifier*)b);
+
+	} else if (LASSO_IS_SAML2_NAME_ID(a) && LASSO_IS_SAML2_NAME_ID(b)) {
+		return lasso_saml2_name_id_equals((LassoSaml2NameID*)a,
+					(LassoSaml2NameID*)b);
+	}
+	return FALSE;
+}
+
+/**
+ * lasso_session_get_session_indexes:
+ * @session: a #LassoSession object
+ * @providerID: a provider id
+ * @name_id: a #LassoSamlAssertion or #LassoSaml2Assertion object
+ *
+ * Gets all the registered session indexes for this session.
+ *
+ * Return value:(transfer full)(element-type utf8): a list of string containing the session index identifiers.
+ */
+GList*
+lasso_session_get_session_indexes(LassoSession *session,
+		const gchar *providerID,
+		LassoNode *node)
+{
+	GList *l = NULL, *iter = NULL;
+	GList *ret = NULL;
+
+	if (! LASSO_IS_SESSION(session))
+		return NULL;
+	if (! providerID)
+		return NULL;
+	l = g_hash_table_lookup(session->private_data->nid_and_session_indexes,
+			providerID);
+
+	lasso_foreach(iter, l) {
+		struct _NidAndSessionIndex *nid_and_session_index = iter->data;
+
+		if (! nid_and_session_index->session_index)
+			continue;
+
+		if (node && ! lasso_match_name_id(node, nid_and_session_index->name_id)) {
+			continue;
+		}
+		lasso_list_add_string(ret, nid_and_session_index->session_index);
+	}
+	return ret;
+}
+
+/**
+ * lasso_session_get_name_ids:
+ * @session: a #LassoSession object
+ * @providerID: a provider identifier
+ *
+ * List the known NameID coming from this provider during this session.
+ *
+ * Return value:(transfer full)(element-type LassoNode): a list of #LassoNode objects.
+ */
+GList*
+lasso_session_get_name_ids(LassoSession *session, const gchar *providerID)
+{
+	GList *nid_and_session_indexes = NULL;
+	GList *ret = NULL;
+	GList *i, *j;
+
+	if (! LASSO_IS_SESSION(session))
+		return NULL;
+
+	if (! providerID)
+		return NULL;
+
+	nid_and_session_indexes = g_hash_table_lookup(session->private_data->nid_and_session_indexes,
+			providerID);
+
+	lasso_foreach(i, nid_and_session_indexes) {
+		struct _NidAndSessionIndex *nid_and_session_index = i->data;
+		int ok = 1;
+
+		lasso_foreach(j, ret) {
+			if (lasso_match_name_id(j->data, nid_and_session_index->name_id)) {
+				ok = 0;
+				break;
+			}
+		}
+		if (ok) {
+			lasso_list_add_gobject(ret, nid_and_session_index->name_id);
+		}
+	}
+	return ret;
+}
+
+/**
+ * lasso_session_get_assertion_ids:
+ * @session: a #LassoSession object
+ * @providerID: a provider identifier
+ *
+ * List the ids of assertions received during the current session.
+ *
+ * Return value:(transfer full)(element-type utf8): a list of strings
+ */
+GList*
+lasso_session_get_assertion_ids(LassoSession *session, const gchar *providerID)
+{
+	GList *nid_and_session_indexes = NULL;
+	GList *ret = NULL;
+	GList *i;
+
+	if (! LASSO_IS_SESSION(session))
+		return NULL;
+
+	if (! providerID)
+		return NULL;
+
+	nid_and_session_indexes = g_hash_table_lookup(session->private_data->nid_and_session_indexes,
+			providerID);
+
+	lasso_foreach(i, nid_and_session_indexes) {
+		struct _NidAndSessionIndex *nid_and_session_index = i->data;
+		lasso_list_add_string(ret, nid_and_session_index->assertion_id);
+	}
+	return ret;
 }
 
 /**
@@ -83,7 +348,10 @@ lasso_session_add_assertion(LassoSession *session, const char *providerID, Lasso
 	if (ret != 0) {
 		return ret;
 	}
-
+	ret = lasso_session_add_assertion_nid_and_session_index(session, providerID, assertion);
+	if (ret != 0) {
+		return ret;
+	}
 	/* ID-WSF specific need */
 	if (LASSO_IS_SAML_ASSERTION(assertion)) {
 		LassoSamlAssertion *saml_assertion = LASSO_SAML_ASSERTION(assertion);
@@ -253,7 +521,7 @@ lasso_session_get_status(LassoSession *session, const gchar *providerID)
 }
 
 static void
-add_providerID(gchar *key, G_GNUC_UNUSED LassoLibAssertion *assertion, LassoSession *session)
+add_providerID(gchar *key, G_GNUC_UNUSED struct _NidAndSessionIndex *ignored, LassoSession *session)
 {
 	lasso_list_add_string(session->private_data->providerIDs, key);
 }
@@ -277,7 +545,7 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 	g_return_val_if_fail(LASSO_IS_SESSION(session), NULL);
 	g_return_val_if_fail(session->private_data, NULL);
 
-	length = g_hash_table_size(session->assertions);
+	length = g_hash_table_size(session->private_data->nid_and_session_indexes);
 
 	if (length == 0)
 		return NULL;
@@ -308,7 +576,8 @@ lasso_session_init_provider_ids(LassoSession *session)
 	g_return_if_fail(session->private_data);
 
 	lasso_release_list_of_strings(session->private_data->providerIDs);
-	g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
+	g_hash_table_foreach(session->private_data->nid_and_session_indexes, (GHFunc)add_providerID,
+			session);
 }
 
 
@@ -327,12 +596,18 @@ lasso_session_is_empty(LassoSession *session)
 		return TRUE;
 	}
 
-	if (g_hash_table_size(session->assertions)) {
+	if (g_hash_table_size(session->assertions) +
+	    g_hash_table_size(session->private_data->status) +
+	    g_hash_table_size(session->private_data->assertions_by_id) +
+	    g_hash_table_size(session->private_data->nid_and_session_indexes))
+	{
 		return FALSE;
 	}
-	if (g_hash_table_size(session->private_data->status)) {
+#ifdef LASSO_WSF_ENABLED
+	if (g_hash_table_size(session->eprs)) {
 		return FALSE;
 	}
+#endif
 
 	return TRUE;
 }
@@ -352,7 +627,10 @@ lasso_session_count_assertions(LassoSession *session)
 
 	if (! LASSO_IS_SESSION(session))
 		return -1;
-	hashtable = session->assertions;
+	if (lasso_flag_thin_sessions)
+		hashtable = session->private_data->nid_and_session_indexes;
+	else
+		hashtable = session->assertions;
 
 	return hashtable ? g_hash_table_size(hashtable) : 0;
 }
@@ -377,16 +655,21 @@ lasso_session_is_dirty(LassoSession *session)
 gint
 lasso_session_remove_assertion(LassoSession *session, const gchar *providerID)
 {
-	if (! LASSO_IS_SESSION(session) || lasso_strisempty(providerID)) {
-		return LASSO_PARAM_ERROR_INVALID_VALUE;
-	}
+	int rc = 0;
+	gboolean ok1, ok2;
 
-	if (g_hash_table_remove(session->assertions, providerID)) {
+	lasso_bad_param(SESSION, session);
+	lasso_return_val_if_fail(! lasso_strisempty(providerID), LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	ok1 = g_hash_table_remove(session->assertions, providerID);
+	ok2 = g_hash_table_remove(session->private_data->nid_and_session_indexes, providerID);
+
+	if (ok1 || ok2) {
 		session->is_dirty = TRUE;
-		return 0;
+	} else {
+		rc = LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 	}
-
-	return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
+	return rc;
 }
 
 /**
@@ -490,6 +773,35 @@ add_status_childnode(gchar *key, LassoSamlpStatus *value, DumpContext *context)
 	xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
+#define NID_AND_SESSION_INDEX "NidAndSessionIndex"
+#define SESSION_INDEX "SessionIndex"
+#define PROVIDER_ID "ProviderID"
+#define ASSERTION_ID "AssertionID"
+
+static void
+xmlnode_add_assertion_nid_and_session_indexes(gchar *key, GList *nid_and_session_indexes, DumpContext *context)
+{
+	GList *iter;
+
+	if (! nid_and_session_indexes) {
+		return;
+	}
+	lasso_foreach(iter, nid_and_session_indexes) {
+		struct _NidAndSessionIndex *nid_and_session_index = iter->data;
+		xmlNode *node = xmlSecAddChild(context->parent, BAD_CAST NID_AND_SESSION_INDEX,
+				BAD_CAST LASSO_LASSO_HREF);
+
+		xmlSetProp(node, BAD_CAST PROVIDER_ID, BAD_CAST key);
+		xmlSetProp(node, BAD_CAST ASSERTION_ID, BAD_CAST nid_and_session_index->assertion_id);
+		if (nid_and_session_index->session_index) {
+			xmlSetProp(node, BAD_CAST SESSION_INDEX,
+					BAD_CAST nid_and_session_index->session_index);
+		}
+		xmlSecAddChildNode(node, lasso_node_get_xmlNode(nid_and_session_index->name_id,
+					FALSE));
+	}
+}
+
 static xmlNode*
 get_xmlNode(LassoNode *node, G_GNUC_UNUSED gboolean lasso_dump)
 {
@@ -512,6 +824,10 @@ get_xmlNode(LassoNode *node, G_GNUC_UNUSED gboolean lasso_dump)
 	if (g_hash_table_size(session->private_data->assertions_by_id)) {
 		g_hash_table_foreach(session->private_data->assertions_by_id,
 				(GHFunc)add_assertion_by_id, &context);
+	}
+	if (g_hash_table_size(session->private_data->nid_and_session_indexes)) {
+		g_hash_table_foreach(session->private_data->nid_and_session_indexes,
+				(GHFunc)xmlnode_add_assertion_nid_and_session_indexes, &context);
 	}
 
 #ifdef LASSO_WSF_ENABLED
@@ -547,6 +863,39 @@ cleanup:
 	return ret;
 }
 
+static void
+init_from_xml_nid_and_session_index(LassoNode *node, xmlNode *nid_and_session_index_node)
+{
+	xmlChar *session_index = NULL;
+	xmlChar *provider_id = NULL;
+	xmlChar *assertion_id = NULL;
+	xmlNode *nid;
+	LassoNode *name_id;
+	struct _NidAndSessionIndex *nid_and_session_index;
+
+	provider_id = xmlGetProp(nid_and_session_index_node, BAD_CAST PROVIDER_ID);
+	if (! provider_id)
+		goto cleanup;
+	assertion_id = xmlGetProp(nid_and_session_index_node, BAD_CAST ASSERTION_ID);
+	if (! assertion_id)
+		goto cleanup;
+	nid = xmlSecGetNextElementNode(nid_and_session_index_node->children);
+	if (! nid)
+		goto cleanup;
+	name_id = lasso_node_new_from_xmlNode(nid);
+	if (! node)
+		goto cleanup;
+	session_index = xmlGetProp(nid_and_session_index_node, BAD_CAST SESSION_INDEX);
+	nid_and_session_index = lasso_new_nid_and_session_index(name_id, (char*)assertion_id,
+			(char*)session_index);
+	lasso_session_add_nid_and_session_index((LassoSession*)node, (char*)provider_id,
+			nid_and_session_index);
+cleanup:
+	lasso_release_xml_string(session_index);
+	lasso_release_xml_string(provider_id);
+	lasso_release_xml_string(assertion_id);
+}
+
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
@@ -573,6 +922,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 					assertion = lasso_node_new_from_xmlNode(n);
 					lasso_session_add_assertion_simple(session, (char*)value, assertion);
+					/* automatic upgrade from old session serialization to the new */
+					lasso_session_add_assertion_nid_and_session_index(session, (char*)value, assertion);
 					lasso_release_gobject(assertion);
 					xmlFree(value);
 				}
@@ -605,6 +956,10 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 						status);
 			}
 		}
+		if (xmlSecCheckNodeName(t, BAD_CAST NID_AND_SESSION_INDEX,
+					BAD_CAST LASSO_LASSO_HREF)) {
+			init_from_xml_nid_and_session_index(node, t);
+		}
 
 #ifdef LASSO_WSF_ENABLED
 	lasso_session_id_wsf2_init_eprs(session, t);
@@ -635,23 +990,13 @@ dispose(GObject *object)
 	lasso_release_ghashtable(session->private_data->status);
 	lasso_release_list_of_strings(session->private_data->providerIDs);
 	lasso_release_ghashtable(session->private_data->assertions_by_id);
+	lasso_release_ghashtable(session->private_data->nid_and_session_indexes);
 
 #ifdef LASSO_WSF_ENABLED
 	lasso_release_ghashtable(session->private_data->eprs);
 #endif
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
-}
-
-static void
-finalize(GObject *object)
-{
-	LassoSession *session = LASSO_SESSION(object);
-
-	lasso_release(session->private_data);
-	session->private_data = NULL;
-
-	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
 /*****************************************************************************/
@@ -661,7 +1006,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoSession *session)
 {
-	session->private_data = g_new0 (LassoSessionPrivate, 1);
+	session->private_data = LASSO_SESSION_GET_PRIVATE(session);
 	session->private_data->dispose_has_run = FALSE;
 	session->private_data->providerIDs = NULL;
 	session->private_data->status = g_hash_table_new_full(g_str_hash, g_str_equal,
@@ -671,14 +1016,17 @@ instance_init(LassoSession *session)
 			g_hash_table_new_full(g_str_hash, g_str_equal,
 					(GDestroyNotify)g_free,
 					(GDestroyNotify)xmlFree);
+	session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
+			(GDestroyNotify)g_free, (GDestroyNotify)lasso_node_destroy);
+	session->is_dirty = FALSE;
+	session->private_data->nid_and_session_indexes = g_hash_table_new_full(g_str_hash,
+			g_str_equal, (GDestroyNotify)g_free,
+			(GDestroyNotify)lasso_release_list_of_nid_an_session_index);
 #ifdef LASSO_WSF_ENABLED
 	session->private_data->eprs = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,
 			(GDestroyNotify)g_object_unref);
 #endif
-	session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
-			(GDestroyNotify)g_free, (GDestroyNotify)lasso_node_destroy);
-	session->is_dirty = FALSE;
 }
 
 static void
@@ -692,9 +1040,9 @@ class_init(LassoSessionClass *klass)
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Session");
 	lasso_node_class_set_ns(nclass, LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
+	g_type_class_add_private(nclass, sizeof(LassoSessionPrivate));
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
-	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
 GType
@@ -783,4 +1131,13 @@ void lasso_session_destroy(LassoSession *session)
 	if (session == NULL)
 		return;
 	lasso_node_destroy(LASSO_NODE(session));
+}
+
+gboolean
+lasso_session_has_slo_session(LassoSession *session, const gchar *provider_id)
+{
+	if (! LASSO_IS_SESSION(session))
+		return FALSE;
+	return g_hash_table_lookup(session->private_data->nid_and_session_indexes, provider_id) !=
+		NULL;
 }
