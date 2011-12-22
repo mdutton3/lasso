@@ -95,6 +95,8 @@ gboolean lasso_flag_add_signature = TRUE;
 static void lasso_flag_parse_environment_variable();
 /* do not sign messages */
 gboolean lasso_flag_sign_messages = TRUE;
+/* thin sessions */
+gboolean lasso_flag_thin_sessions = FALSE;
 
 #ifndef LASSO_FLAG_ENV_VAR
 #define LASSO_FLAG_ENV_VAR "LASSO_FLAG"
@@ -316,6 +318,9 @@ void lasso_set_flag(char *flag) {
 		if (lasso_strisequal(flag,"sign-messages")) {
 			lasso_flag_sign_messages = value;
 			continue;
+		}
+		if (lasso_strisequal(flag,"thin-sessions")) {
+			lasso_flag_thin_sessions = value;
 		}
 	} while (FALSE);
 }

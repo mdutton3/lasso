@@ -195,6 +195,9 @@ lasso_session_add_assertion_simple(LassoSession *session, const char *providerID
 	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
+	if (lasso_flag_thin_sessions) { /* do not store the full assertion */
+		return 0;
+	}
 	g_hash_table_insert(session->assertions, g_strdup(providerID),
 			g_object_ref(assertion));
 
