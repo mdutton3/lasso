@@ -74,6 +74,13 @@ LASSO_EXPORT LassoNode* lasso_lib_logout_request_new_full(
 		char *providerID, LassoSamlNameIdentifier *nameIdentifier,
 		LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
+LASSO_EXPORT void lasso_lib_logout_request_set_session_indexes(
+		LassoLibLogoutRequest *lib_logout_request,
+		GList *session_indexes);
+
+LASSO_EXPORT GList* lasso_lib_logout_request_get_session_indexes(
+		LassoLibLogoutRequest *lib_logout_request);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

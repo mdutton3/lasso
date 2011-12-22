@@ -518,14 +518,13 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	LassoProfile      *profile;
 	LassoProvider     *remote_provider;
 	LassoSamlNameIdentifier *nameIdentifier = NULL;
-	LassoSaml2EncryptedElement *encryptedNameIdentifier = NULL;
-	LassoNode *assertion_n, *name_identifier_n;
-	LassoSamlAssertion *assertion;
-	LassoSamlSubjectStatementAbstract *subject_statement = NULL;
-	LassoFederation   *federation = NULL;
 	gboolean           is_http_redirect_get_method = FALSE;
 	LassoSession *session;
-	char *session_index = NULL;
+	GList *name_ids = NULL;
+	GList *session_indexes = NULL;
+	LassoLibLogoutRequest *lib_logout_request = NULL;
+	LassoSamlpRequestAbstract *request_abstract = NULL;
+	int rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -546,75 +545,27 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 		lasso_assign_string(profile->remote_providerID, remote_providerID);
 	}
 	if (profile->remote_providerID == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
 	/* get the provider */
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+		goto_cleanup_with_rc(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	IF_SAML2(profile) {
 		return lasso_saml20_logout_init_request(logout, remote_provider, http_method);
 	}
 
-	/* get assertion */
-	assertion_n = lasso_session_get_assertion(session, profile->remote_providerID);
-	if (LASSO_IS_SAML_ASSERTION(assertion_n) == FALSE) {
-		return critical_error(LASSO_PROFILE_ERROR_MISSING_ASSERTION);
+	name_ids = lasso_session_get_name_ids(session, profile->remote_providerID);
+	if (! name_ids) {
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER);
 	}
-
-	assertion = LASSO_SAML_ASSERTION(assertion_n);
-
-	if (assertion->AuthenticationStatement && LASSO_IS_LIB_AUTHENTICATION_STATEMENT(
-				assertion->AuthenticationStatement)) {
-		LassoLibAuthenticationStatement *as =
-			LASSO_LIB_AUTHENTICATION_STATEMENT(assertion->AuthenticationStatement);
-		if (as->SessionIndex)
-			lasso_assign_string(session_index, as->SessionIndex);
-	}
-
-	/* if format is one time, then get name identifier from assertion,
-	   else get name identifier from federation */
-	if (LASSO_IS_SAML_SUBJECT_STATEMENT_ABSTRACT(assertion->AuthenticationStatement)) {
-		subject_statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
-				assertion->AuthenticationStatement);
-		if (subject_statement && subject_statement->Subject) {
-			nameIdentifier = subject_statement->Subject->NameIdentifier;
-			encryptedNameIdentifier =
-				subject_statement->Subject->EncryptedNameIdentifier;
-		}
-	}
-
-	/* FIXME: Should first decrypt the EncryptedNameIdentifier */
-
-	if ((nameIdentifier && strcmp(nameIdentifier->Format,
-					LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME) != 0)
-			|| encryptedNameIdentifier) {
-
-		if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
-			return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
-		}
-		federation = g_hash_table_lookup(profile->identity->federations,
-				profile->remote_providerID);
-		if (federation == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
-		}
-
-		name_identifier_n = lasso_profile_get_nameIdentifier(profile);
-		if (name_identifier_n == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
-		}
-		nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(name_identifier_n);
-		if (federation->local_nameIdentifier) {
-			lasso_assign_gobject(profile->nameIdentifier, federation->local_nameIdentifier);
-		} else {
-			lasso_assign_gobject(profile->nameIdentifier, nameIdentifier);
-		}
-	} else {
-		lasso_assign_gobject(profile->nameIdentifier, nameIdentifier);
-	}
+	nameIdentifier = name_ids->data;
+	lasso_assign_gobject(profile->nameIdentifier, nameIdentifier);
+	session_indexes = lasso_session_get_session_indexes(session,
+			profile->remote_providerID, profile->nameIdentifier);
 
 	/* get / verify http method */
 	if (http_method == LASSO_HTTP_METHOD_ANY) {
@@ -634,7 +585,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 				 * failed, since the remote provider doesn't
 				 * support any logout.  remove assertion
 				 * unconditionnaly. */
-				lasso_session_remove_assertion(profile->session,
+				lasso_session_remove_assertion(session,
 						profile->remote_providerID);
 				if (logout->initial_remote_providerID && logout->initial_request) {
 					lasso_assign_string(profile->remote_providerID,
@@ -647,48 +598,49 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 							0));
 				}
 			}
-			return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+			goto_cleanup_with_rc(LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
 		}
 	}
 
 	/* build a new request object from http method */
 	if (http_method == LASSO_HTTP_METHOD_SOAP) {
-		lasso_assign_new_gobject(profile->request, lasso_lib_logout_request_new_full(
+		lib_logout_request = (LassoLibLogoutRequest*)lasso_lib_logout_request_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				nameIdentifier,
 				profile->server->certificate ?
 				LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
-				LASSO_SIGNATURE_METHOD_RSA_SHA1));
+				LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	} else { /* http_method == LASSO_HTTP_METHOD_REDIRECT */
 		is_http_redirect_get_method = TRUE;
-		lasso_assign_new_gobject(profile->request, lasso_lib_logout_request_new_full(
+		lib_logout_request = (LassoLibLogoutRequest*)lasso_lib_logout_request_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				nameIdentifier,
 				LASSO_SIGNATURE_TYPE_NONE,
-				0));
+				0);
 	}
-
-	/* FIXME: Should encrypt nameIdentifier in the request here */
+	request_abstract = &lib_logout_request->parent;
 
 	if (lasso_provider_get_protocol_conformance(remote_provider) < LASSO_PROTOCOL_LIBERTY_1_2) {
-		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion = 1;
-		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MinorVersion = 1;
+		request_abstract->MajorVersion = 1;
+		request_abstract->MinorVersion = 1;
 	}
 
-	lasso_assign_string(LASSO_LIB_LOGOUT_REQUEST(profile->request)->SessionIndex,
-			session_index);
-	lasso_assign_string(LASSO_LIB_LOGOUT_REQUEST(profile->request)->RelayState,
-			profile->msg_relayState);
+	lasso_lib_logout_request_set_session_indexes(lib_logout_request, session_indexes);
+	lasso_assign_string(lib_logout_request->RelayState, profile->msg_relayState);
 
 	/* if logout request from a SP and if an HTTP Redirect/GET method, then remove assertion */
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP && is_http_redirect_get_method) {
-		lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+		lasso_session_remove_assertion(session, profile->remote_providerID);
 	}
 
 	/* Save the http method */
 	logout->initial_http_request_method = http_method;
-
-	return 0;
+	lasso_assign_gobject(profile->request, lib_logout_request);
+cleanup:
+	lasso_release_gobject(lib_logout_request);
+	lasso_release_list_of_strings(session_indexes);
+	lasso_release_list_of_gobjects(name_ids);
+	return rc;
 }
 
 /**
