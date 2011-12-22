@@ -413,13 +413,8 @@ lasso_login_build_assertion(LassoLogin *login,
 	lasso_check_good_rc(lasso_server_set_signature_for_provider_by_name(login->parent.server,
 			profile->remote_providerID, (LassoNode*)assertion));
 
-
-	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST || \
-			login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP) {
-		/* only add assertion if response is an AuthnResponse */
-		lasso_list_add_gobject(LASSO_SAMLP_RESPONSE(profile->response)->Assertion,
-				assertion);
-	}
+	lasso_list_add_gobject(LASSO_SAMLP_RESPONSE(profile->response)->Assertion,
+			assertion);
 
 #ifdef LASSO_WSF_ENABLED
 	lasso_login_assertion_add_discovery(login, assertion);
@@ -864,6 +859,8 @@ lasso_login_build_assertion_artifact(LassoLogin *login)
 	b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
 
 	lasso_assign_string(login->assertionArtifact, (char*)b64_samlArt);
+	lasso_assign_string(login->parent.private_data->artifact,
+			(char*)b64_samlArt);
 	lasso_release_xml_string(b64_samlArt);
 }
 
