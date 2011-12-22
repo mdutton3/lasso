@@ -626,7 +626,7 @@
  * LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED:
  *
  * <emphasis>Federated</emphasis> name identifier constant, used in
- * #LassoNameIdentifier.  It implies the name identifier belongs to
+ * #LassoSamlNameIdentifier.  It implies the name identifier belongs to
  * a federation established between SP and IdP.
  */
 #define LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED "urn:liberty:iff:nameid:federated"
@@ -634,14 +634,14 @@
 /**
  * LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME:
  *
- * "One-time" name identifier constant, used in #LassoNameIdentifier.
+ * "One-time" name identifier constant, used in #LassoSamlNameIdentifier.
  */
 #define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME  "urn:liberty:iff:nameid:one-time"
 
 /**
  * LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED:
  *
- * "Encrypted" name identifier constant, used in #LassoNameIdentifier.
+ * "Encrypted" name identifier constant, used in #LassoSamlNameIdentifier.
  */
 #define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED "urn:liberty:iff:nameid:encrypted"
 #define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID  "urn:liberty:iff:nameid:entityID"

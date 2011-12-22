@@ -675,7 +675,7 @@ lasso_profile_set_soap_fault_response(LassoProfile *profile, const char *faultco
  *
  * Return value: #LASSO_PROVIDER_ROLE_NONE if nothing can be said, #LASSO_PROVIDER_ROLE_SP if a
  * federation qualifier by @remote_provider_id exists or #LASSO_PROVIDER_ROLE_IDP if a federation
- * qualifier by our own #LassoProvider.providerID exists.
+ * qualifier by our own #LassoProvider.ProviderID exists.
  */
 LassoProviderRole lasso_profile_sso_role_with(LassoProfile *profile, const char *remote_provider_id)
 {

@@ -139,6 +139,9 @@ typedef enum {
  * HTTP-Post binding), the body of the POST will be in this field,
  * @msg_relayState: put there the relaystate to put in the genereated URL for HTTP-Redirect or
  * HTTP-Get binding.
+ * @signature_status: result of the last signature validation.
+ * @identity: the state of federation linking for the current user.
+ * @session: the state of global SSO session for the current user.
  *
  * #LassoProfile, child class of #LassoNode is the basis object of profiles object like #LassoLogin, #LassoLogout,
  * #LassoDefederation, #LassoNameIdentifierMapping, #LassoNameRegistration, #LassoNameIdManagement

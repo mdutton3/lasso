@@ -213,7 +213,7 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
   <chapter id="saml2">
     <title>SAML 2.0 Single Sign On profiles</title>
     <para>
-	    The profile <link linkend="lasso-LassoLogin">LassoLogin</link> and <link linkend="lasso-LassoLogout">LassoLogout</link> are shared between SAML
+	    The profile <link linkend="lasso-login">LassoLogin</link> and <link linkend="lasso-LassoLogout">LassoLogout</link> are shared between SAML
 	    2.0 and ID-FF 1.2, depending on the declared protocol support,
 	    Lasso will create request respecting the chosen standard. Beware
 	    that initialization of the <link linkend="lasso-LassoLogin">LassoLogin</link> object, after construction,
