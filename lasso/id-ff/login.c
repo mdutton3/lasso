@@ -259,6 +259,7 @@
 #include "../xml/saml_conditions.h"
 #include "../xml/samlp_response.h"
 #include "../xml/saml-2.0/saml2_encrypted_element.h"
+#include "../xml/misc_text_node.h"
 
 
 #include "profileprivate.h"
@@ -909,12 +910,12 @@ lasso_login_build_assertion_artifact(LassoLogin *login)
 gint
 lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 {
-	LassoProvider *remote_provider;
-	LassoProfile *profile;
-	gchar *url;
-	xmlChar *b64_samlArt;
-	char *relayState;
-	gint ret = 0;
+	LassoProvider *remote_provider = NULL;
+	LassoProfile *profile = NULL;
+	gchar *url = NULL;
+	xmlChar *b64_samlArt = NULL;
+	xmlChar *relayState = NULL;
+	gint rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -923,7 +924,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_login_init_request was not called before */
-		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
 	IF_SAML2(profile) {
@@ -931,18 +932,18 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	}
 
 	if (http_method != LASSO_HTTP_METHOD_REDIRECT && http_method != LASSO_HTTP_METHOD_POST) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	/* ProtocolProfile must be BrwsArt */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
 	/* build artifact infos */
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+		goto_cleanup_with_rc(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 	url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
 			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
@@ -988,12 +989,12 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	}
 
 	b64_samlArt = xmlStrdup((xmlChar*)login->assertionArtifact);
-	relayState = (char*)xmlURIEscapeStr(
+	relayState = xmlURIEscapeStr(
 			(xmlChar*)LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState, NULL);
 
 	if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
 		xmlChar *escaped_artifact = xmlURIEscapeStr(b64_samlArt, NULL);
-		gchar *query;
+		gchar *query = NULL;
 
 		if (relayState == NULL) {
 			query = g_strdup_printf("SAMLart=%s", escaped_artifact);
@@ -1003,20 +1004,16 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 		}
 		lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
 		lasso_release_string(query);
-
-		xmlFree(escaped_artifact);
+		lasso_release_xml_string(escaped_artifact);
 	}
 
 	if (http_method == LASSO_HTTP_METHOD_POST) {
 		lasso_assign_string(profile->msg_url, url);
 		lasso_assign_string(profile->msg_body, (char*)b64_samlArt);
 		if (relayState != NULL) {
-			lasso_assign_string(profile->msg_relayState, relayState);
+			lasso_assign_string(profile->msg_relayState, (char*)relayState);
 		}
 	}
-	lasso_release_string(url);
-	xmlFree(b64_samlArt);
-	xmlFree(relayState);
 
 	if (strcmp(LASSO_SAMLP_RESPONSE(profile->response)->Status->StatusCode->Value,
 				LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
@@ -1029,7 +1026,25 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 		lasso_session_remove_status(profile->session, profile->remote_providerID);
 	}
 
-	return ret;
+	/* store the response as the artifact message */
+	lasso_check_good_rc(lasso_server_set_signature_for_provider_by_name(
+				profile->server,
+				profile->remote_providerID,
+				profile->response));
+	/* comply with the new way of storing artifacts */
+	lasso_assign_string(profile->private_data->artifact,
+			login->assertionArtifact);
+	/* Artifact profile for ID-FF 1.2 is special, this is not the full message which is relayed
+	 * but only its assertion content, the Response container is changed from a
+	 * lib:AuthnResponse to a samlp:Response.
+	 */
+	lasso_assign_new_string(profile->private_data->artifact_message,
+			lasso_node_export_to_xml((LassoNode*)login->assertion));
+cleanup:
+	lasso_release_string(url);
+	lasso_release_xml_string(b64_samlArt);
+	lasso_release_xml_string(relayState);
+	return rc;
 }
 
 /**
@@ -1366,8 +1381,8 @@ cleanup:
 gint
 lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 {
-	LassoProvider *remote_provider;
-	LassoProfile *profile;
+	LassoProvider *remote_provider = NULL;
+	LassoProfile *profile = NULL;
 	lasso_error_t rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -1429,6 +1444,16 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 				lasso_profile_set_response_status(profile,
 						LASSO_SAML_STATUS_CODE_SUCCESS);
 				lasso_session_remove_status(profile->session, remote_providerID);
+			} else if (profile->private_data->artifact_message) {
+				xmlDoc *doc;
+				char *artifact_message = profile->private_data->artifact_message;
+				doc = lasso_xml_parse_memory(artifact_message,
+						strlen(artifact_message));
+				lasso_profile_set_response_status(profile,
+						LASSO_SAML_STATUS_CODE_SUCCESS);
+				lasso_list_add_new_gobject(((LassoSamlpResponse*)profile->response)->Assertion,
+						lasso_misc_text_node_new_with_xml_node(xmlDocGetRootElement(doc)));
+				lasso_release_doc(doc);
 			}
 		}
 	} else {
@@ -2177,6 +2202,8 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 	/* get AssertionArtifact */
 	lasso_assign_string(login->assertionArtifact,
 			LASSO_SAMLP_REQUEST(profile->request)->AssertionArtifact);
+	lasso_assign_string(login->parent.private_data->artifact,
+			login->assertionArtifact);
 
 	/* Keep a copy of request msg so signature can be verified when we get
 	 * the providerId in lasso_login_build_response_msg()
