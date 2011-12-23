@@ -33,16 +33,6 @@
 #include "tests.h"
 #include "../bindings/ghashtable.h"
 
-#define save_thin_session \
-	gboolean old_thin_sessions = lasso_flag_thin_sessions;
-
-#define push_thin_sessions \
-	lasso_flag_thin_sessions = FALSE;
-
-#define pop_thin_sessions \
-	lasso_flag_thin_sessions = old_thin_sessions;
-
-
 static char*
 generateIdentityProviderContextDump()
 {
@@ -160,7 +150,8 @@ START_TEST(test02_serviceProviderLogin)
 	char *spLoginDump;
 	int requestType;
 	char *found;
-	save_thin_session;
+	char *artifact_message;
+	char *artifact;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
@@ -190,7 +181,6 @@ START_TEST(test02_serviceProviderLogin)
 			"authnRequestQuery RelayState parameter should be encoded");
 
 	/* Identity provider singleSignOn, for a user having no federation. */
-	push_thin_sessions;
 	identityProviderContextDump = generateIdentityProviderContextDump();
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
 	idpLoginContext = lasso_login_new(idpContext);
@@ -239,7 +229,12 @@ START_TEST(test02_serviceProviderLogin)
 	serviceProviderId = g_strdup(LASSO_PROFILE(idpLoginContext)->remote_providerID);
 	fail_unless(serviceProviderId != NULL,
 		    "lasso_profile_get_remote_providerID shouldn't return NULL");
-	pop_thin_sessions;
+	if (lasso_flag_thin_sessions) {
+		/* when using thin sessions, the way artifact message is constructed changes as the
+		 * session no more contains full assertions. */
+		artifact = g_strdup(lasso_profile_get_artifact(&idpLoginContext->parent));
+		artifact_message = g_strdup(lasso_profile_get_artifact_message(&idpLoginContext->parent));
+	}
 
 	/* Service provider assertion consumer */
 	lasso_server_destroy(spContext);
@@ -262,7 +257,6 @@ START_TEST(test02_serviceProviderLogin)
 	soapRequestMsg = LASSO_PROFILE(spLoginContext)->msg_body;
 	fail_unless(soapRequestMsg != NULL, "soapRequestMsg must not be NULL");
 
-	push_thin_sessions;
 	/* Identity provider SOAP endpoint */
 	lasso_server_destroy(idpContext);
 	lasso_login_destroy(idpLoginContext);
@@ -275,12 +269,15 @@ START_TEST(test02_serviceProviderLogin)
 	idpLoginContext = lasso_login_new(idpContext);
 	check_true(LASSO_IS_LOGIN(idpLoginContext));
 	check_good_rc(lasso_login_process_request_msg(idpLoginContext, soapRequestMsg));
+	if (lasso_flag_thin_sessions) {
+		check_str_equals(idpLoginContext->assertionArtifact, artifact);
+		lasso_profile_set_artifact_message(&idpLoginContext->parent, artifact_message);
+	}
 	check_good_rc(lasso_profile_set_session_from_dump(LASSO_PROFILE(idpLoginContext),
 						 idpSessionContextDump));
 	check_good_rc(lasso_login_build_response_msg(idpLoginContext, serviceProviderId));
 	soapResponseMsg =  LASSO_PROFILE(idpLoginContext)->msg_body;
 	fail_unless(soapResponseMsg != NULL, "soapResponseMsg must not be NULL");
-	pop_thin_sessions;
 
 	/* Service provider assertion consumer (step 2: process SOAP response) */
 	check_good_rc(lasso_login_process_response_msg(spLoginContext, soapResponseMsg));
@@ -337,7 +334,8 @@ START_TEST(test03_serviceProviderLogin)
 	char *spIdentityContextDump;
 	char *spSessionDump;
 	int requestType;
-	save_thin_session;
+	char *artifact_message;
+	char *artifact;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
@@ -363,7 +361,6 @@ START_TEST(test03_serviceProviderLogin)
 	fail_unless(strlen(authnRequestQuery) > 0,
 			"authnRequestRequest shouldn't be an empty string");
 
-	push_thin_sessions;
 	/* Identity provider singleSignOn, for a user having no federation. */
 	identityProviderContextDump = generateIdentityProviderContextDumpMemory();
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
@@ -404,7 +401,12 @@ START_TEST(test03_serviceProviderLogin)
 	serviceProviderId = g_strdup(LASSO_PROFILE(idpLoginContext)->remote_providerID);
 	fail_unless(serviceProviderId != NULL,
 		    "lasso_profile_get_remote_providerID shouldn't return NULL");
-	pop_thin_sessions;
+	if (lasso_flag_thin_sessions) {
+		/* when using thin sessions, the way artifact message is constructed changes as the
+		 * session no more contains full assertions. */
+		artifact = g_strdup(lasso_profile_get_artifact(&idpLoginContext->parent));
+		artifact_message = g_strdup(lasso_profile_get_artifact_message(&idpLoginContext->parent));
+	}
 
 	/* Service provider assertion consumer */
 	lasso_server_destroy(spContext);
@@ -421,7 +423,6 @@ START_TEST(test03_serviceProviderLogin)
 	soapRequestMsg = LASSO_PROFILE(spLoginContext)->msg_body;
 	fail_unless(soapRequestMsg != NULL, "soapRequestMsg must not be NULL");
 
-	push_thin_sessions;
 	/* Identity provider SOAP endpoint */
 	lasso_server_destroy(idpContext);
 	lasso_login_destroy(idpLoginContext);
@@ -433,7 +434,10 @@ START_TEST(test03_serviceProviderLogin)
 	idpLoginContext = lasso_login_new(idpContext);
 	rc = lasso_login_process_request_msg(idpLoginContext, soapRequestMsg);
 	fail_unless(rc == 0, "lasso_login_process_request_msg failed");
-
+	if (lasso_flag_thin_sessions) {
+		check_str_equals(idpLoginContext->assertionArtifact, artifact);
+		lasso_profile_set_artifact_message(&idpLoginContext->parent, artifact_message);
+	}
 	rc = lasso_profile_set_session_from_dump(LASSO_PROFILE(idpLoginContext),
 						 idpSessionContextDump);
 	fail_unless(rc == 0, "lasso_login_set_assertion_from_dump failed");
@@ -441,7 +445,6 @@ START_TEST(test03_serviceProviderLogin)
 	fail_unless(rc == 0, "lasso_login_build_response_msg failed");
 	soapResponseMsg =  LASSO_PROFILE(idpLoginContext)->msg_body;
 	fail_unless(soapResponseMsg != NULL, "soapResponseMsg must not be NULL");
-	pop_thin_sessions;
 
 	/* Service provider assertion consumer (step 2: process SOAP response) */
 	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
