@@ -837,9 +837,16 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	lasso_check_good_rc(lasso_server_saml2_assertion_setup_signature(profile->server,
 				assertion));
 
-
 	/* Encrypt NameID */
 	if (do_encrypt_nameid) {
+		/* store assertion in session object */
+		if (profile->session == NULL) {
+			profile->session = lasso_session_new();
+		}
+
+		lasso_session_add_assertion(profile->session, profile->remote_providerID,
+				LASSO_NODE(assertion));
+
 		/* FIXME: as with assertions, it should be possible to setup encryption of NameID for later */
 		goto_cleanup_if_fail_with_rc(provider != NULL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
@@ -859,14 +866,6 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 				lasso_provider_get_encryption_public_key(provider),
 				lasso_provider_get_encryption_sym_key_type(provider));
 	}
-
-	/* store assertion in session object */
-	if (profile->session == NULL) {
-		profile->session = lasso_session_new();
-	}
-
-	lasso_session_add_assertion(profile->session, profile->remote_providerID,
-			LASSO_NODE(assertion));
 
 	response = LASSO_SAMLP2_RESPONSE(profile->response);
 	lasso_list_add_gobject(response->Assertion, assertion);
@@ -918,6 +917,17 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 			lasso_saml2_assertion_get_subject_confirmation_data(assertion, TRUE);
 		lasso_assign_string(subject_confirmation_data->Recipient, url);
 	}
+
+	/* If there is a non-encrypted NameID, fix the assertion in the session */
+	if (assertion && assertion->Subject && assertion->Subject->NameID) {
+		/* store assertion in session object */
+		if (profile->session == NULL) {
+			profile->session = lasso_session_new();
+		}
+		lasso_session_add_assertion(profile->session, profile->remote_providerID,
+				LASSO_NODE(assertion));
+	}
+
 
 	lasso_check_good_rc(lasso_saml20_profile_build_response_msg(profile, NULL, http_method,
 				url));
@@ -1334,7 +1344,7 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 {
 	LassoProfile *profile;
 	LassoSaml2Assertion *assertion;
-	GList *previous_assertions, *t;
+	GList *previous_assertion_ids, *t;
 	LassoSaml2NameID *ni;
 	LassoFederation *federation;
 
@@ -1346,23 +1356,15 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	if (assertion == NULL)
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 
-	previous_assertions = lasso_session_get_assertions(profile->session,
+	previous_assertion_ids = lasso_session_get_assertion_ids(profile->session,
 			profile->remote_providerID);
-	for (t = previous_assertions; t; t = g_list_next(t)) {
-		LassoSaml2Assertion *ta;
-
-		if (LASSO_IS_SAML2_ASSERTION(t->data) == FALSE) {
-			continue;
-		}
-
-		ta = t->data;
-
-		if (lasso_strisequal(ta->ID,assertion->ID)) {
-			lasso_release_list(previous_assertions);
+	lasso_foreach(t, previous_assertion_ids) {
+		if (lasso_strisequal(t->data, assertion->ID)) {
+			lasso_release_list_of_strings(previous_assertion_ids);
 			return LASSO_LOGIN_ERROR_ASSERTION_REPLAY;
 		}
 	}
-	lasso_release_list(previous_assertions);
+	lasso_release_list_of_strings(previous_assertion_ids);
 
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			LASSO_NODE(assertion));
@@ -1423,6 +1425,16 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 		subject_confirmation_data =
 			lasso_saml2_assertion_get_subject_confirmation_data(assertion, TRUE);
 		lasso_assign_string(subject_confirmation_data->Recipient, url);
+	}
+
+	/* If there is a non-encrypted NameID, fix the assertion in the session */
+	if (assertion && assertion->Subject && assertion->Subject->NameID) {
+		/* store assertion in session object */
+		if (profile->session == NULL) {
+			profile->session = lasso_session_new();
+		}
+		lasso_session_add_assertion(profile->session, profile->remote_providerID,
+				LASSO_NODE(assertion));
 	}
 
 	switch (login->protocolProfile) {

@@ -34,6 +34,7 @@
 #include "../id-ff/sessionprivate.h"
 #include "../id-ff/profileprivate.h"
 #include "../id-ff/serverprivate.h"
+#include "../id-ff/sessionprivate.h"
 
 #include "../xml/xml_enc.h"
 
@@ -45,23 +46,15 @@
 
 static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile *profile);
 
-static char*
-_lasso_saml2_assertion_get_session_index(LassoSaml2Assertion *assertion)
-{
-	if (! LASSO_IS_SAML2_AUTHN_STATEMENT(assertion->AuthnStatement->data))
-		return NULL;
-	return((LassoSaml2AuthnStatement*)assertion->AuthnStatement->data)->SessionIndex;
-}
-
 int
 lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_provider,
 		LassoHttpMethod http_method)
 {
 	LassoProfile *profile = &logout->parent;
-	LassoNode *assertion_n = NULL;
-	LassoSaml2Assertion *assertion = NULL;
 	LassoSession *session = NULL;
 	LassoSamlp2LogoutRequest *logout_request = NULL;
+	GList *name_ids = NULL;
+	LassoSaml2NameID *name_id = NULL;
 	int rc = 0;
 
 	logout_request = (LassoSamlp2LogoutRequest*) lasso_samlp2_logout_request_new();
@@ -75,19 +68,14 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 
 	/* session existence has been checked in id-ff/ */
 	session = lasso_profile_get_session(profile);
-	assertion_n = lasso_session_get_assertion(session, profile->remote_providerID);
-	if (LASSO_IS_SAML2_ASSERTION(assertion_n) == FALSE) {
-		return critical_error(LASSO_PROFILE_ERROR_MISSING_ASSERTION);
+	name_ids = lasso_session_get_name_ids(session, profile->remote_providerID);
+	if (!name_ids || ! LASSO_IS_SAML2_NAME_ID(name_ids->data)) {
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_MISSING_ASSERTION);
 	}
-	lasso_ref(assertion_n);
-	assertion = (LassoSaml2Assertion*)assertion_n;
+	name_id = name_ids->data; /* take the first */
 
 	/* Set the NameID */
-	goto_cleanup_if_fail_with_rc(assertion->Subject != NULL,
-			LASSO_PROFILE_ERROR_MISSING_SUBJECT);
-	goto_cleanup_if_fail_with_rc(assertion->Subject->NameID != NULL,
-			LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER);
-	lasso_assign_gobject(logout_request->NameID, assertion->Subject->NameID);
+	lasso_assign_gobject(logout_request->NameID, name_id);
 
 	/* Encrypt NameID */
 	if (lasso_provider_get_encryption_mode(remote_provider) == LASSO_ENCRYPTION_MODE_NAMEID) {
@@ -97,17 +85,17 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	}
 
 	/* set the session index if one is found */
-	lasso_assign_string(logout_request->SessionIndex,
-			_lasso_saml2_assertion_get_session_index(assertion));
+	{
+		GList *session_indexes = lasso_session_get_session_indexes(profile->session,
+				remote_provider->ProviderID,
+				&name_id->parent);
+		lasso_samlp2_logout_request_set_session_indexes(logout_request, session_indexes);
+		lasso_release_list_of_strings(session_indexes);
+	}
 
 cleanup:
-	/* all is going well, remove the assertion */
-	if (rc == 0) {
-		lasso_session_remove_assertion(session,
-				profile->remote_providerID);
-	}
+	lasso_release_list_of_gobjects(name_ids);
 	lasso_release_gobject(logout_request);
-	lasso_release_gobject(assertion_n);
 	return rc;
 }
 
@@ -152,26 +140,25 @@ cleanup:
 int
 lasso_saml20_logout_validate_request(LassoLogout *logout)
 {
-	LassoProfile *profile = LASSO_PROFILE(logout);
-	LassoProvider *remote_provider;
-	LassoSamlp2StatusResponse *response;
-	LassoSaml2NameID *name_id;
-	LassoNode *assertion_n;
-	LassoSaml2Assertion *assertion;
-	LassoSamlp2LogoutRequest *logout_request;
+	LassoProfile *profile = &logout->parent;
+	LassoProvider *remote_provider = NULL;
+	LassoSamlp2StatusResponse *response = NULL;
+	LassoSaml2NameID *name_id = NULL;
+	LassoSamlp2LogoutRequest *logout_request = NULL;
+	GList *local_session_indexes = NULL;
+	GList *logout_session_indexes = NULL;
 	int rc = 0;
 
-	if (LASSO_IS_SAMLP2_LOGOUT_REQUEST(profile->request) == FALSE)
-		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+	goto_cleanup_if_fail_with_rc(LASSO_IS_SAMLP2_LOGOUT_REQUEST(profile->request),
+			LASSO_PROFILE_ERROR_MISSING_REQUEST);
 	logout_request = (LassoSamlp2LogoutRequest*)profile->request;
 
 	/* check the issuer */
 	lasso_assign_string(profile->remote_providerID,
 			logout_request->parent.Issuer->content);
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
+	goto_cleanup_if_fail_with_rc(LASSO_IS_PROVIDER(remote_provider),
+			LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 	/* create the response */
 	response = (LassoSamlp2StatusResponse*)lasso_samlp2_logout_response_new();
@@ -183,66 +170,46 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	if (name_id == NULL) {
 		lasso_saml20_profile_set_response_status_responder(
 				profile, LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-		return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
 	}
 
 	if (profile->session == NULL) {
 		lasso_saml20_profile_set_response_status_responder(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
-		return critical_error(LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
+		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 	}
 
 	/* verify authentication */
-	assertion_n = lasso_session_get_assertion(profile->session, profile->remote_providerID);
-	if (LASSO_IS_SAML2_ASSERTION(assertion_n) == FALSE) {
+	if (profile->session) {
+		local_session_indexes = lasso_session_get_session_indexes(profile->session,
+				profile->remote_providerID, &name_id->parent);
+	}
+	if (! local_session_indexes) {
 		lasso_saml20_profile_set_response_status_responder(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 	}
-	assertion = LASSO_SAML2_ASSERTION(assertion_n);
-
-	/* Verify name identifier and session matching */
-	if (assertion->Subject == NULL) {
-		lasso_saml20_profile_set_response_status(profile,
-				LASSO_SAML2_STATUS_CODE_RESPONDER,
-				"http://lasso.entrouvert.org/error/MalformedAssertion");
-		return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
-	}
-
-	if (lasso_saml2_name_id_equals(name_id, assertion->Subject->NameID) != TRUE) {
-		lasso_saml20_profile_set_response_status_responder(profile,
-				LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
-		return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
-	}
 
 	/* verify session index */
-	if (assertion->AuthnStatement) {
-		if (! LASSO_IS_SAML2_AUTHN_STATEMENT(assertion->AuthnStatement->data)) {
+	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP && logout_request->SessionIndex == NULL) {
+		/* ok, no SessionIndex from IdP, all sessions logout */
+	} else {
+		GList *i, *j;
+		int ok = 0;
 
-			lasso_saml20_profile_set_response_status(profile,
-					LASSO_SAML2_STATUS_CODE_RESPONDER, "http://lasso.entrouvert.org/error/MalformedAssertion");
-			return LASSO_PROFILE_ERROR_BAD_SESSION_DUMP;
-		}
-		if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP && logout_request->SessionIndex == NULL) {
-			/* ok, no SessionIndex from IdP, all sessions logout */
-		} else {
-			GList *session_indexes = lasso_samlp2_logout_request_get_session_indexes(logout_request);
-			int ok = 0;
-			char *assertion_SessionIndex = NULL;
-			GList *iter;
+		logout_session_indexes = lasso_samlp2_logout_request_get_session_indexes(logout_request);
 
-			assertion_SessionIndex = _lasso_saml2_assertion_get_session_index(assertion);
-			lasso_foreach(iter, session_indexes) {
-				if (lasso_strisequal((char*)iter->data, assertion_SessionIndex)) {
+		lasso_foreach(i, logout_session_indexes) {
+			lasso_foreach(j, local_session_indexes) {
+				if (lasso_strisequal((char*)i->data, (char*)j->data)) {
 					ok = 1;
 				}
 			}
-			lasso_release_list_of_strings(session_indexes);
-			if (! ok) {
-				lasso_saml20_profile_set_response_status_responder(profile,
-						LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
-				return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
-			}
+		}
+		if (! ok) {
+			lasso_saml20_profile_set_response_status_responder(profile,
+					LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
+			goto_cleanup_with_rc(LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL);
 		}
 	}
 
@@ -259,7 +226,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 		if (logout->private_data->all_soap == FALSE) {
 			lasso_saml20_profile_set_response_status_responder(profile,
 					LASSO_LIB_STATUS_CODE_UNSUPPORTED_PROFILE);
-			return LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
+			goto_cleanup_with_rc(LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE);
 		}
 	}
 
@@ -279,6 +246,8 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 
 cleanup:
 	lasso_release_gobject(response);
+	lasso_release_list_of_strings(local_session_indexes);
+	lasso_release_list_of_strings(logout_session_indexes);
 	return rc;
 }
 
@@ -286,22 +255,15 @@ static void
 check_soap_support(G_GNUC_UNUSED gchar *key, LassoProvider *provider, LassoProfile *profile)
 {
 	const GList *supported_profiles;
-	LassoSaml2Assertion *assertion;
-	LassoNode *assertion_n;
 
 	if (strcmp(provider->ProviderID, profile->remote_providerID) == 0)
 		return; /* original service provider (initiated logout) */
 
-	assertion_n = lasso_session_get_assertion(profile->session, provider->ProviderID);
-	if (LASSO_IS_SAML2_ASSERTION(assertion_n) == FALSE) {
-		return; /* not authenticated with this provider */
+	if (! lasso_session_has_slo_session(profile->session, provider->ProviderID)) {
+		return;
 	}
-
-	assertion = LASSO_SAML2_ASSERTION(assertion_n);
-
 	supported_profiles = lasso_provider_get_metadata_list(provider,
 			"SingleLogoutService SOAP");
-
 	if (supported_profiles)
 		return; /* provider support profile */
 

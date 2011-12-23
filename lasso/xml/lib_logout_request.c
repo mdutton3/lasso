@@ -60,12 +60,22 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define LASSO_LIB_LOGOUT_REQUEST_GET_PRIVATE(o) \
+	   (G_TYPE_INSTANCE_GET_PRIVATE ((o), LASSO_TYPE_LIB_LOGOUT_REQUEST, \
+					 struct _LassoLibLogoutRequestPrivate))
+
+struct _LassoLibLogoutRequestPrivate {
+	GList *SessionIndex;
+};
+
 static struct XmlSnippet schema_snippets[] = {
 	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoLibLogoutRequest, Extension), NULL, NULL, NULL},
 	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, ProviderID), NULL, NULL, NULL},
 	{ "NameIdentifier", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibLogoutRequest, NameIdentifier),
 		NULL, LASSO_SAML_ASSERTION_PREFIX, LASSO_SAML_ASSERTION_HREF},
 	{ "SessionIndex", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, SessionIndex), NULL, NULL, NULL},
+	{ "SessionIndex", SNIPPET_LIST_CONTENT|SNIPPET_PRIVATE, G_STRUCT_OFFSET(struct
+			_LassoLibLogoutRequestPrivate, SessionIndex), NULL, NULL, NULL},
 	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, RelayState), NULL, NULL, NULL},
 	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibLogoutRequest, consent), NULL, NULL, NULL},
 	{ "NotOnOrAfter", SNIPPET_ATTRIBUTE,
@@ -136,6 +146,7 @@ class_init(LassoLibLogoutRequestClass *klass)
 	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 	lasso_node_class_add_query_snippets(nclass, query_snippets);
+	g_type_class_add_private(nclass, sizeof(struct _LassoLibLogoutRequestPrivate));
 }
 
 GType
@@ -207,4 +218,57 @@ lasso_lib_logout_request_new_full(char *providerID, LassoSamlNameIdentifier *nam
 	LASSO_LIB_LOGOUT_REQUEST(request)->NameIdentifier = g_object_ref(nameIdentifier);
 
 	return LASSO_NODE(request);
+}
+
+/**
+ * lasso_lib_logout_request_set_session_indexes:
+ * @lib_logout_request: a #LassoLibLogoutRequest object
+ * @session_indexes:(element-type string): a list of session indexes
+ *
+ * Set the SessionIndex node for this idff:LogoutRequest.
+ */
+void
+lasso_lib_logout_request_set_session_indexes(LassoLibLogoutRequest *lib_logout_request,
+		GList *session_indexes)
+{
+	char *first = NULL;
+	struct _LassoLibLogoutRequestPrivate *private_data;
+
+	if (! LASSO_IS_LIB_LOGOUT_REQUEST(lib_logout_request))
+		return;
+	private_data = LASSO_LIB_LOGOUT_REQUEST_GET_PRIVATE(lib_logout_request);
+	if (session_indexes) {
+		first = session_indexes->data;
+		session_indexes = g_list_next(session_indexes);
+	}
+	lasso_assign_string(lib_logout_request->SessionIndex, first);
+	lasso_assign_list_of_strings(private_data->SessionIndex, session_indexes);
+}
+
+
+/**
+ * lasso_lib_logout_request_get_session_indexes:
+ * @lib_logout_request: a #LassoLibLogoutRequest object
+ *
+ * Get the SessionIndex node for this idff:LogoutRequest.
+ *
+ * Return value:(transfer full)(element-type utf8): a list of strings
+ */
+GList*
+lasso_lib_logout_request_get_session_indexes(LassoLibLogoutRequest *lib_logout_request)
+{
+	struct _LassoLibLogoutRequestPrivate *private_data;
+	GList *ret = NULL;
+	GList *i = NULL;
+
+	if (! LASSO_IS_LIB_LOGOUT_REQUEST(lib_logout_request))
+		return NULL;
+	private_data = LASSO_LIB_LOGOUT_REQUEST_GET_PRIVATE(lib_logout_request);
+	if (lib_logout_request->SessionIndex) {
+		lasso_list_add_string(ret, lib_logout_request->SessionIndex);
+	}
+	lasso_foreach(i, private_data->SessionIndex) {
+		lasso_list_add_string(ret, i->data);
+	}
+	return ret;
 }

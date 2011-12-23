@@ -84,6 +84,13 @@ LASSO_EXPORT LassoNode* lasso_session_get_assertion(
 LASSO_EXPORT lasso_error_t lasso_session_add_assertion(LassoSession *session,
 		const char *providerID, LassoNode *assertion);
 
+LASSO_EXPORT GList *lasso_session_get_name_ids(LassoSession *session, const gchar *providerID);
+
+LASSO_EXPORT GList *lasso_session_get_session_indexes(LassoSession *session,
+		const gchar *providerID, LassoNode *name_id);
+
+LASSO_EXPORT GList* lasso_session_get_assertion_ids(LassoSession *session, const gchar *providerID);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

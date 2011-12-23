@@ -220,7 +220,6 @@ LASSO_LECP_GET_CLASS
 
 <SECTION>
 <FILE>login</FILE>
-LassoLoginProtocolProfile
 <TITLE>LassoLogin</TITLE>
 LassoLogin
 lasso_login_new
