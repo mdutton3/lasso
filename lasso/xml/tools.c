@@ -1146,6 +1146,10 @@ lasso_concat_url_query(const char *url, const char *query)
 	}
 }
 
+static void structuredErrorFunc (void *userData, xmlErrorPtr error) {
+		*(int*)userData = error->code;
+}
+
 /**
  * lasso_eval_xpath_expression:
  * @xpath_ctx: the XPath context object
@@ -1169,10 +1173,6 @@ lasso_eval_xpath_expression(xmlXPathContextPtr xpath_ctx, const char *expression
 	xmlStructuredErrorFunc oldStructuredErrorFunc;
 	gboolean rc = TRUE;
 
-	void structuredErrorFunc (G_GNUC_UNUSED void *userData, xmlErrorPtr error) {
-		errorCode = error->code;
-	}
-
 	g_return_val_if_fail(xpath_ctx != NULL && expression != NULL, FALSE);
 
 	if (xpath_error_code) { /* reset */
@@ -1180,8 +1180,10 @@ lasso_eval_xpath_expression(xmlXPathContextPtr xpath_ctx, const char *expression
 	}
 	oldStructuredErrorFunc = xpath_ctx->error;
 	xpath_ctx->error = structuredErrorFunc;
+	xpath_ctx->userData = &errorCode;
 	xpath_object = xmlXPathEvalExpression((xmlChar*)expression, xpath_ctx);
 	xpath_ctx->error = oldStructuredErrorFunc;
+	xpath_ctx->userData = NULL;
 
 	if (xpath_object) {
 		if (xpath_object_ptr) {
