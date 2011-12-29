@@ -24,7 +24,7 @@ Minor version number increase since ABI was extended (new methods).
 
    See the FAQ file for the workflow of a proper key roll-over.
 
- - Partial logout reponse now produce a specific error code when parsed by
+ - Partial logout reponse now produces a specific error code when parsed by
    lasso_logout_process_response_msg()
  - Bugs in lasso_assertion_query_build_request_msg() were fixed
  - Processing of assertions is not stopped when checking that first level
@@ -49,11 +49,31 @@ Minor version number increase since ABI was extended (new methods).
       >>> a.setOriginalXmlnode('<Dummy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="string">Value</Dummy>')
       >>> print a.debug(0)
       <saml:AttributeValue xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="string">Value</saml:AttributeValue>
+ - support for symetric keys signatures: for a long time XMLDisg standard has
+   supported HMAC signature, or signature based on a shared secret key an hash
+   algorithm. Lasso now does support to share a key with another Lasso using
+   service or identity provider and to verify and sign SAML exchange using this
+   key. Performance can be 100 times more than with assymetric cryptography,
+   i.e. RSA.
+ - nodes able to hold any XML attribyte (like saml:AttributeValue) contains a
+   hashtable to for holding those attributes, those hashtable have a new syntax
+   for attributes of another namespace than the current node namespace,
+   inspired by the Python ElementTree library:
 
+    {the_namespace}the_attribute_name
+
+   ex:
+
+    {http://www.w3.org/2001/XMLSchema-instance}type
+
+   for the classic xsi:type attribute.
  - The perfs benchmarking tools now allows to select a different metadata set
    (for example to test with different public key sizes).
  - Perl minimal version for the binding was downgraded to 5
- - an FAQ file was started.
+ - pseudo-XSchema validation: the new XML deserializer does more to enforce
+   constraints of the schema defining SAML messages. It means Lasso is less
+   forgiving with non-conform implementation of SAML.
+ - a FAQ file was started.
 
 
 2.3.6 - November 29th 2011
