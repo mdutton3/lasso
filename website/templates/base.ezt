@@ -10,6 +10,18 @@
 <link rel="stylesheet" href="/documentation/default.css" type="text/css" />
 [end]
 <link rel="meta" title="DOAP" type="application/rdf+xml" href="http://lasso.entrouvert.org/doap.rdf"/>
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.entrouvert.org/" : "http://piwik.entrouvert.org/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 4);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script><noscript><p><img src="http://piwik.entrouvert.org/piwik.php?idsite=4" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Tracking Code -->
 </head>
 <body>
   <div id="shadow-wrapper">
