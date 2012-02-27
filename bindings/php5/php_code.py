@@ -312,12 +312,14 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
                         php_args.append('%s = null' % arg_name)
                 else:
                     php_args.append(arg_name)
-                if arg_type in ('char*', 'const char*', 'gchar*', 'const gchar*') or \
-                        arg_type in ['int', 'gint', 'gboolean', 'const gboolean'] or \
-                        arg_type in self.binding_data.enums:
+                if is_xml_node(arg) or is_boolean(arg) or is_cstring(arg) or \
+                    is_int(arg, self.binding_data) or is_glist(arg) or \
+                    is_hashtable(arg) or is_time_t_pointer(arg):
                     c_args.append(arg_name)
+                elif is_object(arg):
+                    c_args.append('%s->_cptr' % arg_name)
                 else:
-                    c_args.append('%s._cptr' % arg_name)
+                    raise Exception('Does not handle argument of type: %s' % ((m, arg),))
                 if is_out(arg):
                     php_args.pop()
                     php_args.append(arg_name)
