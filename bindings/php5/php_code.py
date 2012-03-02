@@ -136,6 +136,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
     def generate_constructors(self, klass):
         method_prefix = format_as_underscored(klass.name) + '_'
         for m in self.binding_data.functions:
+            name = m.rename or m.name
             if m.name == method_prefix + 'new':
                 php_args = []
                 c_args = []
@@ -163,18 +164,36 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
                 print >> self.fd, '    }'
                 print >> self.fd, ''
 
-            if m.name == method_prefix + 'new_from_dump':
-                if len(m.args) == 1:
-                    print >> self.fd, '    public static function newFromDump($dump) {'
-                    print >> self.fd, '        return cptrToPhp(%s($dump));' % m.name
+            elif name.startswith(method_prefix) and m.args \
+                    and clean_type(unconstify(m.args[0][0])) != klass.name:
+                if m.rename:
+                    php_name = m.rename
                 else:
-                    print >> self.fd, '    public static function newFromDump($server, $dump) {'
-                    print >> self.fd, '        return cptrToPhp(%s($server->_cptr, $dump));' % m.name
-                # XXX: Else throw an exception
-                print >> self.fd, '    }'
-                print >> self.fd, ''
-            elif m.name == method_prefix + 'new_full':
-                pass
+                    mname = m.name
+                    mname = mname[len(method_prefix):]
+                    if 'new' in mname and not mname.startswith('new'):
+                        continue
+                    php_name = format_underscore_as_camelcase(mname)
+                php_args = []
+                c_args = []
+                for arg in m.args:
+                    arg_type, arg_name, arg_options = arg
+                    if arg_options.get('optional'):
+                        php_args.append('$%s = null' % arg_name)
+                    else:
+                        php_args.append('$%s' % arg_name)
+
+                    if self.is_object(arg_type):
+                        c_args.append('$%s->_cptr' % arg_name)
+                    else:
+                        c_args.append('$%s' % arg_name)
+                php_args = ', '.join(php_args)
+                c_args = ', '.join(c_args)
+                print >>self.fd, '    public static function %s(%s) {' % (php_name, php_args)
+                print >>self.fd, '        return cptrToPhp(%s(%s));' % (m.name, c_args)
+                print >>self.fd, '    }'
+                print >>self.fd, ''
+
 
 
     def generate_getter(self, c, m):
