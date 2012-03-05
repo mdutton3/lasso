@@ -508,7 +508,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 
     def generate_functions_list(self):
         print >> self.fd, '''\
-static function_entry lasso_functions[] = {'''
+static zend_function_entry lasso_functions[] = {'''
         for m in self.functions_list:
             print >> self.fd, '    PHP_FE(%s, NULL)' % m
         print >> self.fd, '''\
