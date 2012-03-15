@@ -56,7 +56,7 @@ support.  It is possible to workaround the bug::
 
   $ gcc hello.c -o hello $(pkg-config lasso --cflags --libs)
  <command line>:4:16: missing terminating " character
-  $ gcc hello.c -o hello $(pkg-config xmlsec1 --cflags --libs | tr -d '\\')
+  $ gcc hello.c -o hello $(pkg-config lasso --cflags --libs | tr -d '\\')
   $ ./hello
  Hello world.
 
