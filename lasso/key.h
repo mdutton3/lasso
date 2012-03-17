@@ -65,7 +65,7 @@ struct _LassoKeyClass {
 
 LASSO_EXPORT GType lasso_key_get_type();
 
-LASSO_EXPORT LassoKey* lasso_key_new_for_signature_from_memory(void *buffer, size_t size,
+LASSO_EXPORT LassoKey* lasso_key_new_for_signature_from_memory(const void *buffer, size_t size,
 		char *password, LassoSignatureMethod signature_method, char *certificate);
 
 LASSO_EXPORT LassoKey* lasso_key_new_for_signature_from_base64_string(char *base64_string,
@@ -73,6 +73,14 @@ LASSO_EXPORT LassoKey* lasso_key_new_for_signature_from_base64_string(char *base
 
 LASSO_EXPORT LassoKey* lasso_key_new_for_signature_from_file(char *filename_or_buffer,
 		char *password, LassoSignatureMethod signature_method, char *certificate);
+
+LASSO_EXPORT lasso_error_t lasso_key_query_verify(LassoKey* key, const char *query);
+
+LASSO_EXPORT char* lasso_key_query_sign(LassoKey *key, const char *query);
+
+LASSO_EXPORT lasso_error_t lasso_key_saml2_xml_verify(LassoKey *key, char *id, xmlNode *document);
+
+LASSO_EXPORT xmlNode *lasso_key_saml2_xml_sign(LassoKey *key, const char *id, xmlNode *document);
 
 #ifdef __cplusplus
 }

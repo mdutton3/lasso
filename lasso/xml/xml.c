@@ -2809,11 +2809,7 @@ lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 	LassoNodeClass *klass = NULL;
 	LassoNodeClassData *node_data = NULL;
 	LassoSignatureContext context;
-	xmlSecTransformId transform_id;
-	xmlNode *signature = NULL, *reference, *key_info;
-	char *uri;
-	char *id;
-
+	char *id = NULL;
 
 	node_data = lasso_legacy_get_signature_node_data(node, &klass);
 	if (! node_data)
@@ -2827,66 +2823,11 @@ lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		if (lasso_legacy_extract_and_copy_signature_parameters(node, node_data))
 			context = lasso_node_get_signature(node);
 
-	if (! lasso_validate_signature_context(context))
-		return;
-
-	switch (context.signature_method) {
-		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
-			transform_id = xmlSecTransformRsaSha1Id;
-			break;
-		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
-			transform_id = xmlSecTransformDsaSha1Id;
-			break;
-		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
-			transform_id = xmlSecTransformHmacSha1Id;
-			break;
-		default:
-			g_assert_not_reached();
-	}
-	signature = xmlSecTmplSignatureCreate(NULL,
-			xmlSecTransformExclC14NId,
-			transform_id, NULL);
-	xmlAddChild(xmlnode, signature);
-
-	/* Normally the signature is son of the signed node, which holds an Id attribute, but in
-	 * other cases, set snippet->offset to 0 and use xmlSecTmpSignatureAddReference from another
-	 * node get_xmlNode virtual method to add the needed reference.
-	 */
 	if (snippet_signature->offset) {
 		id = SNIPPET_STRUCT_MEMBER(char *, node, G_TYPE_FROM_CLASS(klass), snippet_signature);
-		uri = g_strdup_printf("#%s", id);
-		reference = xmlSecTmplSignatureAddReference(signature,
-				xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
-		lasso_release(uri);
 	}
 
-	/* add enveloped transform */
-	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
-	/* add exclusive C14N transform */
-	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
-	/* if the key is the public part of a symetric key, add its certificate or the key itself */
-	switch (context.signature_method) {
-		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
-		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
-			/* symetric cryptography methods */
-			key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
-			if (xmlSecKeyGetData(context.signature_key, xmlSecOpenSSLKeyDataX509Id)) {
-				/* add <dsig:KeyInfo/> */
-				xmlSecTmplKeyInfoAddX509Data(key_info);
-			} else {
-				xmlSecTmplKeyInfoAddKeyValue(key_info);
-			}
-			break;
-		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
-			if (context.signature_key->name) {
-				key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
-				xmlSecTmplKeyInfoAddKeyName(key_info, NULL);
-
-			}
-			break;
-		default:
-			g_assert_not_reached();
-	}
+	lasso_xmlnode_add_saml2_signature_template(xmlnode, context, id);
 }
 
 static struct XmlSnippet*
@@ -3473,4 +3414,82 @@ lasso_node_get_namespace(LassoNode *node)
 	if (klass->node_data && klass->node_data->ns)
 		return (const char*)klass->node_data->ns->href;
 	return NULL;
+}
+
+
+/**
+ * lasso_node_export_to_saml2_query:
+ * @node: the #LassoNode object to pass as a query
+ * @param_name: the key value for the query string parameter
+ * @url:(allow-none): an optional URL to prepend to the query string
+ * @key:(allow-none): a #LassoKey object
+ *
+ * Export a node as signed query string, the node must support serialization as a query.
+ *
+ * Return value: an HTTP URL or query string if successful, NULL otherwise.
+ */
+char*
+lasso_node_export_to_saml2_query(LassoNode *node, const char *param_name, const char *url,
+		LassoKey *key)
+{
+	char *value = NULL, *query = NULL, *signed_query = NULL, *result = NULL;
+	xmlChar *encoded_param = NULL;
+
+	value = lasso_node_build_deflated_query(xmlnode);
+	if (! value)
+		goto cleanup;
+	encoded_param = xmlURIEscapeStr(BAD_CAST param_name, NULL);
+	if (! encoded_param)
+		goto cleanup;
+	query = g_strdup_printf("%s=%s", encoded_param, value);
+	if (! query)
+		goto cleanup;
+	if (LASSO_IS_KEY(key)) {
+		signed_query = lasso_key_query_sign(key, query);
+	} else {
+		lasso_transfer_string(signed_query, query);
+	}
+	if (! signed_query)
+		goto cleanup;
+	if (url) {
+		result = lasso_concat_url_query(url, signed_query);
+	} else {
+		lasso_transfer_string(result, signed_query);
+	}
+
+cleanup:
+	lasso_release_string(value);
+	lasso_release_xml_string(encoded_param);
+	lasso_release_string(query);
+	lasso_release_string(signed_query);
+	return result;
+}
+
+/**
+ * lasso_node_new_from_saml2_query:
+ * @url_or_qs: an URL containing a query string or a query string only
+ * @param_name: the key value for the query string parameter to extract as a #LassoNode.
+ * @key:(allow-none): a #LassoKey object
+ *
+ * Verify the signature on a SAML-2 encoded query string and return the encoded node.
+ *
+ * Return value: a newly build #LassoNode if successful, NULL otherwise.
+ */
+LassoNode*
+lasso_node_new_from_saml2_query(const char *url_or_qs, const char *param_name, LassoKey *key)
+{
+	char *needle = NULL;
+	LassoNode *result = NULL;
+
+	if (! url_or_qs || ! param_name)
+		return NULL;
+	needle = strchr(url_or_qs, '?');
+	if (needle) {
+		url_or_qs = (const char*)(needle+1);
+	}
+	if (key) {
+		goto_cleanup_if_fail(lasso_key_query_verify(key, url_or_qs) == 0);
+	}
+cleanup:
+	return result;
 }
