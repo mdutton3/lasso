@@ -534,7 +534,24 @@ lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 	return TRUE;
 }
 
-static gboolean has_synchronous_methods(LassoProvider *provider, LassoMdProtocolType protocol_type)
+enum {
+	FOR_RESPONSE = 1
+};
+
+/**
+ * has_synchronous_methods:
+ * @provider: a #LassoProvider object
+ * @protocol_type: a #LassoMdProtocolType value
+ * @for_response: a boolean stating whether we need the answer for receiving a response.
+ *
+ * Return whether the given @provider support a certain protocol with a synchronous binding.
+ * If we need to receive a response for this protocol, @for_response must be set to True.
+ *
+ * Return result: TRUE if @provider supports @protocol_type with a synchronous binding, eventually
+ * for receiving responses, FALSE otherwise.
+ */
+static gboolean has_synchronous_methods(LassoProvider *provider, LassoMdProtocolType protocol_type,
+		gboolean for_response)
 {
 	GList *t = NULL;
 	const char *kind = NULL;
@@ -545,6 +562,11 @@ static gboolean has_synchronous_methods(LassoProvider *provider, LassoMdProtocol
 	}
 	if (! kind) {
 		return LASSO_HTTP_METHOD_NONE;
+	}
+
+	if (for_response && protocol_type == LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON)
+	{
+		kind = LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE;
 	}
 
 	lasso_foreach(t, provider->private_data->endpoints) {
@@ -581,7 +603,7 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 			/* a synchronous method needs another synchronous method for receiving the
 			 * response on the local side */
 			if (http_method_kind(result) == SYNCHRONOUS
-					&& ! has_synchronous_methods(provider, protocol_type))
+					&& ! has_synchronous_methods(provider, protocol_type, FOR_RESPONSE))
 				continue;
 			if (result != LASSO_HTTP_METHOD_NONE)
 				break;
