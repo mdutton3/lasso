@@ -706,7 +706,7 @@ if test "z$PKG_CONFIG_PATH" != "z"; then
     export PKG_CONFIG_PATH
 fi
 
-PKG_CHECK_MODULES(LASSO, glib-2.0 >= 2.4.0 gobject-2.0 >= 2.4.0 libxml-2.0 xmlsec1 >= 1.2.6 xmlsec1-openssl >= 1.2.6 openssl)
+PKG_CHECK_MODULES(LASSO, glib-2.0 >= 2.17.0 gobject-2.0 >= 2.17.0 libxml-2.0 xmlsec1 >= 1.2.6 xmlsec1-openssl >= 1.2.6 openssl)
 
 AC_ARG_WITH(sasl2, [  --with-sasl2[=PFX]         Use Cyrus SASL library version 2 for WSF-Auth])
 if test "x$enable_wsf" = "xyes"; then

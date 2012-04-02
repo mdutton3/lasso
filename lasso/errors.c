@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <glib/gstrfuncs.h>
+#include <glib.h>
 #include "errors.h"
 #include "xml/xml.h"
 

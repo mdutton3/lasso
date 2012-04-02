@@ -33,7 +33,6 @@ extern "C" {
 
 #include <glib.h>
 #include <glib-object.h>
-#include <glib/gprintf.h>
 
 #include <libxml/uri.h>
 #include <libxml/tree.h>
