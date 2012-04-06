@@ -721,10 +721,18 @@ lasso_saml2_assertion_add_attribute_with_node(LassoSaml2Assertion *assertion, co
 	lasso_assign_string(attribute->NameFormat, LASSO_SAML2_ATTRIBUTE_NAME_FORMAT_URI);
 	lasso_list_add_new_gobject(attribute->AttributeValue, attribute_value);
 
-	attribute_statement = LASSO_SAML2_ATTRIBUTE_STATEMENT(lasso_saml2_attribute_statement_new());
+	if (assertion->AttributeStatement
+			&& LASSO_IS_SAML2_ATTRIBUTE_STATEMENT(
+				assertion->AttributeStatement->data)) {
+		attribute_statement =
+			(LassoSaml2AttributeStatement*)
+				assertion->AttributeStatement->data;
+	} else {
+		attribute_statement = LASSO_SAML2_ATTRIBUTE_STATEMENT(lasso_saml2_attribute_statement_new());
+		lasso_list_add_new_gobject(assertion->AttributeStatement, attribute_statement);
+	}
 	lasso_list_add_new_gobject(attribute_statement->Attribute, attribute);
 
-	lasso_list_add_new_gobject(assertion->AttributeStatement, attribute_statement);
 cleanup:
 	return rc;
 }
