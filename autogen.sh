@@ -73,8 +73,15 @@ fi
 echo "* Running libtoolize"
 libtoolize --copy --force
 
-echo "* Running gtkdocize"
-gtkdocize --flavour no-tmpl || exit $?
+GTKDOCIZE=`which gtkdocize`
+if test -z $GTKDOCIZE; then
+        echo "You don't have gtk-doc installed, and thus"
+        echo "won't be able to generate the documentation."
+        touch gtk-doc.make
+else
+        echo "* Running gtkdocize"
+        $GTKDOCIZE --flavour no-tmpl || exit $?
+fi
 
 echo "* Running $ACLOCAL"
 $ACLOCAL $ACLOCAL_FLAGS -I m4 || exit $?

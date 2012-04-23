@@ -681,7 +681,14 @@ AC_SUBST(LASSO_WSF_SUPPORT)
 
 
 dnl API Reference documentation support
+# gtkdocize greps for ^GTK_DOC_CHECK and parses it, so you need to have
+# it on it's own line.
+m4_ifdef([GTK_DOC_CHECK], [
 GTK_DOC_CHECK(1.9)
+],[
+AM_CONDITIONAL([ENABLE_GTK_DOC],[false])
+])
+
 if test "z$with_html_dir" != "z" ; then
     LASSO_DOCDIR=$with_html_dir
 else
