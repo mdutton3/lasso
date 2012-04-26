@@ -43,6 +43,7 @@
 #include <xmlsec/crypto.h>
 #include <xmlsec/xmlenc.h>
 #include <xmlsec/openssl/crypto.h>
+#include <xmlsec/openssl/x509.h>
 
 #include "xml.h"
 #include "xml_enc.h"
