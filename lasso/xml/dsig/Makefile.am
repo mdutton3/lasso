@@ -1,4 +1,3 @@
-EXTRA_DIST = xml_saml2.h
 MAINTAINERCLEANFILES = Makefile.in
 liblassoincludedir = $(includedir)/lasso/xml/dsig
 
@@ -21,4 +20,5 @@ liblassoinclude_HEADERS = \
 	ds_key_value.h \
 	ds_rsa_key_value.h \
 	ds_x509_data.h \
-	strings.h
+	strings.h \
+	xml_dsig.h
