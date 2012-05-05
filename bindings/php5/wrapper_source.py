@@ -185,7 +185,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
     } else {
         RETVAL_NULL();
     }'''
-            if free or is_transfer_full(arg):
+            if free:
                 print >> self.fd, '    free(return_c_value);'
         elif is_xml_node(arg):
             print >> self.fd, '''\
@@ -206,7 +206,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 print >> self.fd, '''\
     set_array_from_list_of_strings((GList*)return_c_value, &return_value);
 '''
-                if free or is_transfer_full(arg):
+                if free:
                     print >> self.fd, '    lasso_release_list_of_strings(return_c_value);'
             elif is_xml_node(el_type):
                 print >> self.fd, '''\
@@ -218,7 +218,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 print >> self.fd, '''\
     set_array_from_list_of_objects((GList*)return_c_value, &return_value);
 '''
-                if free or is_transfer_full(arg):
+                if free:
                     print >> self.fd, '    lasso_release_list_of_gobjects(return_c_value);'
             else:
                 raise Exception('cannot return value for %s' % (arg,))
@@ -373,7 +373,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                     print >> self.fd, '    }'
 
         try:
-            self.return_value(m.return_arg, is_transfer_full(m.return_arg))
+            self.return_value(m.return_arg, is_transfer_full(m.return_arg, default=True))
         except:
             raise Exception('Cannot return value for function %s' % m)
 
