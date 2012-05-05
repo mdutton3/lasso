@@ -996,6 +996,8 @@ register_constants(PyObject *d)
                     print >> fd, '    free_list(&%s, (GFunc)g_object_unref);' % arg[1]
             elif is_time_t_pointer(arg):
                 print >> fd, '    if (%s) free(%s);' % (arg[1], arg[1])
+            elif not is_transfer_full(arg) and is_xml_node(arg):
+                self.free_value(fd, arg)
 
         if not m.return_type:
             print >> fd, '    return noneRef();'
