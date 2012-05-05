@@ -3,7 +3,7 @@ NEWS
 
 2.4.0 - June 6th 2011
 ---------------------
-93 files changed, 32160 insertions(+), 607 deletions(-)
+189 commits, 420 files changed, 42834 insertions, 3770 deletions
 
 Minor version number increase since ABI was extended (new methods).
 
@@ -67,12 +67,35 @@ Minor version number increase since ABI was extended (new methods).
     {http://www.w3.org/2001/XMLSchema-instance}type
 
    for the classic xsi:type attribute.
+ - xmldsig:X509Data node now possess a binding as a Lasso object. You can use
+   it combined with the new class LassoSaml2KeyInformationDataType to use the
+   holder-of-key subject confirmation method.
  - The perfs benchmarking tools now allows to select a different metadata set
    (for example to test with different public key sizes).
  - Perl minimal version for the binding was downgraded to 5
  - pseudo-XSchema validation: the new XML deserializer does more to enforce
    constraints of the schema defining SAML messages. It means Lasso is less
    forgiving with non-conform implementation of SAML.
+ - thin-sessions mode: A new flag was added named thin-session, you can set it
+   using lasso_set_flag("thin-sessions") or by setting the LASSO_FLAG
+   environement variable to the string "thin-sessions". The effect of this flag
+   is to remove complete storage of assertions in the LassoSession object,
+   which was made mainly to support logout and the artifact binding for ID-FF
+   1.2. A new thinner structure is used for supporting logout, and ID-FF 1.2
+   can now use the same storage mechanism as the SAML 2 implementation for the
+   artifact binding (i.e. using lasso_profile_get_artifact_message after
+   artifact generation and lasso_profile_set_artifact_message before artifact
+   retrieval).
+ - better initialization and access to SessionIndex in logout requests:
+   LassoSession now store all generated SessionIndex for a session using a
+   small structure, using it the LassoLogout profile can now initialize
+   LassoLogout message with all of them, now need to implement this
+   functionnalitý in your service or identity provider anymore.
+ - new LassoKey object: this new class was introduced to simplify management of
+   keys when using shared key signature. But you can also use it to load
+   assymetric keys. In the future it should gain API to do XML signature and
+   encryptiong independently of any SAML 2.0 or ID-FF 1.2 exchange. Providing
+   the first simple binding of libxmlsec to Python.
  - a FAQ file was started.
 
 
