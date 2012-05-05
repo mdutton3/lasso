@@ -77,7 +77,7 @@ class Binding:
         elif is_int(type, self.binding_data) or is_boolean(type):
             pass
         elif is_xml_node(type):
-            print >>fd, '   lasso_release_xml_node(%s);' % name
+            print >>fd, '    lasso_release_xml_node(%s);' % name
         elif is_glist(type):
             etype = element_type(type)
             if is_cstring(etype):
