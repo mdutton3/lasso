@@ -30,10 +30,14 @@ def convert_type_from_gobject_annotation(type):
     return _mapping_convert_type_from_gobject_annotation.get(type, type)
 
 def clean_type(type):
+    '''Convert struct references to their typedef counterpart'''
     if not type:
         return type
     type = type.strip()
     type = re.sub('\s+', ' ', type)
+    m = re.match('\s*struct\s+_(\w+)\s*\*', type)
+    if m:
+        type = '%s*' % m.group(1)
     return re.sub('\s*\*\s*', '*', type)
 
 
@@ -266,7 +270,7 @@ def is_transfer_full(arg):
 _not_objects = ( 'GHashTable', 'GList', 'GType' )
 
 def is_object(arg):
-    t = unconstify(arg_type(arg))
+    t = clean_type(unconstify(arg_type(arg)))
     return t and t[0] in string.uppercase and not [ x for x in _not_objects if x in t ]
 
 if __name__ == '__main__':
