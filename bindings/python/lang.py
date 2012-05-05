@@ -982,6 +982,17 @@ register_constants(PyObject *d)
             print >> fd, '   ',
         print >> fd, '%s(%s);' % (m.name, ', '.join([ref_name(x) for x in m.args]))
 
+        if m.return_type:
+            # Constructor so decrease refcount (it was incremented by PyGObjectPtr_New called
+            # in self.return_value
+            try:
+                self.return_value(fd, m.return_arg)
+            except:
+                print >>sys.stderr, 'W: cannot assign return value of', m
+                raise
+
+            if is_transfer_full(m.return_arg, default=True):
+                self.free_value(fd, m.return_arg, name = 'return_value')
         for f, arg in zip(parse_tuple_format, m.args):
             if is_out(arg):
                 self.return_value(fd, arg, return_var_name = arg[1], return_pyvar_name = 'out_pyvalue')
@@ -1002,16 +1013,6 @@ register_constants(PyObject *d)
         if not m.return_type:
             print >> fd, '    return noneRef();'
         else:
-            # Constructor so decrease refcount (it was incremented by PyGObjectPtr_New called
-            # in self.return_value
-            try:
-                self.return_value(fd, m.return_arg)
-            except:
-                print >>sys.stderr, 'W: cannot assign return value of', m
-                raise
-
-            if is_transfer_full(m.return_arg):
-                self.free_value(fd, m.return_arg, name = 'return_value')
             print >> fd, '    return return_pyvalue;'
         print >> fd, '}'
         print >> fd, ''
