@@ -844,7 +844,7 @@ static GQuark custom_element_quark;
  *
  * Retrieve the original xmlNode eventually associated to this #LassoNode.
  *
- * Return value: an #xmlNodePtr or NULL.
+ * Return value:(transfer none): an #xmlNodePtr or NULL.
  */
 xmlNodePtr
 lasso_node_get_original_xmlnode(LassoNode *node)
