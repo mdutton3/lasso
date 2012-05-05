@@ -198,6 +198,8 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         }
     }
 '''
+            if free:
+                print >> self.fd, '    lasso_release_xml_node(return_c_value);'
         elif is_glist(arg):
             el_type = element_type(arg)
             if is_cstring(el_type):
