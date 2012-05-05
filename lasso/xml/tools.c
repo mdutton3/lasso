@@ -1012,6 +1012,17 @@ lasso_node_build_deflated_query(LassoNode *node)
 {
 	/* actually deflated and b64'ed and url-escaped */
 	xmlNode *xmlnode;
+	gchar *result;
+
+	xmlnode = lasso_node_get_xmlNode(node, FALSE);
+	result = lasso_xmlnode_build_deflated_query(xmlnode);
+	xmlFreeNode(node);
+	return result;
+}
+
+gchar*
+lasso_xmlnode_build_deflated_query(xmlNode *xmlnode)
+{
 	xmlOutputBufferPtr buf;
 	xmlCharEncodingHandlerPtr handler = NULL;
 	xmlChar *buffer;
@@ -1021,16 +1032,11 @@ lasso_node_build_deflated_query(LassoNode *node)
 	int rc = 0;
 	z_stream stream;
 
-	xmlnode = lasso_node_get_xmlNode(node, FALSE);
-
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
 	xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
 	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
-
-	xmlFreeNode(xmlnode);
-	xmlnode = NULL;
 
 	in_len = strlen((char*)buffer);
 	ret = g_malloc(in_len * 2);
@@ -1077,6 +1083,35 @@ lasso_node_build_deflated_query(LassoNode *node)
 	xmlFree(ret);
 
 	return rret;
+}
+
+void
+lasso_get_query_string_param_value(const char *qs, const char *param_key, char **value,
+		size_t *length)
+{
+	size_t key_size = strlen(param_key);
+
+	*value = NULL;
+	*length = 0;
+	while (qs) {
+		if (strncmp(qs, param_key, key_size) == 0 &&
+				qs[key_size] == '=')
+		{
+			char *end;
+			*value = qs[key_size+1];
+			end = strchr(*value, '&');
+			if (! end) {
+				end = strchr(*value, ';');
+			}
+			if (end) {
+				*length = (ptrdiff_t)(end - *value)
+			} else {
+				*length = strlen(*value);
+			}
+			return;
+		}
+		qs = strchr(qs, '&');
+	}
 }
 
 gboolean
@@ -2367,7 +2402,7 @@ lasso_get_hmac_key(const xmlSecKey *key, void **buffer, size_t *size)
  * successful, LASSO_SIGNATURE_CONTEXT_NONE otherwise. The caller must free the #xmlSecKey.
  */
 LassoSignatureContext
-lasso_make_signature_context_from_buffer(const char *buffer, size_t length, const char *password,
+lasso_make_signature_context_from_buffer(const void *buffer, size_t length, const char *password,
 		LassoSignatureMethod signature_method, const char *certificate) {
 	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
 
@@ -2465,4 +2500,77 @@ set_xsi_type(xmlNode *node,
 			type_ns_prefix,
 			type_ns_href,
 			type_name);
+}
+
+void
+lasso_xmlnode_add_saml2_signature_template(xmlNode *node, LassoSignatureContext context,
+		const char *id) {
+	xmlSecTransformId transform_id;
+	xmlNode *existing_signature = NULL, *signature = NULL, *reference, *key_info;
+	char *uri;
+
+	if (! lasso_validate_signature_context(context) || ! node)
+		return;
+
+	switch (context.signature_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+			transform_id = xmlSecTransformRsaSha1Id;
+			break;
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			transform_id = xmlSecTransformDsaSha1Id;
+			break;
+		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
+			transform_id = xmlSecTransformHmacSha1Id;
+			break;
+		default:
+			g_assert_not_reached();
+	}
+	existing_signature = xmlSecFindChild(node, xmlSecNodeSignature, xmlSecDSigNs);
+	signature = xmlSecTmplSignatureCreate(NULL,
+			xmlSecTransformExclC14NId,
+			transform_id, NULL);
+	if (existing_signature) {
+		xmlSecReplaceNode(existing_signature, signature);
+	} else {
+		xmlAddChild(node, signature);
+	}
+
+	/* Normally the signature is son of the signed node, which holds an Id attribute, but in
+	 * other cases, set snippet->offset to 0 and use xmlSecTmpSignatureAddReference from another
+	 * node get_xmlNode virtual method to add the needed reference.
+	 */
+	if (id) {
+		uri = g_strdup_printf("#%s", id);
+		reference = xmlSecTmplSignatureAddReference(signature,
+				xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
+		lasso_release(uri);
+	}
+
+	/* add enveloped transform */
+	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
+	/* add exclusive C14N transform */
+	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
+	/* if the key is the public part of an asymetric key, add its certificate or the key itself */
+	switch (context.signature_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			/* asymetric cryptography methods */
+			key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
+			if (xmlSecKeyGetData(context.signature_key, xmlSecOpenSSLKeyDataX509Id)) {
+				/* add <dsig:KeyInfo/> */
+				xmlSecTmplKeyInfoAddX509Data(key_info);
+			} else {
+				xmlSecTmplKeyInfoAddKeyValue(key_info);
+			}
+			break;
+		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
+			if (context.signature_key->name) {
+				key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
+				xmlSecTmplKeyInfoAddKeyName(key_info, NULL);
+
+			}
+			break;
+		default:
+			g_assert_not_reached();
+	}
 }

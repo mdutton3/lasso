@@ -2057,13 +2057,11 @@ START_TEST(test15_ds_key_info)
 	list = (GList){ .data = ds_key_info, .next = NULL, .prev = NULL };
 	lasso_saml2_key_info_confirmation_data_type_set_key_info(kicdt, &list);
 	dump = lasso_node_debug((LassoNode*)sc, 10);
-	printf("1 %s\n", dump);
 	lasso_release_gobject(sc);
 	lasso_release_gobject(ds_key_info);
 	node = lasso_node_new_from_dump(dump);
 	lasso_release_string(dump);
 	dump = lasso_node_debug(node, 10);
-	printf("2 %s\n", dump);
 	lasso_release_string(dump);
 }
 END_TEST

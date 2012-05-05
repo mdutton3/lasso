@@ -1,6 +1,81 @@
 NEWS
 ====
 
+2.4.0 - June 6th 2011
+---------------------
+93 files changed, 32160 insertions(+), 607 deletions(-)
+
+Minor version number increase since ABI was extended (new methods).
+
+ - Improvements to autoconf and automake files to compile under Darwin (Mac Os
+   X).
+ - Key rollover support:
+   Lasso is now able to accept messages signed by any key declared as a signing
+   key in a metadata and not just the last one. You can also decrypt encrypted
+   nodes using any of a list of private keys, allowing roll-over of encryption
+   certificates. Signing key roll-over is automatic, your provider just have to
+   provide the new signing key in their metadata. For multiple-encryption key
+   you can load another private key than the one loaded in the LassoServer
+   constuctor with code like that:
+
+      >>> import lasso
+      >>> server = lasso.Server(our_metadata, first_private_key_path)
+      >>> server.setEncryptionPrivateKey(second_private_key_path)
+
+   See the FAQ file for the workflow of a proper key roll-over.
+
+ - Partial logout reponse now produces a specific error code when parsed by
+   lasso_logout_process_response_msg()
+ - Bugs in lasso_assertion_query_build_request_msg() were fixed
+ - Processing of assertions is not stopped when checking that first level
+   status code is not success, so that later code can check the second level
+   status code.
+ - A new generic error for denied request was added,
+   LASSO_PROFILE_ERROR_REQUEST_DENIED
+ - A new API lasso_server_load_metadata() was added to load federation files
+   (XML files containing metadata from multiple providers) and to check
+   signatures on them.
+ - Better warning and errors are reported in logs when failing to load a
+   metadata file.
+ - Bugs around missing namespace declaration for dump file were fixed, it
+   prevented reloading dumped object (like LassoLogin).
+ - lasso_node_get_xml_node_for_any_type() must be able to copy the content of
+   an XML node to another (namespace, attribute and children). It did not, now
+   it is fixed. It can be used for example to add specific attribute like «
+   xsi:type="string" » to a Saml2AttributeValue. Here is a python snippet to do that:
+
+      >>> import lasso
+      >>> a = lasso.Saml2AttributeValue()
+      >>> a.setOriginalXmlnode('<Dummy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="string">Value</Dummy>')
+      >>> print a.debug(0)
+      <saml:AttributeValue xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="string">Value</saml:AttributeValue>
+ - support for symetric keys signatures: for a long time XMLDisg standard has
+   supported HMAC signature, or signature based on a shared secret key an hash
+   algorithm. Lasso now does support to share a key with another Lasso using
+   service or identity provider and to verify and sign SAML exchange using this
+   key. Performance can be 100 times more than with assymetric cryptography,
+   i.e. RSA.
+ - nodes able to hold any XML attribyte (like saml:AttributeValue) contains a
+   hashtable to for holding those attributes, those hashtable have a new syntax
+   for attributes of another namespace than the current node namespace,
+   inspired by the Python ElementTree library:
+
+    {the_namespace}the_attribute_name
+
+   ex:
+
+    {http://www.w3.org/2001/XMLSchema-instance}type
+
+   for the classic xsi:type attribute.
+ - The perfs benchmarking tools now allows to select a different metadata set
+   (for example to test with different public key sizes).
+ - Perl minimal version for the binding was downgraded to 5
+ - pseudo-XSchema validation: the new XML deserializer does more to enforce
+   constraints of the schema defining SAML messages. It means Lasso is less
+   forgiving with non-conform implementation of SAML.
+ - a FAQ file was started.
+
+
 2.3.6 - November 29th 2011
 --------------------------
 

@@ -275,7 +275,7 @@ lasso_create_hmac_key(const xmlSecByte * buf, xmlSecSize size);
 lasso_error_t
 lasso_get_hmac_key(const xmlSecKey *key, void **buffer, size_t *size);
 
-LassoSignatureContext lasso_make_signature_context_from_buffer(const char *buffer, size_t length,
+LassoSignatureContext lasso_make_signature_context_from_buffer(const void *buffer, size_t length,
 		const char *password, LassoSignatureMethod signature_method,
 		const char *certificate);
 
@@ -299,6 +299,12 @@ void set_xsi_type(xmlNode *node,
 		const xmlChar *type_ns_prefix,
 		const xmlChar *type_ns_href,
 		const xmlChar *type_name);
+
+void lasso_xmlnode_add_saml2_signature_template(xmlNode *node, LassoSignatureContext context,
+		const char *id);
+
+gchar* lasso_xmlnode_build_deflated_query(xmlNode *xmlnode);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

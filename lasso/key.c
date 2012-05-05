@@ -24,6 +24,7 @@
 #include "key.h"
 #include "keyprivate.h"
 #include "xml/private.h"
+#include "xmlsec/xmltree.h"
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -172,7 +173,7 @@ lasso_key_new_for_signature_from_file(char *filename_or_buffer,
  * Return value:(transfer full): a newly allocated #LassoKey object
  */
 LassoKey*
-lasso_key_new_for_signature_from_memory(void *buffer,
+lasso_key_new_for_signature_from_memory(const void *buffer,
 		size_t size,
 		char *password,
 		LassoSignatureMethod signature_method,
@@ -221,6 +222,149 @@ lasso_key_new_for_signature_from_base64_string(char *base64_string,
 	return key;
 }
 
+static xmlNode *
+find_xmlnode_with_saml2_id(xmlNode *xmlnode, const char *id)
+{
+	xmlNode *found = NULL;
+	xmlNode *t;
+
+	if (! xmlnode)
+		return NULL;
+
+	if (xmlHasProp(xmlnode, BAD_CAST "ID")) {
+		xmlChar *value;
+
+		value = xmlGetProp(xmlnode, BAD_CAST "ID");
+		if (lasso_strisequal((char*)value, id)) {
+			found = xmlnode;
+		}
+		xmlFree(value);
+	}
+	if (found) {
+		return found;
+	}
+	t = xmlSecGetNextElementNode(xmlnode->children);
+	while (t) {
+		found = find_xmlnode_with_saml2_id(t, id);
+		if (found) {
+			return found;
+		}
+		t = xmlSecGetNextElementNode(t->next);
+	}
+	return NULL;
+}
+
+/**
+ * lasso_key_saml2_xml_verify:
+ * @key: a #LassoKey object
+ * @id: the value of the ID attribute of signed node
+ * @document: the document containing the signed node
+ *
+ * Verify the first signature node child of the node with the given id. It follows from the profile
+ * of XMLDsig used by the SAML 2.0 specification.
+ *
+ * Return value: 0 if the signature validate, an error code otherwise.
+ */
+lasso_error_t
+lasso_key_saml2_xml_verify(LassoKey *key, char *id, xmlNode *document)
+{
+	xmlNode *signed_node;
+	LassoSignatureContext signature_context;
+
+
+	signed_node = find_xmlnode_with_saml2_id(document, id);
+	if (! signed_node) {
+		return LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML;
+	}
+	signature_context = lasso_key_get_signature_context(key);
+	return lasso_verify_signature(signed_node, signed_node->doc, "ID", NULL,
+			signature_context.signature_key, NO_OPTION, NULL);
+}
+
+/**
+ * lasso_key_saml2_xml_sign:
+ * @key: a #LassoKey object
+ * @id: the value of the ID attribute of signed node
+ * @document: the document containing the signed node
+ *
+ * Sign the first signature node child of the node with the given id. It no signature node is found
+ * a new one is added at the end of the children list of the signed node.
+ *
+ * The passed document node is modified in-place.
+ *
+ * Return value: The modified xmlNode object, or NULL if the signature failed.
+ */
+xmlNode*
+lasso_key_saml2_xml_sign(LassoKey *key, const char *id, xmlNode *document)
+{
+	xmlNode *signed_node;
+	LassoSignatureContext signature_context;
+
+	signed_node = find_xmlnode_with_saml2_id(document, id);
+	if (! signed_node) {
+		return NULL;
+	}
+	signature_context = lasso_key_get_signature_context(key);
+	lasso_xmlnode_add_saml2_signature_template(signed_node, signature_context, id);
+	if (lasso_sign_node(signed_node, signature_context,
+			"ID", id) == 0) {
+		return document;
+	} else {
+		return NULL;
+	}
+}
+
+/**
+ * lasso_key_query_verify:
+ * key: a #LassoKey object
+ * query: a raw HTTP query string
+ *
+ * Check if this query string contains a proper SAML2 signature for this key.
+ *
+ * Return value: 0 if a valid signature was found, an error code otherwise.
+ */
+lasso_error_t
+lasso_key_query_verify(LassoKey *key, const char *query)
+{
+	LassoSignatureContext signature_context;
+	lasso_bad_param(KEY, key);
+
+	signature_context = lasso_key_get_signature_context(key);
+	if (! lasso_validate_signature_context(signature_context))
+		return LASSO_ERROR_UNDEFINED;
+	return lasso_saml2_query_verify_signature(query, signature_context.signature_key);
+}
+
+/**
+ * lasso_key_query_verify:
+ * key: a #LassoKey object
+ * query: a raw HTTP query string
+ *
+ * Sign the given query string using the given key.
+ *
+ * Return value: the signed query string.
+ */
+char*
+lasso_key_query_sign(LassoKey *key, const char *query)
+{
+	LassoSignatureContext signature_context;
+
+	if (! LASSO_IS_KEY(key))
+		return NULL;
+	signature_context = lasso_key_get_signature_context(key);
+	if (! lasso_validate_signature_context(signature_context))
+		return NULL;
+	return lasso_query_sign((char*)query, signature_context);
+}
+
+/**
+ * lasso_key_get_signature_context:
+ * @key: a #LassoKey object
+ *
+ * Private method to extract the signature context embedded in a LassoKey object.
+ *
+ * Return value: a #LassoSignatureContext structure value.
+ */
 LassoSignatureContext
 lasso_key_get_signature_context(LassoKey *key) {
 	if (key->private_data && key->private_data->type == LASSO_KEY_TYPE_FOR_SIGNATURE) {
@@ -228,6 +372,13 @@ lasso_key_get_signature_context(LassoKey *key) {
 	}
 	return LASSO_SIGNATURE_CONTEXT_NONE;
 }
+
+/**
+ * lasso_key_get_key_type:
+ * @key: a #LassoKey object
+ *
+ * Return the type of key, i.e. which operation it supports.
+ */
 LassoKeyType
 lasso_key_get_key_type(LassoKey *key) {
 	lasso_return_val_if_fail(LASSO_IS_KEY(key),

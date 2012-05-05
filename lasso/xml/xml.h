@@ -194,6 +194,11 @@ LASSO_EXPORT gchar* lasso_get_prefix_for_idwsf2_dst_service_href(const gchar *hr
 
 LASSO_EXPORT char* lasso_node_debug(LassoNode *node, int level);
 
+typedef struct _LassoKey LassoKey;
+
+LASSO_EXPORT char* lasso_node_export_to_saml2_query(LassoNode *node, const char *param_name, const
+		char *url, LassoKey *key);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
