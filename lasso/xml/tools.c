@@ -1016,7 +1016,7 @@ lasso_node_build_deflated_query(LassoNode *node)
 
 	xmlnode = lasso_node_get_xmlNode(node, FALSE);
 	result = lasso_xmlnode_build_deflated_query(xmlnode);
-	xmlFreeNode(node);
+	xmlFreeNode(xmlnode);
 	return result;
 }
 
@@ -1086,7 +1086,7 @@ lasso_xmlnode_build_deflated_query(xmlNode *xmlnode)
 }
 
 void
-lasso_get_query_string_param_value(const char *qs, const char *param_key, char **value,
+lasso_get_query_string_param_value(const char *qs, const char *param_key, const char **value,
 		size_t *length)
 {
 	size_t key_size = strlen(param_key);
@@ -1098,13 +1098,13 @@ lasso_get_query_string_param_value(const char *qs, const char *param_key, char *
 				qs[key_size] == '=')
 		{
 			char *end;
-			*value = qs[key_size+1];
+			*value = &qs[key_size+1];
 			end = strchr(*value, '&');
 			if (! end) {
 				end = strchr(*value, ';');
 			}
 			if (end) {
-				*length = (ptrdiff_t)(end - *value)
+				*length = (ptrdiff_t)(end - *value);
 			} else {
 				*length = strlen(*value);
 			}

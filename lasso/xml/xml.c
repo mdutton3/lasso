@@ -3436,7 +3436,7 @@ lasso_node_export_to_saml2_query(LassoNode *node, const char *param_name, const 
 	char *value = NULL, *query = NULL, *signed_query = NULL, *result = NULL;
 	xmlChar *encoded_param = NULL;
 
-	value = lasso_node_build_deflated_query(xmlnode);
+	value = lasso_node_build_deflated_query(node);
 	if (! value)
 		goto cleanup;
 	encoded_param = xmlURIEscapeStr(BAD_CAST param_name, NULL);
