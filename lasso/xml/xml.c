@@ -60,6 +60,8 @@
 #include "id-wsf-2.0/idwsf2_strings.h"
 #endif
 
+#include "../key.h"
+
 static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump);
 static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name, LassoNodeClass **class_p);
