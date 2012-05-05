@@ -174,7 +174,7 @@ lasso_misc_text_node_get_type()
  *
  * Return the xml content in this node.
  *
- * Return value: an #xmlNode or NULL.
+ * Return value:(transfer none): an #xmlNode or NULL.
  */
 xmlNode*
 lasso_misc_text_node_get_xml_content(LassoMiscTextNode *misc_text_node)
