@@ -258,14 +258,15 @@ def is_int(arg, binding_data):
 def is_time_t_pointer(arg):
     return re.match(r'\btime_t\*', unconstify(arg_type(arg)))
 
-def is_transfer_full(arg):
+def is_transfer_full(arg, default=False):
     if not isinstance(arg, tuple):
-        return False
+        return default
     transfer = arg[2].get('transfer')
     if transfer:
         return transfer == 'full'
-    else:
-        return is_out(arg) or is_object(arg)
+    if is_cstring(arg) and is_const(arg):
+        return False
+    return default or is_out(arg) or is_object(arg)
 
 _not_objects = ( 'GHashTable', 'GList', 'GType' )
 
