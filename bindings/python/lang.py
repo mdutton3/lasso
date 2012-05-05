@@ -73,8 +73,8 @@ class Binding:
         if not name:
             raise Exception('Cannot free, missing a name')
         if is_cstring(type):
-            print >>fd, '   lasso_release_string(%s);' % name
-        elif is_int(type, self.binding_data):
+            print >>fd, '    lasso_release_string(%s);' % name
+        elif is_int(type, self.binding_data) or is_boolean(type):
             pass
         elif is_xml_node(type):
             print >>fd, '   lasso_release_xml_node(%s);' % name
