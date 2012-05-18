@@ -434,7 +434,7 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 	/* calculate signature value */
 	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
 		/* load private key */
-		rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, NULL, NULL);
+		rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, NULL, (void*)private_key_password);
 		if (rsa == NULL) {
 			goto done;
 		}
@@ -444,7 +444,7 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 		status = RSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret, &siglen, rsa);
 		RSA_free(rsa);
 	} else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
-		dsa = PEM_read_bio_DSAPrivateKey(bio, NULL, NULL, NULL);
+		dsa = PEM_read_bio_DSAPrivateKey(bio, NULL, NULL, (void*)private_key_password);
 		if (dsa == NULL) {
 			goto done;
 		}
@@ -770,11 +770,11 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	if (access(private_key_file, R_OK) == 0) {
 		dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
 				xmlSecKeyDataFormatPem,
-				NULL, NULL, NULL);
+				private_key_password, NULL, NULL);
 	} else {
 		int len = private_key_file ? strlen(private_key_file) : 0;
 		dsig_ctx->signKey = xmlSecCryptoAppKeyLoadMemory((xmlSecByte*)private_key_file, len,
-				xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+				xmlSecKeyDataFormatPem, private_key_password, NULL, NULL);
 	}
 	if (dsig_ctx->signKey == NULL) {
 		xmlSecDSigCtxDestroy(dsig_ctx);
