@@ -121,7 +121,7 @@ xmlSecKeyPtr lasso_get_public_key_from_pem_cert_file(const char *file);
 xmlSecKeysMngr* lasso_load_certs_from_pem_certs_chain_file (const char *file);
 
 char* lasso_query_sign(char *query, LassoSignatureMethod sign_method,
-	const char *private_key_file);
+	const char *private_key_file, const char *private_key_password);
 
 int lasso_query_verify_signature(const char *query, const xmlSecKey *public_key);
 

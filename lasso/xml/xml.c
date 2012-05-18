@@ -390,7 +390,7 @@ lasso_node_export_to_query(LassoNode *node,
 
 	unsigned_query = lasso_node_build_query(node);
 	if (private_key_file) {
-		query = lasso_query_sign(unsigned_query, sign_method, private_key_file);
+		query = lasso_query_sign(unsigned_query, sign_method, private_key_file, NULL);
 	} else {
 		lasso_transfer_string(query, unsigned_query);
 	}

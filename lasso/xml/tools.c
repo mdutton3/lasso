@@ -379,7 +379,8 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
  * Return value: a newly allocated query signed or NULL if an error occurs.
  **/
 char*
-lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *private_key_file)
+lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *private_key_file,
+		G_GNUC_UNUSED const char *private_key_password)
 {
 	BIO *bio = NULL;
 	char *digest = NULL; /* 160 bit buffer */
