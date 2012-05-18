@@ -1042,7 +1042,7 @@ lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, int 
 	}
 	if (sign && lasso_flag_add_signature) {
 		result = lasso_query_sign(unsigned_query, profile->server->signature_method,
-				profile->server->private_key, NULL);
+				profile->server->private_key, profile->server->private_key_password);
 		lasso_release_string(unsigned_query);
 	} else {
 		result = unsigned_query;
