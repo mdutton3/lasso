@@ -77,6 +77,7 @@ struct _LassoSaml2Assertion {
 	LassoSignatureType sign_type;
 	LassoSignatureMethod sign_method;
 	char *private_key_file;
+	char *private_key_password;
 	char *certificate_file;
 	gboolean encryption_activated;
 	char *encryption_public_key_str;

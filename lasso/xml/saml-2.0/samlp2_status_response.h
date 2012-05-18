@@ -72,6 +72,7 @@ struct _LassoSamlp2StatusResponse {
 	LassoSignatureType sign_type;
 	LassoSignatureMethod sign_method;
 	char *private_key_file;
+	char *private_key_password;
 	char *certificate_file;
 
 };
