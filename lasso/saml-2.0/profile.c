@@ -340,6 +340,7 @@ lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 		response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 	}
 	response->private_key_file = g_strdup(profile->server->private_key);
+	response->private_key_password = g_strdup(profile->server->private_key_password);
 	response->certificate_file = g_strdup(profile->server->certificate);
 
 	profile->response = LASSO_NODE(response);
@@ -791,6 +792,7 @@ lasso_saml20_profile_setup_request_signing(LassoProfile *profile)
 	request_abstract->sign_type = server->certificate ? LASSO_SIGNATURE_TYPE_WITHX509 :
 		LASSO_SIGNATURE_TYPE_SIMPLE;
 	lasso_assign_string(request_abstract->private_key_file, server->private_key);
+	lasso_assign_string(request_abstract->private_key_password, server->private_key_password);
 	lasso_assign_string(request_abstract->certificate_file, server->certificate);
 
 cleanup:
@@ -935,6 +937,7 @@ lasso_saml20_profile_setup_response_signing(LassoProfile *profile)
 	response_abstract->sign_type = server->certificate ? LASSO_SIGNATURE_TYPE_WITHX509 :
 		LASSO_SIGNATURE_TYPE_SIMPLE;
 	lasso_assign_string(response_abstract->private_key_file, server->private_key);
+	lasso_assign_string(response_abstract->private_key_password, server->private_key_password);
 	lasso_assign_string(response_abstract->certificate_file, server->certificate);
 
 cleanup:

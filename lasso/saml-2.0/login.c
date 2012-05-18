@@ -144,6 +144,8 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 		if (must_sign) {
 			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file =
 				g_strdup(profile->server->private_key);
+			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_password =
+				g_strdup(profile->server->private_key_password);
 			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file =
 				g_strdup(profile->server->certificate);
 		}
@@ -867,6 +869,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	}
 	assertion->sign_method = profile->server->signature_method;
 	assertion->private_key_file = g_strdup(profile->server->private_key);
+	assertion->private_key_password = g_strdup(profile->server->private_key_password);
 	assertion->certificate_file = g_strdup(profile->server->certificate);
 
 	/* Save encryption material in assertion private datas to be able to encrypt later */
@@ -985,6 +988,8 @@ lasso_saml20_login_build_request_msg(LassoLogin *login)
 
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file =
 		g_strdup(profile->server->private_key);
+	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_password =
+		g_strdup(profile->server->private_key_password);
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file =
 		g_strdup(profile->server->certificate);
 	profile->msg_body = lasso_node_export_to_soap(profile->request);
@@ -1036,6 +1041,8 @@ lasso_saml20_login_build_response_msg(LassoLogin *login)
 
 		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->private_key_file =
 			g_strdup(profile->server->private_key);
+		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->private_key_password =
+			g_strdup(profile->server->private_key_password);
 		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file =
 			g_strdup(profile->server->certificate);
 
@@ -1397,6 +1404,8 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 
 	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->private_key_file =
 		g_strdup(profile->server->private_key);
+	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->private_key_password =
+		g_strdup(profile->server->private_key_password);
 	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file =
 		g_strdup(profile->server->certificate);
 

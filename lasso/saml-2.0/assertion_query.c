@@ -292,6 +292,7 @@ lasso_assertion_query_validate_request(LassoAssertionQuery *assertion_query)
 		response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 	}
 	response->private_key_file = g_strdup(profile->server->private_key);
+	response->private_key_password = g_strdup(profile->server->private_key_password);
 	response->certificate_file = g_strdup(profile->server->certificate);
 
 	/* verify signature status */
@@ -346,6 +347,7 @@ lasso_assertion_query_build_response_msg(LassoAssertionQuery *assertion_query)
 			response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 		}
 		response->private_key_file = g_strdup(profile->server->private_key);
+		response->private_key_password = g_strdup(profile->server->private_key_password);
 		response->certificate_file = g_strdup(profile->server->certificate);
 		return 0;
 	}

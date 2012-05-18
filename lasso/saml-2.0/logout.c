@@ -199,6 +199,8 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 	}
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file =
 		g_strdup(profile->server->private_key);
+	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_password =
+		g_strdup(profile->server->private_key_password);
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file =
 		g_strdup(profile->server->certificate);
 
@@ -299,6 +301,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 		response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 	}
 	response->private_key_file = g_strdup(profile->server->private_key);
+	response->private_key_password = g_strdup(profile->server->private_key_password);
 	response->certificate_file = g_strdup(profile->server->certificate);
 
 	/* verify signature status */
@@ -466,6 +469,7 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 			response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 		}
 		response->private_key_file = g_strdup(profile->server->private_key);
+		response->private_key_password = g_strdup(profile->server->private_key_password);
 		response->certificate_file = g_strdup(profile->server->certificate);
 	}
 
