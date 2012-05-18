@@ -165,7 +165,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 					"No Private Key set for signing saml:Assertion");
 		} else {
 			rc = lasso_sign_node(xmlnode, "AssertionID", assertion->AssertionID,
-				assertion->private_key_file, assertion->certificate_file);
+				assertion->private_key_file, NULL, assertion->certificate_file);
 			if (rc != 0) {
 				message(G_LOG_LEVEL_WARNING, "Signing of saml:Assertion failed: %s", lasso_strerror(rc));
 			}

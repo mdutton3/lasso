@@ -744,7 +744,7 @@ error_code(G_GNUC_UNUSED GLogLevelFlags level, int error, ...)
 
 int
 lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value,
-		const char *private_key_file, const char *certificate_file)
+		const char *private_key_file, G_GNUC_UNUSED const char* private_key_password, const char *certificate_file)
 {
 	xmlDoc *doc;
 	xmlNode *sign_tmpl, *old_parent;
