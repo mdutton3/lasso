@@ -134,7 +134,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 					"No Private Key set for signing samlp2:StatusResponse");
 		} else {
 			rc = lasso_sign_node(xmlnode, "ID", response->ID,
-				response->private_key_file, NULL, response->certificate_file);
+				response->private_key_file, response->private_key_password, response->certificate_file);
 			if (rc != 0) {
 				message(G_LOG_LEVEL_WARNING, "Signing of samlp2:StatusResponse failed: %s", lasso_strerror(rc));
 			}
