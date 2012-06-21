@@ -55,6 +55,9 @@ case "${host}" in
     *linux*)
         SUN_EXTRA_INCLUDE="linux"
         ;;
+    *solaris*)
+        SUN_EXTRA_INCLUDE="solaris"
+        ;;
 esac
 
 ### adapting build environment for different platforms...

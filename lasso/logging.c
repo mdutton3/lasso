@@ -25,6 +25,7 @@
 #include "logging.h"
 #include "lasso_config.h"
 #include <glib.h>
+#include <time.h>
 
 void
 lasso_log(GLogLevelFlags level, const char *filename, int line,
