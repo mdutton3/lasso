@@ -272,6 +272,34 @@ class LoginTestCase(unittest.TestCase):
         sp_login.processAuthnResponseMsg(idp_login.msgBody)
         sp_login.acceptSso()
 
+    def test07(self):
+        '''SAMLv2 SSO with DSA key for the IdP'''
+        sp = lasso.Server(
+            os.path.join(dataDir, 'sp5-saml2/metadata.xml'),
+            os.path.join(dataDir, 'sp5-saml2/private-key.pem'))
+        assert sp
+        sp.addProvider(
+            lasso.PROVIDER_ROLE_IDP,
+            os.path.join(dataDir, 'idp12-dsa-saml2/metadata.xml'))
+        sp_login = lasso.Login(sp)
+        assert sp_login
+        sp_login.initAuthnRequest(None, lasso.HTTP_METHOD_REDIRECT)
+        sp_login.buildAuthnRequestMsg()
+        idp = lasso.Server(
+            os.path.join(dataDir, 'idp12-dsa-saml2/metadata.xml'),
+            os.path.join(dataDir, 'idp12-dsa-saml2/private-key.pem'))
+        idp.signatureMethod = lasso.SIGNATURE_METHOD_DSA_SHA1
+        idp.addProvider(
+            lasso.PROVIDER_ROLE_SP,
+            os.path.join(dataDir, 'sp5-saml2/metadata.xml'))
+        idp_login = lasso.Login(idp)
+        print sp_login.msgUrl
+        idp_login.processAuthnRequestMsg(sp_login.msgUrl.split('?')[1])
+        idp_login.protocolProfile = lasso.LOGIN_PROTOCOL_PROFILE_BRWS_POST;
+        idp_login.validateRequestMsg(True, True)
+        idp_login.buildAssertion("None", "None", "None", "None", "None")
+        idp_login.buildAuthnResponseMsg()
+
 class LogoutTestCase(unittest.TestCase):
     def test01(self):
         """SP logout without session and identity; testing initRequest."""

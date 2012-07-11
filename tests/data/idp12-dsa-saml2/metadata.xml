@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+    entityID="http://idp5/metadata">
+<IDPSSODescriptor
+    WantAuthnRequestsSigned="true"
+    protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+<KeyDescriptor use="signing">
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:X509Data><ds:X509Certificate>
+MIIDsDCCA3CgAwIBAgIBATAJBgcqhkjOOAQDMIGFMQswCQYDVQQGEwJVUzELMAkG
+A1UECBMCQ0ExCzAJBgNVBAcTAlNKMREwDwYDVQQKEwhJcm9uUG9ydDELMAkGA1UE
+CxMCcWExHDAaBgNVBAMME0RTQTEwMjRfU0hBMV9TRVJWRVIxHjAcBgkqhkiG9w0B
+CQEWD2hiYXJ6aW5AbWFpbC5xYTAeFw0xMjA0MDQwMDI3MDBaFw0xMzA0MDQwMDI3
+MDBaMIGFMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExCzAJBgNVBAcTAlNKMREw
+DwYDVQQKEwhJcm9uUG9ydDELMAkGA1UECxMCcWExHDAaBgNVBAMME0RTQTEwMjRf
+U0hBMV9TRVJWRVIxHjAcBgkqhkiG9w0BCQEWD2hiYXJ6aW5AbWFpbC5xYTCCAbgw
+ggEsBgcqhkjOOAQBMIIBHwKBgQCcShHE1F8mmcKpd4dSPX5SB+SrlTyBGBBhlLyx
+iW7/VhMy9wQ/CL8bTOLh8QH1cB80TzYzHxDfYRGO/lEd6RyFjTxiug3s8ca91M2R
+H3dPIC1p5b7obs0jXJNGY52+54G4UFk9eFTRmcf7pE3GuPOtTtHxHkLvuzQJWHS8
+5xAPiwIVAKMz1hUnqArzTw0TJPtpHkT5cvtJAoGBAIAj9xJRC0xeXhlzvEXFLqnJ
+XTIrBEeQiwtH7yoGJCZVRkPB28pKFszDnt61IkdU5H+zhEqgiMOo+hGHH3imePCS
+xLGNnmAx/PR7qqPJPEK+nweLMixCFgjg3FzVc/Re3PbRbW0Rx9yIZjwnSFSq0som
+QACzJqZfTe421NGJilBuA4GFAAKBgQCW2Ts1hQ/2dPM+Qcuh+iCrHhhdvSda+4D+
+k/defiMm7Bmdj56Xrgjv9j9ZEXaZBHJkx1XnXbrEXfYQkSIK77+d+MLorC/SM5Yz
+2xXatP8tnSmQE9cE4Lb9/OfNFbs+JBNKjiBi5ZrB8phiPQULdh4vkE2QAj77DB3R
+feAGMljBHqNvMG0wDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUopBgnBRcDnmbgd42
+wcHXpHV94WMwCwYDVR0PBAQDAgXgMBEGCWCGSAGG+EIBAQQEAwIGQDAeBglghkgB
+hvhCAQ0EERYPeGNhIGNlcnRpZmljYXRlMAkGByqGSM44BAMDLwAwLAIUNrgbrTIl
+xUCNFUTbcILsXO2J4awCFF7XlpaByAVaK3OZxd+7C6sPq6yi
+</ds:X509Certificate></ds:X509Data>
+    </ds:KeyInfo>
+  </KeyDescriptor>
+<KeyDescriptor use="encryption">
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:KeyValue>
+
+MIIDsDCCA3CgAwIBAgIBATAJBgcqhkjOOAQDMIGFMQswCQYDVQQGEwJVUzELMAkG
+A1UECBMCQ0ExCzAJBgNVBAcTAlNKMREwDwYDVQQKEwhJcm9uUG9ydDELMAkGA1UE
+CxMCcWExHDAaBgNVBAMME0RTQTEwMjRfU0hBMV9TRVJWRVIxHjAcBgkqhkiG9w0B
+CQEWD2hiYXJ6aW5AbWFpbC5xYTAeFw0xMjA0MDQwMDI3MDBaFw0xMzA0MDQwMDI3
+MDBaMIGFMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExCzAJBgNVBAcTAlNKMREw
+DwYDVQQKEwhJcm9uUG9ydDELMAkGA1UECxMCcWExHDAaBgNVBAMME0RTQTEwMjRf
+U0hBMV9TRVJWRVIxHjAcBgkqhkiG9w0BCQEWD2hiYXJ6aW5AbWFpbC5xYTCCAbgw
+ggEsBgcqhkjOOAQBMIIBHwKBgQCcShHE1F8mmcKpd4dSPX5SB+SrlTyBGBBhlLyx
+iW7/VhMy9wQ/CL8bTOLh8QH1cB80TzYzHxDfYRGO/lEd6RyFjTxiug3s8ca91M2R
+H3dPIC1p5b7obs0jXJNGY52+54G4UFk9eFTRmcf7pE3GuPOtTtHxHkLvuzQJWHS8
+5xAPiwIVAKMz1hUnqArzTw0TJPtpHkT5cvtJAoGBAIAj9xJRC0xeXhlzvEXFLqnJ
+XTIrBEeQiwtH7yoGJCZVRkPB28pKFszDnt61IkdU5H+zhEqgiMOo+hGHH3imePCS
+xLGNnmAx/PR7qqPJPEK+nweLMixCFgjg3FzVc/Re3PbRbW0Rx9yIZjwnSFSq0som
+QACzJqZfTe421NGJilBuA4GFAAKBgQCW2Ts1hQ/2dPM+Qcuh+iCrHhhdvSda+4D+
+k/defiMm7Bmdj56Xrgjv9j9ZEXaZBHJkx1XnXbrEXfYQkSIK77+d+MLorC/SM5Yz
+2xXatP8tnSmQE9cE4Lb9/OfNFbs+JBNKjiBi5ZrB8phiPQULdh4vkE2QAj77DB3R
+feAGMljBHqNvMG0wDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUopBgnBRcDnmbgd42
+wcHXpHV94WMwCwYDVR0PBAQDAgXgMBEGCWCGSAGG+EIBAQQEAwIGQDAeBglghkgB
+hvhCAQ0EERYPeGNhIGNlcnRpZmljYXRlMAkGByqGSM44BAMDLwAwLAIUNrgbrTIl
+xUCNFUTbcILsXO2J4awCFF7XlpaByAVaK3OZxd+7C6sPq6yi
+</ds:KeyValue>
+    </ds:KeyInfo>
+  </KeyDescriptor>
+
+  <ArtifactResolutionService isDefault="true" index="0"
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+    Location="http://idp5/artifact" />
+  <SingleLogoutService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+    Location="http://idp5/singleLogoutSOAP" />
+  <SingleLogoutService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    Location="http://idp5/singleLogout"
+    ResponseLocation="http://idp5/singleLogoutReturn" />
+  <ManageNameIDService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+    Location="http://idp5/manageNameIdSOAP" />
+  <ManageNameIDService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    Location="http://idp5/manageNameId"
+    ResponseLocation="http://idp5/manageNameIdReturn" />
+  <SingleSignOnService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    Location="http://idp5/singleSignOn" />
+  <SingleSignOnService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+    Location="http://idp5/singleSignOnSOAP" />
+  <SingleSignOnService
+    Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+    Location="http://idp5/singleSignOnArtifact" />
+</IDPSSODescriptor>
+<Organization>
+   <OrganizationName xml:lang="en">Entr'ouvert</OrganizationName>
+</Organization>
+
+</EntityDescriptor>
