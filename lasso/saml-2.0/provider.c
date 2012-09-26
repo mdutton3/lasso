@@ -180,7 +180,7 @@ load_endpoint_type2(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole
 	}
 	indexed_endpoint = checkSaml2MdNode(xmlnode, LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE);
 	if (indexed_endpoint) {
-		if (! xsdUnsignedShortParse(index, &idx)) {
+		if (! index || ! xsdUnsignedShortParse(index, &idx)) {
 			warning("Invalid AssertionConsumerService, no index set");
 			goto cleanup;
 		}
