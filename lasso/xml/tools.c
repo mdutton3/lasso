@@ -36,6 +36,7 @@
 #include <libxml/uri.h>
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
+#include <libxml/xmlIO.h>
 
 #include <openssl/pem.h>
 #include <openssl/sha.h>
@@ -1023,9 +1024,9 @@ lasso_node_build_deflated_query(LassoNode *node)
 gchar*
 lasso_xmlnode_build_deflated_query(xmlNode *xmlnode)
 {
-	xmlOutputBufferPtr buf;
+	xmlOutputBuffer *output_buffer;
+	xmlBuffer *buffer;
 	xmlCharEncodingHandlerPtr handler = NULL;
-	xmlChar *buffer;
 	xmlChar *ret, *b64_ret;
 	char *rret;
 	unsigned long in_len;
@@ -1033,18 +1034,19 @@ lasso_xmlnode_build_deflated_query(xmlNode *xmlnode)
 	z_stream stream;
 
 	handler = xmlFindCharEncodingHandler("utf-8");
-	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 0, "utf-8");
-	xmlOutputBufferFlush(buf);
-	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
+	buffer = xmlBufferCreate();
+	output_buffer = xmlOutputBufferCreateBuffer(buffer, handler);
+	xmlNodeDumpOutput(output_buffer, NULL, xmlnode, 0, 0, NULL);
+	xmlOutputBufferClose(output_buffer);
+	xmlBufferAdd(buffer, BAD_CAST "", 1);
 
-	in_len = strlen((char*)buffer);
+	in_len = strlen((char*)xmlBufferContent(buffer));
 	ret = g_malloc(in_len * 2);
 		/* deflating should never increase the required size but we are
 		 * more conservative than that.  Twice the size should be
 		 * enough. */
 
-	stream.next_in = buffer;
+	stream.next_in = (xmlChar*)xmlBufferContent(buffer);
 	stream.avail_in = in_len;
 	stream.next_out = ret;
 	stream.avail_out = in_len * 2;
@@ -1067,6 +1069,7 @@ lasso_xmlnode_build_deflated_query(xmlNode *xmlnode)
 			rc = deflateEnd(&stream);
 		}
 	}
+	xmlBufferFree(buffer);
 	if (rc != Z_OK) {
 		lasso_release(ret);
 		message(G_LOG_LEVEL_CRITICAL, "Failed to deflate");
@@ -1074,7 +1077,6 @@ lasso_xmlnode_build_deflated_query(xmlNode *xmlnode)
 	}
 
 	b64_ret = xmlSecBase64Encode(ret, stream.total_out, 0);
-	xmlOutputBufferClose(buf);
 	lasso_release(ret);
 
 	ret = xmlURIEscapeStr(b64_ret, NULL);
@@ -2246,22 +2248,21 @@ cleanup:
 char*
 lasso_xmlnode_to_string(xmlNode *node, gboolean format, int level)
 {
-	xmlOutputBufferPtr buf;
-	xmlCharEncodingHandlerPtr handler = NULL;
-	xmlChar *buffer;
+	xmlOutputBufferPtr output_buffer;
+	xmlBuffer *buffer;
 	char *str;
 
 	if (! node)
 		return NULL;
 
-	handler = xmlFindCharEncodingHandler("utf-8");
-	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, node, level, format ? 1 : 0, "utf-8");
-	xmlOutputBufferFlush(buf);
-	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
+	buffer = xmlBufferCreate();
+	output_buffer = xmlOutputBufferCreateBuffer(buffer, NULL);
+	xmlNodeDumpOutput(output_buffer, NULL, node, level, format ? 1 : 0, NULL);
+	xmlOutputBufferClose(output_buffer);
+	xmlBufferAdd(buffer, BAD_CAST "", 1);
 	/* do not mix XML and GLib strings, so we must copy */
-	str = g_strdup((char*)buffer);
-	xmlOutputBufferClose(buf);
+	str = g_strdup((char*)xmlBufferContent(buffer));
+	xmlBufferFree(buffer);
 
 	return str;
 }

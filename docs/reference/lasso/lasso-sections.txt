@@ -1,4 +1,10 @@
 <SECTION>
+<FILE>utilities</FILE>
+<TITLE>Utilities</TITLE>
+LassoServe_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>server</FILE>
 <TITLE>LassoServer</TITLE>
 LassoServer
@@ -6059,7 +6065,7 @@ LASSO_PROVIDER_ERROR_MISSING_PUBLIC_KEY
 </SECTION>
 
 <SECTION>
-<FILE>init</FILE>
+<FILE>lasso</FILE>
 <TITLE>Initialization functions</TITLE>
 LASSO_EXPORT
 LASSO_EXPORT_VAR
