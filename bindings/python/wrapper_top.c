@@ -103,28 +103,40 @@ get_dict_from_hashtable_of_strings(GHashTable *value)
 	return proxy;
 }
 
+static xmlBuffer*
+xmlnode_to_xmlbuffer(xmlNode *node)
+{
+	xmlOutputBufferPtr output_buffer;
+	xmlBuffer *buffer;
+
+	if (! node)
+		return NULL;
+
+	buffer = xmlBufferCreate();
+	output_buffer = xmlOutputBufferCreateBuffer(buffer, NULL);
+	xmlNodeDumpOutput(output_buffer, NULL, node, 0, 0, NULL);
+	xmlOutputBufferClose(output_buffer);
+	xmlBufferAdd(buffer, BAD_CAST "", 1);
+
+	return buffer;
+}
+
 static PyObject*
 get_pystring_from_xml_node(xmlNode *xmlnode)
 {
-	xmlOutputBufferPtr buf;
 	PyObject *pystring = NULL;
+	xmlBuffer *buffer;
 
 	if (xmlnode == NULL) {
 		return NULL;
 	}
+	buffer = xmlnode_to_xmlbuffer(xmlnode);
 
-	buf = xmlAllocOutputBuffer(NULL);
-	if (buf == NULL) {
+	if (buffer == NULL) {
 		pystring = NULL;
 	} else {
-		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
-		xmlOutputBufferFlush(buf);
-		if (buf->conv == NULL) {
-			pystring = PyString_FromString((char*)buf->buffer->content);
-		} else {
-			pystring = PyString_FromString((char*)buf->conv->content);
-		}
-		xmlOutputBufferClose(buf);
+		pystring = PyString_FromString((char*)xmlBufferContent(buffer));
+		xmlBufferFree(buffer);
 	}
 
 	return pystring;

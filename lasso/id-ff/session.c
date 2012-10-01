@@ -437,27 +437,12 @@ add_assertion_childnode(gchar *key, LassoLibAssertion *value, DumpContext *conte
 
 xmlChar *
 xmlNode_to_base64(xmlNode *node) {
-	xmlOutputBufferPtr buf = NULL;
-	xmlCharEncodingHandlerPtr handler = NULL;
-	xmlChar *buffer = NULL;
+	gchar *buffer = NULL;
 	xmlChar *ret = NULL;
 
-	handler = xmlFindCharEncodingHandler("utf-8");
-	if (! handler)
-		goto cleanup;
-	buf = xmlAllocOutputBuffer(handler);
-	if (! buf)
-		goto cleanup;
-	xmlNodeDumpOutput(buf, NULL, node, 0, 0, "utf-8");
-	xmlOutputBufferFlush(buf);
-	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
-
-	ret = xmlSecBase64Encode(buffer, strlen((char*)buffer), 0);
-
-cleanup:
-	if (buf)
-		xmlOutputBufferClose(buf);
-
+	buffer = lasso_xmlnode_to_string(node, 0, 0);
+	ret = xmlSecBase64Encode(BAD_CAST buffer, strlen((char*)buffer), 0);
+	lasso_release_string(buffer);
 	return ret;
 }
 

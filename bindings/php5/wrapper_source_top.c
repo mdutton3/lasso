@@ -119,31 +119,41 @@ free_glist(GList **list, GFunc free_function) {
 }
 /* Conversion functions */
 
+static xmlBuffer*
+xmlnode_to_xmlbuffer(xmlNode *node)
+{
+	xmlOutputBufferPtr output_buffer;
+	xmlBuffer *buffer;
+
+	if (! node)
+		return NULL;
+
+	buffer = xmlBufferCreate();
+	output_buffer = xmlOutputBufferCreateBuffer(buffer, NULL);
+	xmlNodeDumpOutput(output_buffer, NULL, node, 0, 0, NULL);
+	xmlOutputBufferClose(output_buffer);
+	xmlBufferAdd(buffer, BAD_CAST "", 1);
+
+	return buffer;
+}
+
 static char*
 get_string_from_xml_node(xmlNode *xmlnode)
 {
-	xmlOutputBufferPtr buf;
-	char *xmlString;
+	xmlBuffer *buffer;
+	char *result;
 
 	if (xmlnode == NULL) {
 		return NULL;
 	}
-
-	buf = xmlAllocOutputBuffer(NULL);
-	if (buf == NULL) {
-		xmlString = NULL;
+	buffer = xmlnode_to_xmlbuffer(xmlnode);
+	if (buffer == NULL) {
+		result = NULL;
 	} else {
-		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
-		xmlOutputBufferFlush(buf);
-		if (buf->conv == NULL) {
-			xmlString = estrdup((char*)buf->buffer->content);
-		} else {
-			xmlString = estrdup((char*)buf->conv->content);
-		}
-		xmlOutputBufferClose(buf);
+		result = estrdup((char*)xmlBufferContent(buffer));
+		xmlBufferFree(buffer);
 	}
-
-	return xmlString;
+	return result;
 }
 
 static xmlNode*
