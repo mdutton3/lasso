@@ -90,8 +90,6 @@ GTKDOC_LIBS= \
 	$(top_builddir)/lasso/liblasso.la \
 	$(LASSO_LIBS)
 
-EXTRA_DIST =
-
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
 
