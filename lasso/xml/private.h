@@ -62,6 +62,7 @@ typedef enum {
 	SNIPPET_ALLOW_TEXT = 1 << 26, /* allow text childs in list of nodes */
 	SNIPPET_KEEP_XMLNODE = 1 << 27, /* force keep xmlNode */
 	SNIPPET_PRIVATE = 1 << 28, /* means that the offset is relative to a private extension */
+	SNIPPET_MANDATORY = 1 << 29, /* means that the element cardinality is at least 1 */
 } SnippetType;
 
 typedef enum {

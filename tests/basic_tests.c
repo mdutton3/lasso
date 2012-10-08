@@ -137,6 +137,22 @@ START_TEST(test07_registry_functional_mapping)
 }
 END_TEST
 
+static struct XmlSnippet schema_snippets[] = {
+	{NULL, 0, 0, NULL, NULL, NULL}
+};
+
+static void
+class_init(LassoNodeClass *klass)
+{
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Assertion");
+	lasso_node_class_set_ns(nclass,LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
+
+}
+
 START_TEST(test08_test_new_from_xmlNode)
 {
 	static GType this_type = 0;
@@ -147,7 +163,7 @@ START_TEST(test08_test_new_from_xmlNode)
 		sizeof (LassoNodeClass),
 		NULL,
 		NULL,
-		NULL,
+		(GClassInitFunc) class_init,
 		NULL,
 		NULL,
 		sizeof(LassoNode),

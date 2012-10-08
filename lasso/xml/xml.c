@@ -1366,14 +1366,42 @@ is_snippet_type(struct XmlSnippet *snippet, SnippetType simple_type) {
 }
 
 static inline gboolean
+is_snippet_mandatory(struct XmlSnippet *snippet)
+{
+	return snippet->type & SNIPPET_MANDATORY ? TRUE : FALSE;
+}
+
+static inline gboolean
+is_snippet_multiple(struct XmlSnippet *snippet)
+{
+	switch (snippet->type & 0xff) {
+		case SNIPPET_LIST_XMLNODES:
+		case SNIPPET_LIST_CONTENT:
+		case SNIPPET_LIST_NODES:
+		case SNIPPET_EXTENSION:
+			return TRUE;
+		default:
+			return FALSE;
+	}
+}
+
+static inline gboolean
 node_match_snippet(xmlNode *parent, xmlNode *node, struct XmlSnippet *snippet)
 {
+	gboolean rc = TRUE;
+
 	/* special case of ArtifactResponse */
-	if (snippet->type & SNIPPET_ANY)
+	if (snippet->type & SNIPPET_ANY) {
 		return TRUE;
-	return (lasso_strisequal(snippet->name, (char*)node->name)
-		&& ((!snippet->ns_uri && lasso_equal_namespace(parent->ns, node->ns)) ||
-		    (node->ns && lasso_strisequal((char*)node->ns->href, snippet->ns_uri))));
+	} else {
+		rc = rc && lasso_strisequal(snippet->name, (char*)node->name);
+		rc = rc &&
+		    ((!snippet->ns_uri &&
+			lasso_equal_namespace(parent->ns, node->ns)) ||
+		    (node->ns &&
+		           lasso_strisequal((char*)node->ns->href, snippet->ns_uri)));
+		return rc;
+	}
 }
 
 /** FIXME: return a real error code */
@@ -1564,28 +1592,54 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			xmlNode *first_child = NULL;
 			GList **list = NULL;
 			xmlChar *content = NULL;
+			gboolean match = FALSE;
+			struct XmlSnippet *matched_snippet = NULL;
 
-			/* Find a matching snippet */
-			while (class_iter && ! node_match_snippet(xmlnode, t, snippet)) {
-				snippet++;
+#define ADVANCE \
+				snippet++; \
 				next_node_snippet(&class_iter, &snippet);
-			}
-			if (! class_iter) {
-				/* If we cannot find one, terminate here. */
-				break;
-			}
-			class = class_iter->data;
-			g_type = G_TYPE_FROM_CLASS(class);
-			value = SNIPPET_STRUCT_MEMBER_P(node, g_type, snippet);
-			list = value;
+#define ERROR \
+				error("Element %s:%s cannot be parsed", \
+						t->ns != NULL ? (char*)t->ns->prefix : "<noprefix>", \
+						t->name); \
+				rc = 1; \
+				goto cleanup;
+			/* Find a matching snippet */
+			while (class_iter && snippet) {
+				gboolean mandatory = is_snippet_mandatory(snippet);
+				gboolean multiple = is_snippet_multiple(snippet);
 
-			if (snippet->offset || (snippet->type & SNIPPET_PRIVATE)) {
-				switch (snippet->type & 0xff) {
+				if ((match = node_match_snippet(xmlnode, t, snippet))) {
+					matched_snippet = snippet;
+					class = class_iter->data;
+					g_type = G_TYPE_FROM_CLASS(class);
+					value = SNIPPET_STRUCT_MEMBER_P(node, g_type, snippet);
+					list = value;
+					if (! multiple) {
+						ADVANCE;
+					}
+					break;
+				} else {
+					if (mandatory) {
+						break;
+					} else {
+						ADVANCE;
+					}
+				}
+			}
+			if (! match) {
+				ERROR;
+			}
+#undef ADVANCE
+#undef ERROR
+
+			if (matched_snippet->offset || (matched_snippet->type & SNIPPET_PRIVATE)) {
+				switch (matched_snippet->type & 0xff) {
 					case SNIPPET_LIST_NODES:
 					case SNIPPET_NODE:
 						subnode = lasso_node_new_from_xmlNode_with_type(t,
-								snippet->class_name);
-						if (is_snippet_type(snippet, SNIPPET_NODE)) {
+								matched_snippet->class_name);
+						if (is_snippet_type(matched_snippet, SNIPPET_NODE)) {
 							lasso_assign_new_gobject(*(LassoNode**)value, subnode);
 						} else {
 							lasso_list_add_new_gobject(*list, subnode);
@@ -1595,7 +1649,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 						first_child = xmlSecGetNextElementNode(t->children);
 						if (first_child) {
 							subnode = lasso_node_new_from_xmlNode_with_type(first_child,
-										snippet->class_name);
+										matched_snippet->class_name);
 							lasso_assign_new_gobject(*(LassoNode**)value, subnode);
 						}
 						break;
@@ -1609,8 +1663,8 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					case SNIPPET_CONTENT:
 					case SNIPPET_LIST_CONTENT:
 						content = xmlNodeGetContent(t);
-						if (is_snippet_type(snippet, SNIPPET_CONTENT)) {
-							snippet_set_value(node, class, snippet, content);
+						if (is_snippet_type(matched_snippet, SNIPPET_CONTENT)) {
+							snippet_set_value(node, class, matched_snippet, content);
 						} else { /* only list of string-like xsd:type supported */
 							lasso_list_add_string(*list, (char*)content);
 						}
@@ -1626,21 +1680,8 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			}
 			/* When creating a new LassoNode and option KEEP_XMLNODE is present,
 			 * we attached the xmlNode to the LassoNode */
-			if (subnode && (snippet->type & SNIPPET_KEEP_XMLNODE)) {
+			if (subnode && (matched_snippet->type & SNIPPET_KEEP_XMLNODE)) {
 				lasso_node_set_original_xmlnode(subnode, t);
-			}
-			switch (snippet->type & 0xff) {
-				case SNIPPET_NODE:
-				case SNIPPET_NODE_IN_CHILD:
-				case SNIPPET_XMLNODE:
-				case SNIPPET_CONTENT:
-				case SNIPPET_SIGNATURE:
-					/* Only one node to read, advance ! */
-					++snippet;
-					next_node_snippet(&class_iter, &snippet);
-					break;
-				default:
-					break;
 			}
 		} else {
 			g_assert_not_reached();
@@ -2797,6 +2838,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, x
 			case SNIPPET_ANY:
 			case SNIPPET_KEEP_XMLNODE:
 			case SNIPPET_PRIVATE:
+			case SNIPPET_MANDATORY:
 			case SNIPPET_UNUSED1:
 				g_assert_not_reached();
 		}
