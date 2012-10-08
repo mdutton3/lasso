@@ -1396,16 +1396,20 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	xmlAttr *attr = NULL;
 	GType g_type = 0;
 	LassoNodeClass *node_class;
+	gint rc = 0;
 
-	if (! xmlnode)
-		return 1;
+	if (! xmlnode) {
+		rc = 1;
+		goto cleanup;
+	}
 
 	node_class = class = LASSO_NODE_GET_CLASS(node);
 	/* No node_data no initialization possible */
 	if (! class->node_data) {
 		message(G_LOG_LEVEL_WARNING, "Class %s has no node_data so no initialization "
 				"is possible", G_OBJECT_CLASS_NAME(class));
-		return 0;
+		rc = 1;
+		goto cleanup;
 	}
 
 	/* Collect special snippets like SNIPPET_COLLECT_NAMESPACES, SNIPPET_ANY, SNIPPET_ATTRIBUTE
@@ -1683,7 +1687,8 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 							"class %s",
 							t->ns ?  t->ns->href : NULL, t->name,
 							g_type_name(G_TYPE_FROM_INSTANCE(node)));
-					return 1;
+					rc = 1;
+					goto cleanup;
 				}
 			}
 		}
@@ -1737,8 +1742,9 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		lasso_release_xml_string(private_key_password);
 		lasso_release_xml_string(certificate);
 	}
-
-	return 0;
+cleanup:
+	lasso_release_slist(class_list);
+	return rc;
 }
 #undef trace_snippet
 
