@@ -1461,14 +1461,16 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		if (attr->ns && lasso_strisequal((char*)attr->name, "type") &&
 				lasso_strisequal((char*)attr->ns->href, LASSO_XSI_HREF)) {
 			char *colon = strchr((char*)content, ':');
-			xmlNs *ns;
-			*colon = '\0';
-			ns = xmlSearchNs(NULL, xmlnode, content);
-			*colon = ':';
-			if (ns && lasso_strisequal((char*)ns->href, (char*)node_class->node_data->ns->href)
-					&& lasso_strisequal(&colon[1], node_class->node_data->node_name)) {
-				lasso_release_xml_string(content);
-				continue;
+			if (colon) {
+				xmlNs *ns;
+				*colon = '\0';
+				ns = xmlSearchNs(NULL, xmlnode, content);
+				*colon = ':';
+				if (ns && lasso_strisequal((char*)ns->href, (char*)node_class->node_data->ns->href)
+						&& lasso_strisequal(&colon[1], node_class->node_data->node_name)) {
+					lasso_release_xml_string(content);
+					continue;
+				}
 			}
 		}
 
