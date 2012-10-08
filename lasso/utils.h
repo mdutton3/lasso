@@ -123,7 +123,7 @@
 #define lasso_release_list(dest) \
 	lasso_release_full2(dest, g_list_free, GList*)
 
-#define lasso_release_islist(dest) \
+#define lasso_release_slist(dest) \
 	lasso_release_full2(dest, g_slist_free, GSList*)
 
 #define lasso_release_list_of_full(dest, free_function) \
