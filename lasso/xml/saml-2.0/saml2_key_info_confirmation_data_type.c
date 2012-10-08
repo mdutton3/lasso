@@ -64,7 +64,8 @@ struct _LassoSaml2KeyInfoConfirmationDataTypePrivate {
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "KeyInfo", SNIPPET_LIST_NODES|SNIPPET_PRIVATE,
-		G_STRUCT_OFFSET(LassoSaml2KeyInfoConfirmationDataTypePrivate, KeyInfo), "LassoDsKeyInfo", NULL, NULL},
+		G_STRUCT_OFFSET(LassoSaml2KeyInfoConfirmationDataTypePrivate, KeyInfo),
+		"LassoDsKeyInfo", LASSO_DS_PREFIX, LASSO_DS_HREF},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
 
