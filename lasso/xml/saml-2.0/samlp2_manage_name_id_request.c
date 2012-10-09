@@ -78,12 +78,30 @@ static struct XmlSnippet schema_snippets[] = {
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
+static LassoNodeClass *parent_class = NULL;
+
+static int
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	int rc = 0;
+	LassoSamlp2ManageNameIDRequest *nid_request = (LassoSamlp2ManageNameIDRequest*)node;
+
+	rc = parent_class->init_from_xml(node, xmlnode);
+	if ((nid_request->NameID != 0) +
+	    (nid_request->EncryptedID != 0) != 1) {
+		error("samlp2:LogoutRequest needs one of BaseID, NameID or EncryptedID");
+		rc = 1;
+	}
+	return rc;
+}
 
 static void
 class_init(LassoSamlp2ManageNameIDRequestClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(klass);
+	klass->parent.parent.init_from_xml = init_from_xml;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "ManageNameIDRequest");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_PROTOCOL_HREF, LASSO_SAML2_PROTOCOL_PREFIX);
