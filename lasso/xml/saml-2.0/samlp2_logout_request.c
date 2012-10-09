@@ -139,8 +139,16 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	int rc = 0;
 	xmlNode *child = NULL;
 	LassoSamlp2LogoutRequestPrivate *pv = NULL;
+	LassoSamlp2LogoutRequest *logout_request = (LassoSamlp2LogoutRequest*)node;
 
 	rc = parent_class->init_from_xml(node, xmlnode);
+	if ((logout_request->BaseID != 0) +
+	    (logout_request->NameID != 0) +
+	    (logout_request->EncryptedID != 0) != 1) {
+		error("samlp2:LogoutRequest needs one of BaseID, NameID or EncryptedID");
+		rc = 1;
+	}
+
 	if (rc == 0) {
 
 		pv = GET_PRIVATE(node);
