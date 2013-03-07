@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: lasso
 Version: @VERSION@
 Description: A free implementation of the Liberty Alliance specifications
-Requires: libxml-2.0 libxslt xmlsec1 glib-2.0 gobject-2.0
+Requires.private: libxml-2.0 libxslt xmlsec1 glib-2.0 gobject-2.0
 Cflags: -I${includedir} @LASSO_PUB_CFLAGS@
 Libs: -L${libdir} @LASSO_CORE_LIBS@
