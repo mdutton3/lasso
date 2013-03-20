@@ -321,6 +321,9 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 						LASSO_SAML2_STATUS_CODE_RESPONDER,
 						LASSO_SAML2_STATUS_CODE_REQUEST_DENIED));
 		}
+	} else {
+		lasso_check_good_rc(lasso_profile_saml20_setup_message_signature(
+					profile, profile->response));
 	}
 
 	/* build logout response message */
