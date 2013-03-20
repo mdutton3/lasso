@@ -1511,24 +1511,24 @@ START_TEST(test10_test_alldumps)
 	lasso_release_string(node_dump);
 	lasso_release_gobject(node2);
 	lasso_release_gobject(node);
-	node = LASSO_NODE(lasso_samlp2_logout_request_new());
+/*	node = LASSO_NODE(lasso_samlp2_logout_request_new());
 	node_dump = lasso_node_dump(node);
 	fail_unless((node2 = lasso_node_new_from_dump(node_dump)) != NULL, "restoring dump failed after lasso_samlp2_logout_request_new");
 	lasso_release_string(node_dump);
 	lasso_release_gobject(node2);
-	lasso_release_gobject(node);
+	lasso_release_gobject(node); */
 	node = LASSO_NODE(lasso_samlp2_logout_response_new());
 	node_dump = lasso_node_dump(node);
 	fail_unless((node2 = lasso_node_new_from_dump(node_dump)) != NULL, "restoring dump failed after lasso_samlp2_logout_response_new");
 	lasso_release_string(node_dump);
 	lasso_release_gobject(node2);
 	lasso_release_gobject(node);
-	node = LASSO_NODE(lasso_samlp2_manage_name_id_request_new());
+/*	node = LASSO_NODE(lasso_samlp2_manage_name_id_request_new());
 	node_dump = lasso_node_dump(node);
 	fail_unless((node2 = lasso_node_new_from_dump(node_dump)) != NULL, "restoring dump failed after lasso_samlp2_manage_name_id_request_new");
 	lasso_release_string(node_dump);
 	lasso_release_gobject(node2);
-	lasso_release_gobject(node);
+	lasso_release_gobject(node); */
 	node = LASSO_NODE(lasso_samlp2_manage_name_id_response_new());
 	node_dump = lasso_node_dump(node);
 	fail_unless((node2 = lasso_node_new_from_dump(node_dump)) != NULL, "restoring dump failed after lasso_samlp2_manage_name_id_response_new");
