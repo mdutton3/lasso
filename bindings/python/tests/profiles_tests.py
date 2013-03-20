@@ -35,6 +35,9 @@ if not '../.libs' in sys.path:
     sys.path.insert(0, '../.libs')
 
 import lasso
+import logging
+
+logging.basicConfig()
 
 
 try:
@@ -482,6 +485,7 @@ class LogoutTestCase(unittest.TestCase):
         '''Test parsing of a logout request with more than one session index'''
         content = '''<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="xxxx" Version="2.0" IssueInstant="2010-06-14T22:00:00">
         <saml:Issuer>me</saml:Issuer>
+        <saml:NameID>coin</saml:NameID>
         <samlp:SessionIndex>id1</samlp:SessionIndex>
         <samlp:SessionIndex>id2</samlp:SessionIndex>
         <samlp:SessionIndex>id3</samlp:SessionIndex>
