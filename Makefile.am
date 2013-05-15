@@ -7,7 +7,9 @@ SUBDIRS		= lasso \
 		  docs
 
 EXTRA_DIST	= COPYING lasso.pc.in lasso-src-config.in autogen.sh tools abi \
-	lasso.doap README.JAVA README.WIN32 HACKING logos
+	lasso.doap README.JAVA README.WIN32 HACKING logos $(top_srcdir)/.version
+
+BUILT_SOURCES = $(top_srcdir)/.version
 
 MAINTAINERCLEANFILES = \
     Makefile.in \
@@ -36,5 +38,9 @@ dist-hook:
 	else \
 		echo A git clone is required to generate a ChangeLog >&2; \
 	fi
+	echo $(VERSION) > $(distdir)/.tarball-version
 
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
+
+$(top_srcdir)/.version:
+	echo $(VERSION) > $@-t && mv $@-t $@
