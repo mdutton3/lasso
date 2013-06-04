@@ -160,7 +160,7 @@ dnl ==========================================================================
 changequote(<<, >>)dnl
 VERSION_MAJOR=`echo $VERSION | $SED -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\1/'`
 VERSION_MINOR=`echo $VERSION | $SED -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\2/'`
-VERSION_RELEASE=`echo $VERSION | $SED -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\3/'`
+VERSION_RELEASE=`echo $VERSION | $SED -e 's/^\([^\.]*\)\.\([^\.]*\)\.\([0-9]*\).*$/\3/'`
 changequote([, ])dnl
 VERSION_UNDERSCORED=`echo $VERSION | $SED -e 's/\./_/g'`
 AC_SUBST(VERSION_UNDERSCORED)
