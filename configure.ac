@@ -136,7 +136,6 @@ AC_CHECK_PROGS(PYTHON, python)
 AC_CHECK_PROGS(SWIG, swig)
 
 dnl Make sure we have an ANSI compiler
-AM_C_PROTOTYPES
 test "z$U" != "z" && AC_MSG_ERROR(Compiler not ANSI compliant)
 
 dnl Check for variadic macros
