@@ -134,7 +134,7 @@ lasso_key_new_for_signature_from_context(LassoSignatureContext context) {
 }
 
 /**
- * lasso_key_new_for_signature_from_file;
+ * lasso_key_new_for_signature_from_file:
  * @filename_or_buffer: a file path of a string containing the key PEM or Base64 encoded
  * @password: an eventual password to decoded the private key contained in @buffer
  * @signature_method: the signature method to associate to this key
@@ -159,7 +159,7 @@ lasso_key_new_for_signature_from_file(char *filename_or_buffer,
 }
 
 /**
- * lasso_key_new_for_signature_from_memory;
+ * lasso_key_new_for_signature_from_memory:
  * @buffer: a byte buffer of size @size
  * @size: the size of @buffer
  * @password: an eventual password to decoded the private key contained in @buffer
@@ -188,7 +188,7 @@ lasso_key_new_for_signature_from_memory(const void *buffer,
 }
 
 /**
- * lasso_key_new_for_signature_from_base64_string;
+ * lasso_key_new_for_signature_from_base64_string:
  * @base64_string: a NULL-terminated string containing a base64 encode representation of the key
  * @password: an eventual password to decoded the private key contained in @buffer
  * @signature_method: the signature method to associate to this key
