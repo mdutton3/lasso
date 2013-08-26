@@ -95,7 +95,7 @@ include $(top_srcdir)/gtk-doc.make
 
 # Other files to distribute
 # e.g. EXTRA_DIST += version.xml.in
-EXTRA_DIST = lasso-sections.txt lasso-docs.sgml version.xml.in lasso.types.in style.css
+EXTRA_DIST += lasso-sections.txt lasso-docs.sgml version.xml.in lasso.types.in style.css
 
 # Files not to distribute
 # for --rebuild-types in $(SCAN_OPTIONS), e.g. $(DOC_MODULE).types
