@@ -610,6 +610,13 @@ LASSO_EXPORT const char* lasso_strerror(int error_code);
  *
  */
 #define LASSO_PROFILE_ERROR_REQUEST_DENIED 450
+/**
+ * LASSO_PROFILE_ERROR_ENDPOINT_INDEX_NOT_FOUND
+ *
+ * A received artifact contains an andpoint index which does not exist in the metadata of the
+ * corresponding provider.
+ */
+#define LASSO_PROFILE_ERROR_ENDPOINT_INDEX_NOT_FOUND 451
 
 /* functions/methods parameters checking */
 /**

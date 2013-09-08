@@ -211,6 +211,8 @@ lasso_strerror(int error_code)
 			return "Profile was called without a specific provider and we cannot find one.";
 		case LASSO_PROFILE_ERROR_CANNOT_VERIFY_SIGNATURE:
 			return "The profile cannot verify a signature on the message";
+		case LASSO_PROFILE_ERROR_ENDPOINT_INDEX_NOT_FOUND:
+			return "A received artifact contains an andpoint index which does not exist in the metadata of the corresponding provider.";
 		case LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND:
 			return "Federation not found";
 		case LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND:
