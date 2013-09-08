@@ -52,14 +52,14 @@
 {	typeof(what) __tmp1, __tmp2; \
 	__tmp1 = (what); \
 	__tmp2 = (to); \
-	fail_unless(__tmp1 == __tmp2, "%s:%i: " #what " is not equal to " #to "(%p) but to %p", __func__, __LINE__, (void*)__tmp2, (void*)__tmp1); \
+	fail_unless(__tmp1 == __tmp2, "%s:%i: " #what " is not equal to " #to "(%llu) but to %llu", __func__, __LINE__, (long long int)__tmp2, (long long int)__tmp1); \
 }
 
 #define check_not_equals(what,to) \
 {	typeof(what) __tmp1, __tmp2; \
 	__tmp1 = (what); \
 	__tmp2 = (to); \
-	fail_unless(__tmp1 != __tmp2, "%s:%i: " #what " is equal to " #to "(%p)", __func__, __LINE__, (void*)__tmp2); \
+	fail_unless(__tmp1 != __tmp2, "%s:%i: " #what " is equal to " #to "(%llu)", __func__, __LINE__, (long long int)__tmp2); \
 }
 
 #define check_str_equals(what, to) \
