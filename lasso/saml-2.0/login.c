@@ -260,6 +260,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	LassoSamlp2StatusResponse *response = NULL;
 	LassoSamlp2AuthnRequest *authn_request = NULL;
 	LassoProvider *remote_provider = NULL;
+	LassoServer *server = NULL;
 	const gchar *protocol_binding = NULL;
 	const char *status1 = LASSO_SAML2_STATUS_CODE_RESPONDER;
 	const char *status2 = NULL;
@@ -298,6 +299,10 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		rc = LASSO_PROFILE_ERROR_UNKNOWN_PROVIDER;
 		goto cleanup;
 	}
+	lasso_extract_node_or_fail(server, lasso_profile_get_server(&login->parent), SERVER,
+			LASSO_PROFILE_ERROR_MISSING_SERVER);
+	remote_provider->role = LASSO_PROVIDER_ROLE_SP;
+	server->parent.role = LASSO_PROVIDER_ROLE_IDP;
 
 	/* all those attributes are mutually exclusive */
 	if (((authn_request->ProtocolBinding != NULL) ||
@@ -1500,6 +1505,10 @@ lasso_saml20_login_init_idp_initiated_authn_request(LassoLogin *login,
 	provider = lasso_server_get_provider(server, remote_providerID);
 	if (! LASSO_IS_PROVIDER(provider))
 		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
+
+	/* fix roles */
+	server->parent.role = LASSO_PROVIDER_ROLE_IDP;
+	provider->role = LASSO_PROVIDER_ROLE_SP;
 
 	lasso_assign_string(profile->remote_providerID, remote_providerID);
 	lasso_assign_new_gobject(profile->request, lasso_samlp2_authn_request_new());
