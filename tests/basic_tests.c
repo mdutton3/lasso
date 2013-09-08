@@ -187,7 +187,7 @@ END_TEST
 START_TEST(test09_test_deserialization)
 {
 	char *content = NULL;
-	unsigned int len = 0;
+	size_t len = 0;
 	LassoNode *node;
 
 	g_file_get_contents(TESTSDATADIR "/response-1", &content, &len, NULL);

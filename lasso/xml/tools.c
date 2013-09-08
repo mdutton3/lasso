@@ -639,7 +639,7 @@ lasso_query_verify_helper(const char *signed_content, const char *b64_signature,
 	xmlSecByte *signature = NULL;
 	int key_size = 0;
 	unsigned char *hmac_key = NULL;
-	unsigned int hmac_key_length = 0;
+	size_t hmac_key_length = 0;
 	const EVP_MD *md = NULL;
 	lasso_error_t rc = 0;
 	LassoSignatureMethod method = LASSO_SIGNATURE_METHOD_NONE;

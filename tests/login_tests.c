@@ -90,7 +90,7 @@ generateIdentityProviderContextDumpMemory()
 	char *metadata;
 	char *private_key;
 	char *certificate;
-	guint len;
+	size_t len;
 	char *ret;
 
 	g_file_get_contents(TESTSDATADIR "/idp1-la/metadata.xml", &metadata, &len, NULL);

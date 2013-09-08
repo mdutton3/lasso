@@ -1295,7 +1295,7 @@ snippet_set_value(LassoNode *node, LassoNodeClass *class, struct XmlSnippet *sni
 	value = SNIPPET_STRUCT_MEMBER_P(node, g_type, snippet);
 	if (snippet->type & SNIPPET_INTEGER) {
 		int val = strtol((char*)content, NULL, 10);
-		if (((val == LONG_MIN || val == LONG_MAX) && errno == ERANGE)
+		if (((val == INT_MIN || val == INT_MAX) && errno == ERANGE)
 				|| errno == EINVAL || val < 0) {
 			if (snippet->type & SNIPPET_OPTIONAL_NEG) {
 				val = -1;

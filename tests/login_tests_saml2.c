@@ -93,7 +93,7 @@ generateIdentityProviderContextDumpMemory()
 	char *metadata = NULL;
 	char *private_key = NULL;
 	char *certificate = NULL;
-	guint len;
+	size_t len;
 	char *ret = NULL;
 
 	g_file_get_contents(TESTSDATADIR "/idp5-saml2/metadata.xml", &metadata, &len, NULL);

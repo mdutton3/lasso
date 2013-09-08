@@ -153,7 +153,7 @@ xsdUnsignedShortParse(xmlChar *value, int *out) {
 
 	errno = 0;
 	l = strtol((char*)value, NULL, 10);
-	if (((l == LONG_MIN || l == LONG_MAX) && errno == ERANGE) ||
+	if (((l == INT_MIN || l == INT_MAX) && errno == ERANGE) ||
 			errno == EINVAL || l < 0 || l >= 65535) {
 		return FALSE;
 	}

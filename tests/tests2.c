@@ -6,7 +6,7 @@
 void load(char *file) {
 	LassoNode *node = NULL;
 	char *content;
-	guint len;
+	size_t len;
 	xmlNode *xmlnode;
 
 	g_file_get_contents(file, &content, &len, NULL);
