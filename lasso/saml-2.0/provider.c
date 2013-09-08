@@ -780,6 +780,63 @@ lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvide
 	return NULL;
 }
 
+/**
+ * lasso_saml20_provider_get_endpoint_url:
+ * @provider: a #LassoProvider object
+ * @role: the role of the given provider,
+ * @kind: the endpoint kind, ex. AssertionConsumerService
+ * @bindings:(allow-none): a list of string, giving binding to match, if needed,
+ * @is_response: TRUE if the URL will be user for returning a response
+ * @is_default: TRUE if we are looking for the default endpoint
+ * @idx: if >= 0 look for the endpoint with the given index
+ *
+ * Return the best URL for reaching the given endpoint
+ */
+const gchar*
+lasso_saml20_provider_get_endpoint_url(LassoProvider *provider, 
+		LassoProviderRole role, const char *kind, GSList *bindings, gboolean is_response,
+		gboolean is_default, int idx)
+{
+	EndpointType* endpoint_type = NULL;
+	GList *t = NULL;
+
+	if (! LASSO_IS_PROVIDER(provider) || !kind)
+		return NULL;
+	lasso_foreach(t, provider->private_data->endpoints) {
+		endpoint_type = (EndpointType*) t->data;
+		if (! endpoint_type)
+			continue;
+		if (! endpoint_type->binding)
+			continue;
+		if (endpoint_type->role != role)
+			continue;
+		if (! lasso_strisequal(endpoint_type->kind, kind))
+			continue;
+		/* endpoints are already properly ordered so that the first matching one is the
+		 * default one */
+		if (is_default)
+			break;
+		else if (idx >= 0) {
+			if (endpoint_type->index == idx)
+				break;
+		} else {
+			/* if all else fails return the first matching one or the first matching our
+			 * list of bindings */
+			if (!bindings || g_slist_find_custom(bindings, endpoint_type->binding, (GCompareFunc)g_strcmp0))
+				break;
+		}
+		endpoint_type = NULL;
+	}
+
+	if (! endpoint_type)
+		return NULL;
+	if (is_response && endpoint_type->return_url)
+		return endpoint_type->return_url;
+	else
+		return endpoint_type->url;
+}
+
+
 lasso_error_t
 lasso_saml20_provider_get_artifact_resolution_service_index(LassoProvider *provider, unsigned short *index)
 {

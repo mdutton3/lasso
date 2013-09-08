@@ -55,6 +55,9 @@ const gchar* lasso_saml20_provider_get_assertion_consumer_service_binding_by_url
 		LassoProvider *provider, const char *url);
 lasso_error_t lasso_saml20_provider_get_artifact_resolution_service_index(LassoProvider *provider,
 		unsigned short *index);
+const gchar* lasso_saml20_provider_get_endpoint_url(LassoProvider *provider, LassoProviderRole role,
+		const char *kind, GSList *bindings, gboolean is_response, gboolean is_default,
+		int idx);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
