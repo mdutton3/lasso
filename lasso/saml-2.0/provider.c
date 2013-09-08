@@ -178,7 +178,8 @@ load_endpoint_type2(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole
 		warning("Invalid endpoint node %s", (char*) xmlnode->name);
 		goto cleanup;
 	}
-	indexed_endpoint = checkSaml2MdNode(xmlnode, LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE);
+	indexed_endpoint = checkSaml2MdNode(xmlnode, LASSO_SAML2_METADATA_ELEMENT_ASSERTION_CONSUMER_SERVICE) ||
+		checkSaml2MdNode(xmlnode, LASSO_SAML2_METADATA_ELEMENT_ARTIFACT_RESOLUTION_SERVICE);
 	if (indexed_endpoint) {
 		if (! index || ! xsdUnsignedShortParse(index, &idx)) {
 			warning("Invalid AssertionConsumerService, no index set");
@@ -777,6 +778,31 @@ lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvide
 		}
 	}
 	return NULL;
+}
+
+lasso_error_t
+lasso_saml20_provider_get_artifact_resolution_service_index(LassoProvider *provider, unsigned short *index)
+{
+	const char *kind = LASSO_SAML2_METADATA_ELEMENT_ARTIFACT_RESOLUTION_SERVICE;
+	GList *t = NULL;
+
+	lasso_bad_param(PROVIDER, provider)
+	lasso_null_param(index);
+	lasso_foreach(t, provider->private_data->endpoints) {
+		EndpointType *endpoint_type = (EndpointType*) t->data;
+		if (! endpoint_type)
+			continue;
+		/* endpoints are already properly ordered to provide the default endpoint first, so
+		 * we just need to return the first matching one */
+		if (endpoint_type->role == provider->role &&
+				lasso_strisequal(endpoint_type->kind,kind))
+		{
+			*index = endpoint_type->index;
+			return 0;
+		}
+	}
+	return -1;
+
 }
 
 /**

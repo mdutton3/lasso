@@ -178,23 +178,28 @@ lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part)
 static char*
 lasso_saml20_profile_build_artifact(LassoProvider *provider)
 {
-	xmlSecByte samlArt[44], *b64_samlArt;
-	char *source_succinct_id;
-	char *ret;
+	xmlSecByte samlArt[44], *b64_samlArt = NULL;
+	char *source_succinct_id = NULL;
+	char *ret = NULL;
+	unsigned short index;
 
 	source_succinct_id = lasso_sha1(provider->ProviderID);
-
+	/* XXX: unchecked return value*/
+	goto_cleanup_if_fail(lasso_saml20_provider_get_artifact_resolution_service_index(provider,
+				&index) == 0);
 	/* Artifact Format is described in saml-bindings-2.0-os, 3.6.4.2. */
 	memcpy(samlArt, "\000\004", 2); /* type code */
-	memcpy(samlArt+2, "\000\000", 2); /* XXX: Endpoint index */
+	samlArt[2] = 0xFF & (index >> 8);
+	samlArt[3] = 0xFF & index;
 	memcpy(samlArt+4, source_succinct_id, 20);
 	lasso_build_random_sequence((char*)samlArt+24, 20);
 
-	xmlFree(source_succinct_id);
 	b64_samlArt = xmlSecBase64Encode(samlArt, 44, 0);
 
 	ret = g_strdup((char*)b64_samlArt);
-	xmlFree(b64_samlArt);
+cleanup:
+	lasso_release_string(source_succinct_id);
+	lasso_release_xml_string(b64_samlArt);
 
 	return ret;
 }

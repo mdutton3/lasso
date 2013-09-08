@@ -53,6 +53,8 @@ gboolean lasso_saml20_provider_check_assertion_consumer_service_url(LassoProvide
 		const gchar *url, const gchar *binding);
 const gchar* lasso_saml20_provider_get_assertion_consumer_service_binding_by_url(
 		LassoProvider *provider, const char *url);
+lasso_error_t lasso_saml20_provider_get_artifact_resolution_service_index(LassoProvider *provider,
+		unsigned short *index);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
