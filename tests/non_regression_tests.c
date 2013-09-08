@@ -33,6 +33,7 @@
 #include "../lasso/xml/saml_name_identifier.h"
 #include "../lasso/xml/samlp_response.h"
 #include "../lasso/xml/saml-2.0/saml2_attribute.h"
+#include "../lasso/xml/saml-2.0/samlp2_authn_request.h"
 #include "../lasso/id-ff/provider.h"
 #include "../lasso/utils.h"
 #include <libxml/tree.h>
@@ -181,13 +182,46 @@ START_TEST(remove_warning_when_parssing_unknown_SNIPPET_LIST_NODES_20111007)
 	lasso_release_gobject(node);
 }
 END_TEST
+
+START_TEST(wrong_endpoint_index_in_artifacts)
+{
+	LassoServer *server = NULL;
+	LassoLogin *login = NULL;
+	guchar *decoded = NULL;
+	size_t out_len;
+
+	check_not_null(server = lasso_server_new(TESTSDATADIR "/idp13-artifact-resolution-service-indexed/metadata.xml",
+				TESTSDATADIR "/idp13-artifact-resolution-service-indexed/private-key.pem", NULL, NULL));
+	check_good_rc(lasso_server_add_provider(server, LASSO_PROVIDER_ROLE_SP,
+				TESTSDATADIR "/sp7-saml2/metadata.xml", NULL, NULL));
+	check_not_null(login = lasso_login_new(server));
+	check_good_rc(lasso_login_init_idp_initiated_authn_request(login,
+				"http://sp7/metadata"));
+	lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(login->parent.request)->ProtocolBinding,
+			LASSO_SAML2_METADATA_BINDING_ARTIFACT);
+	check_good_rc(lasso_login_process_authn_request_msg(login, NULL));
+	check_good_rc(lasso_login_validate_request_msg(login, TRUE, TRUE));
+	check_good_rc(lasso_login_build_artifact_msg(login, LASSO_HTTP_METHOD_ARTIFACT_GET));
+	check_not_null(LASSO_PROFILE(login)->msg_url);
+	check_null(LASSO_PROFILE(login)->msg_body);
+	printf("%s\n", LASSO_PROFILE(login)->msg_url);
+	decoded = g_base64_decode(strstr(LASSO_PROFILE(login)->msg_url, "SAMLart=")+8, &out_len);
+	check_equals(decoded[2],0);
+	check_equals(decoded[3],7);
+	lasso_release_gobject(login);
+	lasso_release_gobject(server);
+	lasso_release(decoded);
+}
+END_TEST
+
 struct {
 	char *name;
 	void *function;
 } tests[] = {
 	{ "Googleapps error from coudot@ on 27-09-2010", test01_googleapps_27092010},
 	{ "Wrong assertionConsumer ordering on 08-10-2010", indexed_endpoints_20101008},
-	{ "Warning when parsing AttributeValue node containing unknown namespace nodes", remove_warning_when_parssing_unknown_SNIPPET_LIST_NODES_20111007 }
+	{ "Warning when parsing AttributeValue node containing unknown namespace nodes", remove_warning_when_parssing_unknown_SNIPPET_LIST_NODES_20111007 },
+	{ "Wrong endpoint index in artifacts", wrong_endpoint_index_in_artifacts },
 };
 
 Suite*
