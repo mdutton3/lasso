@@ -50,7 +50,7 @@ int lasso_saml20_profile_init_request(LassoProfile *profile, const char *remote_
 int lasso_saml20_profile_set_response_status(LassoProfile *profile, const char *code1, const char
 		*code2);
 int lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
-		const char *msg, LassoHttpMethod method);
+		LassoProviderRole role, const char *msg, LassoHttpMethod method);
 int lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char *msg);
 int lasso_saml20_profile_build_artifact_response(LassoProfile *profile);
 int lasso_saml20_profile_process_artifact_response(LassoProfile *profile, const char *msg);

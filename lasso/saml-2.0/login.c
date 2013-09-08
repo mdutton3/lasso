@@ -940,8 +940,8 @@ gint
 lasso_saml20_login_init_request(LassoLogin *login, gchar *response_msg,
 		LassoHttpMethod response_http_method)
 {
-	return lasso_saml20_profile_init_artifact_resolve(
-			LASSO_PROFILE(login), response_msg, response_http_method);
+	return lasso_saml20_profile_init_artifact_resolve(LASSO_PROFILE(login),
+			LASSO_PROVIDER_ROLE_IDP, response_msg, response_http_method);
 }
 
 
@@ -957,7 +957,7 @@ lasso_saml20_login_build_request_msg(LassoLogin *login)
 		lasso_node_remove_signature(profile->request);
 	}
 	return lasso_saml20_profile_build_request_msg(profile, "ArtifactResolutionService",
-			LASSO_HTTP_METHOD_SOAP, NULL);
+			LASSO_HTTP_METHOD_SOAP, profile->msg_url);
 }
 
 gint

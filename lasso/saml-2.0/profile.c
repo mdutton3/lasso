@@ -46,6 +46,7 @@
 #include "../xml/saml-2.0/samlp2_status_response.h"
 #include "../xml/saml-2.0/samlp2_response.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
+#include "../xml/saml-2.0/saml2_xsd.h"
 #include "../xml/misc_text_node.h"
 #include "../utils.h"
 #include "../debug.h"
@@ -273,7 +274,7 @@ lasso_profile_saml20_build_artifact_post_response_msg(LassoProfile *profile, con
 
 int
 lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
-		const char *msg, LassoHttpMethod method)
+		LassoProviderRole remote_provider_role, const char *msg, LassoHttpMethod method)
 {
 	char **query_fields;
 	char *artifact_b64 = NULL;
@@ -281,8 +282,10 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 	char *provider_succinct_id[21];
 	char artifact[45];
 	LassoSamlp2RequestAbstract *request = NULL;
+	LassoProvider *remote_provider = NULL;
 	int i = 0;
 	int rc = 0;
+	unsigned short index_endpoint = 0;
 
 	if (method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
 		query_fields = urlencoded_to_strings(msg);
@@ -313,8 +316,6 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 		return LASSO_PROFILE_ERROR_INVALID_ARTIFACT;
 	}
 
-	/* XXX: index endpoint */
-
 	memcpy(provider_succinct_id, artifact+4, 20);
 	provider_succinct_id[20] = 0;
 
@@ -324,8 +325,21 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 			profile->server, (char*)provider_succinct_id_b64));
 	lasso_release_xml_string(provider_succinct_id_b64);
 	if (profile->remote_providerID == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 	}
+
+	/* resolve the resolver url using the endpoint index in the artifact string */
+	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+	index_endpoint = (artifact[2] << 16) + artifact[3];
+	lasso_assign_string(profile->msg_url, lasso_saml20_provider_get_endpoint_url(remote_provider,
+			remote_provider_role,
+			LASSO_SAML2_METADATA_ELEMENT_ARTIFACT_RESOLUTION_SERVICE, NULL, FALSE,
+			FALSE, index_endpoint));
+	if (! profile->msg_url) {
+		debug("looking for index endpoint %d", index_endpoint);
+		return LASSO_PROFILE_ERROR_ENDPOINT_INDEX_NOT_FOUND;
+	}
+
 
 	lasso_assign_new_gobject(profile->request, lasso_samlp2_artifact_resolve_new());
 	request = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request);
