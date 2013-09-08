@@ -2251,7 +2251,6 @@ gint
 lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 {
 	LassoProfile *profile;
-	LassoSamlpResponse *response;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -2269,7 +2268,6 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 		lasso_release_gobject(profile->response);
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
-	response = LASSO_SAMLP_RESPONSE(profile->response);
 
 	/* Validate RequestID and InResponseTo */
 	if (profile->request || lasso_flag_strict_checking) {

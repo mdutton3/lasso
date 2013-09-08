@@ -310,11 +310,10 @@ void
 lasso_saml2_assertion_set_basic_conditions(LassoSaml2Assertion *saml2_assertion, time_t tolerance,
 		time_t length, gboolean one_time_use)
 {
-	LassoSaml2Conditions *saml2_conditions;
-
 	g_return_if_fail (LASSO_IS_SAML2_ASSERTION (saml2_assertion));
 
-	saml2_conditions = lasso_saml2_assertion_get_conditions (saml2_assertion, TRUE);
+	/* ensure conditions exists */
+	lasso_saml2_assertion_get_conditions (saml2_assertion, TRUE);
 	set_notbefore_and_notonorafter (saml2_assertion->Conditions, tolerance, length);
 	lasso_saml2_assertion_set_one_time_use(saml2_assertion, one_time_use);
 }
@@ -380,11 +379,11 @@ void
 lasso_saml2_assertion_add_proxy_limit (LassoSaml2Assertion *saml2_assertion, int proxy_count,
 		GList *proxy_audiences)
 {
-	LassoSaml2Conditions *saml2_conditions;
 	LassoSaml2ProxyRestriction *saml2_proxy_restriction;
 
 	g_return_if_fail (LASSO_IS_SAML2_ASSERTION (saml2_assertion));
-	saml2_conditions = lasso_saml2_assertion_get_conditions (saml2_assertion, TRUE);
+	/* ensure conditions exists */
+	lasso_saml2_assertion_get_conditions (saml2_assertion, TRUE);
 	saml2_proxy_restriction = (LassoSaml2ProxyRestriction*)lasso_saml2_proxy_restriction_new ();
 	if (proxy_count >= 0) {
 		saml2_proxy_restriction->Count = g_strdup_printf("%i", proxy_count);

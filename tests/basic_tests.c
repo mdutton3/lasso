@@ -155,7 +155,6 @@ class_init(LassoNodeClass *klass)
 
 START_TEST(test08_test_new_from_xmlNode)
 {
-	static GType this_type = 0;
 	gint r;
 	LassoNode *node = NULL;
 
@@ -172,7 +171,7 @@ START_TEST(test08_test_new_from_xmlNode)
 		NULL
 	};
 
-	this_type = g_type_register_static(LASSO_TYPE_NODE,
+	g_type_register_static(LASSO_TYPE_NODE,
 			"LassoTest", &this_info, 0);
 	r = lasso_registry_default_add_direct_mapping("http://example.com", "Test1", LASSO_LASSO_HREF, "LassoTest");
 	fail_unless(r == 0, "no mapping for http://example.com:Test1 should exist");

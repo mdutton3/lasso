@@ -1916,7 +1916,6 @@ lasso_url_add_parameters(char *url,
 {
 	char *old_url = url, *new_url;
 	xmlChar *encoded_key, *encoded_value;
-	int rc = 0;
 	va_list ap;
 
 	va_start(ap, free);
@@ -1930,7 +1929,7 @@ lasso_url_add_parameters(char *url,
 			break;
 		}
 		encoded_key = xmlURIEscapeStr((xmlChar*)key, NULL);
-		goto_cleanup_if_fail_with_rc(encoded_key, 0);
+		goto_cleanup_if_fail(encoded_key);
 
 		value = va_arg(ap, char*);
 		if (! value) {
@@ -1938,7 +1937,7 @@ lasso_url_add_parameters(char *url,
 			break;
 		}
 		encoded_value = xmlURIEscapeStr((xmlChar*)value, NULL);
-		goto_cleanup_if_fail_with_rc(encoded_value, 0);
+		goto_cleanup_if_fail(encoded_value);
 
 		if (old_url) {
 			new_url = g_strdup_printf("%s&%s=%s", old_url, (char*)encoded_key, (char*)encoded_value);

@@ -378,7 +378,6 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
 	LassoMessageFormat format;
-	LassoSamlNameIdentifier *nameIdentifier;
 	LassoLibRegisterNameIdentifierRequest *request;
 
 	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration),
@@ -411,8 +410,6 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 
 	request = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request);
 
-	nameIdentifier = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
-			profile->request)->SPProvidedNameIdentifier;
 	name_registration->oldNameIdentifier = NULL;
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP) {
 		/* IdP initiated */
@@ -452,7 +449,6 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	LassoProvider *remote_provider;
 	LassoFederation *federation;
 	LassoSamlNameIdentifier *nameIdentifier = NULL;
-	LassoHttpMethod response_method;
 	LassoLibStatusResponse *response;
 	LassoMessageFormat format;
 	int rc = 0;
@@ -470,10 +466,6 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
-	if (format == LASSO_MESSAGE_FORMAT_SOAP)
-		response_method = LASSO_HTTP_METHOD_SOAP;
-	if (format == LASSO_MESSAGE_FORMAT_QUERY)
-		response_method = LASSO_HTTP_METHOD_REDIRECT;
 
 	remote_provider = lasso_server_get_provider(profile->server,
 			LASSO_LIB_STATUS_RESPONSE(profile->response)->ProviderID);

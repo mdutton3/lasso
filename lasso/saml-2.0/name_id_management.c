@@ -124,7 +124,7 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 cleanup:
 	lasso_release_gobject(request);
 
-	return 0;
+	return rc;
 }
 
 

@@ -1745,7 +1745,6 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	/* Collect signature parameters */
 	{
 			LassoSignatureMethod method = 0;
-			LassoSignatureType type = 0;
 			xmlChar *private_key = NULL;
 			xmlChar *private_key_password = NULL;
 			xmlChar *certificate = NULL;
@@ -3253,7 +3252,7 @@ lasso_node_init_from_saml2_query_fields(LassoNode *node, char **query_fields, G_
 static void
 xmlDeclareNs(xmlNode *root_node, xmlNode *node)
 {
-	xmlNs *ns, *ns2;
+	xmlNs *ns;
 	xmlNode *t;
 
 	if (strcmp((char*)node->name, "Signature") == 0)
@@ -3261,7 +3260,7 @@ xmlDeclareNs(xmlNode *root_node, xmlNode *node)
 
 	for (ns = node->nsDef; ns; ns = ns->next) {
 		if (ns->prefix && strcmp((char*)ns->prefix, "xsi") != 0) {
-			ns2 = xmlNewNs(root_node, ns->href, ns->prefix);
+			xmlNewNs(root_node, ns->href, ns->prefix);
 		}
 	}
 	for (t = node->children; t; t = t->next) {

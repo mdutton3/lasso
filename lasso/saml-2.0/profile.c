@@ -74,9 +74,9 @@ static char* lasso_saml20_profile_generate_artifact(LassoProfile *profile, int p
 static int
 get_provider(LassoProfile *profile, LassoProvider **provider_out)
 {
-	int rc = 0;
 	LassoProvider *provider;
 	LassoServer *server;
+	int rc = 0;
 
 	lasso_bad_param(PROFILE, profile);
 
@@ -89,7 +89,7 @@ get_provider(LassoProfile *profile, LassoProvider **provider_out)
 
 	*provider_out = provider;
 cleanup:
-	return 0;
+	return rc;
 }
 
 static char *
@@ -637,7 +637,6 @@ lasso_saml20_profile_process_any_request(LassoProfile *profile,
 		const char *request_msg)
 {
 	int rc = 0;
-	LassoSaml2NameID *name_id = NULL;
 	LassoProvider *remote_provider = NULL;
 	LassoSamlp2RequestAbstract *request_abstract = NULL;
 	LassoMessageFormat format;
@@ -676,7 +675,7 @@ lasso_saml20_profile_process_any_request(LassoProfile *profile,
 
 	lasso_extract_node_or_fail(request_abstract, profile->request, SAMLP2_REQUEST_ABSTRACT,
 			LASSO_PROFILE_ERROR_INVALID_MSG);
-	lasso_extract_node_or_fail(name_id, request_abstract->Issuer, SAML2_NAME_ID,
+	goto_cleanup_if_fail_with_rc(LASSO_IS_SAML2_NAME_ID(request_abstract->Issuer),
 			LASSO_PROFILE_ERROR_MISSING_ISSUER);
 	lasso_assign_string(profile->remote_providerID, request_abstract->Issuer->content);
 
@@ -1030,7 +1029,6 @@ lasso_saml20_profile_validate_request(LassoProfile *profile, gboolean needs_iden
 	int rc = 0;
 	LassoSamlp2RequestAbstract *request_abstract = NULL;
 	LassoSaml2NameID *issuer = NULL;
-	LassoIdentity *identity = NULL;
 	LassoProvider *provider = NULL;
 
 	lasso_bad_param(PROFILE, profile);
@@ -1040,7 +1038,7 @@ lasso_saml20_profile_validate_request(LassoProfile *profile, gboolean needs_iden
 			LASSO_PROFILE_ERROR_MISSING_REQUEST);
 	/* look for identity object */
 	if (needs_identity) {
-		lasso_extract_node_or_fail(identity, profile->identity, IDENTITY,
+		goto_cleanup_if_fail_with_rc(LASSO_IS_IDENTITY(profile->identity),
 				LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 	}
 
@@ -1304,7 +1302,6 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 	LassoSamlp2StatusCode *status_code1 = NULL;
 	LassoMessageFormat format;
 	gboolean missing_issuer = FALSE;
-	LassoProfileSignatureVerifyHint signature_verify_hint;
 
 	xmlDoc *doc = NULL;
 	xmlNode *content = NULL;
@@ -1312,7 +1309,6 @@ lasso_saml20_profile_process_any_response(LassoProfile *profile,
 	lasso_bad_param(PROFILE, profile);
 	lasso_bad_param(SAMLP2_STATUS_RESPONSE, status_response);
 
-	signature_verify_hint = lasso_profile_get_signature_verify_hint(profile);
 	/* reset signature_status */
 	profile->signature_status = 0;
 	format = lasso_node_init_from_message_with_format((LassoNode*)status_response,

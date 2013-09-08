@@ -200,11 +200,6 @@ _lasso_login_must_verify_authn_request_signature(LassoProfile *profile) {
 
 static gboolean
 _lasso_login_must_verify_signature(LassoProfile *profile) {
-	LassoProvider *remote_provider;
-
-	remote_provider = lasso_server_get_provider(profile->server,
-			profile->remote_providerID);
-
 	switch (lasso_profile_get_signature_verify_hint(profile)) {
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
 			return lasso_flag_verify_signature;
@@ -227,10 +222,8 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login)
 	LassoProfile *profile;
 	LassoSamlp2AuthnRequest *authn_request;
 	int rc = 0;
-	LassoHttpMethod http_method;
 
 	profile = &login->parent;
-	http_method = login->http_method;
 
 	lasso_extract_node_or_fail(authn_request, profile->request, SAMLP2_AUTHN_REQUEST,
 			LASSO_PROFILE_ERROR_INVALID_REQUEST);

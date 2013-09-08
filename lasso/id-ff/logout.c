@@ -956,7 +956,6 @@ lasso_logout_validate_request(LassoLogout *logout)
 	LassoFederation *federation = NULL;
 	LassoProvider *remote_provider;
 	LassoSamlNameIdentifier *nameIdentifier;
-	LassoSamlAssertion *assertion;
 	LassoNode *assertion_n;
 	LassoLibLogoutRequest *logout_request = NULL;
 
@@ -1038,8 +1037,6 @@ lasso_logout_validate_request(LassoLogout *logout)
 		lasso_profile_set_response_status(profile, LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 	}
-
-	assertion = LASSO_SAML_ASSERTION(assertion_n);
 
 	/* If name identifier is federated, then verify federation */
 	if (strcmp(nameIdentifier->Format, LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED) == 0) {
@@ -1128,7 +1125,6 @@ static void
 check_soap_support(G_GNUC_UNUSED gchar *key, LassoProvider *provider, LassoProfile *profile)
 {
 	const GList *supported_profiles;
-	LassoSamlAssertion *assertion;
 	LassoNode *assertion_n;
 
 	if (strcmp(provider->ProviderID, profile->remote_providerID) == 0)
@@ -1138,7 +1134,6 @@ check_soap_support(G_GNUC_UNUSED gchar *key, LassoProvider *provider, LassoProfi
 	if (LASSO_IS_SAML_ASSERTION(assertion_n) == FALSE) {
 		return; /* not authenticated with this provider */
 	}
-	assertion = LASSO_SAML_ASSERTION(assertion_n);
 
 	supported_profiles = lasso_provider_get_metadata_list(provider,
 			"SingleLogoutProtocolProfile");
