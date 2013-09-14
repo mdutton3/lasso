@@ -362,7 +362,7 @@ fi
 
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
-PYTHON_VERSION=`$PYTHON -c 'import sys; print sys.version[:3]' 2>/dev/null`
+PYTHON_VERSION=`$PYTHON -c 'from distutils import sysconfig ; print sysconfig.get_config_var("VERSION")'`
 changequote([, ])dnl
 
 test "x$PYTHON" != "x" || AC_MSG_ERROR(Python must be installed to compile lasso)
@@ -370,21 +370,17 @@ test "x$PYTHON" != "x" || AC_MSG_ERROR(Python must be installed to compile lasso
 AC_MSG_CHECKING(for Python development files)
 dnl Check if we were be able to extract a good version number.
 if test "X$PYTHON_VERSION" != "X"; then
-    PY_PREFIX=`$PYTHON -c 'import sys ; print sys.prefix'`
-    PY_EXEC_PREFIX=`$PYTHON -c 'import sys ; print sys.exec_prefix'`
     changequote(<<, >>)dnl
-    PY_VERSION=`$PYTHON -c 'import sys ; print sys.version[0:3]'`
+    PYTHON_INC=`$PYTHON -c 'from distutils import sysconfig ; print sysconfig.get_python_inc()'`
+    PYTHON_LIB=`$PYTHON -c 'from distutils import sysconfig ; print sysconfig.get_python_lib(1)'`
     changequote([, ])dnl
-    PYTHON_H=$PY_PREFIX/include/python$PY_VERSION/Python.h
-    LIBPYTHON_SO=$PY_PREFIX/lib/libpython$PY_VERSION.so
+    PYTHON_H=$PYTHON_INC/Python.h
     if test -f $PYTHON_H; then
-            dnl Not useful unless we make a test on the python version.
-            PYTHON="python$PY_VERSION"
-            PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
-            PY_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/Makefile"
+            PY_CFLAGS="-I$PYTHON_INC"
+            PY_MAKEFILE=`$PYTHON -c 'from distutils import sysconfig ; print sysconfig.get_makefile_filename()'`
             PY_OTHER_LIBS=`$SED -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
             PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
-            PY_SITE_PACKAGES="\${prefix}/lib/python$PY_VERSION/site-packages"
+            PY_SITE_PACKAGES="$PYTHON_LIB"
             AC_SUBST(PYTHON)
             AC_SUBST(PY_LIB_LOC)
             AC_SUBST(PY_CFLAGS)
