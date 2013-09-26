@@ -1519,11 +1519,15 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 {
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
+	LassoServer *server = NULL;
 	LassoSamlpRequestAbstract *request;
+	lasso_error_t rc = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(login);
+	lasso_extract_node_or_fail(server, profile->server, SERVER,
+			LASSO_PROFILE_ERROR_MISSING_SERVER);
 
 	/* clean state */
 	lasso_release_string (profile->remote_providerID);
@@ -1541,6 +1545,9 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	remote_provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+
+	remote_provider->role = LASSO_PROVIDER_ROLE_IDP;
+	server->parent.role = LASSO_PROVIDER_ROLE_SP;
 
 	IF_SAML2(profile) {
 		return lasso_saml20_login_init_authn_request(login, http_method);
@@ -1572,7 +1579,9 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	lasso_assign_string(LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState,
 			profile->msg_relayState);
 
-	return 0;
+cleanup:
+
+	return rc;
 }
 
 
