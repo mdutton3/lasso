@@ -42,6 +42,8 @@ docs/reference/lasso/lasso.signals
 docs/reference/lasso/lasso-undeclared.txt
 docs/reference/lasso/lasso-undocumented.txt
 docs/reference/lasso/sgml.stamp
+docs/reference/lasso/lasso-unused.txt
+docs/reference/lasso/setup-build.stamp
 docs/reference/lasso/xml/*
 /.gitignore
 /gtk-doc.make
@@ -101,3 +103,4 @@ docs/reference/lasso/scan-build.stamp
 docs/reference/lasso/sgml-build.stamp
 /lasso-?.?.?.tar.gz
 /lasso.pc
+/.version
