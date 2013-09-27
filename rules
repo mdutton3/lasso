@@ -14,7 +14,7 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 DEB_TARGET_ARCH     := $(shell dpkg-architecture -qDEB_HOST_ARCH)
 
-with_java := yes
+with_java := no
 no_java_archs := alpha arm hppa hurd-i386
 ifneq ($(DEB_TARGET_ARCH),i386)
  ifneq ($(DEB_TARGET_ARCH),amd64)
@@ -150,11 +150,11 @@ binary-arch: build install
 	dh_installexamples -XCVS
 	dh_installman
 	dh_install
+	chrpath -d $(CURDIR)/debian/liblasso-perl/usr/lib/perl5/auto/Lasso/Lasso.so
 	dh_link
 	dh_strip
 	dh_perl
 	dh_pycentral -ppython-lasso
-	dh_python
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -a -V

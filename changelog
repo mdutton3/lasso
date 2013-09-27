@@ -1,3 +1,47 @@
+lasso (2.3.6-2) unstable; urgency=low
+
+  * Fix building against glib 2.32 (closes: #665565, #666636)
+
+ -- Frederic Peters <fpeters@debian.org>  Mon, 02 Apr 2012 17:31:31 +0200
+
+lasso (2.3.6-1) unstable; urgency=low
+
+  * New upstream version.
+  * bindings/php5/wrapper_source.py: use zend_function_entry, making it build
+    against PHP 5.4 (upstream, closes: #662622)
+
+ -- Frederic Peters <fpeters@debian.org>  Mon, 05 Mar 2012 14:07:05 +0100
+
+lasso (2.3.5-4) unstable; urgency=low
+
+  * Don't force gcc 4.4 anymore; /facepalm. (closes: #635640)
+
+ -- Frederic Peters <fpeters@debian.org>  Thu, 28 Jul 2011 08:16:14 +0200
+
+lasso (2.3.5-3) unstable; urgency=low
+
+  * debian/control.in, debian/rules: disable liblasso-java on all
+    architectures, at the moment it is too complicated to have reliable builds
+    with java activated. (closes: #624777)
+  * build against a newer perl version. (closes: #635446)
+
+ -- Frederic Peters <fpeters@debian.org>  Tue, 26 Jul 2011 22:36:27 +0200
+
+lasso (2.3.5-2) unstable; urgency=low
+
+  * debian/liblasso-perl.install: fixed module name (uppercase L).
+    (closes: #622114)
+  * debian/liblasso3-dev.install: do not install libtool archive file.
+    (closes: #620909, #621560)
+  * debian/control.in: add build-dependency on gcc-4.4, to match the gcj
+    version that is used.
+  * debian/rules:
+    + force gcc 4.4, because of gcj 4.4.
+    + remove rpath from Lasso.so Perl module.
+    + remove obsolete call to dh_python.
+
+ -- Frederic Peters <fpeters@debian.org>  Mon, 11 Apr 2011 09:35:48 +0200
+
 lasso (2.3.5-1) unstable; urgency=low
 
   * New upstream release.

@@ -2,7 +2,7 @@ Source: lasso
 Priority: optional
 Section: libs
 Maintainer: Frederic Peters <fpeters@debian.org>
-Build-Depends: debhelper (>= 5.0.37.2), libxml2-dev, libxslt1-dev, libxmlsec1-dev, libxmlsec1-openssl, libglib2.0-dev, python-all-dev (>= 2.3.5-11), libexpat1-dev, fastjar, python-central (>= 0.5), gcj, gcj-jre, gcj-jdk, php5-dev, python-lxml
+Build-Depends: debhelper (>= 5.0.37.2), libxml2-dev, libxslt1-dev, libxmlsec1-dev, libxmlsec1-openssl, libglib2.0-dev, python-all-dev (>= 2.3.5-11), libexpat1-dev, fastjar, python-central (>= 0.5), php5-dev, python-lxml, chrpath
 XS-Python-Version: all
 Standards-Version: 3.8.0
 Homepage: http://lasso.entrouvert.org
@@ -48,17 +48,17 @@ Description: Library for Liberty Alliance and SAML protocols - Python bindings
  This package contains Python bindings for liblasso, needed to use lasso
  in Python applications.
 
-Package: liblasso-java
-Section: libs
-Architecture: amd64 armel i386 ia64 mips mipsel powerpc ppc64 s390 sparc kfreebsd-i386 kfreebsd-amd64
-Depends: ${shlibs:Depends}, ${misc:depends}
-Description: Library for Liberty Alliance and SAML protocols - Java bindings
- Lasso is an implementation of Liberty Alliance and related protocols, for
- network identity federations, single sign-on and other web services protocols.
- The main specifications implemented by the library are ID-FF, ID-WSF and SAML.
- .
- This package provides the Java interface to liblasso, needed to use lasso in
- Java applications.
+
+
+
+
+
+
+
+
+
+
+
 
 Package: liblasso-perl
 Section: perl
