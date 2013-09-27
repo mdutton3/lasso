@@ -185,7 +185,7 @@ then
 
     # Change the first '-' to a '.', so version-comparing tools work properly.
     # Remove the "g" in git describe's output string, to save a byte.
-    v=`echo "$v" | sed 's/-/./;s/\(.*\)-g/\1-/'`;
+    v=`echo "$v" | sed 's/-/./;s/\(.*\)-g/\1-g/'`;
     v_from_git=1
 elif test "x$fallback" = x || git --version >/dev/null 2>&1; then
     v=UNKNOWN
@@ -203,6 +203,7 @@ if test "x$v_from_git" != x; then
   git update-index --refresh > /dev/null 2>&1
 
   dirty=`exec 2>/dev/null;git diff-index --name-only HEAD` || dirty=
+
   case "$dirty" in
       '') ;;
       *) # Append the suffix only if there isn't one already.
