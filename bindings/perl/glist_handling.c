@@ -68,7 +68,7 @@ xmlnode_to_pv(xmlNode *node, gboolean do_free)
 
 static xmlNode *
 pv_to_xmlnode(SV *value) {
-	unsigned int size;
+	STRLEN size;
 	char *string;
 
 	if (! SvPOK(value))
