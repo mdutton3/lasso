@@ -933,7 +933,11 @@ urlencoded_to_strings(const char *str)
 	while(1) {
 		if (*st == '&' || *st == ';' || *st == '\0') {
 			ptrdiff_t len = st - st2;
-			result[i] = xmlURIUnescapeString(st2, len, NULL);
+			if (len) {
+				result[i] = xmlURIUnescapeString(st2, len, NULL);
+			} else {
+				result[i] = g_malloc0(1);
+			}
 			i++;
 			st2 = st + 1;
 			if (*st == '\0')
@@ -1892,7 +1896,11 @@ lasso_get_relaystate_from_query(const char *query) {
 			message(G_LOG_LEVEL_WARNING, "Received a RelayState of size %ti > %u",
 					length, query_string_attribute_length_limit);
 		}
-		result = xmlURIUnescapeString(start, length, NULL);
+		if (length) {
+			result = xmlURIUnescapeString(start, length, NULL);
+		} else {
+			result = g_malloc0(1);
+		}
 	}
 	return result;
 }
