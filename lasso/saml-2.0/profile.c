@@ -199,6 +199,10 @@ lasso_saml20_profile_build_artifact(LassoProvider *provider)
 
 	ret = g_strdup((char*)b64_samlArt);
 cleanup:
+	if (ret == NULL) {
+		warning("Unable to find an artifact resolution service for entity id %s with %d",
+				provider->ProviderID, provider->role)
+	}
 	lasso_release_string(source_succinct_id);
 	lasso_release_xml_string(b64_samlArt);
 
