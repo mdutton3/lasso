@@ -808,7 +808,9 @@ lasso_saml20_provider_get_endpoint_url(LassoProvider *provider,
 			continue;
 		if (! endpoint_type->binding)
 			continue;
-		if (endpoint_type->role != role)
+		if (endpoint_type->role != role \
+				&& role != LASSO_PROVIDER_ROLE_ANY \
+				&& role != LASSO_PROVIDER_ROLE_NONE)
 			continue;
 		if (! lasso_strisequal(endpoint_type->kind, kind))
 			continue;
@@ -851,11 +853,14 @@ lasso_saml20_provider_get_artifact_resolution_service_index(LassoProvider *provi
 			continue;
 		/* endpoints are already properly ordered to provide the default endpoint first, so
 		 * we just need to return the first matching one */
-		if (endpoint_type->role == provider->role &&
-				lasso_strisequal(endpoint_type->kind,kind))
-		{
-			*index = endpoint_type->index;
-			return 0;
+		if (endpoint_type->role == provider->role || provider->role ==
+				LASSO_PROVIDER_ROLE_NONE || provider->role ==
+				LASSO_PROVIDER_ROLE_ANY) {
+			if (lasso_strisequal(endpoint_type->kind,kind))
+			{
+				*index = endpoint_type->index;
+				return 0;
+			}
 		}
 	}
 	return -1;
