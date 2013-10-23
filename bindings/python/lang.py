@@ -168,7 +168,10 @@ class Error(Exception):
             raise exception
 
     def __str__(self):
-        return '<lasso.%s(%s): %s>' % (self.__class__.__name__, self.code, _lasso.strError(self.code))
+        if self.code:
+            return '<lasso.%s(%s): %s>' % (self.__class__.__name__, self.code, _lasso.strError(self.code))
+        else:
+            return '<lasso.%s: %s>' % (self.__class__.__name__, self.message)
 
     def __getitem__(self, i):
         # compatibility with SWIG bindings
