@@ -1,3 +1,0 @@
-debian/tmp/usr/lib/perl/5.*.*/lasso.pm usr/lib/perl5/
-debian/tmp/usr/lib/perl/5.*.*/auto/lasso/lasso.bs usr/lib/perl5/auto/lasso/
-debian/tmp/usr/lib/perl/5.*.*/auto/lasso/lasso.so usr/lib/perl5/auto/lasso/
