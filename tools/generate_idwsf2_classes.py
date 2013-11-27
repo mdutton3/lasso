@@ -185,8 +185,7 @@ class LassoClass:
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __LASSO_%(category_upper)s%(file_name_upper)s_H__
@@ -435,8 +434,7 @@ LASSO_EXPORT Lasso%(prefix_cap)s%(name)s* lasso_%(category)s%(file_name)s_new(vo
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 """ % self.__dict__)
 
@@ -908,8 +906,7 @@ lasso_%(category)s%(file_name)s_new_with_int(int content)
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef SWIGPHP4
