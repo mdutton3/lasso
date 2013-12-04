@@ -154,7 +154,7 @@ binary-arch: build install
 	dh_link
 	dh_strip
 	dh_perl
-	dh_pycentral -ppython-lasso
+	dh_python2 -ppython-lasso
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -a -V
