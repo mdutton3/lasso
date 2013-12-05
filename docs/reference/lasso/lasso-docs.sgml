@@ -140,7 +140,6 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     <xi:include href="xml/session.xml"/>
     <xi:include href="xml/profile.xml"/>
     <xi:include href="xml/errors.xml"/>
-    <xi:include href="xml/init.xml"/>
     <para><link linkend="lasso-LassoNode">LassoNode</link> is the base class for all Lasso classes, it gives XML serialization and deserialization support to all of them.</para>
     <xi:include href="xml/node.xml"/>
     <para>The <link linkend="lasso-LassoMiscTextNode">LassoMiscTextNode</link> allows to represent miscellenaous nodes for whose no mapping to a specific <link linkend="GObjectClass">GObjectClass</link> exists.</para>
