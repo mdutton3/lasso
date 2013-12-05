@@ -380,7 +380,10 @@ if test "X$PYTHON_VERSION" != "X"; then
             PY_MAKEFILE=`$PYTHON -c 'from distutils import sysconfig ; print sysconfig.get_makefile_filename()'`
             PY_OTHER_LIBS=`$SED -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
             PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
-            PY_SITE_PACKAGES="$PYTHON_LIB"
+            dnl this extracts the $libdir out of python lib directory,
+            dnl replacing it by our own.
+            PY_SUFFIX_LIB=`echo $PYTHON_LIB | $SED -e 's/.*python/python/'`
+            PY_SITE_PACKAGES="\${libdir}/$PY_SUFFIX_LIB"
             AC_SUBST(PYTHON)
             AC_SUBST(PY_LIB_LOC)
             AC_SUBST(PY_CFLAGS)
