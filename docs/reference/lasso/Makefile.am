@@ -115,7 +115,7 @@ endif
 # Comment this out if you want your docs-status tested during 'make check'
 if ENABLE_GTK_DOC
 TESTS_ENVIRONMENT = cd $(srcdir)
-TESTS = $(GTKDOC_CHECK)
+#TESTS = $(GTKDOC_CHECK)
 endif
 
 -include $(top_srcdir)/git.mk
