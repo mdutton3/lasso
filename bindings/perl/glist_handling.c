@@ -28,6 +28,25 @@
 #include <lasso/utils.h>
 #include "../utils.c"
 
+static xmlBuffer*
+xmlnode_to_xmlbuffer(xmlNode *node)
+{
+	xmlOutputBufferPtr output_buffer;
+	xmlBuffer *buffer;
+
+	if (! node)
+		return NULL;
+
+	buffer = xmlBufferCreate();
+	output_buffer = xmlOutputBufferCreateBuffer(buffer, NULL);
+	xmlNodeDumpOutput(output_buffer, NULL, node, 0, 0, NULL);
+	xmlOutputBufferClose(output_buffer);
+	xmlBufferAdd(buffer, BAD_CAST "", 1);
+
+	return buffer;
+}
+
+
 /**
  * xmlnode_to_pv:
  * @node: an xmlNode* object
@@ -38,25 +57,18 @@
 static SV*
 xmlnode_to_pv(xmlNode *node, gboolean do_free)
 {
-	xmlOutputBufferPtr buf;
+	xmlBuffer *buf;
 	SV *pestring = NULL;
 
 	if (node == NULL) {
 		return &PL_sv_undef;
 	}
 
-	buf = xmlAllocOutputBuffer(NULL);
+	buf = xmlnode_to_xmlbuffer(node);
 	if (buf == NULL) {
 		pestring = &PL_sv_undef;
 	} else {
-		xmlNodeDumpOutput(buf, NULL, node, 0, 1, NULL);
-		xmlOutputBufferFlush(buf);
-		if (buf->conv == NULL) {
-			pestring = newSVpv((char*)buf->buffer->content, 0);
-		} else {
-			pestring = newSVpv((char*)buf->conv->content, 0);
-		}
-		xmlOutputBufferClose(buf);
+		pestring = newSVpv((char*)xmlBufferContent(buf), 0);
 	}
 	if (do_free) {
 		lasso_release_xml_node(node);
