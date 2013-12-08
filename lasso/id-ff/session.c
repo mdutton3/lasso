@@ -870,7 +870,7 @@ init_from_xml_nid_and_session_index(LassoNode *node, xmlNode *nid_and_session_in
 	if (! nid)
 		goto cleanup;
 	name_id = lasso_node_new_from_xmlNode(nid);
-	if (! node)
+	if (! name_id)
 		goto cleanup;
 	session_index = xmlGetProp(nid_and_session_index_node, BAD_CAST SESSION_INDEX);
 	nid_and_session_index = lasso_new_nid_and_session_index(name_id, (char*)assertion_id,
