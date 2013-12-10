@@ -51,8 +51,6 @@ CONFIGURE_ARGS := \
 	--enable-tests=no \
 	--disable-gtk-doc \
 	--enable-perl \
-	--disable-csharp \
-	--disable-php4 \
 	--with-php5-config-dir=/etc/php5/conf.d/
 
 
