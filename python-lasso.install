@@ -1,2 +1,2 @@
-debian/tmp/usr/lib/python*/site-packages/*.py
-debian/tmp/usr/lib/python*/site-packages/*.so
+debian/tmp/usr/lib/python*/dist-packages/*.py
+debian/tmp/usr/lib/python*/dist-packages/*.so
