@@ -122,6 +122,11 @@ def cptrToPy(cptr):
     o._cptr = cptr
     return o
 
+def str2lasso(s):
+    if isinstance(s, unicode):
+        return s.encode('utf-8')
+    return s
+
 class frozendict(dict):
     \'\'\'Immutable dict\'\'\'
     # from Python Cookbook:
@@ -325,6 +330,8 @@ if WSF_SUPPORT:
                     py_args.append(get_python_arg_decl(arg))
                     if not is_int(arg, self.binding_data) and is_object(arg):
                         c_args.append('%(name)s and %(name)s._cptr' % { 'name' : arg_name(arg) })
+                    elif is_cstring(arg):
+                        c_args.append('str2lasso(%s)' % arg_name(arg))
                     else:
                         c_args.append(arg_name(arg))
                 py_args = remove_bad_optional(py_args)
@@ -352,6 +359,8 @@ if WSF_SUPPORT:
 
                     if not is_int(arg, self.binding_data) and is_object(arg):
                         c_args.append('%s and %s._cptr' % (aname, aname))
+                    elif is_cstring(arg):
+                        c_args.append('str2lasso(%s)' % arg_name(arg))
                     else:
                         c_args.append(aname)
                 opt = False
@@ -411,6 +420,8 @@ if WSF_SUPPORT:
             print >> fd, '    def set_%s(self, value):' % mname
             if is_int(m, self.binding_data) or is_xml_node(m) or is_cstring(m) or is_boolean(m):
                 pass
+            elif is_cstring(m):
+                print >> fd, '        value = str2lasso(value)'
             elif is_object(m):
                 print >> fd, '        if value is not None:'
                 print >> fd, '            value = value and value._cptr'
@@ -465,6 +476,8 @@ if WSF_SUPPORT:
 
                 if is_out(arg):
                     c_args.append(outvar)
+                elif is_cstring(arg):
+                    c_args.append('str2lasso(%s)' % arg_name(arg))
                 elif is_xml_node(arg) or is_boolean(arg) or is_cstring(arg) or is_int(arg, self.binding_data) or is_glist(arg) or is_hashtable(arg) or is_time_t_pointer(arg):
                     c_args.append(arg_name(arg))
                 elif is_object(arg):
