@@ -275,6 +275,9 @@ LASSO_EXPORT lasso_error_t lasso_provider_set_server_signing_key(LassoProvider *
 
 LASSO_EXPORT lasso_error_t lasso_provider_add_key(LassoProvider *provider, LassoKey *key, gboolean after);
 
+LASSO_EXPORT int lasso_provider_verify_signature(LassoProvider *provider,
+		const char *message, const char *id_attr_name, LassoMessageFormat format);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
