@@ -3,12 +3,10 @@ NEWS
 
 2.4.0 - June 6th 2011
 ---------------------
-189 commits, 420 files changed, 42834 insertions, 3770 deletions
+281 commits, 933 files changed, 45384 insertions, 6313 deletions
 
 Minor version number increase since ABI was extended (new methods).
 
- - Improvements to autoconf and automake files to compile under Darwin (Mac Os
-   X).
  - Key rollover support:
    Lasso is now able to accept messages signed by any key declared as a signing
    key in a metadata and not just the last one. You can also decrypt encrypted
@@ -24,7 +22,7 @@ Minor version number increase since ABI was extended (new methods).
 
    See the FAQ file for the workflow of a proper key roll-over.
 
- - Partial logout reponse now produces a specific error code when parsed by
+ - Partial logout response now produces a specific error code when parsed by
    lasso_logout_process_response_msg()
  - Bugs in lasso_assertion_query_build_request_msg() were fixed
  - Processing of assertions is not stopped when checking that first level
@@ -49,9 +47,9 @@ Minor version number increase since ABI was extended (new methods).
       >>> a.setOriginalXmlnode('<Dummy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="string">Value</Dummy>')
       >>> print a.debug(0)
       <saml:AttributeValue xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="string">Value</saml:AttributeValue>
- - support for symetric keys signatures: for a long time XMLDisg standard has
+ - support for symetric keys signatures: for a long time XMLDsig standard has
    supported HMAC signature, or signature based on a shared secret key an hash
-   algorithm. Lasso now does support to share a key with another Lasso using
+   algorithm. Lasso now supports to share a key with another Lasso using
    service or identity provider and to verify and sign SAML exchange using this
    key. Performance can be 100 times more than with assymetric cryptography,
    i.e. RSA.
@@ -89,14 +87,67 @@ Minor version number increase since ABI was extended (new methods).
  - better initialization and access to SessionIndex in logout requests:
    LassoSession now store all generated SessionIndex for a session using a
    small structure, using it the LassoLogout profile can now initialize
-   LassoLogout message with all of them, now need to implement this
+   LassoLogout message with all of them. It's not necessary to implement this
    functionnalitý in your service or identity provider anymore.
  - new LassoKey object: this new class was introduced to simplify management of
    keys when using shared key signature. But you can also use it to load
    assymetric keys. In the future it should gain API to do XML signature and
    encryptiong independently of any SAML 2.0 or ID-FF 1.2 exchange. Providing
    the first simple binding of libxmlsec to Python.
+ - Improvements to autoconf and automake files to compile under Darwin (Mac Os
+   X) and Fedora.
  - a FAQ file was started.
+ - added API:
+	LASSO_LOGOUT_ERROR_PARTIAL_LOGOUT
+	LASSO_PROFILE_ERROR_ENDPOINT_INDEX_NOT_FOUND
+	LASSO_PROFILE_ERROR_REQUEST_DENIED
+	LASSO_PROVIDER_ROLE_ALL
+	LASSO_SERVER_ERROR_NO_PROVIDER_LOADED
+	LASSO_SERVER_LOAD_METADATA_FLAG_CHECK_ENTITIES_DESCRIPTOR_SIGNATURE
+	LASSO_SERVER_LOAD_METADATA_FLAG_CHECK_ENTITY_DESCRIPTOR_SIGNATURE
+	LASSO_SERVER_LOAD_METADATA_FLAG_DEFAULT
+	LASSO_SERVER_LOAD_METADATA_FLAG_INHERIT_SIGNATURE
+	LASSO_SIGNATURE_METHOD_HMAC_SHA1
+	LASSO_SIGNATURE_METHOD_NONE
+	LASSO_XMLENC_ERROR_INVALID_ENCRYPTED_DATA
+	LASSO_XMLENC_HREF
+	LASSO_XMLENC_PREFIX
+	struct LassoDsX509Data {  LassoDsX509DataPrivate* private_data  }
+	struct LassoKey {  LassoKeyPrivate* private_data  }
+	struct LassoSaml2KeyInfoConfirmationDataType {  LassoSaml2KeyInfoConfirmationDataTypePrivate* private_data  }
+	LassoServerLoadMetadataFlag
+	LassoDsX509Data*   lasso_ds_key_value_get_x509_data ( LassoDsKeyValue* key_value )
+	None   lasso_ds_key_value_set_x509_data ( LassoDsKeyValue* key_value, LassoDsX509Data* x509_data )
+	const char*   lasso_ds_x509_data_get_certificate ( LassoDsX509Data* x509_data )
+	const char*   lasso_ds_x509_data_get_crl ( LassoDsX509Data* x509_data )
+	const char*   lasso_ds_x509_data_get_subject_name ( LassoDsX509Data* x509_data )
+	GType   lasso_ds_x509_data_get_type (  )
+	LassoDsX509Data*   lasso_ds_x509_data_new (  )
+	None   lasso_ds_x509_data_set_certificate ( LassoDsX509Data* x509_data, const char* certificate )
+	None   lasso_ds_x509_data_set_crl ( LassoDsX509Data* x509_data, const char* crl )
+	None   lasso_ds_x509_data_set_subject_name ( LassoDsX509Data* x509_data, const char* subject_name )
+	GType   lasso_key_get_type (  )
+	LassoKey*   lasso_key_new_for_signature_from_base64_string ( char* base64_string, char* password, LassoSignatureMethod signature_method, char* certificate )
+	LassoKey*   lasso_key_new_for_signature_from_file ( char* filename_or_buffer, char* password, LassoSignatureMethod signature_method, char* certificate )
+	char*   lasso_key_query_sign ( LassoKey* key, const char* query )
+	lasso_error_t   lasso_key_query_verify ( LassoKey* key, const char* query )
+	xmlNode*   lasso_key_saml2_xml_sign ( LassoKey* key, const char* id, xmlNode* document )
+	lasso_error_t   lasso_key_saml2_xml_verify ( LassoKey* key, char* id, xmlNode* document )
+	GList*   lasso_lib_logout_request_get_session_indexes ( LassoLibLogoutRequest* lib_logout_request )
+	None   lasso_lib_logout_request_set_session_indexes ( LassoLibLogoutRequest* lib_logout_request, GList* session_indexes )
+	lasso_error_t   lasso_provider_add_key ( LassoProvider* provider, LassoKey* key, gboolean after )
+	lasso_error_t   lasso_provider_set_server_signing_key ( LassoProvider* provider, LassoKey* key )
+	int   lasso_provider_verify_signature ( LassoProvider* provider, const char* message, const char* id_attr_name, LassoMessageFormat format )
+	GList*   lasso_saml2_key_info_confirmation_data_type_get_key_info ( LassoSaml2KeyInfoConfirmationDataType* kicdt )
+	GType   lasso_saml2_key_info_confirmation_data_type_get_type (  )
+	LassoNode*   lasso_saml2_key_info_confirmation_data_type_new (  )
+	None   lasso_saml2_key_info_confirmation_data_type_set_key_info ( LassoSaml2KeyInfoConfirmationDataType* kicdt, GList* key_infos )
+	gboolean   lasso_saml_name_identifier_equals ( LassoSamlNameIdentifier* a, LassoSamlNameIdentifier* b )
+	lasso_error_t   lasso_server_add_provider2 ( LassoServer* server, LassoProvider* provider )
+	lasso_error_t   lasso_server_load_metadata ( LassoServer* server, LassoProviderRole role, const gchar* federation_file, const gchar* trusted_roots, GList* blacklisted_entity_ids, GList** loaded_entity_ids, LassoServerLoadMetadataFlag flags )
+	GList*   lasso_session_get_assertion_ids ( LassoSession* session, const gchar* providerID )
+	GList*   lasso_session_get_name_ids ( LassoSession* session, const gchar* providerID )
+	GList*   lasso_session_get_session_indexes ( LassoSession* session, const gchar* providerID, LassoNode* name_id )
 
 
 2.3.6 - November 29th 2011
