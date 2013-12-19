@@ -7,6 +7,25 @@ checking.  It is developed and built locally on GNU/Linux (Debian) both
 on x86 and PowerPC processors, but is also compiled via Debian
 infrastructure on several other architectures.
 
+Installing build dependencies
+=============================
+
+If you are building from git you need to install the autotools on your distribution.
+
+Buid dependencies are:
+
+ - libxml2
+ - libxslt
+ - libxmlsec
+ - python development files
+ - php5 development files
+ - jdk
+
+In all cases you need to install development packages for dependencies. On Debian 7.0 Wheezy:
+
+    aptitude install libxml2-dev libxslt1-dev libxmlsec1-dev libxmlsec1-openssl \
+      libglib2.0-dev python-all-dev fastjar php5-dev python-lxml
+
 Basic Installation
 ==================
 
@@ -230,4 +249,3 @@ Operation Controls
      script, and exit.
 
 'configure' also accepts some other, not widely useful, options.
-
