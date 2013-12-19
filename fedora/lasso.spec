@@ -80,7 +80,7 @@ supplied by %{name}.
 %package php
 Summary: PHP module for %{name}
 Group: Development/Libraries
-BuildRequires: php-devel >= 5.0, expat-devel
+BuildRequires: php-devel >= 5.0
 BuildRequires: python-lxml
 Requires: php >= 5.0
 Requires: %{name} = %{version}-%{release}

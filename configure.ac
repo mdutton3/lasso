@@ -459,18 +459,6 @@ AC_SUBST(PHP5_PREFIX)
 AC_SUBST(PHP5_INCLUDE_DIR)
 AC_SUBST(PHP5_CONFIG_DIR)
 
-dnl Check for expat
-have_expat_include=no
-if test $MINGW -eq 1; then 
-    AC_CHECK_LIB(xmlparse, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
-else
-    AC_CHECK_LIB(expat, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
-fi
-  
-if test x$have_expat_lib = xno; then
-    enable_php5=no
-fi
-
 AC_MSG_CHECKING(for PHP 5 development files)
 if $PHP5_CONFIG --version | grep -q "^5" || test "x$ENABLE_PHP5_FORCE" = "xyes"
 then
