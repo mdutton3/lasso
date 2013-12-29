@@ -39,7 +39,6 @@ Provides: liblasso0-python2.3, ${python:Provides}
 Section: python
 Architecture: any
 Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:depends}
-XB-Python-Version: ${python:Versions}
 Description: Library for Liberty Alliance and SAML protocols - Python bindings
  Lasso is an implementation of Liberty Alliance and related protocols, for
  network identity federations, single sign-on and other web services protocols.

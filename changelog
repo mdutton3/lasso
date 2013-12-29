@@ -1,3 +1,10 @@
+lasso (2.3.6-2.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Convert to dh_python2 (Closes: #616856).
+
+ -- Luca Falavigna <dktrkranz@debian.org>  Thu, 30 May 2013 20:36:16 +0200
+
 lasso (2.3.6-2) unstable; urgency=low
 
   * Fix building against glib 2.32 (closes: #665565, #666636)
