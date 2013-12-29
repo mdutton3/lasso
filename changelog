@@ -1,3 +1,14 @@
+lasso (2.3.6-3) unstable; urgency=medium
+
+  * Remove double-free in lasso_node_build_deflated_query. (thanks Andjelko
+    Horvat, closes: #732543)
+  * Enable hardened build flags. (thanks Moritz Muehlenhoff, closes: #667555)
+  * debian/php5-lasso.{postinst,prerm}: use php5enmod and php5dismod.
+    (closes: #667766)
+  * bindings/php5/lasso.ini: change comment marker. (closes: #571736)
+
+ -- Frederic Peters <fpeters@debian.org>  Sun, 29 Dec 2013 10:06:47 +0100
+
 lasso (2.3.6-2.2) unstable; urgency=low
 
   * Non-maintainer upload.
