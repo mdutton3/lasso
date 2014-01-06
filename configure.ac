@@ -196,44 +196,6 @@ DLL_FILENAME="liblasso-$minimal_version.dll"
 AC_SUBST(UPCASED_DLL_FILENAME)
 AC_SUBST(DLL_FILENAME)
 
-dnl ==========================================================================
-dnl Swig
-dnl ==========================================================================
-SWIG_MIN_VERSION=1.3.28
-AC_MSG_CHECKING(SWIG support)
-if test "X$SWIG" != "X"; then
-  SWIG_VERSION=`$SWIG -version 2>&1 | $SED -ne 's/^SWIG Version //p'`
-  SWIG_VERSION_DEC=`echo $SWIG_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
-
- if test $SWIG_VERSION_DEC -ge 010314; then
-   SWIG_PYTHON_ARGS=-noproxy
- fi
-
-  SWIG_MIN_VERSION_DEC=`echo $SWIG_MIN_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
-
-  if test $SWIG_VERSION_DEC -ge $SWIG_MIN_VERSION_DEC; then
-    AC_MSG_RESULT($SWIG_VERSION - OK)
-  else
-    AC_MSG_RESULT($SWIG_VERSION - too old to generate language interfaces)
-    if test -r $srcdir/python/lasso_wrap.c ; then
-      AC_MSG_WARN(Pre-generated language interface files are present)
-      AC_MSG_WARN(If you want to change the interfaces you will need)
-      AC_MSG_WARN(SWIG version $SWIG_MIN_VERSION from http://www.swig.org/)
-    else
-      AC_MSG_WARN(There are no pre-generated language interface files)
-      AC_MSG_WARN(lasso language interfaces will NOT build.)
-      AC_MSG_WARN(If you want to build them you will need)
-      AC_MSG_WARN(SWIG version $SWIG_MIN_VERSION from http://www.swig.org/)
-      AC_MSG_WARN(Alternatively copy the pre-generated interface)
-      AC_MSG_WARN(files from a released version)
-    fi
-  fi
-else
-  AC_MSG_RESULT(not present - using pre-generated interface files)
-  SWIG="echo"
-fi
-AC_SUBST(SWIG_PYTHON_ARGS)
-
 dnl Detect available languages binding.
 languages_available=
 
