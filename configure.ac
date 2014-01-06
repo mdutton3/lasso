@@ -430,6 +430,10 @@ else
 	enable_php5=no
 fi
 
+if test "x$PHP" = "x"; then
+	enable_php5=no
+fi
+
 AC_MSG_RESULT($enable_php5)
 AM_CONDITIONAL([PHP5_ENABLED], [test "x$enable_php5" = "xyes"])
 AC_SUBST(PHP5_VERSION)
