@@ -1,7 +1,6 @@
 <SECTION>
 <FILE>utilities</FILE>
 <TITLE>Utilities</TITLE>
-LassoServe_CLASS
 </SECTION>
 
 <SECTION>
