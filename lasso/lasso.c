@@ -149,7 +149,9 @@ int lasso_init()
 {
 	int i;
 
+#ifndef GLIB_VERSION_2_36
 	g_type_init();
+#endif
 
 	/* Init Lasso classes */
 	for (i=0; functions[i]; i++)
