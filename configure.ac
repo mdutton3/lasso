@@ -531,12 +531,15 @@ AC_ARG_ENABLE(perl, [  --disable-perl          disable the Perl binding],,
 if test "X$PERL" != "X"; then
   PERLINSTALLSITEARCH=`$PERL -MConfig -e 'print $Config{installsitearch};'`
   PERLMAN3DIR=`$PERL -MConfig -e 'print $Config{man3dir};'`
+  PERL_CFLAGS=$($PERL -V::ccflags:)
 else
   PERLINSTALLSITEARCH=none
   PERLMAN3DIR=none
+  PERL_CFLAGS=
 fi
 AC_SUBST(PERLINSTALLSITEARCH)
 AC_SUBST(PERLMAN3DIR)
+AC_SUBST(PERL_CFLAGS)
 
 AC_MSG_CHECKING(for Perl API)
 if test "X$enable_perl" != "Xno" ; then
