@@ -1,6 +1,12 @@
 NEWS
 ====
 
+2.4.1 - xxx
+-----------
+
+ - fix bug #4455 runtime bug in perl binding on debian wheezy 32bits #
+ - fix warning on g_type_init() on GLib > 2.36
+
 2.4.0 - June 6th 2011
 ---------------------
 281 commits, 933 files changed, 45384 insertions, 6313 deletions
