@@ -12,7 +12,7 @@ MAINTAINERCLEANFILES = Makefile.in
 DISTCLEANFILES = __init__.pyc lang.pyc Makefile.perl.old
 CLEANFILES = Lasso.pm Lasso.xs Lasso.so typemap Lasso.o Lasso.bs pm_to_blib Lasso.c
 
-LASSO_XS_CFLAGS = -fno-strict-aliasing $(LASSO_CFLAGS) $(LASSO_CORE_CFLAGS) $(PERL_CFLAGS) $(AM_CFLAGS)
+LASSO_XS_CFLAGS = -fno-strict-aliasing $(LASSO_CFLAGS) $(LASSO_CORE_CFLAGS) $(PERL_CFLAGS) $(AM_CFLAGS) -Wno-unused-but-set-variable
 
 TESTS_ENVIRONMENT=TOP_SRCDIR=$(top_srcdir)
 TESTS = test.sh
