@@ -35,6 +35,7 @@ extern "C" {
 
 #include <libxml/uri.h>
 #include <libxml/tree.h>
+#include <libxml/xmlreader.h>
 
 #include "../export.h"
 #include "../errors.h"

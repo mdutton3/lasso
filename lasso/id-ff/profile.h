@@ -211,6 +211,8 @@ LASSO_EXPORT LassoProfileSignatureVerifyHint lasso_profile_get_signature_verify_
 LASSO_EXPORT LassoProviderRole lasso_profile_sso_role_with(LassoProfile *profile,
 		const char *remote_provider_id);
 LASSO_EXPORT lasso_error_t lasso_profile_get_signature_status(LassoProfile *profile);
+LASSO_EXPORT char* lasso_profile_get_issuer(const char *message);
+LASSO_EXPORT char* lasso_profile_get_in_response_to(const char *message);
 
 #ifdef __cplusplus
 }

@@ -335,6 +335,8 @@ void lasso_xmlnode_add_saml2_signature_template(xmlNode *node, LassoSignatureCon
 
 gchar* lasso_xmlnode_build_deflated_query(xmlNode *xmlnode);
 
+xmlTextReader *lasso_xmltextreader_from_message(const char *message, xmlChar **to_free);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

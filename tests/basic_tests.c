@@ -2082,6 +2082,18 @@ START_TEST(test15_ds_key_info)
 }
 END_TEST
 
+/* test load federation */
+START_TEST(test16_test_get_issuer)
+{
+	char *content = NULL;
+	size_t len = 0;
+
+	g_file_get_contents(TESTSDATADIR "/response-1", &content, &len, NULL);
+	check_str_equals(lasso_profile_get_issuer(content), "gefssstg");
+	check_str_equals(lasso_profile_get_in_response_to(content), "xx");
+}
+END_TEST
+
 Suite*
 basic_suite()
 {
@@ -2101,6 +2113,7 @@ basic_suite()
 	TCase *tc_load_metadata = tcase_create("Test loading a federation metadata file");
 	TCase *tc_key = tcase_create("Test loading and manipulating LassoKey objects");
 	TCase *tc_key_info = tcase_create("Test creating and dumping ds:KeyInfo nodes");
+	TCase *tc_get_issuer = tcase_create("Test get_issuer and get_request_id");
 
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
@@ -2117,6 +2130,7 @@ basic_suite()
 	suite_add_tcase(s, tc_load_metadata);
 	suite_add_tcase(s, tc_key);
 	suite_add_tcase(s, tc_key_info);
+	suite_add_tcase(s, tc_get_issuer);
 
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
@@ -2133,6 +2147,7 @@ basic_suite()
 	tcase_add_test(tc_load_metadata, test13_test_lasso_server_load_metadata);
 	tcase_add_test(tc_key, test14_lasso_key);
 	tcase_add_test(tc_key_info, test15_ds_key_info);
+	tcase_add_test(tc_get_issuer, test16_test_get_issuer);
 	tcase_set_timeout(tc_load_metadata, 10);
 	return s;
 }

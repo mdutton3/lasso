@@ -1310,13 +1310,51 @@ lasso_get_query_string_param_value(const char *qs, const char *param_key, const 
 	}
 }
 
+unsigned char*
+lasso_inflate(unsigned char *input, size_t len)
+{
+	z_stream zstr;
+	unsigned char *output;
+	int z_err;
+
+	zstr.zalloc = NULL;
+	zstr.zfree = NULL;
+	zstr.opaque = NULL;
+
+	output = g_malloc(len*10);
+	zstr.avail_in = len;
+	zstr.next_in = (unsigned char*)input;
+	zstr.total_in = 0;
+	zstr.avail_out = len*10;
+	zstr.total_out = 0;
+	zstr.next_out = output;
+
+	z_err = inflateInit2(&zstr, -MAX_WBITS);
+	if (z_err != Z_OK) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to inflateInit");
+		lasso_release_string(output);
+		return FALSE;
+	}
+
+	z_err = inflate(&zstr, Z_FINISH);
+	if (z_err != Z_STREAM_END) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to inflate");
+		inflateEnd(&zstr);
+		lasso_release_string(output);
+		return NULL;
+	}
+	output[zstr.total_out] = 0;
+	inflateEnd(&zstr);
+
+	return output;
+}
+
+
 gboolean
 lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string)
 {
 	int len;
 	xmlChar *b64_zre, *zre, *re;
-	z_stream zstr;
-	int z_err;
 	xmlDoc *doc;
 	xmlNode *root;
 
@@ -1326,40 +1364,15 @@ lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string)
 	len = xmlSecBase64Decode(b64_zre, zre, len*4);
 	xmlFree(b64_zre);
 
-	zstr.zalloc = NULL;
-	zstr.zfree = NULL;
-	zstr.opaque = NULL;
-
-	zstr.avail_in = len;
-	re = xmlMalloc(len*10);
-	zstr.next_in = (xmlChar*)zre;
-	zstr.total_in = 0;
-	zstr.avail_out = len*10;
-	zstr.total_out = 0;
-	zstr.next_out = re;
-
-	z_err = inflateInit2(&zstr, -MAX_WBITS);
-	if (z_err != Z_OK) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to inflateInit");
-		xmlFree(zre);
-		xmlFree(re);
-		return FALSE;
-	}
-
-	z_err = inflate(&zstr, Z_FINISH);
-	if (z_err != Z_STREAM_END) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to inflate");
-		inflateEnd(&zstr);
-		xmlFree(zre);
-		xmlFree(re);
-		return FALSE;
-	}
-	re[zstr.total_out] = 0;
-	inflateEnd(&zstr);
+	re = lasso_inflate(zre, len);
 	xmlFree(zre);
 
+	if (! re)
+		return FALSE;
+
 	doc = lasso_xml_parse_memory((char*)re, strlen((char*)re));
-	xmlFree(re);
+	lasso_release_string(re);
+
 	root = xmlDocGetRootElement(doc);
 	lasso_node_init_from_xml(node, root);
 	lasso_release_doc(doc);
@@ -2825,4 +2838,76 @@ lasso_xmlnode_add_saml2_signature_template(xmlNode *node, LassoSignatureContext 
 		default:
 			g_assert_not_reached();
 	}
+}
+
+static char*
+get_saml_message(char **query_fields) {
+	int i;
+	char *field, *t;
+
+	for (i=0; (field=query_fields[i]); i++) {
+		t = strchr(field, '=');
+		if (t == NULL)
+			continue;
+		*t = 0;
+		if (strcmp(field, LASSO_SAML2_FIELD_ENCODING) == 0) {
+			return t+1;
+		}
+		if (strcmp(field, LASSO_SAML2_FIELD_REQUEST) == 0 || strcmp(field, LASSO_SAML2_FIELD_RESPONSE) == 0) {
+			return t+1;
+		}
+	}
+	return NULL;
+}
+
+/**
+ * lasso_xmltextreader_from_message:
+ * @message: the HTTP query, POST content or SOAP message
+ *
+ * Try to parse the passed message and create an xmlTextReader from it.
+ */
+xmlTextReader *
+lasso_xmltextreader_from_message(const char *message, xmlChar **to_free) {
+	size_t len = strlen(message);
+	char *needle;
+	char **query_fields = NULL;
+	char *decoded_message = NULL;
+	xmlTextReader *reader = NULL;
+
+	if (message[0] != '<') {
+		needle = strchr(message, '=');
+		if (needle) {
+			ptrdiff_t needle_pos = (needle-message);
+			if (len - needle_pos > 2) { // query
+				query_fields = urlencoded_to_strings(needle+1);
+				message = get_saml_message(query_fields);
+				if (! message)
+					goto cleanup;
+				len = strlen(message);
+			}
+		}
+		if (is_base64(message)) {
+			int rc;
+			decoded_message = g_malloc(len);
+			rc = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)decoded_message, len);
+			if (rc < 0)
+				goto cleanup;
+			len = rc;
+			message = (char*)lasso_inflate((unsigned char*) decoded_message, rc);
+			lasso_release_string(decoded_message);
+			if (! message)
+				goto cleanup;
+		}
+	}
+
+	if (message[0] == '<') // XML case
+		reader = xmlReaderForMemory(message, len, "", NULL, XML_PARSE_NOENT |
+				XML_PARSE_NONET);
+
+cleanup:
+	if (query_fields)
+		lasso_release(query_fields);
+	if (decoded_message && to_free)
+		*to_free = BAD_CAST decoded_message;
+	return reader;
 }

@@ -54,6 +54,8 @@
 #endif
 #include "../lasso_config.h"
 
+#include <stdio.h>
+
 /*****************************************************************************/
 /* public functions                                                          */
 /*****************************************************************************/
@@ -732,6 +734,119 @@ lasso_profile_get_signature_status(LassoProfile *profile)
 	lasso_bad_param(PROFILE, profile);
 
 	return profile->signature_status;
+}
+
+static xmlChar *
+extract_issuer(xmlTextReader *reader)
+{
+	const xmlChar *name;
+	const xmlChar *ns_uri;
+	xmlNode *node;
+
+	name = xmlTextReaderConstLocalName(reader);
+	ns_uri = xmlTextReaderConstNamespaceUri(reader);
+
+	if (strcmp((const char*)name, "Issuer"))
+		return NULL;
+	if (strcmp((const char*)ns_uri, LASSO_SAML2_ASSERTION_HREF))
+		return NULL;
+	node = xmlTextReaderExpand(reader);
+	return xmlNodeGetContent(node);
+}
+
+
+/**
+ * lasso_profile_get_issuer:
+ * @message: the HTTP query, POST content or SOAP message
+ *
+ * Extract the issuer of a message.
+ *
+ * Return value:(transfer full): Returns the issuer of the given message.
+ */
+char*
+lasso_profile_get_issuer(const char *message)
+{
+	xmlTextReader *reader;
+	char *result = NULL;
+	int count = 0, ret;
+	xmlChar *xml_result = NULL;
+	xmlChar *to_free = NULL;
+
+
+	reader = lasso_xmltextreader_from_message(message, &to_free);
+	if (! reader)
+		goto cleanup;
+	ret = xmlTextReaderRead(reader);
+	while (ret == 1) {
+		int node_type = xmlTextReaderNodeType(reader);
+		if (node_type == 1) {
+			count += 1;
+			xml_result = extract_issuer(reader);
+			if (xml_result)
+				break;
+		}
+		if (count == 3) {
+			break;
+		}
+		ret = xmlTextReaderRead(reader);
+	}
+	if (! xml_result)
+		goto cleanup;
+	result = g_strdup((char *)xml_result);
+cleanup:
+	if (xml_result)
+		lasso_release_xml_string(xml_result);
+	if (reader)
+		xmlFreeTextReader(reader);
+	if (to_free)
+		lasso_release_xml_string(to_free);
+	return result;
+}
+
+/**
+ * lasso_profile_get_request_id:
+ * @message: the HTTP query, POST content or SOAP message
+ *
+ * Extract the issuer of a message.
+ *
+ * Return value:(transfer full): Returns the issuer of the given message.
+ */
+char*
+lasso_profile_get_in_response_to(const char *message)
+{
+	xmlTextReader *reader;
+	char *result = NULL;
+	int ret;
+	int node_type = 0;
+	xmlChar *xml_result = NULL;
+	xmlChar *to_free = NULL;
+
+
+	reader = lasso_xmltextreader_from_message(message, &to_free);
+	if (! reader)
+		goto cleanup;
+	ret = xmlTextReaderRead(reader);
+	while (ret == 1) {
+		node_type = xmlTextReaderNodeType(reader);
+		if (node_type == 1) {
+			break;
+		}
+		ret = xmlTextReaderRead(reader);
+	}
+	if (node_type != 1)
+		goto cleanup;
+	xml_result = xmlTextReaderGetAttribute(reader, BAD_CAST "InResponseTo");
+	if (! xml_result)
+		goto cleanup;
+	result = g_strdup((char*)xml_result);
+cleanup:
+	if (reader)
+		xmlFreeTextReader(reader);
+	if (xml_result)
+		lasso_release_xml_string(xml_result);
+	if (to_free)
+		lasso_release_xml_string(to_free);
+	return result;
 }
 
 /*****************************************************************************/
