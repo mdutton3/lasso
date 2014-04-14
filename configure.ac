@@ -220,7 +220,7 @@ if test "x$JAVAC" = "xjavac"; then
     dnl If we have a java compiler
     dnl need to change quotes to allow square brackets
     changequote(<<, >>)dnl
-    JAVA_VERSION=`$JAVA -version 2>&1 | $SED -ne 's/java version "\([^"]*\)".*/\1/p' 2>/dev/null`
+    JAVA_VERSION=`$JAVA -version 2>&1 | $SED -ne 's/\(openjdk\|java\) \(full\)*version "\([^"]*\)".*/\3/p' 2>/dev/null`
     changequote([, ])dnl
     dnl If no java version found, perphas it is a kaffee environment...
     if test "x$JAVA_VERSION" = x; then
