@@ -5,37 +5,42 @@
   <title>Download</title>
  </head>
  <body>
-	<h1>Download</h1>
+	<h1>Source Download</h1>
 
 	<p>
-	  Lasso is licensed under the GNU GPL and the latest release
-	  is available here as a gzipped tarball:
-	  <a href="https://dev.entrouvert.org/lasso/lasso-2.3.6.tar.gz">lasso-2.3.6.tar.gz</a>
+		All our <a href="https://dev.entrouvert.org/releases/lasso/">releases</a>
+		are available through HTTP. The latest is the 2.4.0.
 	</p>
 
-	<h2>Binary Downloads</h2>
+	<h1>Binary Downloads</h2>
 
-	<h3>Debian Packages</h3>
+	<h2>Debian Packages</h3>
 
 	<p>
 	  Debian packages are available in the official Debian distribution,
 	  they are included in the current testing and development versions
-	  (<i>etch</i> and <i>sid</i>).
+	  (<i>wheezy</i> and <i>sid</i>).
 	</p>
 	 
 	<p>
-		Additionnaly there are <i>lenny</i> and <i>karmic</i> packages and there may be more
+		Additionnaly there are <i>squeeze</i> and <i>wheezy</i> packages and there may be more
 	  up-to-date packages available in our local apt repository.  Pick the
 	  one appropriate for your distribution:
 	</p>
 
+	<h3>Squeeze</h4>
 	<pre>
-deb http://deb.entrouvert.org lenny main
-deb http://deb.entrouvert.org karmic main
-</pre>
+	deb http://deb.entrouvert.org squeeze main
+	</pre>
+	<h3>Wheezy</h4>
+	<pre>
+	deb http://deb.entrouvert.org wheezy main
+	</pre>
+
+	<p>Look on <a href="http://deb.entrouvert.org">deb.entrouvert.org</a> to get the GPG key of our repository</p>
 
 	<p>
-	  Available packages are:
+	  Available packages are&nbsp;:
 	</p>
 
 	<ul>
@@ -44,30 +49,17 @@ deb http://deb.entrouvert.org karmic main
 	 <li>python-lasso: Python 2.5 &amp; 2.6 bindings</li>
 	 <li>php5-lasso: PHP bindings</li>
 	 <li>liblasso-java: JAVA bindings</li>
-	 <li>liblasso3-perl: Perl bindings</li>
+	 <li>liblasso-perl: Perl bindings</li>
 	</ul>
 
-	<p>
-	  You can also browse the repositories on <a
-	  href="http://deb.entrouvert.org">deb.entrouvert.org</a>
-	</p>
 
+	<h1>Git</h2>
 
-	<h3>Microsoft Windows Installer Packages</h3>
+	<p>To checkout the repository do&nbsp;:</p>
 
-	<p>
-		Windows support is currently being updated, expect some news soon.
-	</p>
+	<pre>git clone https://repos.entrouvert.org/lasso.git</pre>
 
-	<h2>Git</h2>
-
-	<p>
-	 Lasso is also available through Git; you can checkout source code
-	 (see below) or browse source files online with <a
-	 href="https://dev.entrouvert.org/projects/lasso/repository">Redmine</a>.
-	</p>
-
-	<pre> git clone http://dev.entrouvert.org/git/lasso.git </pre>
+	<p>You can also <a href="https://repos.entrouvert.org/lasso.git/">browse<a/> using CGit.</p>
 
  </body>
 </html>
