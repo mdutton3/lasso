@@ -2461,7 +2461,7 @@ get_or_define_ns(xmlNode *xmlnode, const xmlChar *ns_uri, const xmlChar *advised
 		return ns;
 	/* Try with the advised prefix */
 	if (advised_prefix) {
-		ns = xmlSearchNs(NULL, xmlnode, BAD_CAST prefix);
+		ns = xmlSearchNs(NULL, xmlnode, BAD_CAST advised_prefix);
 		if (! ns) { /* If not taken, use it */
 			return xmlNewNs(xmlnode, ns_uri, BAD_CAST advised_prefix);
 		}
