@@ -12,9 +12,9 @@
 		are available through HTTP. The latest is the 2.4.0.
 	</p>
 
-	<h1>Binary Downloads</h2>
+	<h1>Binary Downloads</h1>
 
-	<h2>Debian Packages</h3>
+	<h2>Debian Packages</h2>
 
 	<p>
 	  Debian packages are available in the official Debian distribution,
@@ -28,11 +28,11 @@
 	  one appropriate for your distribution:
 	</p>
 
-	<h3>Squeeze</h4>
+	<h3>Squeeze</h3>
 	<pre>
 	deb http://deb.entrouvert.org squeeze main
 	</pre>
-	<h3>Wheezy</h4>
+	<h3>Wheezy</h3>
 	<pre>
 	deb http://deb.entrouvert.org wheezy main
 	</pre>
@@ -53,13 +53,13 @@
 	</ul>
 
 
-	<h1>Git</h2>
+	<h1>Git</h1>
 
 	<p>To checkout the repository do&nbsp;:</p>
 
 	<pre>git clone https://repos.entrouvert.org/lasso.git</pre>
 
-	<p>You can also <a href="https://repos.entrouvert.org/lasso.git/">browse<a/> using CGit.</p>
+	<p>You can also <a href="https://repos.entrouvert.org/lasso.git/">browse</a> using CGit.</p>
 
  </body>
 </html>
