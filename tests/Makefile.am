@@ -34,7 +34,7 @@ tests2_LDADD = \
 	$(LASSO_LIBS) \
 	$(CHECK_LIBS)
 tests2_LDFLAGS = -rpath `cd $(top_builddir)/lasso/.libs/; pwd`
-tests2_CFLAGS = -DSRCDIR=\"$(srcdir)\"
+tests2_CFLAGS = $(AM_CFLAGS) -DSRCDIR=\"$(srcdir)\"
 
 perfs_SOURCES = perfs.c
 perfs_LDADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
