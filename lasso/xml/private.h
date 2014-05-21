@@ -120,6 +120,16 @@ lasso_validate_signature_context(LassoSignatureContext context) {
 		&& context.signature_key != NULL;
 }
 
+#define SNIPPET_OFFSET_MASK ((~(guint)0) >> 3)
+
+#define SNIPPET_OFFSET_SHIFT (sizeof(guint) * 8 - 2)
+
+#define SNIPPET_OFFSET_WITH_SIZEOF_FLAG (1 << (SNIPPET_OFFSET_SHIFT-1))
+
+#define SNIPPET_OFFSET_ENCODE_SIZEOF(type) ((sizeof(type) == 1 ? 0 : (sizeof(type) == 2 ? 1 : (sizeof(type) == 4 ? 2 : 3))) << SNIPPET_OFFSET_SHIFT & SNIPPET_OFFSET_WITH_SIZEOF_FLAG)
+
+#define SNIPPET_OFFSET_DECODE_SIZEOF(offset) 1 << ((offset & ~SNIPPET_OFFSET_MASK) >> SNIPPET_OFFSET_SHIFT)
+
 /**
  * This inline method replace normal use of G_STRUCT_MEMBER_P/G_STRUCT_MEMBER, in order to add an
  * indirection through the private structure attached to a GObject instance if needed */
@@ -133,7 +143,7 @@ snippet_struct_member(void *base, GType type, struct XmlSnippet *snippet)
 		base = g_type_instance_get_private((GTypeInstance*)object,
 				type);
 	}
-	return G_STRUCT_MEMBER_P(base, snippet->offset);
+	return G_STRUCT_MEMBER_P(base, snippet->offset & SNIPPET_OFFSET_MASK);
 }
 
 #define SNIPPET_STRUCT_MEMBER(type, base, gtype, snippet) \
@@ -141,6 +151,65 @@ snippet_struct_member(void *base, GType type, struct XmlSnippet *snippet)
 
 #define SNIPPET_STRUCT_MEMBER_P(base, gtype, snippet) \
 	snippet_struct_member(base, gtype, snippet)
+
+inline static long
+snippet_struct_member_integer(void *base, GType type, struct XmlSnippet *snippet)
+{
+	if (snippet->type & SNIPPET_OFFSET_WITH_SIZEOF_FLAG) {
+		switch (SNIPPET_OFFSET_DECODE_SIZEOF(snippet->type)) {
+			case 1:
+				return SNIPPET_STRUCT_MEMBER(gint8, base, type, snippet);
+				break;
+			case 2:
+				return SNIPPET_STRUCT_MEMBER(gint16, base, type, snippet);
+				break;
+			case 4:
+				return SNIPPET_STRUCT_MEMBER(gint32, base, type, snippet);
+				break;
+			case 8:
+				return SNIPPET_STRUCT_MEMBER(gint64, base, type, snippet);
+				break;
+			default:
+				g_assert_not_reached();
+				break;
+		}
+	} else {
+		return SNIPPET_STRUCT_MEMBER(int, base, type, snippet);
+	}
+}
+
+inline static void
+snippet_struct_member_set_integer(void *base, GType type, struct XmlSnippet *snippet, long value)
+{
+	if (snippet->type & SNIPPET_OFFSET_WITH_SIZEOF_FLAG) {
+		switch (SNIPPET_OFFSET_DECODE_SIZEOF(snippet->type)) {
+			case 1:
+				SNIPPET_STRUCT_MEMBER(gint8, base, type, snippet) = value;
+				break;
+			case 2:
+				SNIPPET_STRUCT_MEMBER(gint16, base, type, snippet) = value;
+				break;
+			case 4:
+				SNIPPET_STRUCT_MEMBER(gint32, base, type, snippet) = value;
+				break;
+			case 8:
+				SNIPPET_STRUCT_MEMBER(gint64, base, type, snippet) = value;
+				break;
+			default:
+				g_assert_not_reached();
+				break;
+		}
+	} else {
+		SNIPPET_STRUCT_MEMBER(int, base, type, snippet) = value;
+	}
+}
+
+
+#define SNIPPET_STRUCT_MEMBER_INT(base, gtype, snippet) \
+	snippet_struct_member_integer(base, gtype, snippet)
+
+#define SNIPPET_STRUCT_MEMBER_SET_INT(base, gtype, snippet, value) \
+	snippet_struct_member_set_integer(base, gtype, snippet, value)
 
 struct QuerySnippet {
 	char *path;

@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <xmlsec/base64.h>
 #include <xmlsec/xmltree.h>
@@ -44,6 +45,7 @@
 #include <xmlsec/openssl/crypto.h>
 #include <xmlsec/openssl/x509.h>
 
+#include "../id-ff/profile.h"
 #include "xml.h"
 #include "xml_enc.h"
 #include "saml_name_identifier.h"
@@ -1302,7 +1304,7 @@ snippet_set_value(LassoNode *node, LassoNodeClass *class, struct XmlSnippet *sni
 				val = 0;
 			}
 		}
-		(*(int*)value) = val;
+		SNIPPET_STRUCT_MEMBER_SET_INT(node, g_type, snippet, val);
 	} else if (snippet->type & SNIPPET_BOOLEAN) {
 		int val = 0;
 		if (strcmp((char*)content, "true") == 0) {
@@ -2726,7 +2728,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, x
 
 	for (snippet = snippets; snippet && snippet->name; snippet++) {
 		void *value;
-		int int_value;
+		long int_value;
 		gboolean bool_value;
 		char *str;
 		gboolean optional = snippet->type & SNIPPET_OPTIONAL;
@@ -2745,14 +2747,14 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, x
 
 		// convert input type to string if needed
 		if (snippet->type & SNIPPET_INTEGER) {
-			int_value = SNIPPET_STRUCT_MEMBER(int, node, g_type, snippet);
+			int_value = SNIPPET_STRUCT_MEMBER_INT(node, g_type, snippet);
 			if (int_value == 0 && optional) {
 				continue;
 			}
 			if (int_value == -1 && optional_neg) {
 				continue;
 			}
-			str = g_strdup_printf("%i", int_value);
+			str = g_strdup_printf("%li", int_value);
 		} else if (snippet->type & SNIPPET_BOOLEAN) {
 			bool_value = SNIPPET_STRUCT_MEMBER(gboolean, node, g_type, snippet);
 			if (bool_value == FALSE  && optional) {
@@ -2964,7 +2966,7 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 		gboolean v = SNIPPET_STRUCT_MEMBER(gboolean, value_node, g_type, snippet);
 		return v ? g_strdup("true") : g_strdup("false");
 	} else if (snippet->type & SNIPPET_INTEGER) {
-		int v = SNIPPET_STRUCT_MEMBER(int, value_node, g_type, snippet);
+		int v = SNIPPET_STRUCT_MEMBER_INT(value_node, g_type, snippet);
 		return g_strdup_printf("%d", v);
 	} else if (snippet->type == SNIPPET_NODE) {
 		LassoNode *value = SNIPPET_STRUCT_MEMBER(LassoNode *, value_node, g_type, snippet);
@@ -3061,6 +3063,7 @@ set_value_at_path(LassoNode *node, char *path, char *query_value)
 
 	if (snippet->type & SNIPPET_INTEGER) {
 		int val = atoi(query_value);
+		SNIPPET_STRUCT_MEMBER_SET_INT(value_node, g_type, snippet, val);
 		(*(int*)value) = val;
 	} else if (snippet->type & SNIPPET_BOOLEAN) {
 		int val = (strcmp(query_value, "true") == 0);
