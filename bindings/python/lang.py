@@ -418,7 +418,7 @@ if WSF_SUPPORT:
             print >> fd, '        return t;'
             # setter
             print >> fd, '    def set_%s(self, value):' % mname
-            if is_int(m, self.binding_data) or is_xml_node(m) or is_cstring(m) or is_boolean(m):
+            if is_int(m, self.binding_data) or is_xml_node(m) or is_boolean(m):
                 pass
             elif is_cstring(m):
                 print >> fd, '        value = str2lasso(value)'
