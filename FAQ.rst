@@ -228,3 +228,30 @@ Put the following content in a file named index.php:
 You must replace the ``$idp_metadata_xml`` variable by your identity provider metadata.
 You can indicate to your identity provider the URL
 http://yourdomain.com/index.php?metadata as the URL of your metadata file.
+
+3. I received a request or a response, how do I find out which provider sent it
+   before parsing it with Lasso ?
+
+A profile needs a provider to be loaded in their server object before parsing
+any message from it. If you manage a lot of providers and you do not want to
+always load all of them you can use the lasso_profile_get_issuer() function if
+the message is sent using the SOAP, HTTP-POST or HTTP-Redirect bindings.
+
+.. code-block:: python
+
+     # POST case
+     import lasso
+
+     msg = request.POST['SAMLRequest']
+     provider_id = lasso.Profile.getIssuser(msg)
+
+     # GET case
+     msg = request.META['QUERY_STRING']
+     provider_id = lasso.Profile.getIssuer(msg)
+
+     # SOAP case
+     msg = request.read()
+     provider_id = lasso.Profile.getIssuer(msg)
+
+The python example is pseudo-code. It assumes there is a request object whom
+you can retrieve a POST parameters, the query string or the POST body.
