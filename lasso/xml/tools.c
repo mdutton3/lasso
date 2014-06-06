@@ -1716,6 +1716,7 @@ static void __xmlWarningFunc(G_GNUC_UNUSED void *userData, const char *msg, ...)
 
 	va_start(arg_ptr, msg);
 	xml_logv(G_LOG_LEVEL_WARNING, msg, arg_ptr);
+        va_end(arg_ptr);
 }
 
 static void __xmlErrorFunc(G_GNUC_UNUSED void *userData, const char *msg, ...) {
@@ -1723,6 +1724,7 @@ static void __xmlErrorFunc(G_GNUC_UNUSED void *userData, const char *msg, ...) {
 
 	va_start(arg_ptr, msg);
 	xml_logv(G_LOG_LEVEL_CRITICAL, msg, arg_ptr);
+        va_end(arg_ptr);
 }
 
 /**
