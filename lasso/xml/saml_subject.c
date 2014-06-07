@@ -50,7 +50,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "NameIdentifier", SNIPPET_NODE,
+	{ "NameIdentifier", SNIPPET_NODE | SNIPPET_JUMP_ON_MISS | SNIPPET_JUMP_2,
 		G_STRUCT_OFFSET(LassoSamlSubject, NameIdentifier), NULL, NULL, NULL},
 	{ "EncryptedNameIdentifier", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlSubject, EncryptedNameIdentifier),

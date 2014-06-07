@@ -54,13 +54,15 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "BaseID", SNIPPET_NODE,
+	{ "BaseID", SNIPPET_NODE | SNIPPET_JUMP_ON_MATCH | SNIPPET_JUMP_3,
 		G_STRUCT_OFFSET(LassoSaml2Subject, BaseID), NULL, NULL, NULL},
-	{ "NameID", SNIPPET_NODE,
+	{ "NameID", SNIPPET_NODE | SNIPPET_JUMP_ON_MATCH | SNIPPET_JUMP_2,
 		G_STRUCT_OFFSET(LassoSaml2Subject, NameID), NULL, NULL, NULL},
-	{ "EncryptedID", SNIPPET_NODE,
+	{ "EncryptedID", SNIPPET_NODE | SNIPPET_JUMP_ON_MISS | SNIPPET_JUMP_2,
 		G_STRUCT_OFFSET(LassoSaml2Subject, EncryptedID),
 		"LassoSaml2EncryptedElement", NULL, NULL},
+	{ "SubjectConfirmation", SNIPPET_NODE | SNIPPET_OPTIONAL | SNIPPET_JUMP_ON_MATCH | SNIPPET_JUMP_2,
+		G_STRUCT_OFFSET(LassoSaml2Subject, SubjectConfirmation), NULL, NULL, NULL},
 	{ "SubjectConfirmation", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSaml2Subject, SubjectConfirmation), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}

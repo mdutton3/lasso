@@ -59,11 +59,15 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "AuthnContextClassRef", SNIPPET_CONTENT | SNIPPET_OPTIONAL,
+	{ "AuthnContextClassRef", SNIPPET_CONTENT | SNIPPET_OPTIONAL | SNIPPET_JUMP_ON_MISS | SNIPPET_JUMP_3,
 		G_STRUCT_OFFSET(LassoSaml2AuthnContext, AuthnContextClassRef), NULL, NULL, NULL},
-	{ "AuthnContextDecl", SNIPPET_NODE | SNIPPET_OPTIONAL,
+	{ "AuthnContextDecl", SNIPPET_NODE | SNIPPET_OPTIONAL | SNIPPET_JUMP_ON_MISS | SNIPPET_JUMP_4,
 		G_STRUCT_OFFSET(LassoSaml2AuthnContext, AuthnContextDecl), NULL, NULL, NULL},
-	{ "AuthnContextDeclRef", SNIPPET_CONTENT | SNIPPET_OPTIONAL,
+	{ "AuthnContextDeclRef", SNIPPET_CONTENT | SNIPPET_OPTIONAL | SNIPPET_JUMP | SNIPPET_JUMP_3,
+		G_STRUCT_OFFSET(LassoSaml2AuthnContext, AuthnContextDeclRef), NULL, NULL, NULL},
+	{ "AuthnContextDecl", SNIPPET_NODE | SNIPPET_OPTIONAL | SNIPPET_JUMP_ON_MATCH | SNIPPET_JUMP_2,
+		G_STRUCT_OFFSET(LassoSaml2AuthnContext, AuthnContextDecl), NULL, NULL, NULL},
+	{ "AuthnContextDeclRef", SNIPPET_CONTENT | SNIPPET_MANDATORY,
 		G_STRUCT_OFFSET(LassoSaml2AuthnContext, AuthnContextDeclRef), NULL, NULL, NULL},
 	{ "AuthenticatingAuthority", SNIPPET_CONTENT | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoSaml2AuthnContext, AuthenticatingAuthority), NULL, NULL, NULL},

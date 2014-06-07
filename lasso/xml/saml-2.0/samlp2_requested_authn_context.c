@@ -48,13 +48,19 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "AuthnContextClassRef", SNIPPET_LIST_CONTENT,
+	{ "AuthnContextClassRef", SNIPPET_LIST_CONTENT | SNIPPET_JUMP_ON_MATCH | SNIPPET_JUMP_2,
+		G_STRUCT_OFFSET(LassoSamlp2RequestedAuthnContext, AuthnContextClassRef),
+		NULL, LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF },
+	{ "AuthnContextDeclRef", SNIPPET_LIST_CONTENT | SNIPPET_MANDATORY | SNIPPET_JUMP_ON_MATCH | SNIPPET_JUMP_2,
+		G_STRUCT_OFFSET(LassoSamlp2RequestedAuthnContext, AuthnContextDeclRef),
+		NULL, LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF },
+	{ "AuthnContextClassRef", SNIPPET_LIST_CONTENT | SNIPPET_JUMP_ON_MISS | SNIPPET_JUMP_2,
 		G_STRUCT_OFFSET(LassoSamlp2RequestedAuthnContext, AuthnContextClassRef),
 		NULL, LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF },
 	{ "AuthnContextDeclRef", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoSamlp2RequestedAuthnContext, AuthnContextDeclRef),
 		NULL, LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF },
-	{ "Comparison", SNIPPET_CONTENT,
+	{ "Comparison", SNIPPET_CONTENT | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoSamlp2RequestedAuthnContext, Comparison), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };

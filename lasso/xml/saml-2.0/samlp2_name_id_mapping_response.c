@@ -51,7 +51,7 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "NameID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlp2NameIDMappingResponse, NameID), NULL,
+	{ "NameID", SNIPPET_NODE | SNIPPET_JUMP_ON_MATCH | SNIPPET_JUMP_2, G_STRUCT_OFFSET(LassoSamlp2NameIDMappingResponse, NameID), NULL,
 		LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF},
 	{ "EncryptedID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlp2NameIDMappingResponse,
 			EncryptedID), NULL, LASSO_SAML2_ASSERTION_PREFIX,
