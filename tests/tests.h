@@ -89,7 +89,7 @@ struct CheckingLogHandlerUserData {
 		const char *message;
 		gboolean endswith;
 		GLogLevelFlags log_level_found;
-		const char *message_found;
+		char *message_found;
 };
 G_GNUC_UNUSED static guint checking_log_handler = 0;
 G_GNUC_UNUSED static guint checking_log_handler_flag = 0;
@@ -138,6 +138,9 @@ static inline void end_check_do_log() {
 			checking_logger_user_data.message,
 			checking_logger_user_data.log_level_found,
 			checking_logger_user_data.message_found);
+	if (checking_logger_user_data.message_found) {
+		g_free(checking_logger_user_data.message_found);
+	}
 	checking_log_handler_flag = 0;
 }
 
