@@ -2093,6 +2093,8 @@ basic_suite()
 	TCase *tc_registry_functional_mapping = tcase_create("Test QName registry with functional mapping");
 	TCase *tc_registry_new_from_xmlNode = tcase_create("Test parsing a node that has a mapping to Lasso Object in the registry");
 	TCase *tc_response_new_from_xmlNode = tcase_create("Test parsing a message from Ping Federate");
+	TCase *tc_all_dumps = tcase_create("Test dumping all kind of nodes");
+	TCase *tc_get_default_name_id_format = tcase_create("Test getting default name id format");
 	TCase *tc_custom_namespace = tcase_create("Test custom namespace handling");
 	TCase *tc_load_metadata = tcase_create("Test loading a federation metadata file");
 	TCase *tc_key = tcase_create("Test loading and manipulating LassoKey objects");
@@ -2107,6 +2109,8 @@ basic_suite()
 	suite_add_tcase(s, tc_registry_functional_mapping);
 	suite_add_tcase(s, tc_registry_new_from_xmlNode);
 	suite_add_tcase(s, tc_response_new_from_xmlNode);
+	suite_add_tcase(s, tc_all_dumps);
+	suite_add_tcase(s, tc_get_default_name_id_format);
 	suite_add_tcase(s, tc_custom_namespace);
 	suite_add_tcase(s, tc_load_metadata);
 	suite_add_tcase(s, tc_key);
@@ -2121,8 +2125,8 @@ basic_suite()
 	tcase_add_test(tc_registry_functional_mapping, test07_registry_functional_mapping);
 	tcase_add_test(tc_registry_new_from_xmlNode, test08_test_new_from_xmlNode);
 	tcase_add_test(tc_response_new_from_xmlNode, test09_test_deserialization);
-	tcase_add_test(tc_response_new_from_xmlNode, test10_test_alldumps);
-	tcase_add_test(tc_response_new_from_xmlNode, test11_get_default_name_id_format);
+	tcase_add_test(tc_all_dumps, test10_test_alldumps);
+	tcase_add_test(tc_get_default_name_id_format, test11_get_default_name_id_format);
 	tcase_add_test(tc_custom_namespace, test12_custom_namespace);
 	tcase_add_test(tc_load_metadata, test13_test_lasso_server_load_metadata);
 	tcase_add_test(tc_key, test14_lasso_key);
