@@ -145,12 +145,8 @@ lasso_saml20_server_load_metadata_entity(LassoServer *server, LassoProviderRole 
 			lasso_release_gobject(provider);
 			return LASSO_SERVER_ERROR_NO_PROVIDER_LOADED;
 		}
-		if (*loaded_end) {
-			GList *l = *loaded_end;
-			l->next = g_new0(GList, 1);
-			l->next->prev = l;
-			l->next->data = g_strdup(name);
-			*loaded_end = l->next;
+		if (loaded_end) {
+			*loaded_end = g_list_prepend(*loaded_end, g_strdup(name));
 		}
 		g_hash_table_insert(server->providers, g_strdup(name), provider);
 		return 0;
@@ -243,17 +239,18 @@ lasso_saml20_server_load_metadata(LassoServer *server, LassoProviderRole role,
 		xmlSecKeysMngr *keys_mngr, LassoServerLoadMetadataFlag flags)
 {
 	lasso_error_t rc = 0;
-	GList loaded = { .data = NULL, .next = NULL };
-	GList *loaded_end = NULL;
+	GList *loaded = NULL;
+	GList **loaded_end = NULL;
 
 	if (loaded_entity_ids) {
 		loaded_end = &loaded;
 	}
 	rc = lasso_saml20_server_load_metadata_child(server, role,
-			doc, root_node, blacklisted_entity_ids, &loaded_end, keys_mngr, flags);
+			doc, root_node, blacklisted_entity_ids, loaded_end, keys_mngr, flags);
 	if (loaded_entity_ids) {
+		loaded = g_list_reverse(loaded);
 		lasso_release_list_of_strings(*loaded_entity_ids);
-		*loaded_entity_ids = loaded.next;
+		*loaded_entity_ids = loaded;
 	}
 	return rc;
 }
