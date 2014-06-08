@@ -911,7 +911,6 @@ lasso_server_export_to_query_for_provider_by_name(LassoServer *server, const cha
 	goto_cleanup_if_fail_with_rc(query,
 			LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 	lasso_assign_new_string(*out, query);
-	context = LASSO_SIGNATURE_CONTEXT_NONE;
 cleanup:
 	lasso_assign_new_signature_context(context, LASSO_SIGNATURE_CONTEXT_NONE);
 	return rc;
