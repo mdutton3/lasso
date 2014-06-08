@@ -870,6 +870,9 @@ dispose(GObject *object)
 	provider->private_data->affiliation_owner_id = NULL;
 	lasso_release_list_of_full(provider->private_data->endpoints, lasso_endpoint_free);
 
+	lasso_assign_new_signature_context(provider->private_data->signature_context,
+			LASSO_SIGNATURE_CONTEXT_NONE);
+
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
 }
 
