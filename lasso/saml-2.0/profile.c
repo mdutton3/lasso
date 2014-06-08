@@ -1169,9 +1169,7 @@ lasso_saml20_profile_build_http_redirect(LassoProfile *profile,
 
 	goto_cleanup_if_fail_with_rc (url != NULL, LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	/* if message is signed, remove XML signature, add query signature */
-	context = lasso_node_get_signature(msg);
-	/* We must duplicate the key since lasso_node_remove_signature will free it. */
-	context.signature_key = xmlSecKeyDuplicate(context.signature_key);
+	lasso_assign_signature_context(context, lasso_node_get_signature(msg));
 	if (lasso_validate_signature_method(context.signature_method)) {
 		lasso_node_remove_signature(msg);
 	}
@@ -1180,6 +1178,7 @@ lasso_saml20_profile_build_http_redirect(LassoProfile *profile,
 	lasso_assign_new_string(profile->msg_url, lasso_concat_url_query(url, query));
 	lasso_release(profile->msg_body);
 	lasso_release(query);
+	lasso_assign_new_signature_context(context, LASSO_SIGNATURE_CONTEXT_NONE);
 
 cleanup:
 	return rc;
