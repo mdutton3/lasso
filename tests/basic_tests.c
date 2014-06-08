@@ -2031,6 +2031,7 @@ START_TEST(test14_lasso_key)
 				LASSO_SIGNATURE_METHOD_RSA_SHA1, NULL));
 	lasso_release_string(base64_encoded);
 	lasso_release_string(buffer);
+	lasso_release_gobject(key);
 }
 END_TEST
 
@@ -2077,6 +2078,7 @@ START_TEST(test15_ds_key_info)
 	lasso_release_string(dump);
 	dump = lasso_node_debug(node, 10);
 	lasso_release_string(dump);
+	lasso_release_gobject(node);
 }
 END_TEST
 
