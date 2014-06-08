@@ -295,7 +295,6 @@ class LoginTestCase(unittest.TestCase):
             lasso.PROVIDER_ROLE_SP,
             os.path.join(dataDir, 'sp5-saml2/metadata.xml'))
         idp_login = lasso.Login(idp)
-        print sp_login.msgUrl
         idp_login.processAuthnRequestMsg(sp_login.msgUrl.split('?')[1])
         idp_login.protocolProfile = lasso.LOGIN_PROTOCOL_PROFILE_BRWS_POST;
         idp_login.validateRequestMsg(True, True)
@@ -493,7 +492,7 @@ class LogoutTestCase(unittest.TestCase):
         node = lasso.Samlp2LogoutRequest.newFromXmlNode(content)
         assert isinstance(node, lasso.Samlp2LogoutRequest)
         assert node.sessionIndex == 'id1'
-        assert node.sessionIndexes == ('id2', 'id3', 'id1')
+        assert node.sessionIndexes == ('id1', 'id2', 'id3')
 
 serverSuite = unittest.makeSuite(ServerTestCase, 'test')
 loginSuite = unittest.makeSuite(LoginTestCase, 'test')
