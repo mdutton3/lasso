@@ -406,3 +406,9 @@
    fun:g_get_charset
    fun:g_log_default_handler
 }
+{
+   register type
+   Memcheck:Leak
+   ...
+   fun:g_type_init_*
+}
