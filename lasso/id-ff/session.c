@@ -882,6 +882,7 @@ cleanup:
 	lasso_release_xml_string(session_index);
 	lasso_release_xml_string(provider_id);
 	lasso_release_xml_string(assertion_id);
+	lasso_release_gobject(name_id);
 }
 
 static int

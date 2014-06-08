@@ -90,6 +90,17 @@ static LassoNodeClass *parent_class = NULL;
 #define GET_PRIVATE(x) G_TYPE_INSTANCE_GET_PRIVATE(x, \
 		LASSO_TYPE_SAMLP2_LOGOUT_REQUEST, LassoSamlp2LogoutRequestPrivate)
 
+static void
+dispose(GObject *object)
+{
+	LassoSamlp2LogoutRequest *logout_request = LASSO_SAMLP2_LOGOUT_REQUEST(object);
+	LassoSamlp2LogoutRequestPrivate *pv;
+
+	pv = GET_PRIVATE(logout_request);
+	lasso_release_list_of_strings(pv->SessionIndex);
+	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(logout_request));
+}
+
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -183,6 +194,7 @@ class_init(LassoSamlp2LogoutRequestClass *klass)
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_PROTOCOL_HREF, LASSO_SAML2_PROTOCOL_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 	g_type_class_add_private(G_OBJECT_CLASS(klass), sizeof(LassoSamlp2LogoutRequestPrivate));
+	G_OBJECT_CLASS(klass)->dispose = dispose;
 }
 
 GType
@@ -231,7 +243,7 @@ lasso_samlp2_logout_request_get_session_indexes(LassoSamlp2LogoutRequest *logout
 	pv = GET_PRIVATE(logout_request);
 	lasso_assign_list_of_strings(ret, pv->SessionIndex);
 	if (logout_request->SessionIndex) {
-		ret = g_list_append(ret, g_strdup(logout_request->SessionIndex));
+		ret = g_list_prepend(ret, g_strdup(logout_request->SessionIndex));
 	}
 	return ret;
 }
@@ -261,7 +273,7 @@ lasso_samlp2_logout_request_set_session_indexes(LassoSamlp2LogoutRequest *logout
 	if (pv->SessionIndex && pv->SessionIndex->next) {
 		GList *last = g_list_last(pv->SessionIndex);
 		lasso_assign_new_string(logout_request->SessionIndex, (char*) last->data);
-		pv->SessionIndex = g_list_remove_link(pv->SessionIndex, last);
+		pv->SessionIndex = g_list_delete_link(pv->SessionIndex, last);
 	}
 }
 
