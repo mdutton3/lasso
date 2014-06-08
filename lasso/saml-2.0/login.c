@@ -948,10 +948,14 @@ gint
 lasso_saml20_login_build_request_msg(LassoLogin *login)
 {
 	LassoProfile *profile;
+	lasso_error_t rc = 0;
 
 	profile = &login->parent;
 	if (_lasso_login_must_sign_non_authn_request(login)) {
-		lasso_profile_saml20_setup_message_signature(profile, profile->request);
+		rc = lasso_profile_saml20_setup_message_signature(profile, profile->request);
+		if (rc != 0) {
+			return rc;
+		}
 	} else {
 		lasso_node_remove_signature(profile->request);
 	}

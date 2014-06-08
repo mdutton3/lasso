@@ -1079,6 +1079,9 @@ lasso_node_set_encryption(LassoNode *node, xmlSecKey *encryption_public_key,
 	g_return_if_fail(LASSO_IS_NODE(node));
 	if (encryption_public_key) {
 		custom_element = _lasso_node_get_custom_element_or_create(node);
+		if (! custom_element) {
+			return;
+		}
 	} else {
 		custom_element = _lasso_node_get_custom_element(node);
 		if (! custom_element) {
