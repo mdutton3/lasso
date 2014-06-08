@@ -1270,7 +1270,7 @@ lasso_get_integer_attribute(xmlNode *node, xmlChar *attribute_name, xmlChar *ns_
 		goto cleanup;
 	if (! lasso_string_to_xsd_integer((char*)content, &what))
 		goto cleanup;
-	if (*integer < low || *integer >= high)
+	if (what < low || what >= high)
 		goto cleanup;
 	*integer = what;
 	rc = TRUE;
