@@ -225,7 +225,9 @@ lasso_iso_8601_gmt_to_time_t(const char *xsdtime)
 		if (strptime_ret == NULL) {
 			return -1;
 		}
-	}
+	} else {
+            return -1;
+        }
 	return timegm(&tm);
 }
 
