@@ -2842,16 +2842,6 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, x
 				break;
 			case SNIPPET_COLLECT_NAMESPACES:
 				break;
-			case SNIPPET_INTEGER:
-			case SNIPPET_BOOLEAN:
-			case SNIPPET_LASSO_DUMP:
-			case SNIPPET_OPTIONAL:
-			case SNIPPET_OPTIONAL_NEG:
-			case SNIPPET_ALLOW_TEXT:
-			case SNIPPET_ANY:
-			case SNIPPET_KEEP_XMLNODE:
-			case SNIPPET_PRIVATE:
-			case SNIPPET_MANDATORY:
 			case SNIPPET_UNUSED1:
 				g_assert_not_reached();
 		}
