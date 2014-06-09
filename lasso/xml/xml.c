@@ -2927,7 +2927,7 @@ find_path(LassoNode *node, char *path, LassoNode **value_node, LassoNodeClass **
 
 	*class_p = NULL;
 	s = path;
-	while (s-1) {
+	while (s) {
 		t = strchr(s, '/');
 		if (t) *t = 0;
 		tsnippet = find_xml_snippet_by_name(tnode, s, class_p);
@@ -2936,8 +2936,11 @@ find_path(LassoNode *node, char *path, LassoNode **value_node, LassoNodeClass **
 					tsnippet);
 			if (tnode == NULL)
 				return FALSE;
+
+			s = t+1;
+		} else {
+			s = NULL;
 		}
-		s = t+1;
 	}
 
 	if (tsnippet == NULL)
