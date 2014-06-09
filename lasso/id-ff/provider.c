@@ -1807,7 +1807,7 @@ lasso_provider_set_server_signing_key(LassoProvider *provider,
 		LassoKey *key)
 {
 	lasso_error_t rc = 0;
-	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
+	LassoSignatureContext context;
 
 	lasso_bad_param(PROVIDER, provider);
 	lasso_bad_param(KEY, key);

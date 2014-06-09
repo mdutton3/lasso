@@ -792,7 +792,7 @@ xmlNode*
 lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode = NULL;
-	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
+	LassoSignatureContext context;
 	LassoNodeClassData *node_data;
 
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
@@ -1764,7 +1764,6 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					BAD_CAST LASSO_LIB_HREF, &what, LASSO_SIGNATURE_TYPE_NONE+1,
 					LASSO_SIGNATURE_TYPE_LAST))
 				break;
-			type = what;
 			private_key_password = xmlGetNsProp(xmlnode, LASSO_PRIVATE_KEY_PASSWORD_ATTRIBUTE,
 				BAD_CAST LASSO_LIB_HREF);
 			if (! private_key)

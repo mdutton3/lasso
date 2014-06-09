@@ -731,8 +731,6 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	goto_cleanup_if_fail_with_rc(LASSO_IS_SAMLP2_RESPONSE(profile->response),
 			LASSO_PROFILE_ERROR_MISSING_RESPONSE);
 
-	response = (LassoSamlp2Response*)profile->response;
-
 	assertion = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
 	assertion->ID = lasso_build_unique_id(32);
 	lasso_assign_string(assertion->Version, "2.0");
