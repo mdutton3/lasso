@@ -377,7 +377,7 @@ load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole rol
 	xmlNode *t;
 	xmlChar *value;
 	LassoProviderPrivate *pdata = provider->private_data;
-	char *token, *saveptr;
+	char *token, *saveptr = NULL;
 	int counter = 0;
 	
 	/* check protocol support enumeration */
@@ -444,7 +444,7 @@ load_descriptor(xmlNode *xmlnode, LassoProvider *provider, LassoProviderRole rol
 gboolean
 lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node)
 {
-	xmlNode *node, *descriptor_node;
+	xmlNode *node = NULL, *descriptor_node;
 	xmlChar *providerID;
 	xmlChar providerID_cpy[150] = "";
 

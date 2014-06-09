@@ -2728,7 +2728,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, x
 	g_type = G_TYPE_FROM_CLASS(class);
 
 	for (snippet = snippets; snippet && snippet->name; snippet++) {
-		void *value;
+		void *value = NULL;
 		int int_value;
 		gboolean bool_value;
 		char *str;

@@ -1925,7 +1925,7 @@ char*
 lasso_url_add_parameters(char *url,
 		gboolean free, ...)
 {
-	char *old_url = url, *new_url;
+	char *old_url = url, *new_url = NULL;
 	xmlChar *encoded_key, *encoded_value;
 	va_list ap;
 
