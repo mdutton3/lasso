@@ -559,7 +559,7 @@ static LassoNodeClass *parent_class = NULL;
 void
 lasso_profile_set_signature_hint(LassoProfile *profile, LassoProfileSignatureHint signature_hint)
 {
-	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
+	if (! LASSO_IS_PROFILE(profile) || ! profile->private_data)
 		return;
 	profile->private_data->signature_hint = signature_hint;
 }
@@ -576,7 +576,7 @@ LassoProfileSignatureHint
 lasso_profile_get_signature_hint(LassoProfile *profile)
 {
 	LassoProfileSignatureVerifyHint signature_verify_hint;
-	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
+	if (! LASSO_IS_PROFILE(profile) || ! profile->private_data)
 		return LASSO_PROFILE_SIGNATURE_HINT_MAYBE;
 	signature_verify_hint = profile->private_data->signature_verify_hint;
 	if (signature_verify_hint >= LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST) {
@@ -600,7 +600,7 @@ void
 lasso_profile_set_signature_verify_hint(LassoProfile *profile,
 		LassoProfileSignatureVerifyHint signature_verify_hint)
 {
-	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
+	if (! LASSO_IS_PROFILE(profile) || ! profile->private_data)
 		return;
 	if (signature_verify_hint >= LASSO_PROFILE_SIGNATURE_VERIFY_HINT_LAST) {
 		message(G_LOG_LEVEL_WARNING, "%i is an invalid argument for " __FUNCTION__,
@@ -622,7 +622,7 @@ lasso_profile_set_signature_verify_hint(LassoProfile *profile,
 LassoProfileSignatureVerifyHint
 lasso_profile_get_signature_verify_hint(LassoProfile *profile)
 {
-	if (! LASSO_IS_PROFILE(profile) && ! profile->private_data)
+	if (! LASSO_IS_PROFILE(profile) || ! profile->private_data)
 		return LASSO_PROFILE_SIGNATURE_HINT_MAYBE;
 	return profile->private_data->signature_verify_hint;
 }
