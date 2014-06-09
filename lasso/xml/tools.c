@@ -1382,6 +1382,7 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 			lasso_strisequal((char*)dsig_reference_ctx->uri, reference_uri);
 		ok |= (signature_verification_option & EMPTY_URI)
 			&& xmlDocGetRootElement(doc) == signed_node
+			&& dsig_reference_ctx != NULL
 			&& lasso_strisequal((char*)dsig_reference_ctx->uri, "");
 		goto_cleanup_if_fail_with_rc(ok,
 				LASSO_DS_ERROR_INVALID_REFERENCE_FOR_SAML);
@@ -1393,7 +1394,8 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 		for (i = 0; i < size; ++i) {
 
 			dsig_reference_ctx = (xmlSecDSigReferenceCtx*)xmlSecPtrListGetItem(&(dsigCtx->signedInfoReferences), i);
-			if (dsig_reference_ctx->uri == NULL) {
+			if (dsig_reference_ctx == NULL ||
+                            dsig_reference_ctx->uri == NULL) {
 				message(G_LOG_LEVEL_CRITICAL, "dsig_reference_ctx->uri cannot be null");
 				continue;
 			}
