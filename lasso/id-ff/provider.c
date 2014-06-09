@@ -1773,7 +1773,7 @@ lasso_provider_add_key(LassoProvider *provider, LassoKey *key, gboolean after)
 	LassoSignatureContext context;
 	lasso_error_t rc = 0;
 	GList **list = NULL;
-	xmlSecKey *xml_sec_key;
+	xmlSecKey *xml_sec_key = NULL;
 
 	lasso_bad_param(PROVIDER, provider);
 	lasso_bad_param(KEY, key);

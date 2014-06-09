@@ -1417,7 +1417,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	SnippetType type;
 	struct XmlSnippet *snippet_any = NULL;
 	struct XmlSnippet *snippet_any_attribute = NULL;
-	GType g_type_collect_namespaces, g_type_any, g_type_any_attribute;
+	GType g_type_collect_namespaces = 0, g_type_any = 0, g_type_any_attribute = 0;
 	struct XmlSnippet *snippet_collect_namespaces = NULL;
 	struct XmlSnippet *snippet_signature = NULL;
 	gboolean keep_xmlnode = FALSE;

@@ -1395,7 +1395,7 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 	LassoProfile *profile;
 	LassoProvider *remote_provider = NULL;
 	LassoSaml2Assertion *assertion = NULL;
-	LassoHttpMethod http_method;
+	LassoHttpMethod http_method = LASSO_HTTP_METHOD_NONE;
 	char *url = NULL;
 	int rc = 0;
 

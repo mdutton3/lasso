@@ -483,7 +483,7 @@ lasso_query_sign(char *query, LassoSignatureContext context)
 	const xmlChar *algo_href = NULL;
 	char *hmac_key;
 	size_t hmac_key_length;
-	const EVP_MD *md;
+	const EVP_MD *md = NULL;
 	xmlSecKey *key;
 	xmlSecKeyData *key_data;
 	unsigned int sigret_size = 0;
