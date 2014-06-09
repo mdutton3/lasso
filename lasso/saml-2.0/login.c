@@ -405,19 +405,19 @@ lasso_saml20_login_must_authenticate(LassoLogin *login)
 		GList *class_refs = request->RequestedAuthnContext->AuthnContextClassRef;
 		char *class_ref;
 		GList *t1, *t2;
-		int compa;
+		int compa = -1;
 
 		if (comparison == NULL || lasso_strisequal(comparison,"exact")) {
 			compa = 0;
 		} else if (lasso_strisequal(comparison,"minimum")) {
 			message(G_LOG_LEVEL_CRITICAL, "'minimum' comparison is not implemented");
-			compa = 0;
+			compa = 1;
 		} else if (lasso_strisequal(comparison,"better")) {
 			message(G_LOG_LEVEL_CRITICAL, "'better' comparison is not implemented");
-			compa = 0;
+			compa = 2;
 		} else if (lasso_strisequal(comparison,"maximum")) {
 			message(G_LOG_LEVEL_CRITICAL, "'maximum' comparison is not implemented");
-			compa = 0;
+			compa = 3;
 		}
 
 		if (class_refs) {
@@ -454,17 +454,23 @@ lasso_saml20_login_must_authenticate(LassoLogin *login)
 
 				method = as->AuthnContext->AuthnContextClassRef;
 
-				if (compa == 0) { /* exact */
+				switch (compa) {
+				case 1: /* minimum */
+					/* XXX: implement 'minimum' comparison */
+				case 2: /* better */
+					/* XXX: implement 'better' comparison */
+				case 3: /* maximum */
+					/* XXX: implement 'maximum' comparison */
+				case 0: /* exact */
 					if (lasso_strisequal(method,class_ref)) {
 						matched = TRUE;
-						break;
 					}
-				} else if (compa == 1) { /* minimum */
-					/* XXX: implement 'minimum' comparison */
-				} else if (compa == 2) { /* better */
-					/* XXX: implement 'better' comparison */
-				} else if (compa == 3) { /* maximum */
-					/* XXX: implement 'maximum' comparison */
+					break;
+				default: /* never reached */
+					break;
+				}
+				if (matched == TRUE) {
+					break;
 				}
 			}
 		}

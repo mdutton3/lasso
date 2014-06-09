@@ -1824,16 +1824,16 @@ lasso_login_must_authenticate(LassoLogin *login)
 		char *class_ref;
 		GList *class_refs = request->RequestAuthnContext->AuthnContextClassRef;
 		GList *t1, *t2;
-		int compa;
+		int compa = -1;
 
 		if (comparison == NULL || strcmp(comparison, "exact") == 0) {
 			compa = 0;
 		} else if (strcmp(comparison, "minimum") == 0) {
 			message(G_LOG_LEVEL_CRITICAL, "'minimum' comparison is not implemented");
-			compa = 0;
+			compa = 1;
 		} else if (strcmp(comparison, "better") == 0) {
 			message(G_LOG_LEVEL_CRITICAL, "'better' comparison is not implemented");
-			compa = 0;
+			compa = 2;
 		}
 
 		if (class_refs) {
@@ -1867,15 +1867,21 @@ lasso_login_must_authenticate(LassoLogin *login)
 					method = LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD;
 				}
 
-				if (compa == 0) { /* exact */
+				switch (compa) {
+				case 1: /* minimum */
+					/* XXX: implement 'minimum' comparison */
+				case 2: /* better */
+					/* XXX: implement 'better' comparison */
+				case 0: /* exact */
 					if (strcmp(method, class_ref) == 0) {
 						matched = TRUE;
-						break;
 					}
-				} else if (compa == 1) { /* minimum */
-					/* XXX: implement 'minimum' comparison */
-				} else if (compa == 2) { /* better */
-					/* XXX: implement 'better' comparison */
+					break;
+				default: /* inever reached */
+					break;
+				}
+				if (matched == TRUE) {
+					break;
 				}
 			}
 		}
