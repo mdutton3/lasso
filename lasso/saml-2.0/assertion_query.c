@@ -55,7 +55,7 @@ _lasso_assertion_query_type_to_protocol_type(LassoAssertionQueryRequestType quer
 		LASSO_MD_PROTOCOL_TYPE_ATTRIBUTE,
 		LASSO_MD_PROTOCOL_TYPE_AUTHZ, };
 
-	if (query_request_type < LASSO_ASSERTION_QUERY_REQUEST_TYPE_ASSERTION_ID &&
+	if (query_request_type < LASSO_ASSERTION_QUERY_REQUEST_TYPE_ASSERTION_ID ||
 			query_request_type > LASSO_ASSERTION_QUERY_REQUEST_TYPE_AUTHZ_DECISION) {
 		return -1;
 	}
