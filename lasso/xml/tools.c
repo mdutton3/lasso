@@ -800,7 +800,7 @@ lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_pu
 	int n = 0;
 	char *saml_request_response = NULL;
 	char *relaystate = NULL;
-	char *sig_alg, *usig_alg = NULL;
+	char *sig_alg = NULL, *usig_alg = NULL;
 	lasso_error_t rc = 0;
 
 	lasso_return_val_if_fail(query != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -857,6 +857,9 @@ lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sender_pu
 		goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_QUERY);
 	}
 
+	if (! sig_alg) {
+		goto_cleanup_with_rc(LASSO_DS_ERROR_INVALID_SIGALG);
+	}
 	if (! b64_signature) {
 		goto_cleanup_with_rc(LASSO_DS_ERROR_SIGNATURE_NOT_FOUND);
 	}
