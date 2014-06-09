@@ -1119,6 +1119,7 @@ lasso_saml20_login_check_assertion_signature(LassoLogin *login,
 		/* Issuer format is not entity */
 	{
 		rc = LASSO_PROFILE_ERROR_MISSING_ISSUER;
+		goto cleanup;
 	} else {
 		remote_provider_id = Issuer->content;
 	}
