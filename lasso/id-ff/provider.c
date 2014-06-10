@@ -326,6 +326,7 @@ lasso_provider_get_first_http_method(LassoProvider *provider,
 	const gchar *role_prefix;
 
 	g_return_val_if_fail(LASSO_IS_PROVIDER(provider), LASSO_HTTP_METHOD_NONE);
+	g_return_val_if_fail(remote_provider != NULL, LASSO_HTTP_METHOD_NONE);
 	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
 		return lasso_saml20_provider_get_first_http_method(
 				provider, remote_provider, protocol_type);

@@ -933,6 +933,9 @@ lasso_saml20_profile_build_request_msg(LassoProfile *profile, const char *servic
 	if (url) {
 		lasso_assign_string(((LassoSamlp2RequestAbstract*)profile->request)->Destination,
 				url);
+	} else {
+		rc = LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL;
+		goto cleanup;
 	}
 
 	switch (method) {
