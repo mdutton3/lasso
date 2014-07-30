@@ -1168,7 +1168,7 @@ lasso_saml20_profile_build_http_redirect(LassoProfile *profile,
 {
 	char *query = NULL;
 	int rc = 0;
-	LassoSignatureContext context;
+	LassoSignatureContext context = LASSO_SIGNATURE_CONTEXT_NONE;
 
 	goto_cleanup_if_fail_with_rc (url != NULL, LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	/* if message is signed, remove XML signature, add query signature */
