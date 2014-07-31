@@ -2525,6 +2525,8 @@ lasso_xmlnode_add_saml2_signature_template(xmlNode *node, LassoSignatureContext 
 	xmlNode *existing_signature = NULL, *signature = NULL, *reference, *key_info;
 	char *uri;
 
+	g_assert(id);
+
 	if (! lasso_validate_signature_context(context) || ! node)
 		return;
 
@@ -2555,12 +2557,10 @@ lasso_xmlnode_add_saml2_signature_template(xmlNode *node, LassoSignatureContext 
 	 * other cases, set snippet->offset to 0 and use xmlSecTmpSignatureAddReference from another
 	 * node get_xmlNode virtual method to add the needed reference.
 	 */
-	if (id) {
-		uri = g_strdup_printf("#%s", id);
-		reference = xmlSecTmplSignatureAddReference(signature,
-				xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
-		lasso_release(uri);
-	}
+	uri = g_strdup_printf("#%s", id);
+	reference = xmlSecTmplSignatureAddReference(signature,
+			xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
+	lasso_release(uri);
 
 	/* add enveloped transform */
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
