@@ -858,7 +858,7 @@ init_from_xml_nid_and_session_index(LassoNode *node, xmlNode *nid_and_session_in
 	xmlChar *provider_id = NULL;
 	xmlChar *assertion_id = NULL;
 	xmlNode *nid;
-	LassoNode *name_id;
+	LassoNode *name_id = NULL;
 	struct _NidAndSessionIndex *nid_and_session_index;
 
 	provider_id = xmlGetProp(nid_and_session_index_node, BAD_CAST PROVIDER_ID);
