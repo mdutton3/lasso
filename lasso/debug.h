@@ -22,7 +22,7 @@
  */
 
 #ifndef __LASSO_DEBUG_H__
-#define __LASSO__DEBUGH__
+#define __LASSO_DEBUG_H__
 
 #ifdef __cplusplus
 extern "C" {
