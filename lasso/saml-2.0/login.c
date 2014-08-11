@@ -744,6 +744,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
 			LASSO_PROVIDER(profile->server)->ProviderID));
 	assertion->Conditions = LASSO_SAML2_CONDITIONS(lasso_saml2_conditions_new());
+	lasso_assign_string(assertion->Conditions->NotOnOrAfter, notOnOrAfter);
 
 	audience_restriction = LASSO_SAML2_AUDIENCE_RESTRICTION(
 			lasso_saml2_audience_restriction_new());
