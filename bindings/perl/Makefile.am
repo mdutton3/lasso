@@ -59,7 +59,7 @@ clean-local:
 	-@if [ -f Makefile.perl ]; then make -f Makefile.perl clean; fi; rm -f Makefile.perl
 
 install-exec-local: Makefile.perl
-	make -f Makefile.perl install DESTDIR=$(DESTDIR)
+	make -f Makefile.perl install DESTDIR=$(DESTDIR) PREFIX=$(prefix)
 
 uninstall-local:
 	-@rm -rf `find $(DESTDIR)$(prefix) -name Lasso.pm -or -name Lasso.so -or -name Lasso.bs -or -name .packlist -or -name perllocal.pod`
