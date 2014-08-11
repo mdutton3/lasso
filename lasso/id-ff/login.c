@@ -1500,7 +1500,8 @@ lasso_login_destroy(LassoLogin *login)
  * provider, or if none is specified, Transient, which ask the IdP to give a one-time
  * federation</para>
  *
- * Return value: 0 on success; or <itemizedlist>
+ * Return value: 0 on success; or
+ * <itemizedlist>
  * <listitem><para>LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,</para></listitem>
  * <listitem><para>LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID if @remote_providerID is NULL and no default remote
  * provider could be found from the server object -- usually the first one in the order of adding to
@@ -2567,7 +2568,8 @@ lasso_login_dump(LassoLogin *login)
  *
  * Initializes a response to the authentication request received.
  *
- * Return value: 0 on success; or <itemizedlist>
+ * Return value: 0 on success; or
+ * <itemizedlist>
  * <listitem><para>#LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if login is not a #LassoLogin object,</para></listitem>
  * <listitem><para>#LASSO_LOGIN_ERROR_REQUEST_DENIED</para> if @authentication_result if FALSE,</listitem>
  * <listitem><para>#LASSO_LOGIN_ERROR_INVALID_SIGNATURE if signature validation of the request

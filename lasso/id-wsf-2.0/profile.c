@@ -639,7 +639,8 @@ lasso_idwsf2_profile_build_response_msg(LassoIdWsf2Profile *idwsf2_profile)
  * Parse a response received by SOAP. Place the parsed message in the #LassoIdWsf2Profile structure
  * in the @soap_envelope_response field and the content of the body in the @response field.
  *
- * Return value: 0 if successful, one of those error codes if the call fails: <itemizedlist>
+ * Return value: 0 if successful, one of those error codes if the call fails:
+ * <itemizedlist>
  * <listitem><para>LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ if first parameter is not
  * a #LassoIdWsf2Profile object,</para></listitem>
  * <listitem><para>LASSO_PARAM_ERROR_INVALID_VALUE if message is NULL,</para></listitem>
