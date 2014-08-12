@@ -11,7 +11,9 @@ lasso_server_new
 lasso_server_new_from_buffers
 lasso_server_new_from_dump
 lasso_server_add_provider
+lasso_server_add_provider2
 lasso_server_add_provider_from_buffer
+lasso_server_load_metadata
 lasso_server_destroy
 lasso_server_dump
 lasso_server_get_provider
