@@ -1,11 +1,19 @@
 NEWS
 ====
 
-2.4.1 - xxx
------------
+2.4.1 - Septembre 28th 2014
+---------------------------
+56 commits, 35 files changed, 12590 insertions(+), 31117 deletions(-)
 
  - fix bug #4455 runtime bug in perl binding on debian wheezy 32bits #
  - fix warning on g_type_init() on GLib > 2.36
+ - lot of null pointer, boundary checks, and dead code removal after validation
+	 using Coverity and Clang static analyzer (Simo Sorce)
+ - always set NotOnOrAfter on the Condition element
+ - fix pkg-config typo (Simon Josefsson)
+ - Python binding now conserve the order of session indexes values
+ - fix memory leaks
+ - Python bindings now automatically convert unicode values to UTF-8
 
 2.4.0 - January 7th 2014
 ------------------------
