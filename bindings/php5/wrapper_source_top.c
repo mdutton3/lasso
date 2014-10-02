@@ -167,13 +167,11 @@ get_list_from_array_of_strings(zval* array)
 {
 	HashTable* hashtable;
 	HashPosition pointer;
-	int size;
 	zval** data;
 	zval temp;
 	GList* result = NULL;
 
 	hashtable = Z_ARRVAL_P(array);
-	size = zend_hash_num_elements(hashtable);
 	for (zend_hash_internal_pointer_reset_ex(hashtable, &pointer);
 			zend_hash_get_current_data_ex(hashtable, (void**) &data, &pointer) == SUCCESS;
 			zend_hash_move_forward_ex(hashtable, &pointer)) {
@@ -205,13 +203,11 @@ get_list_from_array_of_xmlnodes(zval* array)
 {
 	HashTable* hashtable;
 	HashPosition pointer;
-	int size;
 	zval** data;
 	zval temp;
 	GList* result = NULL;
 
 	hashtable = Z_ARRVAL_P(array);
-	size = zend_hash_num_elements(hashtable);
 	for (zend_hash_internal_pointer_reset_ex(hashtable, &pointer);
 			zend_hash_get_current_data_ex(hashtable, (void**) &data, &pointer) == SUCCESS;
 			zend_hash_move_forward_ex(hashtable, &pointer)) {
@@ -248,13 +244,11 @@ get_list_from_array_of_objects(zval *array)
 {
 	HashTable *hashtable;
 	HashPosition pointer;
-	int size;
 	zval **data;
 	PhpGObjectPtr *cvt_temp;
 	GList *result = NULL;
 
 	hashtable = Z_ARRVAL_P(array);
-	size = zend_hash_num_elements(hashtable);
 	for (zend_hash_internal_pointer_reset_ex(hashtable, &pointer);
 			zend_hash_get_current_data_ex(hashtable, (void**) &data, &pointer) == SUCCESS;
 			zend_hash_move_forward_ex(hashtable, &pointer)) {
@@ -293,7 +287,6 @@ get_hashtable_from_array_of_objects(zval *array)
 {
 	HashTable *hashtable = NULL;
 	HashPosition pointer;
-	int size;
 	char *key = NULL;
 	unsigned int key_len;
 	unsigned long index;
@@ -303,7 +296,6 @@ get_hashtable_from_array_of_objects(zval *array)
 
 	result = g_hash_table_new(g_str_hash, g_str_equal);
 	hashtable = Z_ARRVAL_P(array);
-	size = zend_hash_num_elements(hashtable);
 	for (zend_hash_internal_pointer_reset_ex(hashtable, &pointer);
 			zend_hash_get_current_data_ex(hashtable, (void**) &data, &pointer) == SUCCESS;
 			zend_hash_move_forward_ex(hashtable, &pointer)) {
@@ -322,7 +314,6 @@ get_hashtable_from_array_of_strings(zval *array)
 {
 	HashTable *hashtable = NULL;
 	HashPosition pointer;
-	int size;
 	char *key = NULL;
 	unsigned int key_len;
 	unsigned long index;
@@ -331,7 +322,6 @@ get_hashtable_from_array_of_strings(zval *array)
 
 	result = g_hash_table_new(g_str_hash, g_str_equal);
 	hashtable = Z_ARRVAL_P(array);
-	size = zend_hash_num_elements(hashtable);
 	for (zend_hash_internal_pointer_reset_ex(hashtable, &pointer);
 			zend_hash_get_current_data_ex(hashtable, (void**) &data, &pointer) == SUCCESS;
 			zend_hash_move_forward_ex(hashtable, &pointer)) {
