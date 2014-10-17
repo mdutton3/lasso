@@ -1,11 +1,11 @@
 /**
  * Simple Lasso CGI
  *
- * take its own metadata file as first argument, the private key as second argument, then IdP metadata files.
- * URL, HOST and HTTP scheme are extracted from environment, metadata file is generated.
+ * Usage:
  *
+ * ./main <private-key.pem> <certificate.pem> [<idp-metadata.xml>...]
  *
- * The assertion consumer only support the POST binding.
+ * The assertion consumer only support the POST binding, single logout is not supported.
  *
  * Entr'ouvert © 2014
  */
