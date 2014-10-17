@@ -1,0 +1,26 @@
+Starting
+========
+
+To run this CGI SAML 2.0 SP, you must:
+
+- configure Apache (or any other web-service handling CGI scripts) for
+	running CGI scripts
+- compile this script by doing:
+
+   make
+
+- put all projects files in a directory readable and *writable* (for session
+	files) by Apache2. The script test.cgi should be accessible through the URL
+	http://yourdomain.com/.../test.cgi.
+- retrieve the metadata content on http://yourdomain.com/.../test.cgi/metadata and put them
+	in a file named metadata.xml
+- register on https://openidp.feide.no/ and upload the `metadata.xml` file on
+	https://openidp.feide.no/simplesaml/module.php/metaedit/index.php
+- go on http://yourdomain.com/.../test.cgi/login and see that SAML 2.0 login is working
+
+Details
+=======
+
+Retrieved attributes are stored in a session file, session id are stored in a
+cookie named `session_id`, session file is named `session_<session_id>` and it
+contains attributes formatted following RFC822 (format of mail or HTTP headers).
