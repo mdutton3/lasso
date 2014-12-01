@@ -23,6 +23,7 @@
 
 import os
 import re
+from six import print_
 import sys
 from utils import *
 
@@ -240,7 +241,7 @@ class Function:
                 try:
                     arg = [x for x in self.args if x[1] == param.attrib.get('name')][0]
                 except IndexError:
-                    print('W: no such param (%s) in function (%s)' % (
+                    print_('W: no such param (%s) in function (%s)' % (
                             param.attrib.get('name'), self.name), file=sys.stderr)
                     continue
                 if param.attrib.get('optional') == 'true':
@@ -470,7 +471,7 @@ def parse_header(header_file):
                 if not in_struct.name in binding.structs_toskip:
                     binding.structs.append(in_struct)
                 else:
-                    print('W: skipping structure %s due to overrides.xml' % in_struct.name, file=sys.stderr)
+                    print_('W: skipping structure %s due to overrides.xml' % in_struct.name, file=sys.stderr)
                 in_struct = None
             elif '/*< public >*/' in line:
                 in_struct_private = False
@@ -490,7 +491,7 @@ def parse_header(header_file):
                     member_type, member_name = normalise_var(member_match.group(1), member_match.group(2))
                     field = (member_type, member_name, {})
                     if member_type == 'void*':
-                        print('W: skipping field %s.%s' % (in_struct.name, member_name), file=sys.stderr)
+                        print_('W: skipping field %s.%s' % (in_struct.name, member_name), file=sys.stderr)
                     else:
                         if is_glist(field) or is_hashtable(field):
                             found = re.search(r' of ([^*]*)', line)
@@ -539,13 +540,13 @@ def parse_header(header_file):
                                 type = clean_type(type)
                                 f.args.append(list((type, name, {})))
                             else:
-                                print('failed to process:', arg, 'in line:', line, file=sys.stderr)
+                                print_('failed to process:', arg, 'in line:', line, file=sys.stderr)
                                 f.skip = True
                         f.apply_overrides()
                         if not f.skip:
                             binding.functions.append(f)
                         else:
-                            print('W: skipping function', f, file=sys.stderr)
+                            print_('W: skipping function', f, file=sys.stderr)
 
         i += 1
 

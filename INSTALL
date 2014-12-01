@@ -26,6 +26,10 @@ In all cases you need to install development packages for dependencies. On Debia
     aptitude install libxml2-dev libxslt1-dev libxmlsec1-dev libxmlsec1-openssl \
       libglib2.0-dev python-all-dev fastjar php5-dev php5-cli python-lxml
 
+Python bindings require the "six" library:
+
+    pip install six
+
 Basic Installation
 ==================
 
