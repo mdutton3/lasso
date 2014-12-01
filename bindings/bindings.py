@@ -103,9 +103,9 @@ class BindingData:
 
     def display_funcs(self):
         for func in self.functions:
-            print func.return_type, func.name
+            print(func.return_type, func.name)
             for a in func.args:
-                print '  ', a
+                print('  ', a)
 
     def order_class_hierarchy(self):
         new_order = []
@@ -191,11 +191,11 @@ class Struct:
         return '<Struct name:%s, childof:%s>' % (self.name, self.parent)
 
     def display(self):
-        print self.__repr__()
+        print(self.__repr__())
         for m in self.members:
-            print '  ', m
+            print('  ', m)
         for m in self.methods:
-            print '  ', m
+            print('  ', m)
 
     def getMember(self, name):
         l = [m for m in self.members if arg_name(m) == name]
@@ -240,8 +240,8 @@ class Function:
                 try:
                     arg = [x for x in self.args if x[1] == param.attrib.get('name')][0]
                 except IndexError:
-                    print >> sys.stderr, 'W: no such param (%s) in function (%s)' % (
-                            param.attrib.get('name'), self.name)
+                    print('W: no such param (%s) in function (%s)' % (
+                            param.attrib.get('name'), self.name), file=sys.stderr)
                     continue
                 if param.attrib.get('optional') == 'true':
                     arg[2]['optional'] = True
@@ -405,7 +405,7 @@ def parse_header(header_file):
     in_struct_private = False
     in_ifdef_zero = False
 
-    lines = file(header_file).readlines()
+    lines = open(header_file).readlines()
     i = 0
     while i < len(lines):
         line = lines[i]
@@ -470,7 +470,7 @@ def parse_header(header_file):
                 if not in_struct.name in binding.structs_toskip:
                     binding.structs.append(in_struct)
                 else:
-                    print >>sys.stderr, 'W: skipping structure %s due to overrides.xml' % in_struct.name
+                    print('W: skipping structure %s due to overrides.xml' % in_struct.name, file=sys.stderr)
                 in_struct = None
             elif '/*< public >*/' in line:
                 in_struct_private = False
@@ -490,7 +490,7 @@ def parse_header(header_file):
                     member_type, member_name = normalise_var(member_match.group(1), member_match.group(2))
                     field = (member_type, member_name, {})
                     if member_type == 'void*':
-                        print >>sys.stderr, 'W: skipping field %s.%s' % (in_struct.name, member_name)
+                        print('W: skipping field %s.%s' % (in_struct.name, member_name), file=sys.stderr)
                     else:
                         if is_glist(field) or is_hashtable(field):
                             found = re.search(r' of ([^*]*)', line)
@@ -539,13 +539,13 @@ def parse_header(header_file):
                                 type = clean_type(type)
                                 f.args.append(list((type, name, {})))
                             else:
-                                print >>sys.stderr, 'failed to process:', arg, 'in line:', line
+                                print('failed to process:', arg, 'in line:', line, file=sys.stderr)
                                 f.skip = True
                         f.apply_overrides()
                         if not f.skip:
                             binding.functions.append(f)
                         else:
-                            print >>sys.stderr, 'W: skipping function', f
+                            print('W: skipping function', f, file=sys.stderr)
 
         i += 1
 

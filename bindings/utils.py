@@ -60,13 +60,13 @@ def camelcase_to_list(varname):
         else:
             l[-1].append(x)
         last = x
-    return map(str.lower,map(''.join,l))
+    return list(map(str.lower,map(''.join,l)))
 
 def old_format_as_camelcase(var):
     '''Format an identifier name into CamelCase'''
     if '_' in var:
         return format_underscore_as_camelcase(var)
-    if var[0] in string.uppercase:
+    if var[0] in string.ascii_uppercase:
         var = var[0].lower() + var[1:]
     var = re.sub(r'([a-z])(ID)([A-Z]|$)', r'\1Id\3', var) # replace standing ID by Id
     return var
@@ -75,10 +75,10 @@ def format_as_camelcase(var):
     '''Format an identifier name into CamelCase'''
     if var[0].isupper():
         l = camelcase_to_list(var)
-        return l[0] + ''.join(map(str.capitalize, l[1:]))
+        return l[0] + ''.join(list(map(str.capitalize, l[1:])))
     if '_' in var:
         return format_underscore_as_camelcase(var)
-    if var[0] in string.uppercase:
+    if var[0] in string.ascii_uppercase:
         var = var[0].lower() + var[1:]
     var = re.sub(r'([a-z])(ID)([A-Z]|$)', r'\1Id\3', var) # replace standing ID by Id
     return var
@@ -125,7 +125,7 @@ def pgroup(group,prev):
         if isinstance(x,tuple):
             pgroup(x,prefix)
         else:
-            print prefix * ' ' + x[prefix:]
+            print(prefix * ' ' + x[prefix:])
         i = i + 1
 
 def group(list):
@@ -271,7 +271,7 @@ _not_objects = ( 'GHashTable', 'GList', 'GType' )
 
 def is_object(arg):
     t = clean_type(unconstify(arg_type(arg)))
-    return t and t[0] in string.uppercase and not [ x for x in _not_objects if x in t ]
+    return t and t[0] in string.ascii_uppercase and not [ x for x in _not_objects if x in t ]
 
 if __name__ == '__main__':
-    print camelcase_to_list('Samlp2IDPList')
+    print(camelcase_to_list('Samlp2IDPList'))
