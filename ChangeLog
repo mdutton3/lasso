@@ -1,3 +1,7 @@
+2014-12-01  Houzéfa Abbasbhay  <houzefa.abba@xcg-consulting.fr>
+
+	Update Python bindings to work with Python 3.
+
 2014-08-28  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
 
 	Add tool gitlog-to-changelog
