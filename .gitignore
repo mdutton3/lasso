@@ -15,6 +15,8 @@ bindings/perl/Lasso.pm
 bindings/perl/Lasso.xs
 bindings/perl/Makefile.perl
 bindings/perl/Makefile.perl.old
+bindings/perl/MYMETA.json
+bindings/perl/MYMETA.yml
 bindings/perl/pm_to_blib
 bindings/perl/typemap
 bindings/php5/_lasso.c
