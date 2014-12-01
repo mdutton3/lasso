@@ -21,7 +21,7 @@ MOD_INIT(_lasso)
 {
 	PyObject *m, *d;
 
-#if PY_MAJOR_VERSION < 2
+#if PY_MAJOR_VERSION <= 2
     /// @todo Seg-faults on Python 3...
 	if (PyType_Ready(&PyGObjectPtrType) < 0)
 		return MOD_ERROR_VAL;
@@ -33,7 +33,7 @@ MOD_INIT(_lasso)
 
 	lasso_wrapper_key = g_quark_from_static_string("PyLasso::wrapper");
 
-#if PY_MAJOR_VERSION < 2
+#if PY_MAJOR_VERSION <= 2
     /// @todo Seg-faults on Python 3...
 	Py_INCREF(&PyGObjectPtrType);
 	PyModule_AddObject(m, "PyGObjectPtr", (PyObject *)&PyGObjectPtrType);
