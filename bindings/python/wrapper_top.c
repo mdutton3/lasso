@@ -13,6 +13,24 @@ typedef int Py_ssize_t;
 #define PY_SSIZE_T_MIN INT_MIN
 #endif
 
+/** @todo Remove Python 3 defines and update the code when Python 2 is out of the picture. */
+
+// Python 3 has unified int & long types.
+#if PY_MAJOR_VERSION >= 3
+#define PyInt_AS_LONG PyLong_AS_LONG
+#define PyInt_Check PyLong_Check
+#define PyInt_FromLong PyLong_FromLong
+#endif
+
+// Python 3 has removed PyString and related functions, in favor of PyBytes & PyUnicode.
+#if PY_MAJOR_VERSION >= 3
+#define PyString_AsString PyUnicode_AsUnicode
+#define PyString_Check PyUnicode_Check
+#define PyString_FromFormat PyUnicode_FromFormat
+#define PyString_FromString PyUnicode_FromString
+#define PyString_Size PyUnicode_GET_LENGTH
+#endif
+
 GQuark lasso_wrapper_key;
 
 PyMODINIT_FUNC init_lasso(void);
