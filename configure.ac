@@ -324,7 +324,7 @@ fi
 
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
-PYTHON_VERSION=`$PYTHON -c 'from distutils import sysconfig ; print sysconfig.get_config_var("VERSION")'`
+PYTHON_VERSION=`$PYTHON -c 'from distutils import sysconfig ; print(sysconfig.get_config_var("VERSION"))'`
 changequote([, ])dnl
 
 test "x$PYTHON" != "x" || AC_MSG_ERROR(Python must be installed to compile lasso)
@@ -333,13 +333,13 @@ AC_MSG_CHECKING(for Python development files)
 dnl Check if we were be able to extract a good version number.
 if test "X$PYTHON_VERSION" != "X"; then
     changequote(<<, >>)dnl
-    PYTHON_INC=`$PYTHON -c 'from distutils import sysconfig ; print sysconfig.get_python_inc()'`
-    PYTHON_LIB=`$PYTHON -c 'from distutils import sysconfig ; print sysconfig.get_python_lib(1)'`
+    PYTHON_INC=`$PYTHON -c 'from distutils import sysconfig ; print(sysconfig.get_python_inc())'`
+    PYTHON_LIB=`$PYTHON -c 'from distutils import sysconfig ; print(sysconfig.get_python_lib(1))'`
     changequote([, ])dnl
     PYTHON_H=$PYTHON_INC/Python.h
     if test -f $PYTHON_H; then
             PY_CFLAGS="-I$PYTHON_INC"
-            PY_MAKEFILE=`$PYTHON -c 'from distutils import sysconfig ; print sysconfig.get_makefile_filename()'`
+            PY_MAKEFILE=`$PYTHON -c 'from distutils import sysconfig ; print(sysconfig.get_makefile_filename())'`
             PY_OTHER_LIBS=`$SED -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
             PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
             dnl this extracts the $libdir out of python lib directory,
