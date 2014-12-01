@@ -485,7 +485,7 @@ PyGObjectPtr_dealloc(PyGObjectPtr *self)
 	g_object_set_qdata_full(self->obj, lasso_wrapper_key, NULL, NULL);
 	g_object_unref(self->obj);
 	Py_XDECREF(self->typename);
-	self->ob_type->tp_free((PyObject*)self);
+	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static int
