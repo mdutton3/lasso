@@ -104,3 +104,4 @@ docs/reference/lasso/sgml-build.stamp
 /lasso-?.?.?.tar.gz
 /lasso.pc
 /.version
+/test-driver
