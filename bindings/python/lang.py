@@ -124,7 +124,8 @@ def cptrToPy(cptr):
     return o
 
 def str2lasso(s):
-    if isinstance(s, unicode):
+    if s is not None and not isinstance(s, str):
+        # Assume this is a Python 2 unicode string.
         return s.encode('utf-8')
     return s
 
