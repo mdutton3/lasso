@@ -575,8 +575,7 @@ static PyGetSetDef PyGObjectPtr_getseters[] = {
 
 
 static PyTypeObject PyGObjectPtrType = {
-	PyVarObject_HEAD_INIT(NULL, 0)
-	0, /* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0 /* ob_size */)
 	"_lasso.PyGObjectPtr", /* tp_name */
 	sizeof(PyGObjectPtr),  /* tp_basicsize */
 	0,                     /* tp_itemsize */
