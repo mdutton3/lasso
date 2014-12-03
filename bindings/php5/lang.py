@@ -19,9 +19,9 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 import os
-from wrapper_source import WrapperSource
-from wrapper_header import WrapperHeader
-from php_code import PhpCode
+from php5.wrapper_source import WrapperSource
+from php5.wrapper_header import WrapperHeader
+from php5.php_code import PhpCode
 
 class Binding:
     def __init__(self, binding_data):

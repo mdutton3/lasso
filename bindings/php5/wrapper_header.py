@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
+import six
 
 class WrapperHeader:
     def __init__(self, binding_data, fd, functions_list):
@@ -31,7 +32,7 @@ class WrapperHeader:
 
     def generate_header(self):
         # FIXME: Get the current version and name
-        print >> self.fd, '''\
+        six.print_('''\
 /* this file has been generated automatically; do not edit */
 
 #include "../../config.h"
@@ -46,18 +47,18 @@ class WrapperHeader:
 
 PHP_MINIT_FUNCTION(lasso);
 PHP_MSHUTDOWN_FUNCTION(lasso);
-'''
+''', file=self.fd)
 
     def generate_functions_list(self):
         for m in self.functions_list:
-            print >> self.fd, 'PHP_FUNCTION(%s);' % m
-        print >> self.fd, ''
+            six.print_('PHP_FUNCTION(%s);' % m, file=self.fd)
+        six.print_('', file=self.fd)
 
     def generate_footer(self):
-        print >> self.fd, '''\
+        six.print_('''\
 extern zend_module_entry lasso_module_entry;
 #define phpext_lasso_ptr &lasso_module_entry
 
 #endif
-'''
+''', file=self.fd)
 

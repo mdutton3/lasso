@@ -20,6 +20,7 @@
 
 import re
 import sys
+import six
 
 from utils import *
 
@@ -39,7 +40,7 @@ class PhpCode:
         self.generate_footer()
 
     def generate_header(self):
-        print >> self.fd, '''\
+        six.print_('''\
 <?php
 
 /* this file has been generated automatically; do not edit */
@@ -100,7 +101,7 @@ function lassoGetRequestTypeFromSoapMsg($mesg) {
 function lassoRegisterIdWsf2DstService($prefix, $href) {
     lasso_register_idwsf2_dst_service($prefix, $href);
 }
-'''
+''', file=self.fd)
 
     def generate_class(self, klass):
         class_name = klass.name
@@ -110,27 +111,27 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
         else:
             inheritence = ' extends LassoObject'
 
-        print >> self.fd, '/**'
-        print >> self.fd, ' * @package Lasso'
-        print >> self.fd, ' */'
-        print >> self.fd, 'class %(class_name)s%(inheritence)s {' % locals()
+        six.print_('/**', file=self.fd)
+        six.print_(' * @package Lasso', file=self.fd)
+        six.print_(' */', file=self.fd)
+        six.print_('class %(class_name)s%(inheritence)s {' % locals(), file=self.fd)
 
         if klass.members or klass.methods:
             self.generate_constructors(klass)
             self.generate_getters_and_setters(klass)
             self.generate_methods(klass)
 
-        print >> self.fd, '}'
-        print >> self.fd, ''
+        six.print_('}', file=self.fd)
+        six.print_('', file=self.fd)
 
         # Add a special class to get an object instance without initialising
-        print >> self.fd, '/**'
-        print >> self.fd, ' * @package Lasso'
-        print >> self.fd, ' */'
-        print >> self.fd, 'class %(class_name)sNoInit extends %(class_name)s {' % locals()
-        print >> self.fd, '    public function __construct() {}'
-        print >> self.fd, '}'
-        print >> self.fd, ''
+        six.print_('/**', file=self.fd)
+        six.print_(' * @package Lasso', file=self.fd)
+        six.print_(' */', file=self.fd)
+        six.print_('class %(class_name)sNoInit extends %(class_name)s {' % locals(), file=self.fd)
+        six.print_('    public function __construct() {}', file=self.fd)
+        six.print_('}', file=self.fd)
+        six.print_('', file=self.fd)
 
     def generate_constructors(self, klass):
         method_prefix = format_as_underscored(klass.name) + '_'
@@ -155,13 +156,13 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
                 c_args = ', '.join(c_args)
                 # XXX: could check $this->_cptr->typename to see if it got the
                 # right class type
-                print >> self.fd, '    public $_cptr = null;'
-                print >> self.fd, ''
-                print >> self.fd, '    public function __construct(%s) {' % php_args
-                print >> self.fd, '        $this->_cptr = %s(%s);' % (m.name, c_args)
-                print >> self.fd, '        if (is_null($this->_cptr)) { throw new Exception("Constructor for ', klass.name, ' failed "); }'
-                print >> self.fd, '    }'
-                print >> self.fd, ''
+                six.print_('    public $_cptr = null;', file=self.fd)
+                six.print_('', file=self.fd)
+                six.print_('    public function __construct(%s) {' % php_args, file=self.fd)
+                six.print_('        $this->_cptr = %s(%s);' % (m.name, c_args), file=self.fd)
+                six.print_('        if (is_null($this->_cptr)) { throw new Exception("Constructor for ', klass.name, ' failed "); }', file=self.fd)
+                six.print_('    }', file=self.fd)
+                six.print_('', file=self.fd)
 
             elif name.startswith(method_prefix) and m.args \
                     and clean_type(unconstify(m.args[0][0])) != klass.name:
@@ -188,10 +189,10 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
                         c_args.append('$%s' % arg_name)
                 php_args = ', '.join(php_args)
                 c_args = ', '.join(c_args)
-                print >>self.fd, '    public static function %s(%s) {' % (php_name, php_args)
-                print >>self.fd, '        return cptrToPhp(%s(%s));' % (m.name, c_args)
-                print >>self.fd, '    }'
-                print >>self.fd, ''
+                six.print_('    public static function %s(%s) {' % (php_name, php_args), file=self.fd)
+                six.print_('        return cptrToPhp(%s(%s));' % (m.name, c_args), file=self.fd)
+                six.print_('    }', file=self.fd)
+                six.print_('', file=self.fd)
 
 
 
@@ -199,49 +200,49 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
         d = { 'type': arg_type(m), 'name': format_as_camelcase(arg_name(m)),
                 'docstring': self.get_docstring_return_type(arg_type(m)), 'class': c.name }
 
-        print >> self.fd, '''    /**'
+        six.print_('''    /**', file=self.fd)
     * @return %(docstring)s
     */
-    protected function get_%(name)s() {''' % d
-        print >> self.fd, '        $t = %(class)s_%(name)s_get($this->_cptr);' % d
+    protected function get_%(name)s() {''' % d, file=self.fd)
+        six.print_('        $t = %(class)s_%(name)s_get($this->_cptr);' % d, file=self.fd)
         if is_object(m):
-            print >> self.fd, '        $t = cptrToPhp($t);'
+            six.print_('        $t = cptrToPhp($t);', file=self.fd)
         elif (is_glist(m) or is_hashtable(m)) and is_object(element_type(m)):
-                print >> self.fd, '        foreach ($t as $key => $item) {'
-                print >> self.fd, '            $t[$key] = cptrToPhp($item);'
-                print >> self.fd, '        }'
+                six.print_('        foreach ($t as $key => $item) {', file=self.fd)
+                six.print_('            $t[$key] = cptrToPhp($item);', file=self.fd)
+                six.print_('        }', file=self.fd)
         elif is_hashtable(m) or (is_glist(m) and (is_cstring(element_type(m)) \
                 or is_xml_node(element_type(m)))) or is_int(m, self.binding_data) \
                 or is_boolean(m) or is_cstring(m) or is_xml_node(m):
             pass
         else:
             raise Exception('Cannot generate a Php getter %s.%s' % (c,m))
-        print >> self.fd, '        return $t;'
-        print >>self.fd, '    }'
+        six.print_('        return $t;', file=self.fd)
+        six.print_('    }', file=self.fd)
 
     def generate_setter(self, c, m):
         d = { 'type': arg_type(m), 'name': format_as_camelcase(arg_name(m)),
                 'docstring': self.get_docstring_return_type(arg_type(m)), 'class': c.name }
-        print >> self.fd, '    protected function set_%(name)s($value) {' % d
+        six.print_('    protected function set_%(name)s($value) {' % d, file=self.fd)
         if is_object(m):
-            print >> self.fd, '        $value = $value->_cptr;'
+            six.print_('        $value = $value->_cptr;', file=self.fd)
         elif (is_glist(m) or is_hashtable(m)) and is_object(element_type(m)):
-            print >> self.fd, '        $array = array();'
-            print >> self.fd, '        if (!is_null($value)) {'
-            print >> self.fd, '            foreach ($value as $key => $item) {'
-            print >> self.fd, '                $array[$key] = $item->_cptr;'
-            print >> self.fd, '            }'
-            print >> self.fd, '        }'
-            print >> self.fd, '        $value = $array;'
+            six.print_('        $array = array();', file=self.fd)
+            six.print_('        if (!is_null($value)) {', file=self.fd)
+            six.print_('            foreach ($value as $key => $item) {', file=self.fd)
+            six.print_('                $array[$key] = $item->_cptr;', file=self.fd)
+            six.print_('            }', file=self.fd)
+            six.print_('        }', file=self.fd)
+            six.print_('        $value = $array;', file=self.fd)
         elif is_hashtable(m) or (is_glist(m) and (is_cstring(element_type(m)) \
                 or is_xml_node(element_type(m)))) or is_int(m, self.binding_data) \
                 or is_boolean(m) or is_cstring(m) or is_xml_node(m):
             pass
         else:
             raise Exception('Cannot generate a Php setter %s.%s' % (c,m))
-        print >> self.fd, '        %(class)s_%(name)s_set($this->_cptr, $value);' % d
-        print >> self.fd, '    }'
-        print >> self.fd, ''
+        six.print_('        %(class)s_%(name)s_set($this->_cptr, $value);' % d, file=self.fd)
+        six.print_('    }', file=self.fd)
+        six.print_('', file=self.fd)
 
     def generate_getters_and_setters(self, klass):
         for m in klass.members:
@@ -269,27 +270,27 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
             mname = re.match(r'lasso_.*_get_(\w+)', meth_name).group(1)
             mname = format_as_camelcase(mname)
 
-            print >> self.fd, '    /**'
-            print >> self.fd, '     * @return %s' % self.get_docstring_return_type(m.return_type)
-            print >> self.fd, '     */'
-            print >> self.fd, '    protected function get_%s() {' % mname
+            six.print_('    /**', file=self.fd)
+            six.print_('     * @return %s' % self.get_docstring_return_type(m.return_type), file=self.fd)
+            six.print_('     */', file=self.fd)
+            six.print_('    protected function get_%s() {' % mname, file=self.fd)
             if self.is_object(m.return_type):
-                print >> self.fd, '        $cptr = %s($this->_cptr);' % meth_name
-                print >> self.fd, '        if (! is_null($cptr)) {'
-                print >> self.fd, '            return cptrToPhp($cptr);'
-                print >> self.fd, '        }'
-                print >> self.fd, '        return null;'
+                six.print_('        $cptr = %s($this->_cptr);' % meth_name, file=self.fd)
+                six.print_('        if (! is_null($cptr)) {', file=self.fd)
+                six.print_('            return cptrToPhp($cptr);', file=self.fd)
+                six.print_('        }', file=self.fd)
+                six.print_('        return null;', file=self.fd)
             else:
-                print >> self.fd, '        return %s($this->_cptr);' % meth_name
-            print >> self.fd, '    }'
+                six.print_('        return %s($this->_cptr);' % meth_name, file=self.fd)
+            six.print_('    }', file=self.fd)
             if setter:
-                print >> self.fd, '    protected function set_%s($value) {' % mname
+                six.print_('    protected function set_%s($value) {' % mname, file=self.fd)
                 if self.is_object(m.return_type):
-                    print >> self.fd, '        %s($this->_cptr, $value->_cptr);' % setter.name
+                    six.print_('        %s($this->_cptr, $value->_cptr);' % setter.name, file=self.fd)
                 else:
-                    print >> self.fd, '        %s($this->_cptr, $value);' % setter.name
-                print >> self.fd, '    }'
-            print >> self.fd, ''
+                    six.print_('        %s($this->_cptr, $value);' % setter.name, file=self.fd)
+                six.print_('    }', file=self.fd)
+            six.print_('', file=self.fd)
 
         # second pass on methods, real methods
         method_prefix = format_as_underscored(klass.name) + '_'
@@ -354,26 +355,26 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
                 c_args = ''
 
             if m.docstring:
-                print >> self.fd, self.generate_docstring(m, mname, 4)
-            print >> self.fd, '    public function %s(%s) {' % (
-                    format_underscore_as_camelcase(mname), php_args)
+                six.print_(self.generate_docstring(m, mname, 4), file=self.fd)
+            six.print_('    public function %s(%s) {' % (
+                    format_underscore_as_camelcase(mname), php_args), file=self.fd)
             if m.return_type == 'void':
-                print >> self.fd, '        %s($this->_cptr%s);' % (cname, c_args)
+                six.print_('        %s($this->_cptr%s);' % (cname, c_args), file=self.fd)
             elif is_rc(m.return_type):
-                print >> self.fd, '        $rc = %s($this->_cptr%s);' % (cname, c_args)
-                print >> self.fd, '        if ($rc == 0) {'
-                print >> self.fd, '            return 0;'
-                print >> self.fd, '        } else if ($rc > 0) {' # recoverable error
-                print >> self.fd, '            return $rc;'
-                print >> self.fd, '        } else if ($rc < 0) {' # unrecoverable error
-                print >> self.fd, '            LassoError::throw_on_rc($rc);'
-                print >> self.fd, '        }'
+                six.print_('        $rc = %s($this->_cptr%s);' % (cname, c_args), file=self.fd)
+                six.print_('        if ($rc == 0) {', file=self.fd)
+                six.print_('            return 0;', file=self.fd)
+                six.print_('        } else if ($rc > 0) {', file=self.fd) # recoverable error
+                six.print_('            return $rc;', file=self.fd)
+                six.print_('        } else if ($rc < 0) {', file=self.fd) # unrecoverable error
+                six.print_('            LassoError::throw_on_rc($rc);', file=self.fd)
+                six.print_('        }', file=self.fd)
             else:
-                print >> self.fd, '        return %s($this->_cptr%s);' % (cname, c_args)
-            print >> self.fd, '    }'
-            print >> self.fd, ''
+                six.print_('        return %s($this->_cptr%s);' % (cname, c_args), file=self.fd)
+            six.print_('    }', file=self.fd)
+            six.print_('', file=self.fd)
 
-        print >> self.fd, ''
+        six.print_('', file=self.fd)
 
     def generate_docstring(self, func, method_name, indent):
         docstring = func.docstring.orig_docstring
@@ -433,12 +434,12 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
             cat = exc_cat.attrib.get('name')
             done_cats.append(cat)
             parent_cat = exc_cat.attrib.get('parent', '')
-            print >> self.fd, '''\
+            six.print_('''\
 /**
  * @package Lasso
  */
 class Lasso%sError extends Lasso%sError {}
-''' % (cat, parent_cat)
+''' % (cat, parent_cat), file=self.fd) 
 
         exceptions_dict = {}
 
@@ -458,35 +459,35 @@ class Lasso%sError extends Lasso%sError {}
                 else:
                     parent_cat = ''
 
-                print >> self.fd, '''\
+                six.print_('''\
 /**
  * @package Lasso
  */
 class Lasso%sError extends Lasso%sError {}
-''' % (cat, parent_cat)
+''' % (cat, parent_cat), file=self.fd)
 
             if detail not in exceptions_dict:
-                print >> self.fd, '''\
+                six.print_('''\
 /**
  * @package Lasso
  */
 class Lasso%sError extends Lasso%sError {
     protected $code = %s;
 }
-''' % (detail, cat, c[1])
+''' % (detail, cat, c[1]), file=self.fd)
                 exceptions_dict[detail] = c[1]
 
-        print >> self.fd, '''\
+        six.print_('''\
 /**
  * @package Lasso
  */
 class LassoError extends Exception {
-    private static $exceptions_dict = array('''
+    private static $exceptions_dict = array(''', file=self.fd)
 
         for k, v in exceptions_dict.items():
-            print >> self.fd, '        %s => "Lasso%sError",' % (v, k)
+            six.print_('        %s => "Lasso%sError",' % (v, k), file=self.fd)
 
-        print >> self.fd, '''\
+        six.print_('''\
     );
 
     public static function throw_on_rc($rc) {
@@ -497,9 +498,9 @@ class LassoError extends Exception {
         throw new $exception(strError($rc), $rc);
     }
 }
-'''
+''', file=self.fd)
 
     def generate_footer(self):
-        print >> self.fd, '''\
-?>'''
+        six.print_('''\
+?>''', file=self.fd)
 

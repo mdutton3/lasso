@@ -20,6 +20,7 @@
 
 import sys
 import os
+import six
 
 from utils import *
 
@@ -52,43 +53,43 @@ class WrapperSource:
         self.functions_list.append('lasso_init')
         self.functions_list.append('lasso_shutdown')
 
-        print >> self.fd, '''\
+        six.print_('''\
 /* this file has been generated automatically; do not edit */
-'''
+''', file=self.fd)
 
-        print >> self.fd, open(os.path.join(self.src_dir,'wrapper_source_top.c')).read()
+        six.print_(open(os.path.join(self.src_dir,'wrapper_source_top.c')).read(), file=self.fd)
 
         for h in self.binding_data.headers:
-            print >> self.fd, '#include <%s>' % h
-        print >> self.fd, ''
+            six.print_('#include <%s>' % h, file=self.fd)
+        six.print_('', file=self.fd)
 
-        print >> self.fd, '''\
+        six.print_('''\
 PHP_MINIT_FUNCTION(lasso)
 {
     le_lasso_server = zend_register_list_destructors_ex(php_gobject_generic_destructor, NULL, PHP_LASSO_SERVER_RES_NAME, module_number);
     lasso_init();
-'''
+''', file=self.fd)
 
     def generate_constants(self):
-        print >> self.fd, '    /* Constants (both enums and defines) */'
+        six.print_('    /* Constants (both enums and defines) */', file=self.fd)
         for c in self.binding_data.constants:
             if c[0] == 'i':
-                print >> self.fd, '    REGISTER_LONG_CONSTANT("%s", %s, CONST_CS|CONST_PERSISTENT);' % (c[1], c[1])
+                six.print_('    REGISTER_LONG_CONSTANT("%s", %s, CONST_CS|CONST_PERSISTENT);' % (c[1], c[1]), file=self.fd)
             elif c[0] == 's':
-                print >> self.fd, '    REGISTER_STRING_CONSTANT("%s", (char*) %s, CONST_CS|CONST_PERSISTENT);' % (c[1], c[1])
+                six.print_('    REGISTER_STRING_CONSTANT("%s", (char*) %s, CONST_CS|CONST_PERSISTENT);' % (c[1], c[1]), file=self.fd)
             elif c[0] == 'b':
-                print >> self.fd, '''\
+                six.print_('''\
 #ifdef %s
     REGISTER_LONG_CONSTANT("%s", 1, CONST_CS|CONST_PERSISTENT);
 #else
     REGISTER_LONG_CONSTANT("%s", 0, CONST_CS|CONST_PERSISTENT);
-#endif''' % (c[1], c[1], c[1])
+#endif''' % (c[1], c[1], c[1]), file=self.fd)
             else:
-                print >> sys.stderr, 'E: unknown constant type: %r' % c[0]
-        print >> self.fd, ''
+                six.print_('E: unknown constant type: %r' % c[0], file=sys.stderr)
+        six.print_('', file=self.fd)
 
     def generate_middle(self):
-        print >> self.fd, '''\
+        six.print_('''\
     return SUCCESS;
 }
 
@@ -98,7 +99,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
     return SUCCESS;
 }
 
-'''
+''', file=self.fd)
 
     def set_zval(self, zval_name, c_variable, type, free = False):
         '''Emit code to set a zval* of name zval_name, from the value of the C variable called c_variable type, type.
@@ -106,21 +107,21 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         # first we free the previous value
         p = (zval_name, c_variable)
         q = { 'zval_name' : zval_name, 'c_variable' : c_variable }
-        print >> self.fd, '    zval_dtor(%s);' % zval_name
+        six.print_('    zval_dtor(%s);' % zval_name, file=self.fd)
         if is_pointer(type):
-            print >> self.fd, '    if (! %s) {' % c_variable
-            print >> self.fd, '       ZVAL_NULL(%s);' % zval_name
-            print >> self.fd, '    } else {'
+            six.print_('    if (! %s) {' % c_variable, file=self.fd)
+            six.print_('       ZVAL_NULL(%s);' % zval_name, file=self.fd)
+            six.print_('    } else {', file=self.fd)
         if is_int(type, self.binding_data):
-            print >> self.fd, '    ZVAL_LONG(%s, %s);' % p
+            six.print_('    ZVAL_LONG(%s, %s);' % p, file=self.fd)
         elif is_boolean(type):
-            print >> self.fd, '    ZVAL_BOOL(%s, %s);' % p
+            six.print_('    ZVAL_BOOL(%s, %s);' % p, file=self.fd)
         elif is_cstring(type):
-            print >> self.fd, '    ZVAL_STRING(%s, (char*)%s, 1);' % p
+            six.print_('    ZVAL_STRING(%s, (char*)%s, 1);' % p, file=self.fd)
             if free and not is_const(type):
-                print >> self.fd, 'g_free(%s)' % c_variable
+                six.print_('g_free(%s)' % c_variable, file=self.fd)
         elif arg_type(type) == 'xmlNode*':
-            print >> self.fd, '''\
+            six.print_('''\
     {
         char* xmlString = get_string_from_xml_node(%(c_variable)s);
         if (xmlString) {
@@ -129,7 +130,7 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             ZVAL_NULL(%(zval_name)s);
         }
     }
-''' % q
+''' % q, file=self.fd)
         elif is_glist(type):
             elem_type = make_arg(element_type(type))
             if not arg_type(elem_type):
@@ -145,27 +146,27 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 free_function = 'g_list_free(%(c_variable)s);'
             else:
                 raise Exception('unknown element-type: ' + repr(type))
-            print >> self.fd, '     %s((GList*)%s, &%s);' % (function, c_variable, zval_name)
+            six.print_('     %s((GList*)%s, &%s);' % (function, c_variable, zval_name), file=self.fd)
             if free:
-                print >> self.fd, '   ', free_function % q
+                six.print_('   ', free_function % q, file=self.fd)
         elif is_object(type):
-            print >> self.fd, '''\
+            six.print_('''\
     if (G_IS_OBJECT(%(c_variable)s)) {
         PhpGObjectPtr *obj = PhpGObjectPtr_New(G_OBJECT(%(c_variable)s));
         ZEND_REGISTER_RESOURCE(%(zval_name)s, obj, le_lasso_server);
     } else {
         ZVAL_NULL(%(zval_name)s);
-    }''' % q
+    }''' % q, file=self.fd)
             if free:
-                print >> self.fd, '''\
+                six.print_('''\
     if (%(c_variable)s) {
         g_object_unref(%(c_variable)s); // If constructor ref is off by one'
-    }''' % q
+    }''' % q, file=self.fd)
 
         else:
             raise Exception('unknown type: ' + repr(type) + unconstify(arg_type(type)))
         if is_pointer(type):
-            print >> self.fd, '    }'
+            six.print_('    }', file=self.fd)
 
 
 
@@ -174,20 +175,20 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             return
 
         if is_boolean(arg):
-            print >> self.fd, '    RETVAL_BOOL(return_c_value);'
+            six.print_('    RETVAL_BOOL(return_c_value);', file=self.fd)
         elif is_int(arg, self.binding_data):
-            print >> self.fd, '    RETVAL_LONG(return_c_value);'
+            six.print_('    RETVAL_LONG(return_c_value);', file=self.fd)
         elif is_cstring(arg):
-            print >> self.fd, '''\
+            six.print_('''\
     if (return_c_value) {
         RETVAL_STRING((char*)return_c_value, 1);
     } else {
         RETVAL_NULL();
-    }'''
+    }''', file=self.fd)
             if free:
-                print >> self.fd, '    free(return_c_value);'
+                six.print_('    free(return_c_value);', file=self.fd)
         elif is_xml_node(arg):
-            print >> self.fd, '''\
+            six.print_('''\
     {
         char* xmlString = get_string_from_xml_node(return_c_value);
         if (xmlString) {
@@ -196,54 +197,54 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             RETVAL_NULL();
         }
     }
-'''
+''', file=self.fd)
             if free:
-                print >> self.fd, '    lasso_release_xml_node(return_c_value);'
+                six.print_('    lasso_release_xml_node(return_c_value);', file=self.fd)
         elif is_glist(arg):
             el_type = element_type(arg)
             if is_cstring(el_type):
-                print >> self.fd, '''\
+                six.print_('''\
     set_array_from_list_of_strings((GList*)return_c_value, &return_value);
-'''
+''', file=self.fd)
                 if free:
-                    print >> self.fd, '    lasso_release_list_of_strings(return_c_value);'
+                    six.print_('    lasso_release_list_of_strings(return_c_value);', file=self.fd)
             elif is_xml_node(el_type):
-                print >> self.fd, '''\
+                six.print_('''\
     set_array_from_list_of_xmlnodes((GList*)return_c_value, &return_value);
-'''
+''', file=self.fd)
                 if free or is_transfer_full(arg):
-                    print >> self.fd, '    lasso_release_list_of_xml_node(return_c_value);'
+                    six.print_('    lasso_release_list_of_xml_node(return_c_value);', file=self.fd)
             elif is_object(el_type):
-                print >> self.fd, '''\
+                six.print_('''\
     set_array_from_list_of_objects((GList*)return_c_value, &return_value);
-'''
+''', file=self.fd)
                 if free:
-                    print >> self.fd, '    lasso_release_list_of_gobjects(return_c_value);'
+                    six.print_('    lasso_release_list_of_gobjects(return_c_value);', file=self.fd)
             else:
                 raise Exception('cannot return value for %s' % (arg,))
         elif is_hashtable(arg):
             el_type = element_type(arg)
             if is_object(el_type):
-                print >> self.fd, '''\
+                six.print_('''\
     set_array_from_hashtable_of_objects(return_c_value, &return_value);
-'''
+''', file=self.fd)
             else:
                 if not is_cstring(arg):
                     print >>sys.stderr, 'W: %s has no explicit string annotation' % (arg,)
-                print >> self.fd, '''\
+                six.print_('''\
     set_array_from_hashtable_of_strings(return_c_value, &return_value);
-'''
+''', file=self.fd)
         elif is_object(arg):
-            print >> self.fd, '''\
+            six.print_('''\
     if (return_c_value) {
         PhpGObjectPtr *self;
         self = PhpGObjectPtr_New(G_OBJECT(return_c_value));
         ZEND_REGISTER_RESOURCE(return_value, self, le_lasso_server);
     } else {
         RETVAL_NULL();
-    }'''
+    }''', file=self.fd)
             if free:
-                print >> self.fd, '    lasso_release_gobject(return_c_value);'
+                six.print_('    lasso_release_gobject(return_c_value);', file=self.fd)
         else:
             raise Exception('cannot return value for %s' % (arg,))
 
@@ -255,26 +256,26 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         else:
             name = m.name
         self.functions_list.append(name)
-        print >> self.fd, '''PHP_FUNCTION(%s)
-{''' % name
+        six.print_('''PHP_FUNCTION(%s)
+{''' % name, file=self.fd)
         parse_tuple_format = []
         parse_tuple_args = []
         for arg in m.args:
             if is_out(arg):
-                print >> self.fd, '   zval *php_out_%s = NULL;' % arg_name(arg)
-                print >> self.fd, '   %s %s;' % (var_type(arg), arg_name(arg))
+                six.print_('   zval *php_out_%s = NULL;' % arg_name(arg), file=self.fd)
+                six.print_('   %s %s;' % (var_type(arg), arg_name(arg)), file=self.fd)
                 parse_tuple_format.append('z!')
                 parse_tuple_args.append('&php_out_%s' % arg_name(arg))
             elif is_cstring(arg):
                 parse_tuple_format.append('s!')
                 parse_tuple_args.append('&%s_str, &%s_len' % (arg_name(arg), arg_name(arg)))
-                print >> self.fd, '    %s %s = NULL;' % ('char*', arg_name(arg))
-                print >> self.fd, '    %s %s_str = NULL;' % ('char*', arg_name(arg))
-                print >> self.fd, '    %s %s_len = 0;' % ('int', arg_name(arg))
+                six.print_('    %s %s = NULL;' % ('char*', arg_name(arg)), file=self.fd)
+                six.print_('    %s %s_str = NULL;' % ('char*', arg_name(arg)), file=self.fd)
+                six.print_('    %s %s_len = 0;' % ('int', arg_name(arg)), file=self.fd)
             elif is_int(arg, self.binding_data) or is_boolean(arg):
                 parse_tuple_format.append('l')
                 parse_tuple_args.append('&%s' % arg_name(arg))
-                print >> self.fd, '    %s %s;' % ('long', arg_name(arg))
+                six.print_('    %s %s;' % ('long', arg_name(arg)), file=self.fd)
             elif is_time_t_pointer(arg):
                 parse_tuple_format.append('l')
                 parse_tuple_args.append('&%s' % (arg_name(arg),))
@@ -282,59 +283,59 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             elif is_xml_node(arg):
                 parse_tuple_format.append('s!')
                 parse_tuple_args.append('&%s_str, &%s_len' % (arg_name(arg), arg_name(arg)))
-                print >> self.fd, '    %s %s = NULL;' % ('xmlNode*', arg_name(arg))
-                print >> self.fd, '    %s %s_str = NULL;'  % ('char*', arg_name(arg))
-                print >> self.fd, '    %s %s_len = 0;' % ('int', arg_name(arg))
+                six.print_('    %s %s = NULL;' % ('xmlNode*', arg_name(arg)), file=self.fd)
+                six.print_('    %s %s_str = NULL;'  % ('char*', arg_name(arg)), file=self.fd)
+                six.print_('    %s %s_len = 0;' % ('int', arg_name(arg)), file=self.fd)
             elif is_glist(arg):
                 parse_tuple_format.append('a!')
                 parse_tuple_args.append('&zval_%s' % arg_name(arg))
-                print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', arg_name(arg))
-                print >> self.fd, '    %s %s = NULL;' % ('GList*', arg_name(arg))
+                six.print_('    %s zval_%s = NULL;' % ('zval*', arg_name(arg)), file=self.fd)
+                six.print_('    %s %s = NULL;' % ('GList*', arg_name(arg)), file=self.fd)
             elif is_object(arg):
                 parse_tuple_format.append('r')
                 parse_tuple_args.append('&zval_%s' % arg_name(arg))
-                print >> self.fd, '    %s %s = NULL;' % (arg_type(arg), arg_name(arg))
-                print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', arg_name(arg))
-                print >> self.fd, '    %s cvt_%s = NULL;' % ('PhpGObjectPtr*', arg_name(arg))
+                six.print_('    %s %s = NULL;' % (arg_type(arg), arg_name(arg)), file=self.fd)
+                six.print_('    %s zval_%s = NULL;' % ('zval*', arg_name(arg)), file=self.fd)
+                six.print_('    %s cvt_%s = NULL;' % ('PhpGObjectPtr*', arg_name(arg)), file=self.fd)
             else:
                 raise Exception('Unsupported type %s %s' % (arg, m))
 
         if m.return_type:
-            print >> self.fd, '    %s return_c_value;' % m.return_type
+            six.print_('    %s return_c_value;' % m.return_type, file=self.fd)
         if m.return_type is not None and self.is_object(m.return_arg):
-            print >> self.fd, '    G_GNUC_UNUSED PhpGObjectPtr *self;'
-        print >> self.fd, ''
+            six.print_('    G_GNUC_UNUSED PhpGObjectPtr *self;', file=self.fd)
+        six.print_('', file=self.fd)
 
         parse_tuple_args = ', '.join(parse_tuple_args)
         if parse_tuple_args:
             parse_tuple_args = ', ' + parse_tuple_args
 
-        print >> self.fd, '''\
+        six.print_('''\
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "%s"%s) == FAILURE) {
         RETURN_FALSE;
     }
-''' % (''.join(parse_tuple_format), parse_tuple_args)
+''' % (''.join(parse_tuple_format), parse_tuple_args), file=self.fd)
 
         for f, arg in zip(parse_tuple_format, m.args):
             if is_out(arg):
                 continue
             elif is_xml_node(arg):
-                print >> self.fd, '''\
-        %(name)s = get_xml_node_from_string(%(name)s_str);''' % {'name': arg[1]}
+                six.print_('''\
+        %(name)s = get_xml_node_from_string(%(name)s_str);''' % {'name': arg[1]}, file=self.fd)
             elif f.startswith('s'):
-                print >> self.fd, '''\
-        %(name)s = %(name)s_str;''' % {'name': arg[1]}
+                six.print_('''\
+        %(name)s = %(name)s_str;''' % {'name': arg[1]}, file=self.fd)
             elif f.startswith('r'):
-                print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%s, PhpGObjectPtr *, &zval_%s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % (arg[1], arg[1])
-                print >> self.fd, '    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1])
+                six.print_('    ZEND_FETCH_RESOURCE(cvt_%s, PhpGObjectPtr *, &zval_%s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % (arg[1], arg[1]), file=self.fd)
+                six.print_('    %s = (%s)cvt_%s->obj;' % (arg[1], arg[0], arg[1]), file=self.fd)
             elif f.startswith('a'):
                 el_type = element_type(arg)
                 if is_cstring(el_type):
-                    print >> self.fd, '    %(name)s = get_list_from_array_of_strings(zval_%(name)s);' % {'name': arg[1]}
+                    six.print_('    %(name)s = get_list_from_array_of_strings(zval_%(name)s);' % {'name': arg[1]}, file=self.fd)
                 elif is_object(el_type):
-                    print >> self.fd, '    %(name)s = get_list_from_array_of_objects(zval_%(name)s);' % {'name': arg[1]}
+                    six.print_('    %(name)s = get_list_from_array_of_objects(zval_%(name)s);' % {'name': arg[1]}, file=self.fd)
                 else:
-                    print >> sys.stderr, 'E: In %(function)s arg %(name)s is of type GList<%(elem)s>' % { 'function': m.name, 'name': arg[1], 'elem': el_type }
+                    six.print_('E: In %(function)s arg %(name)s is of type GList<%(elem)s>' % { 'function': m.name, 'name': arg[1], 'elem': el_type }, file=sys.stderr)
             elif f == 'l':
                 pass
             else:
@@ -342,17 +343,17 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
 
 
         if m.return_type is not None:
-            print >> self.fd, '    return_c_value = ',
+            six.print_('    return_c_value = ', file=self.fd)
             if 'new' in m.name:
-                print >> self.fd, '(%s)' % m.return_type,
+                six.print_('(%s)' % m.return_type, file=self.fd)
         else:
-            print >> self.fd, '   ',
+            six.print_('   ', file=self.fd)
         def special(x):
             if is_time_t_pointer(x):
                 return '%(name)s ? &%(name)s : NULL' % { 'name': arg_name(x) }
             else:
                 return ref_name(x)
-        print >> self.fd, '%s(%s);' % (m.name, ', '.join([special(x) for x in m.args]))
+        six.print_('%s(%s);' % (m.name, ', '.join([special(x) for x in m.args])), file=self.fd)
         # Free the converted arguments
 
         for f, arg in zip(parse_tuple_format, m.args):
@@ -363,21 +364,21 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
                 self.set_zval('php_out_%s' % argname, argname, unref_type(arg), free = free)
                 pass
             elif argtype == 'xmlNode*':
-                print >> self.fd, '    xmlFree(%s);' % argname
+                six.print_('    xmlFree(%s);' % argname, file=self.fd)
             elif f.startswith('a'):
                 el_type = element_type(arg)
                 if is_cstring(el_type):
-                    print >> self.fd, '    if (%(name)s) {' % { 'name': arg[1] }
-                    print >> self.fd, '        free_glist(&%(name)s,(GFunc)free);' % { 'name': arg[1] }
-                    print >> self.fd, '    }'
+                    six.print_('    if (%(name)s) {' % { 'name': arg[1] }, file=self.fd)
+                    six.print_('        free_glist(&%(name)s,(GFunc)free);' % { 'name': arg[1] }, file=self.fd)
+                    six.print_('    }', file=self.fd)
 
         try:
             self.return_value(m.return_arg, is_transfer_full(m.return_arg, default=True))
         except:
             raise Exception('Cannot return value for function %s' % m)
 
-        print >> self.fd, '}'
-        print >> self.fd, ''
+        six.print_('}', file=self.fd)
+        six.print_('', file=self.fd)
 
     def generate_members(self, c):
         for m in c.members:
@@ -390,40 +391,40 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
         type = arg_type(m)
 
         function_name = '%s_%s_get' % (klassname, format_as_camelcase(name))
-        print >> self.fd, '''PHP_FUNCTION(%s)
-{''' % function_name
+        six.print_('''PHP_FUNCTION(%s)
+{''' % function_name, file=self.fd)
         self.functions_list.append(function_name)
 
-        print >> self.fd, '    %s return_c_value;' % type
-        print >> self.fd, '    %s* this;' % klassname
-        print >> self.fd, '    zval* zval_this;'
-        print >> self.fd, '    PhpGObjectPtr *cvt_this;'
-        print >> self.fd, ''
-        print >> self.fd, '''\
+        six.print_('    %s return_c_value;' % type, file=self.fd)
+        six.print_('    %s* this;' % klassname, file=self.fd)
+        six.print_('    zval* zval_this;', file=self.fd)
+        six.print_('    PhpGObjectPtr *cvt_this;', file=self.fd)
+        six.print_('', file=self.fd)
+        six.print_('''\
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zval_this) == FAILURE) {
         RETURN_FALSE;
     }
 
     ZEND_FETCH_RESOURCE(cvt_this, PhpGObjectPtr *, &zval_this, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);
     this = (%s*)cvt_this->obj;
-''' % (klassname)
-        print >> self.fd, '    return_c_value = (%s)this->%s;' % (type, name)
+''' % (klassname), file=self.fd)
+        six.print_('    return_c_value = (%s)this->%s;' % (type, name), file=self.fd)
         self.return_value(m)
-        print >> self.fd, '}'
-        print >> self.fd, ''
+        six.print_('}', file=self.fd)
+        six.print_('', file=self.fd)
 
     def generate_setter(self, c, m):
         klassname = c.name
         name = arg_name(m)
         type = arg_type(m)
         function_name = '%s_%s_set' % (klassname, format_as_camelcase(name))
-        print >> self.fd, '''PHP_FUNCTION(%s)
-{''' % function_name
+        six.print_('''PHP_FUNCTION(%s)
+{''' % function_name, file=self.fd)
         self.functions_list.append(function_name)
 
-        print >> self.fd, '    %s* this;' % klassname
-        print >> self.fd, '    zval* zval_this;'
-        print >> self.fd, '    PhpGObjectPtr *cvt_this;'
+        six.print_('    %s* this;' % klassname, file=self.fd)
+        six.print_('    zval* zval_this;', file=self.fd)
+        six.print_('    PhpGObjectPtr *cvt_this;', file=self.fd)
 
         # FIXME: This bloc should be factorised
         parse_tuple_format = ''
@@ -432,93 +433,93 @@ PHP_MSHUTDOWN_FUNCTION(lasso)
             # arg_type = arg_type.replace('const ', '')
             parse_tuple_format += 's'
             parse_tuple_args.append('&%s_str, &%s_len' % (name, name))
-            print >> self.fd, '    %s %s_str = NULL;' % ('char*', name)
-            print >> self.fd, '    %s %s_len = 0;' % ('int', name)
+            six.print_('    %s %s_str = NULL;' % ('char*', name), file=self.fd)
+            six.print_('    %s %s_len = 0;' % ('int', name), file=self.fd)
         elif is_int(m, self.binding_data) or is_boolean(m):
             parse_tuple_format += 'l'
             parse_tuple_args.append('&%s' % name)
-            print >> self.fd, '    %s %s;' % ('long', name)
+            six.print_('    %s %s;' % ('long', name), file=self.fd)
         # Must also handle lists of Objects
         elif is_glist(m) or is_hashtable(m):
             parse_tuple_format += 'a'
             parse_tuple_args.append('&zval_%s' % name)
-            print >> self.fd, '    %s zval_%s;' % ('zval*', name)
+            six.print_('    %s zval_%s;' % ('zval*', name), file=self.fd)
         elif is_object(m):
             parse_tuple_format += 'r'
             parse_tuple_args.append('&zval_%s' % name)
-            print >> self.fd, '    %s zval_%s = NULL;' % ('zval*', name)
-            print >> self.fd, '    %s cvt_%s = NULL;' % ('PhpGObjectPtr*', name)
+            six.print_('    %s zval_%s = NULL;' % ('zval*', name), file=self.fd)
+            six.print_('    %s cvt_%s = NULL;' % ('PhpGObjectPtr*', name), file=self.fd)
         else:
             raise Exception('Cannot make a setter for %s.%s' % (c,m))
 
         if parse_tuple_args:
             parse_tuple_arg = parse_tuple_args[0]
         else:
-            print >> self.fd, '}'
-            print >> self.fd, ''
+            six.print_('}', file=self.fd)
+            six.print_('', file=self.fd)
             return
 
-        print >> self.fd, ''
-        print >> self.fd, '''\
+        six.print_('', file=self.fd)
+        six.print_('''\
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r%s", &zval_this, %s) == FAILURE) {
         return;
     }
-''' % (parse_tuple_format, parse_tuple_arg)
+''' % (parse_tuple_format, parse_tuple_arg), file=self.fd)
 
         # Get 'this' object
-        print >> self.fd, '''\
+        six.print_('''\
     ZEND_FETCH_RESOURCE(cvt_this, PhpGObjectPtr *, &zval_this, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);
     this = (%s*)cvt_this->obj;
-''' % klassname
+''' % klassname, file=self.fd)
 
         # Set new value
         d = { 'name': name, 'type': type }
         if is_int(m, self.binding_data) or is_boolean(m):
-            print >> self.fd, '    this->%s = %s;' % (name, name)
+            six.print_('    this->%s = %s;' % (name, name), file=self.fd)
         elif is_cstring(m):
-            print >> self.fd, '    lasso_assign_string(this->%(name)s, %(name)s_str);' % d
+            six.print_('    lasso_assign_string(this->%(name)s, %(name)s_str);' % d, file=self.fd)
         elif is_xml_node(m):
-            print >> self.fd, '    lasso_assign_new_xml_node(this->%(name)s, get_xml_node_from_string(%(name)s_str));' % d
+            six.print_('    lasso_assign_new_xml_node(this->%(name)s, get_xml_node_from_string(%(name)s_str));' % d, file=self.fd)
         elif is_glist(m):
             el_type = element_type(m)
             if is_cstring(el_type):
-                print >> self.fd, '    lasso_assign_new_list_of_strings(this->%(name)s, get_list_from_array_of_strings(zval_%(name)s));' % d
+                six.print_('    lasso_assign_new_list_of_strings(this->%(name)s, get_list_from_array_of_strings(zval_%(name)s));' % d, file=self.fd)
             elif is_xml_node(el_type):
-                print >> self.fd, '    lasso_assign_new_list_of_xml_node(this->%(name)s, get_list_from_array_of_xmlnodes(zval_%(name)s))' % d
+                six.print_('    lasso_assign_new_list_of_xml_node(this->%(name)s, get_list_from_array_of_xmlnodes(zval_%(name)s))' % d, file=self.fd)
             elif is_object(el_type):
-                print >> self.fd, '    lasso_assign_new_list_of_gobjects(this->%(name)s, get_list_from_array_of_objects(zval_%(name)s));' % d
+                six.print_('    lasso_assign_new_list_of_gobjects(this->%(name)s, get_list_from_array_of_objects(zval_%(name)s));' % d, file=self.fd)
             else:
                 raise Exception('Cannot create C setter for %s.%s' % (c,m))
         elif is_hashtable(m):
             el_type = element_type(m)
-            print >> self.fd, '''\
+            six.print_('''\
         {
-            GHashTable *oldhash = this->%(name)s;''' % d
+            GHashTable *oldhash = this->%(name)s;''' % d, file=self.fd)
             if is_object(el_type):
-                print >>self.fd, '            this->%(name)s = get_hashtable_from_array_of_objects(zval_%(name)s);' % d
+                six.print_('            this->%(name)s = get_hashtable_from_array_of_objects(zval_%(name)s);' % d, file=self.fd)
             else:
-                print >>self.fd, '            this->%(name)s = get_hashtable_from_array_of_strings(zval_%(name)s);' % d
-            print >> self.fd, '            g_hash_table_destroy(oldhash);'
-            print >> self.fd, '        }'
+                six.print_('            this->%(name)s = get_hashtable_from_array_of_strings(zval_%(name)s);' % d, file=self.fd)
+            six.print_('            g_hash_table_destroy(oldhash);', file=self.fd)
+            six.print_('        }', file=self.fd)
         elif is_object(m):
-            print >> self.fd, '    ZEND_FETCH_RESOURCE(cvt_%(name)s, PhpGObjectPtr*, &zval_%(name)s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % d
-            print >> self.fd, '    lasso_assign_gobject(this->%(name)s, cvt_%(name)s->obj);' % d
+            six.print_('    ZEND_FETCH_RESOURCE(cvt_%(name)s, PhpGObjectPtr*, &zval_%(name)s, -1, PHP_LASSO_SERVER_RES_NAME, le_lasso_server);' % d, file=self.fd)
+            six.print_('    lasso_assign_gobject(this->%(name)s, cvt_%(name)s->obj);' % d, file=self.fd)
 
-        print >> self.fd, '}'
-        print >> self.fd, ''
+        six.print_('}', file=self.fd)
+        six.print_('', file=self.fd)
 
     def generate_functions_list(self):
-        print >> self.fd, '''\
-static zend_function_entry lasso_functions[] = {'''
+        six.print_('''\
+static zend_function_entry lasso_functions[] = {''', file=self.fd)
         for m in self.functions_list:
-            print >> self.fd, '    PHP_FE(%s, NULL)' % m
-        print >> self.fd, '''\
+            six.print_('    PHP_FE(%s, NULL)' % m, file=self.fd)
+        six.print_('''\
     {NULL, NULL, NULL, 0, 0}
 };
-'''
+''', file=self.fd)
 
     def generate_footer(self):
-        print >> self.fd, '''\
+        six.print_('''\
 zend_module_entry lasso_module_entry = {
 #if ZEND_MODULE_API_NO >= 20010901
     STANDARD_MODULE_HEADER,
@@ -535,5 +536,5 @@ zend_module_entry lasso_module_entry = {
 #endif
     STANDARD_MODULE_PROPERTIES
 };
-'''
+''', file=self.fd)
 
