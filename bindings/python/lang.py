@@ -114,6 +114,8 @@ class Binding:
 # this file has been generated automatically; do not edit
 
 import _lasso
+import sys
+
 
 def cptrToPy(cptr):
     if cptr is None:
@@ -123,11 +125,14 @@ def cptrToPy(cptr):
     o._cptr = cptr
     return o
 
-def str2lasso(s):
-    if s is not None and not isinstance(s, str):
-        # Assume this is a Python 2 unicode string.
-        return s.encode('utf-8')
-    return s
+if sys.version_info >= (3,):
+    def str2lasso(s):
+        return s
+else: # Python 2.x
+    def str2lasso(s):
+        if isinstance(s, unicode):
+            return s.encode('utf-8')
+        return s
 
 class frozendict(dict):
     \'\'\'Immutable dict\'\'\'

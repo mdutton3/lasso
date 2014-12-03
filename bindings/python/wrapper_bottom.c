@@ -7,7 +7,7 @@
   #define MOD_INIT(name) PyMODINIT_FUNC PyInit_##name(void)
   #define MOD_DEF(ob, name, doc, methods) \
           static struct PyModuleDef moduledef = { \
-            PyModuleDef_HEAD_INIT, name, doc, -1, methods, }; \
+            PyModuleDef_HEAD_INIT, name, doc, -1, methods, NULL, NULL, NULL, NULL}; \
           ob = PyModule_Create(&moduledef);
 #else
   #define MOD_ERROR_VAL
@@ -32,6 +32,7 @@ MOD_INIT(_lasso)
 
 	Py_INCREF(&PyGObjectPtrType);
 	PyModule_AddObject(m, "PyGObjectPtr", (PyObject *)&PyGObjectPtrType);
+
 	lasso_init();
 	lasso_log_set_handler(G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION | G_LOG_LEVEL_MASK,
 			lasso_python_log, NULL);

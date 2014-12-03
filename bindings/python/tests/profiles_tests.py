@@ -49,7 +49,7 @@ def server(local_name, remote_role, remote_name):
     pwd = os.path.join(dataDir, local_name, 'password')
     password = None
     if os.path.exists(pwd):
-        password = file(pwd).read()
+        password = open(pwd).read()
     s = lasso.Server(os.path.join(dataDir, local_name, 'metadata.xml'),
             os.path.join(dataDir, local_name, 'private-key.pem'),
             password)
@@ -126,7 +126,7 @@ class LoginTestCase(unittest.TestCase):
         login = lasso.Login(lassoServer)
         try:
             login.processResponseMsg('')
-        except lasso.Error, error:
+        except lasso.Error as error:
             if error[0] != lasso.PROFILE_ERROR_INVALID_MSG:
                 raise
 
@@ -318,7 +318,7 @@ class LogoutTestCase(unittest.TestCase):
         logout = lasso.Logout(lassoServer)
         try:
             logout.initRequest()
-        except lasso.Error, error:
+        except lasso.Error as error:
             if error[0] != lasso.PROFILE_ERROR_SESSION_NOT_FOUND:
                 raise
         else:
@@ -357,7 +357,7 @@ class LogoutTestCase(unittest.TestCase):
         # The processRequestMsg should fail but not abort.
         try:
             logout.processRequestMsg('passport=0&lasso=1')
-        except lasso.Error, error:
+        except lasso.Error as error:
             if error[0] != lasso.PROFILE_ERROR_INVALID_MSG:
                 raise
         else:
@@ -380,7 +380,7 @@ class LogoutTestCase(unittest.TestCase):
         # The processResponseMsg should fail but not abort.
         try:
             logout.processResponseMsg('liberty=&alliance')
-        except lasso.Error, error:
+        except lasso.Error as error:
             if error[0] != lasso.PROFILE_ERROR_INVALID_MSG:
                 raise
         else:
@@ -404,7 +404,7 @@ class DefederationTestCase(unittest.TestCase):
         # The processNotificationMsg should fail but not abort.
         try:
             defederation.processNotificationMsg('nonLibertyQuery=1')
-        except lasso.Error, error:
+        except lasso.Error as error:
             if error[0] != lasso.PROFILE_ERROR_INVALID_MSG:
                 raise
         else:
@@ -437,7 +437,7 @@ class AttributeAuthorityTestCase(unittest.TestCase):
                 os.path.join(dataDir, 'sp5-saml2/metadata.xml'))
 
         aq = lasso.AssertionQuery(s)
-        rpid = s.providers.keys()[0]
+        rpid = list(s.providers.keys())[0]
         aq.initRequest(rpid,
                 lasso.HTTP_METHOD_SOAP,
                 lasso.ASSERTION_QUERY_REQUEST_TYPE_ATTRIBUTE)

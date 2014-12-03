@@ -3,6 +3,7 @@
 import glob
 import re
 import sys
+import six
 
 enable_wsf = False
 
@@ -21,7 +22,7 @@ for header_file in glob.glob('%s/*/*.h' % srcdir) + glob.glob('%s/*.h' % srcdir)
         glob.glob('%s/*/*/*.h' % srcdir):
     if ('/id-wsf/' in header_file or '/id-wsf-2.0' in header_file) and not enable_wsf:
         continue
-    symbols.extend(regex.findall(file(header_file).read().replace('\\\n', '')))
+    symbols.extend(regex.findall(open(header_file).read().replace('\\\n', '')))
 
 wsf = ['lasso_disco_', 'lasso_dst_', 'lasso_is_', 'lasso_profile_service_',
         'lasso_discovery', 'lasso_wsf', 'lasso_interaction_', 'lasso_utility_',
@@ -36,5 +37,5 @@ for s in symbols:
         if s.startswith(t):
             break
     else:
-        print s
+        six.print_(s)
 

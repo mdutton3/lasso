@@ -268,7 +268,7 @@ class BindingTestCase(unittest.TestCase):
 
     def test09(self):
         '''Test dictionary attributes'''
-        identity = lasso.Identity.newFromDump(file(
+        identity = lasso.Identity.newFromDump(open(
                     os.path.join(dataDir, 'sample-identity-dump-1.xml')).read())
         self.failUnlessEqual(len(identity.federations.keys()), 2)
         self.failIf(not 'http://idp1.lasso.lan' in identity.federations.keys())
@@ -293,7 +293,7 @@ class BindingTestCase(unittest.TestCase):
         '''Test saving and reloading a Server using an encrypted private key'''
         pkey = os.path.join(dataDir, 'sp7-saml2', 'private-key.pem')
         mdata = os.path.join(dataDir, 'sp7-saml2', 'metadata.xml')
-        password = file(os.path.join(dataDir, 'sp7-saml2', 'password')).read().strip()
+        password = open(os.path.join(dataDir, 'sp7-saml2', 'password')).read().strip()
         server = lasso.Server(mdata, pkey, password)
         assert isinstance(server, lasso.Server)
         server_dump = server.dump()
