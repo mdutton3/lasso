@@ -1955,10 +1955,13 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 				version_snippet);
 		major_version = *value;
 
-		find_path(node, "MinorVersion", &value_node, &version_class, &version_snippet);
-		value = SNIPPET_STRUCT_MEMBER_P(value_node, G_TYPE_FROM_CLASS(version_class),
-				version_snippet);
-		minor_version = *value;
+		if (find_path(node, "MinorVersion", &value_node, &version_class, &version_snippet) == TRUE) {
+			value = SNIPPET_STRUCT_MEMBER_P(value_node, G_TYPE_FROM_CLASS(version_class),
+					version_snippet);
+			minor_version = *value;
+		} else {
+			minor_version = 0;
+		}
 
 		if (strcmp((char*)xmlnode->ns->href, LASSO_LIB_HREF) == 0) {
 			if (major_version == 1 && minor_version == 0) {
