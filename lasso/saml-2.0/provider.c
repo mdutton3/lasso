@@ -21,8 +21,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _POSIX_SOURCE
-
 #include <errno.h>
 #include <string.h>
 
