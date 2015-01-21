@@ -425,8 +425,8 @@ lasso_login_build_assertion(LassoLogin *login,
 		profile->session = lasso_session_new();
 	}
 	lasso_assign_gobject(login->assertion, LASSO_SAML_ASSERTION(assertion));
-	lasso_session_add_assertion(profile->session, profile->remote_providerID,
-			LASSO_NODE(assertion));
+	lasso_check_good_rc(lasso_session_add_assertion(profile->session, profile->remote_providerID,
+			LASSO_NODE(assertion)));
 
 	if (LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion == 1 &&
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MinorVersion < 2) {
