@@ -224,6 +224,12 @@ int lasso_saml2_query_verify_signature(const char *query, const xmlSecKey *sende
 
 char* lasso_sha1(const char *str);
 
+char* lasso_sha256(const char *str);
+
+char* lasso_sha384(const char *str);
+
+char* lasso_sha512(const char *str);
+
 char** urlencoded_to_strings(const char *str);
 
 int lasso_sign_node(xmlNode *xmlnode, LassoSignatureContext context, const char *id_attr_name, const char *id_value);

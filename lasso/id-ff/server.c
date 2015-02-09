@@ -49,6 +49,12 @@
 #define RSA_SHA1 "RSA_SHA1"
 #define DSA_SHA1 "DSA_SHA1"
 #define HMAC_SHA1 "HMAC_SHA1"
+#define RSA_SHA256 "RSA_SHA256"
+#define HMAC_SHA256 "HMAC_SHA256"
+#define RSA_SHA384 "RSA_SHA384"
+#define HMAC_SHA384 "HMAC_SHA384"
+#define RSA_SHA512 "RSA_SHA512"
+#define HMAC_SHA512 "HMAC_SHA512"
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -283,7 +289,12 @@ static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoServer *server = LASSO_SERVER(node);
-	char *signature_methods[] = { NULL, RSA_SHA1, DSA_SHA1, HMAC_SHA1};
+	char *signature_methods[] = { NULL,
+		RSA_SHA1, DSA_SHA1, HMAC_SHA1,
+		RSA_SHA256, HMAC_SHA256,
+		RSA_SHA384, HMAC_SHA384,
+		RSA_SHA512, HMAC_SHA512,
+	};
 	xmlNode *xmlnode = NULL, *ret_xmlnode = NULL;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
@@ -339,6 +350,18 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		server->signature_method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
 	else if (lasso_strisequal((char*) s, HMAC_SHA1))
 		server->signature_method = LASSO_SIGNATURE_METHOD_HMAC_SHA1;
+	else if (lasso_strisequal((char*) s, RSA_SHA256))
+		server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA256;
+	else if (lasso_strisequal((char*) s, HMAC_SHA256))
+		server->signature_method = LASSO_SIGNATURE_METHOD_HMAC_SHA256;
+	else if (lasso_strisequal((char*) s, RSA_SHA384))
+		server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA384;
+	else if (lasso_strisequal((char*) s, HMAC_SHA384))
+		server->signature_method = LASSO_SIGNATURE_METHOD_HMAC_SHA384;
+	else if (lasso_strisequal((char*) s, RSA_SHA512))
+		server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA512;
+	else if (lasso_strisequal((char*) s, HMAC_SHA512))
+		server->signature_method = LASSO_SIGNATURE_METHOD_HMAC_SHA512;
 	else {
 		warning("Unable to rebuild a LassoServer object from XML, bad SignatureMethod: %s",
 			s);
