@@ -17,20 +17,10 @@ Core
 - Frédéric Péters <fpeters@entrouvert.com>
 - Damien Laniel <dlaniel@entrouvert.com>
 - Benjamin Dauvergne <bdauvergne@entrouvert.com>
-
-
-SWIG Bindings
-=============
-
-- Emmanuel Raviart <eraviart@entrouvert.com>
-
-with help from:
-
-- Romain Chantereau <rchantereau@entrouvert.com> (initial SWIG binding)
-- Christophe Nowicki <cnowicki@easter-eggs.com> (PHP)
-- Benjamin Poussin <poussin@codelutin.com> (first Java binding)
-- and the core developers
-
+- Houzéfa Abbasbhay <houzefa.abba@xcg-consulting.fr>, Python3 binding,
+	contributed under MIT license by XCG consulting
+- Simo Sorce <simo@redhat.com>, code review using Coverity and related
+	bugfixes, contributed under MIT license by Redhat Inc.
 
 Unit Tests
 ==========
@@ -83,4 +73,3 @@ Web Site Design
 with help from:
 
 - Cédric Musso (initial design) <cedric.musso@labor-liber.net>
-
