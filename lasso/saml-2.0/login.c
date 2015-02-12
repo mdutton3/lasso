@@ -303,7 +303,9 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	remote_provider->role = LASSO_PROVIDER_ROLE_SP;
 	server->parent.role = LASSO_PROVIDER_ROLE_IDP;
 
-	/* all those attributes are mutually exclusive */
+	/* Normally those three attributes are mutually exclusive, but Google Apps send
+	 * ProtocolBinding and AssertionConsumerServiceURL at the same time, so we support this case
+	 * by validating that it matches the same endpoint */
 	if (((authn_request->ProtocolBinding != NULL) ||
 			(authn_request->AssertionConsumerServiceURL != NULL)) &&
 			(authn_request->AssertionConsumerServiceIndex != -1))
@@ -314,41 +316,24 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 
 	/* try to find a protocol profile for sending the response */
 	protocol_binding = authn_request->ProtocolBinding;
-	if (protocol_binding == NULL && authn_request->AssertionConsumerServiceIndex) {
-		/* protocol binding not set; so it will look into
-		 * AssertionConsumerServiceIndex
-		 * Also, if AssertionConsumerServiceIndex is not set in request,
-		 * its value will be -1, which is just the right value to get
-		 * default assertion consumer...  (convenient)
-		 */
-		gchar *binding;
-		int service_index = authn_request->AssertionConsumerServiceIndex;
+	if (protocol_binding || authn_request->AssertionConsumerServiceURL)
+	{
+		const gchar *acs_url_binding = NULL;
 
-		binding = lasso_saml20_provider_get_assertion_consumer_service_binding(
-				remote_provider, service_index);
-		if (binding == NULL) {
-			if (service_index == -1)
-				return LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT;
-		} else if (lasso_strisequal(binding,"HTTP-Artifact")) {
-			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
-		} else if (lasso_strisequal(binding,"HTTP-POST")) {
-			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
-		} else if (lasso_strisequal(binding,"HTTP-Redirect")) {
-			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT;
-		} else if (lasso_strisequal(binding,"SOAP")) {
-			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
-		} else if (lasso_strisequal(binding,"PAOS")) {
-			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
+		if (authn_request->AssertionConsumerServiceURL) {
+			acs_url_binding = lasso_saml20_provider_get_assertion_consumer_service_binding_by_url(
+					remote_provider, authn_request->AssertionConsumerServiceURL);
+			if (! acs_url_binding) {
+				// Sent ACS URL is unknown
+				rc = LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
+				goto cleanup;
+			}
+			if (! protocol_binding) {
+				// Only ACS URL sent
+				protocol_binding = acs_url_binding;
+			}
 		}
-		lasso_release_string(binding);
-	} else {
-		// If we just received an URL, try to find the corresponding protocol binding
-		if (protocol_binding == NULL && authn_request->AssertionConsumerServiceURL) {
-			protocol_binding =
-				lasso_saml20_provider_get_assertion_consumer_service_binding_by_url(
-						remote_provider,
-						authn_request->AssertionConsumerServiceURL);
-		}
+
 		if (lasso_strisequal(protocol_binding,LASSO_SAML2_METADATA_BINDING_ARTIFACT)) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
 		} else if (lasso_strisequal(protocol_binding,LASSO_SAML2_METADATA_BINDING_POST)) {
@@ -364,6 +349,41 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 			rc = LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
 			goto cleanup;
 		}
+		// We received both a protocolbinding and an acs url, check both matches
+		if (acs_url_binding && g_strcmp0(protocol_binding, acs_url_binding) != 0) {
+			rc = LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
+			goto cleanup;
+		}
+	} else {
+		/* protocol binding not set; so it will look into
+		 * AssertionConsumerServiceIndex
+		 * Also, if AssertionConsumerServiceIndex is not set in request,
+		 * its value will be -1, which is just the right value to get
+		 * default assertion consumer...  (convenient)
+		 */
+		gchar *binding;
+		int service_index = authn_request->AssertionConsumerServiceIndex;
+
+		binding = lasso_saml20_provider_get_assertion_consumer_service_binding(
+				remote_provider, service_index);
+		if (binding == NULL) {
+			if (service_index == -1) {
+				goto_cleanup_with_rc(LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT);
+			} else {
+				goto_cleanup_with_rc(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
+			}
+		} else if (lasso_strisequal(binding,"HTTP-Artifact")) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
+		} else if (lasso_strisequal(binding,"HTTP-POST")) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
+		} else if (lasso_strisequal(binding,"HTTP-Redirect")) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_REDIRECT;
+		} else if (lasso_strisequal(binding,"SOAP")) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
+		} else if (lasso_strisequal(binding,"PAOS")) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
+		}
+		lasso_release_string(binding);
 	}
 
 

@@ -1002,6 +1002,111 @@ START_TEST(test07_sso_sp_with_hmac_sha1_signatures)
 }
 END_TEST
 
+typedef struct {
+	char *assertion_consumer_service_url;
+	char *protocol_binding;
+	gboolean use_assertion_consumer_service_idx;
+	int assertion_consumer_service_idx;
+	gboolean stop_after_build_assertion;
+} SsoSettings;
+
+static void
+sso_initiated_by_sp2(LassoServer *idp_context, LassoServer *sp_context, SsoSettings sso_settings)
+{
+	LassoLogin *idp_login_context;
+	LassoLogin *sp_login_context;
+	LassoSamlp2AuthnRequest *request;
+	char *authn_request_query;
+
+	check_not_null(idp_login_context = lasso_login_new(idp_context));
+	check_not_null(sp_login_context = lasso_login_new(sp_context))
+
+	/* Create response */
+	check_good_rc(lasso_login_init_authn_request(sp_login_context, NULL, LASSO_HTTP_METHOD_REDIRECT));
+	request = (LassoSamlp2AuthnRequest*)sp_login_context->parent.request;
+	if (sso_settings.assertion_consumer_service_url) {
+		lasso_assign_string(request->AssertionConsumerServiceURL, sso_settings.assertion_consumer_service_url);
+	}
+	if (sso_settings.protocol_binding) {
+		lasso_assign_string(request->ProtocolBinding, sso_settings.protocol_binding);
+	}
+	if (sso_settings.use_assertion_consumer_service_idx) {
+		request->AssertionConsumerServiceIndex = sso_settings.assertion_consumer_service_idx;
+	}
+	lasso_assign_string(LASSO_SAMLP2_AUTHN_REQUEST(sp_login_context->parent.request)->NameIDPolicy->Format,
+			LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
+	LASSO_SAMLP2_AUTHN_REQUEST(sp_login_context->parent.request)->NameIDPolicy->AllowCreate = 1;
+	check_good_rc(lasso_login_build_authn_request_msg(sp_login_context));
+	check_not_null(sp_login_context->parent.msg_url);
+	authn_request_query = strchr(sp_login_context->parent.msg_url, '?');
+	check_not_null(authn_request_query);
+	authn_request_query += 1;
+	check_good_rc(lasso_login_process_authn_request_msg(idp_login_context, authn_request_query));
+
+	check_good_rc(lasso_login_validate_request_msg(idp_login_context,
+			1, /* authentication_result */
+		        0 /* is_consent_obtained */
+			));
+
+	check_good_rc(lasso_login_build_assertion(idp_login_context,
+			LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD,
+			"FIXME: authenticationInstant",
+			"FIXME: reauthenticateOnOrAfter",
+			"FIXME: notBefore",
+			"FIXME: notOnOrAfter"));
+	if (sso_settings.stop_after_build_assertion) {
+		goto cleanup;
+	}
+	check_good_rc(lasso_login_build_authn_response_msg(idp_login_context));
+	check_not_null(idp_login_context->parent.msg_body);
+	check_not_null(idp_login_context->parent.msg_url);
+
+	/* Process response */
+	check_good_rc(lasso_login_process_authn_response_msg(sp_login_context,
+				idp_login_context->parent.msg_body));
+	check_good_rc(lasso_login_accept_sso(sp_login_context));
+
+	/* Cleanup */
+cleanup:
+	lasso_release_gobject(idp_login_context);
+	lasso_release_gobject(sp_login_context);
+}
+
+START_TEST(test08_test_authnrequest_flags)
+{
+	LassoServer *idp_context = NULL;
+	LassoServer *sp_context = NULL;
+	GList *providers;
+
+	/* Create an IdP context for IdP initiated SSO with provider metadata 1 */
+	make_context(idp_context, "idp5-saml2", "", LASSO_PROVIDER_ROLE_SP, "sp5-saml2", "")
+	make_context(sp_context, "sp5-saml2", "", LASSO_PROVIDER_ROLE_IDP, "idp5-saml2", "")
+
+	block_lasso_logs;
+	sso_initiated_by_sp2(idp_context, sp_context, 
+			(SsoSettings) { 
+				.use_assertion_consumer_service_idx = 1,
+				.assertion_consumer_service_idx = 0,
+				.stop_after_build_assertion = 1,
+			});
+	sso_initiated_by_sp2(idp_context, sp_context, 
+			(SsoSettings) { 
+				.assertion_consumer_service_url = "http://sp5/singleSignOnPost",
+				.stop_after_build_assertion = 1,
+			});
+	sso_initiated_by_sp2(idp_context, sp_context, 
+			(SsoSettings) { 
+				.protocol_binding = LASSO_SAML2_METADATA_BINDING_ARTIFACT,
+				.stop_after_build_assertion = 1,
+			});
+	unblock_lasso_logs;
+
+	/* Cleanup */
+	lasso_release_gobject(idp_context);
+	lasso_release_gobject(sp_context);
+}
+END_TEST
+
 Suite*
 login_saml2_suite()
 {
@@ -1027,6 +1132,7 @@ login_saml2_suite()
 	tcase_add_test(tc_idpKeyRollover, test05_sso_idp_with_key_rollover);
 	tcase_add_test(tc_spKeyRollover, test06_sso_sp_with_key_rollover);
 	tcase_add_test(tc_hmacSignature, test07_sso_sp_with_hmac_sha1_signatures);
+	tcase_add_test(tc_spLogin, test08_test_authnrequest_flags);
 	return s;
 }
 
