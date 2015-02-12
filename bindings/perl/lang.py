@@ -22,7 +22,7 @@ import os
 import os.path
 import sys
 import re
-import textwrap
+from six import print_
 from utils import *
 
 class Output(object):
@@ -32,10 +32,10 @@ class Output(object):
         self.indent_size = indent
 
     def pn(self, s = ''):
-        print >> self.fd, (' ' * self.indent_stack[-1]) + s
+        print_((' ' * self.indent_stack[-1]) + s, file=self.fd)
 
     def p(self, s = ''):
-        print >>self.fd, s,
+        print_(s, file=self.fd, end="")
 
     def close(self):
         self.fd.close()
@@ -70,7 +70,8 @@ class Binding:
         self.typemap = Output('typemap')
 
     def file_content(self, filename):
-        return file(os.path.join(self.src_dir, filename)).read()
+        return open(os.path.join(self.src_dir, filename)).read()
+
 
     def generate(self):
         # Generate XS
@@ -276,7 +277,7 @@ INCLUDE: LassoNode.xs
             try:
                 self.xs.pn(self.glist_type(func.return_arg))
             except:
-                print >>sys.stderr, 'failed', func.return_arg, func
+                print_('failed', func.return_arg, func, file=sys.stderr)
                 raise
         self.xs.p(name + '(')
         arg_list = []
@@ -586,12 +587,12 @@ HV*
                 self.generate_xs_function(func, prefix = prefix)
             for member in struct.members:
                 if arg_type(member) ==  'void*':
-                    print 'Skipping %s' % member
+                    print_('Skipping %s' % member)
                     continue
                 try:
                     self.generate_xs_getter_setter(struct, member)
                 except:
-                    print 'failed', struct, member
+                    print_('failed', struct, member)
                     raise
 
     def generate_wrapper(self):
