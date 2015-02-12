@@ -19,6 +19,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 import os
+from six import print_, string_types
 import sys
 import re
 import textwrap
@@ -131,9 +132,9 @@ class Binding:
                 l.append(super + '.java')
         l = [ lasso_java_path + p for p in l]
         for p in l:
-            print p,
-        print
-        print
+            print_(p, end=" ")
+        print_()
+        print_()
 
 
     def is_gobject_type(self, t):
@@ -160,29 +161,29 @@ class Binding:
         fd.close()
 
     def generate_Constants_header(self, fd):
-        print >> fd, '''\
+        print_('''\
 /* this file has been generated automatically; do not edit */
 
 package %s;
 
 public abstract interface LassoConstants {
-''' % lasso_package_name
+''' % lasso_package_name, file=fd)
 
     def generate_Constants_constants(self, fd):
-        print >> fd, '/* Constants (both enums and defines) */'
+        print_('/* Constants (both enums and defines) */', file=fd)
         # Declaration
         for c in self.binding_data.constants:
-            print >> fd, 'static final ',
+            print_('static final ', file=fd, end=" ")
             if c[0] == 'i':
-               print >> fd, 'int ',
+               print_('int ', file=fd, end=" ")
             elif c[0] == 's':
-               print >> fd, 'String ',
+               print_('String ', file=fd, end=" ")
             elif c[0] == 'b':
-               print >> fd, 'boolean ',
-            print >> fd, '%s = LassoJNI.%s_get();' % (c[1][6:], c[1])
+               print_('boolean ', file=fd, end=" ")
+            print_('%s = LassoJNI.%s_get();' % (c[1][6:], c[1]), file=fd)
 
     def generate_Constants_footer(self, fd):
-        print >> fd, '}'
+        print_('}', file=fd)
 
 
 # LassoJNI
@@ -200,7 +201,7 @@ public abstract interface LassoConstants {
         fd.close();
 
     def generate_JNI_header(self, fd):
-        print >> fd, '''\
+        print_('''\
 /* this file has been generated automatically; do not edit */
 
 package %s;
@@ -208,18 +209,18 @@ package %s;
 public final class LassoJNI {
 protected static native void init2();
 protected static native void destroy(long cptr);
-''' % lasso_package_name
+''' % lasso_package_name, file=fd)
     def generate_JNI_constants(self, fd):
-        print >>fd, '/* Constants getters */'
+        print_('/* Constants getters */', file=fd)
         for c in self.binding_data.constants:
-            print >>fd, 'public static native ',
+            print_('public static native ', file=fd, end=" ")
             if c[0] == 'i':
-                print >>fd, 'int ',
+                print_('int ', file=fd, end=" ")
             elif c[0] == 's':
-                print >>fd, 'String ',
+                print_('String ', file=fd, end=" ")
             elif c[0] == 'b':
-                print >>fd, 'boolean ',
-            print >>fd, '%s_get();' % c[1]
+                print_('boolean ', file=fd, end=" ")
+            print_('%s_get();' % c[1], file=fd)
 
     def java_arg_type(self, vtype):
         if is_boolean(vtype):
@@ -251,7 +252,7 @@ protected static native void destroy(long cptr);
             return 'Object[]'
         elif vtype == 'xmlNode*':
             return 'String'
-        elif isinstance(vtype,basestring) and vtype.startswith('Lasso'):
+        elif isinstance(vtype,string_types) and vtype.startswith('Lasso'):
             if vtype.endswith('*'):
                 vtype = vtype[:-1]
             return convert_class_name(vtype)
@@ -278,7 +279,7 @@ protected static native void destroy(long cptr);
         else:
             jtype = self.JNI_return_type(m.return_type)
         name = self.JNI_function_name(m)
-        print >> fd, '   public static native %s %s(%s);' % (jtype,name, generate_arg_list3(self,m.args))
+        print_('   public static native %s %s(%s);' % (jtype,name, generate_arg_list3(self,m.args)), file=fd)
 
     def JNI_member_function_prefix(self,c,m):
         klassname = c.name[5:]
@@ -294,34 +295,34 @@ protected static native void destroy(long cptr);
             jtype = self.JNI_member_type(m)
             if mtype == 'GList*'or mtype == 'const GList*':
                 name = '%s_get' % prefix
-                print >> fd, '   public static native %s[] %s(GObject obj);' % (jtype,name)
+                print_('   public static native %s[] %s(GObject obj);' % (jtype,name), file=fd)
                 name = '%s_set' % prefix
-                print >> fd, '   public static native void %s(GObject obj, %s[] value);' % (name,jtype)
+                print_('   public static native void %s(GObject obj, %s[] value);' % (name,jtype), file=fd)
                 name = '%s_add' % prefix
-                print >> fd, '   public static native void %s(GObject obj, %s value);' % (name,jtype)
+                print_('   public static native void %s(GObject obj, %s value);' % (name,jtype), file=fd)
                 if not m[2].get('element-type') in ('xmlNode*',):
                     name = '%s_remove' % prefix
-                    print >> fd, '   public static native void %s(GObject obj, %s value);' % (name,jtype)
+                    print_('   public static native void %s(GObject obj, %s value);' % (name,jtype), file=fd)
             elif mtype == 'GHashTable*':
                 name = '%s_get' % prefix
-                print >> fd, '   public static native %s[] %s(GObject obj);' % (jtype,name)
+                print_('   public static native %s[] %s(GObject obj);' % (jtype,name), file=fd)
                 name = '%s_set' % prefix
-                print >> fd, '   public static native void %s(GObject obj, %s[] value);' % (name,jtype)
+                print_('   public static native void %s(GObject obj, %s[] value);' % (name,jtype), file=fd)
             else:
                 name = '%s_get' % prefix
-                print >> fd, '   public static native %s %s(GObject obj);' % (jtype,name)
+                print_('   public static native %s %s(GObject obj);' % (jtype,name), file=fd)
                 name = '%s_set' % prefix
-                print >> fd, '   public static native void %s(GObject obj, %s value);' % (name,jtype)
+                print_('   public static native void %s(GObject obj, %s value);' % (name,jtype), file=fd)
 
     def generate_JNI_footer(self, fd):
-        print >>fd, '''
+        print_('''
     static {
         System.loadLibrary("jnilasso");
         init();
         init2();
     }
-'''
-        print >>fd, '}'
+''', file=fd)
+        print_('}', file=fd)
 
 
 # Wrappers
@@ -330,51 +331,51 @@ protected static native void destroy(long cptr);
         self.generate_wrapper_header(fd)
         self.generate_wrapper_constants(fd)
 
-        print >> fd, '/* Declaration of standalone functions */'
+        print_('/* Declaration of standalone functions */', file=fd)
         for m in self.binding_data.functions:
             self.generate_wrapper_function(m, fd)
-        print >> fd, '/* End of declaration of standalone functions */'
-        print >> fd, '/* Declaration of getter/setter methods */'
+        print_('/* End of declaration of standalone functions */', file=fd)
+        print_('/* Declaration of getter/setter methods */', file=fd)
         for c in self.binding_data.structs:
             self.generate_wrapper_getter_setter(c, fd)
-        print >> fd, '/* End of declaration of getter/setter methods */'
+        print_('/* End of declaration of getter/setter methods */', file=fd)
         for c in self.binding_data.structs:
             for m in c.methods:
                 self.generate_wrapper_function(m, fd)
-        print >> fd, open(os.path.join(self.src_dir,'wrapper_bottom.c')).read()
+        print_(open(os.path.join(self.src_dir,'wrapper_bottom.c')).read(), file=fd)
         fd.close()
 
     def generate_wrapper_header(self, fd):
-        print >> fd, open(os.path.join(self.src_dir,'wrapper_top.c')).read()
-        print >> fd, ''
+        print_(open(os.path.join(self.src_dir,'wrapper_top.c')).read(), file=fd)
+        print_('', file=fd)
         for h in self.binding_data.headers:
-            print >> fd, '#include <%s>' % h
+            print_('#include <%s>' % h, file=fd)
 
 
     def generate_wrapper_constants(self, fd):
-        print >> fd, '/* Declaration of constants */'
+        print_('/* Declaration of constants */', file=fd)
         for c in self.binding_data.constants:
             s = c[1]+'_get'
             if c[0] == 'i':
-                print >>fd, wrapper_decl(s,'jint')
-                print >>fd, ') {'
-                print >>fd, '   return %s;' % c[1]
-                print >>fd, '}'
+                print_(wrapper_decl(s,'jint'), file=fd)
+                print_(') {', file=fd)
+                print_('   return %s;' % c[1], file=fd)
+                print_('}', file=fd)
             elif c[0] == 's':
-                print >>fd, wrapper_decl(s,'jstring')
-                print >>fd, ') {'
-                print >>fd, '   return (*env)->NewStringUTF(env, (char*) %s);' % c[1]
-                print >>fd, '}'
+                print_(wrapper_decl(s,'jstring'), file=fd)
+                print_(') {', file=fd)
+                print_('   return (*env)->NewStringUTF(env, (char*) %s);' % c[1], file=fd)
+                print_('}', file=fd)
             elif c[0] == 'b':
-                print >>fd, wrapper_decl(s,'jboolean')
-                print >>fd, ') {'
-                print >>fd, '#ifdef %s' % c[1]
-                print >>fd, '   return 1;'
-                print >>fd, '#else'
-                print >>fd, '   return 0;'
-                print >>fd, '#endif'
-                print >>fd, '}'
-        print >> fd, '/* End of declaration of constants */'
+                print_(wrapper_decl(s,'jboolean'), file=fd)
+                print_(') {', file=fd)
+                print_('#ifdef %s' % c[1], file=fd)
+                print_('   return 1;', file=fd)
+                print_('#else', file=fd)
+                print_('   return 0;', file=fd)
+                print_('#endif', file=fd)
+                print_('}', file=fd)
+        print_('/* End of declaration of constants */', file=fd)
 
     def jni_return_type(self, type):
         if type is None:
@@ -460,28 +461,28 @@ protected static native void destroy(long cptr);
 
 
     def generate_wrapper_function(self, m, fd):
-        print >> fd, '/* Wrapper function for ',
+        print_('/* Wrapper function for ', file=fd, end=" ")
         if m.return_type:
-            print >> fd, m.return_type,
+            print_(m.return_type, file=fd, end=" ")
         else:
-            print >> fd, 'void',
-        print >> fd, '%s(' % m.name,
+            print_('void', file=fd, end=" ")
+        print_('%s(' % m.name, file=fd, end=" ")
         for arg in m.args:
-            print >> fd, '%s %s %s,' % (arg[0],arg[1],arg[2]),
-        print >> fd, ') */'
+            print_('%s %s %s,' % (arg[0],arg[1],arg[2]), file=fd, end=" ")
+        print_(') */', file=fd)
         if m.rename:
             name = m.rename
         else:
             name = m.name[6:]
 #        self.wrapper_list.append(name)
-#        print >> fd, '''static PyObject*
+#        print_('''static PyObject*, file=fd)
 #%s(PyObject *self, PyObject *args)
 #{''' % name
         if m.name.endswith('_new'):
             jtype = 'jlong'
         else:
             jtype = self.jni_return_type(m.return_type)
-        print >>fd, wrapper_decl(name, jtype)
+        print_(wrapper_decl(name, jtype), file=fd)
         parse_tuple_format = []
         parse_tuple_args = []
         idx = 0
@@ -489,87 +490,87 @@ protected static native void destroy(long cptr);
         for arg in m.args:
             idx = idx + 1
             arg_type, arg_name, arg_options = arg
-            print >> fd, ',%s jarg%s' % (self.jni_return_type(arg_type.replace('const ','')),idx),
-        print >> fd, ')'
-        print >> fd, '  {'
+            print_(',%s jarg%s' % (self.jni_return_type(arg_type.replace('const ','')),idx), file=fd, end=" ")
+        print_(')', file=fd)
+        print_('  {', file=fd)
         idx = 0
         if m.return_type:
-            print >> fd, '    %s ret;' % jtype
+            print_('    %s ret;' % jtype, file=fd)
         # Declare C args
         for arg in m.args:
             idx = idx + 1
             arg_type, arg_name, arg_options = arg
             if is_pointer(arg):
-                print >> fd, '    %s %s = NULL;' % (arg_type.replace('const ',''),arg_name)
+                print_('    %s %s = NULL;' % (arg_type.replace('const ',''),arg_name), file=fd)
             else:
-                print >> fd, '    %s %s;' % (arg_type.replace('const ',''),arg_name)
+                print_('    %s %s;' % (arg_type.replace('const ',''),arg_name), file=fd)
         # Declare return vars
         if m.return_type:
-            print >> fd, '    %s return_value;' % m.return_type
+            print_('    %s return_value;' % m.return_type, file=fd)
         idx = 0
         # Convert args
         for arg in m.args:
             idx = idx + 1
             arg_type, arg_name, arg_options = arg
-            print >> fd, '    %s' % self.java_to_c_value(arg_name, 'jarg%s' % idx, arg)
+            print_('    %s' % self.java_to_c_value(arg_name, 'jarg%s' % idx, arg), file=fd)
         if debug:
-            print >> fd, '    printf("%s' % name,
+            print_('    printf("%s' % name, file=fd, end=" ")
             arglist = ''
             for  arg in m.args:
                 arg_type, arg_name, arg_options = arg
                 arglist = arglist + ', %s' % arg_name
                 if is_int(arg_type, self.binding_data):
-                    print >> fd, '%i',
+                    print_('%i', file=fd, end=" ")
                 elif is_cstring(arg_type):
-                    print >> fd, '%s',
+                    print_('%s', file=fd, end=" ")
                 else:
-                    print >> fd, '%p',
-            print >> fd, '\\n"%s);' % arglist
+                    print_('%p', file=fd, end=" ")
+            print_('\\n"%s);' % arglist, file=fd)
         # Call function
-        print >> fd, '   ',
+        print_('   ', file=fd, end=" ")
         if m.return_type:
-            print >> fd, 'return_value = ',
+            print_('return_value = ', file=fd, end=" ")
             if 'new' in m.name:
-                print >>fd, '(%s)' % m.return_type,
+                print_('(%s)' % m.return_type, file=fd, end=" ")
         def arg2ref(x):
             if is_const(x):
                 return '(%s) %s' % (x[0],x[1]) 
             else:
                 return x[1]
-        print >> fd, '%s(%s);' % (m.name, ', '.join([arg2ref(x) for x in m.args]))
+        print_('%s(%s);' % (m.name, ', '.join([arg2ref(x) for x in m.args])), file=fd)
         # Free const char * args
         idx=0
         for arg in m.args:
             idx=idx+1
             arg_type, arg_name, arg_options = arg
             if is_cstring(arg_type):
-                print >> fd, '    if (%s)' % arg_name
-                print >> fd, '        g_free(%s);' % arg_name
+                print_('    if (%s)' % arg_name, file=fd)
+                print_('        g_free(%s);' % arg_name, file=fd)
             elif arg_type == 'GList*' or arg_type == 'const GList*':
                 if is_cstring(element_type(arg)):
-                    print >> fd, '    free_glist(&%s, (GFunc)free);' % arg_name
+                    print_('    free_glist(&%s, (GFunc)free);' % arg_name, file=fd)
                 elif is_object(element_type(arg)):
-                    print >> fd, '    free_glist(&%s, (GFunc)g_object_unref);' % arg_name
+                    print_('    free_glist(&%s, (GFunc)g_object_unref);' % arg_name, file=fd)
                 else:
                     raise Exception('Freeing args of type list of \'%s\' not supported.' % arg_options.get('element-type'))
 
         # Return
         if m.return_type:
             if m.name.endswith('_new'):
-                print >> fd, '    ret = (jlong)(ptrdiff_t) return_value;'
+                print_('    ret = (jlong)(ptrdiff_t) return_value;', file=fd)
             else:
                 options = {}
                 if m.return_owner:
                     options = with_return_owner({})
-                print >> fd, '    %s;' % self.c_to_java_value('ret','return_value', m.return_arg)
+                print_('    %s;' % self.c_to_java_value('ret','return_value', m.return_arg), file=fd)
                 if m.return_owner:
                     if m.return_type == 'GList*' or m.return_type == 'const GList*':
-                        print >> fd, '    free_glist(&return_value, NULL);'
+                        print_('    free_glist(&return_value, NULL);', file=fd)
                     elif is_cstring(m.return_type) and not is_const(m.return_arg):
-                        print >> fd, '    if (return_value)'
-                        print >> fd, '        g_free(return_value);'
-            print >> fd, '    return ret;'
-        print >> fd, '  }'
+                        print_('    if (return_value)', file=fd)
+                        print_('        g_free(return_value);', file=fd)
+            print_('    return ret;', file=fd)
+        print_('  }', file=fd)
 
     def generate_wrapper_getter(self, c, m, fd):
         type = arg_type(m)
@@ -580,22 +581,22 @@ protected static native void destroy(long cptr);
         signature = wrapper_decl("%s_get" % prefix, return_type)
         field = 'gobj->%s' % name
         d = locals()
-        print >>fd, '''
+        print_('''
 /* Getter for %(type)s %(klass)s.%(name)s */
 %(signature)s, jobject jobj)  {
     %(klass)s *gobj = NULL;
-    jobject_to_gobject_noref(env, jobj, (GObject**)&gobj);''' % d
+    jobject_to_gobject_noref(env, jobj, (GObject**)&gobj);''' % d, file=fd)
         if debug:
-            print >> fd, '    printf("%(prefix)s_get %%p %%p\\n", gobj, %(field)s);' % d
-        print >> fd, '    %(return_type)s ret = 0;' % d
-        print >> fd, '    if (gobj) {'
-        print >> fd, '         %s;' % self.c_to_java_value ('ret', d['field'], m)
-        print >> fd, '''    } else {
+            print_('    printf("%(prefix)s_get %%p %%p\\n", gobj, %(field)s);' % d, file=fd)
+        print_('    %(return_type)s ret = 0;' % d, file=fd)
+        print_('    if (gobj) {', file=fd)
+        print_('         %s;' % self.c_to_java_value ('ret', d['field'], m), file=fd)
+        print_('''    } else {
                  throw_by_name(env, "java/lang/NullPointerException", "no gobject correspond to the given object");
             }
             return ret;
         }
-'''
+''', file=fd)
 
     def generate_wrapper_setter(self, c, m, fd):
         type = arg_type(m)
@@ -607,17 +608,17 @@ protected static native void destroy(long cptr);
         field = 'gobj->%s' % name
         d = locals()
 
-        print >> fd,'/* Setter for %(type)s %(klass)s.%(name)s */' % d
-        print >> fd, '%(signature)s, jobject jobj, %(return_type)s value)\n  {' % d
-        print >> fd, '    %(klass)s *gobj = NULL;' % d
+        print_('/* Setter for %(type)s %(klass)s.%(name)s */' % d, file=fd)
+        print_('%(signature)s, jobject jobj, %(return_type)s value)\n  {' % d, file=fd)
+        print_('    %(klass)s *gobj = NULL;' % d, file=fd)
         if debug:
-            print >> fd, '    printf("%(prefix)s_set %%p %%p\\n", gobj, value);' % d
-        print >> fd, '    jobject_to_gobject_noref(env, jobj, (GObject**)&gobj);'
-        print >> fd, '    if (!gobj) {'
-        print >> fd, '        throw_by_name(env, "java/lang/NullPointerException", "no gobject correspond to the given object");'
-        print >> fd, '    }'
-        print >> fd, '    %s' % self.java_to_c_value(d['field'], 'value', m, full = True)
-        print >> fd, '}'
+            print_('    printf("%(prefix)s_set %%p %%p\\n", gobj, value);' % d, file=fd)
+        print_('    jobject_to_gobject_noref(env, jobj, (GObject**)&gobj);', file=fd)
+        print_('    if (!gobj) {', file=fd)
+        print_('        throw_by_name(env, "java/lang/NullPointerException", "no gobject correspond to the given object");', file=fd)
+        print_('    }', file=fd)
+        print_('    %s' % self.java_to_c_value(d['field'], 'value', m, full = True), file=fd)
+        print_('}', file=fd)
 
     def generate_wrapper_adder(self, c, m, fd):
         type = arg_type(m)
@@ -631,19 +632,19 @@ protected static native void destroy(long cptr);
         field = 'gobj->%s' % name
         d = locals()
 
-        print >> fd,'/* Adder for %(type)s<%(el_type)s> %(klass)s.%(name)s */' % d
-        print >> fd, '%(signature)s, jobject jobj, %(jni_el_type)s value)\n  {' % d
-        print >> fd, '    %(klass)s *gobj = NULL;' % d
-        print >> fd, '    jobject_to_gobject_noref(env, jobj, (GObject**)&gobj);'
+        print_('/* Adder for %(type)s<%(el_type)s> %(klass)s.%(name)s */' % d, file=fd)
+        print_('%(signature)s, jobject jobj, %(jni_el_type)s value)\n  {' % d, file=fd)
+        print_('    %(klass)s *gobj = NULL;' % d, file=fd)
+        print_('    jobject_to_gobject_noref(env, jobj, (GObject**)&gobj);', file=fd)
         if is_cstring(el_type):
-            print >> fd, '    add_to_list_of_strings(env, &%(field)s, value);' % d
+            print_('    add_to_list_of_strings(env, &%(field)s, value);' % d, file=fd)
         elif is_xml_node(el_type):
-            print >> fd, '    add_to_list_of_xml_nodes(env, &%(field)s, value);' % d
+            print_('    add_to_list_of_xml_nodes(env, &%(field)s, value);' % d, file=fd)
         elif is_object(el_type):
-            print >> fd, '    add_to_list_of_objects(env, &%(field)s, value);' % d
+            print_('    add_to_list_of_objects(env, &%(field)s, value);' % d, file=fd)
         else:
             raise Exception('generate_wrapper_adder failed for %s.%s' % (c,m))
-        print >> fd, '}'
+        print_('}', file=fd)
 
     def generate_wrapper_remover(self, c, m, fd):
         type = arg_type(m)
@@ -658,20 +659,20 @@ protected static native void destroy(long cptr);
         d = locals()
 
         if is_xml_node(el_type):
-            print >>sys.stderr, 'W: remove for list of xml node not supported: %s' % (m,)
+            print_('W: remove for list of xml node not supported: %s' % (m,), file=sys.stderr)
             return
-        print >> fd,'/* Remover for %(type)s<%(el_type)s> %(klass)s.%(name)s */' % d
-        print >> fd, '%(signature)s, jobject jobj, %(jni_el_type)s value)\n  {' % d
-        print >> fd, '    %(klass)s *gobj = NULL;' % d
-        print >> fd, '    jobject_to_gobject_noref(env, jobj, (GObject**)&gobj);'
+        print_('/* Remover for %(type)s<%(el_type)s> %(klass)s.%(name)s */' % d, file=fd)
+        print_('%(signature)s, jobject jobj, %(jni_el_type)s value)\n  {' % d, file=fd)
+        print_('    %(klass)s *gobj = NULL;' % d, file=fd)
+        print_('    jobject_to_gobject_noref(env, jobj, (GObject**)&gobj);', file=fd)
         if is_cstring(el_type):
-            print >> fd, '    remove_from_list_of_strings(env, &%(field)s,value);' % d
+            print_('    remove_from_list_of_strings(env, &%(field)s,value);' % d, file=fd)
         elif is_object(el_type):
-            print >> fd, '    remove_from_list_of_objects(env, &%(field)s,value);' % d
+            print_('    remove_from_list_of_objects(env, &%(field)s,value);' % d, file=fd)
         else:
             raise Exception('remove_from_list unsupported for %s.%s' % (c,m,))
-        print >> fd, '}'
-        print >> fd, ''
+        print_('}', file=fd)
+        print_('', file=fd)
 
     def generate_wrapper_getter_setter(self, c, fd):
         klassname = c.name
@@ -688,13 +689,13 @@ protected static native void destroy(long cptr);
                 self.generate_wrapper_remover(c, m, fd)
 
     def generate_exception_switch_case(self, fd, name, orig):
-        print >> fd, '        if (errorCode == LassoConstants.%s) {' % orig[6:]
-        print >> fd, '            throw new %s(errorCode);' % name
-        print >> fd, '        }'
+        print_('        if (errorCode == LassoConstants.%s) {' % orig[6:], file=fd)
+        print_('            throw new %s(errorCode);' % name, file=fd)
+        print_('        }', file=fd)
 
     def generate_exception_classes(self):
         efd = open(lasso_java_path + 'LassoException.java', 'w')
-        print >> efd, open(os.path.join(self.src_dir,'LassoException_top.java')).read()
+        print_(open(os.path.join(self.src_dir,'LassoException_top.java')).read(), file=efd)
         # Generate the function to get class name by error code
         supers = []
         for c in self.binding_data.constants:
@@ -719,28 +720,28 @@ protected static native void destroy(long cptr);
             name = 'Lasso%sException' % name
             self.generate_exception_class(name, 'LassoException', 0, orig)
             self.generate_exception_switch_case(efd, name, orig)
-        print >> efd, '        throw new LassoException(errorCode, "Uknown lasso error code, maybe a bug in the binding, report it!");'
-        print >> efd, '    }'
-        print >> efd, '}'
+        print_('        throw new LassoException(errorCode, "Uknown lasso error code, maybe a bug in the binding, report it!");', file=efd)
+        print_('    }', file=efd)
+        print_('}', file=efd)
         efd.close()
 
 
     def generate_exception_class(self, name, super,abstract,orig):
             fd = open(lasso_java_path + '%s.java' % name, 'w')
-            print >> fd, 'package %s;' % lasso_package_name
-            print >> fd, ''
+            print_('package %s;' % lasso_package_name, file=fd)
+            print_('', file=fd)
             if abstract:
-                print >> fd, 'abstract ',
-            print >> fd, 'public class %s extends %s {' % (name,super)
-            print >> fd, '    private static final long serialVersionUID = 6170037639785281128L;'
+                print_('abstract ', file=fd, end=" ")
+            print_('public class %s extends %s {' % (name,super), file=fd)
+            print_('    private static final long serialVersionUID = 6170037639785281128L;', file=fd)
             if not abstract:
-                print >> fd, '    public %s() {' % name
-                print >> fd, '       super(LassoConstants.%s);' % orig[6:]
-                print >> fd, '    }'
-            print >> fd, '    protected %s(int errorCode) {' % name
-            print >> fd, '        super(errorCode);'
-            print >> fd, '    }'
-            print >> fd, '}'
+                print_('    public %s() {' % name, file=fd)
+                print_('       super(LassoConstants.%s);' % orig[6:], file=fd)
+                print_('    }', file=fd)
+            print_('    protected %s(int errorCode) {' % name, file=fd)
+            print_('        super(errorCode);', file=fd)
+            print_('    }', file=fd)
+            print_('}', file=fd)
             fd.close()
 
     # Generate classes for Lasso Objects
@@ -760,7 +761,7 @@ protected static native void destroy(long cptr);
                 parent_name = convert_class_name(parent_name)
             path = lasso_java_path + '%s.java' % class_name
             fd = open(path,'w')
-            print >> fd, 'package %s;' % lasso_package_name
+            print_('package %s;' % lasso_package_name, file=fd)
             do_import_util = 0
             for m in c.members:
                 if m[0] in ('const GList*','GList*','GHashTable*'):
@@ -769,14 +770,14 @@ protected static native void destroy(long cptr);
                 if m.return_type in ('const GList*','GList*','GHashTable*'):
                     do_import_util = 1
             if do_import_util:
-                print >> fd, 'import java.util.*;'
-            print >> fd, ''
-            print >> fd, 'public class %s extends %s {' % (class_name,parent_name)
+                print_('import java.util.*;', file=fd)
+            print_('', file=fd)
+            print_('public class %s extends %s {' % (class_name,parent_name), file=fd)
             # Constructeur private
-            print >> fd, '    /* Constructors */'
-            print >> fd, '    protected %s(long cptr) {' % class_name
-            print >> fd, '        super(cptr);'
-            print >> fd, '    }'
+            print_('    /* Constructors */', file=fd)
+            print_('    protected %s(long cptr) {' % class_name, file=fd)
+            print_('        super(cptr);', file=fd)
+            print_('    }', file=fd)
             # Constructeur de base
             def cprefix(name):
                 i = name.find('_new')
@@ -786,17 +787,17 @@ protected static native void destroy(long cptr);
                     return name[:i].replace('_','').lower()
             cons = [ x for x in self.binding_data.functions if cprefix(x.name) == c.name.lower() and x.name.endswith('_new') ]
             for m in cons:
-                print >> fd, '    public %s(%s) {' % (class_name, generate_arg_list(self,m.args))
-                print >> fd, '        super(LassoJNI.%s(%s));' % (self.JNI_function_name(m),generate_arg_list2(m.args))
-                print >> fd, '    }'
+                print_('    public %s(%s) {' % (class_name, generate_arg_list(self,m.args)), file=fd)
+                print_('        super(LassoJNI.%s(%s));' % (self.JNI_function_name(m),generate_arg_list2(m.args)), file=fd)
+                print_('    }', file=fd)
             # Constructeurs speciaux
             cons = [ x for x in self.binding_data.functions if cprefix(x.name) == c.name.lower() and not x.name.endswith('_new') ]
             for m in cons:
                 name = method_name(m,class_name)
-                print >> fd, '    static public %s %s(%s) {' % (class_name, name, generate_arg_list(self,m.args))
-                print >> fd, '        return (%s) LassoJNI.%s(%s);' % (class_name, self.JNI_function_name(m),generate_arg_list2(m.args))
-                print >> fd, '    }'
-            print >> fd, '    /* Setters and getters */'
+                print_('    static public %s %s(%s) {' % (class_name, name, generate_arg_list(self,m.args)), file=fd)
+                print_('        return (%s) LassoJNI.%s(%s);' % (class_name, self.JNI_function_name(m),generate_arg_list2(m.args)), file=fd)
+                print_('    }', file=fd)
+            print_('    /* Setters and getters */', file=fd)
             for m in c.members:
                 type, name, options = m
                 prefix = self.JNI_member_function_prefix(c,m)
@@ -805,69 +806,69 @@ protected static native void destroy(long cptr);
                 old_jname = old_format_as_camelcase('_' + name)
                 jtype = self.JNI_member_type(m)
                 if type == 'GList*' or type == 'const GList*':
-                    print >> fd, '    public void set%s(List list) {' % jname
-                    print >> fd, '        %s[] arr = null;' % jtype
-                    print >> fd, '        if (list != null) {'
-                    print >> fd, '            arr = new %s[list.size()];' % jtype
-                    print >> fd, '            listToArray(list, arr);'
-                    print >> fd, '        }'
-                    print >> fd, '        LassoJNI.%s_set(this, arr);' % prefix
-                    print >> fd, '    }'
-                    print >> fd, '    public List get%s() {' % jname
-                    print >> fd, '        %s[] arr = LassoJNI.%s_get(this);' % (jtype,prefix)
-                    print >> fd, '        if (arr != null)'
-                    print >> fd, '            return Arrays.asList(arr);'
-                    print >> fd, '        else'
-                    print >> fd, '            return new ArrayList(0);'
-                    print >> fd, '    }'
-                    print >> fd, '    public void addTo%s(%s value) {' % (jname,jtype)
-                    print >> fd, '        LassoJNI.%s_add(this, value);' % prefix
-                    print >> fd, '    }'
+                    print_('    public void set%s(List list) {' % jname, file=fd)
+                    print_('        %s[] arr = null;' % jtype, file=fd)
+                    print_('        if (list != null) {', file=fd)
+                    print_('            arr = new %s[list.size()];' % jtype, file=fd)
+                    print_('            listToArray(list, arr);', file=fd)
+                    print_('        }', file=fd)
+                    print_('        LassoJNI.%s_set(this, arr);' % prefix, file=fd)
+                    print_('    }', file=fd)
+                    print_('    public List get%s() {' % jname, file=fd)
+                    print_('        %s[] arr = LassoJNI.%s_get(this);' % (jtype,prefix), file=fd)
+                    print_('        if (arr != null)', file=fd)
+                    print_('            return Arrays.asList(arr);', file=fd)
+                    print_('        else', file=fd)
+                    print_('            return new ArrayList(0);', file=fd)
+                    print_('    }', file=fd)
+                    print_('    public void addTo%s(%s value) {' % (jname,jtype), file=fd)
+                    print_('        LassoJNI.%s_add(this, value);' % prefix, file=fd)
+                    print_('    }', file=fd)
                     if m[2].get('element-type') not in ('xmlNode*',):
-                        print >> fd, '    public void removeFrom%s(%s value) {' % (jname,jtype)
-                        print >> fd, '        LassoJNI.%s_remove(this, value);' % prefix
-                        print >> fd, '    }'
+                        print_('    public void removeFrom%s(%s value) {' % (jname,jtype), file=fd)
+                        print_('        LassoJNI.%s_remove(this, value);' % prefix, file=fd)
+                        print_('    }', file=fd)
                     if old_jname != jname:
-                        print >> fd, '    public void set%s(List list) {' % old_jname
-                        print >> fd, '        this.set%s(list);' % jname
-                        print >> fd, '    }'
-                        print >> fd, '    public List get%s() {' % old_jname
-                        print >> fd, '        return this.get%s();' % jname
-                        print >> fd, '    }'
-                        print >> fd, '    public void addTo%s(%s value) {' % (old_jname,jtype)
-                        print >> fd, '        this.addTo%s(value);' % jname
-                        print >> fd, '    }'
+                        print_('    public void set%s(List list) {' % old_jname, file=fd)
+                        print_('        this.set%s(list);' % jname, file=fd)
+                        print_('    }', file=fd)
+                        print_('    public List get%s() {' % old_jname, file=fd)
+                        print_('        return this.get%s();' % jname, file=fd)
+                        print_('    }', file=fd)
+                        print_('    public void addTo%s(%s value) {' % (old_jname,jtype), file=fd)
+                        print_('        this.addTo%s(value);' % jname, file=fd)
+                        print_('    }', file=fd)
                         if m[2].get('element-type') not in ('xmlNode*',):
-                            print >> fd, '    public void removeFrom%s(%s value) {' % (old_jname,jtype)
-                            print >> fd, '        this.removeFrom%s(value);' % jname
-                            print >> fd, '    }'
+                            print_('    public void removeFrom%s(%s value) {' % (old_jname,jtype), file=fd)
+                            print_('        this.removeFrom%s(value);' % jname, file=fd)
+                            print_('    }', file=fd)
                 elif type == 'GHashTable*':
-                    print >> fd, '    public void set%s(Map map) {' % jname
-                    print >> fd, '        %s[] arr = null;' % jtype
-                    print >> fd, '        if (map != null) {'
-                    print >> fd, '            arr = new %s[map.size()*2];' % jtype
-                    print >> fd, '            mapToArray(map,arr);'
-                    print >> fd, '        }'
-                    print >> fd, '        LassoJNI.%s_set(this, arr);' % prefix
-                    print >> fd, '    }'
-                    print >> fd, '    public Map get%s() {' % jname
-                    print >> fd, '        return arrayToMap(LassoJNI.%s_get(this));' % prefix
-                    print >> fd, '    }'
+                    print_('    public void set%s(Map map) {' % jname, file=fd)
+                    print_('        %s[] arr = null;' % jtype, file=fd)
+                    print_('        if (map != null) {', file=fd)
+                    print_('            arr = new %s[map.size()*2];' % jtype, file=fd)
+                    print_('            mapToArray(map,arr);', file=fd)
+                    print_('        }', file=fd)
+                    print_('        LassoJNI.%s_set(this, arr);' % prefix, file=fd)
+                    print_('    }', file=fd)
+                    print_('    public Map get%s() {' % jname, file=fd)
+                    print_('        return arrayToMap(LassoJNI.%s_get(this));' % prefix, file=fd)
+                    print_('    }', file=fd)
                 else:
-                    print >> fd, '    public void set%s(%s value) {' % (jname,jtype)
-                    print >> fd, '        LassoJNI.%s_set(this, value);' % prefix
-                    print >> fd, '    }'
-                    print >> fd, '    public %s get%s() {' % (jtype,jname)
-                    print >> fd, '        return LassoJNI.%s_get(this);' % prefix
-                    print >> fd, '    }'
+                    print_('    public void set%s(%s value) {' % (jname,jtype), file=fd)
+                    print_('        LassoJNI.%s_set(this, value);' % prefix, file=fd)
+                    print_('    }', file=fd)
+                    print_('    public %s get%s() {' % (jtype,jname), file=fd)
+                    print_('        return LassoJNI.%s_get(this);' % prefix, file=fd)
+                    print_('    }', file=fd)
                     if old_jname != jname:
-                        print >> fd, '    public void set%s(%s value) {' % (old_jname,jtype)
-                        print >> fd, '        this.set%s(value);' % jname
-                        print >> fd, '    }'
-                        print >> fd, '    public %s get%s() {' % (jtype,old_jname)
-                        print >> fd, '        return this.get%s();' % jname
-                        print >> fd, '    }'
-            print >> fd, '    /* Methods */'
+                        print_('    public void set%s(%s value) {' % (old_jname,jtype), file=fd)
+                        print_('        this.set%s(value);' % jname, file=fd)
+                        print_('    }', file=fd)
+                        print_('    public %s get%s() {' % (jtype,old_jname), file=fd)
+                        print_('        return this.get%s();' % jname, file=fd)
+                        print_('    }', file=fd)
+            print_('    /* Methods */', file=fd)
             for m in c.methods:
                 return_type = self.JNI_return_type(m.return_type)
                 jni_name = self.JNI_function_name(m)
@@ -889,21 +890,21 @@ protected static native void destroy(long cptr);
                 if doc:
                     first = normalize(doc.description, '    /** ')
                     if first:
-                        print >> fd, first
+                        print_(first, file=fd)
                     else:
-                        print >> fd, '    /**\n'
-                    print >> fd, '      *'
+                        print_('    /**\n', file=fd)
+                    print_('      *', file=fd)
                     for p in doc.parameters:
                         name = p[0]
                         desc = p[1]
-                        print >> fd, normalize(desc, '      * @param %s ' % format_as_camelcase(name))
+                        print_(normalize(desc, '      * @param %s ' % format_as_camelcase(name)), file=fd)
                     if doc.return_value:
-                        print >> fd, normalize(doc.return_value, '      * @return ')
+                        print_(normalize(doc.return_value, '      * @return '), file=fd)
                     if m.errors:
                         for err in m.errors:
                             err = error_to_exception(err)[0]
-                            print >> fd, normalize(err,'      * @throws ')
-                    print >> fd, '    **/'
+                            print_(normalize(err,'      * @throws '), file=fd)
+                    print_('    **/', file=fd)
                 outarg = None
                 for a in args:
                     if is_out(a):
@@ -913,38 +914,38 @@ protected static native void destroy(long cptr);
                 if outarg:
                     assert is_int(make_arg(m.return_type), self.binding_data)
                     new_return_type = self.JNI_return_type(var_type(outarg))
-                    print >> fd, '    public %s %s(%s) {' % (new_return_type, mname, generate_arg_list(self, args[1:]))
-                    print >> fd, '        Object[] output = new Object[1];'
-                    print >> fd, '        LassoException.throwError(LassoJNI.%s(this, %s));' % (jni_name, generate_arg_list2(args[1:]))
-                    print >> fd, '        return (%s)output[0];' % new_return_type
-                    print >> fd, '    }'
+                    print_('    public %s %s(%s) {' % (new_return_type, mname, generate_arg_list(self, args[1:])), file=fd)
+                    print_('        Object[] output = new Object[1];', file=fd)
+                    print_('        LassoException.throwError(LassoJNI.%s(this, %s));' % (jni_name, generate_arg_list2(args[1:])), file=fd)
+                    print_('        return (%s)output[0];' % new_return_type, file=fd)
+                    print_('    }', file=fd)
 
                 elif m.return_type == 'GList*' or m.return_type == 'const GList*':
-                    print >> fd, '    public List %s(%s) {' % (mname,generate_arg_list(self,args[1:]))
+                    print_('    public List %s(%s) {' % (mname,generate_arg_list(self,args[1:])), file=fd)
                     arglist = generate_arg_list2(args[1:])
                     if arglist:
                         arglist = ', ' + arglist
-                    print >> fd, '        Object[] arr = LassoJNI.%s(this%s);' % (jni_name,arglist)
-                    print >> fd, '        if (arr != null)'
-                    print >> fd, '            return Arrays.asList(arr);'
-                    print >> fd, '        else'
-                    print >> fd, '            return null;'
-                    print >> fd, '    }'
+                    print_('        Object[] arr = LassoJNI.%s(this%s);' % (jni_name,arglist), file=fd)
+                    print_('        if (arr != null)', file=fd)
+                    print_('            return Arrays.asList(arr);', file=fd)
+                    print_('        else', file=fd)
+                    print_('            return null;', file=fd)
+                    print_('    }', file=fd)
                 else:
-                    print >> fd, '    public %s %s(%s) {' % (return_type,mname,generate_arg_list(self,args[1:]))
-                    print >> fd, '       ',
+                    print_('    public %s %s(%s) {' % (return_type,mname,generate_arg_list(self,args[1:])), file=fd)
+                    print_('       ', file=fd, end=" ")
                     if m.return_type:
-                        print >> fd, 'return',
+                        print_('return', file=fd, end=" ")
                     arglist = generate_arg_list2(args[1:])
                     if arglist:
                         arglist = ', ' + arglist
                     if is_rc(m.return_type):
-                        print >> fd, 'LassoException.throwError(',
-                    print >> fd,'LassoJNI.%s(this%s)' % (jni_name,arglist),
+                        print_('LassoException.throwError(', file=fd, end=" ")
+                    print_('LassoJNI.%s(this%s)' % (jni_name,arglist), file=fd)
                     if is_rc(m.return_type):
-                        print >> fd, ');'
+                        print_(');', file=fd)
                     else:
-                        print >> fd, ';'
-                    print >> fd, '    }'
-            print >> fd, '}'
+                        print_(';', file=fd)
+                    print_('    }', file=fd)
+            print_('}', file=fd)
             fd.close()
