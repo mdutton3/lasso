@@ -6,6 +6,7 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+include /usr/share/python/python.mk
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
@@ -26,6 +27,7 @@ endif
 
 PYDEF		:= $(shell pyversions -vd)
 PYVERS		:= $(shell pyversions -vr debian/control)
+PY3VERS     := $(shell py3versions -vr '>= 3.0')
 OTHERPYVERS	:= $(filter-out $(PYDEF), $(PYVERS))
 
 CFLAGS = `dpkg-buildflags --get CFLAGS`
@@ -49,10 +51,7 @@ CONFIGURE_ARGS := \
 	--enable-tests=no \
 	--disable-gtk-doc \
 	--enable-perl \
-	--disable-csharp \
-	--disable-php4 \
 	--with-php5-config-dir=/etc/php5/mods-available/
-
 
 ifeq ($(with_java),yes)
   CONFIGURE_ARGS += --enable-java
@@ -75,6 +74,14 @@ build-stamp:  config.status
 	$(MAKE)
 	set -e; \
 	for v in $(OTHERPYVERS); do \
+	  rm -rf bindings/python$$v; \
+	  cp -a bindings/python bindings/python$$v; \
+	  sed "s/$(PYDEF)/$$v/g" bindings/python/Makefile > bindings/python$$v/Makefile; \
+	  $(MAKE) -C bindings/python$$v clean; \
+	  $(MAKE) -C bindings/python$$v; \
+	done
+
+	for v in $(PY3VERS); do \
 	  rm -rf bindings/python$$v; \
 	  cp -a bindings/python bindings/python$$v; \
 	  sed "s/$(PYDEF)/$$v/g" bindings/python/Makefile > bindings/python$$v/Makefile; \
@@ -108,6 +115,10 @@ endif
 	  rm -rf bindings/python$$v; \
 	done
 
+	for v in $(PY3VERS); do \
+	  rm -rf bindings/python$$v; \
+	done
+
 	rm -f config.log
 
 	dh_clean 
@@ -123,6 +134,9 @@ install: build
 		GACUTIL="/usr/bin/gacutil -root $(CURDIR)/debian/tmp/usr/lib"
 	set -e; \
 	for v in $(OTHERPYVERS); do \
+	  $(MAKE) -C bindings/python$$v install DESTDIR=$(CURDIR)/debian/tmp; \
+	done
+	for v in $(PY3VERS); do \
 	  $(MAKE) -C bindings/python$$v install DESTDIR=$(CURDIR)/debian/tmp; \
 	done
 
@@ -153,6 +167,7 @@ binary-arch: build install
 	dh_strip
 	dh_perl
 	dh_python2 -ppython-lasso
+	dh_python3 -ppython3-lasso
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -a -V
@@ -164,4 +179,4 @@ binary-arch: build install
 	dh_builddeb
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install 
+.PHONY: build clean binary-indep binary-arch binary install
