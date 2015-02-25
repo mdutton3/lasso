@@ -20,6 +20,8 @@ PYVERS		:= $(shell pyversions -vr debian/control)
 PY3VERS     := $(shell py3versions -vr '>= 3.0')
 OTHERPYVERS	:= $(filter-out $(PYDEF), $(PYVERS))
 
+PERLARCHLIB := $(shell perl -MConfig -e 'print $$Config{vendorarch}')
+
 CFLAGS = `dpkg-buildflags --get CFLAGS`
 CFLAGS += -Wall
 LDFLAGS = `dpkg-buildflags --get LDFLAGS`
@@ -107,6 +109,8 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 
+	sed -e 's,$${archlib},$(PERLARCHLIB),g' debian/liblasso-perl.install.in > debian/liblasso-perl.install
+
 	# Add here commands to install the package into debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp \
 		GACUTIL="/usr/bin/gacutil -root $(CURDIR)/debian/tmp/usr/lib"
@@ -131,7 +135,7 @@ binary-arch: build install
 	dh_installexamples -XCVS
 	dh_installman
 	dh_install
-	chrpath -d $(CURDIR)/debian/liblasso-perl/usr/lib/perl5/auto/Lasso/Lasso.so
+	chrpath -d $(CURDIR)/debian/liblasso-perl$(PERLARCHLIB)/auto/Lasso/Lasso.so
 	dh_link
 	dh_strip
 	dh_perl
