@@ -6,7 +6,6 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-include /usr/share/python/python.mk
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
@@ -15,12 +14,22 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 DEB_TARGET_ARCH     := $(shell dpkg-architecture -qDEB_HOST_ARCH)
 
+ARCHLIB := $(shell perl -MConfig -e 'print $$Config{vendorarch}')
+
+with_java := no
+no_java_archs := alpha arm hppa hurd-i386
+ifneq ($(DEB_TARGET_ARCH),i386)
+ ifneq ($(DEB_TARGET_ARCH),amd64)
+  ifeq ($(DEB_TARGET_ARCH), $(findstring $(DEB_TARGET_ARCH),$(no_java_archs)))
+   with_java := disabled for architecture $(DEB_TARGET_ARCH)
+  endif
+ endif
+endif
+
 PYDEF		:= $(shell pyversions -vd)
 PYVERS		:= $(shell pyversions -vr debian/control)
-PY3VERS     := $(shell py3versions -vr '>= 3.0')
+PY3VERS		:= $(shell py3versions -vr '>= 3.0')
 OTHERPYVERS	:= $(filter-out $(PYDEF), $(PYVERS))
-
-PERLARCHLIB := $(shell perl -MConfig -e 'print $$Config{vendorarch}')
 
 CFLAGS = `dpkg-buildflags --get CFLAGS`
 CFLAGS += -Wall
@@ -43,13 +52,20 @@ CONFIGURE_ARGS := \
 	--enable-tests=no \
 	--disable-gtk-doc \
 	--enable-perl \
-	--disable-java \
 	--with-php5-config-dir=/etc/php5/mods-available/
+
+
+ifeq ($(with_java),yes)
+  CONFIGURE_ARGS += --enable-java
+else
+  CONFIGURE_ARGS += --disable-java
+endif
 
 
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
+	autoreconf -fi
 	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) $(CONFIGURE_ARGS)
 
 
@@ -67,7 +83,6 @@ build-stamp:  config.status
 	  $(MAKE) -C bindings/python$$v clean; \
 	  $(MAKE) -C bindings/python$$v; \
 	done
-
 	for v in $(PY3VERS); do \
 	  rm -rf bindings/python$$v; \
 	  cp -a bindings/python bindings/python$$v; \
@@ -83,17 +98,23 @@ clean:
 	dh_testroot
 	rm -f build-stamp 
 
+ifeq ($(with_java),yes)
+	sed -e 's/^#JAVA#//' < debian/control.in > debian/control
+else
+	sed -e 's/^#JAVA#.*//' < debian/control.in > debian/control
+endif
+
 	[ ! -f Makefile ] || $(MAKE) distclean
 
 	for v in $(OTHERPYVERS); do \
 	  rm -rf bindings/python$$v; \
 	done
-
 	for v in $(PY3VERS); do \
 	  rm -rf bindings/python$$v; \
 	done
 
 	rm -f config.log
+	rm -f debian/liblasso-perl.install
 
 	dh_clean 
 
@@ -102,8 +123,6 @@ install: build
 	dh_testroot
 	dh_clean -k 
 	dh_installdirs
-
-	sed -e 's,$${archlib},$(PERLARCHLIB),g' debian/liblasso-perl.install.in > debian/liblasso-perl.install
 
 	# Add here commands to install the package into debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp \
@@ -115,6 +134,18 @@ install: build
 	for v in $(PY3VERS); do \
 	  $(MAKE) -C bindings/python$$v install DESTDIR=$(CURDIR)/debian/tmp; \
 	done
+
+
+	mkdir $(CURDIR)/debian/tmp/usr/lib/jni/
+	if [ -e $(CURDIR)/debian/tmp/usr/lib/java ]; then \
+	  mv $(CURDIR)/debian/tmp/usr/lib/java/*.so $(CURDIR)/debian/tmp/usr/lib/jni/ ; \
+	fi
+
+	sed -e 's,$${archlib},$(ARCHLIB),g' debian/liblasso-perl.install.in > debian/liblasso-perl.install
+
+	# remove id-wsf directory if it is empty
+	-rmdir $(CURDIR)/debian/tmp/usr/include/lasso/id-wsf/
+
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -129,7 +160,7 @@ binary-arch: build install
 	dh_installexamples -XCVS
 	dh_installman
 	dh_install
-	chrpath -d $(CURDIR)/debian/liblasso-perl$(PERLARCHLIB)/auto/Lasso/Lasso.so
+	chrpath -d $(CURDIR)/debian/liblasso-perl/$(ARCHLIB)/auto/Lasso/Lasso.so
 	dh_link
 	dh_strip
 	dh_perl

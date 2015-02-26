@@ -1,2 +1,1 @@
-debian/tmp/${archlib}/auto/Lasso/*
-debian/tmp/${archlib}/*.pm
+debian/tmp/${archlib}
