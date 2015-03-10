@@ -1029,6 +1029,10 @@ lasso_saml20_login_build_response_msg(LassoLogin *login)
 						= g_strdup(assertionConsumerURL);
 		}
 
+		/* If response is signed it MUST have Destination attribute, optional otherwise */
+		lasso_assign_string(((LassoSamlp2StatusResponse*)profile->response)->Destination,
+					assertionConsumerURL);
+
 		/* build an ECP SOAP Response */
 		lasso_assign_new_string(profile->msg_body, lasso_node_export_to_ecp_soap_response(
 					LASSO_NODE(profile->response), assertionConsumerURL));
