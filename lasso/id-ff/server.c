@@ -984,7 +984,7 @@ lasso_server_get_encryption_private_keys(LassoServer *server)
  * </para></listitem>
  * <listitem><para>
  * LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED if the @trusted_root file cannot be loaded,
- * </listitem></para>
+ * </para></listitem>
  * </itemizedlist>
  */
 lasso_error_t
