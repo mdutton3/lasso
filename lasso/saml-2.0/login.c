@@ -303,9 +303,6 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	remote_provider->role = LASSO_PROVIDER_ROLE_SP;
 	server->parent.role = LASSO_PROVIDER_ROLE_IDP;
 
-	/* Normally those three attributes are mutually exclusive, but Google Apps send
-	 * ProtocolBinding and AssertionConsumerServiceURL at the same time, so we support this case
-	 * by validating that it matches the same endpoint */
 	if (((authn_request->ProtocolBinding != NULL) ||
 			(authn_request->AssertionConsumerServiceURL != NULL)) &&
 			(authn_request->AssertionConsumerServiceIndex != -1))
@@ -318,19 +315,26 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	protocol_binding = authn_request->ProtocolBinding;
 	if (protocol_binding || authn_request->AssertionConsumerServiceURL)
 	{
-		const gchar *acs_url_binding = NULL;
-
 		if (authn_request->AssertionConsumerServiceURL) {
-			acs_url_binding = lasso_saml20_provider_get_assertion_consumer_service_binding_by_url(
-					remote_provider, authn_request->AssertionConsumerServiceURL);
-			if (! acs_url_binding) {
-				// Sent ACS URL is unknown
-				rc = LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
-				goto cleanup;
-			}
-			if (! protocol_binding) {
-				// Only ACS URL sent
-				protocol_binding = acs_url_binding;
+			if (protocol_binding) {
+				if (! lasso_saml20_provider_check_assertion_consumer_service_url(
+							remote_provider, 
+							authn_request->AssertionConsumerServiceURL,
+							authn_request->ProtocolBinding)) {
+					// Sent ACS URL is unknown
+					rc = LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
+					goto cleanup;
+				}
+			} else {
+				// Only ACS URL sent, choose the first associated binding
+				protocol_binding = lasso_saml20_provider_get_assertion_consumer_service_binding_by_url(
+						remote_provider, authn_request->AssertionConsumerServiceURL);
+				if (! protocol_binding) {
+					rc = LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
+					goto cleanup;
+				}
+				lasso_assign_string(authn_request->ProtocolBinding,
+						protocol_binding);
 			}
 		}
 
@@ -346,11 +350,6 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		} else if (lasso_strisequal(protocol_binding,LASSO_SAML2_METADATA_BINDING_PAOS)) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 		} else {
-			rc = LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
-			goto cleanup;
-		}
-		// We received both a protocolbinding and an acs url, check both matches
-		if (acs_url_binding && g_strcmp0(protocol_binding, acs_url_binding) != 0) {
 			rc = LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
 			goto cleanup;
 		}

@@ -1099,6 +1099,30 @@ START_TEST(test08_test_authnrequest_flags)
 				.protocol_binding = LASSO_SAML2_METADATA_BINDING_ARTIFACT,
 				.stop_after_build_assertion = 1,
 			});
+	sso_initiated_by_sp2(idp_context, sp_context, 
+			(SsoSettings) { 
+				.assertion_consumer_service_url = "http://sp5/singleSignOnPost",
+				.protocol_binding = LASSO_SAML2_METADATA_BINDING_POST,
+				.stop_after_build_assertion = 1,
+			});
+	sso_initiated_by_sp2(idp_context, sp_context, 
+			(SsoSettings) { 
+				.assertion_consumer_service_url = "http://sp5/singleSignOnArtifact",
+				.protocol_binding = LASSO_SAML2_METADATA_BINDING_ARTIFACT,
+				.stop_after_build_assertion = 1,
+			});
+	sso_initiated_by_sp2(idp_context, sp_context, 
+			(SsoSettings) { 
+				.assertion_consumer_service_url = "http://sp5/singleSignOnPostAndArtifact",
+				.protocol_binding = LASSO_SAML2_METADATA_BINDING_ARTIFACT,
+				.stop_after_build_assertion = 1,
+			});
+	sso_initiated_by_sp2(idp_context, sp_context, 
+			(SsoSettings) { 
+				.assertion_consumer_service_url = "http://sp5/singleSignOnPostAndArtifact",
+				.protocol_binding = LASSO_SAML2_METADATA_BINDING_POST,
+				.stop_after_build_assertion = 1,
+			});
 	unblock_lasso_logs;
 
 	/* Cleanup */
