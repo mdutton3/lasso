@@ -1,0 +1,2 @@
+debian/tmp/usr/lib/python2*/dist-packages/*.py
+debian/tmp/usr/lib/python2*/dist-packages/*.so
