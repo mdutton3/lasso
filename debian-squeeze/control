@@ -1,0 +1,85 @@
+Source: lasso
+Priority: optional
+Section: libs
+Maintainer: Frederic Peters <fpeters@debian.org>
+Build-Depends: debhelper (>= 5.0.37.2), libxml2-dev, libxslt1-dev, libxmlsec1-dev, libxmlsec1-openssl, libglib2.0-dev, python-all-dev (>= 2.3.5-11), libexpat1-dev, fastjar, python-central (>= 0.5), gcj, gcj-jre, gcj-jdk, php5-dev, python-lxml
+XS-Python-Version: all
+Standards-Version: 3.8.0
+Homepage: http://lasso.entrouvert.org
+
+Package: liblasso3-dev
+Section: libdevel
+Architecture: any
+Depends: liblasso3 (= ${binary:Version}), libxml2-dev, libxmlsec1-dev, libglib2.0-dev
+Provides: liblasso-dev
+Conflicts: liblasso-dev, liblasso0, liblasso1
+Description: Library for Liberty Alliance and SAML protocols - development kit
+ Lasso is an implementation of Liberty Alliance and related protocols, for
+ network identity federations, single sign-on and other web services protocols.
+ The main specifications implemented by the library are ID-FF, ID-WSF and SAML.
+ .
+ This package contains the development files for Lasso.
+ 
+Package: liblasso3
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Library for Liberty Alliance and SAML protocols - runtime library
+ Lasso is an implementation of Liberty Alliance and related protocols, for
+ network identity federations, single sign-on and other web services protocols.
+ The main specifications implemented by the library are ID-FF, ID-WSF and SAML.
+ .
+ This package contains liblasso library used by applications to gain Library
+ Alliance support.
+
+Package: python-lasso
+Conflicts: liblasso0-python2.3, python2.3-lasso, python2.4-lasso
+Replaces: liblasso0-python2.3, python2.3-lasso, python2.4-lasso
+Provides: liblasso0-python2.3, ${python:Provides}
+Section: python
+Architecture: any
+Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:depends}
+XB-Python-Version: ${python:Versions}
+Description: Library for Liberty Alliance and SAML protocols - Python bindings
+ Lasso is an implementation of Liberty Alliance and related protocols, for
+ network identity federations, single sign-on and other web services protocols.
+ The main specifications implemented by the library are ID-FF, ID-WSF and SAML.
+ .
+ This package contains Python bindings for liblasso, needed to use lasso
+ in Python applications.
+
+Package: liblasso-java
+Section: libs
+Architecture: amd64 armel i386 ia64 mips mipsel powerpc ppc64 s390 sparc kfreebsd-i386 kfreebsd-amd64
+Depends: ${shlibs:Depends}, ${misc:depends}
+Description: Library for Liberty Alliance and SAML protocols - Java bindings
+ Lasso is an implementation of Liberty Alliance and related protocols, for
+ network identity federations, single sign-on and other web services protocols.
+ The main specifications implemented by the library are ID-FF, ID-WSF and SAML.
+ .
+ This package provides the Java interface to liblasso, needed to use lasso in
+ Java applications.
+
+Package: liblasso-perl
+Section: perl
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:depends}, ${perl:Depends}
+Description: Library for Liberty Alliance and SAML protocols - Perl bindings
+ Lasso is an implementation of Liberty Alliance and related protocols, for
+ network identity federations, single sign-on and other web services protocols.
+ The main specifications implemented by the library are ID-FF, ID-WSF and SAML.
+ .
+ This package contains Perl bindings for liblasso, needed to use lasso
+ in Perl applications.
+
+Package: php5-lasso
+Section: web
+Architecture: any
+Depends: ${shlibs:Depends}, ${php:Depends}, ${misc:depends}
+Description: Library for Liberty Alliance and SAML protocols - PHP 5 bindings
+ Lasso is an implementation of Liberty Alliance and related protocols, for
+ network identity federations, single sign-on and other web services protocols.
+ The main specifications implemented by the library are ID-FF, ID-WSF and SAML.
+ .
+ This package contains PHP bindings for liblasso, needed to use lasso
+ in PHP applications.
