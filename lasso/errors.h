@@ -113,6 +113,12 @@ LASSO_EXPORT const char* lasso_strerror(int error_code);
  * An XML tree does not respect at least an XML schema of its namespaces.
  */
 #define LASSO_XML_ERROR_SCHEMA_INVALID_FRAGMENT         17
+/**
+ * LASSO_XML_ERROR_ATTR_VALUE_INVALID:
+ *
+ * Attribute value is invalid.
+ */
+#define LASSO_XML_ERROR_ATTR_VALUE_INVALID -18
 
 /* XMLDSig */
 /**
@@ -616,6 +622,12 @@ LASSO_EXPORT const char* lasso_strerror(int error_code);
  * corresponding provider.
  */
 #define LASSO_PROFILE_ERROR_ENDPOINT_INDEX_NOT_FOUND 451
+/**
+ * LASSO_PROFILE_ERROR_INVALID_IDP_LIST
+ *
+ * The IDP list is invalid
+ */
+#define LASSO_PROFILE_ERROR_INVALID_IDP_LIST 452
 
 /* functions/methods parameters checking */
 /**
@@ -1089,3 +1101,59 @@ LASSO_EXPORT const char* lasso_strerror(int error_code);
  * The EncryptedData node is invalid, look at the logs.
  */
 #define LASSO_XMLENC_ERROR_INVALID_ENCRYPTED_DATA -2001
+
+/**
+ * LASSO_PAOS_ERROR_MISSING_REQUEST
+ *
+ * Missing PAOS Request
+ */
+#define LASSO_PAOS_ERROR_MISSING_REQUEST -2101
+/**
+ * LASSO_PAOS_ERROR_MISSING_RESPONSE
+ *
+ * Missing PAOS Response
+ */
+#define LASSO_PAOS_ERROR_MISSING_RESPONSE -2102
+/**
+ * LASSO_PAOS_ERROR_MISSING_RESPONSE_CONSUMER_URL
+ *
+ * Missing paos:Request responseConsumerURL
+ */
+#define LASSO_PAOS_ERROR_MISSING_RESPONSE_CONSUMER_URL -2103
+
+/**
+ * LASSO_ECP_ERROR_MISSING_REQUEST
+ *
+ * Missing ECP Request
+ */
+#define LASSO_ECP_ERROR_MISSING_REQUEST -2201
+/**
+ * LASSO_ECP_ERROR_MISSING_RESPONSE
+ *
+ * Missing ECP Response
+ */
+#define LASSO_ECP_ERROR_MISSING_RESPONSE -2202
+/**
+ * LASSO_ECP_ERROR_MISSING_RELAYSTATE
+ *
+ * Missing ECP RelayState
+ */
+#define LASSO_ECP_ERROR_MISSING_RELAYSTATE -2203
+/**
+ * LASSO_ECP_ERROR_MISSING_AUTHN_REQUEST
+ *
+ * Missing samlp:AuthnRequest in ECP request
+ */
+#define LASSO_ECP_ERROR_MISSING_AUTHN_REQUEST -2204
+/**
+ * LASSO_ECP_ERROR_MISSING_SAML_RESPONSE
+ *
+ * Missing samlp:Response in IdP ECP response
+ */
+#define LASSO_ECP_ERROR_MISSING_SAML_RESPONSE -2205
+/**
+ * LASSO_ECP_ERROR_ASSERTION_CONSUMER_URL_MISMATCH
+ *
+ * The ecp:Request responseConsumerURL and ecp:Response AssertionConsumerURL do not match
+ */
+#define LASSO_ECP_ERROR_ASSERTION_CONSUMER_URL_MISMATCH -2206

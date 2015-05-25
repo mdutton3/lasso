@@ -118,6 +118,18 @@ lasso_strerror(int error_code)
 			return "Failed to verify signature.";
 		case LASSO_DS_ERROR_TOO_MUCH_REFERENCES:
 			return "SAML signature must contain only one reference";
+		case LASSO_ECP_ERROR_ASSERTION_CONSUMER_URL_MISMATCH:
+			return "The ecp:Request responseConsumerURL and ecp:Response AssertionConsumerURL do not match";
+		case LASSO_ECP_ERROR_MISSING_AUTHN_REQUEST:
+			return "Missing samlp:AuthnRequest in ECP request";
+		case LASSO_ECP_ERROR_MISSING_RELAYSTATE:
+			return "Missing ECP RelayState";
+		case LASSO_ECP_ERROR_MISSING_REQUEST:
+			return "Missing ECP Request";
+		case LASSO_ECP_ERROR_MISSING_RESPONSE:
+			return "Missing ECP Response";
+		case LASSO_ECP_ERROR_MISSING_SAML_RESPONSE:
+			return "Missing samlp:Response in IdP ECP response";
 		case LASSO_ERROR_CAST_FAILED:
 			return "Expected GObject class was not found, cast failed";
 		case LASSO_ERROR_OUT_OF_MEMORY:
@@ -186,6 +198,12 @@ lasso_strerror(int error_code)
 			return "LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_IDENTIFIER";
 		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE:
 			return "Target name space not found";
+		case LASSO_PAOS_ERROR_MISSING_REQUEST:
+			return "Missing PAOS Request";
+		case LASSO_PAOS_ERROR_MISSING_RESPONSE:
+			return "Missing PAOS Response";
+		case LASSO_PAOS_ERROR_MISSING_RESPONSE_CONSUMER_URL:
+			return "Missing paos:Request responseConsumerURL";
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
 			return "An object type provided as parameter is invalid or object is NULL.";
 		case LASSO_PARAM_ERROR_CHECK_FAILED:
@@ -224,6 +242,8 @@ lasso_strerror(int error_code)
 			return "An assertion conditions could not be validated.";
 		case LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD:
 			return "Invalid HTTP method";
+		case LASSO_PROFILE_ERROR_INVALID_IDP_LIST:
+			return "The IDP list is invalid";
 		case LASSO_PROFILE_ERROR_INVALID_ISSUER:
 			return "Assertion issuer is not the same as the requested issuer";
 		case LASSO_PROFILE_ERROR_INVALID_MSG:
@@ -364,6 +384,8 @@ lasso_strerror(int error_code)
 			return "The EncryptedData node is invalid, look at the logs.";
 		case LASSO_XML_ERROR_ATTR_NOT_FOUND:
 			return "Unable to get attribute of element.";
+		case LASSO_XML_ERROR_ATTR_VALUE_INVALID:
+			return "Attribute value is invalid.";
 		case LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND:
 			return "Unable to get attribute value of element.";
 		case LASSO_XML_ERROR_INVALID_FILE:
