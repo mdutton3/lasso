@@ -21,6 +21,12 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * The effect of defining the _DEFAULT_SOURCE macro is equivalent to
+ * the effect of explicitly defining three macros in earlier glibc
+ * versions: -D_BSD_SOURCE -D_SVID_SOURCE -D_POSIX_C_SOURCE=200809C
+ */
+#define _DEFAULT_SOURCE
 /* permit importation of strptime for glibc2 */
 #define _XOPEN_SOURCE
 /* permit importation of timegm for glibc2, wait for people to complain it does not work on their
