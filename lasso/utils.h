@@ -30,7 +30,6 @@
 #include <xmlsec/keys.h>
 #include "debug.h"
 #include "backward_comp.h"
-#include "xml/private.h"
 #include "xml/tools.h"
 #include "logging.h"
 
