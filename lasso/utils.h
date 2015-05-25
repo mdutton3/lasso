@@ -442,6 +442,11 @@
 		*__tmp_list = g_list_remove(*__tmp_list, __tmp); \
 		lasso_unref(__tmp); } while(0)
 
+/* List element membership */
+#define lasso_is_in_list_of_strings(list, item) \
+	g_list_find_custom(list, item, (GCompareFunc)g_strcmp0) == NULL ? FALSE : TRUE
+
+
 /* Pointer ownership transfer */
 
 /* lasso_transfer_xxx macros are like lasso_assign_xxx but they do not increment reference count or
