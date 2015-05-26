@@ -34,6 +34,7 @@ extern "C" {
 #include "../xml/saml-2.0/samlp2_status_response.h"
 #include "../xml/saml-2.0/samlp2_request_abstract.h"
 #include "../xml/saml-2.0/saml2_subject.h"
+#include "../xml/soap-1.1/soap_header.h"
 #include "../id-ff/provider.h"
 
 int lasso_saml20_profile_init_request(LassoProfile *profile, const char *remote_provider_id,
@@ -58,6 +59,7 @@ gint lasso_saml20_profile_process_name_identifier_decryption(LassoProfile *profi
 		LassoSaml2NameID **name_id, LassoSaml2EncryptedElement **encrypted_id);
 int lasso_saml20_profile_process_soap_request(LassoProfile *profile, const char *request_msg);
 int lasso_saml20_profile_process_soap_response(LassoProfile *profile, const char *response_msg);
+	int lasso_saml20_profile_process_soap_response_with_headers(LassoProfile *profile, const char *response_msg, LassoSoapHeader **return_header);
 int lasso_saml20_profile_process_any_request(LassoProfile *profile, LassoNode *request_node,
 	const char *request_msg);
 int lasso_saml20_profile_process_any_response(LassoProfile *profile, LassoSamlp2StatusResponse *response_node, LassoHttpMethod *response_method, const char *response_msg);

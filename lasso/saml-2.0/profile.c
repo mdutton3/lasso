@@ -38,6 +38,7 @@
 #include "../id-ff/login.h"
 
 #include "../xml/private.h"
+#include "../xml/soap-1.1/soap_envelope.h"
 #include "../xml/saml-2.0/samlp2_request_abstract.h"
 #include "../xml/saml-2.0/samlp2_artifact_resolve.h"
 #include "../xml/saml-2.0/samlp2_artifact_response.h"
@@ -1439,7 +1440,32 @@ int
 lasso_saml20_profile_process_soap_response(LassoProfile *profile,
 		const char *response_msg)
 {
+	return lasso_saml20_profile_process_soap_response_with_headers(
+				profile, response_msg, NULL);
+}
+
+/**
+ * lasso_saml20_profile_process_soap_response_with_headers:
+ * @profile: the SAML 2.0 #LassoProfile object
+ * @response_msg: xml response message
+ * @header_return: If non-NULL the soap headers are returned at this
+ *                 pointer as a #LassoSoapHeader object.
+ *
+ * Generic method for processing SAML 2.0 protocol message as a SOAP response.
+ * The SOAP headers are returned via the header_return parameter
+ * if the parameter is non-NULL. The caller is responsible for freeing
+ * the SOAP header by calling lasso_release_gobject().
+ *
+ * Return value: 0 if successful; an error code otherwise.
+ */
+int
+lasso_saml20_profile_process_soap_response_with_headers(LassoProfile *profile,
+		const char *response_msg, LassoSoapHeader **header_return)
+{
 	int rc = 0;
+	LassoSoapEnvelope *envelope = NULL;
+	LassoSoapHeader *header = NULL;
+	LassoSoapBody *body = NULL;
 	LassoSaml2NameID *issuer = NULL;
 	LassoProvider *remote_provider = NULL;
 	LassoServer *server = NULL;
@@ -1447,9 +1473,38 @@ lasso_saml20_profile_process_soap_response(LassoProfile *profile,
 
 	lasso_bad_param(PROFILE, profile);
 	lasso_null_param(response_msg);
+	if (header_return) {
+		*header_return = NULL;
+	}
 
 	profile->signature_status = 0;
-	lasso_assign_new_gobject(profile->response, lasso_node_new_from_soap(response_msg));
+
+	/* Get the SOAP envelope */
+	lasso_extract_node_or_fail(envelope, lasso_soap_envelope_new_from_message(response_msg),
+							   SOAP_ENVELOPE, LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
+
+	/* Get and validate the SOAP body, assign it to the profile response */
+	lasso_extract_node_or_fail(body, envelope->Body, SOAP_BODY,
+							   LASSO_SOAP_ERROR_MISSING_BODY);
+	if (body->any && LASSO_IS_NODE(body->any->data)) {
+		lasso_assign_gobject(profile->response, body->any->data);
+	} else {
+		lasso_release_gobject(profile->response);
+		goto_cleanup_with_rc(LASSO_SOAP_ERROR_MISSING_BODY);
+	}
+
+	/* Get the optional SOAP header, validate it, optionally return it */
+	if (envelope->Header) {
+		lasso_extract_node_or_fail(header, envelope->Header, SOAP_HEADER,
+								   LASSO_PROFILE_ERROR_INVALID_SOAP_MSG);
+	}
+	if (header_return) {
+		if (header) {
+			lasso_assign_gobject(*header_return, header);
+		}
+	}
+
+	/* Extract and validate the response data */
 	lasso_extract_node_or_fail(response_abstract, profile->response, SAMLP2_STATUS_RESPONSE,
 			LASSO_PROFILE_ERROR_INVALID_MSG);
 	lasso_extract_node_or_fail(server, profile->server, SERVER,
@@ -1478,6 +1533,7 @@ lasso_saml20_profile_process_soap_response(LassoProfile *profile,
 	}
 
 cleanup:
+	lasso_release_gobject(envelope);
 	return rc;
 }
 
