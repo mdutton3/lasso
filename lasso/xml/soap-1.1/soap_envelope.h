@@ -63,6 +63,8 @@ LASSO_EXPORT LassoSoapEnvelope* lasso_soap_envelope_new(LassoSoapBody *body);
 
 LASSO_EXPORT LassoSoapEnvelope* lasso_soap_envelope_new_from_message(const gchar *message);
 
+LASSO_EXPORT LassoSoapEnvelope* lasso_soap_envelope_new_full(void);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

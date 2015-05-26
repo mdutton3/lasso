@@ -82,6 +82,16 @@ lasso_soap_envelope_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_soap_envelope_new:
+ *
+ * Creates a new #LassoSoapEnvelope with a new empty #LassoSoapBody
+ * member.  Note, this function does not add a #LassoSoapHeader, if
+ * you need both headers and a body use
+ * lasso_soap_envelope_new_full() instead.
+ *
+ * Returns: new #LassoSoapEnvelope
+ **/
 LassoSoapEnvelope*
 lasso_soap_envelope_new(LassoSoapBody *body)
 {
@@ -94,6 +104,16 @@ lasso_soap_envelope_new(LassoSoapBody *body)
 	return envelope;
 }
 
+/**
+ * lasso_soap_envelope_new_from_message:
+ * @message: XML document
+ *
+ * Given an XML document in @message, parse it and convert it into a
+ * #LassoNode, then insert that #LassoNode into the body of the newly
+ * returned #LassoSoapEnvelope.
+ *
+ * Returns: new #LassoSoapEnvelope
+ **/
 LassoSoapEnvelope*
 lasso_soap_envelope_new_from_message(const gchar *message)
 {
@@ -107,4 +127,39 @@ lasso_soap_envelope_new_from_message(const gchar *message)
 	}
 
 	return envelope;
+}
+
+/**
+ * lasso_soap_envelope_new_full:
+ *
+ * Creates a new #LassoSoapEnvelope with new empty #LassoSoapHeader
+ * and #LassoSoapBody members.
+ *
+ * Returns: new #LassoSoapEnvelope
+ **/
+LassoSoapEnvelope*
+lasso_soap_envelope_new_full()
+{
+	LassoSoapEnvelope *envelope = NULL;
+	LassoSoapHeader *header = NULL;
+	LassoSoapBody *body = NULL;
+
+	envelope = g_object_new(LASSO_TYPE_SOAP_ENVELOPE, NULL);
+	goto_cleanup_if_fail(envelope);
+
+	header = lasso_soap_header_new();
+	goto_cleanup_if_fail(header);
+	lasso_assign_gobject(envelope->Header, header);
+
+	body = lasso_soap_body_new();
+	goto_cleanup_if_fail(body);
+	lasso_assign_gobject(envelope->Body, body);
+
+	return envelope;
+
+ cleanup:
+	lasso_release_gobject(envelope);
+	lasso_release_gobject(header);
+	lasso_release_gobject(body);
+	return NULL;
 }

@@ -2477,6 +2477,7 @@ LASSO_SOAP_DETAIL_GET_CLASS
 <TITLE>LassoSoapEnvelope</TITLE>
 LassoSoapEnvelope
 lasso_soap_envelope_new
+lasso_soap_envelope_new_full
 lasso_soap_envelope_new_from_message
 <SUBSECTION SoapBinding>
 lasso_soap_envelope_add_action
