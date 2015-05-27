@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = saml-2.0 soap-1.1 dsig
+SUBDIRS = saml-2.0 soap-1.1 dsig ecp
 if WSF_ENABLED
 SUBDIRS += id-wsf-2.0 ws
 endif
@@ -162,6 +162,8 @@ liblasso_xml_la_SOURCES = \
 	lib_status_response.c \
 	lib_subject.c \
 	misc_text_node.c \
+	paos_request.c \
+	paos_response.c \
 	saml_advice.c \
 	saml_assertion.c \
 	saml_attribute.c \
@@ -213,6 +215,8 @@ liblassoinclude_HEADERS = \
 	lib_status_response.h \
 	lib_subject.h \
 	misc_text_node.h \
+	paos_request.h \
+	paos_response.h \
 	saml_advice.h \
 	saml_assertion.h \
 	saml_attribute.h \

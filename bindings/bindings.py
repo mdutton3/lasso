@@ -500,7 +500,7 @@ def parse_header(header_file):
                         if member_name == 'parent':
                             in_struct.parent = member_type
                         else:
-                            in_struct.members.append(field) 
+                            in_struct.members.append(field)
         elif line.startswith('LASSO_EXPORT '):
             while not line.strip().endswith(';'):
                 i += 1
@@ -640,4 +640,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

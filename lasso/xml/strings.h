@@ -941,13 +941,13 @@
 /**
  * LASSO_PAOS_PREFIX:
  *
- * Preferred prefix for namespace of FIXME
+ * URN binding name for PAOS
  *
  */
 #define LASSO_PAOS_PREFIX "paos"
 
 /*****************************************************************************/
-/* ECP BINDING                                                              */
+/* ECP PROFILE                                                               */
 /*****************************************************************************/
 
 /**
@@ -960,7 +960,7 @@
 /**
  * LASSO_ECP_PREFIX:
  *
- * Preferred prefix for namespace of FIXME
+ * SAML 2 URN profile name for Enhanced Client & Proxy (ECP)
  *
  */
 #define LASSO_ECP_PREFIX "ecp"
@@ -986,4 +986,3 @@
 #define LASSO_XSI_PREFIX "xsi"
 
 #endif /* __LASSO_STRINGS_H__ */
-

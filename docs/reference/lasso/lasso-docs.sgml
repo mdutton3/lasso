@@ -183,6 +183,8 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     <xi:include href="xml/lib_scoping.xml"/>
     <xi:include href="xml/lib_status_response.xml"/>
     <xi:include href="xml/lib_subject.xml"/>
+    <xi:include href="xml/paos_request.xml"/>
+    <xi:include href="xml/paos_response.xml"/>
     <xi:include href="xml/saml_advice.xml"/>
     <xi:include href="xml/saml_assertion.xml"/>
     <xi:include href="xml/saml_attribute_designator.xml"/>
@@ -284,6 +286,9 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     <xi:include href="xml/samlp2_status.xml"/>
     <xi:include href="xml/samlp2_subject_query_abstract.xml"/>
     <xi:include href="xml/samlp2_terminate.xml"/>
+    <xi:include href="xml/ecp_request.xml"/>
+    <xi:include href="xml/ecp_response.xml"/>
+    <xi:include href="xml/ecp_relaystate.xml"/>
   </chapter>
 
   <chapter id="idwsf">

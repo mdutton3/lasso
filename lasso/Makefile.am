@@ -56,6 +56,7 @@ endif
 if MINGW
 liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/xml/liblasso-xml.la \
+	$(top_builddir)/lasso/xml/ecp/liblasso-xml-ecp.la \
 	$(top_builddir)/lasso/xml/saml-2.0/liblasso-xml-saml2.la \
 	$(top_builddir)/lasso/xml/soap-1.1/liblasso-xml-soap11.la \
 	$(top_builddir)/lasso/xml/dsig/liblasso-xml-dsig.la \
@@ -72,6 +73,7 @@ liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@ \
                       -Wl,--add-stdcall-alias 
 else
 liblasso_la_LIBADD = \
+	$(top_builddir)/lasso/xml/ecp/liblasso-xml-ecp.la \
 	$(top_builddir)/lasso/xml/liblasso-xml.la \
 	$(top_builddir)/lasso/xml/saml-2.0/liblasso-xml-saml2.la \
 	$(top_builddir)/lasso/xml/soap-1.1/liblasso-xml-soap11.la \
