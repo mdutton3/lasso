@@ -54,7 +54,7 @@ struct _LassoSamlp2IDPList {
 
 	/*< public >*/
 	/* elements */
-	LassoSamlp2IDPEntry *IDPEntry;
+	GList *IDPEntry; /* of LassoSamlp2IDPEntry */
 	char *GetComplete;
 };
 
