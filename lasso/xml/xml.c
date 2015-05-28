@@ -2313,6 +2313,10 @@ prefix_from_href_and_nodename(const xmlChar *href, G_GNUC_UNUSED const xmlChar *
 		prefix = "Saml2";
 	else if (strcmp((char*)href, LASSO_SAML2_PROTOCOL_HREF) == 0)
 		prefix = "Samlp2";
+	else if (strcmp((char*)href, LASSO_ECP_HREF) == 0)
+		prefix = "Ecp";
+	else if (strcmp((char*)href, LASSO_PAOS_HREF) == 0)
+		prefix = "Paos";
 	else if (strcmp((char*)href, LASSO_SOAP_ENV_HREF) == 0)
 		prefix = "Soap";
 	else if (strcmp((char*)href, LASSO_DS_HREF) == 0)
