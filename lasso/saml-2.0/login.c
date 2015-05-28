@@ -241,11 +241,29 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login)
 	if (login->http_method == LASSO_HTTP_METHOD_SOAP
 			&& lasso_strisequal(authn_request->ProtocolBinding,LASSO_SAML2_METADATA_BINDING_PAOS)) {
 		login->http_method = LASSO_HTTP_METHOD_PAOS;
-		/* PAOS is special, the url passed to build_request is the AssertionConsumerServiceURL of
-		 * this SP, not the destination. */
-		url = lasso_saml20_login_get_assertion_consumer_service_url(login,
-				LASSO_PROVIDER(profile->server));
 	}
+
+	if (login->http_method == LASSO_HTTP_METHOD_PAOS) {
+
+		/*
+		 * PAOS is special, the url passed to build_request is the
+		 * AssertionConsumerServiceURL of this SP, not the
+		 * destination.
+		 */
+		if (authn_request->AssertionConsumerServiceURL) {
+			url = authn_request->AssertionConsumerServiceURL;
+			if (!lasso_saml20_provider_check_assertion_consumer_service_url(
+					LASSO_PROVIDER(profile->server), url, LASSO_SAML2_METADATA_BINDING_PAOS)) {
+				rc = LASSO_PROFILE_ERROR_INVALID_REQUEST;
+				goto cleanup;
+			}
+		} else {
+			url = lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(
+					LASSO_PROVIDER(profile->server), LASSO_SAML2_METADATA_BINDING_PAOS);
+			lasso_assign_string(authn_request->AssertionConsumerServiceURL, url);
+		}
+	}
+
 
 	lasso_check_good_rc(lasso_saml20_profile_build_request_msg(profile, "SingleSignOnService",
 				login->http_method, url));
@@ -1022,8 +1040,8 @@ lasso_saml20_login_build_response_msg(LassoLogin *login)
 		if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
-		assertionConsumerURL = lasso_saml20_login_get_assertion_consumer_service_url(
-						login, remote_provider);
+		assertionConsumerURL = lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(
+                         remote_provider, LASSO_SAML2_METADATA_BINDING_PAOS);
 
 		assertion = login->private_data->saml2_assertion;
 		if (LASSO_IS_SAML2_ASSERTION(assertion) == TRUE) {

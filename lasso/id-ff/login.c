@@ -1110,6 +1110,10 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	profile = LASSO_PROFILE(login);
 	lasso_profile_clean_msg_info(profile);
 
+	/* With PAOS ECP there is no remote provider, don't check for it, go straight to saml2.0 */
+	if (login->http_method == LASSO_HTTP_METHOD_PAOS) {
+		return lasso_saml20_login_build_authn_request_msg(login);
+	}
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_login_init_request was not called before */
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
@@ -1518,7 +1522,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 		LassoHttpMethod http_method)
 {
 	LassoProfile *profile;
-	LassoProvider *remote_provider;
+	LassoProvider *remote_provider = NULL;
 	LassoServer *server = NULL;
 	LassoSamlpRequestAbstract *request;
 	lasso_error_t rc = 0;
@@ -1532,6 +1536,13 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	/* clean state */
 	lasso_release_string (profile->remote_providerID);
 	lasso_release_gobject (profile->request);
+
+	server->parent.role = LASSO_PROVIDER_ROLE_SP;
+
+	/* With PAOS ECP there is no remote provider, don't check for it, go straight to saml2.0 */
+	if (http_method == LASSO_HTTP_METHOD_PAOS) {
+		return lasso_saml20_login_init_authn_request(login, http_method);
+	}
 
 	if (remote_providerID != NULL) {
 		lasso_assign_string(profile->remote_providerID, remote_providerID);
@@ -1547,7 +1558,6 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 	remote_provider->role = LASSO_PROVIDER_ROLE_IDP;
-	server->parent.role = LASSO_PROVIDER_ROLE_SP;
 
 	IF_SAML2(profile) {
 		return lasso_saml20_login_init_authn_request(login, http_method);
@@ -1569,7 +1579,8 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	lasso_assign_string(login->private_data->request_id, request->RequestID);
 	request->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
 	request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
-	if (lasso_provider_get_protocol_conformance(remote_provider) < LASSO_PROTOCOL_LIBERTY_1_2) {
+	if (remote_provider &&
+		lasso_provider_get_protocol_conformance(remote_provider) < LASSO_PROTOCOL_LIBERTY_1_2) {
 		request->MajorVersion = 1;
 		request->MinorVersion = 0;
 	}

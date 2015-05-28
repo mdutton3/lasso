@@ -799,51 +799,59 @@ lasso_saml20_profile_init_request(LassoProfile *profile,
 		session = profile->session;
 	}
 
-	/* set remote provider Id */
-	if (! remote_provider_id) {
-		if (first_in_session) {
-			if (! session) {
-				return LASSO_PROFILE_ERROR_SESSION_NOT_FOUND;
+	/*
+	 * With PAOS the ECP client determines the remote provider.
+	 * Everthing in the following block of code depends on
+	 * establishing the remote provider and subsequetnly operating
+	 * on the remote provider.
+	 */
+	if (http_method != LASSO_HTTP_METHOD_PAOS) {
+		/* set remote provider Id */
+		if (! remote_provider_id) {
+			if (first_in_session) {
+				if (! session) {
+					return LASSO_PROFILE_ERROR_SESSION_NOT_FOUND;
+				}
+				remote_provider_id_auto = lasso_session_get_provider_index(session, 0);
+			} else {
+				remote_provider_id_auto = lasso_server_get_first_providerID(server);
 			}
-			remote_provider_id_auto = lasso_session_get_provider_index(session, 0);
-		} else {
-			remote_provider_id_auto = lasso_server_get_first_providerID(server);
 		}
-	}
-	if (! remote_provider_id && ! remote_provider_id_auto) {
-		rc = LASSO_PROFILE_ERROR_CANNOT_FIND_A_PROVIDER;
-		goto cleanup;
-	}
-	if (remote_provider_id) {
-		lasso_assign_string(profile->remote_providerID, remote_provider_id);
-	} else {
-		lasso_assign_new_string(profile->remote_providerID, remote_provider_id_auto);
-	}
-	rc = get_provider(profile, &remote_provider);
-	if (rc)
-		goto cleanup;
-	/* set the name identifier */
-	name_id = (LassoSaml2NameID*)lasso_profile_get_nameIdentifier(profile);
-	if (LASSO_IS_SAML2_NAME_ID(name_id)) {
-		lasso_assign_gobject(profile->nameIdentifier, (LassoNode*)name_id);
-	}
+		if (! remote_provider_id && ! remote_provider_id_auto) {
+			rc = LASSO_PROFILE_ERROR_CANNOT_FIND_A_PROVIDER;
+			goto cleanup;
+		}
+		if (remote_provider_id) {
+			lasso_assign_string(profile->remote_providerID, remote_provider_id);
+		} else {
+			lasso_assign_new_string(profile->remote_providerID, remote_provider_id_auto);
+		}
+		rc = get_provider(profile, &remote_provider);
+		if (rc)
+			goto cleanup;
+		/* set the name identifier */
+		name_id = (LassoSaml2NameID*)lasso_profile_get_nameIdentifier(profile);
+		if (LASSO_IS_SAML2_NAME_ID(name_id)) {
+			lasso_assign_gobject(profile->nameIdentifier, (LassoNode*)name_id);
+		}
 
-	/* verify that this provider supports the current http method */
-	if (http_method == LASSO_HTTP_METHOD_ANY) {
-		http_method = lasso_saml20_provider_get_first_http_method((LassoProvider*)server,
-				remote_provider, protocol_type);
-	}
-	if (http_method == LASSO_HTTP_METHOD_NONE) {
-		rc = LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
-		goto cleanup;
-	}
-	if (! lasso_saml20_provider_accept_http_method(
-				(LassoProvider*)server,
-				remote_provider,
-				protocol_type,
-				http_method,
-				TRUE)) {
-		rc = LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+		/* verify that this provider supports the current http method */
+		if (http_method == LASSO_HTTP_METHOD_ANY) {
+			http_method = lasso_saml20_provider_get_first_http_method((LassoProvider*)server,
+					remote_provider, protocol_type);
+		}
+		if (http_method == LASSO_HTTP_METHOD_NONE) {
+			rc = LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+			goto cleanup;
+		}
+		if (! lasso_saml20_provider_accept_http_method(
+					(LassoProvider*)server,
+					remote_provider,
+					protocol_type,
+					http_method,
+					TRUE)) {
+			rc = LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+		}
 	}
 	profile->http_request_method = http_method;
 
