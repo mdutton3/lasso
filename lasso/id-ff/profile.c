@@ -523,6 +523,74 @@ lasso_profile_get_server(LassoProfile *profile)
 }
 
 
+/**
+ * lasso_profile_get_message_id:
+ * @profile: a #LassoProfile object
+ *
+ * Return the messge ID.
+ *
+ * Return value:(transfer full)(allow-none): a newly allocated string or NULL
+ */
+char*
+lasso_profile_get_message_id(LassoProfile *profile)
+{
+	return g_strdup(profile->private_data->message_id);
+}
+
+/**
+ * lasso_profile_set_message_id:
+ * @profile: a #LassoProfile object
+ * @message_id: the message ID
+ *
+ * Set @message_id for the current conversation
+ *
+ */
+void
+lasso_profile_set_message_id(LassoProfile *profile, const char *message_id)
+{
+	if (! LASSO_IS_PROFILE(profile)) {
+		message(G_LOG_LEVEL_CRITICAL, "set_message_id called on something not a" \
+			"LassoProfile object: %p", profile);
+		return;
+	}
+	lasso_assign_string(profile->private_data->message_id, message_id);
+}
+
+/**
+ * lasso_profile_get_idp_list:
+ * @profile: a #LassoProfile object
+ *
+ * Return the messge ID.
+ *
+ * Return value: a #LassoNode, when using SAML 2.0 a #LassoSamlp2IDPList,
+ * when using ID-FF a #LassoLibIDPList.
+ */
+LassoNode*
+lasso_profile_get_idp_list(LassoProfile *profile)
+{
+	return profile->private_data->idp_list;
+}
+
+/**
+ * lasso_profile_set_idp_list:
+ * @profile: a #LassoProfile object
+ * @idp_list: a #LassoNode, when using SAML 2.0 a #LassoSamlp2IDPList,
+ * when using ID-FF a #LassoLibIDPList.
+ *
+ * Set @idp_list for the current conversation
+ *
+ */
+void
+lasso_profile_set_idp_list(LassoProfile *profile, const LassoNode *idp_list)
+{
+	if (! LASSO_IS_PROFILE(profile)) {
+		message(G_LOG_LEVEL_CRITICAL, "set_idp_list called on something not a" \
+			"LassoProfile object: %p", profile);
+		return;
+	}
+	lasso_assign_gobject(profile->private_data->idp_list, idp_list);
+}
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
@@ -891,6 +959,8 @@ instance_init(LassoProfile *profile)
 	profile->private_data->artifact = NULL;
 	profile->private_data->artifact_message = NULL;
 	profile->private_data->signature_hint = LASSO_PROFILE_SIGNATURE_HINT_MAYBE;
+	profile->private_data->message_id = NULL;
+	profile->private_data->idp_list = NULL;
 
 	profile->server = NULL;
 	profile->request = NULL;

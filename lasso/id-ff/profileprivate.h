@@ -38,6 +38,8 @@ struct _LassoProfilePrivate
 	gboolean dispose_has_run;
 	LassoProfileSignatureHint signature_hint;
 	LassoProfileSignatureVerifyHint signature_verify_hint;
+	gchar *message_id;
+	LassoNode *idp_list;
 };
 
 void lasso_profile_set_response_status(LassoProfile *profile, const gchar *statusCodeValue);
