@@ -5757,6 +5757,12 @@ LASSO_IDWSF2_DSTREF_DATA_RESPONSE_GET_CLASS
 <FILE>ecp</FILE>
 <TITLE>LassoEcp</TITLE>
 LassoEcp
+lasso_ecp_is_provider_in_sp_idplist
+lasso_ecp_is_idp_entry_known_idp_supporting_ecp
+lasso_ecp_set_known_sp_provided_idp_entries_supporting_ecp
+lasso_ecp_has_sp_idplist
+lasso_ecp_get_endpoint_url_by_entity_id
+lasso_ecp_process_sp_idp_list
 lasso_ecp_new
 lasso_ecp_process_authn_request_msg
 lasso_ecp_process_response_msg

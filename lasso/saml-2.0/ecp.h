@@ -31,6 +31,7 @@ extern "C" {
 #include "../xml/xml.h"
 
 #include "../id-ff/profile.h"
+#include "../xml//saml-2.0/samlp2_idp_list.h"
 
 #define LASSO_TYPE_ECP (lasso_ecp_get_type())
 #define LASSO_ECP(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_ECP, LassoEcp))
@@ -47,7 +48,16 @@ struct _LassoEcp {
 	LassoProfile parent;
 
 	/*< public >*/
-	gchar *assertionConsumerURL;
+	gchar *assertion_consumer_url;
+	gchar *message_id;
+	gchar *response_consumer_url;
+	gchar *relaystate;
+	LassoSaml2NameID *issuer;
+	gchar *provider_name;
+	gboolean is_passive;
+	LassoSamlp2IDPList *sp_idp_list;
+	GList *known_sp_provided_idp_entries_supporting_ecp; /* of LassoSamlp2IDPEntry */
+	GList *known_idp_entity_ids_supporting_ecp;	         /* of strings */
 
 	/*< private >*/
 	LassoEcpPrivate *private_data;
@@ -68,6 +78,19 @@ LASSO_EXPORT lasso_error_t lasso_ecp_process_response_msg(LassoEcp *ecp,
 		const char *response_msg);
 
 LASSO_EXPORT void lasso_ecp_destroy(LassoEcp *ecp);
+
+LASSO_EXPORT gboolean lasso_ecp_is_provider_in_sp_idplist(LassoEcp *ecp, const gchar *entity_id);
+
+LASSO_EXPORT gboolean lasso_ecp_is_idp_entry_known_idp_supporting_ecp(LassoEcp *ecp, const LassoSamlp2IDPEntry *idp_entry);
+
+LASSO_EXPORT void lasso_ecp_set_known_sp_provided_idp_entries_supporting_ecp(LassoEcp *ecp);
+
+LASSO_EXPORT gboolean lasso_ecp_has_sp_idplist(LassoEcp *ecp);
+
+LASSO_EXPORT gchar *lasso_ecp_get_endpoint_url_by_entity_id(LassoEcp *ecp, const gchar *entity_id);
+
+LASSO_EXPORT int lasso_ecp_process_sp_idp_list(LassoEcp *ecp, const LassoSamlp2IDPList *sp_idp_list);
+
 
 #ifdef __cplusplus
 }

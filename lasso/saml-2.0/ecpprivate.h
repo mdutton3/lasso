@@ -32,8 +32,7 @@ extern "C" {
 
 struct _LassoEcpPrivate
 {
-	xmlChar *messageID;
-	xmlChar *relay_state;
+	gboolean dispose_has_run;
 };
 
 #ifdef __cplusplus
