@@ -59,6 +59,13 @@
 #include "id-wsf-2.0/idwsf2_strings.h"
 #endif
 
+/* Needed for ECP */
+#include "saml-2.0/samlp2_idp_list.h"
+#include "paos_request.h"
+#include "ecp/ecp_request.h"
+#include "ecp/ecp_response.h"
+#include "ecp/ecp_relaystate.h"
+
 #include "../key.h"
 
 static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, LassoNodeClass *class, xmlNode *xmlnode,
@@ -247,40 +254,23 @@ lasso_node_export_to_base64(LassoNode *node)
 char*
 lasso_node_export_to_ecp_soap_response(LassoNode *node, const char *assertionConsumerURL)
 {
-	xmlNode *envelope, *body, *message, *header, *ecp_response;
-	xmlNs *soap_env_ns, *ecp_ns;
-	char *ret;
+	char *ret = NULL;
+	LassoNode *ecp_response = NULL;
+	GList *headers = NULL;
 
-	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
+	lasso_return_null_if_fail(LASSO_IS_NODE(node));
+	lasso_return_null_if_fail(assertionConsumerURL);
 
-	message = lasso_node_get_xmlNode(node, FALSE);
+	/* Build the soap header elements */
+	ecp_response = lasso_ecp_response_new(assertionConsumerURL);
+	goto_cleanup_if_fail(ecp_response);
+	lasso_list_add_new_gobject(headers, ecp_response);
 
-	envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
-	soap_env_ns = xmlNewNs(envelope,
-				(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX);
-	xmlSetNs(envelope, soap_env_ns);
+	/* Create soap envelope and serialize into an xml document */
+	ret = lasso_node_export_to_soap_with_headers(node, headers);
 
-	header = xmlNewTextChild(envelope, NULL, (xmlChar*)"Header", NULL);
-
-	/* ECP response header block */
-	ecp_response = xmlNewNode(NULL, (xmlChar*)"Response");
-	ecp_ns = xmlNewNs(ecp_response, (xmlChar*)LASSO_ECP_HREF, (xmlChar*)LASSO_ECP_PREFIX);
-	xmlSetNs(ecp_response, ecp_ns);
-	xmlSetNsProp(ecp_response, soap_env_ns, (xmlChar*)"mustUnderstand", (xmlChar*)"1");
-	xmlSetNsProp(ecp_response, soap_env_ns,
-			(xmlChar*)"actor", (xmlChar*)LASSO_SOAP_ENV_ACTOR);
-	xmlSetProp(ecp_response, (xmlChar*)"AssertionConsumerServiceURL",
-			(const xmlChar*)assertionConsumerURL);
-	xmlAddChild(header, ecp_response);
-
-	/* Body block */
-	body = xmlNewTextChild(envelope, NULL, (xmlChar*)"Body", NULL);
-	xmlAddChild(body, message);
-
-	/* dump */
-	ret = lasso_xmlnode_to_string(envelope, FALSE, 0);
-	xmlFreeNode(envelope);
-
+ cleanup:
+	lasso_release_list_of_gobjects(headers);
 	return ret;
 }
 
@@ -290,79 +280,73 @@ lasso_node_export_to_ecp_soap_response(LassoNode *node, const char *assertionCon
  *
  * Exports @node to a PAOS message.
  *
+ * Deprecated, use lasso_node_export_to_paos_request_full() instead
+ *
  * Return value: a PAOS export of @node.  The string must be freed by the
  *      caller.
  **/
-char*
+char *
 lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
 		const char *responseConsumerURL, const char *relay_state)
 {
-	xmlNode *envelope, *body, *header, *paos_request, *ecp_request, *ecp_relay_state, *message;
-	xmlNs *soap_env_ns, *saml_ns, *ecp_ns;
-	char *ret;
+	return lasso_node_export_to_paos_request_full(node, issuer, responseConsumerURL,
+												  NULL, relay_state, TRUE, NULL, NULL);
+}
 
-	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
+/**
+ * lasso_node_export_to_paos_request_full:
+ * @node:
+ * @issuer:
+ * @responseConsumerURL:
+ * @message_id: (allow-none):
+ * @relay_state: (allow-none):
+ * @is_passive:
+ * @provider_name: (allow-none):
+ * @idp_list: (allow-none):
+ *
+ * Creates a new SOAP message. The SOAP headers include a PaosRequst,
+ * a EcpRequest and optionally a EcpRelayState. The SOAP body contains
+ * the @node parameters.
+ *
+ * Returns: string containing a PAOS request. The string must be freed
+ * by the caller.
+ **/
+char *
+lasso_node_export_to_paos_request_full(LassoNode *node, const char *issuer,
+									   const char *responseConsumerURL, const char *message_id,
+									   const char *relay_state, gboolean is_passive, gchar *provider_name,
+									   LassoSamlp2IDPList *idp_list)
+{
+	char *ret = NULL;
+	LassoNode *paos_request = NULL;
+	LassoNode *ecp_request = NULL;
+	LassoNode *ecp_relaystate = NULL;
+	GList *headers = NULL;
 
-	message = lasso_node_get_xmlNode(node, FALSE);
+	lasso_return_null_if_fail(LASSO_IS_NODE(node));
+	lasso_return_null_if_fail(issuer);
+	lasso_return_null_if_fail(responseConsumerURL);
 
-	if (message == NULL) {
-		return NULL;
-	}
+	/* Build the soap header elements */
+	paos_request = lasso_paos_request_new(responseConsumerURL, message_id);
+	goto_cleanup_if_fail(paos_request);
+	lasso_list_add_new_gobject(headers, paos_request);
 
-	envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
-	soap_env_ns = xmlNewNs(envelope,
-			(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX);
-	xmlSetNs(envelope, soap_env_ns);
+	ecp_request = lasso_ecp_request_new(issuer, is_passive, provider_name, idp_list);
+	goto_cleanup_if_fail(ecp_request);
+	lasso_list_add_new_gobject(headers, ecp_request);
 
-	header = xmlNewTextChild(envelope, NULL, (xmlChar*)"Header", NULL);
-
-	/* PAOS request header block */
-	paos_request = xmlNewNode(NULL, (xmlChar*)"Request");
-	xmlSetNs(paos_request, xmlNewNs(paos_request,
-				(xmlChar*)LASSO_PAOS_HREF, (xmlChar*)LASSO_PAOS_PREFIX));
-	xmlSetProp(paos_request, (xmlChar*)"service", (xmlChar*)LASSO_ECP_HREF);
-	xmlSetProp(paos_request, (xmlChar*)"responseConsumerURL",
-			(const xmlChar*)responseConsumerURL);
-	xmlSetNsProp(paos_request, soap_env_ns, (xmlChar*)"mustUnderstand", (xmlChar*)"1");
-	xmlSetNsProp(paos_request, soap_env_ns, (xmlChar*)"actor", (xmlChar*)LASSO_SOAP_ENV_ACTOR);
-	xmlAddChild(header, paos_request);
-
-	/* ECP request header block */
-	ecp_request = xmlNewNode(NULL, (xmlChar*)"Request");
-	ecp_ns = xmlNewNs(ecp_request, (xmlChar*)LASSO_ECP_HREF, (xmlChar*)LASSO_ECP_PREFIX);
-	xmlSetNs(ecp_request, ecp_ns);
-	xmlSetProp(ecp_request, (xmlChar*)"responseConsumerURL",
-			(const xmlChar*)responseConsumerURL);
-	xmlSetNsProp(ecp_request, soap_env_ns, (xmlChar*)"mustUnderstand", (xmlChar*)"1");
-	xmlSetNsProp(ecp_request, soap_env_ns, (xmlChar*)"actor", (xmlChar*)LASSO_SOAP_ENV_ACTOR);
-	saml_ns = xmlNewNs(ecp_request,
-			(xmlChar*)LASSO_SAML2_ASSERTION_HREF,
-			(xmlChar*)LASSO_SAML2_ASSERTION_PREFIX);
-	xmlNewTextChild(ecp_request, saml_ns, (xmlChar*)"Issuer", (const xmlChar*)issuer);
-	xmlAddChild(header, ecp_request);
-
-	/* ECP relay state block */
 	if (relay_state) {
-		ecp_relay_state = xmlNewNode(NULL, (xmlChar*)"RelayState");
-		xmlNodeSetContent(ecp_relay_state, (const xmlChar*)relay_state);
-		ecp_ns = xmlNewNs(ecp_relay_state, (xmlChar*)LASSO_ECP_HREF,
-				(xmlChar*)LASSO_ECP_PREFIX);
-		xmlSetNs(ecp_relay_state, ecp_ns);
-		xmlSetNsProp(ecp_relay_state, soap_env_ns,
-				(xmlChar*)"mustUnderstand", (xmlChar*)"1");
-		xmlSetNsProp(ecp_relay_state, soap_env_ns,
-				(xmlChar*)"actor", (xmlChar*)LASSO_SOAP_ENV_ACTOR);
-		xmlAddChild(header, ecp_relay_state);
+		ecp_relaystate = lasso_ecp_relay_state_new(relay_state);
+		goto_cleanup_if_fail(ecp_relaystate);
+		lasso_list_add_new_gobject(headers, ecp_relaystate);
 	}
 
-	/* Body block */
-	body = xmlNewTextChild(envelope, NULL, (xmlChar*)"Body", NULL);
-	xmlAddChild(body, message);
+	/* Create soap envelope and serialize into an xml document */
+	ret = lasso_node_export_to_soap_with_headers(node, headers);
 
-	ret = lasso_xmlnode_to_string(envelope, FALSE, 0);
-
-	xmlFreeNode(envelope);
-
+ cleanup:
+	lasso_release_list_of_gobjects(headers);
 	return ret;
 }
 
