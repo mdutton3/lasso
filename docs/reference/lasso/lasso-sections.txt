@@ -169,6 +169,7 @@ lasso_provider_get_metadata_list_for_role
 lasso_provider_get_metadata_keys_for_role
 lasso_provider_get_roles
 lasso_provider_match_conformance
+lasso_provider_set_protocol_conformance
 <SUBSECTION Standard>
 LASSO_PROVIDER
 LASSO_IS_PROVIDER

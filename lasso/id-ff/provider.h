@@ -236,6 +236,9 @@ LASSO_EXPORT xmlNode* lasso_provider_get_organization(const LassoProvider *provi
 LASSO_EXPORT LassoProtocolConformance lasso_provider_get_protocol_conformance(
 		const LassoProvider *provider);
 
+LASSO_EXPORT void lasso_provider_set_protocol_conformance(LassoProvider *provider,
+														  LassoProtocolConformance protocol_conformance);
+
 LASSO_EXPORT void lasso_provider_set_encryption_mode(LassoProvider *provider,
 		LassoEncryptionMode encryption_mode);
 

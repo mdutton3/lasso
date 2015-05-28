@@ -969,6 +969,32 @@ lasso_provider_get_protocol_conformance(const LassoProvider *provider)
 	return provider->private_data->conformance;
 }
 
+/**
+ * lasso_provider_set_protocol_conformance:
+ * @provider: a #LassoProvider object
+ * @protocol_conformance: #LassoProtocolConformance enumerated value.
+ *
+ * Normally the protocol conformance is set when the metadata for the
+ * provider is loaded because the metadata defines the type of
+ * server. However some #LassoServer variants do not have metadata
+ * (e.g. ECP) therefore instead of loading the metadata it is
+ * necessary to explicitly set the protocol conformance because parts
+ * of the Lasso library dispatch based on the protocol conformance.
+ * Without the protocol conformance being set it is likely the wrong
+ * code will execute.
+ *
+ * **WARNING**, do not manually set the protocol conformance if
+ * metadata has been loaded, metadata is the final arbiter of protocol
+ * conformance.
+ *
+ * Return value: 0 on success; another value if an error occured.
+ **/
+void
+lasso_provider_set_protocol_conformance(LassoProvider *provider, LassoProtocolConformance protocol_conformance)
+{
+	provider->private_data->conformance = protocol_conformance;
+}
+
 gboolean
 _lasso_provider_load_metadata_from_buffer(LassoProvider *provider, const gchar *metadata, int length)
 {
