@@ -42,14 +42,18 @@
 #include "../xml/saml-2.0/samlp2_request_abstract.h"
 #include "../xml/saml-2.0/samlp2_artifact_resolve.h"
 #include "../xml/saml-2.0/samlp2_artifact_response.h"
+#include "../xml/saml-2.0/samlp2_authn_request.h"
 #include "../xml/saml-2.0/samlp2_name_id_mapping_response.h"
 #include "../xml/saml-2.0/samlp2_status_response.h"
 #include "../xml/saml-2.0/samlp2_response.h"
 #include "../xml/saml-2.0/saml2_assertion.h"
 #include "../xml/saml-2.0/saml2_xsd.h"
+#include "../xml/soap-1.1/soap_envelope.h"
 #include "../xml/misc_text_node.h"
 #include "../utils.h"
 #include "../debug.h"
+
+
 
 static char* lasso_saml20_profile_build_artifact(LassoProvider *provider);
 static int lasso_saml20_profile_export_to_query(LassoProfile *profile, LassoNode *msg, char **query,
@@ -907,26 +911,44 @@ lasso_saml20_profile_build_soap_request_msg(LassoProfile *profile, const char *u
 static int
 lasso_profile_saml20_build_paos_request_msg(LassoProfile *profile, const char *url)
 {
+	int rc = 0;
+    LassoSamlp2AuthnRequest *request;
+	LassoSamlp2IDPList *idp_list = NULL;
+
+	lasso_extract_node_or_fail(request, profile->request, SAMLP2_AUTHN_REQUEST,
+							   LASSO_PROFILE_ERROR_MISSING_REQUEST);
+
+	if (lasso_profile_get_idp_list(profile)) {
+		lasso_extract_node_or_fail(idp_list,
+								   lasso_profile_get_idp_list(profile),
+								   SAMLP2_IDP_LIST,
+								   LASSO_PROFILE_ERROR_INVALID_IDP_LIST);
+	}
+
 	lasso_assign_new_string(profile->msg_body,
-			lasso_node_export_to_paos_request(profile->request,
-					profile->server->parent.ProviderID, url,
-					profile->msg_relayState));
+			lasso_node_export_to_paos_request_full(profile->request,
+												   profile->server->parent.ProviderID, url,
+												   lasso_profile_get_message_id(profile),
+												   profile->msg_relayState,
+												   request->IsPassive, request->ProviderName,
+												   idp_list));
+
 	check_msg_body;
-	return 0;
+
+cleanup:
+	return rc;
 }
 
 int
 lasso_saml20_profile_build_request_msg(LassoProfile *profile, const char *service,
 		LassoHttpMethod method, const char *_url)
 {
-	LassoProvider *provider;
 	char *made_url = NULL, *url;
 	int rc = 0;
 
 	lasso_bad_param(PROFILE, profile);
 
 	lasso_profile_clean_msg_info(profile);
-	lasso_check_good_rc(get_provider(profile, &provider));
 	url = (char*)_url;
 
 	/* check presence of a request */
@@ -936,6 +958,9 @@ lasso_saml20_profile_build_request_msg(LassoProfile *profile, const char *servic
 
 	/* if not explicitely given, automatically determine an URI from the metadatas */
 	if (url == NULL) {
+		LassoProvider *provider;
+
+		lasso_check_good_rc(get_provider(profile, &provider));
 		made_url = url = get_url(provider, service, http_method_to_binding(method));
 	}
 

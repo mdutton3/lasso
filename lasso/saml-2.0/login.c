@@ -38,6 +38,9 @@
 #include "../id-ff/sessionprivate.h"
 #include "../id-ff/loginprivate.h"
 
+#include "../xml/ecp/ecp_relaystate.h"
+#include "../xml/paos_response.h"
+
 #include "../xml/xml_enc.h"
 
 #include "../xml/saml-2.0/samlp2_authn_request.h"
@@ -1065,22 +1068,83 @@ cleanup:
 	return rc;
 }
 
+/**
+ * lasso_saml20_login_process_paos_response_msg:
+ * @login: a #LassoLogin profile object
+ * @msg: ECP to SP PAOS message
+ *
+ * Process an ECP to SP PAOS response message.
+ *
+ * SAML2 Profile for ECP (Section 4.2) defines these steps for an ECP
+ * transaction
+ *
+ * 1. ECP issues HTTP Request to SP
+ * 2. SP issues <AuthnRequest> to ECP using PAOS
+ * 3. ECP determines IdP
+ * 4. ECP conveys <AuthnRequest> to IdP using SOAP
+ * 5. IdP identifies principal
+ * 6. IdP issues <Response> to ECP, targeted at SP using SOAP
+ * 7. ECP conveys <Response> to SP using PAOS
+ * 8. SP grants or denies access to principal
+ *
+ * This function is used in the implemention of Step 8 in an SP. The
+ * ECP response from Step 7 has been received from the ECP client, the
+ * SP must now parse the response and act upon the result of the Authn
+ * request the SP issued in Step 2. If the SOAP body contains a
+ * samlp:Response with a saml:Assertion the assertion is processed in
+ * the context of the @login parameter.
+ *
+ * The response may contain in the SOAP header a paos:Response or
+ * ecp:RelayState elment, both are optional. If the ecp:RelayState is
+ * present it is assigned to the #LassoProfile.msg_relayState
+ * field. If the paos:Response is present it's refToMessageID
+ * attribute is assigned to the #LassoProfile.msg_messageID field.
+ */
 gint
 lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 {
+	LassoSoapHeader *header = NULL;
 	LassoProfile *profile;
 	int rc1, rc2;
 
 	lasso_null_param(msg);
 
 	profile = LASSO_PROFILE(login);
-	rc1 = lasso_saml20_profile_process_soap_response(profile, msg);
-	rc2 = lasso_saml20_login_process_response_status_and_assertion(login);
 
+	rc1 = lasso_saml20_profile_process_soap_response_with_headers(profile, msg, &header);
+
+	/*
+	 * If the SOAP message contained a header check for the optional
+     * paos:Response and ecp:RelayState elements, if they exist extract their
+     * values into the profile.
+	 */
+	if (header) {
+		GList *i = NULL;
+		LassoEcpRelayState *ecp_relaystate = NULL;
+		LassoPaosResponse *paos_response = NULL;
+
+		lasso_foreach(i, header->Other) {
+			if (!ecp_relaystate && LASSO_IS_ECP_RELAYSTATE(i->data)) {
+				ecp_relaystate = (LassoEcpRelayState *)i->data;
+			} else if (!paos_response && LASSO_IS_PAOS_RESPONSE(i->data)) {
+				paos_response = (LassoPaosResponse *)i->data;
+			}
+			if (ecp_relaystate && paos_response) break;
+		}
+		if (ecp_relaystate) {
+			lasso_assign_string(profile->msg_relayState, ecp_relaystate->RelayState);
+		}
+		if (paos_response) {
+			lasso_profile_set_message_id(profile, paos_response->refToMessageID);
+		}
+	}
+
+	rc2 = lasso_saml20_login_process_response_status_and_assertion(login);
 	if (rc1) {
 		return rc1;
 	}
 	return rc2;
+
 }
 
 /**
