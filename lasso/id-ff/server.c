@@ -558,6 +558,63 @@ lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash)
 	return NULL;
 }
 
+typedef struct {
+	GList *provider_list;
+	LassoProvider *provider;
+	LassoProviderRole role;
+	LassoMdProtocolType protocol_type;
+	LassoHttpMethod http_method;
+} FilteredProviderListContext;
+
+static void
+filter_provider_list(G_GNUC_UNUSED gpointer key, gpointer value, gpointer user_data)
+{
+	LassoProvider *remote_provider = (LassoProvider*)value;
+	FilteredProviderListContext *context = (FilteredProviderListContext*)user_data;
+
+	if (remote_provider->role == context->role) {
+		if (lasso_provider_accept_http_method(context->provider, remote_provider,
+											  context->protocol_type, context->http_method, FALSE)) {
+			lasso_list_add_string(context->provider_list, remote_provider->ProviderID);
+		}
+	}
+}
+
+
+/**
+ * lasso_server_get_filtered_provider_list
+ * @server: a #LassoServer
+ * @role: each returned provider will match this #LassoProviderRole
+ * @protocol_type: provider must have endpoint matching #LassoMdProtocolType and @http_method
+ * @http_method: provider must have endpoint matching #LassoHttpMethod and @protocol_type
+ *
+ * Iterate over the @server providers and build a list of provider EntityID's who
+ * have the specified @role and at least one endpoint matching the
+ * @protocol_type and @http_method. Return a #GList list of EntityID's at the
+ * @provider_list pointer. The caller is responsible for freeing the @provider_list
+ * by calling lasso_release_list_of_strings().
+ *
+ * Return value:(transfer full)(element-type string):  #GList of matching provider EntityID's returned here.
+ */
+GList *
+lasso_server_get_filtered_provider_list(const LassoServer *server, LassoProviderRole role,
+										LassoMdProtocolType protocol_type,
+										LassoHttpMethod http_method)
+{
+	FilteredProviderListContext context;
+
+	context.provider_list = NULL;
+	context.provider = LASSO_PROVIDER(server);
+	context.role = role;
+	context.protocol_type = protocol_type;
+	context.http_method = http_method;
+
+	g_hash_table_foreach(server->providers,
+						 filter_provider_list, &context);
+
+	return context.provider_list;
+}
+
 /*****************************************************************************/
 /* overridden parent class methods                                           */
 /*****************************************************************************/
