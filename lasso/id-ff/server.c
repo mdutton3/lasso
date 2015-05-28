@@ -254,6 +254,34 @@ cleanup:
 	return rc;
 }
 
+/**
+ * lasso_server_get_endpoint_url_by_id:
+ * @server: a #LassoServer
+ * @provider_id: the EntityID whose endpoints will be examined.
+ * @endpoint_description: string describing criteria used to select endpoint.
+ *
+ * Locate the provider in the server's list of providers, then select an
+ * endpoint given the @endpoint_description and return than endpoint's URL.
+ * If the provider cannot be found or if the provider does not have a
+ * matching endpoint NULL will be returned.
+ *
+ * Returns: url (must be freed by caller)
+ */
+gchar *
+lasso_server_get_endpoint_url_by_id(const LassoServer *server, const gchar *provider_id,
+									const gchar *endpoint_description)
+{
+	LassoProvider *provider;
+	gchar *url = NULL;
+
+	provider = lasso_server_get_provider(server, provider_id);
+	if (!provider) return NULL;
+
+	url = lasso_provider_get_metadata_one(provider, endpoint_description);
+
+	return url;
+}
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
