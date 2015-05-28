@@ -471,6 +471,72 @@ lasso_node_export_to_soap(LassoNode *node)
 }
 
 /**
+ * lasso_node_export_to_soap_with_headers:
+ * @node: a #LassoNode, becomes the SOAP body
+ * @headers: (allow-none): #GList of #LassNode
+ *
+ * Exports @node to a SOAP message. The @node becomes the SOAP body.
+ * each header in the #headers list is added to the SOAP header if non-NULL.
+ * @headers is permitted to be an empty list (e.g. NULL).
+ *
+ * <example>
+ * <title>Create SOAP envelope with variable number of header nodes</title>
+ *
+ * <para>You need to form a SOAP message with authn_request as the body and
+ * paos_request, ecp_request and ecp_relaystate as SOAP header elements.
+ * It is possible one or more of these may be NULL and should be skipped.</para>
+ * <programlisting>
+ * char *text = NULL;
+ * LassoNode *paos_request = NULL;
+ * LassoNode *ecp_request = NULL;
+ * LassoNode *ecp_relaystate = NULL;
+ * GList *headers = NULL;
+ *
+ * paos_request = lasso_paos_request_new(responseConsumerURL, message_id);
+ * ecp_request = lasso_ecp_request_new(issuer, is_passive, provider_name, idp_list);
+ *
+ * lasso_list_add_new_gobject(headers, paos_request);
+ * lasso_list_add_new_gobject(headers, ecp_request);
+ * lasso_list_add_new_gobject(headers, ecp_relaystate);
+ *
+ * text = lasso_node_export_to_soap_with_headers(node, headers);
+ *
+ * lasso_release_list_of_gobjects(headers);
+ * </programlisting>
+ * </example>
+ *
+ * Return value: a SOAP export of @node.  The string must be freed by the
+ *      caller.
+ **/
+char*
+lasso_node_export_to_soap_with_headers(LassoNode *node, GList *headers)
+{
+	GList *i;
+	LassoSoapEnvelope *envelope = NULL;
+	LassoNode *header = NULL;
+	char *ret = NULL;
+
+	g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
+
+	envelope = lasso_soap_envelope_new_full();
+	lasso_list_add_gobject(envelope->Body->any, node);
+
+	lasso_foreach(i, headers) {
+		header = i->data;
+		if (!header) continue;
+
+		goto_cleanup_if_fail(LASSO_IS_NODE(header));
+		lasso_list_add_gobject(envelope->Header->Other, header); /* adds ref */
+	}
+
+	ret = lasso_node_export_to_xml((LassoNode*)envelope);
+
+ cleanup:
+	lasso_release_gobject(envelope);
+	return ret;
+}
+
+/**
  * lasso_node_encrypt:
  * @lasso_node: a #LassoNode to encrypt
  * @encryption_public_key : RSA public key the node will be encrypted with
@@ -643,7 +709,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 		message(G_LOG_LEVEL_WARNING, "Encryption failed");
 		goto cleanup;
 	}
-	
+
 
 	/* Create a new EncryptedElement */
 	encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_saml2_encrypted_element_new());

@@ -198,6 +198,11 @@
   <func name="lasso_log_set_handler" skip="true"/>
   <func name="lasso_log_remove_handler" skip="true"/>
   <func name="lasso_key_new_for_signature_from_memory" skip="true"/>
+  <!-- Xml -->
+  <func name="lasso_node_export_to_soap_with_headers">
+    <param name="node"/>
+    <param name="headers" type="GList*" elem_type="LassoNode*"/>
+  </func>
   <!-- Exceptions -->
   <exception>
     <category name="Profile"/>
