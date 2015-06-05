@@ -1131,6 +1131,386 @@ START_TEST(test08_test_authnrequest_flags)
 }
 END_TEST
 
+typedef enum {
+	ECP_IDP_LIST_NONE,
+	ECP_IDP_LIST_ECP,
+	ECP_IDP_LIST_BOGUS,
+} EcpIdpListVariant;
+
+/* Build an IDPList whose members have an endpoint supporing
+ * the protocol_type and http_method.
+ */
+static LassoNode *
+get_idp_list(const LassoServer *server, LassoMdProtocolType protocol_type, LassoHttpMethod http_method)
+{
+    GList *idp_entity_ids = NULL;
+    GList *entity_id = NULL;
+    GList *idp_entries = NULL;
+    LassoSamlp2IDPList *idp_list;
+    LassoSamlp2IDPEntry *idp_entry;
+
+    idp_list = LASSO_SAMLP2_IDP_LIST(lasso_samlp2_idp_list_new());
+
+    idp_entity_ids =
+        lasso_server_get_filtered_provider_list(server,
+                                                LASSO_PROVIDER_ROLE_IDP,
+                                                protocol_type, http_method);
+
+    for (entity_id = g_list_first(idp_entity_ids); entity_id != NULL;
+         entity_id = g_list_next(entity_id)) {
+        idp_entry = LASSO_SAMLP2_IDP_ENTRY(lasso_samlp2_idp_entry_new());
+        idp_entry->ProviderID = g_strdup(entity_id->data);
+        idp_entry->Name = g_strdup_printf("[NAME] %s", idp_entry->ProviderID);
+        idp_entry->Loc = g_strdup_printf("[LOCATION] %s", idp_entry->ProviderID);
+
+        idp_entries = g_list_append(idp_entries, idp_entry);
+    }
+    lasso_release_list_of_strings(idp_entity_ids);
+
+    idp_list->IDPEntry = idp_entries;
+    return LASSO_NODE(idp_list);
+}
+
+static LassoNode *
+get_bogus_idp_list()
+{
+    char *idp_entity_ids[] = {"http://bogus_1/metadata", NULL};
+	char **idp_entity_id_iter = NULL;
+    char *entity_id = NULL;
+    GList *idp_entries = NULL;
+    LassoSamlp2IDPList *idp_list;
+    LassoSamlp2IDPEntry *idp_entry;
+
+    idp_list = LASSO_SAMLP2_IDP_LIST(lasso_samlp2_idp_list_new());
+
+    for (idp_entity_id_iter = idp_entity_ids, entity_id = *idp_entity_id_iter;
+		 *idp_entity_id_iter != NULL;
+		 idp_entity_id_iter++) {
+        idp_entry = LASSO_SAMLP2_IDP_ENTRY(lasso_samlp2_idp_entry_new());
+        idp_entry->ProviderID = g_strdup(entity_id);
+        idp_entry->Name = g_strdup_printf("[NAME] %s", idp_entry->ProviderID);
+        idp_entry->Loc = g_strdup_printf("[LOCATION] %s", idp_entry->ProviderID);
+
+        idp_entries = g_list_append(idp_entries, idp_entry);
+    }
+
+    idp_list->IDPEntry = idp_entries;
+    return LASSO_NODE(idp_list);
+}
+
+static void validate_idp_list(LassoEcp *ecp, EcpIdpListVariant ecpIDPListVariant, LassoSamlp2IDPList *idp_list)
+{
+	if (ecpIDPListVariant == ECP_IDP_LIST_NONE) {
+		check_null(ecp->sp_idp_list);
+		check_null(ecp->known_sp_provided_idp_entries_supporting_ecp);
+	} else if (ecpIDPListVariant == ECP_IDP_LIST_ECP || ecpIDPListVariant == ECP_IDP_LIST_BOGUS) {
+		GList *ecp_iter, *src_iter;
+
+		check_not_null(ecp->sp_idp_list);
+		check_not_null(idp_list);
+
+		check_null(ecp->sp_idp_list->GetComplete);
+		check_null(idp_list->GetComplete);
+
+		check_equals(g_list_length(ecp->sp_idp_list->IDPEntry),
+					 g_list_length(idp_list->IDPEntry));
+
+		for (ecp_iter = g_list_first(ecp->sp_idp_list->IDPEntry), src_iter = g_list_first(idp_list->IDPEntry);
+			 ecp_iter && src_iter;
+			 ecp_iter = g_list_next(ecp_iter), src_iter = g_list_next(src_iter)) {
+			LassoSamlp2IDPEntry *ecp_item, *src_item;
+
+			ecp_item = LASSO_SAMLP2_IDP_ENTRY(ecp_iter->data);
+			src_item = LASSO_SAMLP2_IDP_ENTRY(src_iter->data);
+
+			check_not_null(ecp_item->ProviderID);
+			check_not_null(src_item->ProviderID);
+			check_str_equals(ecp_item->ProviderID, src_item->ProviderID);
+
+			check_not_null(ecp_item->Name);
+			check_not_null(src_item->Name);
+			check_str_equals(ecp_item->Name, src_item->Name);
+
+			check_not_null(ecp_item->Loc);
+			check_not_null(src_item->Loc);
+			check_str_equals(ecp_item->Loc, src_item->Loc);
+		}
+
+		if (ecpIDPListVariant == ECP_IDP_LIST_ECP) {
+			check_not_null(ecp->known_sp_provided_idp_entries_supporting_ecp);
+			for (ecp_iter = g_list_first(ecp->known_sp_provided_idp_entries_supporting_ecp),
+				 src_iter = g_list_first(idp_list->IDPEntry);
+				 ecp_iter && src_iter;
+				 ecp_iter = g_list_next(ecp_iter), src_iter = g_list_next(src_iter)) {
+				gchar *ecp_item, *src_item;
+
+				ecp_item = ecp_iter->data;
+				src_item = src_iter->data;
+
+				check_not_null(ecp_item);
+				check_not_null(src_item);
+				check_str_equals(ecp_item, src_item);
+			}
+		} else {
+			check_null(ecp->known_sp_provided_idp_entries_supporting_ecp);
+		}
+
+	}
+	check_equals(g_list_length(ecp->known_idp_entity_ids_supporting_ecp), 1);
+	check_str_equals((char*)g_list_nth(ecp->known_idp_entity_ids_supporting_ecp, 0)->data, "http://idp5/metadata");
+}
+
+void test_ecp(EcpIdpListVariant ecpIDPListVariant)
+{
+	char *serviceProviderContextDump = NULL, *identityProviderContextDump = NULL;
+	LassoServer *spContext = NULL, *ecpContext=NULL, *idpContext = NULL;
+	LassoLogin *spLoginContext = NULL, *idpLoginContext = NULL;
+	LassoEcp *ecp = NULL;
+	LassoSamlp2AuthnRequest *request = NULL;
+	gboolean is_passive = FALSE;
+    char *provider_name = NULL;
+	char *relayState = NULL;
+	char *messageID = NULL;
+	char *spPaosRequestMsg = NULL;
+	char *ecpSoapRequestMsg = NULL;
+	char *idpSoapResponseMsg = NULL;
+	char *ecpPaosResponseMsg = NULL;
+	char *spLoginDump = NULL;
+	LassoSaml2Assertion *assertion;
+    LassoSamlp2IDPList *idp_list = NULL;
+
+	/*
+	 * SAML2 Profile for ECP (Section 4.2) defines these steps for an ECP
+	 * transaction
+	 *
+	 * 1. ECP issues HTTP Request to SP
+	 * 2. SP issues <AuthnRequest> to ECP using PAOS
+	 * 3. ECP determines IdP
+	 * 4. ECP conveys <AuthnRequest> to IdP using SOAP
+	 * 5. IdP identifies principal
+	 * 6. IdP issues <Response> to ECP, targeted at SP using SOAP
+	 * 7. ECP conveys <Response> to SP using PAOS
+	 * 8. SP grants or denies access to principal
+	 */
+
+
+	/*
+	 * Act as the SP who generates an AuthnRequest & conveys it in PAOS
+	 */
+
+	/* Create new SP Login Context */
+	serviceProviderContextDump = generateServiceProviderContextDump();
+	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
+	spLoginContext = lasso_login_new(spContext);
+	check_not_null(spLoginContext);
+
+	check_good_rc(lasso_login_init_authn_request(spLoginContext, "http://idp5/metadata",
+												 LASSO_HTTP_METHOD_PAOS));
+
+	/* Set PAOS authn request parameters */
+	request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(spLoginContext)->request);
+	fail_unless(LASSO_IS_SAMLP2_AUTHN_REQUEST(request), "request should be authn_request");
+	request->IsPassive = is_passive;
+
+	lasso_assign_string(request->NameIDPolicy->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
+	request->NameIDPolicy->AllowCreate = 1;
+
+	provider_name = "test_sp_001";
+	lasso_assign_string(request->ProviderName, provider_name);
+
+	relayState = "fake[]";
+	lasso_assign_string(LASSO_PROFILE(spLoginContext)->msg_relayState, relayState);
+
+	messageID = "id-1234";
+	lasso_profile_set_message_id(LASSO_PROFILE(spLoginContext), messageID);
+
+	if (ecpIDPListVariant == ECP_IDP_LIST_ECP) {
+		idp_list = LASSO_SAMLP2_IDP_LIST(get_idp_list(spContext,
+													  LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON,
+													  LASSO_HTTP_METHOD_SOAP));
+		lasso_profile_set_idp_list(LASSO_PROFILE(spLoginContext), LASSO_NODE(idp_list));
+	} else if (ecpIDPListVariant == ECP_IDP_LIST_BOGUS) {
+		idp_list = LASSO_SAMLP2_IDP_LIST(get_bogus_idp_list());
+		lasso_profile_set_idp_list(LASSO_PROFILE(spLoginContext), LASSO_NODE(idp_list));
+	}
+
+	/* Build PAOS authn request message */
+	check_good_rc(lasso_login_build_authn_request_msg(spLoginContext));
+
+	/*
+	 * spPaosRequestMsg is what will be sent back to the ECP client.
+     * No reason to validate the contents of spPaosRequestMsg here
+     * because in the next step the spPaosRequestMsg will be parsed
+     * and we'll validate the parsed values.
+	 */
+	lasso_assign_string(spPaosRequestMsg, LASSO_PROFILE(spLoginContext)->msg_body);
+	check_not_null(spPaosRequestMsg);
+	check_null(LASSO_PROFILE(spLoginContext)->msg_url);
+	check_not_null(strstr(spPaosRequestMsg, "RelayState"));
+
+
+	/* Finished with SP Login Context, will create new one later */
+	lasso_server_destroy(spContext);
+	spContext = NULL;
+	spLoginDump = lasso_node_dump(LASSO_NODE(spLoginContext));
+	lasso_login_destroy(spLoginContext);
+	spLoginContext = NULL;
+
+	/*
+	 * Act as the ECP client who just received a PAOS request (spPaosRequestMsg).
+	 */
+
+	/* Create an ECP client & load an IdP */
+	ecpContext = lasso_server_new(NULL, NULL, NULL, NULL);
+	lasso_provider_set_protocol_conformance(LASSO_PROVIDER(ecpContext), LASSO_PROTOCOL_SAML_2_0);
+
+	lasso_server_add_provider(ecpContext, LASSO_PROVIDER_ROLE_IDP,
+							  TESTSDATADIR "/idp5-saml2/metadata.xml", NULL, NULL);
+
+	ecp = lasso_ecp_new(ecpContext);
+	check_not_null(ecp);
+
+	/* parse the spPaosRequestMsg */
+	check_good_rc(lasso_ecp_process_authn_request_msg(ecp, spPaosRequestMsg));
+
+	/* Validate ECP properties received in the spPaosRequestMsg */
+	check_null(ecp->assertion_consumer_url);
+	check_str_equals(ecp->response_consumer_url, "http://sp5/singleSignOnSOAP");
+	check_str_equals(ecp->message_id, messageID);
+	check_str_equals(ecp->relaystate, relayState);
+	check_str_equals(ecp->issuer->content, "http://sp5/metadata");
+	check_str_equals(ecp->provider_name, provider_name);
+    check_equals(ecp->is_passive, is_passive);
+
+	/* Validate ECP IdP list info & default IdP URL */
+	validate_idp_list(ecp, ecpIDPListVariant, idp_list);
+	check_str_equals(LASSO_PROFILE(ecp)->msg_url, "http://idp5/singleSignOnSOAP");
+
+	/*
+	 * ecpSoapRequestMsg is what we'll post to the IdP at the msg_url.
+     */
+	lasso_assign_string(ecpSoapRequestMsg, LASSO_PROFILE(ecp)->msg_body);
+	check_not_null(ecpSoapRequestMsg);
+
+	/*
+	 * Act as the IdP which just received the SOAP request (ecpSoapRequestMsg)
+	 */
+
+	/* Create an IdP */
+	identityProviderContextDump = generateIdentityProviderContextDump();
+	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
+	idpLoginContext = lasso_login_new(idpContext);
+	check_not_null(idpLoginContext);
+
+	/* Parse the ecpSoapRequestMsg */
+	check_good_rc(lasso_login_process_authn_request_msg(idpLoginContext, ecpSoapRequestMsg));
+
+	check_true(lasso_login_must_authenticate(idpLoginContext));
+	check_equals(idpLoginContext->protocolProfile, LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP);
+	check_false(lasso_login_must_ask_for_consent(idpLoginContext));
+	check_good_rc(lasso_login_validate_request_msg(idpLoginContext,
+			1, /* authentication_result */
+			0  /* is_consent_obtained */ ));
+
+	/* Build IdP response */
+
+	check_good_rc(lasso_login_build_assertion(idpLoginContext,
+			LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD,
+			"FIXME: authenticationInstant",
+			"FIXME: reauthenticateOnOrAfter",
+			"FIXME: notBefore",
+			"FIXME: notOnOrAfter"));
+	assertion = (LassoSaml2Assertion*)lasso_login_get_assertion(idpLoginContext);
+	check_true(LASSO_IS_SAML2_ASSERTION(assertion));
+	lasso_saml2_assertion_set_basic_conditions(LASSO_SAML2_ASSERTION(assertion), 60, 120, FALSE);
+	lasso_release_gobject(assertion);
+
+	/* Build IdP SOAP response message */
+	check_good_rc(lasso_login_build_response_msg(idpLoginContext, NULL));
+
+	/* idpSoapResponseMsg is what we'll send back to the ECP client */
+	lasso_assign_string(idpSoapResponseMsg, LASSO_PROFILE(idpLoginContext)->msg_body);
+	check_not_null(idpSoapResponseMsg);
+
+	/*
+	 * Resume acting as the ECP client, process IdP response
+	 */
+
+	check_good_rc(lasso_ecp_process_response_msg(ecp, idpSoapResponseMsg));
+
+	/* Validate ECP properties, only the assertion_consumer_url should have changed */
+	check_str_equals(ecp->assertion_consumer_url, "http://sp5/singleSignOnSOAP");
+	check_str_equals(ecp->response_consumer_url, "http://sp5/singleSignOnSOAP");
+	check_str_equals(ecp->response_consumer_url, ecp->assertion_consumer_url); /* MUST match! */
+
+	check_str_equals(ecp->message_id, messageID);
+	check_str_equals(ecp->relaystate, relayState);
+	check_str_equals(ecp->issuer->content, "http://sp5/metadata");
+	check_str_equals(ecp->provider_name, provider_name);
+    check_equals(ecp->is_passive, is_passive);
+
+	/* Validate ECP IdP list info */
+	validate_idp_list(ecp, ecpIDPListVariant, idp_list);
+
+	lasso_assign_string(ecpPaosResponseMsg, LASSO_PROFILE(ecp)->msg_body);
+	check_not_null(ecpPaosResponseMsg);
+	check_str_equals(LASSO_PROFILE(ecp)->msg_url, ecp->assertion_consumer_url);
+
+	/* Act as the SP again which has just been posted the ecpPaosResponseMsg */
+
+	/* Create new SP Login Context */
+	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
+	spLoginContext = lasso_login_new(spContext);
+	check_not_null(spLoginContext);
+
+	/* Parse the ecpPaosResponseMsg */
+	check_good_rc(lasso_login_process_paos_response_msg(spLoginContext, ecpPaosResponseMsg));
+
+	/* Verify we got back the same relayState and messageID */
+	check_str_equals(LASSO_PROFILE(spLoginContext)->msg_relayState, relayState);
+	check_str_equals(lasso_profile_get_message_id(LASSO_PROFILE(spLoginContext)), messageID);
+
+
+	g_free(serviceProviderContextDump);
+	g_free(identityProviderContextDump);
+
+	lasso_release_gobject(spContext);
+	lasso_release_gobject(ecpContext);
+	lasso_release_gobject(idpContext);
+
+	lasso_release_gobject(spLoginContext);
+	lasso_release_gobject(idpLoginContext);
+
+	lasso_release_gobject(ecp);
+
+	lasso_release_string(spLoginDump);
+	lasso_release_string(spPaosRequestMsg);
+	lasso_release_string(ecpSoapRequestMsg);
+	lasso_release_string(idpSoapResponseMsg);
+	lasso_release_string(ecpPaosResponseMsg);
+
+	lasso_release_gobject(idp_list);
+
+}
+
+START_TEST(test09_ecp)
+{
+	test_ecp(ECP_IDP_LIST_NONE);
+}
+END_TEST
+
+START_TEST(test10_ecp)
+{
+	test_ecp(ECP_IDP_LIST_ECP);
+}
+END_TEST
+
+START_TEST(test11_ecp)
+{
+	test_ecp(ECP_IDP_LIST_BOGUS);
+}
+END_TEST
+
 Suite*
 login_saml2_suite()
 {
@@ -1142,6 +1522,7 @@ login_saml2_suite()
 	TCase *tc_idpKeyRollover = tcase_create("Login initiated by idp, idp use two differents signing keys (simulate key roll-over)");
 	TCase *tc_spKeyRollover = tcase_create("Login initiated by idp, sp use two differents encrypting keys (simulate key roll-over)");
 	TCase *tc_hmacSignature = tcase_create("Login initiated by sp, using shared-key signature");
+	TCase *tc_ecp = tcase_create("ECP Login");
 	suite_add_tcase(s, tc_generate);
 	suite_add_tcase(s, tc_spLogin);
 	suite_add_tcase(s, tc_spLoginMemory);
@@ -1149,6 +1530,7 @@ login_saml2_suite()
 	suite_add_tcase(s, tc_idpKeyRollover);
 	suite_add_tcase(s, tc_spKeyRollover);
 	suite_add_tcase(s, tc_hmacSignature);
+	suite_add_tcase(s, tc_ecp);
 	tcase_add_test(tc_generate, test01_saml2_generateServersContextDumps);
 	tcase_add_test(tc_spLogin, test02_saml2_serviceProviderLogin);
 	tcase_add_test(tc_spLoginMemory, test03_saml2_serviceProviderLogin);
@@ -1157,6 +1539,9 @@ login_saml2_suite()
 	tcase_add_test(tc_spKeyRollover, test06_sso_sp_with_key_rollover);
 	tcase_add_test(tc_hmacSignature, test07_sso_sp_with_hmac_sha1_signatures);
 	tcase_add_test(tc_spLogin, test08_test_authnrequest_flags);
+	tcase_add_test(tc_ecp, test09_ecp);
+	tcase_add_test(tc_ecp, test10_ecp);
+	tcase_add_test(tc_ecp, test11_ecp);
 	return s;
 }
 
