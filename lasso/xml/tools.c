@@ -494,6 +494,7 @@ lasso_query_sign(char *query, LassoSignatureContext context)
 	xmlSecKeyData *key_data;
 	unsigned int sigret_size = 0;
 	LassoSignatureMethod sign_method;
+        lasso_error_t rc = 0;
 
 	g_return_val_if_fail(query != NULL, NULL);
 	g_return_val_if_fail(lasso_validate_signature_method(context.signature_method), NULL);
@@ -594,8 +595,11 @@ lasso_query_sign(char *query, LassoSignatureContext context)
 		case LASSO_SIGNATURE_METHOD_HMAC_SHA256:
 		case LASSO_SIGNATURE_METHOD_HMAC_SHA384:
 		case LASSO_SIGNATURE_METHOD_HMAC_SHA512:
-			lasso_get_hmac_key(key, (void**)&hmac_key,
-					&hmac_key_length);
+			if ((rc = lasso_get_hmac_key(key, (void**)&hmac_key,
+										 &hmac_key_length))) {
+				message(G_LOG_LEVEL_CRITICAL, "Failed to get hmac key (%s)", lasso_strerror(rc));
+				goto done;
+			}
 			g_assert(hmac_key);
 			md = EVP_sha1();
 			sigret_size = EVP_MD_size(md);
