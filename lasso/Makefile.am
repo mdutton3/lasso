@@ -5,11 +5,11 @@ endif
 
 liblassoincludedir = $(includedir)/lasso
 
-INCLUDES = -I$(top_builddir) -I$(top_srcdir) $(LASSO_CORE_CFLAGS)
+AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) $(LASSO_CORE_CFLAGS)
 
 ## Added to activate libtool 1.5.6 windows resources partial support
 LTRCCOMPILE = $(LIBTOOL) --tag=RC --mode=compile $(RC) \
-     `echo $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) |\
+     `echo $(DEFS) $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) |\
          sed -e 's/-I/--include-dir /g;s/-D/--define /g'`
 
 ## Added to activate libtool 1.5.6 windows resources partial support

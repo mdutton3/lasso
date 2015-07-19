@@ -18,7 +18,7 @@ TESTS_ENVIRONMENT=TOP_SRCDIR=$(top_srcdir)
 TESTS = test.sh
 
 if PERL_ENABLED
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
 	$(SASL_CFLAGS)

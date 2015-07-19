@@ -2,7 +2,7 @@ EXTRA_DIST = xml_saml2.h
 MAINTAINERCLEANFILES = Makefile.in
 liblassoincludedir = $(includedir)/lasso/xml/saml-2.0
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
 	$(LASSO_CORE_CFLAGS) \

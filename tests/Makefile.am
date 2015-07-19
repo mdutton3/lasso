@@ -12,7 +12,7 @@ TESTS = tests tests2
 noinst_PROGRAMS = tests perfs tests2
 
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-DPACKAGE=\"@PACKAGE@\" \
 	-DTESTSDATADIR=\"$(srcdir)/data/\" \
 	-DTESTSMETADATADIR=\"$(srcdir)/data/metadata/\" \

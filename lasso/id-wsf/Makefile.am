@@ -1,7 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
 liblassoincludedir = $(includedir)/lasso/id-wsf
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
 	$(LASSO_CORE_CFLAGS) \

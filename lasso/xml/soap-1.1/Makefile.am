@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 liblassoincludedir = $(includedir)/lasso/xml/soap-1.1
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
 	$(LASSO_CORE_CFLAGS) \

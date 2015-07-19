@@ -6,7 +6,7 @@ endif
 
 liblassoincludedir = $(includedir)/lasso/xml
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
 	$(LASSO_CORE_CFLAGS) \

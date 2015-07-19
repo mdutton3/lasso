@@ -2,7 +2,7 @@ CLEANFILES = lasso.php php_lasso.h _lasso.c
 DISTCLEANFILES = __init__.pyc lang.pyc php_code.pyc wrapper_header.pyc wrapper_top.pyc wrapper_source.pyc
 SUBDIRS = examples tests
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
 	$(SASL_CFLAGS)

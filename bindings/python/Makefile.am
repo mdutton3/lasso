@@ -4,7 +4,7 @@ DISTCLEANFILES = __init__.pyc lasso.pyc lang.pyc
 SUBDIRS = tests
 
 if PYTHON_ENABLED
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
 	$(SASL_CFLAGS)
