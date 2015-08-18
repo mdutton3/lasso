@@ -1567,7 +1567,7 @@ lasso_verify_signature(xmlNode *signed_node, xmlDoc *doc, const char *id_attr_na
 	/* Find ID */
 	if (id_attr_name) {
 		id = xmlGetProp(signed_node, (xmlChar*)id_attr_name);
-		if (id) {
+		if (id && (xmlGetID(doc, id) == NULL)) {
 			xmlAddID(NULL, doc, id, xmlHasProp(signed_node, (xmlChar*)id_attr_name));
 		}
 	}
