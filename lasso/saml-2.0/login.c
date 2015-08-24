@@ -108,7 +108,7 @@ cleanup:
 
 static gboolean want_authn_request_signed(LassoProvider *provider) {
 	char *s;
-	gboolean rc = TRUE;
+	gboolean rc = FALSE;
 
 	s = lasso_provider_get_metadata_one_for_role(provider, LASSO_PROVIDER_ROLE_IDP,
 			LASSO_SAML2_METADATA_ATTRIBUTE_WANT_AUTHN_REQUEST_SIGNED);
@@ -159,9 +159,8 @@ _lasso_login_must_sign(LassoProfile *profile)
 	switch (lasso_profile_get_signature_hint(profile)) {
 		case LASSO_PROFILE_SIGNATURE_HINT_MAYBE:
 			/* If our metadatas say that we sign, then we sign,
-			 * If the IdP does not says that he doesn't want our signature, then we sign
-			 * (I decided to not follow the metadata specification and to always sign by
-			 * default).
+			 * If the IdP says that he wants our signature, then we sign
+			 * Otherwise we do not.
 			 */
 			ret = authn_request_signed(&profile->server->parent)
 				|| want_authn_request_signed(remote_provider);
@@ -183,6 +182,10 @@ _lasso_login_must_verify_authn_request_signature(LassoProfile *profile) {
 			profile->remote_providerID);
 
 	switch (lasso_profile_get_signature_verify_hint(profile)) {
+			/* If our metadatas say that we want signature, then we verify,
+			 * If the SP says that he signs, then we verify
+			 * Otherwise we do not.
+			 */
 		case LASSO_PROFILE_SIGNATURE_VERIFY_HINT_MAYBE:
 			return want_authn_request_signed(&profile->server->parent) ||
 				authn_request_signed(remote_provider);
