@@ -1363,6 +1363,11 @@ lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string)
 	zre = xmlMalloc(len*4);
 	len = xmlSecBase64Decode(b64_zre, zre, len*4);
 	xmlFree(b64_zre);
+	if (len == -1) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to base64-decode query");
+		xmlFree(zre);
+		return FALSE;
+	}
 
 	re = lasso_inflate(zre, len);
 	xmlFree(zre);

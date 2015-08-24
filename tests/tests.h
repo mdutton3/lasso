@@ -73,21 +73,24 @@
 	fail_unless(g_strcmp0(__tmp, to) != 0, "%s:%i: " #what " is equal to %s", __func__, __LINE__, to); \
 }
 
-static inline void mute_logger(G_GNUC_UNUSED const gchar *domain,
+void mute_logger(G_GNUC_UNUSED const gchar *domain,
 		G_GNUC_UNUSED GLogLevelFlags log_level, G_GNUC_UNUSED const gchar *message,
-		G_GNUC_UNUSED gpointer user_data) {
-}
-G_GNUC_UNUSED static guint mute_log_handler = 0;
+		G_GNUC_UNUSED gpointer user_data);
 
-#define block_lasso_logs mute_log_handler = g_log_set_handler(LASSO_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, \
-		mute_logger, NULL)
+void fail_logger(const gchar *log_domain, GLogLevelFlags log_level,
+		 const gchar *message, G_GNUC_UNUSED gpointer user_data);
 
-#define unblock_lasso_logs g_log_remove_handler(LASSO_LOG_DOMAIN, mute_log_handler)
+#define block_lasso_logs g_log_set_default_handler(mute_logger, NULL);
+
+#define unblock_lasso_logs g_log_set_default_handler(fail_logger, NULL);
+
+
+#define CHECKING_LOG_HANDLER_SIZE 30
 
 struct CheckingLogHandlerUserData {
-		GLogLevelFlags log_level;
-		const char *message;
-		gboolean endswith;
+		GLogLevelFlags log_levels[CHECKING_LOG_HANDLER_SIZE];
+		const char *messages[CHECKING_LOG_HANDLER_SIZE];
+		gboolean endswith[CHECKING_LOG_HANDLER_SIZE];
 		GLogLevelFlags log_level_found;
 		char *message_found;
 };
@@ -108,24 +111,40 @@ static inline void checking_logger(G_GNUC_UNUSED const gchar *domain,
 		G_GNUC_UNUSED GLogLevelFlags log_level, G_GNUC_UNUSED const gchar *message,
 		G_GNUC_UNUSED gpointer user_data) {
 	struct CheckingLogHandlerUserData *ck_user_data = user_data;
-	if (log_level == ck_user_data->log_level && check_message(message, ck_user_data->message,
-				ck_user_data->endswith)) {
-	} else {
-		g_log_default_handler(domain, log_level, message, user_data);
-		checking_log_handler_flag = 0;
+	int i = 0;
+	for (i = 0; i < CHECKING_LOG_HANDLER_SIZE; i++) {
+		if (log_level == ck_user_data->log_levels[i] && check_message(message, ck_user_data->messages[i],
+				ck_user_data->endswith[i])) {
+			ck_user_data->log_level_found = log_level;
+			ck_user_data->message_found = g_strdup(message);
+			return;
+		}
 	}
-	ck_user_data->log_level_found = log_level;
-	ck_user_data->message_found = g_strdup(message);
+	g_log_default_handler(domain, log_level, message, user_data);
+	checking_log_handler_flag = 0;
 }
+
+static inline void add_check_log(GLogLevelFlags log_level, const char *message, gboolean endswith) {
+	int i = 0;
+
+	for (i = 0; i < CHECKING_LOG_HANDLER_SIZE-1; i++) {
+		if (! checking_logger_user_data.messages[i]) {
+			checking_logger_user_data.log_levels[i] = log_level;
+			checking_logger_user_data.messages[i] = message;
+			checking_logger_user_data.endswith[i] = endswith;
+			return;
+		}
+	}
+	g_assert_not_reached();
+}
+
 /* begin_check_do_log(level, message, endswith)/end_check_do_log() with check that the only
  * message emitted between the two macros is one equals to message at the level level,
  * or ending with message if endswith is True.
  */
 static inline void begin_check_do_log(GLogLevelFlags level, const char *message, gboolean endswith) {
 	memset(&checking_logger_user_data, 0, sizeof(struct CheckingLogHandlerUserData));
-	checking_logger_user_data.log_level = level;
-	checking_logger_user_data.message = message;
-	checking_logger_user_data.endswith = endswith;
+	add_check_log(level, message, endswith);
 	checking_log_handler = g_log_set_handler(LASSO_LOG_DOMAIN, level, checking_logger, &checking_logger_user_data);
 	checking_log_handler_flag = 1;
 }
@@ -134,8 +153,8 @@ static inline void end_check_do_log() {
 	g_log_remove_handler(LASSO_LOG_DOMAIN, checking_log_handler);
 	checking_log_handler = 0;
 	fail_unless(checking_log_handler_flag, "Logging failure: expected log level %d and message «%s», got %d and «%s»",
-			checking_logger_user_data.log_level,
-			checking_logger_user_data.message,
+			checking_logger_user_data.log_levels[0],
+			checking_logger_user_data.messages[0],
 			checking_logger_user_data.log_level_found,
 			checking_logger_user_data.message_found);
 	if (checking_logger_user_data.message_found) {

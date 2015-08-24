@@ -213,6 +213,26 @@ START_TEST(wrong_endpoint_index_in_artifacts)
 }
 END_TEST
 
+START_TEST(malformed_logout_request)
+{
+	/* Sent by Songling Han on 2015-08-08 */
+	LassoServer *server = NULL;
+	LassoLogout *logout = NULL;
+	char *msg = "SAMLRequest=lZJRS8MwFIX/SsnrSJOmmWlCLQz3UpgKTnzwZaRZugW6pPam6s+3WxFRRPAp5HJPznfuTQn61PVqEw5hjA/2ZbQQk3p9jXb8SgrJucRUXi0xp7nAUi8zXEgjZZ43hSwMSp7sAC74a8RSipIaYLS1h6h9nEo0W2JaYCoeWaZYobhIRbZ8Rsl6cnFex4vyGGMPipBMsJTlac7TQpLFm21ee78g87nrLoDpMZ46lNwED/bsMA5eBQ0OlNcnCyoatV3dbtQEo8zcpEYPvTWudXaPkrsQ7/39sGqjHX4C5vkX4Pup86Aus/nbpR9CDCZ0qCov4YdZ+rdIA9jhHB5V5/BT9jfnJxiGWWocmJB2weiO6H0LZGp9dcYCicMIsSSzTVXeTc/W6//aQfCHzvmSzPKqnPe/tXBeY+339r3aZQ3XVlCOdcZbzDPW4ELsp2tLBWXcSslESX5Rfha/fafqAw==tLBWXcSslESX5Rfha%2ffafqAw%3d%3d&Signature=a3Pm6zoaMTJDv8cDOOa+u1BEBvFuAtUmcqsUIUGkOIkCswlq44VNvAJ1NaHZfk8uf+q1KEfl8CLASjL1Rgjzc6JjzRv0U4qRPeF9U5D07W1G+f9AZWMat6AHAwXoAq42B5fdJJtDhCXjEYQRoWKMzJQzn/6QFezUMbErPz3gzku384+RBTrlTpNYdEoC4j2YOGiTBvlZAUdmDNpCkKeEVUOKZhe7V5u8nqOK2F+WhLlCU8g5EIvoEeIXpmY4rn4h2lRsLKJTKLB2RNJoE3U7lBkUzObHmmt0gfiFxGOuL0vxmfrKt/psvZsRMOsVzmZrUW7BVaCw2j0uB7X9njbDiA==0uB7X9njbDiA%3d%3d&SigAlg=http://www.w3.org/2000/09/xmldsig#rsa-sha1sig%23rsa-sha1";
+
+	check_not_null(server = lasso_server_new(TESTSDATADIR "/idp5-saml2/metadata.xml",
+				TESTSDATADIR "/idp5-saml2/private-key.pem", NULL, NULL));
+	check_good_rc(lasso_server_add_provider(server, LASSO_PROVIDER_ROLE_SP,
+				TESTSDATADIR "/sp5-saml2/metadata.xml", NULL, NULL));
+	check_not_null(logout = lasso_logout_new(server));
+	block_lasso_logs;
+	check_equals(lasso_logout_process_request_msg(logout, msg), LASSO_PROFILE_ERROR_INVALID_MSG);
+	unblock_lasso_logs;
+	lasso_release_gobject(logout);
+	lasso_release_gobject(server);
+}
+END_TEST
+
 struct {
 	char *name;
 	void *function;
@@ -221,6 +241,7 @@ struct {
 	{ "Wrong assertionConsumer ordering on 08-10-2010", indexed_endpoints_20101008},
 	{ "Warning when parsing AttributeValue node containing unknown namespace nodes", remove_warning_when_parssing_unknown_SNIPPET_LIST_NODES_20111007 },
 	{ "Wrong endpoint index in artifacts", wrong_endpoint_index_in_artifacts },
+	{ "Malformed logout request", malformed_logout_request },
 };
 
 Suite*
