@@ -598,25 +598,6 @@ AC_SUBST(Z_LIBS)
 CPPFLAGS=${_cppflags}
 LDFLAGS=${_ldflags}
 
-dnl ==========================================================================
-dnl Test suite (requires check)
-dnl ==========================================================================
-dnl Check if user disabled the tests.
-AC_ARG_ENABLE(tests, [  --disable-tests         disable the test suite],,
-              enable_tests="yes")
-if test "x$enable_tests" = xyes ; then
-  PKG_CHECK_MODULES(CHECK, check, [], [
-AC_CHECK_LIB(check, srunner_set_log, enable_tests="yes", enable_tests="no")
-CHECK_CFLAGS=""
-CHECK_LIBS="-lcheck"
-])
-  AC_SUBST(CHECK_CFLAGS)
-  AC_SUBST(CHECK_LIBS)
-  AC_CHECK_LIB(check, srunner_set_xml, [AC_DEFINE(CHECK_IS_XML, [], [Define if check available with XML support])])
-fi
-
-AM_CONDITIONAL(WITH_TESTS, [test "x$enable_tests" = "xyes"])
-
 dnl Final step, add missing programs.
 AM_MISSING_PROG(ACLOCAL, aclocal, $missing_dir)
 AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
@@ -670,6 +651,25 @@ if test "z$PKG_CONFIG_PATH" != "z"; then
 fi
 
 PKG_CHECK_MODULES(LASSO, glib-2.0 >= 2.17.0 gobject-2.0 >= 2.17.0 libxml-2.0 xmlsec1 >= 1.2.6 xmlsec1-openssl >= 1.2.6 openssl)
+
+dnl ==========================================================================
+dnl Test suite (requires check)
+dnl ==========================================================================
+dnl Check if user disabled the tests.
+AC_ARG_ENABLE(tests, [  --disable-tests         disable the test suite],,
+              enable_tests="yes")
+if test "x$enable_tests" = xyes ; then
+  PKG_CHECK_MODULES(CHECK, check, [], [
+AC_CHECK_LIB(check, srunner_set_log, enable_tests="yes", enable_tests="no")
+CHECK_CFLAGS=""
+CHECK_LIBS="-lcheck"
+])
+  AC_SUBST(CHECK_CFLAGS)
+  AC_SUBST(CHECK_LIBS)
+  AC_CHECK_LIB(check, srunner_set_xml, [AC_DEFINE(CHECK_IS_XML, [], [Define if check available with XML support])])
+fi
+
+AM_CONDITIONAL(WITH_TESTS, [test "x$enable_tests" = "xyes"])
 
 AC_ARG_WITH(sasl2, [  --with-sasl2[=PFX]         Use Cyrus SASL library version 2 for WSF-Auth])
 if test "x$enable_wsf" = "xyes"; then
