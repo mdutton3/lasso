@@ -221,13 +221,6 @@ LASSO_EXPORT LassoNode* lasso_profile_get_idp_list(LassoProfile *profile);
 LASSO_EXPORT void lasso_profile_set_idp_list(LassoProfile *profile, const LassoNode *idp_list);
 
 
-LASSO_EXPORT char* lasso_profile_get_message_id(LassoProfile *profile);
-LASSO_EXPORT void lasso_profile_set_message_id(LassoProfile *profile, const char *message_id);
-
-LASSO_EXPORT LassoNode* lasso_profile_get_idp_list(LassoProfile *profile);
-LASSO_EXPORT void lasso_profile_set_idp_list(LassoProfile *profile, const LassoNode *idp_list);
-
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
