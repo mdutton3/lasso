@@ -1,6 +1,32 @@
 NEWS
 ====
 
+2.5.0 - Septembre 2nd 2015
+--------------------------
+151 commits, 180 files changed, 8391 insertions, 1339 deletions
+
+ - lots of bugfixes (reported by static analysis tools like clang,
+   coverity and manual inspection) thanks to Simo Sorce and John Dennis from
+   RedHat
+ - xsd:choices are now parsed correctly by implementing a real finite automata
+   for parsing XML documents. New flag for jumping forward and backward in
+   schema snippets have been added. It fixes parsing of message from third
+   party not following the ordre from the schema (they are entitled to do it but
+   most SAML implementations do not)
+ - added C CGI examples for SP and IdP side
+ - removed the _POSIX_SOURCE declaration
+ - added support for the SHA-2 family of hash functions
+ - fixed protocol profile selection when parsing AuthnRequest
+ - added support for Python 3, thanks to Houzéfa Abbasbhay from XCG Consulting
+ - fixed default value of WantAuthnRequestSigned in metadata parsing
+ - SAML 2.0 ECP is now functionnal, thanks to John Dennis from RedHat
+ - added two new API function to LassoProfile to extract the Issuer and
+   InResponseTo attribute of messages, allowing pre-treatment before parsing
+   the message, to load the metadata of the remote provider, or find the request
+   which the response matches.
+ - fixed segfault when parsing HTTP-Redirect marlformed base64 content
+ - added support for automake 1.15 (jdennis)
+
 2.4.1 - August 28th 2014
 ---------------------------
 56 commits, 35 files changed, 12590 insertions(+), 31117 deletions(-)
