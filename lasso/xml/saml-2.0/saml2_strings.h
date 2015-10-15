@@ -414,4 +414,13 @@
 #define LASSO_SAML2_ATTRIBUTE_PROFILE_UUID "urn:oasis:names:tc:SAML:2.0:profiles:attribute:UUID"
 #define LASSO_SAML2_ATTRIBUTE_PROFILE_DCE "urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE"
 
+/* SAML 2.0 SSO Profile */
+
+#define LASSO_SAML2_ECP_PROFILE_WANT_AUTHN_SIGNED "urn:oasis:names:tc:SAML:2.0:profiles:SSO:ecp:2.0:WantAuthnRequestsSigned"
+
+/* SAML 2.0 Conditions */
+
+#define LASSO_SAML2_CONDITIONS_DELEGATION "urn:oasis:names:tc:SAML:2.0:conditions:delegation"
+
+
 #endif /* __LASSO_SAML2_STRINGS_H__ */

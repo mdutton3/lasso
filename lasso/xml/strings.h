@@ -927,6 +927,16 @@
 #define LASSO_SAML_CONFIRMATION_METHOD_SENDER_VOUCHES	 \
 	"urn:oasis:names:tc:SAML:1.0:cm:sender-vouches"
 
+/* Extensions */
+
+/**
+ * LASSO_SAML_EXT_CHANNEL_BINDING:
+ *
+ * Indicates support for channel binding
+ *
+ *
+#define LASSO_SAML_EXT_CHANNEL_BINDING "urn:oasis:names:tc:SAML:protocol:ext:channel-binding"
+
 /*****************************************************************************/
 /* POAS BINDING                                                              */
 /*****************************************************************************/
