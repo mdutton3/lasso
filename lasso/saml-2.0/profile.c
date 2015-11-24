@@ -914,6 +914,7 @@ lasso_profile_saml20_build_paos_request_msg(LassoProfile *profile, const char *u
 	int rc = 0;
     LassoSamlp2AuthnRequest *request;
 	LassoSamlp2IDPList *idp_list = NULL;
+	char *message_id = NULL;
 
 	lasso_extract_node_or_fail(request, profile->request, SAMLP2_AUTHN_REQUEST,
 							   LASSO_PROFILE_ERROR_MISSING_REQUEST);
@@ -925,10 +926,12 @@ lasso_profile_saml20_build_paos_request_msg(LassoProfile *profile, const char *u
 								   LASSO_PROFILE_ERROR_INVALID_IDP_LIST);
 	}
 
+	message_id = lasso_profile_get_message_id(profile);
+
 	lasso_assign_new_string(profile->msg_body,
 			lasso_node_export_to_paos_request_full(profile->request,
 												   profile->server->parent.ProviderID, url,
-												   lasso_profile_get_message_id(profile),
+												   message_id,
 												   profile->msg_relayState,
 												   request->IsPassive, request->ProviderName,
 												   idp_list));
@@ -936,6 +939,7 @@ lasso_profile_saml20_build_paos_request_msg(LassoProfile *profile, const char *u
 	check_msg_body;
 
 cleanup:
+	lasso_release_string(message_id);
 	return rc;
 }
 
