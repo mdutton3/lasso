@@ -2087,10 +2087,16 @@ START_TEST(test16_test_get_issuer)
 {
 	char *content = NULL;
 	size_t len = 0;
+	char *issuer = NULL;
+	char *in_response_to = NULL;
 
 	g_file_get_contents(TESTSDATADIR "/response-1", &content, &len, NULL);
-	check_str_equals(lasso_profile_get_issuer(content), "gefssstg");
-	check_str_equals(lasso_profile_get_in_response_to(content), "xx");
+	issuer = lasso_profile_get_issuer(content);
+	check_str_equals(issuer, "gefssstg");
+	lasso_release_string(issuer);
+	in_response_to = lasso_profile_get_in_response_to(content);
+	check_str_equals(in_response_to, "xx");
+	lasso_release_string(in_response_to);
 }
 END_TEST
 
