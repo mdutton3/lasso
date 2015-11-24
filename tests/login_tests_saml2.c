@@ -1271,6 +1271,7 @@ void test_ecp(EcpIdpListVariant ecpIDPListVariant)
     char *provider_name = NULL;
 	char *relayState = NULL;
 	char *messageID = NULL;
+	char *extracted_messageID = NULL;
 	char *spPaosRequestMsg = NULL;
 	char *ecpSoapRequestMsg = NULL;
 	char *idpSoapResponseMsg = NULL;
@@ -1468,7 +1469,9 @@ void test_ecp(EcpIdpListVariant ecpIDPListVariant)
 
 	/* Verify we got back the same relayState and messageID */
 	check_str_equals(LASSO_PROFILE(spLoginContext)->msg_relayState, relayState);
-	check_str_equals(lasso_profile_get_message_id(LASSO_PROFILE(spLoginContext)), messageID);
+	extracted_messageID = lasso_profile_get_message_id(LASSO_PROFILE(spLoginContext));
+	check_str_equals(extracted_messageID, messageID);
+	lasso_release_string(extracted_messageID);
 
 
 	g_free(serviceProviderContextDump);
