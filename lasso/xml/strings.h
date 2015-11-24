@@ -934,7 +934,7 @@
  *
  * Indicates support for channel binding
  *
- *
+ */
 #define LASSO_SAML_EXT_CHANNEL_BINDING "urn:oasis:names:tc:SAML:protocol:ext:channel-binding"
 
 /*****************************************************************************/
