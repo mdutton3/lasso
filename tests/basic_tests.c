@@ -2097,6 +2097,7 @@ START_TEST(test16_test_get_issuer)
 	in_response_to = lasso_profile_get_in_response_to(content);
 	check_str_equals(in_response_to, "xx");
 	lasso_release_string(in_response_to);
+	lasso_release_string(content);
 }
 END_TEST
 
