@@ -57,7 +57,29 @@
 {
    OpenSSL RSA_padding_add_PKCS1_type_2(Cond)
    Memcheck:Cond
+   ...
    fun:RSA_padding_add_PKCS1_type_2
    fun:RSA_eay_public_encrypt
 }
 
+{
+   OpenSSL BN_*(Value8)
+   Memcheck:Value8
+   fun:BN_*
+}
+{
+   libcrypto(Value8)
+   Memcheck:Value8
+   obj:/usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0
+}
+{
+   libcrypto(Cond)
+   Memcheck:Cond
+   obj:/usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0
+}
+{
+   Config
+   Memcheck:Leak
+   ...
+   fun:OPENSSL_config
+}

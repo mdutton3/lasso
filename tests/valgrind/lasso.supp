@@ -32,18 +32,7 @@
 {
    suppression 16
    Memcheck:Leak
-   fun:malloc
-   fun:xmlStrndup
-   fun:xmlStrdup
-   fun:xmlNewNs
-   fun:lasso_node_class_set_ns
-   fun:class_init
-   fun:g_type_class_ref
-}
-{
-   suppression 14
-   Memcheck:Leak
-   fun:malloc
+   ...
    fun:xmlNewNs
    fun:lasso_node_class_set_ns
    fun:class_init
