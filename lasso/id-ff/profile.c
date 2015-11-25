@@ -946,6 +946,7 @@ dispose(GObject *object)
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(profile));
 
+	lasso_release_gobject(profile->private_data->idp_list);
 	lasso_release_string(profile->private_data->message_id);
 }
 
