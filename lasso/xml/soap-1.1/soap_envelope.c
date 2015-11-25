@@ -143,6 +143,7 @@ lasso_soap_envelope_new_full()
 	LassoSoapEnvelope *envelope = NULL;
 	LassoSoapHeader *header = NULL;
 	LassoSoapBody *body = NULL;
+	LassoSoapEnvelope *result = NULL;
 
 	envelope = g_object_new(LASSO_TYPE_SOAP_ENVELOPE, NULL);
 	goto_cleanup_if_fail(envelope);
@@ -154,12 +155,12 @@ lasso_soap_envelope_new_full()
 	body = lasso_soap_body_new();
 	goto_cleanup_if_fail(body);
 	lasso_assign_gobject(envelope->Body, body);
-
-	return envelope;
+	lasso_transfer_gobject(result, envelope);
 
  cleanup:
 	lasso_release_gobject(envelope);
 	lasso_release_gobject(header);
 	lasso_release_gobject(body);
-	return NULL;
+
+	return result;
 }
