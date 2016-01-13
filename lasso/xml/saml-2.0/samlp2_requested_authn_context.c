@@ -60,7 +60,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "AuthnContextDeclRef", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoSamlp2RequestedAuthnContext, AuthnContextDeclRef),
 		NULL, LASSO_SAML2_ASSERTION_PREFIX, LASSO_SAML2_ASSERTION_HREF },
-	{ "Comparison", SNIPPET_CONTENT | SNIPPET_OPTIONAL,
+	{ "Comparison", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
 		G_STRUCT_OFFSET(LassoSamlp2RequestedAuthnContext, Comparison), NULL, NULL, NULL},
 	{NULL, 0, 0, NULL, NULL, NULL}
 };
