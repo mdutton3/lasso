@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 liblassoincludedir = $(includedir)/lasso/xml/ecp
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_builddir) \
 	-I$(top_srcdir) \
 	$(LASSO_CORE_CFLAGS) \
