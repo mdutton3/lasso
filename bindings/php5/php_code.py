@@ -197,17 +197,22 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
 
 
     def generate_getter(self, c, m):
-        d = { 'type': arg_type(m), 'name': format_as_camelcase(arg_name(m)),
-                'docstring': self.get_docstring_return_type(arg_type(m)), 'class': c.name }
+        d = {
+            'type': arg_type(m),
+            'name': format_as_camelcase(arg_name(m)),
+            'docstring': self.get_docstring_return_type(arg_type(m)),
+            'class': c.name
+        }
 
-        six.print_('''    /**', file=self.fd)
-    * @return %(docstring)s
+        six.print_('''\
+    /**
+    * @return  %(docstring)s
     */
     protected function get_%(name)s() {''' % d, file=self.fd)
         six.print_('        $t = %(class)s_%(name)s_get($this->_cptr);' % d, file=self.fd)
-        if is_object(m):
+        if self.is_object(m):
             six.print_('        $t = cptrToPhp($t);', file=self.fd)
-        elif (is_glist(m) or is_hashtable(m)) and is_object(element_type(m)):
+        elif (is_glist(m) or is_hashtable(m)) and self.is_object(element_type(m)):
                 six.print_('        foreach ($t as $key => $item) {', file=self.fd)
                 six.print_('            $t[$key] = cptrToPhp($item);', file=self.fd)
                 six.print_('        }', file=self.fd)
@@ -224,9 +229,9 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
         d = { 'type': arg_type(m), 'name': format_as_camelcase(arg_name(m)),
                 'docstring': self.get_docstring_return_type(arg_type(m)), 'class': c.name }
         six.print_('    protected function set_%(name)s($value) {' % d, file=self.fd)
-        if is_object(m):
+        if self.is_object(m):
             six.print_('        $value = $value->_cptr;', file=self.fd)
-        elif (is_glist(m) or is_hashtable(m)) and is_object(element_type(m)):
+        elif (is_glist(m) or is_hashtable(m)) and self.is_object(element_type(m)):
             six.print_('        $array = array();', file=self.fd)
             six.print_('        if (!is_null($value)) {', file=self.fd)
             six.print_('            foreach ($value as $key => $item) {', file=self.fd)
@@ -335,7 +340,7 @@ function lassoRegisterIdWsf2DstService($prefix, $href) {
                     is_int(arg, self.binding_data) or is_glist(arg) or \
                     is_hashtable(arg) or is_time_t_pointer(arg):
                     c_args.append(arg_name)
-                elif is_object(arg):
+                elif self.is_object(arg):
                     c_args.append('%s->_cptr' % arg_name)
                 else:
                     raise Exception('Does not handle argument of type: %s' % ((m, arg),))
