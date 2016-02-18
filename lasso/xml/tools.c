@@ -616,15 +616,27 @@ lasso_query_sign(char *query, LassoSignatureContext context)
 
 	switch (sign_method) {
 		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+			/* sign digest message */
+			status = RSA_sign(NID_sha1, (unsigned char*)digest, SHA_DIGEST_LENGTH, sigret,
+					&siglen, rsa);
+			break;
 		case LASSO_SIGNATURE_METHOD_RSA_SHA256:
+			/* sign digest message */
+			status = RSA_sign(NID_sha256, (unsigned char*)digest, SHA256_DIGEST_LENGTH, sigret,
+					&siglen, rsa);
+			break;
 		case LASSO_SIGNATURE_METHOD_RSA_SHA384:
+			/* sign digest message */
+			status = RSA_sign(NID_sha384, (unsigned char*)digest, SHA384_DIGEST_LENGTH, sigret,
+					&siglen, rsa);
+			break;
 		case LASSO_SIGNATURE_METHOD_RSA_SHA512:
 			/* sign digest message */
-			status = RSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret,
+			status = RSA_sign(NID_sha512, (unsigned char*)digest, SHA512_DIGEST_LENGTH, sigret,
 					&siglen, rsa);
 			break;
 		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
-			status = DSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret,
+			status = DSA_sign(NID_sha1, (unsigned char*)digest, SHA_DIGEST_LENGTH, sigret,
 					&siglen, dsa);
 			break;
 		case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
@@ -723,14 +735,14 @@ lasso_query_verify_helper(const char *signed_content, const char *b64_signature,
 		rsa = xmlSecOpenSSLKeyDataRsaGetRsa(key->value);
 		key_size = RSA_size(rsa);
 		method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-		digest_size = 20;
+		digest_size = SHA_DIGEST_LENGTH;
 		type = NID_sha1;
 	} else if (lasso_strisequal(algorithm, (char*)xmlSecHrefDsaSha1)) {
 		goto_cleanup_if_fail_with_rc(key->value->id == xmlSecOpenSSLKeyDataDsaId, LASSO_DS_ERROR_INVALID_SIGALG);
 		dsa = xmlSecOpenSSLKeyDataDsaGetDsa(key->value);
 		key_size = DSA_size(dsa);
 		method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
-		digest_size = 20;
+		digest_size = SHA_DIGEST_LENGTH;
 		type = NID_sha1;
 	} else if (lasso_strisequal(algorithm, (char*)xmlSecHrefRsaSha256)) {
 		goto_cleanup_if_fail_with_rc(key->value->id == xmlSecOpenSSLKeyDataRsaId,
@@ -738,7 +750,7 @@ lasso_query_verify_helper(const char *signed_content, const char *b64_signature,
 		rsa = xmlSecOpenSSLKeyDataRsaGetRsa(key->value);
 		key_size = RSA_size(rsa);
 		method = LASSO_SIGNATURE_METHOD_RSA_SHA256;
-		digest_size = 32;
+		digest_size = SHA256_DIGEST_LENGTH;
 		type = NID_sha256;
 	} else if (lasso_strisequal(algorithm, (char*)xmlSecHrefRsaSha384)) {
 		goto_cleanup_if_fail_with_rc(key->value->id == xmlSecOpenSSLKeyDataRsaId,
@@ -746,7 +758,7 @@ lasso_query_verify_helper(const char *signed_content, const char *b64_signature,
 		rsa = xmlSecOpenSSLKeyDataRsaGetRsa(key->value);
 		key_size = RSA_size(rsa);
 		method = LASSO_SIGNATURE_METHOD_RSA_SHA384;
-		digest_size = 48;
+		digest_size = SHA384_DIGEST_LENGTH;
 		type = NID_sha384;
 	} else if (lasso_strisequal(algorithm, (char*)xmlSecHrefRsaSha512)) {
 		goto_cleanup_if_fail_with_rc(key->value->id == xmlSecOpenSSLKeyDataRsaId,
@@ -754,7 +766,7 @@ lasso_query_verify_helper(const char *signed_content, const char *b64_signature,
 		rsa = xmlSecOpenSSLKeyDataRsaGetRsa(key->value);
 		key_size = RSA_size(rsa);
 		method = LASSO_SIGNATURE_METHOD_RSA_SHA512;
-		digest_size = 64;
+		digest_size = SHA512_DIGEST_LENGTH;
 		type = NID_sha512;
 	} else if (lasso_strisequal(algorithm, (char*)xmlSecHrefHmacSha1)) {
 		lasso_check_good_rc(lasso_get_hmac_key(key, (void**)&hmac_key, &hmac_key_length));
