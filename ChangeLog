@@ -1,8 +1,853 @@
-2014-12-01  Houzéfa Abbasbhay  <houzefa.abba@xcg-consulting.fr>
+2016-02-18  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
 
-	Update Python bindings to work with Python 3.
+	bindings/php5: fix enum getters and setters (fixes #10032)
+	enumeration type were being wrongly interpreted as objects types because
+	is_object() was used instead of the local specialisation done in
+	PhpCode.is_object().
+
+	Also fix docstring of getters/setters.
+
+2016-02-18  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	tools.c: use correct NID and digest length when building RSA signature using SHA-2 digest (fixes #10019)
+	Thanks to Brett Gardner for the bug report and patch.
+
+	Licence: MIT
+
+2016-01-13  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Fix wrong snippet type (fixes #9616)
+	In elements samlp2:RequestedAuthnContext, Comparison is an attribute, not a text
+	child node.
+
+2016-01-11  Frédéric Péters  <fpeters@entrouvert.com>
+
+	perl: remove quotes from $PERL -V::ccflags: output (#9572)
+
+2015-11-25  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	tests: update valgrind suppressions
+
+	tests: fix leak
+
+	saml-2.0: fix leaks of url
+
+	profile: fix leak of private idp_list field
+
+	xml: fix leak in lasso_soap_envelope_new_full
+
+2015-11-24  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	xml: fix wrong termination of comment
+
+	tests: fix leaks in test_ecp
+
+	saml-2.0: fix leak of message_id in lasso_profile_saml20_build_paos_request_msg
+
+	id-ff: fix leak of profile->private_data->message_id
+
+	tests: fix leak in test test16_test_get_issuer
+
+2015-10-30  Rob Crittenden  <rcritten@redhat.com>
+
+	Set NotBefore in SAML 2.0 login assertions
+	License: MIT
+
+2015-10-15  John Dennis  <jdennis@redhat.com>
+
+	Add missing urn constants used in PAOS HTTP header
+	The new OASIS "SAML V2.0 Enhanced Client or Proxy Profile Version 2.0"
+	specification added new options that can appear in the PAOS HTTP header.
+
+	Section 2.3.1 enumerates the following URN options which can appear
+	in the PAOS HEADER:
+
+	urn:oasis:names:tc:SAML:protocol:ext:channel-binding
+	urn:oasis:names:tc:SAML:2.0:cm:holder-of-key
+	urn:oasis:names:tc:SAML:2.0:profiles:SSO:ecp:2.0:WantAuthnRequestsSigned
+	urn:oasis:names:tc:SAML:2.0:conditions:delegation
+
+	Of these only the holder-of-key was previously defined in Lasso,
+	this patch adds the other 3 constants.
+
+	License: MIT
+
+2015-09-02  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Release 2.5.0
+
+	remove errors.c, it breaks computation of version from tags
+
+	java: fix AllJunitTests generation when building out of source directory
+
+2015-09-01  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Revert "Add messageID and idp_list to profile properties"
+	This reverts commit b10c48058ed5942b135712f46888e0697fb593ff.
+
+2015-09-01  John Dennis  <jdennis@redhat.com>
+
+	fix test08_lasso_key test failure
+	Note: the rest of this message is formatted as reStructuredText (rst).
+
+	Test Failure
+	============
+
+	The unit tests run by "make check" fail with the following error:
+
+	::
+
+	    tests.c:61:F:Lasso keys:test08_lasso_key:0: No logging output expected: message «ID _E3F8E9116EE08F0E2607CF9789649BB4 already defined
+	    » was emitted for domain «Lasso» at the level «128»
+
+	This is not a regression in Lasso, rather the failure is caused by one
+	of the components Lasso is dependent upon. It was first observed when
+	the identical Lasso package was built in Fedora 22, no problems were
+	observed in Fedora 21. This implies one or more updated components in
+	Fedora 22 is the cause.
+
+	This was a particularity difficult error to track down, first one had
+	to identify who was emitting the message and on what file descriptor
+	(stream) and who was triggering on the message emission and causing a
+	check failure. The obvious assumption the check library was
+	responsible for detecting the message emission and failing the test is
+	wrong.
+
+	Who is emitting the message and why?
+	------------------------------------
+
+	The message is emitted by libxml2 in the function `xmlAddID()`
+	(valid.c:2578). It occurs at the end of xmlAddID() when it detects the
+	ID (which is supposed to be unique to the document is already defined,
+	which for valid XML is illegal (violates uniquenesss constraint). The
+	message emission occurs because of the code fragment
+
+	::
+
+	        if (xmlHashAddEntry(table, value, ret) < 0) {
+	    #ifdef LIBXML_VALID_ENABLED
+	            /*
+	             * The id is already defined in this DTD.
+	             */
+	            xmlErrValidNode(ctxt, attr->parent, XML_DTD_ID_REDEFINED,
+	                            "ID %s already defined\n", value, NULL, NULL);
+	    #endif /* LIBXML_VALID_ENABLED */
+	            xmlFreeID(ret);
+	            return(NULL);
+	        }
+
+	Why is the message emission different between libxml2 versions?
+	---------------------------------------------------------------
+
+	The change occured between libxml2 version 2.9.1 and 2.9.2 in commit
+	a16eb968075a82ec33b2c1e77db8909a35b44620
+
+	::
+
+	    commit a16eb968075a82ec33b2c1e77db8909a35b44620
+	    Author: Daniel Veillard <veillard@redhat.com>
+	    Date:   Tue Jun 10 16:06:14 2014 +0800
+
+	        erroneously ignores a validation error if no error callback set
+
+	        Reported by Stefan Behnel
+	        https://bugzilla.gnome.org/show_bug.cgi?id=724903
+
+	    diff --git a/valid.c b/valid.c
+	    index aedd9d7..1e03a7c 100644
+	    --- a/valid.c
+	    +++ b/valid.c
+	    @@ -2633,11 +2633,8 @@ xmlAddID(xmlValidCtxtPtr ctxt, xmlDocPtr doc, const xmlChar *value,
+	            /*
+	             * The id is already defined in this DTD.
+	             */
+	    -	if ((ctxt != NULL) && (ctxt->error != NULL)) {
+	    -	    xmlErrValidNode(ctxt, attr->parent, XML_DTD_ID_REDEFINED,
+	    -	                    "ID %s already defined\n",
+	    -			    value, NULL, NULL);
+	    -	}
+	    +	xmlErrValidNode(ctxt, attr->parent, XML_DTD_ID_REDEFINED,
+	    +			"ID %s already defined\n", value, NULL, NULL);
+	     #endif /* LIBXML_VALID_ENABLED */
+	            xmlFreeID(ret);
+	            return(NULL);
+
+	In both versions of libxml2 the conditional complilation
+	LIBXML_VALID_ENABLED is enabled by default via the configure
+	script. What is different is the the requirement ctxt be
+	non-NULL. Lasso invokes xmlAddID with a NULL ctxt parameter. Because
+	the NULL test for ctxt is absent in libxlm2 2.9.2 the message is now
+	emitted where previously it was not.
+
+	Who triggers on messge emission and fails the test?
+	---------------------------------------------------
+
+	This is a Lasso feature, it is not part of libcheck. In tests/tests.c
+	is the following function
+
+	::
+
+	    void error_logger(const gchar *log_domain, GLogLevelFlags log_level,
+	                    const gchar *message, G_GNUC_UNUSED gpointer user_data)
+	    {
+	            fail("No logging output expected: message «%s» was emitted for domain «%s» at the level"
+	                            " «%d»", message, log_domain, log_level);
+	    }
+
+	Before the test are run the error_logger function is installed as a
+	glib handler
+
+	::
+
+	    g_log_set_default_handler(error_logger, NULL);
+
+	When the message is emitted the error_logger traps it and invokes the
+	libcheck (deprecated) function fail() which aborts the test case.
+
+	Why does `test08_lasso_key` cause an XML validation failure?
+	------------------------------------------------------------
+
+	`test08_lasso_key` invokes `lasso_key_saml2_xml_verify()` twice on the
+	same XML document. Any time `lasso_key_saml2_xml_verify()` is called
+	more than once the XML validation will fail on the second and
+	subsequent invocations. This occurs because
+	`lasso_key_saml2_xml_verify()` invokes `lasso_verify_signature()`
+	passing it the node id in the `id_attr_name` parameter. Inside
+	`lasso_verify_signature()` is this code fragment:
+
+	::
+
+		/* Find ID */
+		if (id_attr_name) {
+			id = xmlGetProp(signed_node, (xmlChar*)id_attr_name);
+			if (id) {
+				xmlAddID(NULL, doc, id, xmlHasProp(signed_node, (xmlChar*)id_attr_name));
+			}
+		}
+
+	Note that it unconditionally invokes `xmlAddID()`, which adds the ID
+	to the set of unique element ID's in the document. But if you invoke
+	`xmlAddID()` more than once with the same ID in the same document you
+	violate the uniqueness constraint.
+
+	The ID needs to be registered in the document because the <Reference>
+	element of the <SignedInfo> may utilize an XPointer reference to the
+	signed data. In it's simplest form the XPointer reference is an ID
+	attribute on a node. Thus to locate the signed data referenced by the
+	ID it should (must?) be in a table of ID's for the document.
+
+	Simple Solution (patch)
+	-----------------------
+
+	The solution is simple now that the problem is understood. The ID
+	should not be unconditionally added to the document, instead it should
+	only be added if it's not already registered. Prior to calling
+	`xmlAddID()` one should call `xmlGetID()` and test for a NULL result
+	indicating the ID has not be registered previously.
+
+	License: MIT
+
+2015-09-01  John Dennis  <jdennis@redhat.com>
+
+	add support for automake 1.15
+	License: MIT
+
+2015-09-01  John Dennis  <jdennis@redhat.com>
+
+	Fix coverity lasso_get_hmac_key() warning
+	lasso_get_hmac_key() did not check return value. Now check the return
+	code, emit a critical message and return early with cleanup.
+
+	License: MIT
+
+2015-09-01  John Dennis  <jdennis@redhat.com>
+
+	Add messageID and idp_list to profile properties
+	ECP needs a place to store the messageID and idp_list. Normally values
+	like this would located in a "context" passed to the relevant
+	routines. But currently there is no such context, the closest thing to
+	a context we have is the profile so we add them here in the profile
+	private data using accessors. They are currently not relevant outside
+	of ECP.
+
+	Adds functions:
+
+	lasso_profile_get_message_id()
+	lasso_profile_set_message_id()
+	lasso_profile_get_idp_list()
+	lasso_profile_set_idp_list()
+
+	License: MIT
+
+2015-08-24  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	configure.ac: move test framework detection after pkg-config detection
+
+	debian-jessie: add build dependency on pkg-config
+
+	Add 'debian-jessie/' from commit 'dc7374e9f41214557dd45735789a7535d6bbe681'
+	git-subtree-dir: debian-jessie
+	git-subtree-mainline: 83f6319c01ef633fe17625d9ec8d15f1f9dbfc36
+	git-subtree-split: dc7374e9f41214557dd45735789a7535d6bbe681
+
+	bindings/java: fix test script generation
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	add ECP unit test
+	Test ECP.
+	3 different variations of the SP provided IDP List are exercised.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Implement PAOS request and response messages
+	Re-implement lasso_profile_saml20_build_paos_request_msg() and
+	lasso_saml20_login_process_paos_response_msg() to use the
+	functionality introduced by earlier patches and to assure they are
+	functionally complete.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Add messageID and idp_list to profile properties
+	ECP needs a place to store the messageID and idp_list. Normally values
+	like this would located in a "context" passed to the relevant
+	routines. But currently there is no such context, the closest thing to
+	a context we have is the profile so we add them here in the profile
+	private data using accessors. They are currently not relevant outside
+	of ECP.
+
+	Adds functions:
+
+	lasso_profile_get_message_id()
+	lasso_profile_set_message_id()
+	lasso_profile_get_idp_list()
+	lasso_profile_set_idp_list()
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	ECP and PAOS special handling
+	ECP does not require an SP to know the remote IdP provider. Existing
+	code made the assumption the remote provider always was
+	necessary. Determination and setting of the remote consumer URL is
+	different in the presence of ECP. Rework the logic to reflect
+	differing requirements.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Add function to set protocol conformance
+	Lasso uses an internal private variable bound to the provider to
+	indicate which protocol the provider is servicing. It is vital this
+	value be correctly set because many Lasso routines used it to dispatch
+	to the appropriate protocol handlers.
+
+	Normally the provider's protocol conformance is set as a side-effect
+	of parsing the XML metadata that describes the provider (e.g. an SP or
+	IdP). However there are some providers (e.g. an ECP client) which do
+	not have metadata. For providers lacking metadata it is essential
+	there be a mechanism to set the protocol conformance otherwise the
+	library will malfunction.
+
+	The function comes with documentation that includes a clear warning
+	this is to be used only in limited circumstances.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Implement ECP client functionality
+	Implement everything needed to support a SAMLv2 ECP client.
+
+	Re-implement lasso_ecp_process_authn_request_msg() and
+	lasso_ecp_process_response_msg() to use the Lasso XML serialization
+	subsystem with the ECP and PASO LassoNode's introduced earlier. This
+	replaces one-off explicit direct use of the libxml API with Lasso
+	common code. In the process provide support for 100% of the ECP and
+	PAOS SAMLv2 parameters, not just a subset. Include support for
+	receiving an IDPList from the SP in conjuction with selecting an IdP
+	known to the ECP client. Add extensive documentation.
+
+	Modify LassoSamlp2AuthnRequest to preserve it's original XML (enable
+	keep_xmlnode flag) so that when serializing the SOAP request the
+	LassoSamlp2AuthnRequest received from the SP is exactly duplicated.
+
+	Add the following internal static utility functions:
+
+	is_provider_in_sp_idplist()
+	is_idp_entry_in_entity_id_list()
+	intersect_sp_idplist_with_entity_id_list()
+
+	Add the following exported utility functions:
+
+	lasso_ecp_is_provider_in_sp_idplist()
+	lasso_ecp_is_idp_entry_known_idp_supporting_ecp()
+	lasso_ecp_set_known_sp_provided_idp_entries_supporting_ecp()
+	lasso_ecp_has_sp_idplist()
+	lasso_ecp_get_endpoint_url_by_entity_id()
+	lasso_ecp_process_sp_idp_list()
+
+	Add the following members to the ECP class:
+
+	message_id
+	response_consumer_url
+	relaystate
+	issuer
+	provider_name
+	is_passive
+	sp_idp_list
+	known_sp_provided_idp_entries_supporting_ecp
+	known_idp_entity_ids_supporting_ecp
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Clean up ECP and PAOS XML generation
+	Re-implement lasso_node_export_to_ecp_soap_response() and
+	lasso_node_export_to_paos_request(). Add new function
+	lasso_node_export_to_paos_request_full() with full functionality which
+	deprecates lasso_node_export_to_paos_request().
+
+	The existing code had two significant deficiencies, it performed
+	explicit direct xml manipulation using the libxml API rather than
+	calling into Lasso's extensive XML utilities, this was in stark
+	contrast the rest of the Lasso library. It also failed to handle a
+	number of ECP parameters leaving a functionality gap in the API.
+
+	The new code makes use of the Lasso XML serialization
+	subsystem. Rather than hand crafted xml manipulation we use the ECP
+	and PAOS LassoNode objects introduced in an earlier patch. This is
+	consistent with the rest of Lasso and because those LassoNodes are
+	used elsewhere we have a better guarantee of robustness because the
+	same common code is being called from multiple places. Other Lasso
+	common utilities (some introduced in previous patches) are invoked
+	instead of handcrafted xml manipulation, once again common code is
+	preferred.
+
+	Finally lasso_node_export_to_paos_request_full() was introduced to
+	expose in the Lasso API all ECP
+	parameters. lasso_node_export_to_paos_request() now trivially calls
+	into lasso_node_export_to_paos_request_full().
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Server utility returns list of providers supporting endpoint type
+	Add lasso_server_get_filtered_provider_list() utility.
+
+	Iterate over the server providers and build a list of provider EntityID's who
+	have the specified role and at least one endpoint matching the
+	protocol_type and http_method. Return a GList list of EntityID's
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Add server utility lasso_server_get_endpoint_url_by_id()
+	Locate the provider in the server's list of providers, then select an
+	endpoint given the @endpoint_description and return that endpoint's URL.
+	If the provider cannot be found or if the provider does not have a
+	matching endpoint NULL will be returned.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Add ECP and PAOS to prefix_from_href_and_nodename()
+	prefix_from_href_and_nodename() did not know about the ECP and PAOS
+	XML prefixes so add them.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Export LassonNode to SOAP with arbitrary SOAP headers
+	Add function lasso_node_export_to_soap_with_headers()
+
+	Utility function to build a full SOAP envelope message with arbitrary
+	headers. The LassoNode becomes the body of the SOAP envelope. The
+	headers are passed as a GList of LassoNode's and are added as header
+	elements to the SOAP envelope header. This is a flexible way to build
+	a SOAP envelope that contains headers without constraints on the
+	headers.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	LassoSamlp2IDPList is not list capable
+	LassoSamlp2IDPList is supposed to handle a list of LassoSamlp2IDPEntry
+	but in fact it had no list support. Change the snippet flag
+	SNIPPET_NODE to SNIPPET_LIST_NODES and add the special list comment on
+	the struct member so that the binding generator knows what type of
+	GList it is.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Add LassoNode objects for ECP and PAOS
+	The SAMLv2 protocol defines 5 XML types which we need to map to
+	LassoNode objectes so thay can be serialized from XML and back into
+	XML.
+
+	ecp:RelayState
+	ecp:Request
+	ecp:Response
+	paos:Request
+	paso:Response
+
+	This patch addes these 5 new LassoNode's and updates the build
+	configuration to include them.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Enhance process soap response to include processing soap headers
+	The existing lasso_saml20_profile_process_soap_response() assumed
+	there were no SOAP headers (prior to ECP none of the SOAP messages
+	contained headers). A new function
+	lasso_saml20_profile_process_soap_response_with_headers() was
+	implemented that serializes from the XML SOAP headers into a
+	LassoSoapHeader node and optionally will return the LassoSoapHeader
+	node.
+
+	The functionality in lasso_saml20_profile_process_soap_response() was
+	moved into the new
+	lasso_saml20_profile_process_soap_response_with_headers() and now
+	lasso_saml20_profile_process_soap_response() simply calls
+	lasso_saml20_profile_process_soap_response_with_headers() passing NULL
+	for the header return.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Add new LassoSoapEnvelope constructor, lasso_soap_envelope_new_full()
+	The existing LassoSoapEnvelope constructors did not populate the node
+	with it's constituent members, namely a SOAP header (LassoSoapHeader)
+	and a SOAP body (LassoSoapBody). lasso_soap_envelope_new_full() allows
+	one to create a SOAP envelope and immediately begin to add header and
+	body elements.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Fix LassoSoapHeader, was unable to serialize from XML.
+	The existing Lasso code never made use of SOAP headers because up
+	until now nothing used them. LassoSoapHeader was unable to serialize
+	from XML into a GList of LassoNode objects because it was missing one
+	of the necessary snippet flags. This corrects this omission and now
+	parsing a SOAP header will yield a sequence of LassoNode's.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Add new error codes and their matching error descriptions
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Add lasso_is_in_list_of_strings macro to utils.h
+	Add macro that tests to see if a string is a member in a list of
+	strings.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Fix build failure, remove inclusion of xml/private.h in utils.h
+	The public utils.h header includes the private xml/private.h file
+	which is not installed. Therefore anyone trying to build against lasso
+	and include utils.h will fail because xml/private.h cannot be
+	found. There doesn't seem to be any need to include this file.
+
+	License: MIT
+
+2015-08-24  John Dennis  <jdennis@redhat.com>
+
+	Eliminate _BSD_SOURCE and _SVID_SOURCE deprecation warning
+	Because all warnings are treated as errors and this warning is emitted:
+
+	warning "_BSD_SOURCE and _SVID_SOURCE are deprecated, use _DEFAULT_SOURCE"
+
+	the build fails.
+
+	The fix is to define _DEFAULT_SOURCE in lasso/xml/tools.c
+
+	The effect of defining the _DEFAULT_SOURCE macro is equivalent to
+	the effect of explicitly defining three macros in earlier glibc
+	versions: -D_BSD_SOURCE -D_SVID_SOURCE -D_POSIX_C_SOURCE=200809C
+
+	License: MIT
+
+2015-08-24  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	configure.ac: provide fallback for systems where libcheck is not installed with pkg-config
+
+	Add checks for failure of an allocation function from libxml (#8070)
+	g_malloc always trap on allocation errors but not xmlMalloc.
+
+	xml: handle failure of xmlSecBase64Decode() (fixes #8070)
+	Thanks to fpeters for the patch.
+
+	FAQ: add section about getting the issuer before parsing the received message (#4378)
+
+	profile: add two new class methods, lasso_profile_get_issuer and lasso_profile_get_in_response_to (#4378)
+	The goal of those two methods is to allow IdP and SP to load metadata
+	dynamically without processing completely the incoming. Currently it's
+	impossible as message parsing and signature checking is done in the same
+	function.
+
+	configure.ac: use pkg-config for libcheck
+
+	saml-2.0/login.c: change default value of WantAuthnRequestSigned (fixes #8105)
+	Specification says it should default to FALSE. We comply.
+
+2015-08-24  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Makefile.am: fix automake warning
+	It fixes this warning:
+
+		warning: 'INCLUDES' is the old name for 'AM_CPPFLAGS' (or '*_CPPFLAGS')
+
+	it seems INCLUDES is not to be used anymore.
+
+2015-04-03  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Add 'debian-squeeze/' from commit '33d67ddd1352a2db97d252c7d18f7806ec91e616'
+	git-subtree-dir: debian-squeeze
+	git-subtree-mainline: 80a2e0ea4763d3f0bc611ab98c8e207b6a82c099
+	git-subtree-split: 33d67ddd1352a2db97d252c7d18f7806ec91e616
+
+	Add 'debian-wheezy/' from commit '0001ab9af1e3a7e19000a65b75ebc3c42f76a739'
+	git-subtree-dir: debian-wheezy
+	git-subtree-mainline: 9f99176b3c8dd2d7c9a6ebf9c619d9c7fea2b64b
+	git-subtree-split: 0001ab9af1e3a7e19000a65b75ebc3c42f76a739
+
+2015-03-26  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	SAML-2.0: rework on commit 05fe802b8d, improve handling of ProtocolBinding and AssertionConsumerServiceURL
+	When the same URL was used for many bindings, the current code did not
+	work. Now we use
+	lasso_saml20_provider_check_assertion_consumer_service_url() to validate
+	url and binding are matching, if no binding is suggested we take the
+	first one defined for this URL.
+
+	Using AssertionConsumerServiceIndex and any of the other assertion
+	consumer designator attributes is still forbidden.
+
+2015-03-23  John Dennis  <jdennis@redhat.com>
+
+	Fix build failures
+	Fix a mistake in the documentation markup that prevented the
+	doc from building, needed to reverse the order of two tags.
+
+	Remove the $(PYTHON) from TESTS_ENVIRONMENT, it was causing
+	python to be invoked passing /bin/sh to it as a script.
+
+	License: MIT
+
+2015-03-11  John Dennis  <jdennis@redhat.com>
+
+	Add Destination attribute for SAML ECP Response
+	The Destination attribute on SAML Response element was not being set
+	when handling an ECP response. It is a requirement of SAML 2.0 that
+	signed values contain a Destination attribute on the root element
+	otherwise the client will reject the response. This is documented in
+	the SAML Bindings Specification, Section 3.4.5.2 "Security
+	Considerations":
+
+	    If the message is signed, the Destination XML attribute in the
+	    root SAML element of the protocol message MUST contain the URL to
+	    which the sender has instructed the user agent to deliver the
+	    message. The recipient MUST then verify that the value matches the
+	    location at which the message has been received.
+
+	Normally on login one calls
+	lasso_saml20_login_build_authn_response_msg() which then calls
+	lasso_saml20_profile_build_response_msg() which sets the Destination
+	attribute on the SAML Response. But when doing ECP you do not call
+	lasso_saml20_login_build_authn_response_msg(), instead you call call
+	lasso_saml20_login_build_response_msg() and if it's ECP it then calls
+	lasso_node_export_to_ecp_soap_response(). Thus the ECP
+	response never gets the Destination attribute set because of the
+	different code path, plus for ECP the destination is different, it's
+	the assertion consumer service.
+
+	FWIW this line of code was copied almost verbatim from
+	lasso_saml20_profile_build_response_msg which also sets the
+	Destination attribute.
+
+	License: MIT
+
+2015-02-26  Jérôme Schneider  <jschneider@entrouvert.com>
+
+	php5-lasso.prerm: s/phpdismod/php5dismod/
+
+	Merge with lasso in Jessie, re-activate java and gen-default-control.sh
+
+	control: build depends on dh-python
+
+2015-02-25  Jérôme Schneider  <jschneider@entrouvert.com>
+
+	python-lasso.install: just install python 2 files
+
+	python-lasso.install: python-lasso is for python2 only
+
+	liblasso-perl.install.in: fixes path
+
+	rules: cleanning clean target
+
+	perl; fix build for Jessie
+
+	remove java support
+
+	control: update build-dependencies for python3
+
+	debian/control: like control.in, control must be updated
+
+2015-02-25  EO builder bot  <admin@entrouvert.com>
+
+	debian: add python3 support
+
+2015-02-13  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Re-add control for eobuilder
+
+	Remove control and add python-six to control.in
+
+	Revert "Remove control.in"
+	This reverts commit 176e0716f8f8593860e0603697db5dec5675f5b3.
+
+2015-02-12  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Remove control.in
+
+	Add dependency on python-six
+
+	Update AUHTORS file
+
+	Port Java binding generator to Python 3
+
+	Port Perl binding generator to Python 3
+
+	Port PHP5 binding generator to Python 3
+
+	Make python generator scripts and tests run with python >= 3.2
+
+2015-02-12  Houzéfa Abbasbhay  <houzefa.abba@xcg-consulting.fr>
+
+	Python 3: Fix the pygobject init macro and restore it
+
+	Python 3: Fix a string conversion helper
+
+	Python 3: Oops (see rev 279959f)
+
+	Python 3: Fix Python 2 support (use six.print_)
+
+	Mention Python 3 support in the changelog
+
+	Python 3: Disable "PyGObjectPtrType" to avoid crashes (needs investigation)
+
+	Python 3: Fix a string function
+
+	Python 3: Fix module init
+
+	Python 3: PyObject_HEAD_INIT(NULL) -> PyVarObject_HEAD_INIT(NULL, 0) (to play better with C strict aliasing rules - see PEP 3123)
+
+	Python 3: Defs for int & string related functions
+
+	Python 3: - file(...) -> open(...) - print ... -> print(...) - print >> fd, ... -> print(..., file=fd) - basestring -> str - map(...) -> list(map(...))
+
+	Python 3: PyObject.ob_type is deeper in the structure; use the Py_TYPE macro instead
+
+	Python 3: Fix print calls in configure.ac
+
+	Ignore some Perl binding files
+
+	Ignore /test-driver
+
+2015-02-12  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	SAML-2.0: Rework protocol profile selection when parsing AuthnRequest messages
+	This commit also add tests around authn request parsing.
+
+2015-02-09  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Add support for SHA-2 family of hash functions for RSA and HMAC signatures
+
+2015-01-21  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Check return value of lasso_session_add_assertion() in lasso_login_build_assertion()
+
+	Remove _POSIX_SOURCE declaration as it's not needed
+
+2014-12-09  Simo Sorce  <simo@redhat.com>
+
+	Fix coverity issue about unchecked return
+	If find_path() does not find MinorVersion, then no value is changed and
+	we repeate the search with the values for thr major version.
+	Check if we have found anything and if not set the minor version to 0.
+
+	License: MIT
+
+2014-10-17  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Improve top level commint in CGI script example
+
+	Add simple example of a CGI service provider script written in C
+
+2014-10-02  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Remove dead code in the PHP5 binding
+
+2014-09-02  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	xml: modify xschema snippets to handle xsd:choice constructs
+
+	xml: support xsd:choices by allowing to rewind or advance after match or miss of a snippet
+
+2014-08-28  Simo Sorce  <simo@redhat.com>
+
+	Fix header guard
+	Found by clang
+
+	License: MIT
+
+2014-08-28  Simo Sorce  <simo@redhat.com>
+
+	Assert on missing id
+	In this function id is required, so just assert if it is missing.
+	This also silences a warning about "reference" being used unintialized
+	if "id" is null.
+
+	License: MIT
+
+2014-08-28  Simo Sorce  <simo@redhat.com>
+
+	Missing variable initialization
+	If name_id s unconditonally dereferenced in the cleanup code.
+	If it is not initialized it may cause segfaults or other misbehaviors.
+
+	License: MIT
 
 2014-08-28  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
+
+	Fix release date of 2.4.1
+
+	Release 2.4.1
 
 	Add tool gitlog-to-changelog
 
@@ -16,6 +861,10 @@
 	doc: add lasso_server_add_provider2 and lasso_server_load_metadata
 
 2014-08-11  Frédéric Péters  <fpeters@entrouvert.com>
+
+	debian: don't move perl files
+
+	debian: accomodate perl now installing in the right directory
 
 	perl: keep on using PREFIX, required for distcheck
 
@@ -318,6 +1167,22 @@
 
 	configure.ac: remove checks for SWIG
 
+2013-12-29  Frédéric Péters  <fpeters@entrouvert.com>
+
+	import 2.3.6-3 changelog entry
+
+	use php5enmod and php5dismod
+
+2013-12-29  Moritz Muehlenhoff  <jmm@debian.org>
+
+	enable hardened build flags
+
+2013-12-29  Frédéric Péters  <fpeters@entrouvert.com>
+
+	import 2.3.6-2.2 changelog entry
+
+	import 2.3.6-2.1 leftovers
+
 2013-12-19  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
 
 	configure.ac,fedora/lasso.spec: remove expat dependency
@@ -336,13 +1201,27 @@
 	bindings/python: automatically encode string into utf-8 when passing unicode string to Lasso methods
 	fixes #4077
 
+2013-12-10  Jérôme Schneider  <jschneider@entrouvert.com>
+
+	python-lasso.install: replace site-packages by dist-packages
+
+	add python-lasso.install with python files
+
 2013-12-08  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
 
 	id-ff/session.c: fix wrong variable reference in init_from_xml_nid_and_session_index
 
+2013-12-08  Thomas NOEL  <tnoel@entrouvert.com>
+
+	update control.in with control
+
 2013-12-06  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
 
 	remove the debian directory from the project
+
+2013-12-06  Jérôme Schneider  <jschneider@entrouvert.com>
+
+	python-lasso.install: don't install old /usr/lib/python*/site-packages
 
 2013-12-06  Frédéric Péters  <fpeters@entrouvert.com>
 
@@ -363,6 +1242,10 @@
 
 	Support automake 1.13 and 1.14
 	License: MIT
+
+2013-12-04  Jérôme Schneider  <jschneider@entrouvert.com>
+
+	debian: replace dh_pycentral by dh_python
 
 2013-12-03  Simo Sorce  <simo@redhat.com>
 
@@ -401,6 +1284,10 @@
 
 2013-09-27  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
 
+	debian: add a source/format file
+
+	debian: add a source/format file
+
 	toosl/git-version-gen: use a dot to separate the commit string from the regular version
 
 	lasso/xml/tools.c: fix misuse of xmlURIUnescapeString
@@ -408,6 +1295,8 @@
 	behaviour we expected is to return a 0 length string.
 
 	tools/git-version-gen: keep the g before the git commit number
+
+	debian: import current packging for debian wheezy
 
 	.gitignore: add more
 
@@ -1294,6 +2183,10 @@
 
 	[debian] adapt packaging to official section overrides
 
+	[debian] adapt packaging to official section overrides
+
+	[debian] sync packaging with official package
+
 	[debian] sync packaging with official package
 
 2011-01-25  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
@@ -1967,6 +2860,8 @@
 	Instead of using a Makefile.am in each data directory, each data
 	directoy has been added to the EXTRA_DIST for the parent directory
 	Makefile.am.
+
+	[Core] remove now useless .cvsignore files
 
 	[Core] remove now useless .cvsignore files
 
@@ -7601,6 +8496,10 @@
 
 	debian/control is now generated
 
+	debian/control is now generated
+
+	updated debian packaging
+
 	updated debian packaging
 
 2008-05-28  Frederic Peters  <fpeters@entrouvert.com>
@@ -7830,7 +8729,11 @@
 
 	updated with 2.1.98 packaging
 
+	updated with 2.1.98 packaging
+
 	properly quote vars
+
+	added build-dep on php5-dev
 
 	added build-dep on php5-dev
 
@@ -8542,6 +9445,8 @@
 
 	updated to current packaging then updated for new bindings
 
+	updated to current packaging then updated for new bindings
+
 2008-04-28  Frederic Peters  <fpeters@entrouvert.com>
 
 	re-added function; but fixed docstrings
@@ -8579,6 +9484,8 @@
 2008-04-21  Benjamin Dauvergne  <bdauvergne@entrouvert.com>
 
 	 * AttributeQuery contains multiple Attribute elements not juste one
+
+	 * ajout d'un package debian pour le binding php5
 
 	 * ajout d'un package debian pour le binding php5
 
@@ -9068,6 +9975,10 @@
 
 	python2.3-lasso was package for old policy
 
+	python2.3-lasso was package for old policy
+
+	updated packaging to current sid package
+
 	updated packaging to current sid package
 
 2007-07-16  Damien Laniel  <dlaniel@entrouvert.com>
@@ -9361,6 +10272,8 @@
 	added some node class for id-wsf-2.0 DST
 
 2007-05-30  Damien Laniel  <dlaniel@entrouvert.com>
+
+	updated Copyright dates in some more remaining files
 
 	updated Copyright dates in some more remaining files
 
@@ -10544,6 +11457,8 @@
 
 	note about 0.6.5
 
+	note about 0.6.5
+
 	try to find nameidentifier in alternative location; for compatibity with some idp
 
 	Helps building outside srcdir
@@ -10572,6 +11487,8 @@
 
 	removed hardcoded php dependency, added php:Depends substvar
 
+	removed hardcoded php dependency, added php:Depends substvar
+
 2006-03-17  Frederic Peters  <fpeters@entrouvert.com>
 
 	fixed RSA_SHA1 constant name
@@ -10581,6 +11498,8 @@
 	fixed underline
 
 	updated changelog to 0.6.4
+
+	update to 0.6.4
 
 	update to 0.6.4
 
@@ -10768,15 +11687,29 @@
 
 	updating ignored files with new packages
 
+	updating ignored files with new packages
+
 	remove old and never necessary debhelper generated files
+
+	remove old and never necessary debhelper generated files
+
+	new liblasso-java package
 
 	new liblasso-java package
 
 	removed mono packages from build-depends
 
+	removed mono packages from build-depends
+
+	updated debian changelog with uploaded packages.
+
 	updated debian changelog with uploaded packages.
 
 	don't build wsf; touch swig files so they are not rebuilt even if swig is detected.
+
+	don't build wsf; touch swig files so they are not rebuilt even if swig is detected.
+
+	updated FSF address
 
 	updated FSF address
 
@@ -10843,6 +11776,8 @@
 	last emergency fix: wsf_profile_private.h must be included in .tar.gz
 
 	updated ChangeLog for 0.6.3
+
+	new upstream release
 
 	new upstream release
 
@@ -11174,6 +12109,8 @@
 
 	disabled c# in debian apckage
 
+	disabled c# in debian apckage
+
 	return LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL after unsuccessful logon
 
 2005-08-09  Frederic Peters  <fpeters@entrouvert.com>
@@ -11260,7 +12197,11 @@
 
 	updated debian packaging wrt new cli policy
 
+	updated debian packaging wrt new cli policy
+
 2005-06-02  Frederic Peters  <fpeters@entrouvert.com>
+
+	new mono packages no longer have this tool
 
 	new mono packages no longer have this tool
 
@@ -11276,7 +12217,13 @@
 
 	no more php zts
 
+	no more php zts
+
 	new upstream
+
+	new upstream
+
+	this file is generated
 
 	this file is generated
 
@@ -11887,6 +12834,8 @@
 
 	updated debian packaging to what has just been uploaded to sid
 
+	updated debian packaging to what has just been uploaded to sid
+
 	that inline should be ok everywhere
 
 	ultra magic swig search&replace; compiles with new debian php packages (and old ones too)
@@ -12169,6 +13118,8 @@
 	Updated binding of all "discovery" nodes.
 
 	Work in progress: improving ID-WSF SWIG binding.
+
+	Updated Copyright and authors.
 
 	Updated Copyright and authors.
 
@@ -14389,6 +15340,8 @@
 
 	updated debian packaging
 
+	updated debian packaging
+
 2004-09-07  Romain Chantereay  <rchantereau@entrouvert.com>
 
 	Better java sun jdk support on Windows plateforms.
@@ -14646,6 +15599,10 @@
 2004-08-31  Frederic Peters  <fpeters@entrouvert.com>
 
 	cvs must ignore cil and dev packages directory
+
+	cvs must ignore cil and dev packages directory
+
+	php4 packaging and renamed liblasso0-python2.3 to python2.3-lasso
 
 	php4 packaging and renamed liblasso0-python2.3 to python2.3-lasso
 
@@ -15062,6 +16019,8 @@
 	Added lasso_node_new_ns_prop() method in LassoNode class
 
 2004-08-21  Frederic Peters  <fpeters@entrouvert.com>
+
+	updated debian package description; added packaging of the C# assembly.
 
 	updated debian package description; added packaging of the C# assembly.
 
@@ -15938,6 +16897,10 @@
 
 	missed new files
 
+	missed new files
+
+	debian packaging:  - correct sections  - correct FSF address  - renamed liblasso-dev to liblasso0-dev (and provides: liblasso-dev)  - pointer to /usr/share/common-licenses/GPL
+
 	debian packaging:  - correct sections  - correct FSF address  - renamed liblasso-dev to liblasso0-dev (and provides: liblasso-dev)  - pointer to /usr/share/common-licenses/GPL
 
 	fixed FSF address
@@ -16421,6 +17384,8 @@
 
 	some files to be ignored in debian/
 
+	some files to be ignored in debian/
+
 2004-08-02  Emmanuel Raviart  <eraviart@entrouvert.com>
 
 	Integrated README.WIN32 into Lasso book.
@@ -16666,6 +17631,8 @@
 	update of federation termination
 
 2004-07-27  Frederic Peters  <fpeters@entrouvert.com>
+
+	debian/ updated for official 0.3 release
 
 	debian/ updated for official 0.3 release
 
@@ -16919,6 +17886,8 @@
 
 	do not build tests in the debian package
 
+	do not build tests in the debian package
+
 	.cvsignore for tests/ directory
 
 	using check <http://check.sourceforge.net/> for the test suite (--enable-tests=no if you don't want them)
@@ -16936,6 +17905,8 @@
 	Moved some #include
 
 2004-07-24  Frederic Peters  <fpeters@entrouvert.com>
+
+	added debian packaging files (NOT included in .tar.gz produced by make dist; this is normal)
 
 	added debian packaging files (NOT included in .tar.gz produced by make dist; this is normal)
 

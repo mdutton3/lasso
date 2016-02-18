@@ -1,7 +1,31 @@
 NEWS
 ====
 
-2.5.0 - Septembre 2nd 2015
+2.5.1 - February 19th 2016
+---------------------------
+17 commits, 16 files changed, 1096 insertions, 42 deletions
+
+ - Add missing urn constants used in PAOS HTTP header
+ - Set NotBefore in SAML 2.0 login assertions
+ - tests: fix leak in test test16_test_get_issuer
+ - id-ff: fix leak of profile->private_data->message_id
+ - saml-2.0: fix leak of message_id in lasso_profile_saml20_build_paos_request_msg
+ - tests: fix leaks in test_ecp
+ - xml: fix wrong termination of comment
+ - xml: fix leak in lasso_soap_envelope_new_full
+ - profile: fix leak of private idp_list field
+ - saml-2.0: fix leaks of url
+ - tests: fix leak
+ - tests: update valgrind suppressions
+ - perl: remove quotes from $PERL -V::ccflags: output (#9572)
+ - Fix wrong snippet type (fixes #9616). Thanks to Brett Gardner for the patch.
+ - tools.c: use correct NID and digest length when building RSA signature using SHA-2 digest
+   (fixes #10019) Thanks to Brett Gardner for the patch.
+ - bindings/php5: fix enum getters and setters (fixes #10032). Thanks to Brett Gardner for the bug
+   report.
+ - fix warning about INCLUDES directive
+
+2.5.0 - September 2nd 2015
 --------------------------
 151 commits, 180 files changed, 8391 insertions, 1339 deletions
 
