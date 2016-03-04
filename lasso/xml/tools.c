@@ -2823,14 +2823,39 @@ lasso_xmlnode_add_saml2_signature_template(xmlNode *node, LassoSignatureContext 
 		xmlAddChild(node, signature);
 	}
 
-	/* Normally the signature is son of the signed node, which holds an Id attribute, but in
-	 * other cases, set snippet->offset to 0 and use xmlSecTmpSignatureAddReference from another
-	 * node get_xmlNode virtual method to add the needed reference.
-	 */
-	uri = g_strdup_printf("#%s", id);
-	reference = xmlSecTmplSignatureAddReference(signature,
-			xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
-	lasso_release(uri);
+	/* choose a digest for handling references based on the chosen signature algorithm */
+	{
+		xmlSecTransformId digest_method_id;
+		switch (context.signature_method) {
+			case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+			case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			case LASSO_SIGNATURE_METHOD_HMAC_SHA1:
+				digest_method_id = xmlSecTransformSha1Id;
+				break;
+			case LASSO_SIGNATURE_METHOD_RSA_SHA256:
+			case LASSO_SIGNATURE_METHOD_HMAC_SHA256:
+				digest_method_id = xmlSecTransformSha256Id;
+				break;
+			case LASSO_SIGNATURE_METHOD_RSA_SHA384:
+			case LASSO_SIGNATURE_METHOD_HMAC_SHA384:
+				digest_method_id = xmlSecTransformSha384Id;
+				break;
+			case LASSO_SIGNATURE_METHOD_RSA_SHA512:
+			case LASSO_SIGNATURE_METHOD_HMAC_SHA512:
+				digest_method_id = xmlSecTransformSha384Id;
+				break;
+			default:
+				g_assert_not_reached();
+		}
+		/* Normally the signature is son of the signed node, which holds an Id attribute, but in
+		 * other cases, set snippet->offset to 0 and use xmlSecTmpSignatureAddReference from another
+		 * node get_xmlNode virtual method to add the needed reference.
+		 */
+		uri = g_strdup_printf("#%s", id);
+		reference = xmlSecTmplSignatureAddReference(signature, digest_method_id, NULL,
+				(xmlChar*)uri, NULL);
+		lasso_release(uri);
+	}
 
 	/* add enveloped transform */
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);

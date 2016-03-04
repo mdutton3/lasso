@@ -925,8 +925,10 @@ END_TEST
 	lasso_provider_add_key(LASSO_PROVIDER(providers->data), key, FALSE); \
 	g_list_free(providers);
 
+typedef void (*SsoCallback)(LassoLogin *idp_login_context, LassoLogin *sp_login_context);
+
 static void
-sso_initiated_by_sp(LassoServer *idp_context, LassoServer *sp_context)
+sso_initiated_by_sp(LassoServer *idp_context, LassoServer *sp_context, SsoCallback sso_callback)
 {
 	LassoLogin *idp_login_context;
 	LassoLogin *sp_login_context;
@@ -970,6 +972,10 @@ sso_initiated_by_sp(LassoServer *idp_context, LassoServer *sp_context)
 				idp_login_context->parent.msg_body));
 	check_good_rc(lasso_login_accept_sso(sp_login_context));
 
+	if (sso_callback) {
+		sso_callback(idp_login_context, sp_login_context);
+	}
+
 	/* Cleanup */
 	lasso_release_gobject(idp_login_context);
 	lasso_release_gobject(sp_login_context);
@@ -991,8 +997,9 @@ START_TEST(test07_sso_sp_with_hmac_sha1_signatures)
 	test07_make_context(idp_context, "idp6-saml2", LASSO_PROVIDER_ROLE_SP, "sp6-saml2", key)
 	test07_make_context(sp_context, "sp6-saml2", LASSO_PROVIDER_ROLE_IDP, "idp6-saml2", key)
 
+
 	block_lasso_logs;
-	sso_initiated_by_sp(idp_context, sp_context);
+	sso_initiated_by_sp(idp_context, sp_context, NULL);
 	unblock_lasso_logs;
 
 	/* Cleanup */
@@ -1514,6 +1521,39 @@ START_TEST(test11_ecp)
 }
 END_TEST
 
+void check_digest_method(LassoLogin *idp_login_context, LassoLogin *sp_login_context)
+{
+	char *dump = lasso_node_debug((LassoNode*)sp_login_context->parent.response, 10);
+	check_true(strstr(dump, "<DigestMethod Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha256\"/>") != NULL);
+	lasso_release_string(dump)
+}
+
+START_TEST(test12_sso_sp_with_rsa_sha256_signatures)
+{
+	LassoServer *idp_context = NULL;
+	LassoServer *sp_context = NULL;
+	GList *providers;
+	LassoKey *key = NULL;
+
+	/* Create a key for signature algorithm RSA_SHA256 */
+	key = lasso_key_new_for_signature_from_file(TESTSDATADIR "idp6-saml2/private-key.pem", NULL,
+			LASSO_SIGNATURE_METHOD_RSA_SHA256, NULL);
+	check_true(LASSO_IS_KEY(key));
+
+	test07_make_context(idp_context, "idp6-saml2", LASSO_PROVIDER_ROLE_SP, "sp6-saml2", key)
+	test07_make_context(sp_context, "sp6-saml2", LASSO_PROVIDER_ROLE_IDP, "idp6-saml2", key)
+
+	block_lasso_logs;
+	sso_initiated_by_sp(idp_context, sp_context, check_digest_method);
+	unblock_lasso_logs;
+
+	/* Cleanup */
+	lasso_release_gobject(idp_context);
+	lasso_release_gobject(sp_context);
+	lasso_release_gobject(key);
+}
+END_TEST
+
 Suite*
 login_saml2_suite()
 {
@@ -1545,6 +1585,7 @@ login_saml2_suite()
 	tcase_add_test(tc_ecp, test09_ecp);
 	tcase_add_test(tc_ecp, test10_ecp);
 	tcase_add_test(tc_ecp, test11_ecp);
+	tcase_add_test(tc_spLogin, test12_sso_sp_with_rsa_sha256_signatures);
 	return s;
 }
 
