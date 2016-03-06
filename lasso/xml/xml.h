@@ -92,7 +92,13 @@ typedef enum {
  * LassoSignatureMethod:
  * @LASSO_SIGNATURE_METHOD_RSA_SHA1: sign using a RSA private key
  * @LASSO_SIGNATURE_METHOD_DSA_SHA1: sign using a DSA private key
- * @LASSO_SIGNATURE_METHOD_HMAC_SHA1: sign using a an HMAC-SHA1 secret key
+ * @LASSO_SIGNATURE_METHOD_HMAC_SHA1: sign using a HMAC-SHA1 secret key
+ * @LASSO_SIGNATURE_METHOD_RSA_SHA256: sign using a RSA private key and use SHA256 digest
+ * @LASSO_SIGNATURE_METHOD_HMAC_SHA256: sign using a HMAC-SHA256 secret key
+ * @LASSO_SIGNATURE_METHOD_RSA_SHA384: sign using a RSA private key and use SHA384 digest
+ * @LASSO_SIGNATURE_METHOD_HMAC_SHA384: sign using a HMAC-SHA384 secret key
+ * @LASSO_SIGNATURE_METHOD_RSA_SHA512: sign using a RSA private key and use SHA521 digest
+ * @LASSO_SIGNATURE_METHOD_HMAC_SHA512: sign using a HMAC-SHA512 secret key
  *
  * Signature method.
  **/
