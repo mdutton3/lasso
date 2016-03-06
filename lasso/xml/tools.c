@@ -1477,6 +1477,10 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 	/* Limit allowed transforms for signature and reference processing */
 	if((xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformInclC14NId) < 0) ||
 			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformExclC14NId) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformInclC14NWithCommentsId) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformExclC14NWithCommentsId) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformInclC14N11Id) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformInclC14N11WithCommentsId) < 0) ||
 			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformSha1Id) < 0) ||
 			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformHmacSha1Id) < 0) ||
 			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformDsaSha1Id) < 0) ||
@@ -1497,6 +1501,10 @@ lasso_saml_constrain_dsigctxt(xmlSecDSigCtxPtr dsigCtx) {
 	}
 	if((xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformInclC14NId) < 0) ||
 			(xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformExclC14NId) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformInclC14NWithCommentsId) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformExclC14NWithCommentsId) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformInclC14N11Id) < 0) ||
+			(xmlSecDSigCtxEnableSignatureTransform(dsigCtx, xmlSecTransformInclC14N11WithCommentsId) < 0) ||
 			(xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformSha1Id) < 0) ||
 			(xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformSha256Id) < 0) ||
 			(xmlSecDSigCtxEnableReferenceTransform(dsigCtx, xmlSecTransformSha384Id) < 0) ||
