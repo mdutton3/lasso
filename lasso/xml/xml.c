@@ -2342,11 +2342,6 @@ prefix_from_href_and_nodename(const xmlChar *href, G_GNUC_UNUSED const xmlChar *
 		prefix = "IdWsf2SubsRef";
 	else if (strcmp((char*)href, LASSO_WSA_HREF) == 0)
 		prefix = "WsAddr";
-#if 0 /* Desactivate DGME lib special casing */
-	else if (strcmp((char*)href, "urn:dgme:msp:ed:2007-01") == 0)
-		/* FIXME: new namespaces should be possible to add from another library than lasso */
-		prefix = "DgmeMspEd";
-#endif
 	else if ((tmp = lasso_get_prefix_for_idwsf2_dst_service_href((char*)href))
 			!= NULL) {
 		/* ID-WSF 2 Profile */
