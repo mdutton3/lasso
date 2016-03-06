@@ -1521,7 +1521,7 @@ START_TEST(test11_ecp)
 }
 END_TEST
 
-void check_digest_method(LassoLogin *idp_login_context, LassoLogin *sp_login_context)
+void check_digest_method(G_GNUC_UNUSED LassoLogin *idp_login_context, LassoLogin *sp_login_context)
 {
 	char *dump = lasso_node_debug((LassoNode*)sp_login_context->parent.response, 10);
 	check_true(strstr(dump, "<DigestMethod Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha256\"/>") != NULL);
