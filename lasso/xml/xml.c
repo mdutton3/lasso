@@ -1492,6 +1492,32 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		goto cleanup;
 	}
 
+	/* check node href and name match the node_data */
+	{
+		gboolean name_mismatch = FALSE;
+		LassoNodeClass *check_class = class;
+
+		/* if node is an xsi subtype of a real element, find the real element class */
+		while (check_class->node_data->xsi_sub_type) {
+			check_class = g_type_class_peek_parent(check_class);
+		}
+
+		name_mismatch = name_mismatch || lasso_strisnotequal((char*)check_class->node_data->node_name, (char*)xmlnode->name);
+		name_mismatch = name_mismatch || lasso_strisnotequal((char*)check_class->node_data->ns->href, (char*)xmlnode->ns->href);
+		name_mismatch = name_mismatch && lasso_strisnotequal(
+				G_OBJECT_CLASS_NAME(class),
+				lasso_registry_default_get_mapping((char*)xmlnode->ns->href,
+								   (char*)xmlnode->name,
+								   LASSO_LASSO_HREF));
+		if (name_mismatch) {
+			warning("lasso_node_impl_init_from_xml: expected name an href do not match node, expected %s:%s received %s:%s",
+					class->node_data->ns->href, class->node_data->node_name,
+					xmlnode->ns->href, xmlnode->name);
+			rc = 1;
+			goto cleanup;
+		}
+	}
+
 	/* Collect special snippets like SNIPPET_COLLECT_NAMESPACES, SNIPPET_ANY, SNIPPET_ATTRIBUTE
 	 * or SNIPPET_SIGNATURE, and initialize class_list in reverse. */
 	while (class && LASSO_IS_NODE_CLASS(class)) {

@@ -23,6 +23,7 @@
 
 #include "../private.h"
 #include "../../utils.h"
+#include "../../registry.h"
 #include "saml2_name_id.h"
 
 /**
@@ -105,6 +106,9 @@ lasso_saml2_name_id_get_type()
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
 				"LassoSaml2NameID", &this_info, 0);
+		lasso_registry_default_add_direct_mapping(
+				LASSO_SAML2_ASSERTION_HREF, "Issuer",
+				LASSO_LASSO_HREF, "LassoSaml2NameID");
 	}
 	return this_type;
 }
