@@ -1503,16 +1503,18 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 
 		name_mismatch = name_mismatch || lasso_strisnotequal((char*)check_class->node_data->node_name, (char*)xmlnode->name);
-		name_mismatch = name_mismatch || lasso_strisnotequal((char*)check_class->node_data->ns->href, (char*)xmlnode->ns->href);
-		name_mismatch = name_mismatch && lasso_strisnotequal(
-				G_OBJECT_CLASS_NAME(class),
-				lasso_registry_default_get_mapping((char*)xmlnode->ns->href,
-								   (char*)xmlnode->name,
-								   LASSO_LASSO_HREF));
+		name_mismatch = name_mismatch || ! lasso_equal_namespace(check_class->node_data->ns, xmlnode->ns);
+		if (xmlnode->ns) {
+			name_mismatch = name_mismatch && lasso_strisnotequal(
+					G_OBJECT_CLASS_NAME(class),
+					lasso_registry_default_get_mapping((char*)xmlnode->ns->href,
+									   (char*)xmlnode->name,
+									   LASSO_LASSO_HREF));
+		}
 		if (name_mismatch) {
 			warning("lasso_node_impl_init_from_xml: expected name an href do not match node, expected %s:%s received %s:%s",
-					class->node_data->ns->href, class->node_data->node_name,
-					xmlnode->ns->href, xmlnode->name);
+					class->node_data->ns ? class->node_data->ns->href : NULL, class->node_data->node_name,
+					xmlnode->ns ? xmlnode->ns->href : NULL, xmlnode->name);
 			rc = 1;
 			goto cleanup;
 		}
