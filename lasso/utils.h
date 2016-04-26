@@ -335,7 +335,10 @@
 
 #define lasso_assign_sec_key(dest, src) \
 	{ \
-		xmlSecKey *__tmp = xmlSecKeyDuplicate(src); \
+		xmlSecKey *__tmp = NULL; \
+		if (src) {\
+			__tmp = xmlSecKeyDuplicate(src); \
+		} \
 		if (dest) \
 			lasso_release_sec_key(dest); \
 		dest = __tmp; \
