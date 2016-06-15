@@ -91,7 +91,6 @@ dnl
 dnl Check for programs
 dnl
 AC_PROG_CC
-CFLAGS=""
 AM_CFLAGS=""
 AC_HEADER_STDC
 LT_AC_PROG_RC
@@ -702,7 +701,7 @@ AC_ARG_ENABLE(debugging,   [  --enable-debugging      enable debuging optimizati
 if test "z$enable_debugging" = "zyes" ; then
     enable_debugging=yes
     LASSO_DEFINES="$LASSO_DEFINES -DLASSO_DEBUG"
-    AM_CFLAGS="-O0 -g -Wall -Wextra -Werror"
+    CFLAGS="$CFLAGS -O0 -g -Wall -Wextra -Werror"
 else
     enable_debugging=no
 fi    
