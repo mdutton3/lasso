@@ -1245,18 +1245,29 @@ static void validate_idp_list(LassoEcp *ecp, EcpIdpListVariant ecpIDPListVariant
 
 		if (ecpIDPListVariant == ECP_IDP_LIST_ECP) {
 			check_not_null(ecp->known_sp_provided_idp_entries_supporting_ecp);
+			check_equals(g_list_length(ecp->known_sp_provided_idp_entries_supporting_ecp),
+						 g_list_length(idp_list->IDPEntry));
+
 			for (ecp_iter = g_list_first(ecp->known_sp_provided_idp_entries_supporting_ecp),
 				 src_iter = g_list_first(idp_list->IDPEntry);
 				 ecp_iter && src_iter;
 				 ecp_iter = g_list_next(ecp_iter), src_iter = g_list_next(src_iter)) {
-				gchar *ecp_item, *src_item;
+				LassoSamlp2IDPEntry *ecp_item, *src_item;
 
-				ecp_item = ecp_iter->data;
-				src_item = src_iter->data;
+				ecp_item = LASSO_SAMLP2_IDP_ENTRY(ecp_iter->data);
+				src_item = LASSO_SAMLP2_IDP_ENTRY(src_iter->data);
 
-				check_not_null(ecp_item);
-				check_not_null(src_item);
-				check_str_equals(ecp_item, src_item);
+				check_not_null(ecp_item->ProviderID);
+				check_not_null(src_item->ProviderID);
+				check_str_equals(ecp_item->ProviderID, src_item->ProviderID);
+
+				check_not_null(ecp_item->Name);
+				check_not_null(src_item->Name);
+				check_str_equals(ecp_item->Name, src_item->Name);
+
+				check_not_null(ecp_item->Loc);
+				check_not_null(src_item->Loc);
+				check_str_equals(ecp_item->Loc, src_item->Loc);
 			}
 		} else {
 			check_null(ecp->known_sp_provided_idp_entries_supporting_ecp);
@@ -1356,7 +1367,6 @@ void test_ecp(EcpIdpListVariant ecpIDPListVariant)
 	check_null(LASSO_PROFILE(spLoginContext)->msg_url);
 	check_not_null(strstr(spPaosRequestMsg, "RelayState"));
 
-
 	/* Finished with SP Login Context, will create new one later */
 	lasso_server_destroy(spContext);
 	spContext = NULL;
@@ -1388,7 +1398,7 @@ void test_ecp(EcpIdpListVariant ecpIDPListVariant)
 	check_str_equals(ecp->relaystate, relayState);
 	check_str_equals(ecp->issuer->content, "http://sp5/metadata");
 	check_str_equals(ecp->provider_name, provider_name);
-    check_equals(ecp->is_passive, is_passive);
+	check_equals(ecp->is_passive, is_passive);
 
 	/* Validate ECP IdP list info & default IdP URL */
 	validate_idp_list(ecp, ecpIDPListVariant, idp_list);
