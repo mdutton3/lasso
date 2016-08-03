@@ -92,9 +92,9 @@ static inline void message(GLogLevelFlags level, const char *format, ...)
 
 #if defined(__GNUC__)
 #  define warning(format, args...) \
-	message(G_LOG_LEVEL_DEBUG, format, ##args)
+	message(G_LOG_LEVEL_WARNING, format, ##args)
 #elif defined(HAVE_VARIADIC_MACROS)
-#  define warning(...)     message(G_LOG_LEVEL_DEBUG, __VA_ARGS__)
+#  define warning(...)     message(G_LOG_LEVEL_WARNING, __VA_ARGS__)
 #else
 static inline void warning(const char *format, ...)
 {
@@ -109,9 +109,9 @@ static inline void warning(const char *format, ...)
 
 #if defined(__GNUC__)
 #  define critical(format, args...) \
-	message(G_LOG_LEVEL_DEBUG, format, ##args)
+	message(G_LOG_LEVEL_CRITICAL, format, ##args)
 #elif defined(HAVE_VARIADIC_MACROS)
-#  define critical(...)     message(G_LOG_LEVEL_DEBUG, __VA_ARGS__)
+#  define critical(...)     message(G_LOG_LEVEL_CRITICAL, __VA_ARGS__)
 #else
 static inline void critical(const char *format, ...)
 {
@@ -126,9 +126,9 @@ static inline void critical(const char *format, ...)
 
 #if defined(__GNUC__)
 #  define error(format, args...) \
-	message(G_LOG_LEVEL_DEBUG, format, ##args)
+	message(G_LOG_LEVEL_ERROR, format, ##args)
 #elif defined(HAVE_VARIADIC_MACROS)
-#  define error(...)     message(G_LOG_LEVEL_DEBUG, __VA_ARGS__)
+#  define error(...)     message(G_LOG_LEVEL_ERROR, __VA_ARGS__)
 #else
 static inline void error(const char *format, ...)
 {
