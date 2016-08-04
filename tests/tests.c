@@ -67,8 +67,32 @@ void
 fail_logger(const gchar *log_domain, GLogLevelFlags log_level,
 		const gchar *message, G_GNUC_UNUSED gpointer user_data)
 {
+	const char *level_name = NULL;
+
+	switch (log_level) {
+		case G_LOG_LEVEL_ERROR:
+			level_name = "ERROR";
+			break;
+		case G_LOG_LEVEL_CRITICAL:
+			level_name = "CRITICAL";
+			break;
+		case G_LOG_LEVEL_WARNING:
+			level_name = "WARNING";
+			break;
+		case G_LOG_LEVEL_INFO:
+			level_name = "INFO";
+			break;
+		case G_LOG_LEVEL_MESSAGE:
+			level_name = "MESSAGE";
+			break;
+		case G_LOG_LEVEL_DEBUG:
+			level_name = "DEBUG";
+			break;
+		default:
+			g_assert_not_reached();
+	}
 	fail("No logging output expected: message «%s» was emitted for domain «%s» at the level"
-			" «%d»", message, log_domain, log_level);
+			" «%s»", message, log_domain, level_name);
 }
 
 static xmlFreeFunc free_func;
